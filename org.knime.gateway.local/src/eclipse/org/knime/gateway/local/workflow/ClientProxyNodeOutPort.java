@@ -50,9 +50,9 @@ package org.knime.gateway.local.workflow;
 
 import org.knime.core.def.node.port.PortTypeUID;
 import org.knime.core.def.node.workflow.INodeOutPort;
-import org.knime.core.def.node.workflow.NodeContainerState;
-import org.knime.core.def.node.workflow.NodeStateChangeListener;
-import org.knime.core.def.node.workflow.NodeStateEvent;
+import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 

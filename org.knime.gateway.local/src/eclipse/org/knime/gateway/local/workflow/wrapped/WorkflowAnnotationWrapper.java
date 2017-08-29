@@ -50,12 +50,12 @@ package org.knime.gateway.local.workflow.wrapped;
 
 import java.util.Optional;
 
-import org.knime.core.def.node.workflow.AnnotationData;
 import org.knime.core.def.node.workflow.IWorkflowAnnotation;
-import org.knime.core.def.node.workflow.NodeUIInformationListener;
 import org.knime.core.def.node.workflow.WorkflowAnnotationID;
-import org.knime.core.def.node.workflow.AnnotationData.StyleRange;
-import org.knime.core.def.node.workflow.AnnotationData.TextAlignment;
+import org.knime.core.node.workflow.AnnotationData;
+import org.knime.core.node.workflow.AnnotationData.StyleRange;
+import org.knime.core.node.workflow.AnnotationData.TextAlignment;
+import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.gateway.local.util.ObjectCache;
 
 /**

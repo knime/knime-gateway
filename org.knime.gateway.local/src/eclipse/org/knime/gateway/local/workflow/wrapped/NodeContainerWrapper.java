@@ -51,7 +51,6 @@ package org.knime.gateway.local.workflow.wrapped;
 import java.net.URL;
 import java.util.Optional;
 
-import org.knime.core.def.node.NodeType;
 import org.knime.core.def.node.workflow.INodeAnnotation;
 import org.knime.core.def.node.workflow.INodeContainer;
 import org.knime.core.def.node.workflow.INodeInPort;
@@ -59,18 +58,19 @@ import org.knime.core.def.node.workflow.INodeOutPort;
 import org.knime.core.def.node.workflow.ISingleNodeContainer;
 import org.knime.core.def.node.workflow.IWorkflowManager;
 import org.knime.core.def.node.workflow.JobManagerUID;
-import org.knime.core.def.node.workflow.NodeContainerState;
-import org.knime.core.def.node.workflow.NodeMessageListener;
-import org.knime.core.def.node.workflow.NodeProgressEvent;
-import org.knime.core.def.node.workflow.NodeProgressListener;
-import org.knime.core.def.node.workflow.NodePropertyChangedListener;
-import org.knime.core.def.node.workflow.NodeStateChangeListener;
-import org.knime.core.def.node.workflow.NodeUIInformation;
-import org.knime.core.def.node.workflow.NodeUIInformationListener;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.config.base.ConfigBaseRO;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
+import org.knime.core.node.workflow.NodeMessageListener;
+import org.knime.core.node.workflow.NodeProgressEvent;
+import org.knime.core.node.workflow.NodeProgressListener;
+import org.knime.core.node.workflow.NodePropertyChangedListener;
+import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.gateway.local.util.ObjectCache;
 
 /**

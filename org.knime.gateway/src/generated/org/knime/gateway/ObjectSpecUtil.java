@@ -136,23 +136,23 @@ public final class ObjectSpecUtil {
 		if(specId.equals("api")) {
 			return "##name##";
 		}				
-		if(specId.equals("builder")) {
-			return "##name##Builder";
-		}				
-		if(specId.equals("test")) {
-			return "##name##Test";
+		if(specId.equals("impl")) {
+			return "Default##name##";
 		}				
 		if(specId.equals("builder-impl")) {
 			return "Default##name##Builder";
 		}				
-		if(specId.equals("test")) {
-			return "##name##Test";
-		}				
 		if(specId.equals("api")) {
 			return "##name##";
 		}				
-		if(specId.equals("impl")) {
-			return "Default##name##";
+		if(specId.equals("test")) {
+			return "##name##Test";
+		}				
+		if(specId.equals("test")) {
+			return "##name##Test";
+		}				
+		if(specId.equals("builder")) {
+			return "##name##Builder";
 		}				
 		return null;
     }
@@ -161,22 +161,22 @@ public final class ObjectSpecUtil {
 		if(specId.equals("api")) {
 			return "org.knime.gateway.v0";
 		}				
-		if(specId.equals("builder")) {
+		if(specId.equals("impl")) {
+			return "org.knime.gateway.v0";
+		}				
+		if(specId.equals("builder-impl")) {
+			return "org.knime.gateway.v0";
+		}				
+		if(specId.equals("api")) {
 			return "org.knime.gateway.v0";
 		}				
 		if(specId.equals("test")) {
 			return "org.knime.core.gateway.v0";
 		}				
-		if(specId.equals("builder-impl")) {
-			return "org.knime.gateway.v0";
-		}				
 		if(specId.equals("test")) {
 			return "org.knime.core.gateway.v0.test";
 		}				
-		if(specId.equals("api")) {
-			return "org.knime.gateway.v0";
-		}				
-		if(specId.equals("impl")) {
+		if(specId.equals("builder")) {
 			return "org.knime.gateway.v0";
 		}				
 		return null;
@@ -186,23 +186,23 @@ public final class ObjectSpecUtil {
 		if(specId.equals("api")) {
 			return "";
 		}				
-		if(specId.equals("builder")) {
-			return "builder";
-		}				
-		if(specId.equals("test")) {
-			return "test";
+		if(specId.equals("impl")) {
+			return "impl";
 		}				
 		if(specId.equals("builder-impl")) {
 			return "impl";
 		}				
-		if(specId.equals("test")) {
-			return "test";
-		}				
 		if(specId.equals("api")) {
 			return "";
 		}				
-		if(specId.equals("impl")) {
-			return "impl";
+		if(specId.equals("test")) {
+			return "test";
+		}				
+		if(specId.equals("test")) {
+			return "test";
+		}				
+		if(specId.equals("builder")) {
+			return "builder";
 		}				
 		return null;
     }
