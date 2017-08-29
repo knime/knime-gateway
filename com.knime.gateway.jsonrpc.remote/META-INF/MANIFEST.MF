@@ -8,7 +8,6 @@ Bundle-ClassPath: .,
 Bundle-Vendor: KNIME GmbH, Konstanz, Germany
 Fragment-Host: org.knime.gateway.jsonrpc;bundle-version="3.5.0.qualifier"
 Require-Bundle: org.eclipse.osgi,
- org.knime.core.def;bundle-version="3.3.0",
  org.eclipse.jetty.server;bundle-version="9.3.9",
  org.eclipse.jetty.servlet,
  org.eclipse.jetty.util;bundle-version="9.3.9",
@@ -18,6 +17,7 @@ Require-Bundle: org.eclipse.osgi,
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.7.1",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.8.1",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="2.7.1",
- com.knime.gateway.remote;bundle-version="3.5.0"
+ com.knime.gateway.remote;bundle-version="3.5.0",
+ org.knime.core;bundle-version="3.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.knime.gateway.jsonrpc.remote
