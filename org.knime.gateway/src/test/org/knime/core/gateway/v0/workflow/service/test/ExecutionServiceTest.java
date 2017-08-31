@@ -46,9 +46,9 @@
  */
 package org.knime.core.gateway.v0.workflow.service.test;
 
-import static org.knime.gateway.services.ServiceManager.service;
 import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertEquals;
+import static org.knime.gateway.service.ServiceManager.service;
 
 import org.knime.gateway.v0.workflow.service.ExecutionService;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
@@ -61,8 +61,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.gateway.server.KnimeGatewayServerManager;
-import org.knime.gateway.services.ServerServiceConfig;
-import org.knime.gateway.services.ServiceConfig;
+import org.knime.gateway.service.ServerServiceConfig;
+import org.knime.gateway.service.ServiceConfig;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 

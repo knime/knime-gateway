@@ -55,9 +55,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.project.ProjectTreeNode;
-import org.knime.core.def.node.workflow.project.WorkflowProject;
-import org.knime.core.def.node.workflow.project.WorkflowProjectFactory;
 import org.knime.core.internal.KNIMEPath;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
@@ -65,6 +62,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.util.LockFailedException;
+import org.knime.gateway.project.ProjectTreeNode;
+import org.knime.gateway.project.WorkflowProject;
+import org.knime.gateway.project.WorkflowProjectFactory;
 
 /**
  * Mainly for testing and prototyping purposes. It provides all workflows of the workspace as a project tree such that

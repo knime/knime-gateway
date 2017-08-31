@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.server;
 
-import org.knime.gateway.services.ServiceFactory;
+import org.knime.gateway.service.ServiceFactory;
 import org.knime.gateway.workflow.service.GatewayService;
 
 /**

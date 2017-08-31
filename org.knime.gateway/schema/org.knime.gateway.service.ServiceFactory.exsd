@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.knime.core.gateway.v0" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.knime.gateway" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.knime.core.gateway.v0" id="org.knime.core.gateway.services.ServiceFactory" name="ServiceFactory"/>
+         <meta.schema plugin="org.knime.gateway" id="org.knime.gateway.service.ServiceFactory" name="ServiceFactory"/>
       </appinfo>
       <documentation>
-         Extension point to plugin in services, most likely java-clients that communicate with a particular gateway server.
+         Extension point to plug-in services, most likely java-clients that communicate with a particular gateway server.
       </documentation>
    </annotation>
 
@@ -69,7 +69,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         KNIME 3.5
       </documentation>
    </annotation>
 
@@ -78,27 +78,24 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         [Enter extension point usage example here.]
+         &lt;extension
+         point=&quot;org.knime.gateway.services.ServiceFactory&quot;&gt;
+   &lt;ServiceFactory
+            ServiceFactory=&quot;org.knime.gateway.jsonrpc.local.JsonRpcClientServiceFactory&quot;&gt;
+   &lt;/ServiceFactory&gt;
+&lt;/extension&gt;
       </documentation>
    </annotation>
+
+
 
    <annotation>
       <appinfo>
-         <meta.section type="apiinfo"/>
+         <meta.section type="copyright"/>
       </appinfo>
       <documentation>
-         [Enter API information here.]
+         (C) KNIME GmbH, Konstanz, Germany.
       </documentation>
    </annotation>
-
-   <annotation>
-      <appinfo>
-         <meta.section type="implementation"/>
-      </appinfo>
-      <documentation>
-         [Enter information about supplied implementation of this extension point.]
-      </documentation>
-   </annotation>
-
 
 </schema>

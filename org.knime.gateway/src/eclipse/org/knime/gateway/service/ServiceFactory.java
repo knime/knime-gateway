@@ -44,87 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 2, 2017 (hornm): created
+ *   Nov 8, 2016 (hornm): created
  */
-package org.knime.gateway.services;
+package org.knime.gateway.service;
+
+import org.knime.gateway.server.KnimeGatewayServer;
+import org.knime.gateway.workflow.service.GatewayService;
 
 /**
- * {@link ServiceConfig}-implementation to configure services that communicate with a server specified by a host name
- * and a port.
+ * Interface to be implemented by plugins that make use of the service factory extension point. Delivers concrete
+ * implementations for given service interfaces (see also {@link ServiceManager}).
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ServerServiceConfig implements ServiceConfig {
+public interface ServiceFactory {
 
-    private String m_host;
+    static final String EXT_POINT_ID = "org.knime.gateway.service.ServiceFactory";
 
-    private int m_port;
-
-    private String m_path;
+    static final String EXT_POINT_ATTR = "ServiceFactory";
 
     /**
-     * @param host
-     * @param port
+     * Normal priority, <code>0</code>.
      */
-    public ServerServiceConfig(final String host, final int port, final String path) {
-        m_host = host;
-        m_port = port;
-        m_path = path;
-
-    }
+    public static final int NORMAL_PRIORITY = 0;
 
     /**
-     * @return the host name
+     * @return the priority with what that service will be used in case of multiple registered services in the
+     *         {@link ServiceManager}
      */
-    public String getHost() {
-        return m_host;
+    default int getPriority() {
+        return NORMAL_PRIORITY;
     }
 
     /**
-     * @return the host's port
+     * Creates an instance for the demanded server interface. The returned implementation very likely represents a
+     * client that communicates with the respective server (see {@link KnimeGatewayServer}).
+     *
+     * @param serviceInterface the service to create
+     * @param serviceConfig a configuration object with more parameters required for service creation
+     * @return a new instance of the service interface or <code>null</code> if the service cannot be created (e.g.
+     *         because a service config object that cannot be handled)
      */
-    public int getPort() {
-        return m_port;
-    }
-
-    /**
-     * @return the server path
-     */
-    public String getPath() {
-        return m_path;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + m_host.hashCode();
-        result = prime * result + m_port;
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ServerServiceConfig other = (ServerServiceConfig)obj;
-        if (m_host == null) {
-            if (other.m_host != null) {
-                return false;
-            }
-        } else if (!m_host.equals(other.m_host)) {
-            return false;
-        } else if (m_port != other.m_port) {
-            return false;
-        }
-        return true;
-    }
-
+    <S extends GatewayService> S createService(Class<S> serviceInterface, ServiceConfig serviceConfig);
 }

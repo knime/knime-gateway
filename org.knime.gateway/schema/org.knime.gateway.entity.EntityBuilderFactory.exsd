@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.knime.core.gateway.v0" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.knime.gateway" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.knime.core.gateway.v0" id="org.knime.core.gateway.entities.EntityBuilderFactory" name="EntityBuilderFactory"/>
+         <meta.schema plugin="org.knime.gateway" id="org.knime.gateway.entity.EntityBuilderFactory" name="EntityBuilderFactory"/>
       </appinfo>
       <documentation>
-         Extension point to plugin in entity builders.
+         Extension point to plug-in entity builders.
       </documentation>
    </annotation>
 
@@ -69,7 +69,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         KNIME 3.5
       </documentation>
    </annotation>
 
@@ -82,14 +82,6 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appinfo>
-         <meta.section type="apiinfo"/>
-      </appinfo>
-      <documentation>
-         [Enter API information here.]
-      </documentation>
-   </annotation>
 
    <annotation>
       <appinfo>
@@ -100,5 +92,13 @@
       </documentation>
    </annotation>
 
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         (C) KNIME GmbH, Konstanz, Germany.
+      </documentation>
+   </annotation>
 
 </schema>

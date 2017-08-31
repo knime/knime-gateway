@@ -46,7 +46,7 @@
  * History
  *   Nov 8, 2016 (hornm): created
  */
-package org.knime.gateway.services;
+package org.knime.gateway.service;
 
 import java.util.Collections;
 import java.util.HashMap;

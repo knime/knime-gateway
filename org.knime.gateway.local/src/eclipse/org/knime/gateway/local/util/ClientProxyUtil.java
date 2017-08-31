@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.util;
 
-import static org.knime.gateway.services.ServiceManager.service;
+import static org.knime.gateway.service.ServiceManager.service;
 
 import java.util.Optional;
 
@@ -62,7 +62,7 @@ import org.knime.gateway.local.workflow.ClientProxyWorkflowAnnotation;
 import org.knime.gateway.local.workflow.ClientProxyWorkflowInPort;
 import org.knime.gateway.local.workflow.ClientProxyWorkflowManager;
 import org.knime.gateway.local.workflow.ClientProxyWorkflowOutPort;
-import org.knime.gateway.services.ServerServiceConfig;
+import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;

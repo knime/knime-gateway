@@ -44,45 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 9, 2016 (hornm): created
+ *   Nov 28, 2016 (hornm): created
  */
-package org.knime.gateway.local.workflow;
-
-import org.knime.core.def.node.workflow.ISingleNodeContainer;
-import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.service.ServerServiceConfig;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
+package org.knime.gateway.project;
 
 /**
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class ClientProxySingleNodeContainer extends ClientProxyNodeContainer implements ISingleNodeContainer {
+public interface WorkflowProjectFactory {
 
-
-    /**
-     * @param node
-     */
-    public ClientProxySingleNodeContainer(final NodeEnt node, final ObjectCache objCache, final ServerServiceConfig serviceConfig) {
-        super(node, objCache, serviceConfig);
-    }
+    static final String EXT_POINT_ID = "org.knime.gateway.project.WorkflowProjectFactory";
+    static final String EXT_POINT_ATTR = "WorkflowProjectFactory";
 
     /**
-     * {@inheritDoc}
+     * @return the root of the project tree
      */
-    @Override
-    public boolean isMemberOfScope() {
-        // TODO
-        return false;
-    }
+    ProjectTreeNode getProjectTree();
 
     /**
-     * {@inheritDoc}
+     * @return <code>true</code> if the project tree has changed - the {@link #getProjectTree()}-method will return the
+     *         new project tree
      */
-    @Override
-    public boolean isInactive() {
-        // TODO
-        return false;
-    }
-
+    boolean hasProjectTreeChanged();
 }

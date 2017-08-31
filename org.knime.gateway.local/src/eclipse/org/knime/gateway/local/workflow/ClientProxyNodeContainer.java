@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow;
 
-import static org.knime.gateway.services.ServiceManager.service;
+import static org.knime.gateway.service.ServiceManager.service;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -80,7 +80,7 @@ import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.util.JobManagerUtil;
 import org.knime.gateway.local.util.ClientProxyUtil;
 import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.services.ServerServiceConfig;
+import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.v0.workflow.entity.BoundsEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;

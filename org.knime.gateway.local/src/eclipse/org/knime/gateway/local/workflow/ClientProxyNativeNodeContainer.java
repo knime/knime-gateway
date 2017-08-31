@@ -54,7 +54,7 @@ import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.services.ServerServiceConfig;
+import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
 import org.knime.workbench.repository.RepositoryManager;

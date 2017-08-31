@@ -59,7 +59,7 @@ import org.knime.gateway.workflow.entity.builder.GatewayEntityBuilder;
  */
 public interface EntityBuilderFactory {
 
-    static final String EXT_POINT_ID = "org.knime.gateway.entities.EntityBuilderFactory";
+    static final String EXT_POINT_ID = "org.knime.gateway.entity.EntityBuilderFactory";
 
     static final String EXT_POINT_ATTR = "EntityBuilderFactory";
 

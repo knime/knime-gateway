@@ -54,9 +54,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
-import org.knime.gateway.services.ServerServiceConfig;
-import org.knime.gateway.services.ServiceConfig;
-import org.knime.gateway.services.ServiceFactory;
+import org.knime.gateway.service.ServerServiceConfig;
+import org.knime.gateway.service.ServiceConfig;
+import org.knime.gateway.service.ServiceFactory;
 import org.knime.gateway.workflow.service.GatewayService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

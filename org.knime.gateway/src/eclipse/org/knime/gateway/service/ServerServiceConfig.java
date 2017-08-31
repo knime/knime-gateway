@@ -46,17 +46,85 @@
  * History
  *   Jun 2, 2017 (hornm): created
  */
-package org.knime.gateway.services;
+package org.knime.gateway.service;
 
 /**
- * Configuration object that will be passed to the {@link ServiceFactory#createService(Class, ServiceConfig)}-method in
- * order to configure the service creation (e.g. passing a host and port).
- *
- * Subclasses must implement the {@link #hashCode()} (and therewith the {@link #equals(Object)}) methods!
- *
+ * {@link ServiceConfig}-implementation to configure services that communicate with a server specified by a host name
+ * and a port.
  *
  * @author Martin Horn, University of Konstanz
  */
-public interface ServiceConfig {
+public class ServerServiceConfig implements ServiceConfig {
+
+    private String m_host;
+
+    private int m_port;
+
+    private String m_path;
+
+    /**
+     * @param host
+     * @param port
+     */
+    public ServerServiceConfig(final String host, final int port, final String path) {
+        m_host = host;
+        m_port = port;
+        m_path = path;
+
+    }
+
+    /**
+     * @return the host name
+     */
+    public String getHost() {
+        return m_host;
+    }
+
+    /**
+     * @return the host's port
+     */
+    public int getPort() {
+        return m_port;
+    }
+
+    /**
+     * @return the server path
+     */
+    public String getPath() {
+        return m_path;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + m_host.hashCode();
+        result = prime * result + m_port;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ServerServiceConfig other = (ServerServiceConfig)obj;
+        if (m_host == null) {
+            if (other.m_host != null) {
+                return false;
+            }
+        } else if (!m_host.equals(other.m_host)) {
+            return false;
+        } else if (m_port != other.m_port) {
+            return false;
+        }
+        return true;
+    }
 
 }

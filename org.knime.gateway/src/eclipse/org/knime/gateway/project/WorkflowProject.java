@@ -44,45 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 9, 2016 (hornm): created
+ *   Nov 28, 2016 (hornm): created
  */
-package org.knime.gateway.local.workflow;
+package org.knime.gateway.project;
 
-import org.knime.core.def.node.workflow.ISingleNodeContainer;
-import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.service.ServerServiceConfig;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
+import org.knime.core.def.node.workflow.IWorkflowManager;
 
 /**
+ * Represents a workflow project.
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class ClientProxySingleNodeContainer extends ClientProxyNodeContainer implements ISingleNodeContainer {
+public interface WorkflowProject {
 
-
-    /**
-     * @param node
-     */
-    public ClientProxySingleNodeContainer(final NodeEnt node, final ObjectCache objCache, final ServerServiceConfig serviceConfig) {
-        super(node, objCache, serviceConfig);
+    public static enum WorkflowProjectType {
+        REMOTE,
+        LOCAL;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the name of the workflow
      */
-    @Override
-    public boolean isMemberOfScope() {
-        // TODO
-        return false;
-    }
+    String getName();
 
     /**
-     * {@inheritDoc}
+     * @return an id of the workflow
      */
-    @Override
-    public boolean isInactive() {
-        // TODO
-        return false;
-    }
+    String getID();
+
+    /**
+     * @return the type of the workflow
+     */
+    WorkflowProjectType getType();
+
+    /**
+     * Opens/loads the actual workflow represented by this workflow project.
+     * If the workflow has already been opened before it will be opened/loaded again.
+     *
+     * @return the newly loaded workflow
+     */
+    IWorkflowManager openProject();
 
 }

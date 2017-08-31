@@ -44,45 +44,39 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 9, 2016 (hornm): created
+ *   Nov 28, 2016 (hornm): created
  */
-package org.knime.gateway.local.workflow;
+package org.knime.gateway.project;
 
-import org.knime.core.def.node.workflow.ISingleNodeContainer;
-import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.service.ServerServiceConfig;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
+import java.util.List;
 
 /**
+ * A node in the workflow project tree. A node is, e.g., a workflow group, mount point etc.
+ * TODO: maybe a project tree node type should be introduced eventually
+ *
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class ClientProxySingleNodeContainer extends ClientProxyNodeContainer implements ISingleNodeContainer {
-
-
-    /**
-     * @param node
-     */
-    public ClientProxySingleNodeContainer(final NodeEnt node, final ObjectCache objCache, final ServerServiceConfig serviceConfig) {
-        super(node, objCache, serviceConfig);
-    }
+public interface ProjectTreeNode {
 
     /**
-     * {@inheritDoc}
+     * @return a name of the project tree node (e.g. the name of the workflow group)
      */
-    @Override
-    public boolean isMemberOfScope() {
-        // TODO
-        return false;
-    }
+    String getName();
 
     /**
-     * {@inheritDoc}
+     * @return an id of the project tree node
      */
-    @Override
-    public boolean isInactive() {
-        // TODO
-        return false;
-    }
+    String getID();
+
+    /**
+     * @return list of all direct tree node children, an empty list if none
+     */
+    List<ProjectTreeNode> getChildren();
+
+    /**
+     * @return list of all project children (i.e. the actual leaves of the tree), an empty list if none
+     */
+    List<WorkflowProject> getChildrenProjects();
 
 }
