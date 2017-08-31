@@ -55,11 +55,11 @@ import java.util.Optional;
 
 import org.knime.core.def.node.workflow.INodeContainer;
 import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.project.WorkflowProjectManager;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.project.WorkflowProjectManager;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.service.NodeService;
 

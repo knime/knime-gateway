@@ -51,8 +51,8 @@ package com.knime.gateway.remote.workflow.service;
 import static com.knime.gateway.remote.util.EntityBuilderUtil.buildWorkflowEnt;
 
 import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.project.WorkflowProjectManager;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.project.WorkflowProjectManager;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.service.ExecutionService;
 
