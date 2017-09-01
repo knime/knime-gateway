@@ -49,8 +49,8 @@ package org.knime.gateway.v0.workflow.entity.impl;
 import org.knime.gateway.v0.workflow.entity.BoundsEnt;
 import org.knime.gateway.v0.workflow.entity.builder.BoundsEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the BoundsEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

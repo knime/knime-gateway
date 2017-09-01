@@ -78,24 +78,12 @@ public interface PortTypeEntBuilderMixIn extends PortTypeEntBuilder {
     public PortTypeEnt build();
     
 	@Override
-	@JsonProperty("Name")
-    public PortTypeEntBuilder setName(final String Name);
-    
-	@Override
 	@JsonProperty("PortObjectClassName")
     public PortTypeEntBuilder setPortObjectClassName(final String PortObjectClassName);
     
 	@Override
 	@JsonProperty("IsOptional")
     public PortTypeEntBuilder setIsOptional(final boolean IsOptional);
-    
-	@Override
-	@JsonProperty("Color")
-    public PortTypeEntBuilder setColor(final int Color);
-    
-	@Override
-	@JsonProperty("IsHidden")
-    public PortTypeEntBuilder setIsHidden(final boolean IsHidden);
     
 
 }

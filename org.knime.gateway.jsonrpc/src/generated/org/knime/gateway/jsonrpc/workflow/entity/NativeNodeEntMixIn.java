@@ -53,7 +53,7 @@ import org.knime.gateway.v0.workflow.entity.JobManagerEnt;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
+import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
@@ -87,8 +87,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface NativeNodeEntMixIn extends NativeNodeEnt {
 
 	@Override
-	@JsonProperty("NodeFactoryID")
-    public NodeFactoryIDEnt getNodeFactoryID();
+	@JsonProperty("NodeFactoryKey")
+    public NodeFactoryKeyEnt getNodeFactoryKey();
     
 	@Override
 	@JsonProperty("ParentNodeID")

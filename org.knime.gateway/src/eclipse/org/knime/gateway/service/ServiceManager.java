@@ -56,7 +56,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.knime.core.util.ExtPointUtils;
 import org.knime.core.util.Pair;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderManager;
 import org.knime.gateway.v0.workflow.service.WorkflowService;
 import org.knime.gateway.workflow.service.GatewayService;
 

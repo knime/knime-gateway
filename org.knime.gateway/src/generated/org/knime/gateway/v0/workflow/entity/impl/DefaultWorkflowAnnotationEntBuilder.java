@@ -53,8 +53,8 @@ import org.knime.gateway.v0.workflow.entity.StyleRangeEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.builder.WorkflowAnnotationEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the WorkflowAnnotationEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

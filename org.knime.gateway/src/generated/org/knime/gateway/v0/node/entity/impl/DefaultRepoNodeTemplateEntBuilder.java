@@ -49,8 +49,8 @@ package org.knime.gateway.v0.node.entity.impl;
 import org.knime.gateway.v0.node.entity.RepoNodeTemplateEnt;
 import org.knime.gateway.v0.node.entity.builder.RepoNodeTemplateEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the RepoNodeTemplateEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

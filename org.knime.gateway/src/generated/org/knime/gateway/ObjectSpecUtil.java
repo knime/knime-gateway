@@ -171,10 +171,10 @@ public final class ObjectSpecUtil {
 			return "org.knime.gateway.v0";
 		}				
 		if(specId.equals("test")) {
-			return "org.knime.core.gateway.v0";
+			return "org.knime.gateway.v0";
 		}				
 		if(specId.equals("test")) {
-			return "org.knime.core.gateway.v0.test";
+			return "org.knime.gateway.v0.test";
 		}				
 		if(specId.equals("builder")) {
 			return "org.knime.gateway.v0";

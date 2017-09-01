@@ -49,8 +49,8 @@ package org.knime.gateway.v0.workflow.entity.impl;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 import org.knime.gateway.v0.workflow.entity.builder.PortTypeEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -62,28 +62,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class DefaultPortTypeEnt implements PortTypeEnt {
 
-	private String m_Name;
 	private String m_PortObjectClassName;
 	private boolean m_IsOptional;
-	private int m_Color;
-	private boolean m_IsHidden;
 
     /**
      * @param builder
      */
     DefaultPortTypeEnt(final DefaultPortTypeEntBuilder builder) {
-		m_Name = builder.m_Name;
 		m_PortObjectClassName = builder.m_PortObjectClassName;
 		m_IsOptional = builder.m_IsOptional;
-		m_Color = builder.m_Color;
-		m_IsHidden = builder.m_IsHidden;
     }
 
-	@Override
-    public String getName() {
-        return m_Name;
-    }
-    
 	@Override
     public String getPortObjectClassName() {
         return m_PortObjectClassName;
@@ -92,16 +81,6 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
 	@Override
     public boolean getIsOptional() {
         return m_IsOptional;
-    }
-    
-	@Override
-    public int getColor() {
-        return m_Color;
-    }
-    
-	@Override
-    public boolean getIsHidden() {
-        return m_IsHidden;
     }
     
 

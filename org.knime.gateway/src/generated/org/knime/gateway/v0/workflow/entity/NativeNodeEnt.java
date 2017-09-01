@@ -59,9 +59,9 @@ import java.util.Optional;
 public interface NativeNodeEnt extends GatewayEntity, NodeEnt  {
 
     /**
-     * @return The ID of the node factory defining all details.
+     * @return The key/ID of the node factory defining all details.
      */
- 	NodeFactoryIDEnt getNodeFactoryID();
+ 	NodeFactoryKeyEnt getNodeFactoryKey();
  	
     /**
      * @return The parent node id of the node or not present if it's the root node.

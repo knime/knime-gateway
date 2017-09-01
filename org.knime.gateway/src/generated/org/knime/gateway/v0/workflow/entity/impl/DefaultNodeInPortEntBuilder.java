@@ -51,8 +51,8 @@ import org.knime.gateway.v0.workflow.entity.NodePortEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 import org.knime.gateway.v0.workflow.entity.builder.NodeInPortEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the NodeInPortEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

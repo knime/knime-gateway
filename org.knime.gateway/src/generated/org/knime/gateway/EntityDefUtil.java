@@ -78,7 +78,7 @@ public class EntityDefUtil {
         list.add(Pair.of("NodeInPortEnt", "workflow.entity"));
         list.add(Pair.of("NativeNodeEnt", "workflow.entity"));
         list.add(Pair.of("NodeOutPortEnt", "workflow.entity"));
-        list.add(Pair.of("NodeFactoryIDEnt", "workflow.entity"));
+        list.add(Pair.of("NodeFactoryKeyEnt", "workflow.entity"));
         list.add(Pair.of("XYEnt", "workflow.entity"));
         list.add(Pair.of("PortTypeEnt", "workflow.entity"));
         list.add(Pair.of("StyleRangeEnt", "workflow.entity"));

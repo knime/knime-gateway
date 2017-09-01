@@ -49,8 +49,8 @@ package org.knime.gateway.v0.workflow.entity.impl;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.entity.builder.NodeMessageEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the NodeMessageEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

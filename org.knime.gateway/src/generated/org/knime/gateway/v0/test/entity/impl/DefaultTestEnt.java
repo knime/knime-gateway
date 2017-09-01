@@ -53,8 +53,8 @@ import org.knime.gateway.v0.test.entity.builder.TestEntBuilder;
 import org.knime.gateway.v0.workflow.entity.XYEnt;
 import org.knime.gateway.v0.workflow.entity.impl.DefaultXYEnt;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

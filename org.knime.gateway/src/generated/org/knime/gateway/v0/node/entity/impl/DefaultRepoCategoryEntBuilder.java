@@ -51,8 +51,8 @@ import org.knime.gateway.v0.node.entity.RepoCategoryEnt;
 import org.knime.gateway.v0.node.entity.RepoNodeTemplateEnt;
 import org.knime.gateway.v0.node.entity.builder.RepoCategoryEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the RepoCategoryEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

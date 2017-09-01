@@ -53,8 +53,8 @@ import org.knime.gateway.v0.test.entity.builder.TestEntBuilder;
 import org.knime.gateway.v0.workflow.entity.XYEnt;
 import org.knime.gateway.v0.workflow.entity.impl.DefaultXYEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the TestEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

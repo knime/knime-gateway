@@ -57,11 +57,6 @@ import org.knime.gateway.workflow.entity.GatewayEntity;
 public interface PortTypeEnt extends GatewayEntity {
 
     /**
-     * @return Port type name.
-     */
- 	String getName();
- 	
-    /**
      * @return Port type class name (for coloring, connection checks).
      */
  	String getPortObjectClassName();
@@ -70,15 +65,5 @@ public interface PortTypeEnt extends GatewayEntity {
      * @return Whether the port is optional, only applies to input ports
      */
  	boolean getIsOptional();
- 	
-    /**
-     * @return The color of a port.
-     */
- 	int getColor();
- 	
-    /**
-     * @return Whether the port is hidden (flow variable in/output).
-     */
- 	boolean getIsHidden();
  	
 }

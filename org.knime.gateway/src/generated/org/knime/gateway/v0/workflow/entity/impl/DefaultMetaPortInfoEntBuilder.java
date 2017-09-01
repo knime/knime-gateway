@@ -50,8 +50,8 @@ import org.knime.gateway.v0.workflow.entity.MetaPortInfoEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 import org.knime.gateway.v0.workflow.entity.builder.MetaPortInfoEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the MetaPortInfoEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

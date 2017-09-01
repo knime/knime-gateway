@@ -56,8 +56,8 @@ import org.knime.gateway.v0.workflow.entity.builder.AnnotationEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.NodeAnnotationEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.WorkflowAnnotationEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

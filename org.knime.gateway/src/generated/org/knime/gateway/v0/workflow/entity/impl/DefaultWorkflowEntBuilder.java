@@ -56,8 +56,8 @@ import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowUIInfoEnt;
 import org.knime.gateway.v0.workflow.entity.builder.WorkflowEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the WorkflowEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

@@ -53,7 +53,7 @@ import org.knime.gateway.v0.workflow.entity.JobManagerEnt;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
+import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
@@ -64,8 +64,8 @@ import org.knime.gateway.v0.workflow.entity.builder.NodeEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.WorkflowNodeEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.WrappedWorkflowNodeEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the NodeEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}

@@ -77,24 +77,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface PortTypeEntMixIn extends PortTypeEnt {
 
 	@Override
-	@JsonProperty("Name")
-    public String getName();
-    
-	@Override
 	@JsonProperty("PortObjectClassName")
     public String getPortObjectClassName();
     
 	@Override
 	@JsonProperty("IsOptional")
     public boolean getIsOptional();
-    
-	@Override
-	@JsonProperty("Color")
-    public int getColor();
-    
-	@Override
-	@JsonProperty("IsHidden")
-    public boolean getIsHidden();
     
 
 }

@@ -53,14 +53,14 @@ import org.knime.gateway.v0.workflow.entity.JobManagerEnt;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
+import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.workflow.entity.builder.NativeNodeEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -72,7 +72,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class DefaultNativeNodeEnt implements NativeNodeEnt {
 
-	private NodeFactoryIDEnt m_NodeFactoryID;
+	private NodeFactoryKeyEnt m_NodeFactoryKey;
 	private Optional<String> m_ParentNodeID;
 	private String m_RootWorkflowID;
 	private Optional<JobManagerEnt> m_JobManager;
@@ -92,7 +92,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
      * @param builder
      */
     DefaultNativeNodeEnt(final DefaultNativeNodeEntBuilder builder) {
-		m_NodeFactoryID = builder.m_NodeFactoryID;
+		m_NodeFactoryKey = builder.m_NodeFactoryKey;
 		m_ParentNodeID = builder.m_ParentNodeID;
 		m_RootWorkflowID = builder.m_RootWorkflowID;
 		m_JobManager = builder.m_JobManager;
@@ -110,8 +110,8 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     }
 
 	@Override
-    public NodeFactoryIDEnt getNodeFactoryID() {
-        return m_NodeFactoryID;
+    public NodeFactoryKeyEnt getNodeFactoryKey() {
+        return m_NodeFactoryKey;
     }
     
 	@Override

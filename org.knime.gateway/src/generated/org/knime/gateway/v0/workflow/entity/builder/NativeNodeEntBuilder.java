@@ -54,7 +54,7 @@ import org.knime.gateway.v0.workflow.entity.JobManagerEnt;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
+import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
@@ -67,10 +67,10 @@ import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
 
     /**
-     * @param nodeFactoryID The ID of the node factory defining all details.
+     * @param nodeFactoryKey The key/ID of the node factory defining all details.
      * @return <code>this</code>
      */
-	NativeNodeEntBuilder setNodeFactoryID(NodeFactoryIDEnt nodeFactoryID);
+	NativeNodeEntBuilder setNodeFactoryKey(NodeFactoryKeyEnt nodeFactoryKey);
 	
     /**
      * @param parentNodeID The parent node id of the node or not present if it's the root node.

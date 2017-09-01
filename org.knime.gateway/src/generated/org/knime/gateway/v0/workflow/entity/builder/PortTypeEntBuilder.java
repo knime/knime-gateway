@@ -57,12 +57,6 @@ import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 public interface PortTypeEntBuilder extends GatewayEntityBuilder<PortTypeEnt> {
 
     /**
-     * @param name Port type name.
-     * @return <code>this</code>
-     */
-	PortTypeEntBuilder setName(String name);
-	
-    /**
      * @param portObjectClassName Port type class name (for coloring, connection checks).
      * @return <code>this</code>
      */
@@ -73,17 +67,5 @@ public interface PortTypeEntBuilder extends GatewayEntityBuilder<PortTypeEnt> {
      * @return <code>this</code>
      */
 	PortTypeEntBuilder setIsOptional(boolean isOptional);
-	
-    /**
-     * @param color The color of a port.
-     * @return <code>this</code>
-     */
-	PortTypeEntBuilder setColor(int color);
-	
-    /**
-     * @param isHidden Whether the port is hidden (flow variable in/output).
-     * @return <code>this</code>
-     */
-	PortTypeEntBuilder setIsHidden(boolean isHidden);
 	
 }

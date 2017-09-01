@@ -53,14 +53,14 @@ import org.knime.gateway.v0.workflow.entity.JobManagerEnt;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
+import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.workflow.entity.builder.NativeNodeEntBuilder;
 
-import org.knime.gateway.entities.EntityBuilderFactory;
-import org.knime.gateway.entities.EntityBuilderManager;
+import org.knime.gateway.entity.EntityBuilderFactory;
+import org.knime.gateway.entity.EntityBuilderManager;
 
 /**
  * Default implementation of the NativeNodeEntBuilder-interface. E.g. used if no other {@link EntityBuilderFactory}
@@ -70,7 +70,7 @@ import org.knime.gateway.entities.EntityBuilderManager;
  */
  public class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {
     
-	NodeFactoryIDEnt m_NodeFactoryID;
+	NodeFactoryKeyEnt m_NodeFactoryKey;
 	Optional<String> m_ParentNodeID = Optional.empty();
 	String m_RootWorkflowID;
 	Optional<JobManagerEnt> m_JobManager = Optional.empty();
@@ -92,8 +92,8 @@ import org.knime.gateway.entities.EntityBuilderManager;
     }
 
 	@Override
-    public NativeNodeEntBuilder setNodeFactoryID(final NodeFactoryIDEnt NodeFactoryID) {
-		m_NodeFactoryID = NodeFactoryID;			
+    public NativeNodeEntBuilder setNodeFactoryKey(final NodeFactoryKeyEnt NodeFactoryKey) {
+		m_NodeFactoryKey = NodeFactoryKey;			
         return this;
     }
         
