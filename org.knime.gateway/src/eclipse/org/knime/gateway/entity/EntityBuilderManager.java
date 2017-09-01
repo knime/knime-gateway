@@ -53,7 +53,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.knime.core.util.ExtPointUtils;
+import org.knime.gateway.util.ExtPointUtil;
 import org.knime.gateway.v0.workflow.entity.impl.DefaultWorkflowEntBuilder;
 import org.knime.gateway.workflow.entity.GatewayEntity;
 import org.knime.gateway.workflow.entity.builder.GatewayEntityBuilder;
@@ -104,7 +104,8 @@ public class EntityBuilderManager {
     }
 
     private static EntityBuilderFactory createBuilderFactory() {
-        List<EntityBuilderFactory> instances = ExtPointUtils
+
+        List<EntityBuilderFactory> instances = ExtPointUtil
             .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
         if (instances.size() == 0) {
             LOGGER.warn("No entity builder factory registered. Default factory used.");

@@ -50,7 +50,7 @@ package org.knime.gateway.server;
 
 import java.util.List;
 
-import org.knime.core.util.ExtPointUtils;
+import org.knime.gateway.util.ExtPointUtil;
 import org.knime.gateway.workflow.service.GatewayService;
 
 /**
@@ -110,7 +110,7 @@ public class KnimeGatewayServerManager {
 
     private static void collectServers() {
         if (SERVERS == null) {
-            SERVERS = ExtPointUtils.collectExecutableExtensions(KnimeGatewayServer.EXT_POINT_ID,
+            SERVERS = ExtPointUtil.collectExecutableExtensions(KnimeGatewayServer.EXT_POINT_ID,
                 KnimeGatewayServer.EXT_POINT_ATTR);
         }
     }

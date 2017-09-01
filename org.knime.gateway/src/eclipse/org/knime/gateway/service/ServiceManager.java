@@ -54,9 +54,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.knime.core.util.ExtPointUtils;
 import org.knime.core.util.Pair;
 import org.knime.gateway.entity.EntityBuilderManager;
+import org.knime.gateway.util.ExtPointUtil;
 import org.knime.gateway.v0.workflow.service.WorkflowService;
 import org.knime.gateway.workflow.service.GatewayService;
 
@@ -127,7 +127,7 @@ public class ServiceManager {
 
     private static ServiceFactory createServiceFactory() {
         List<ServiceFactory> instances =
-            ExtPointUtils.collectExecutableExtensions(ServiceFactory.EXT_POINT_ID, ServiceFactory.EXT_POINT_ATTR);
+            ExtPointUtil.collectExecutableExtensions(ServiceFactory.EXT_POINT_ID, ServiceFactory.EXT_POINT_ATTR);
 
         if(instances.size() == 0) {
             throw new IllegalStateException("No service factory registered!");
