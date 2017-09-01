@@ -66,7 +66,7 @@ import org.knime.core.def.node.workflow.INodeAnnotation;
 import org.knime.core.def.node.workflow.INodeContainer;
 import org.knime.core.def.node.workflow.IWorkflowAnnotation;
 import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.JobManagerUID;
+import org.knime.core.def.node.workflow.JobManagerKey;
 import org.knime.core.def.node.workflow.WorkflowAnnotationID;
 import org.knime.core.def.node.workflow.action.ICollapseIntoMetaNodeResult;
 import org.knime.core.def.node.workflow.action.IExpandMetaNodeResult;
@@ -641,10 +641,10 @@ public class WorkflowManagerWrapper extends NodeContainerWrapper implements IWor
     /**
      * @param nodeID
      * @param jobMgr
-     * @see org.knime.core.node.workflow.WorkflowManager#setJobManager(org.knime.core.node.workflow.NodeID, org.knime.core.def.node.workflow.JobManagerUID)
+     * @see org.knime.core.node.workflow.WorkflowManager#setJobManager(org.knime.core.node.workflow.NodeID, org.knime.core.def.node.workflow.JobManagerKey)
      */
     @Override
-    public void setJobManager(final NodeID nodeID, final JobManagerUID jobMgr) {
+    public void setJobManager(final NodeID nodeID, final JobManagerKey jobMgr) {
         m_delegate.setJobManager(nodeID, jobMgr);
     }
 

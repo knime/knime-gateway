@@ -60,7 +60,7 @@ import org.knime.core.def.node.workflow.INodeContainer;
 import org.knime.core.def.node.workflow.INodeInPort;
 import org.knime.core.def.node.workflow.INodeOutPort;
 import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.JobManagerUID;
+import org.knime.core.def.node.workflow.JobManagerKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeSettings;
@@ -77,7 +77,6 @@ import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationListener;
-import org.knime.core.util.JobManagerUtil;
 import org.knime.gateway.local.util.ClientProxyUtil;
 import org.knime.gateway.local.util.ObjectCache;
 import org.knime.gateway.service.ServerServiceConfig;
@@ -161,14 +160,14 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public Optional<JobManagerUID> getJobManagerUID() {
+    public Optional<JobManagerKey> getJobManagerKey() {
         if (m_node.getJobManager().isPresent()) {
             return m_node.getJobManager()
-                .map(jm -> JobManagerUID.builder(jm.getJobManagerID()).setName(jm.getName()).build());
+                .map(jm -> JobManagerKey.builder(jm.getJobManagerID()).setName(jm.getName()).build());
         } else if (getParent() == null) {
             //if it's the root workflow and no job manager set, return the default one
             return Optional
-                .of(JobManagerUtil.getJobManagerUID(NodeExecutionJobManagerPool.getDefaultJobManagerFactory()));
+                .of(NodeExecutionJobManagerPool.getJobManagerKey(NodeExecutionJobManagerPool.getDefaultJobManagerFactory()));
         } else {
             //if there is no job manager set nor it's the root workflow
             return Optional.empty();
@@ -179,16 +178,16 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public JobManagerUID findJobManagerUID() {
+    public JobManagerKey findJobManagerKey() {
         //optionally derive the job manager uid from the parent
         return m_node.getJobManager()
-            .map(jm -> JobManagerUID.builder(jm.getJobManagerID()).setName(jm.getName()).build())
+            .map(jm -> JobManagerKey.builder(jm.getJobManagerID()).setName(jm.getName()).build())
             .orElseGet(() -> {
                 if(getParent() == null) {
                     //if it's the root workflow, there must be a job manager set
-                    return getJobManagerUID().get();
+                    return getJobManagerKey().get();
                 } else {
-                    return getParent().findJobManagerUID();
+                    return getParent().findJobManagerKey();
                 }
 
             });

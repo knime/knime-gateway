@@ -75,7 +75,7 @@ import org.knime.core.def.node.workflow.IWorkflowAnnotation;
 import org.knime.core.def.node.workflow.IWorkflowInPort;
 import org.knime.core.def.node.workflow.IWorkflowManager;
 import org.knime.core.def.node.workflow.IWorkflowOutPort;
-import org.knime.core.def.node.workflow.JobManagerUID;
+import org.knime.core.def.node.workflow.JobManagerKey;
 import org.knime.core.def.node.workflow.WorkflowAnnotationID;
 import org.knime.core.def.node.workflow.action.ICollapseIntoMetaNodeResult;
 import org.knime.core.def.node.workflow.action.IExpandMetaNodeResult;
@@ -658,7 +658,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public void setJobManager(final NodeID nodeID, final JobManagerUID jobMgr) {
+    public void setJobManager(final NodeID nodeID, final JobManagerKey jobMgr) {
         throw new UnsupportedOperationException();
     }
 

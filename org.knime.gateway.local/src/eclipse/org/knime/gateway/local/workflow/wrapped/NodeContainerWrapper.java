@@ -57,7 +57,7 @@ import org.knime.core.def.node.workflow.INodeInPort;
 import org.knime.core.def.node.workflow.INodeOutPort;
 import org.knime.core.def.node.workflow.ISingleNodeContainer;
 import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.JobManagerUID;
+import org.knime.core.def.node.workflow.JobManagerKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.config.base.ConfigBaseRO;
@@ -128,13 +128,13 @@ public abstract class NodeContainerWrapper implements INodeContainer {
     }
 
     @Override
-    public Optional<JobManagerUID> getJobManagerUID() {
-        return m_delegate.getJobManagerUID();
+    public Optional<JobManagerKey> getJobManagerKey() {
+        return m_delegate.getJobManagerKey();
     }
 
     @Override
-    public JobManagerUID findJobManagerUID() {
-        return m_delegate.findJobManagerUID();
+    public JobManagerKey findJobManagerKey() {
+        return m_delegate.findJobManagerKey();
     }
 
     @Override
