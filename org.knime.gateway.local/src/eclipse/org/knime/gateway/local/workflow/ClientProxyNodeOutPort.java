@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.def.node.port.PortTypeUID;
+import org.knime.core.def.node.port.PortTypeKey;
 import org.knime.core.def.node.workflow.INodeOutPort;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
@@ -83,10 +83,9 @@ public class ClientProxyNodeOutPort implements INodeOutPort {
      * {@inheritDoc}
      */
     @Override
-    public PortTypeUID getPortTypeUID() {
+    public PortTypeKey getPortTypeKey() {
         PortTypeEnt pte = m_outPort.getPortType();
-        return PortTypeUID.builder(pte.getPortObjectClassName()).setName(pte.getName()).setColor(pte.getColor())
-            .setIsHidden(pte.getIsHidden()).setIsOptional(pte.getIsOptional()).build();
+        return PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
     }
 
     /**

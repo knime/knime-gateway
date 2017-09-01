@@ -65,7 +65,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.knime.core.def.node.NodeFactoryUID;
-import org.knime.core.def.node.port.PortTypeUID;
+import org.knime.core.def.node.port.PortTypeKey;
 import org.knime.core.def.node.workflow.IConnectionContainer;
 import org.knime.core.def.node.workflow.INodeAnnotation;
 import org.knime.core.def.node.workflow.INodeContainer;
@@ -216,7 +216,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IWorkflowManager createAndAddSubWorkflow(final PortTypeUID[] inPorts, final PortTypeUID[] outPorts,
+    public IWorkflowManager createAndAddSubWorkflow(final PortTypeKey[] inPorts, final PortTypeKey[] outPorts,
         final String name) {
         throw new UnsupportedOperationException();
     }
@@ -361,14 +361,13 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
         for (int i = 0; i < res.length; i++) {
             MetaPortInfoEnt in = metaInPorts.get(i);
             PortTypeEnt pte = in.getPortType();
-            PortTypeUID portTypeUID = PortTypeUID.builder(pte.getPortObjectClassName()).setName(pte.getName()).setColor(pte.getColor())
-                .setIsHidden(pte.getIsHidden()).setIsOptional(pte.getIsOptional()).build();
+            PortTypeKey portTypeKey = PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
             res[i] = MetaPortInfo.builder()
                     .setIsConnected(in.getIsConnected())
                     .setMessage(in.getMessage())
                     .setNewIndex(in.getNewIndex())
                     .setOldIndex(in.getOldIndex())
-                    .setPortTypeUID(portTypeUID).build();
+                    .setPortTypeKey(portTypeKey).build();
         }
         return res;
     }
@@ -384,14 +383,13 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
         for (int i = 0; i < res.length; i++) {
             MetaPortInfoEnt out = metaOutPorts.get(i);
             PortTypeEnt pte = out.getPortType();
-            PortTypeUID portTypeUID = PortTypeUID.builder(pte.getPortObjectClassName()).setName(pte.getName()).setColor(pte.getColor())
-                .setIsHidden(pte.getIsHidden()).setIsOptional(pte.getIsOptional()).build();
+            PortTypeKey portTypeUID = PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
             res[i] = MetaPortInfo.builder()
                     .setIsConnected(out.getIsConnected())
                     .setMessage(out.getMessage())
                     .setNewIndex(out.getNewIndex())
                     .setOldIndex(out.getOldIndex())
-                    .setPortTypeUID(portTypeUID).build();
+                    .setPortTypeKey(portTypeUID).build();
         }
         return res;
     }

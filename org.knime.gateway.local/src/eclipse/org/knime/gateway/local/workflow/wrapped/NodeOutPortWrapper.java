@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow.wrapped;
 
-import org.knime.core.def.node.port.PortTypeUID;
+import org.knime.core.def.node.port.PortTypeKey;
 import org.knime.core.def.node.workflow.INodeOutPort;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
@@ -111,8 +111,8 @@ public class NodeOutPortWrapper implements INodeOutPort {
     }
 
     @Override
-    public PortTypeUID getPortTypeUID() {
-        return m_delegate.getPortTypeUID();
+    public PortTypeKey getPortTypeKey() {
+        return m_delegate.getPortTypeKey();
     }
 
     @Override

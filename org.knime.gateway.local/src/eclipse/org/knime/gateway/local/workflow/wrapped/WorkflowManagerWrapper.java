@@ -60,7 +60,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.knime.core.def.node.NodeFactoryUID;
-import org.knime.core.def.node.port.PortTypeUID;
+import org.knime.core.def.node.port.PortTypeKey;
 import org.knime.core.def.node.workflow.IConnectionContainer;
 import org.knime.core.def.node.workflow.INodeAnnotation;
 import org.knime.core.def.node.workflow.INodeContainer;
@@ -210,10 +210,10 @@ public class WorkflowManagerWrapper extends NodeContainerWrapper implements IWor
      * @param outPorts
      * @param name
      * @return
-     * @see org.knime.core.node.workflow.WorkflowManager#createAndAddSubWorkflow(org.knime.core.def.node.port.PortTypeUID[], org.knime.core.def.node.port.PortTypeUID[], java.lang.String)
+     * @see org.knime.core.node.workflow.WorkflowManager#createAndAddSubWorkflow(org.knime.core.def.node.port.PortTypeKey[], org.knime.core.def.node.port.PortTypeKey[], java.lang.String)
      */
     @Override
-    public WorkflowManagerWrapper createAndAddSubWorkflow(final PortTypeUID[] inPorts, final PortTypeUID[] outPorts, final String name) {
+    public WorkflowManagerWrapper createAndAddSubWorkflow(final PortTypeKey[] inPorts, final PortTypeKey[] outPorts, final String name) {
         return new WorkflowManagerWrapper(m_delegate.createAndAddSubWorkflow(inPorts, outPorts, name), m_objCache);
     }
 

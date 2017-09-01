@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow.wrapped;
 
-import org.knime.core.def.node.port.PortTypeUID;
+import org.knime.core.def.node.port.PortTypeKey;
 import org.knime.core.def.node.workflow.INodeInPort;
 import org.knime.gateway.local.util.ObjectCache;
 
@@ -99,8 +99,8 @@ public class NodeInPortWrapper implements INodeInPort {
      * {@inheritDoc}
      */
     @Override
-    public PortTypeUID getPortTypeUID() {
-        return m_delegate.getPortTypeUID();
+    public PortTypeKey getPortTypeKey() {
+        return m_delegate.getPortTypeKey();
     }
 
     /**
