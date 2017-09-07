@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.project;
 
-import org.knime.core.def.node.workflow.IWorkflowManager;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Represents a workflow project.
@@ -83,6 +83,6 @@ public interface WorkflowProject {
      *
      * @return the newly loaded workflow
      */
-    IWorkflowManager openProject();
+    WorkflowManager openProject();
 
 }

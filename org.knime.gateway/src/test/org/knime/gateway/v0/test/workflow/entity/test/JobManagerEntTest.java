@@ -77,21 +77,17 @@ public class JobManagerEntTest {
 
     public static JobManagerEnt createEnt(final List<Object> valueList) {
         JobManagerEntBuilder builder = EntityBuilderManager.builder(JobManagerEntBuilder.class);
-		builder.setName((String) valueList.get(0));
-		builder.setJobManagerID((String) valueList.get(1));
+		builder.setJobManagerID((String) valueList.get(0));
         return builder.build();
     }
 
     public static void testEnt(final JobManagerEnt ent, final List<Object> valueList) {
-		assertEquals(ent.getName(), (String) valueList.get(0));
-		assertEquals(ent.getJobManagerID(), (String) valueList.get(1));
+		assertEquals(ent.getJobManagerID(), (String) valueList.get(0));
     }
 
     public static List<Object> createValueList() {
         List<Object> valueList = new ArrayList<Object>();
  		valueList.add("lzCuG");
-
- 		valueList.add("5KrGg");
 
         return valueList;
     }

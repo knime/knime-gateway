@@ -5,11 +5,6 @@
     "namespace" : "workflow.entity",
     "fields" : [
         {
-            "name" : "Name",
-            "description" : "Name of manager.",
-            "type" : "String"
-        },
-        {
             "name" : "JobManagerID",
             "description" : "ID of manager implementation.",
             "type" : "String"

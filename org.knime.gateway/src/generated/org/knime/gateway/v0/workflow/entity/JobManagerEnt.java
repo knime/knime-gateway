@@ -57,11 +57,6 @@ import org.knime.gateway.workflow.entity.GatewayEntity;
 public interface JobManagerEnt extends GatewayEntity {
 
     /**
-     * @return Name of manager.
-     */
- 	String getName();
- 	
-    /**
      * @return ID of manager implementation.
      */
  	String getJobManagerID();

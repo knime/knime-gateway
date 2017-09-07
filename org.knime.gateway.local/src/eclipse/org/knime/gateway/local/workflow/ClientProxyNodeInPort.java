@@ -48,8 +48,9 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.def.node.port.PortTypeKey;
-import org.knime.core.def.node.workflow.INodeInPort;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.ui.node.workflow.UINodeInPort;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 
@@ -57,7 +58,7 @@ import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeInPort implements INodeInPort {
+public class ClientProxyNodeInPort implements UINodeInPort {
 
     private NodeInPortEnt m_inPort;
 
@@ -80,9 +81,10 @@ public class ClientProxyNodeInPort implements INodeInPort {
      * {@inheritDoc}
      */
     @Override
-    public PortTypeKey getPortTypeKey() {
+    public PortType getPortType() {
         PortTypeEnt pte = m_inPort.getPortType();
-        return PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
+        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
+        return ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
     }
 
     /**

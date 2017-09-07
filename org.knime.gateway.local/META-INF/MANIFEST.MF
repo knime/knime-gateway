@@ -21,7 +21,8 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-annotations;bundle-version="[
  org.knime.workbench.editor,
  org.eclipse.core.resources;bundle-version="3.11.0",
  com.knime.enterprise.client.api,
- com.knime.enterprise.client.filesystem
+ com.knime.enterprise.client.filesystem,
+ org.knime.core.ui;bundle-version="3.5.0"
 Eclipse-RegisterBuddy: org.apache.log4j
 Eclipse-BuddyPolicy: dependent
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -78,10 +78,6 @@ public interface JobManagerEntBuilderMixIn extends JobManagerEntBuilder {
     public JobManagerEnt build();
     
 	@Override
-	@JsonProperty("Name")
-    public JobManagerEntBuilder setName(final String Name);
-    
-	@Override
 	@JsonProperty("JobManagerID")
     public JobManagerEntBuilder setJobManagerID(final String JobManagerID);
     

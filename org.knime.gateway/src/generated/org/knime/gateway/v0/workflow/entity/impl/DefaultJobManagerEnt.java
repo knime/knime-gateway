@@ -62,22 +62,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class DefaultJobManagerEnt implements JobManagerEnt {
 
-	private String m_Name;
 	private String m_JobManagerID;
 
     /**
      * @param builder
      */
     DefaultJobManagerEnt(final DefaultJobManagerEntBuilder builder) {
-		m_Name = builder.m_Name;
 		m_JobManagerID = builder.m_JobManagerID;
     }
 
-	@Override
-    public String getName() {
-        return m_Name;
-    }
-    
 	@Override
     public String getJobManagerID() {
         return m_JobManagerID;

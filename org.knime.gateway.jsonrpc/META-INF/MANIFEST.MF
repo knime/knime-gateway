@@ -17,3 +17,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.googlecode.jsonrpc4j,
  com.googlecode.jsonrpc4j.spring.rest,
  org.knime.gateway.jsonrpc
+Bundle-ActivationPolicy: lazy

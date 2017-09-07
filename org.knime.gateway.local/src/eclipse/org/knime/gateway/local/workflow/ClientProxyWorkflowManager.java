@@ -64,36 +64,30 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import org.knime.core.def.node.NodeFactoryUID;
-import org.knime.core.def.node.port.PortTypeKey;
-import org.knime.core.def.node.workflow.IConnectionContainer;
-import org.knime.core.def.node.workflow.INodeAnnotation;
-import org.knime.core.def.node.workflow.INodeContainer;
-import org.knime.core.def.node.workflow.INodeInPort;
-import org.knime.core.def.node.workflow.INodeOutPort;
-import org.knime.core.def.node.workflow.IWorkflowAnnotation;
-import org.knime.core.def.node.workflow.IWorkflowInPort;
-import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.IWorkflowOutPort;
-import org.knime.core.def.node.workflow.JobManagerKey;
-import org.knime.core.def.node.workflow.WorkflowAnnotationID;
-import org.knime.core.def.node.workflow.action.ICollapseIntoMetaNodeResult;
-import org.knime.core.def.node.workflow.action.IExpandMetaNodeResult;
-import org.knime.core.def.node.workflow.action.IExpandSubNodeResult;
-import org.knime.core.def.node.workflow.action.IMetaNodeToSubNodeResult;
-import org.knime.core.def.node.workflow.action.ISubNodeToMetaNodeResult;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.MetaPortInfo;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.EditorUIInformation;
+import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
+import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowListener;
+import org.knime.core.ui.node.workflow.UIConnectionContainer;
+import org.knime.core.ui.node.workflow.UINodeContainer;
+import org.knime.core.ui.node.workflow.UINodeInPort;
+import org.knime.core.ui.node.workflow.UINodeOutPort;
+import org.knime.core.ui.node.workflow.UIWorkflowInPort;
+import org.knime.core.ui.node.workflow.UIWorkflowManager;
+import org.knime.core.ui.node.workflow.UIWorkflowOutPort;
 import org.knime.core.util.Pair;
 import org.knime.gateway.local.util.ClientProxyUtil;
 import org.knime.gateway.local.util.ObjectCache;
@@ -103,6 +97,7 @@ import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
 import org.knime.gateway.v0.workflow.entity.MetaPortInfoEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
+import org.knime.gateway.v0.workflow.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowNodeEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowUIInfoEnt;
@@ -113,7 +108,7 @@ import org.knime.gateway.v0.workflow.entity.WorkflowUIInfoEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyWorkflowManager extends ClientProxyNodeContainer implements IWorkflowManager {
+public class ClientProxyWorkflowManager extends ClientProxyNodeContainer implements UIWorkflowManager {
 
     private WorkflowEnt m_workflowEnt;
     private final WorkflowNodeEnt m_workflowNodeEnt;
@@ -167,7 +162,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IWorkflowManager getProjectWFM() {
+    public UIWorkflowManager getProjectWFM() {
         //TODO if this is a meta node
         return this;
     }
@@ -184,41 +179,8 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public NodeID createAndAddNode(final NodeFactoryUID factoryUID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeID addNode(final NodeFactoryUID factoryUID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean canRemoveNode(final NodeID nodeID) {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeNode(final NodeID nodeID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public IWorkflowManager createAndAddSubWorkflow(final PortTypeKey[] inPorts, final PortTypeKey[] outPorts,
-        final String name) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -234,7 +196,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IConnectionContainer addConnection(final NodeID source, final int sourcePort, final NodeID dest,
+    public UIConnectionContainer addConnection(final NodeID source, final int sourcePort, final NodeID dest,
         final int destPort) {
         throw new UnsupportedOperationException();
     }
@@ -260,7 +222,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public boolean canRemoveConnection(final IConnectionContainer cc) {
+    public boolean canRemoveConnection(final UIConnectionContainer cc) {
         throw new UnsupportedOperationException();
     }
 
@@ -268,7 +230,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public void removeConnection(final IConnectionContainer cc) {
+    public void removeConnection(final UIConnectionContainer cc) {
         throw new UnsupportedOperationException();
     }
 
@@ -276,9 +238,9 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public Set<IConnectionContainer> getOutgoingConnectionsFor(final NodeID id, final int portIdx) {
+    public Set<UIConnectionContainer> getOutgoingConnectionsFor(final NodeID id, final int portIdx) {
         //TODO introduce a more efficient data structure to access the right connection
-        Set<IConnectionContainer> res = new HashSet<IConnectionContainer>();
+        Set<UIConnectionContainer> res = new HashSet<UIConnectionContainer>();
         String nodeID = id.toString();
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getSource().equals(nodeID) && c.getSourcePort() == portIdx) {
@@ -292,9 +254,9 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public Set<IConnectionContainer> getOutgoingConnectionsFor(final NodeID id) {
+    public Set<UIConnectionContainer> getOutgoingConnectionsFor(final NodeID id) {
         //TODO introduce a more efficient data structure to access the right connection
-        Set<IConnectionContainer> res = new HashSet<IConnectionContainer>();
+        Set<UIConnectionContainer> res = new HashSet<UIConnectionContainer>();
         String nodeID = id.toString();
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getSource().equals(nodeID)) {
@@ -308,7 +270,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IConnectionContainer getIncomingConnectionFor(final NodeID id, final int portIdx) {
+    public UIConnectionContainer getIncomingConnectionFor(final NodeID id, final int portIdx) {
         //TODO introduce a more efficient data structure to access the right connection
         String nodeID = id.toString();
         for (ConnectionEnt c : getWorkflow().getConnections()) {
@@ -323,9 +285,9 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public Set<IConnectionContainer> getIncomingConnectionsFor(final NodeID id) {
+    public Set<UIConnectionContainer> getIncomingConnectionsFor(final NodeID id) {
         //TODO introduce a more efficient data structure to access the right connection
-        Set<IConnectionContainer> res = new HashSet<IConnectionContainer>();
+        Set<UIConnectionContainer> res = new HashSet<UIConnectionContainer>();
         String nodeID = id.toString();
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getDest().equals(nodeID)) {
@@ -339,7 +301,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IConnectionContainer getConnection(final ConnectionID id) {
+    public UIConnectionContainer getConnection(final ConnectionID id) {
         //TODO introduce a more efficient data structure to access the right connection
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if (getWorkflow().getNodes().get(c.getDest()).getNodeID().equals(id.getDestinationNode().toString())
@@ -361,13 +323,14 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
         for (int i = 0; i < res.length; i++) {
             MetaPortInfoEnt in = metaInPorts.get(i);
             PortTypeEnt pte = in.getPortType();
-            PortTypeKey portTypeKey = PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
+            PortTypeRegistry ptr = PortTypeRegistry.getInstance();
+            PortType portType = ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
             res[i] = MetaPortInfo.builder()
                     .setIsConnected(in.getIsConnected())
                     .setMessage(in.getMessage())
                     .setNewIndex(in.getNewIndex())
                     .setOldIndex(in.getOldIndex())
-                    .setPortTypeKey(portTypeKey).build();
+                    .setPortType(portType).build();
         }
         return res;
     }
@@ -383,13 +346,14 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
         for (int i = 0; i < res.length; i++) {
             MetaPortInfoEnt out = metaOutPorts.get(i);
             PortTypeEnt pte = out.getPortType();
-            PortTypeKey portTypeUID = PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
+            PortTypeRegistry ptr = PortTypeRegistry.getInstance();
+            PortType portType = ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
             res[i] = MetaPortInfo.builder()
                     .setIsConnected(out.getIsConnected())
                     .setMessage(out.getMessage())
                     .setNewIndex(out.getNewIndex())
                     .setOldIndex(out.getOldIndex())
-                    .setPortTypeKey(portTypeUID).build();
+                    .setPortType(portType).build();
         }
         return res;
     }
@@ -512,48 +476,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IExpandMetaNodeResult expandMetaNodeUndoable(final NodeID wfmID) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public IExpandSubNodeResult expandSubNodeUndoable(final NodeID nodeID) throws IllegalStateException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public IMetaNodeToSubNodeResult convertMetaNodeToSubNode(final NodeID wfmID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ISubNodeToMetaNodeResult convertSubNodeToMetaNode(final NodeID subnodeID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String canCollapseNodesIntoMetaNode(final NodeID[] orgIDs) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ICollapseIntoMetaNodeResult collapseIntoMetaNode(final NodeID[] orgIDs,
-        final WorkflowAnnotationID[] orgAnnos, final String name) {
         throw new UnsupportedOperationException();
     }
 
@@ -626,40 +549,8 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public void cancelExecution(final INodeContainer nc) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void pauseLoopExecution(final INodeContainer nc) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void resumeLoopExecution(final INodeContainer nc, final boolean oneStep) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean canSetJobManager(final NodeID nodeID) {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setJobManager(final NodeID nodeID, final JobManagerKey jobMgr) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -723,7 +614,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public Collection<INodeContainer> getAllNodeContainers() {
+    public Collection<UINodeContainer> getNodeContainers() {
         Collection<NodeEnt> nodes = getWorkflow().getNodes().values();
         //return exactly the same node container instance for the same node entity
         return nodes.stream()
@@ -735,7 +626,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public Collection<IConnectionContainer> getConnectionContainers() {
+    public Collection<UIConnectionContainer> getConnectionContainers() {
         //TODO e.g. put the entities into a hash map for quicker access
         List<? extends ConnectionEnt> connections = getWorkflow().getConnections();
         //return exactly the same connection container instance for the same connection entity
@@ -748,7 +639,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public INodeContainer getNodeContainer(final NodeID id) {
+    public UINodeContainer getNodeContainer(final NodeID id) {
         //TODO e.g. put the node entities into a hash map for quicker access
         final NodeEnt nodeEnt = getWorkflow().getNodes().get(id.toString());
         //return exactly the same node container instance for the same node entity
@@ -908,17 +799,17 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public IWorkflowInPort getInPort(final int index) {
+    public UIWorkflowInPort getInPort(final int index) {
         //get underlying port
-        return ClientProxyUtil.getWorkflowInPort(m_workflowNodeEnt.getInPorts().get(index), null, m_objCache);
+        return ClientProxyUtil.getWorkflowInPort(m_workflowNodeEnt.getInPorts().get(index), null, m_workflowNodeEnt, m_objCache);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public IWorkflowOutPort getOutPort(final int index) {
-        return ClientProxyUtil.getWorkflowOutPort(m_workflowNodeEnt.getOutPorts().get(index), m_objCache);
+    public UIWorkflowOutPort getOutPort(final int index) {
+        return ClientProxyUtil.getWorkflowOutPort(m_workflowNodeEnt.getOutPorts().get(index), m_workflowNodeEnt, m_objCache);
     }
 
     /**
@@ -989,15 +880,15 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public INodeOutPort getWorkflowIncomingPort(final int i) {
-        return ClientProxyUtil.getNodeOutPort(m_workflowNodeEnt.getWorkflowIncomingPorts().get(i), m_objCache);
+    public UINodeOutPort getWorkflowIncomingPort(final int i) {
+        return ClientProxyUtil.getNodeOutPort(m_workflowNodeEnt.getWorkflowIncomingPorts().get(i), m_workflowNodeEnt, m_objCache);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public INodeInPort getWorkflowOutgoingPort(final int i) {
+    public UINodeInPort getWorkflowOutgoingPort(final int i) {
         return ClientProxyUtil.getNodeInPort(m_workflowNodeEnt.getWorkflowOutgoingPorts().get(i), m_objCache);
     }
 
@@ -1039,34 +930,27 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public Collection<IWorkflowAnnotation> getWorkflowAnnotations() {
+    public Collection<WorkflowAnnotation> getWorkflowAnnotations() {
         return getWorkflow().getWorkflowAnnotations().stream()
-            .map(wa -> ClientProxyUtil.getWorkflowAnnotation(wa, m_objCache)).collect(Collectors.toList());
+            .map(wa -> getWorkflowAnnotation(wa, m_objCache)).collect(Collectors.toList());
+    }
+
+    /**
+     * @param wa the entity to get the workflow annotation for
+     * @return the {@link WorkflowAnnotation}
+     */
+    static WorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa, final ObjectCache objCache) {
+        return objCache.getOrCreate(wa, o -> {
+            AnnotationData data = ClientProxyNodeContainer.getAnnotationData(o);
+            return new WorkflowAnnotation(data);
+        });
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Collection<WorkflowAnnotationID> getWorkflowAnnotationIDs() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public IWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationID wfaID) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addWorkflowAnnotation(final IWorkflowAnnotation annotation) {
+    public void addWorkflowAnnotation(final WorkflowAnnotation annotation) {
         throw new UnsupportedOperationException();
     }
 
@@ -1074,7 +958,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public void removeAnnotation(final IWorkflowAnnotation annotation) {
+    public void bringAnnotationToFront(final WorkflowAnnotation annotation) {
         throw new UnsupportedOperationException();
     }
 
@@ -1082,23 +966,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public void removeAnnotation(final WorkflowAnnotationID wfaID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void bringAnnotationToFront(final IWorkflowAnnotation annotation) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void sendAnnotationToBack(final IWorkflowAnnotation annotation) {
+    public void sendAnnotationToBack(final WorkflowAnnotation annotation) {
         throw new UnsupportedOperationException();
     }
 
@@ -1115,12 +983,12 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public List<INodeAnnotation> getNodeAnnotations() {
+    public List<NodeAnnotation> getNodeAnnotations() {
         //TODO
 //        try (WorkflowLock lock = lock()) {
-            Collection<INodeContainer> nodeContainers = getAllNodeContainers();
-            List<INodeAnnotation> result = new LinkedList<INodeAnnotation>();
-            for (INodeContainer node : nodeContainers) {
+            Collection<UINodeContainer> nodeContainers = getNodeContainers();
+            List<NodeAnnotation> result = new LinkedList<NodeAnnotation>();
+            for (UINodeContainer node : nodeContainers) {
                 result.add(node.getNodeAnnotation());
             }
             return result;
@@ -1147,7 +1015,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
      * {@inheritDoc}
      */
     @Override
-    public INodeContainer findNodeContainer(final NodeID id) {
+    public UINodeContainer findNodeContainer(final NodeID id) {
         throw new UnsupportedOperationException();
     }
 

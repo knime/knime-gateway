@@ -6,9 +6,9 @@
     "parents" : [ "workflow.entity.NodeEnt"],
     "fields" : [
         {
-            "name" : "NodeFactoryID",
-            "description" : "The ID of the node factory defining all details.",
-            "type" : "workflow.entity.NodeFactoryIDEnt"
+            "name" : "NodeFactoryKey",
+            "description" : "The key/ID of the node factory defining all details.",
+            "type" : "workflow.entity.NodeFactoryKeyEnt"
         }
     ]
 }

@@ -54,13 +54,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.def.node.workflow.IWorkflowManager;
 import org.knime.core.internal.KNIMEPath;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LockFailedException;
 import org.knime.gateway.project.ProjectTreeNode;
 import org.knime.gateway.project.WorkflowProject;
@@ -208,7 +208,7 @@ public class ClientProxyWorkflowProjectFactory implements WorkflowProjectFactory
          * {@inheritDoc}
          */
         @Override
-        public IWorkflowManager openProject() {
+        public WorkflowManager openProject() {
             try {
                 return org.knime.core.node.workflow.WorkflowManager
                     .loadProject(m_path.toFile(), new ExecutionMonitor(), new WorkflowLoadHelper()).getWorkflowManager();

@@ -48,17 +48,21 @@
  */
 package org.knime.gateway.local.workflow;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 
 import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
 import org.knime.gateway.local.util.ObjectCache;
 import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryIDEnt;
+import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.workbench.repository.RepositoryManager;
-import org.knime.workbench.repository.model.NodeTemplate;
 import org.w3c.dom.Element;
 
 /**
@@ -68,6 +72,7 @@ import org.w3c.dom.Element;
 public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContainer {
 
     private NativeNodeEnt m_nativeNode;
+    private NodeFactory<NodeModel> m_nodeFactory = null;
 
     /**
      * @param node
@@ -85,26 +90,8 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
      */
     @Override
     public Element getXMLDescription() {
-        //get xml description from underlying node model
-        NodeFactoryIDEnt nodeFactoryID = m_nativeNode.getNodeFactoryID();
-        try {
-            String id = nodeFactoryID.getClassName() + nodeFactoryID.getNodeName().map(n -> "#" + n).orElse("");
-            if (RepositoryManager.INSTANCE.getNodeTemplate(id) == null) {
-                //some nodes cannot be found via the repository manager, e.g. WrappedNode Input/Output
-                //try instantiating the factory here from the class name
-                NodeFactory nodeFactory = ((Class<NodeFactory>)Class.forName(nodeFactoryID.getClassName())).newInstance();
-                if(nodeFactory instanceof DynamicNodeFactory) {
-                    //in case of a dynamic node factory needs to be initialized in order to read the node description
-                    nodeFactory.init();
-                }
-                return nodeFactory.getXMLDescription();
-            } else {
-                return RepositoryManager.INSTANCE.getNodeTemplate(id).createFactoryInstance().getXMLDescription();
-            }
-        } catch (Exception ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
+        //get xml description from underlying node factory
+        return getNodeFactoryInstance().getXMLDescription();
     }
 
     /**
@@ -113,21 +100,30 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
     @Override
     public URL getIcon() {
         //get the icon url via the node factory
-        NodeFactoryIDEnt nodeFactoryID = m_nativeNode.getNodeFactoryID();
-        try {
-            String id = nodeFactoryID.getClassName() + nodeFactoryID.getNodeName().map(n -> "#" + n).orElse("");
-            NodeTemplate nodeTemplate = RepositoryManager.INSTANCE.getNodeTemplate(id);
-            if(nodeTemplate == null) {
-                //can happen, e.g., in case of virtual nodes, such as WrappedNode Input/Output
-                //TODO possibly use another placholder icon
-                return SubNodeContainer.class.getResource("virtual/subnode/empty.png");
-            } else {
-                return nodeTemplate.createFactoryInstance().getIcon();
+        return getNodeFactoryInstance().getIcon();
+    }
+
+    private NodeFactory<NodeModel> getNodeFactoryInstance() {
+        if (m_nodeFactory == null) {
+            NodeFactoryKeyEnt nodeFactoryKey = m_nativeNode.getNodeFactoryKey();
+            try {
+                m_nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
+                if (m_nodeFactory instanceof DynamicNodeFactory) {
+                    if (nodeFactoryKey.getSettings().isPresent()) {
+                        //in case of a dynamic node factory additional settings need to be loaded
+                        NodeSettings config = JSONConfig.readJSON(new NodeSettings("settings"),
+                            new StringReader(nodeFactoryKey.getSettings().get()));
+                        m_nodeFactory.loadAdditionalFactorySettings(config);
+                    } else {
+                        m_nodeFactory.init();
+                    }
+                }
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException | InvalidSettingsException ex) {
+                // TODO better exception handling
+                throw new RuntimeException(ex);
             }
-        } catch (Exception ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
         }
+        return m_nodeFactory;
     }
 
 }

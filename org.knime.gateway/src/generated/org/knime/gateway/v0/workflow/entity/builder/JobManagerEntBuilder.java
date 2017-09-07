@@ -57,12 +57,6 @@ import org.knime.gateway.v0.workflow.entity.JobManagerEnt;
 public interface JobManagerEntBuilder extends GatewayEntityBuilder<JobManagerEnt> {
 
     /**
-     * @param name Name of manager.
-     * @return <code>this</code>
-     */
-	JobManagerEntBuilder setName(String name);
-	
-    /**
      * @param jobManagerID ID of manager implementation.
      * @return <code>this</code>
      */

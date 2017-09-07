@@ -62,7 +62,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.knime.core.def.node.workflow.IWorkflowManager;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Manages workflow projects in a tree. The project tree (and therewith the workflow projects) are loaded from the
@@ -90,7 +90,7 @@ public final class WorkflowProjectManager {
     /**
      * Maps of already opened/loaded workflow projects.
      */
-    private Map<String, IWorkflowManager> m_cachedWorkflowsMap = new HashMap<String, IWorkflowManager>();
+    private Map<String, WorkflowManager> m_cachedWorkflowsMap = new HashMap<String, WorkflowManager>();
 
     /**
      * singleton instance
@@ -166,8 +166,8 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID
      * @return the opened workflow or an empty optional if there is no workflow project with the given id
      */
-    public Optional<IWorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
-        IWorkflowManager iwfm = getCachedWorkflow(workflowProjectID).orElse(null);
+    public Optional<WorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
+        WorkflowManager iwfm = getCachedWorkflow(workflowProjectID).orElse(null);
         if (iwfm == null) {
             WorkflowProject wp = getWorkflowProject(workflowProjectID).orElse(null);
             if (wp == null) {
@@ -183,7 +183,7 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID
      * @return the cached workflow or an empty optional if none has been found for the given workflow project ID.
      */
-    private Optional<IWorkflowManager> getCachedWorkflow(final String workflowProjectID) {
+    private Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
         return Optional.ofNullable(m_cachedWorkflowsMap.get(workflowProjectID));
     }
 
@@ -193,7 +193,7 @@ public final class WorkflowProjectManager {
      *
      * @param wfm
      */
-    private void cacheWorkflow(final String workflowProjectID, final IWorkflowManager wfm) {
+    private void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
         m_cachedWorkflowsMap.put( workflowProjectID, wfm);
     }
 

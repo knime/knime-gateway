@@ -57,7 +57,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.knime.core.def.node.workflow.project.WorkflowProjectFactory"/>
+                  <meta.attribute kind="java" basedOn=":org.knime.gateway.project.WorkflowProjectFactory"/>
                </appinfo>
             </annotation>
          </attribute>

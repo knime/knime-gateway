@@ -1,7 +1,7 @@
 {
     "type" : "entity",
-    "name" : "NodeFactoryIDEnt",
-    "description" : "Details on a single node implementation",
+    "name" : "NodeFactoryKeyEnt",
+    "description" : "Object to identify a node specific node implementation.",
     "namespace" : "workflow.entity",
     "fields" : [
         {
@@ -10,8 +10,8 @@
             "type" : "String"
         },
         {
-            "name" : "NodeName",
-            "description" : "The static name of the node as appears on the screen. Only required in case of 'dynamic' node factories.",
+            "name" : "Settings",
+            "description" : "Additional settings in order to be able to re-create nodes. Only required in case of 'dynamic' node factories.",
             "type" : "Optional<String>"
         }
     ]

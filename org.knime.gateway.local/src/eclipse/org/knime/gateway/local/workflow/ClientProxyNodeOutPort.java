@@ -48,11 +48,13 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.def.node.port.PortTypeKey;
-import org.knime.core.def.node.workflow.INodeOutPort;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
+import org.knime.core.ui.node.workflow.UINodeOutPort;
+import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 
@@ -60,15 +62,19 @@ import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeOutPort implements INodeOutPort {
+public class ClientProxyNodeOutPort implements UINodeOutPort {
 
     private NodeOutPortEnt m_outPort;
+    private NodeEnt m_node;
 
     /**
+     * @param outPort
+     * @param node the node this port belongs to
      *
      */
-    public ClientProxyNodeOutPort(final NodeOutPortEnt outPort) {
+    public ClientProxyNodeOutPort(final NodeOutPortEnt outPort, final NodeEnt node) {
         m_outPort = outPort;
+        m_node = node;
     }
 
     /**
@@ -83,9 +89,10 @@ public class ClientProxyNodeOutPort implements INodeOutPort {
      * {@inheritDoc}
      */
     @Override
-    public PortTypeKey getPortTypeKey() {
+    public PortType getPortType() {
         PortTypeEnt pte = m_outPort.getPortType();
-        return PortTypeKey.builder(pte.getPortObjectClassName()).setIsOptional(pte.getIsOptional()).build();
+        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
+        return ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
     }
 
     /**
@@ -117,7 +124,7 @@ public class ClientProxyNodeOutPort implements INodeOutPort {
      */
     @Override
     public NodeContainerState getNodeContainerState() {
-        throw new UnsupportedOperationException();
+        return getNodeState();
     }
 
     /**
@@ -160,7 +167,7 @@ public class ClientProxyNodeOutPort implements INodeOutPort {
      */
     @Override
     public NodeContainerState getNodeState() {
-        throw new UnsupportedOperationException();
+        return ClientProxyNodeContainer.getNodeContainerState(m_node);
     }
 
     /**

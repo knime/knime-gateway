@@ -55,19 +55,21 @@ import java.io.StringReader;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.knime.core.def.node.workflow.INodeAnnotation;
-import org.knime.core.def.node.workflow.INodeContainer;
-import org.knime.core.def.node.workflow.INodeInPort;
-import org.knime.core.def.node.workflow.INodeOutPort;
-import org.knime.core.def.node.workflow.IWorkflowManager;
-import org.knime.core.def.node.workflow.JobManagerKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.workflow.AnnotationData;
+import org.knime.core.node.workflow.AnnotationData.StyleRange;
+import org.knime.core.node.workflow.AnnotationData.TextAlignment;
+import org.knime.core.node.workflow.NodeAnnotation;
+import org.knime.core.node.workflow.NodeAnnotationData;
+import org.knime.core.node.workflow.NodeContainer.NodeLock;
+import org.knime.core.node.workflow.NodeContainer.NodeLocks;
 import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessageListener;
@@ -77,10 +79,16 @@ import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationListener;
+import org.knime.core.ui.node.workflow.UINodeContainer;
+import org.knime.core.ui.node.workflow.UINodeInPort;
+import org.knime.core.ui.node.workflow.UINodeOutPort;
+import org.knime.core.ui.node.workflow.UIWorkflowManager;
 import org.knime.gateway.local.util.ClientProxyUtil;
 import org.knime.gateway.local.util.ObjectCache;
 import org.knime.gateway.service.ServerServiceConfig;
+import org.knime.gateway.v0.workflow.entity.AnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.BoundsEnt;
+import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
 import org.knime.gateway.v0.workflow.service.NodeService;
@@ -89,11 +97,11 @@ import org.knime.gateway.v0.workflow.service.NodeService;
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class ClientProxyNodeContainer implements INodeContainer {
+public abstract class ClientProxyNodeContainer implements UINodeContainer {
 
     private final NodeEnt m_node;
 
-    protected ObjectCache m_objCache;
+    private NodeAnnotation m_nodeAnnotation;
 
     /*--------- listener administration------------*/
 
@@ -114,6 +122,7 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
 
     protected ServerServiceConfig m_serviceConfig;
 
+    protected ObjectCache m_objCache;
 
     /**
      * If the underlying entity is a node.
@@ -122,7 +131,8 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * @param objCache
      * @param serviceConfig
      */
-    public ClientProxyNodeContainer(final NodeEnt node, final ObjectCache objCache, final ServerServiceConfig serviceConfig) {
+    public ClientProxyNodeContainer(final NodeEnt node, final ObjectCache objCache,
+        final ServerServiceConfig serviceConfig) {
         m_node = node;
         m_objCache = objCache;
         m_serviceConfig = serviceConfig;
@@ -140,7 +150,7 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public IWorkflowManager getParent() {
+    public UIWorkflowManager getParent() {
         return m_node.getParentNodeID().map(s -> {
             //get parent wf
             String parentNodeID;
@@ -160,17 +170,16 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public Optional<JobManagerKey> getJobManagerKey() {
+    public NodeExecutionJobManager getJobManager() {
         if (m_node.getJobManager().isPresent()) {
             return m_node.getJobManager()
-                .map(jm -> JobManagerKey.builder(jm.getJobManagerID()).setName(jm.getName()).build());
+                .map(jm -> NodeExecutionJobManagerPool.getJobManagerFactory(jm.getJobManagerID()).getInstance()).get();
         } else if (getParent() == null) {
             //if it's the root workflow and no job manager set, return the default one
-            return Optional
-                .of(NodeExecutionJobManagerPool.getJobManagerKey(NodeExecutionJobManagerPool.getDefaultJobManagerFactory()));
+            return NodeExecutionJobManagerPool.getDefaultJobManagerFactory().getInstance();
         } else {
             //if there is no job manager set nor it's the root workflow
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -178,16 +187,16 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public JobManagerKey findJobManagerKey() {
-        //optionally derive the job manager uid from the parent
+    public NodeExecutionJobManager findJobManager() {
+        //optionally derive the job manager from the parent
         return m_node.getJobManager()
-            .map(jm -> JobManagerKey.builder(jm.getJobManagerID()).setName(jm.getName()).build())
+            .map(jm -> NodeExecutionJobManagerPool.getJobManagerFactory(jm.getJobManagerID()).getInstance())
             .orElseGet(() -> {
-                if(getParent() == null) {
+                if (getParent() == null) {
                     //if it's the root workflow, there must be a job manager set
-                    return getJobManagerKey().get();
+                    return getJobManager();
                 } else {
-                    return getParent().findJobManagerKey();
+                    return getParent().findJobManager();
                 }
 
             });
@@ -335,7 +344,11 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      */
     @Override
     public NodeContainerState getNodeContainerState() {
-        String state = m_node.getNodeState();
+        return getNodeContainerState(m_node);
+    }
+
+    static NodeContainerState getNodeContainerState(final NodeEnt node) {
+        String state = node.getNodeState();
         //TODO more rigid mapping here
         return new NodeContainerState() {
 
@@ -387,7 +400,8 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
     /** {@inheritDoc} */
     @Override
     public ConfigBaseRO getNodeSettings() {
-        String json = service(NodeService.class, m_serviceConfig).getNodeSettingsJSON(m_node.getRootWorkflowID(), m_node.getNodeID());
+        String json = service(NodeService.class, m_serviceConfig).getNodeSettingsJSON(m_node.getRootWorkflowID(),
+            m_node.getNodeID());
         try {
             return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
         } catch (IOException ex) {
@@ -464,7 +478,7 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public INodeInPort getInPort(final int index) {
+    public UINodeInPort getInPort(final int index) {
         return ClientProxyUtil.getNodeInPort(m_node.getInPorts().get(index), m_objCache);
     }
 
@@ -472,8 +486,8 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public INodeOutPort getOutPort(final int index) {
-        return ClientProxyUtil.getNodeOutPort(m_node.getOutPorts().get(index), m_objCache);
+    public UINodeOutPort getOutPort(final int index) {
+        return ClientProxyUtil.getNodeOutPort(m_node.getOutPorts().get(index), m_node, m_objCache);
     }
 
     /**
@@ -594,9 +608,59 @@ public abstract class ClientProxyNodeContainer implements INodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public INodeAnnotation getNodeAnnotation() {
-        //TODO return the same node annotation instance in multiple calls
-        return new ClientProxyNodeAnnotation(m_node.getNodeAnnotation(), this);
+    public NodeAnnotation getNodeAnnotation() {
+        if (m_nodeAnnotation == null) {
+            NodeAnnotationEnt anno = m_node.getNodeAnnotation();
+            NodeAnnotationData data = NodeAnnotationData.createFromObsoleteCustomName(null);
+            if (!anno.getIsDefault()) {
+                data.copyFrom(getAnnotationData(anno), true);
+            }
+            m_nodeAnnotation = new NodeAnnotation(data);
+            m_nodeAnnotation.registerOnNodeContainer(getID(), () -> setDirty());
+            addUIInformationListener(m_nodeAnnotation);
+        }
+        return m_nodeAnnotation;
+    }
+
+    static AnnotationData getAnnotationData(final AnnotationEnt annoEnt) {
+        StyleRange[] styleRanges = annoEnt.getStyleRanges().stream().map(sr -> {
+            StyleRange newSR = new StyleRange();
+            newSR.setStart(sr.getStart());
+            newSR.setLength(sr.getLength());
+            newSR.setFontName(sr.getFontName());
+            newSR.setFontSize(sr.getFontSize());
+            newSR.setFgColor(sr.getForegroundColor());
+            newSR.setFontStyle(getFontStyleIdx(sr.getFontStyle()));
+            return newSR;
+        }).toArray(StyleRange[]::new);
+        AnnotationData ad = new AnnotationData();
+        ad.setText(annoEnt.getText());
+        ad.setX(annoEnt.getBounds().getX());
+        ad.setY(annoEnt.getBounds().getY());
+        ad.setBgColor(annoEnt.getBackgroundColor());
+        ad.setBorderColor(annoEnt.getBorderColor());
+        ad.setBorderSize(annoEnt.getBorderSize());
+        ad.setDefaultFontSize(annoEnt.getDefaultFontSize());
+        ad.setHeight(annoEnt.getBounds().getHeight());
+        ad.setWidth(annoEnt.getBounds().getWidth());
+        ad.setAlignment(TextAlignment.valueOf(annoEnt.getTextAlignment()));
+        ad.setStyleRanges(styleRanges);
+        return ad;
+    }
+
+
+    static int getFontStyleIdx(final String fontStyle) {
+        //indices from SWT-class
+        if (fontStyle.equals("normal")) {
+            return 0;
+        } else if (fontStyle.equals("bold")) {
+            return 1;
+        } else if (fontStyle.equals("italic")) {
+            return 2;
+        } else {
+            //return normal style by default
+            return 0;
+        }
     }
 
     /**

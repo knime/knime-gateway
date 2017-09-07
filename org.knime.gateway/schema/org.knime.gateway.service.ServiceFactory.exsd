@@ -57,7 +57,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.knime.core.gateway.services.ServiceFactory"/>
+                  <meta.attribute kind="java" basedOn=":org.knime.gateway.service.ServiceFactory"/>
                </appinfo>
             </annotation>
          </attribute>

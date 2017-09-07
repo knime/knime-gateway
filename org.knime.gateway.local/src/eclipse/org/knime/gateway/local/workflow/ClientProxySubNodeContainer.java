@@ -55,12 +55,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.xmlbeans.XmlException;
-import org.knime.core.def.node.workflow.ISubNodeContainer;
-import org.knime.core.def.node.workflow.IWorkflowManager;
 import org.knime.core.node.NodeDescription27Proxy;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.ui.node.workflow.UISubNodeContainer;
+import org.knime.core.ui.node.workflow.UIWorkflowManager;
 import org.knime.gateway.local.util.ObjectCache;
 import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.service.ServiceManager;
@@ -74,7 +74,7 @@ import org.w3c.dom.Element;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer implements ISubNodeContainer {
+public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer implements UISubNodeContainer {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ClientProxyNodeContainer.class);
 
@@ -122,7 +122,7 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
      * {@inheritDoc}
      */
     @Override
-    public IWorkflowManager getWorkflowManager() {
+    public UIWorkflowManager getWorkflowManager() {
         return m_objCache.getOrCreate(
             m_wrappedWorkflowNodeEnt.getRootWorkflowID() + "_" + m_wrappedWorkflowNodeEnt.getNodeID(), we -> {
                 return new ClientProxyWrappedWorkflowManager(m_wrappedWorkflowNodeEnt, m_objCache, m_serviceConfig);
@@ -222,6 +222,15 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
             LOGGER.warn("Could not generate Wrapped Metanode description (for a remotely opened workflow)", ex);
         }
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isWriteProtected() {
+        // TODO
+        return false;
     }
 
 }

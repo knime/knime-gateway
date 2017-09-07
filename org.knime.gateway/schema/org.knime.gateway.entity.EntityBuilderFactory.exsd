@@ -57,7 +57,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.knime.core.gateway.entities.EntityBuilderFactory"/>
+                  <meta.attribute kind="java" basedOn=":org.knime.gateway.entity.EntityBuilderFactory"/>
                </appinfo>
             </annotation>
          </attribute>

@@ -60,7 +60,6 @@ import org.knime.gateway.entity.EntityBuilderManager;
  */
  public class DefaultJobManagerEntBuilder implements JobManagerEntBuilder {
     
-	String m_Name;
 	String m_JobManagerID;
 
 	@Override
@@ -68,12 +67,6 @@ import org.knime.gateway.entity.EntityBuilderManager;
         return new DefaultJobManagerEnt(this);
     }
 
-	@Override
-    public JobManagerEntBuilder setName(final String Name) {
-		m_Name = Name;			
-        return this;
-    }
-        
 	@Override
     public JobManagerEntBuilder setJobManagerID(final String JobManagerID) {
 		m_JobManagerID = JobManagerID;			

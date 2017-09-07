@@ -48,20 +48,21 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.def.node.workflow.IWorkflowOutPort;
+import org.knime.core.ui.node.workflow.UIWorkflowOutPort;
+import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 
 /**
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyWorkflowOutPort extends ClientProxyNodeOutPort implements IWorkflowOutPort {
+public class ClientProxyWorkflowOutPort extends ClientProxyNodeOutPort implements UIWorkflowOutPort {
 
     /**
      *
      */
-    public ClientProxyWorkflowOutPort(final NodeOutPortEnt outPort) {
-        super(outPort);
+    public ClientProxyWorkflowOutPort(final NodeOutPortEnt outPort, final NodeEnt node) {
+        super(outPort, node);
     }
 
     /**

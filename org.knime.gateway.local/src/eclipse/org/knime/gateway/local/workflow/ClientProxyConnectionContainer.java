@@ -50,13 +50,14 @@ package org.knime.gateway.local.workflow;
 
 import java.util.List;
 
-import org.knime.core.def.node.workflow.IConnectionContainer;
+import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionProgressEvent;
 import org.knime.core.node.workflow.ConnectionProgressListener;
 import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.ConnectionUIInformationListener;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.ui.node.workflow.UIConnectionContainer;
 import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
 import org.knime.gateway.v0.workflow.entity.XYEnt;
 
@@ -64,7 +65,7 @@ import org.knime.gateway.v0.workflow.entity.XYEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyConnectionContainer implements IConnectionContainer {
+public class ClientProxyConnectionContainer implements UIConnectionContainer {
 
     private ConnectionEnt m_connection;
 

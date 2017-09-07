@@ -77,10 +77,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface JobManagerEntMixIn extends JobManagerEnt {
 
 	@Override
-	@JsonProperty("Name")
-    public String getName();
-    
-	@Override
 	@JsonProperty("JobManagerID")
     public String getJobManagerID();
     

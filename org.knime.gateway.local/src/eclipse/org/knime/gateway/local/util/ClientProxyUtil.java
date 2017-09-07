@@ -58,7 +58,6 @@ import org.knime.gateway.local.workflow.ClientProxyNodeContainer;
 import org.knime.gateway.local.workflow.ClientProxyNodeInPort;
 import org.knime.gateway.local.workflow.ClientProxyNodeOutPort;
 import org.knime.gateway.local.workflow.ClientProxySubNodeContainer;
-import org.knime.gateway.local.workflow.ClientProxyWorkflowAnnotation;
 import org.knime.gateway.local.workflow.ClientProxyWorkflowInPort;
 import org.knime.gateway.local.workflow.ClientProxyWorkflowManager;
 import org.knime.gateway.local.workflow.ClientProxyWorkflowOutPort;
@@ -68,7 +67,6 @@ import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowNodeEnt;
 import org.knime.gateway.v0.workflow.entity.WrappedWorkflowNodeEnt;
@@ -77,6 +75,8 @@ import org.knime.gateway.v0.workflow.service.NodeService;
 /**
  * Collection of utility methods helping to create the client-proxy classes (e.g. {@link ClientProxyWorkflowManager}) from
  * the respective entity classes (e.g. {@link WorkflowEnt}).
+ *
+ * TODO: static creation methods could be moved to the respective ClientProxy...-class.
  *
  * @author Martin Horn, University of Konstanz
  */
@@ -133,16 +133,6 @@ public class ClientProxyUtil {
     }
 
     /**
-     * @param wa the entity to get the client-proxy wrapper for
-     * @param objCache the cache that allows one to re-use class instances
-     * @return the {@link ClientProxyWorkflowAnnotation} - either the cached one or newly created
-     */
-    public static ClientProxyWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa,
-        final ObjectCache objCache) {
-        return objCache.getOrCreate(wa, o -> new ClientProxyWorkflowAnnotation(o), ClientProxyWorkflowAnnotation.class);
-    }
-
-    /**
      * @param c the entity to get the client-proxy wrapper for
      * @param objCache the cache that allows one to re-use class instances
      * @return the {@link ClientProxyConnectionContainer} - either the cached one or newly created
@@ -165,35 +155,39 @@ public class ClientProxyUtil {
 
     /**
      * @param p the entity to get the client-proxy wrapper for
+     * @param node the node the passed port belongs to
      * @param objCache the cache that allows one to re-use class instances
      * @return the {@link ClientProxyNodeOutPort} - either the cached one or newly created
      */
-    public static ClientProxyNodeOutPort getNodeOutPort(final NodeOutPortEnt p, final ObjectCache objCache) {
+    public static ClientProxyNodeOutPort getNodeOutPort(final NodeOutPortEnt p, final NodeEnt node,
+        final ObjectCache objCache) {
         //possibly return the same node out port instance for the same index
-        return objCache.getOrCreate(p, o -> new ClientProxyNodeOutPort(o), ClientProxyNodeOutPort.class);
+        return objCache.getOrCreate(p, o -> new ClientProxyNodeOutPort(o, node), ClientProxyNodeOutPort.class);
     }
 
     /**
      * @param p the entity to get the client-proxy wrapper for
      * @param underlyingPort
+     * @param node
      * @param objCache the cache that allows one to re-use class instances
      * @return the {@link ClientProxyWorkflowInPort} - either the cached one or newly created
      */
     public static ClientProxyWorkflowInPort getWorkflowInPort(final NodeInPortEnt p,
-        final NodeOutPortEnt underlyingPort, final ObjectCache objCache) {
+        final NodeOutPortEnt underlyingPort, final NodeEnt node, final ObjectCache objCache) {
         //possibly return the same node in port instance for the same index
-        return objCache.getOrCreate(p, o -> new ClientProxyWorkflowInPort(o, underlyingPort, objCache),
+        return objCache.getOrCreate(p, o -> new ClientProxyWorkflowInPort(o, underlyingPort, node, objCache),
             ClientProxyWorkflowInPort.class);
     }
 
     /**
      * @param p the entity to get the client-proxy wrapper for
+     * @param node
      * @param objCache the cache that allows one to re-use class instances
      * @return the {@link ClientProxyWorkflowOutPort} - either the cached one or newly created
      */
-    public static ClientProxyWorkflowOutPort getWorkflowOutPort(final NodeOutPortEnt p, final ObjectCache objCache) {
+    public static ClientProxyWorkflowOutPort getWorkflowOutPort(final NodeOutPortEnt p, final NodeEnt node, final ObjectCache objCache) {
         //possibly return the same node out port instance for the same index
-        return objCache.getOrCreate(p, o -> new ClientProxyWorkflowOutPort(o), ClientProxyWorkflowOutPort.class);
+        return objCache.getOrCreate(p, o -> new ClientProxyWorkflowOutPort(o, node), ClientProxyWorkflowOutPort.class);
     }
 
 }
