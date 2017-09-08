@@ -48,7 +48,7 @@
  */
 package com.knime.gateway.remote.test.service;
 
-import static org.knime.gateway.entities.EntityBuilderManager.builder;
+import static org.knime.gateway.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -53,10 +53,10 @@ import static com.knime.gateway.remote.util.EntityBuilderUtil.buildWorkflowEnt;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.knime.core.def.node.workflow.INodeContainer;
-import org.knime.core.def.node.workflow.ISubNodeContainer;
-import org.knime.core.def.node.workflow.IWorkflowManager;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.project.WorkflowProjectManager;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.service.WorkflowService;
@@ -76,24 +76,24 @@ public class DefaultWorkflowService implements WorkflowService {
     public WorkflowEnt getWorkflow(final String rootWorkflowID, final Optional<String> nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID.isPresent()) {
-            INodeContainer metaNode = WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID)
+            NodeContainer metaNode = WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID)
                 .orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."))
                 .findNodeContainer(NodeID.fromString(nodeID.get()));
-            if(metaNode instanceof IWorkflowManager) {
-                IWorkflowManager wfm = (IWorkflowManager)metaNode;
+            if(metaNode instanceof WorkflowManager) {
+                WorkflowManager wfm = (WorkflowManager)metaNode;
                 if (wfm.isEncrypted()) {
                     throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
                 }
                 return buildWorkflowEnt(wfm, rootWorkflowID);
-            } else if(metaNode instanceof ISubNodeContainer) {
-                ISubNodeContainer snc = (ISubNodeContainer)metaNode;
+            } else if(metaNode instanceof SubNodeContainer) {
+                SubNodeContainer snc = (SubNodeContainer)metaNode;
                 return EntityBuilderUtil.buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
             } else {
                 throw new IllegalArgumentException("Node for the given node id ('" + nodeID.toString() + "') is neither a metanode nor a wrapped metanode.");
             }
         } else {
-            IWorkflowManager wfm =
+            WorkflowManager wfm =
                 WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID).orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
             if (wfm.isEncrypted()) {
