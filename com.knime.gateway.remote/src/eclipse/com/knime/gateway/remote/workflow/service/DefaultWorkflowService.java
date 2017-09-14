@@ -57,10 +57,10 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.project.WorkflowProjectManager;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.service.WorkflowService;
 
+import com.knime.gateway.remote.endpoint.GatewayEndpointManager;
 import com.knime.gateway.remote.util.EntityBuilderUtil;
 
 /**
@@ -76,7 +76,7 @@ public class DefaultWorkflowService implements WorkflowService {
     public WorkflowEnt getWorkflow(final String rootWorkflowID, final Optional<String> nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID.isPresent()) {
-            NodeContainer metaNode = WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID)
+            NodeContainer metaNode = GatewayEndpointManager.openAndCacheWorkflow(rootWorkflowID)
                 .orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."))
                 .findNodeContainer(NodeID.fromString(nodeID.get()));
@@ -94,7 +94,7 @@ public class DefaultWorkflowService implements WorkflowService {
             }
         } else {
             WorkflowManager wfm =
-                WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+                GatewayEndpointManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
             if (wfm.isEncrypted()) {
                 throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");

@@ -17,6 +17,9 @@ Require-Bundle: org.eclipse.osgi,
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.7.1",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.8.1",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="2.7.1",
- com.knime.gateway.remote;bundle-version="3.5.0"
+ com.knime.gateway.remote;bundle-version="3.5.0",
+ com.rabbitmq.client;bundle-version="3.6.2",
+ org.knime.core,
+ com.knime.enterprise.executor.api;bundle-version="4.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.knime.gateway.jsonrpc.remote

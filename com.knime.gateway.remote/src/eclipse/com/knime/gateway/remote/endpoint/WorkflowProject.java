@@ -44,54 +44,35 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 10, 2017 (hornm): created
+ *   Nov 28, 2016 (hornm): created
  */
-package com.knime.gateway.remote.workflow.service;
+package com.knime.gateway.remote.endpoint;
 
-import static com.knime.gateway.remote.util.EntityBuilderUtil.buildWorkflowEnt;
-
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
-import org.knime.gateway.v0.workflow.service.ExecutionService;
-
-import com.knime.gateway.remote.endpoint.GatewayEndpointManager;
 
 /**
+ * Represents a workflow project.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class DefaultExecutionService implements ExecutionService {
+public interface WorkflowProject {
 
     /**
-     * {@inheritDoc}
+     * @return the name of the workflow
      */
-    @Override
-    public boolean getCanExecuteUpToHere(final String workflowID, final String nodeID) {
-        try {
-            //TODO cache workflow and throw exception if not found
-            return GatewayEndpointManager.getWorkflowProject(workflowID).get().openProject()
-                .canExecuteNode(NodeID.fromString(nodeID));
-        } catch (Exception ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
-    }
+    String getName();
 
     /**
-     * {@inheritDoc}
+     * @return an id of the workflow
      */
-    @Override
-    public WorkflowEnt setExecuteUpToHere(final String workflowID, final String nodeID) {
-        try {
-            //TODO cache workflow and throw exception if not found
-            WorkflowManager wfm = GatewayEndpointManager.getWorkflowProject(workflowID).get().openProject();
-            wfm.executeUpToHere(NodeID.fromString(nodeID));
-            //TODO only update the downstream nodes, or better: the ones that changed its status
-            return buildWorkflowEnt(wfm, workflowID);
-        } catch (Exception ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
-    }
+    String getID();
+
+    /**
+     * Opens/loads the actual workflow represented by this workflow project.
+     * If the workflow has already been opened before it will be opened/loaded again.
+     *
+     * @return the newly loaded workflow
+     */
+    WorkflowManager openProject();
+
 }

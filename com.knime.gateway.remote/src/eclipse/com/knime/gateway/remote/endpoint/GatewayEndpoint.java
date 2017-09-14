@@ -44,54 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 10, 2017 (hornm): created
+ *   Sep 12, 2017 (hornm): created
  */
-package com.knime.gateway.remote.workflow.service;
+package com.knime.gateway.remote.endpoint;
 
-import static com.knime.gateway.remote.util.EntityBuilderUtil.buildWorkflowEnt;
-
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
-import org.knime.gateway.v0.workflow.service.ExecutionService;
-
-import com.knime.gateway.remote.endpoint.GatewayEndpointManager;
+import org.knime.gateway.workflow.service.GatewayService;
 
 /**
+ * A gateway endpoint is for instance a http-server, a message-queue client, etc. that receives respective messages that
+ * are usually translated in to the respective {@link GatewayService}-calls on the remote side.
+ *
+ * It is the logical counterpart of a respective service factory implementation (see
+ * org.knime.gateway.local.service.ServiceFactory), that essentially sends the messages to be received by the gateway
+ * endpoint (possibly mediated by the KNIME server in between).
  *
  * @author Martin Horn, University of Konstanz
  */
-public class DefaultExecutionService implements ExecutionService {
+public interface GatewayEndpoint {
+
+    static final String EXT_POINT_ID = "com.knime.gateway.remote.endpoint.GatewayEndpoint";
+
+    static final String EXT_POINT_ATTR = "GatewayEndpoint";
 
     /**
-     * {@inheritDoc}
+     * Things to be done on initialization of the gateway endpoint. Just called once.
      */
-    @Override
-    public boolean getCanExecuteUpToHere(final String workflowID, final String nodeID) {
-        try {
-            //TODO cache workflow and throw exception if not found
-            return GatewayEndpointManager.getWorkflowProject(workflowID).get().openProject()
-                .canExecuteNode(NodeID.fromString(nodeID));
-        } catch (Exception ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
-    }
+    void start();
 
     /**
-     * {@inheritDoc}
+     * Called to shutdown the endpoint.
      */
-    @Override
-    public WorkflowEnt setExecuteUpToHere(final String workflowID, final String nodeID) {
-        try {
-            //TODO cache workflow and throw exception if not found
-            WorkflowManager wfm = GatewayEndpointManager.getWorkflowProject(workflowID).get().openProject();
-            wfm.executeUpToHere(NodeID.fromString(nodeID));
-            //TODO only update the downstream nodes, or better: the ones that changed its status
-            return buildWorkflowEnt(wfm, workflowID);
-        } catch (Exception ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
-    }
+    void stop();
+
+    /**
+     * Called when a new workflow project is available. Use the {@link GatewayEndpointManager}, e.g. in order to access
+     * the actual workflow by using the given workflow project id.
+     *
+     * @param workflowProjectID the id of the newly added project
+     */
+    void onWorklfowProjectAdded(String workflowProjectID);
+
+    /**
+     * @param workflowProjectID the id of the project that has been removed
+     */
+    void onWorkflowProjectRemoved(String workflowProjectID);
+
 }
