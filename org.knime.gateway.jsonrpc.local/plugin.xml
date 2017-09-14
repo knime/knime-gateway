@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.knime.gateway.service.ServiceFactory">
+         point="org.knime.gateway.local.service.ServiceFactory">
       <ServiceFactory
             ServiceFactory="org.knime.gateway.jsonrpc.local.JsonRpcClientServiceFactory">
       </ServiceFactory>

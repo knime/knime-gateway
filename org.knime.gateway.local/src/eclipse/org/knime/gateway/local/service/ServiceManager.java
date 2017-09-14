@@ -46,16 +46,15 @@
  * History
  *   Nov 8, 2016 (hornm): created
  */
-package org.knime.gateway.service;
+package org.knime.gateway.local.service;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.util.Pair;
-import org.knime.gateway.entity.EntityBuilderManager;
 import org.knime.gateway.util.ExtPointUtil;
 import org.knime.gateway.v0.workflow.service.WorkflowService;
 import org.knime.gateway.workflow.service.GatewayService;
@@ -67,7 +66,7 @@ import org.knime.gateway.workflow.service.GatewayService;
  */
 public class ServiceManager {
 
-    private static final Logger LOGGER = Logger.getLogger(EntityBuilderManager.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(ServiceManager.class);
 
     private static ServiceFactory SERVICE_FACTORY;
 

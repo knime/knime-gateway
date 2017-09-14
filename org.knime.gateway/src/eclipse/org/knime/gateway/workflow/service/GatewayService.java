@@ -55,6 +55,10 @@ import org.knime.gateway.workflow.entity.GatewayEntity;
  * points. The service methods either take entities (see {@link GatewayEntity}) or primitives as parameters (or return
  * type).
  *
+ * Note: all gateway service methods that are intended to invoke a method on a particular KNIME executor are required to
+ * have the workflow/job id as the very first parameter. It will be extracted by the server that mediates the
+ * communication to the executor.
+ *
  * @author Martin Horn, University of Konstanz
  */
 public interface GatewayService {

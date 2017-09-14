@@ -26,6 +26,7 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-annotations;bundle-version="[
 Eclipse-RegisterBuddy: org.apache.log4j
 Eclipse-BuddyPolicy: dependent
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.knime.gateway.local.util,
+Export-Package: org.knime.gateway.local.service,
+ org.knime.gateway.local.util,
  org.knime.gateway.local.workflow
 Bundle-ActivationPolicy: lazy

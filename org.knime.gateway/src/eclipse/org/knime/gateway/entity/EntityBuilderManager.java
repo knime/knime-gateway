@@ -52,7 +52,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.knime.core.node.NodeLogger;
 import org.knime.gateway.util.ExtPointUtil;
 import org.knime.gateway.v0.workflow.entity.impl.DefaultWorkflowEntBuilder;
 import org.knime.gateway.workflow.entity.GatewayEntity;
@@ -66,7 +66,7 @@ import org.knime.gateway.workflow.entity.builder.GatewayEntityBuilder;
  */
 public class EntityBuilderManager {
 
-    private static final Logger LOGGER = Logger.getLogger(EntityBuilderManager.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityBuilderManager.class);
 
     private static EntityBuilderFactory BUILDER_FACTORY;
 

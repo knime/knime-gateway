@@ -44,19 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 2, 2017 (hornm): created
+ *   Nov 8, 2016 (hornm): created
  */
-package org.knime.gateway.service;
+package org.knime.gateway.local.service;
+
+import org.knime.gateway.workflow.service.GatewayService;
 
 /**
- * Configuration object that will be passed to the {@link ServiceFactory#createService(Class, ServiceConfig)}-method in
- * order to configure the service creation (e.g. passing a host and port).
+ * Interface to be implemented by plugins that make use of the service factory extension point. Delivers concrete
+ * implementations for given service interfaces (see also {@link ServiceManager}).
  *
- * Subclasses must implement the {@link #hashCode()} (and therewith the {@link #equals(Object)}) methods!
- *
+ * Service factories usually communicate to a specific gateway endpoint (see com.knime.gateway.remote.GatewayEndpoint),
+ * possibly mediated by the KNME-server.
  *
  * @author Martin Horn, University of Konstanz
  */
-public interface ServiceConfig {
+public interface ServiceFactory {
 
+    static final String EXT_POINT_ID = "org.knime.gateway.local.service.ServiceFactory";
+
+    static final String EXT_POINT_ATTR = "ServiceFactory";
+
+    /**
+     * Normal priority, <code>0</code>.
+     */
+    public static final int NORMAL_PRIORITY = 0;
+
+    /**
+     * @return the priority with what that service will be used in case of multiple registered services in the
+     *         {@link ServiceManager}
+     */
+    default int getPriority() {
+        return NORMAL_PRIORITY;
+    }
+
+    /**
+     * Creates an instance for the demanded server interface. The returned implementation very likely represents a
+     * client that communicates with the respective server.
+     *
+     * @param serviceInterface the service to create
+     * @param serviceConfig a configuration object with more parameters required for service creation
+     * @return a new instance of the service interface or <code>null</code> if the service cannot be created (e.g.
+     *         because a service config object that cannot be handled)
+     */
+    <S extends GatewayService> S createService(Class<S> serviceInterface, ServiceConfig serviceConfig);
 }

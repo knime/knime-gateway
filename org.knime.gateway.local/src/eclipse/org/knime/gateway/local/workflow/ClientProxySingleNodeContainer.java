@@ -49,8 +49,8 @@
 package org.knime.gateway.local.workflow;
 
 import org.knime.core.ui.node.workflow.UISingleNodeContainer;
+import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 
 /**

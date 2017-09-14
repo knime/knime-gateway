@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow;
 
-import static org.knime.gateway.service.ServiceManager.service;
+import static org.knime.gateway.local.service.ServiceManager.service;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -83,9 +83,9 @@ import org.knime.core.ui.node.workflow.UINodeContainer;
 import org.knime.core.ui.node.workflow.UINodeInPort;
 import org.knime.core.ui.node.workflow.UINodeOutPort;
 import org.knime.core.ui.node.workflow.UIWorkflowManager;
+import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.util.ClientProxyUtil;
 import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.service.ServerServiceConfig;
 import org.knime.gateway.v0.workflow.entity.AnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.BoundsEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
@@ -349,52 +349,7 @@ public abstract class ClientProxyNodeContainer implements UINodeContainer {
 
     static NodeContainerState getNodeContainerState(final NodeEnt node) {
         String state = node.getNodeState();
-        //TODO more rigid mapping here
-        return new NodeContainerState() {
-
-            @Override
-            public boolean isWaitingToBeExecuted() {
-                return state.equals("QUEUED");
-            }
-
-            @Override
-            public boolean isIdle() {
-                return state.equals("IDLE");
-            }
-
-            @Override
-            public boolean isHalted() {
-                return state.equals("HALTED");
-            }
-
-            @Override
-            public boolean isExecutionInProgress() {
-                return state.equals("EXECUTING");
-            }
-
-            @Override
-            public boolean isExecutingRemotely() {
-                return state.equals("EXECUTING_REMOTELY");
-            }
-
-            @Override
-            public boolean isExecuted() {
-                return state.equals("EXECUTED");
-            }
-
-            @Override
-            public boolean isConfigured() {
-                return state.equals("CONFIGURED");
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String toString() {
-                return state;
-            }
-        };
+        return ClientProxyNodeContainerState.valueOf(state);
     }
 
     /** {@inheritDoc} */
@@ -613,7 +568,7 @@ public abstract class ClientProxyNodeContainer implements UINodeContainer {
             NodeAnnotationEnt anno = m_node.getNodeAnnotation();
             NodeAnnotationData data = NodeAnnotationData.createFromObsoleteCustomName(null);
             if (!anno.getIsDefault()) {
-                data.copyFrom(getAnnotationData(anno), true);
+                data.copyFrom(getAnnotationData(anno), false);
             }
             m_nodeAnnotation = new NodeAnnotation(data);
             m_nodeAnnotation.registerOnNodeContainer(getID(), () -> setDirty());

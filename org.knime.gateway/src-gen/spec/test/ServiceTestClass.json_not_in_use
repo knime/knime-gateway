@@ -1,3 +1,4 @@
+//not in use currently since there is no gateway server extension point anymore - need to think of another way to test the service-clients ...
 {
 	"id" : "test",
 	"type" : "service",

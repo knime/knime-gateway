@@ -44,47 +44,87 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 25, 2017 (hornm): created
+ *   Jun 2, 2017 (hornm): created
  */
-package org.knime.gateway.server;
-
-import org.knime.gateway.service.ServiceFactory;
-import org.knime.gateway.workflow.service.GatewayService;
+package org.knime.gateway.local.service;
 
 /**
- * Represents a KNIME gateway server. A server instance can also have the respective java-client service interfaces
- * injected (via the {@link ServiceFactory} extension point) that are able to communicate with the running server.
- *
- * The gateway servers are managed by the {@link KnimeGatewayServerManager}.
+ * {@link ServiceConfig}-implementation to configure services that communicate with a server specified by a host name
+ * and a port.
  *
  * @author Martin Horn, University of Konstanz
  */
-public interface KnimeGatewayServer {
+public class ServerServiceConfig implements ServiceConfig {
 
-    static final String EXT_POINT_ID = "org.knime.gateway.server.KnimeGatewayServer";
+    private String m_host;
 
-    static final String EXT_POINT_ATTR = "KnimeGatewayServer";
+    private int m_port;
 
-    /**
-     * Starts the server.
-     * @param port the port the server listens at
-     * @throws Exception
-     */
-    void start(int port) throws Exception;
+    private String m_path;
 
     /**
-     * Shuts the server down.
-     * @throws Exception
+     * @param host
+     * @param port
      */
-    void stop() throws Exception;
+    public ServerServiceConfig(final String host, final int port, final String path) {
+        m_host = host;
+        m_port = port;
+        m_path = path;
+
+    }
 
     /**
-     * Starts the server but with the provided services injected. This allows one to mock those for testing the
-     * communication only.
-     * @param port the port the server listens at
-     * @param services mocked services for testing
-     * @throws Exception
+     * @return the host name
      */
-    void startForTesting(int port, GatewayService... services) throws Exception;
+    public String getHost() {
+        return m_host;
+    }
+
+    /**
+     * @return the host's port
+     */
+    public int getPort() {
+        return m_port;
+    }
+
+    /**
+     * @return the server path
+     */
+    public String getPath() {
+        return m_path;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + m_host.hashCode();
+        result = prime * result + m_port;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ServerServiceConfig other = (ServerServiceConfig)obj;
+        if (m_host == null) {
+            if (other.m_host != null) {
+                return false;
+            }
+        } else if (!m_host.equals(other.m_host)) {
+            return false;
+        } else if (m_port != other.m_port) {
+            return false;
+        }
+        return true;
+    }
 
 }

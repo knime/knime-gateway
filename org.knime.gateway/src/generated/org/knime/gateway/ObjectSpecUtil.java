@@ -148,9 +148,6 @@ public final class ObjectSpecUtil {
 		if(specId.equals("test")) {
 			return "##name##Test";
 		}				
-		if(specId.equals("test")) {
-			return "##name##Test";
-		}				
 		if(specId.equals("builder")) {
 			return "##name##Builder";
 		}				
@@ -168,9 +165,6 @@ public final class ObjectSpecUtil {
 			return "org.knime.gateway.v0";
 		}				
 		if(specId.equals("api")) {
-			return "org.knime.gateway.v0";
-		}				
-		if(specId.equals("test")) {
 			return "org.knime.gateway.v0";
 		}				
 		if(specId.equals("test")) {
@@ -194,9 +188,6 @@ public final class ObjectSpecUtil {
 		}				
 		if(specId.equals("api")) {
 			return "";
-		}				
-		if(specId.equals("test")) {
-			return "test";
 		}				
 		if(specId.equals("test")) {
 			return "test";

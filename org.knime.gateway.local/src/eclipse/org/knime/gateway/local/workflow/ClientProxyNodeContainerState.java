@@ -43,78 +43,98 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Sep 14, 2017 (hornm): created
  */
-package org.knime.gateway.v0.workflow.service.test;
+package org.knime.gateway.local.workflow;
 
-import static org.knime.gateway.service.ServiceManager.service;
-import static org.mockito.Mockito.mock;
-import static org.junit.Assert.assertEquals;
-
-import org.knime.gateway.v0.workflow.service.WorkflowService;
-import java.util.Optional;
-import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
-import org.knime.gateway.v0.test.workflow.entity.test.WorkflowEntTest;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.knime.gateway.server.KnimeGatewayServerManager;
-import org.knime.gateway.service.ServerServiceConfig;
-import org.knime.gateway.service.ServiceConfig;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
+import org.knime.core.node.workflow.NodeContainerState;
 
 /**
- * Tests essentially the client-server communication but not the service logic itself (the service is mocked). It tests
- * whether the service methods are called properly and the de-/serialization of the entities passed and returned.
- *
- * Test needs to be run as plugin test with the following system property set:
- * '-Djavax.ws.rs.ext.RuntimeDelegate=org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl'
+ * Mainly COPIED from org.knime.core.node.workflow.InternalNodeContainerState!
  *
  * @author Martin Horn, University of Konstanz
  */
-// AUTO-GENERATED CODE; DO NOT MODIFY
-public class WorkflowServiceTest {
+public enum ClientProxyNodeContainerState implements NodeContainerState {
 
-    private WorkflowService m_serviceMock;
-    private ServiceConfig m_serviceConfig;
+    IDLE,
+    CONFIGURED,
+    UNCONFIGURED_MARKEDFOREXEC,
+    CONFIGURED_MARKEDFOREXEC,
+    EXECUTED_MARKEDFOREXEC,
+    CONFIGURED_QUEUED,
+    EXECUTED_QUEUED,
+    PREEXECUTE,
+    EXECUTING,
+    EXECUTINGREMOTELY,
+    POSTEXECUTE,
+    EXECUTED;
 
-    @Before
-    public void setup() throws Exception {
-        m_serviceMock = mock(WorkflowService.class);
-        m_serviceConfig = new ServerServiceConfig("localhost", 3000, "");
 
-        //spin-up the server with the mocked service
-        KnimeGatewayServerManager.startAllForTesting(3000, m_serviceMock);
+    /** {@inheritDoc} */
+    @Override
+    public boolean isIdle() {
+        return IDLE.equals(this);
     }
 
-    @Test
-    public void test_getWorkflow() {
-		//create parameter values
-		String rootWorkflowID = "CGvxL";
-		Optional<String> nodeID = Optional.of("CGvxL");
- 
-		//create return value   
-		List<Object> values = WorkflowEntTest.createValueList();
-        WorkflowEnt res = WorkflowEntTest.createEnt(values);
-
-		//mock return value
-		Mockito.when(m_serviceMock.getWorkflow(Matchers.anyVararg(), Matchers.anyVararg())).thenReturn(res);
-
-		//call method
-		WorkflowEnt methodRes = service(WorkflowService.class, m_serviceConfig).getWorkflow(rootWorkflowID, nodeID);
-
-		//compare results
-        WorkflowEntTest.testEnt(methodRes, values);
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConfigured() {
+        return CONFIGURED.equals(this);
     }
 
- 
-    @After
-    public void shutdown() throws Exception {
-        KnimeGatewayServerManager.stopAll();
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecuted() {
+        return EXECUTED.equals(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecutionInProgress() {
+        switch (this) {
+            case IDLE:
+            case EXECUTED:
+            case CONFIGURED: return false;
+            default: return true;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isWaitingToBeExecuted() {
+        switch (this) {
+            case UNCONFIGURED_MARKEDFOREXEC:
+            case CONFIGURED_MARKEDFOREXEC:
+            case EXECUTED_MARKEDFOREXEC:
+            case CONFIGURED_QUEUED:
+            case EXECUTED_QUEUED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isHalted() {
+        switch (this) {
+            case CONFIGURED_QUEUED:
+            case EXECUTED_QUEUED:
+            case EXECUTING:
+            case EXECUTINGREMOTELY:
+            case POSTEXECUTE:
+            case PREEXECUTE:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isExecutingRemotely() {
+        return EXECUTINGREMOTELY.equals(this);
     }
 
 }
