@@ -59,8 +59,8 @@ import org.knime.core.node.NodeDescription27Proxy;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.ui.node.workflow.UISubNodeContainer;
-import org.knime.core.ui.node.workflow.UIWorkflowManager;
+import org.knime.core.ui.node.workflow.SubNodeContainerUI;
+import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceManager;
 import org.knime.gateway.local.util.ObjectCache;
@@ -74,7 +74,7 @@ import org.w3c.dom.Element;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer implements UISubNodeContainer {
+public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer implements SubNodeContainerUI {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ClientProxyNodeContainer.class);
 
@@ -122,7 +122,7 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
      * {@inheritDoc}
      */
     @Override
-    public UIWorkflowManager getWorkflowManager() {
+    public WorkflowManagerUI getWorkflowManager() {
         return m_objCache.getOrCreate(
             m_wrappedWorkflowNodeEnt.getRootWorkflowID() + "_" + m_wrappedWorkflowNodeEnt.getNodeID(), we -> {
                 return new ClientProxyWrappedWorkflowManager(m_wrappedWorkflowNodeEnt, m_objCache, m_serviceConfig);

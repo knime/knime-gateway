@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.ui.node.workflow.UISingleNodeContainer;
+import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.util.ObjectCache;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
@@ -57,7 +57,7 @@ import org.knime.gateway.v0.workflow.entity.NodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class ClientProxySingleNodeContainer extends ClientProxyNodeContainer implements UISingleNodeContainer {
+public abstract class ClientProxySingleNodeContainer extends ClientProxyNodeContainer implements SingleNodeContainerUI {
 
 
     /**

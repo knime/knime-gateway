@@ -79,10 +79,10 @@ import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationListener;
-import org.knime.core.ui.node.workflow.UINodeContainer;
-import org.knime.core.ui.node.workflow.UINodeInPort;
-import org.knime.core.ui.node.workflow.UINodeOutPort;
-import org.knime.core.ui.node.workflow.UIWorkflowManager;
+import org.knime.core.ui.node.workflow.NodeContainerUI;
+import org.knime.core.ui.node.workflow.NodeInPortUI;
+import org.knime.core.ui.node.workflow.NodeOutPortUI;
+import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.util.ClientProxyUtil;
 import org.knime.gateway.local.util.ObjectCache;
@@ -97,7 +97,7 @@ import org.knime.gateway.v0.workflow.service.NodeService;
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class ClientProxyNodeContainer implements UINodeContainer {
+public abstract class ClientProxyNodeContainer implements NodeContainerUI {
 
     private final NodeEnt m_node;
 
@@ -150,7 +150,7 @@ public abstract class ClientProxyNodeContainer implements UINodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public UIWorkflowManager getParent() {
+    public WorkflowManagerUI getParent() {
         return m_node.getParentNodeID().map(s -> {
             //get parent wf
             String parentNodeID;
@@ -433,7 +433,7 @@ public abstract class ClientProxyNodeContainer implements UINodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public UINodeInPort getInPort(final int index) {
+    public NodeInPortUI getInPort(final int index) {
         return ClientProxyUtil.getNodeInPort(m_node.getInPorts().get(index), m_objCache);
     }
 
@@ -441,7 +441,7 @@ public abstract class ClientProxyNodeContainer implements UINodeContainer {
      * {@inheritDoc}
      */
     @Override
-    public UINodeOutPort getOutPort(final int index) {
+    public NodeOutPortUI getOutPort(final int index) {
         return ClientProxyUtil.getNodeOutPort(m_node.getOutPorts().get(index), m_node, m_objCache);
     }
 

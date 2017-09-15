@@ -53,7 +53,7 @@ import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
-import org.knime.core.ui.node.workflow.UINodeOutPort;
+import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
@@ -62,7 +62,7 @@ import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeOutPort implements UINodeOutPort {
+public class ClientProxyNodeOutPort implements NodeOutPortUI {
 
     private NodeOutPortEnt m_outPort;
     private NodeEnt m_node;

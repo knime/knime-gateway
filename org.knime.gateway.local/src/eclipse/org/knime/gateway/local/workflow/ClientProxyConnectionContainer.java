@@ -57,7 +57,7 @@ import org.knime.core.node.workflow.ConnectionProgressListener;
 import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.ConnectionUIInformationListener;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.ui.node.workflow.UIConnectionContainer;
+import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
 import org.knime.gateway.v0.workflow.entity.XYEnt;
 
@@ -65,7 +65,7 @@ import org.knime.gateway.v0.workflow.entity.XYEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyConnectionContainer implements UIConnectionContainer {
+public class ClientProxyConnectionContainer implements ConnectionContainerUI {
 
     private ConnectionEnt m_connection;
 

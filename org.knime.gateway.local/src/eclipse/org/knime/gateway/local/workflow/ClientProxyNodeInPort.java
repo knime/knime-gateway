@@ -50,7 +50,7 @@ package org.knime.gateway.local.workflow;
 
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.ui.node.workflow.UINodeInPort;
+import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
 import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 
@@ -58,7 +58,7 @@ import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeInPort implements UINodeInPort {
+public class ClientProxyNodeInPort implements NodeInPortUI {
 
     private NodeInPortEnt m_inPort;
 
