@@ -235,8 +235,6 @@ public class JsonRpcRabbitMQEndpoint implements GatewayEndpoint {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             m_jsonRpcServer.handleRequest(new ByteArrayInputStream(body), out);
 
-            System.out.println("executor corr id: " + properties.getCorrelationId());
-
             //return response via message queue
             AMQP.BasicProperties replyProps =
                 new AMQP.BasicProperties.Builder().correlationId(properties.getCorrelationId()).build();
