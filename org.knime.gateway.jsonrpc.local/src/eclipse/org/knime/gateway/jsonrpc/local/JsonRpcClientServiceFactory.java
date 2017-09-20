@@ -58,8 +58,10 @@ import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceConfig;
 import org.knime.gateway.local.service.ServiceFactory;
 import org.knime.gateway.workflow.service.GatewayService;
+import org.knime.gateway.workflow.service.ServiceException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import com.googlecode.jsonrpc4j.ProxyUtil;
@@ -111,7 +113,17 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
             //TODO get the username and password from somewhere for basic authentification (use https, too!!)
             //String encodedAuth = Base64.getEncoder().encodeToString("admin:admin".getBytes());
             //headers.put("Authorization", "Basic " + encodedAuth);
-            JsonRpcHttpClient httpClient = new JsonRpcHttpClient(mapper, new URL(url), headers);
+            JsonRpcHttpClient httpClient = new JsonRpcHttpClient(mapper, new URL(url), headers) {
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                protected void handleErrorResponse(final ObjectNode jsonObject) throws Throwable {
+                    if (hasError(jsonObject)) {
+                        throw new ServiceException(jsonObject.get("error").get("message").asText());
+                    }
+                }
+            };
             //JsonRpcRestClient restClient = new JsonRpcRestClient(new URL(url), mapper, null, headers);
             return ProxyUtil.createClientProxy(proxyInterface.getClassLoader(), proxyInterface, httpClient);
         } catch (MalformedURLException ex) {
