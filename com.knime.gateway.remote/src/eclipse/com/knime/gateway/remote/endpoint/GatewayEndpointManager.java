@@ -183,7 +183,7 @@ public final class GatewayEndpointManager {
             ExtPointUtil.collectExecutableExtensions(GatewayEndpoint.EXT_POINT_ID, GatewayEndpoint.EXT_POINT_ATTR);
 
         if (instances.size() == 0) {
-            throw new IllegalStateException("No gateway endpoint registered!");
+            LOGGER.error("No gateway endpoint registered! Calls to the gateway API won't be possible.");
         }
         return instances;
     }

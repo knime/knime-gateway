@@ -3,10 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Gateway JsonRpc Implementation Remote
 Bundle-SymbolicName: com.knime.gateway.jsonrpc.remote;singleton:=true
 Bundle-Version: 3.5.0.qualifier
-Bundle-ClassPath: .,
- lib/portlet-api-2.0.jar
+Bundle-ClassPath: .
 Bundle-Vendor: KNIME GmbH, Konstanz, Germany
-Fragment-Host: org.knime.gateway.jsonrpc;bundle-version="3.5.0.qualifier"
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.jetty.server;bundle-version="9.3.9",
  org.eclipse.jetty.servlet,
@@ -20,6 +18,8 @@ Require-Bundle: org.eclipse.osgi,
  com.knime.gateway.remote;bundle-version="3.5.0",
  com.rabbitmq.client;bundle-version="3.6.2",
  org.knime.core,
- com.knime.enterprise.executor.api;bundle-version="4.6.0"
+ com.knime.enterprise.executor.api;bundle-version="4.6.0",
+ org.apache.commons.lang3;bundle-version="3.2.1",
+ org.knime.gateway;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.knime.gateway.jsonrpc.remote

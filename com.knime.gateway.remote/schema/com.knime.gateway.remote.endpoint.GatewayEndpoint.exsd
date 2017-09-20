@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.knime.gateway" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.knime.gateway.remote" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.knime.gateway" id="com.knime.gateway.remote.GatewayEndpoint" name="GatewayEndpoint"/>
+         <meta.schema plugin="com.knime.gateway.remote" id="com.knime.gateway.remote.endpoint.GatewayEndpoint" name="GatewayEndpoint"/>
       </appinfo>
       <documentation>
          Extension point to plug-in gateway endoints, e.g. a http server or message queue client that usually receive messages from a service factory (possibly mediated by the KNIME server).
