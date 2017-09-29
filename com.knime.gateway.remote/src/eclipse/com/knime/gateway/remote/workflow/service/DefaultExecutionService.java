@@ -55,7 +55,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.service.ExecutionService;
 
-import com.knime.gateway.remote.endpoint.GatewayEndpointManager;
+import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
  *
@@ -70,7 +70,7 @@ public class DefaultExecutionService implements ExecutionService {
     public boolean getCanExecuteUpToHere(final String workflowID, final String nodeID) {
         try {
             //TODO cache workflow and throw exception if not found
-            return GatewayEndpointManager.getWorkflowProject(workflowID).get().openProject()
+            return WorkflowProjectManager.getWorkflowProject(workflowID).get().openProject()
                 .canExecuteNode(NodeID.fromString(nodeID));
         } catch (Exception ex) {
             // TODO better exception handling
@@ -85,7 +85,7 @@ public class DefaultExecutionService implements ExecutionService {
     public WorkflowEnt setExecuteUpToHere(final String workflowID, final String nodeID) {
         try {
             //TODO cache workflow and throw exception if not found
-            WorkflowManager wfm = GatewayEndpointManager.getWorkflowProject(workflowID).get().openProject();
+            WorkflowManager wfm = WorkflowProjectManager.getWorkflowProject(workflowID).get().openProject();
             wfm.executeUpToHere(NodeID.fromString(nodeID));
             //TODO only update the downstream nodes, or better: the ones that changed its status
             return buildWorkflowEnt(wfm, workflowID);

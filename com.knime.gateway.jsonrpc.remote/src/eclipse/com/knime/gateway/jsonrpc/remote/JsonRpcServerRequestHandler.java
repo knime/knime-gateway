@@ -51,18 +51,17 @@ package com.knime.gateway.jsonrpc.remote;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeoutException;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.ServiceDefUtil;
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
 import org.knime.gateway.workflow.service.GatewayService;
@@ -70,114 +69,91 @@ import org.knime.gateway.workflow.service.GatewayService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
-import com.knime.gateway.remote.endpoint.GatewayEndpoint;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.AMQP.BasicProperties;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
+import com.knime.enterprise.executor.JobPool;
+import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
+import com.knime.gateway.remote.endpoint.WorkflowProject;
+import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
+ * Implementation of the {@link GenericServerRequestHandler} extension point that executes json-rpc 2.0 requests and
+ * delegates the respective calls to the default service implementations.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class JsonRpcRabbitMQEndpoint implements GatewayEndpoint {
+public class JsonRpcServerRequestHandler implements GenericServerRequestHandler {
 
     private static final String DEFAULT_SERVICE_PACKAGE = "com.knime.gateway.remote";
 
     private static final String DEFAULT_SERVICE_PREFIX = "Default";
 
-    private static NodeLogger LOGGER = NodeLogger.getLogger(JsonRpcRabbitMQEndpoint.class);
-
-    private Connection m_connection;
-
-    private Channel m_channel;
+    private static NodeLogger LOGGER = NodeLogger.getLogger(JsonRpcServerRequestHandler.class);
 
     private JsonRpcMultiServer m_jsonRpcMultiServer;
 
-    @Override
-    public void start() {
-        String uri = System.getenv("com.knime.enterprise.executor.msgq");
-        if (uri == null) {
-            uri = System.getProperty("com.knime.enterprise.executor.msgq");
+    /**
+     *
+     */
+    public JsonRpcServerRequestHandler() {
+        //setup json-rpc server
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new Jdk8Module());
+
+        JsonRpcUtil.addMixIns(mapper);
+        m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
+
+        for (Entry<String, GatewayService> entry : createWrappedServices().entrySet()) {
+            m_jsonRpcMultiServer.addService(entry.getKey(), entry.getValue());
         }
-        if (uri == null) {
-            //obviously no message queue configured, no gateway service can be started
-            LOGGER.warn("No message queue server configured. JSONRPC-gateway service will not be available.");
-            return;
-        } else {
-            //otherwise connect to the message queue server and listen for messages
+    }
 
-            //setup json-rpc server
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new Jdk8Module());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getMessageId() {
+        return "jsonrpc2.0";
+    }
 
-            JsonRpcUtil.addMixIns(mapper);
-            m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
 
-            for (Entry<String, GatewayService> entry : createWrappedServices().entrySet()) {
-                m_jsonRpcMultiServer.addService(entry.getKey(), entry.getValue());
-            }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] handle(final UUID jobId, final byte[] messageBody) {
 
-            //setup message queue
-            ConnectionFactory factory = new ConnectionFactory();
+        Optional<WorkflowManager> wfm = JobPool.getAllJobPools().stream().filter(jp -> jp.hasJob(jobId)).findFirst()
+            .map(jp -> jp.getWFManager(jobId));
+        if (wfm.isPresent()) {
+            WorkflowProjectManager.addWorkflowProject(jobId.toString(), new WorkflowProject() {
+
+                @Override
+                public WorkflowManager openProject() {
+                    return wfm.get();
+                }
+
+                @Override
+                public String getName() {
+                    return wfm.get().getName();
+                }
+
+                @Override
+                public String getID() {
+                    return jobId.toString();
+                }
+            });
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
-                factory.setUri(uri);
-                m_connection = factory.newConnection();
-                m_channel = m_connection.createChannel();
-            } catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException | TimeoutException
-                    | IOException ex) {
-                LOGGER.error("An error occurred while connecting to the Rabbit MQ server.", ex);
+                m_jsonRpcMultiServer.handleRequest(new ByteArrayInputStream(messageBody), out);
+                return out.toByteArray();
+            } catch (IOException ex) {
+                //TODO better exception handling
                 throw new RuntimeException(ex);
             }
+        } else {
+            return null;
         }
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void stop() {
-        try {
-            m_connection.close();
-            m_channel.close();
-        } catch (IOException | TimeoutException ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onWorklfowProjectAdded(final String workflowProjectID) {
-        //declare a new queue for the workflow project id
-        try {
-            m_channel.queueDeclare("gateway-" + workflowProjectID, false, false, false, null);
-
-            m_channel.basicConsume("gateway-" + workflowProjectID, false,
-                new GatewayJsonRpcConsumer(m_channel, m_jsonRpcMultiServer));
-        } catch (IOException ex) {
-            // TODO
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onWorkflowProjectRemoved(final String workflowProjectID) {
-        // discard the queue created for this workflow project
-        try {
-            m_channel.queueDelete("gateway-" + workflowProjectID);
-        } catch (IOException ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
     }
 
     private static Map<String, GatewayService> createWrappedServices() {
@@ -211,37 +187,5 @@ public class JsonRpcRabbitMQEndpoint implements GatewayEndpoint {
             }
         }
         return wrappedServices;
-    }
-
-    private class GatewayJsonRpcConsumer extends DefaultConsumer {
-
-        private JsonRpcMultiServer m_jsonRpcServer;
-
-        /**
-         * @param channel
-         * @param jsonRpcServer
-         */
-        public GatewayJsonRpcConsumer(final Channel channel, final JsonRpcMultiServer jsonRpcServer) {
-            super(channel);
-            m_jsonRpcServer = jsonRpcServer;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void handleDelivery(final String consumerTag, final Envelope envelope, final BasicProperties properties,
-            final byte[] body) throws IOException {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            m_jsonRpcServer.handleRequest(new ByteArrayInputStream(body), out);
-
-            //return response via message queue
-            AMQP.BasicProperties replyProps =
-                new AMQP.BasicProperties.Builder().correlationId(properties.getCorrelationId()).build();
-
-            m_channel.basicPublish("", properties.getReplyTo(), replyProps, out.toByteArray());
-            m_channel.basicAck(envelope.getDeliveryTag(), false);
-        }
-
     }
 }

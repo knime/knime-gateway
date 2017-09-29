@@ -50,23 +50,24 @@ package com.knime.gateway.remote.endpoint;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.util.ExtPointUtil;
+
+import com.knime.gateway.remote.workflow.service.DefaultWorkflowService;
 
 /**
- * Manages gateway endpoints (provided by the {@link GatewayEndpoint}-extension point) and let other plugins add/remove
- * workflow projects (that are the basis of the gateway endpoint).
+ * Manages workflow projects that are eventually used by the default service implementations (e.g.
+ * {@link DefaultWorkflowService}). That's how other plugins must provide the workflows that are later on accessed by
+ * the default service implementations called.
  *
  * @author Martin Horn, University of Konstanz
  */
-public final class GatewayEndpointManager {
+public final class WorkflowProjectManager {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(GatewayEndpointManager.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowProjectManager.class);
 
     private static Map<String, WorkflowProject> m_workflowProjectMap = new HashMap<String, WorkflowProject>();
 
@@ -75,15 +76,7 @@ public final class GatewayEndpointManager {
      */
     private static Map<String, WorkflowManager> m_cachedWorkflowsMap = new HashMap<String, WorkflowManager>();
 
-    private static List<GatewayEndpoint> ENDPOINTS;
-
-    static {
-        //start all gateway endpoints as soon as this class is loaded
-        ENDPOINTS = collectEndpoints();
-        ENDPOINTS.forEach(e -> e.start());
-    }
-
-    private GatewayEndpointManager() {
+    private WorkflowProjectManager() {
         //~ static utility class
     }
 
@@ -98,30 +91,21 @@ public final class GatewayEndpointManager {
      * Adds the workflow project with the id to the manager. If a workflow project with the given id already exists, it
      * will be replaced.
      *
-     * If the project for the given id didn't exists before, the registered {@link GatewayEndpoint} will be informed
-     * that a new workflow project has been added.
-     *
      * @param worklfowProjectID id of the project to be added
      * @param project the actual workflow project to be added
      */
     public static void addWorkflowProject(final String worklfowProjectID, final WorkflowProject project) {
-        boolean newlyAdded = !m_workflowProjectMap.containsKey(worklfowProjectID);
         m_workflowProjectMap.put(worklfowProjectID, project);
-        if (newlyAdded) {
-            ENDPOINTS.forEach(e -> e.onWorklfowProjectAdded(worklfowProjectID));
-        }
     }
 
     /**
-     * If a workflow project for the given id exists it will be removed and the registered {@link GatewayEndpoint}s will
-     * be informed.
+     * If a workflow project for the given id exists it will be removed
      *
      * @param workflowProjectID id of the project to be removed
      */
     public static void removeWorkflowProject(final String workflowProjectID) {
         if (m_workflowProjectMap.containsKey(workflowProjectID)) {
             m_workflowProjectMap.remove(workflowProjectID);
-            ENDPOINTS.forEach(e -> e.onWorkflowProjectRemoved(workflowProjectID));
         }
     }
 
@@ -154,13 +138,6 @@ public final class GatewayEndpointManager {
     }
 
     /**
-     * Essentially stops all {@link GatewayEndpoint}s.
-     */
-    public static void shutdown() {
-        ENDPOINTS.forEach(e -> e.stop());
-    }
-
-    /**
      * @param workflowProjectID
      * @return the cached workflow or an empty optional if none has been found for the given workflow project ID.
      */
@@ -177,15 +154,4 @@ public final class GatewayEndpointManager {
     private static void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
         m_cachedWorkflowsMap.put(workflowProjectID, wfm);
     }
-
-    private static List<GatewayEndpoint> collectEndpoints() {
-        List<GatewayEndpoint> instances =
-            ExtPointUtil.collectExecutableExtensions(GatewayEndpoint.EXT_POINT_ID, GatewayEndpoint.EXT_POINT_ATTR);
-
-        if (instances.size() == 0) {
-            LOGGER.error("No gateway endpoint registered! Calls to the gateway API won't be possible.");
-        }
-        return instances;
-    }
-
 }

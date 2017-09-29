@@ -2,10 +2,10 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="com.knime.gateway.remote.endpoint.GatewayEndpoint">
-      <GatewayEndpoint
-            GatewayEndpoint="com.knime.gateway.jsonrpc.remote.JsonRpcRabbitMQEndpoint">
-      </GatewayEndpoint>
+         point="com.knime.enterprise.slave.GenericServerRequestHandler">
+      <GenericServerRequestHandler
+            GenericServerRequestHandler="com.knime.gateway.jsonrpc.remote.JsonRpcServerRequestHandler">
+      </GenericServerRequestHandler>
    </extension>
 
 </plugin>

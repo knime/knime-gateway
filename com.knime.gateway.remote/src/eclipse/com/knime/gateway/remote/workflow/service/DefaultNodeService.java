@@ -62,7 +62,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.service.NodeService;
 
-import com.knime.gateway.remote.endpoint.GatewayEndpointManager;
+import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
  *
@@ -73,7 +73,7 @@ public class DefaultNodeService implements NodeService {
     /** {@inheritDoc} */
     @Override
     public String getNodeSettingsJSON(final String rootWorkflowID, final String nodeID) {
-        WorkflowManager wfm = GatewayEndpointManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
         NodeContainer nodeContainer = wfm.findNodeContainer(NodeID.fromString(nodeID));
         NodeSettings settings = nodeContainer.getNodeSettings();
@@ -87,14 +87,14 @@ public class DefaultNodeService implements NodeService {
     public NodeEnt getNode(final String rootWorkflowID, final Optional<String> nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID.isPresent()) {
-            NodeContainer node = GatewayEndpointManager.openAndCacheWorkflow(rootWorkflowID)
+            NodeContainer node = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)
                 .orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."))
                 .findNodeContainer(NodeID.fromString(nodeID.get()));
             return buildNodeEnt(node, rootWorkflowID);
         } else {
             return buildNodeEnt(
-                GatewayEndpointManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+                WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found.")),
                 rootWorkflowID);
         }

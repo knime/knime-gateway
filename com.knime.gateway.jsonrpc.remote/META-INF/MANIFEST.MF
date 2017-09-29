@@ -20,6 +20,8 @@ Require-Bundle: org.eclipse.osgi,
  org.knime.core,
  com.knime.enterprise.executor.api;bundle-version="4.6.0",
  org.apache.commons.lang3;bundle-version="3.2.1",
- org.knime.gateway;bundle-version="3.5.0"
+ org.knime.gateway;bundle-version="3.5.0",
+ com.knime.enterprise.slave;bundle-version="4.6.0",
+ com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.7.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.knime.gateway.jsonrpc.remote
