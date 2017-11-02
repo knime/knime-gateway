@@ -4,7 +4,7 @@ Bundle-Name: KNIME Gateway JsonRpc Implementation Local
 Bundle-SymbolicName: org.knime.gateway.jsonrpc.local;singleton:=true
 Bundle-Version: 3.5.0.qualifier
 Bundle-ClassPath: .
-Bundle-Vendor: KNIME GmbH, Konstanz, Germany
+Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Require-Bundle: org.knime.gateway,
  org.knime.gateway.jsonrpc;bundle-version="3.3.0",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.8.1",
