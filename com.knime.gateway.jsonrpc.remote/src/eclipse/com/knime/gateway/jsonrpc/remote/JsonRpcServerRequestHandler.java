@@ -55,13 +55,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.tuple.Pair;
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.ServiceDefUtil;
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
 import org.knime.gateway.workflow.service.GatewayService;
@@ -69,14 +66,13 @@ import org.knime.gateway.workflow.service.GatewayService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
-import com.knime.enterprise.executor.JobPool;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
-import com.knime.gateway.remote.endpoint.WorkflowProject;
-import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
  * Implementation of the {@link GenericServerRequestHandler} extension point that executes json-rpc 2.0 requests and
  * delegates the respective calls to the default service implementations.
+ *
+ * The workflows the default service implementations work on are added via the {@link JobPoolListener}.
  *
  * @author Martin Horn, University of Konstanz
  */
@@ -85,8 +81,6 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
     private static final String DEFAULT_SERVICE_PACKAGE = "com.knime.gateway.remote";
 
     private static final String DEFAULT_SERVICE_PREFIX = "Default";
-
-    private static NodeLogger LOGGER = NodeLogger.getLogger(JsonRpcServerRequestHandler.class);
 
     private JsonRpcMultiServer m_jsonRpcMultiServer;
 
@@ -120,40 +114,14 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
      */
     @Override
     public byte[] handle(final UUID jobId, final byte[] messageBody) {
-
-        Optional<WorkflowManager> wfm = JobPool.getAllJobPools().stream().filter(jp -> jp.hasJob(jobId)).findFirst()
-            .map(jp -> jp.getWFManager(jobId));
-        if (wfm.isPresent()) {
-            WorkflowProjectManager.addWorkflowProject(jobId.toString(), new WorkflowProject() {
-
-                @Override
-                public WorkflowManager openProject() {
-                    return wfm.get();
-                }
-
-                @Override
-                public String getName() {
-                    return wfm.get().getName();
-                }
-
-                @Override
-                public String getID() {
-                    return jobId.toString();
-                }
-            });
-
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            try {
-                m_jsonRpcMultiServer.handleRequest(new ByteArrayInputStream(messageBody), out);
-                return out.toByteArray();
-            } catch (IOException ex) {
-                //TODO better exception handling
-                throw new RuntimeException(ex);
-            }
-        } else {
-            return null;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            m_jsonRpcMultiServer.handleRequest(new ByteArrayInputStream(messageBody), out);
+            return out.toByteArray();
+        } catch (IOException ex) {
+            //TODO better exception handling
+            throw new RuntimeException(ex);
         }
-
     }
 
     private static Map<String, GatewayService> createWrappedServices() {

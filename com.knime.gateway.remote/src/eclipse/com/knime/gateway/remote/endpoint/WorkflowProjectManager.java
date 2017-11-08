@@ -104,9 +104,8 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID id of the project to be removed
      */
     public static void removeWorkflowProject(final String workflowProjectID) {
-        if (m_workflowProjectMap.containsKey(workflowProjectID)) {
-            m_workflowProjectMap.remove(workflowProjectID);
-        }
+         m_workflowProjectMap.remove(workflowProjectID);
+         m_cachedWorkflowsMap.remove(workflowProjectID);
     }
 
     /**

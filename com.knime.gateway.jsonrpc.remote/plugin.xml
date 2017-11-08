@@ -7,5 +7,11 @@
             GenericServerRequestHandler="com.knime.gateway.jsonrpc.remote.JsonRpcServerRequestHandler">
       </GenericServerRequestHandler>
    </extension>
+   <extension
+         point="com.knime.enterprise.slave.JobPoolListener">
+      <JobPoolListener
+            JobPoolListener="com.knime.gateway.jsonrpc.remote.JobPoolListener">
+      </JobPoolListener>
+   </extension>
 
 </plugin>
