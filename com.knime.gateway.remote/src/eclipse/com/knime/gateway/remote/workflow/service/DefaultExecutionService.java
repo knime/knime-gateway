@@ -58,6 +58,7 @@ import org.knime.gateway.v0.workflow.service.ExecutionService;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
+ * EXPERIMENTAL. DO NOT USE!
  *
  * @author Martin Horn, University of Konstanz
  */

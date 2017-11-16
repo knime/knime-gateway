@@ -53,6 +53,7 @@ import java.util.List;
 import org.knime.gateway.v0.workflow.service.RepositoryService;
 
 /**
+ * EXPERIMENTAL. DO NOT USE!
  *
  * @author Martin Horn, University of Konstanz
  */

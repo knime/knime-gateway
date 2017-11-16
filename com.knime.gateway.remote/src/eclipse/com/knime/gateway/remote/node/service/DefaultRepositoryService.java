@@ -69,6 +69,7 @@ import org.knime.workbench.repository.model.NodeTemplate;
 import org.knime.workbench.repository.util.NodeFactoryHTMLCreator;
 
 /**
+ * EXPERIMENTAL. DO NOT USE!
  *
  * @author Martin Horn, University of Konstanz
  */
