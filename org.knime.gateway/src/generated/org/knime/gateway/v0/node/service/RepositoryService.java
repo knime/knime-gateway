@@ -51,7 +51,7 @@ import java.util.List;
 import org.knime.gateway.v0.node.entity.RepoCategoryEnt;
 
 /**
- * Defines service methods to query the list of available nodes and metanodes (node repository).
+ * Defines service methods to query the list of available nodes and metanodes (node repository). EXPERIMENTAL! DO NOT USE!
  * 
  * @author Martin Horn, University of Konstanz
  */

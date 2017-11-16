@@ -136,11 +136,11 @@ public final class ObjectSpecUtil {
 		if(specId.equals("api")) {
 			return "##name##";
 		}				
-		if(specId.equals("impl")) {
-			return "Default##name##";
-		}				
 		if(specId.equals("builder-impl")) {
 			return "Default##name##Builder";
+		}				
+		if(specId.equals("impl")) {
+			return "Default##name##";
 		}				
 		if(specId.equals("api")) {
 			return "##name##";
@@ -158,10 +158,10 @@ public final class ObjectSpecUtil {
 		if(specId.equals("api")) {
 			return "org.knime.gateway.v0";
 		}				
-		if(specId.equals("impl")) {
+		if(specId.equals("builder-impl")) {
 			return "org.knime.gateway.v0";
 		}				
-		if(specId.equals("builder-impl")) {
+		if(specId.equals("impl")) {
 			return "org.knime.gateway.v0";
 		}				
 		if(specId.equals("api")) {
@@ -180,10 +180,10 @@ public final class ObjectSpecUtil {
 		if(specId.equals("api")) {
 			return "";
 		}				
-		if(specId.equals("impl")) {
+		if(specId.equals("builder-impl")) {
 			return "impl";
 		}				
-		if(specId.equals("builder-impl")) {
+		if(specId.equals("impl")) {
 			return "impl";
 		}				
 		if(specId.equals("api")) {

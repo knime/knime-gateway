@@ -80,8 +80,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
     @Type(value = DefaultAnnotationEntBuilder.class, name="AnnotationEnt")
 ,
-  @Type(value = DefaultWorkflowAnnotationEntBuilder.class, name = "WorkflowAnnotationEnt"),
-  @Type(value = DefaultNodeAnnotationEntBuilder.class, name = "NodeAnnotationEnt")})
+  @Type(value = DefaultNodeAnnotationEntBuilder.class, name = "NodeAnnotationEnt"),
+  @Type(value = DefaultWorkflowAnnotationEntBuilder.class, name = "WorkflowAnnotationEnt")})
 // AUTO-GENERATED CODE; DO NOT MODIFY
 public interface AnnotationEntBuilderMixIn extends AnnotationEntBuilder {
 

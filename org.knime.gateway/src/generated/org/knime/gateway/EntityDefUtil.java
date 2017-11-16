@@ -64,30 +64,30 @@ public class EntityDefUtil {
 
     static {
         List<Pair<String, String>> list = new ArrayList<>();
-        list.add(Pair.of("TestEnt", "test.entity"));
-        list.add(Pair.of("RepoCategoryEnt", "node.entity"));
-        list.add(Pair.of("RepoNodeTemplateEnt", "node.entity"));
-        list.add(Pair.of("MetaPortInfoEnt", "workflow.entity"));
-        list.add(Pair.of("WorkflowUIInfoEnt", "workflow.entity"));
-        list.add(Pair.of("BoundsEnt", "workflow.entity"));
-        list.add(Pair.of("ConnectionEnt", "workflow.entity"));
-        list.add(Pair.of("NodeEnt", "workflow.entity"));
-        list.add(Pair.of("WorkflowAnnotationEnt", "workflow.entity"));
-        list.add(Pair.of("NodeAnnotationEnt", "workflow.entity"));
         list.add(Pair.of("WorkflowNodeEnt", "workflow.entity"));
-        list.add(Pair.of("NodeInPortEnt", "workflow.entity"));
-        list.add(Pair.of("NativeNodeEnt", "workflow.entity"));
-        list.add(Pair.of("NodeOutPortEnt", "workflow.entity"));
-        list.add(Pair.of("NodeFactoryKeyEnt", "workflow.entity"));
-        list.add(Pair.of("XYEnt", "workflow.entity"));
-        list.add(Pair.of("PortTypeEnt", "workflow.entity"));
         list.add(Pair.of("StyleRangeEnt", "workflow.entity"));
-        list.add(Pair.of("AnnotationEnt", "workflow.entity"));
-        list.add(Pair.of("JobManagerEnt", "workflow.entity"));
-        list.add(Pair.of("WorkflowEnt", "workflow.entity"));
-        list.add(Pair.of("WrappedWorkflowNodeEnt", "workflow.entity"));
-        list.add(Pair.of("NodeMessageEnt", "workflow.entity"));
+        list.add(Pair.of("NodeEnt", "workflow.entity"));
+        list.add(Pair.of("PortTypeEnt", "workflow.entity"));
         list.add(Pair.of("NodePortEnt", "workflow.entity"));
+        list.add(Pair.of("NativeNodeEnt", "workflow.entity"));
+        list.add(Pair.of("NodeAnnotationEnt", "workflow.entity"));
+        list.add(Pair.of("AnnotationEnt", "workflow.entity"));
+        list.add(Pair.of("XYEnt", "workflow.entity"));
+        list.add(Pair.of("NodeInPortEnt", "workflow.entity"));
+        list.add(Pair.of("NodeMessageEnt", "workflow.entity"));
+        list.add(Pair.of("WorkflowEnt", "workflow.entity"));
+        list.add(Pair.of("BoundsEnt", "workflow.entity"));
+        list.add(Pair.of("WrappedWorkflowNodeEnt", "workflow.entity"));
+        list.add(Pair.of("NodeOutPortEnt", "workflow.entity"));
+        list.add(Pair.of("MetaPortInfoEnt", "workflow.entity"));
+        list.add(Pair.of("WorkflowAnnotationEnt", "workflow.entity"));
+        list.add(Pair.of("JobManagerEnt", "workflow.entity"));
+        list.add(Pair.of("NodeFactoryKeyEnt", "workflow.entity"));
+        list.add(Pair.of("ConnectionEnt", "workflow.entity"));
+        list.add(Pair.of("WorkflowUIInfoEnt", "workflow.entity"));
+        list.add(Pair.of("RepoNodeTemplateEnt", "node.entity"));
+        list.add(Pair.of("RepoCategoryEnt", "node.entity"));
+        list.add(Pair.of("TestEnt", "test.entity"));
         ENTITY_DEFS = Collections.unmodifiableList(list);
     }
 

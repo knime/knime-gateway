@@ -1,7 +1,7 @@
 {
     "type" : "service",
     "name" : "RepositoryService",
-    "description" : "Defines service methods to query and explore a workflow repository.",
+    "description" : "Defines service methods to query and explore a workflow repository. EXPERIMENTAL! DO NOT USE!",
     "namespace" : "workflow.service",
     "methods" : [
         {

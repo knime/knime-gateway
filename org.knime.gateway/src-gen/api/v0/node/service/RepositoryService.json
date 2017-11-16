@@ -1,7 +1,7 @@
 {
     "type" : "service",
     "name" : "RepositoryService",
-    "description" : "Defines service methods to query the list of available nodes and metanodes (node repository).",
+    "description" : "Defines service methods to query the list of available nodes and metanodes (node repository). EXPERIMENTAL! DO NOT USE!",
     "namespace" : "node.service",
     "methods" : [
         {

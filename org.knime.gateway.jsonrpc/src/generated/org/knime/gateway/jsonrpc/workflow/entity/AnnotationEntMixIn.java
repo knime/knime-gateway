@@ -81,8 +81,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonSubTypes({
     @Type(value = DefaultAnnotationEnt.class, name="AnnotationEnt")
 ,
-  @Type(value = DefaultWorkflowAnnotationEnt.class, name = "WorkflowAnnotationEnt"),
-  @Type(value = DefaultNodeAnnotationEnt.class, name = "NodeAnnotationEnt")})
+  @Type(value = DefaultNodeAnnotationEnt.class, name = "NodeAnnotationEnt"),
+  @Type(value = DefaultWorkflowAnnotationEnt.class, name = "WorkflowAnnotationEnt")})
 @JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
 // AUTO-GENERATED CODE; DO NOT MODIFY
 public interface AnnotationEntMixIn extends AnnotationEnt {

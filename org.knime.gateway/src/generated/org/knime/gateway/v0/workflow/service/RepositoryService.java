@@ -50,7 +50,7 @@ import org.knime.gateway.workflow.service.GatewayService;
 import java.util.List;
 
 /**
- * Defines service methods to query and explore a workflow repository.
+ * Defines service methods to query and explore a workflow repository. EXPERIMENTAL! DO NOT USE!
  * 
  * @author Martin Horn, University of Konstanz
  */

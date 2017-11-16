@@ -50,7 +50,7 @@ import org.knime.gateway.workflow.service.GatewayService;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 
 /**
- * Defines service methods run or reset a workflow.
+ * Defines service methods run or reset a workflow.  EXPERIMENTAL! DO NOT USE!
  * 
  * @author Martin Horn, University of Konstanz
  */

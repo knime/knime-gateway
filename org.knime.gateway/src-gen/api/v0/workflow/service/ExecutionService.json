@@ -1,7 +1,7 @@
 {
     "type" : "service",
     "name" : "ExecutionService",
-    "description" : "Defines service methods run or reset a workflow.",
+    "description" : "Defines service methods run or reset a workflow.  EXPERIMENTAL! DO NOT USE!",
     "namespace" : "workflow.service",
     "methods" : [
         {

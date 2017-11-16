@@ -48,13 +48,11 @@
  */
 package org.knime.gateway.entity;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.util.ExtPointUtil;
-import org.knime.gateway.v0.workflow.entity.impl.DefaultWorkflowEntBuilder;
 import org.knime.gateway.workflow.entity.GatewayEntity;
 import org.knime.gateway.workflow.entity.builder.GatewayEntityBuilder;
 
@@ -87,20 +85,6 @@ public class EntityBuilderManager {
             BUILDER_FACTORY = createBuilderFactory();
         }
         return BUILDER_FACTORY.createEntityBuilder(builderInterface);
-    }
-
-    /**
-     * @param builderInterface
-     * @return the default implementation for the given builder interface (e.g. {@link DefaultWorkflowEntBuilder})
-     */
-    public static <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
-        defaultBuilder(final Class<B> builderInterface) {
-        try {
-            return (B)builderInterface.getMethod("defaultBuilder").invoke(null);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     private static EntityBuilderFactory createBuilderFactory() {
