@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.jsonrpc.local;
 
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ import com.googlecode.jsonrpc4j.ProxyUtil;
  */
 public class JsonRpcClientServiceFactory implements ServiceFactory {
 
-    private static final String GATEWAY_PATH = "v4/gateway/jsonrpc";
+    private static final String GATEWAY_PATH = "v4/jobs/{uuid}/gateway/jsonrpc";
 
     /**
      * {@inheritDoc}
@@ -84,7 +85,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
         if (serviceConfig instanceof ServerServiceConfig) {
             ServerServiceConfig serverServiceConfig = (ServerServiceConfig)serviceConfig;
             String url = "http://" + serverServiceConfig.getHost() + ":" + serverServiceConfig.getPort()
-                + serverServiceConfig.getPath() + "/" + GATEWAY_PATH;
+                + serverServiceConfig.getPath() + "/";
             String serviceName = org.knime.gateway.ObjectSpecUtil.extractNameFromClass(serviceInterface, "api");
             String serviceNamespace =
                 org.knime.gateway.ObjectSpecUtil.extractNamespaceFromClass(serviceInterface, "api");
@@ -122,6 +123,19 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                     if (hasError(jsonObject)) {
                         throw new ServiceException(jsonObject.get("error").get("message").asText());
                     }
+                }
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public Object invoke(final String methodName, final Object argument, final Type returnType,
+                    final Map<String, String> extraHeaders) throws Throwable {
+                    //set the service URL to /v4/jobs/{uuid}/gateway/jsonrpc
+                    //assuming that the very first argument ('argument' is an array) contains the job id
+                    String jobId = (String)((Object[]) argument)[0];
+                    setServiceUrl(new URL(url + GATEWAY_PATH.replace("{uuid}", jobId)));
+                    return super.invoke(methodName, argument, returnType, extraHeaders);
                 }
             };
             //JsonRpcRestClient restClient = new JsonRpcRestClient(new URL(url), mapper, null, headers);
