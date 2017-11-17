@@ -53,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
 import org.knime.gateway.local.service.ServerServiceConfig;
@@ -92,7 +93,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
             try {
                 Class<?> proxyInterface = org.knime.gateway.jsonrpc.local.ObjectSpecUtil
                     .getClassForFullyQualifiedName(serviceNamespace, serviceName, "jsonrpc");
-                return (S)createService(proxyInterface, url);
+                return (S)createService(proxyInterface, url, serverServiceConfig.getJWT());
             } catch (ClassNotFoundException ex) {
                 // TODO better exception handling
                 throw new RuntimeException(ex);
@@ -102,7 +103,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
         }
     }
 
-    private <T> T createService(final Class<T> proxyInterface, final String url) {
+    private <T> T createService(final Class<T> proxyInterface, final String url, final Optional<String> jwt) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new Jdk8Module());
@@ -111,9 +112,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
 
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
-            //TODO get the username and password from somewhere for basic authentification (use https, too!!)
-            //String encodedAuth = Base64.getEncoder().encodeToString("admin:admin".getBytes());
-            //headers.put("Authorization", "Basic " + encodedAuth);
+            jwt.ifPresent(s -> headers.put("Authorization", "Bearer " + s));
             JsonRpcHttpClient httpClient = new JsonRpcHttpClient(mapper, new URL(url), headers) {
                 /**
                  * {@inheritDoc}

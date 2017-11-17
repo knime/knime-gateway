@@ -48,6 +48,11 @@
  */
 package org.knime.gateway.local.service;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.util.CheckUtils;
+
 /**
  * {@link ServiceConfig}-implementation to configure services that communicate with a server specified by a host name
  * and a port.
@@ -62,14 +67,21 @@ public class ServerServiceConfig implements ServiceConfig {
 
     private String m_path;
 
+    private String m_jwt;
+
     /**
-     * @param host
-     * @param port
+     * @param host the host, never <code>null</code>
+     * @param port the server's port
+     * @param path the path, never <code>null</code>
+     * @param jwt a json web token for authentication, can be <code>null</code> if there is none
      */
-    public ServerServiceConfig(final String host, final int port, final String path) {
+    public ServerServiceConfig(final String host, final int port, final String path, final String jwt) {
+        CheckUtils.checkArgumentNotNull(host);
+        CheckUtils.checkArgumentNotNull(path);
         m_host = host;
         m_port = port;
         m_path = path;
+        m_jwt = jwt;
 
     }
 
@@ -92,6 +104,13 @@ public class ServerServiceConfig implements ServiceConfig {
      */
     public String getPath() {
         return m_path;
+    }
+
+    /**
+     * @return the json web token or an empty optional if none available
+     */
+    public Optional<String> getJWT() {
+        return Optional.ofNullable(m_jwt);
     }
 
     @Override
@@ -122,6 +141,8 @@ public class ServerServiceConfig implements ServiceConfig {
         } else if (!m_host.equals(other.m_host)) {
             return false;
         } else if (m_port != other.m_port) {
+            return false;
+        } else if (StringUtils.equals(m_jwt, other.m_jwt)) {
             return false;
         }
         return true;
