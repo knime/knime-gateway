@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.local.workflow;
 
+import static org.knime.gateway.local.util.ClientProxyUtil.nodeIDToString;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -103,7 +105,7 @@ import org.knime.gateway.v0.workflow.entity.WorkflowNodeEnt;
 import org.knime.gateway.v0.workflow.entity.WorkflowUIInfoEnt;
 
 /**
- * {@link IWorkflowManager} implementation that wraps (and therewith retrieves its information) from a
+ * {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
  * {@link WorkflowNodeEnt} most likely received remotely.
  *
  * @author Martin Horn, University of Konstanz
@@ -241,7 +243,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
     public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id, final int portIdx) {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
-        String nodeID = id.toString();
+        String nodeID = nodeIDToString(id);
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getSource().equals(nodeID) && c.getSourcePort() == portIdx) {
                 res.add(ClientProxyUtil.getConnectionContainer(c, m_objCache));
@@ -257,7 +259,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
     public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id) {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
-        String nodeID = id.toString();
+        String nodeID = nodeIDToString(id);
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getSource().equals(nodeID)) {
                 res.add(ClientProxyUtil.getConnectionContainer(c, m_objCache));
@@ -272,7 +274,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
     @Override
     public ConnectionContainerUI getIncomingConnectionFor(final NodeID id, final int portIdx) {
         //TODO introduce a more efficient data structure to access the right connection
-        String nodeID = id.toString();
+        String nodeID = nodeIDToString(id);
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getDest().equals(nodeID) && c.getDestPort() == portIdx) {
                 return ClientProxyUtil.getConnectionContainer(c, m_objCache);
@@ -288,7 +290,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
     public Set<ConnectionContainerUI> getIncomingConnectionsFor(final NodeID id) {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
-        String nodeID = id.toString();
+        String nodeID = nodeIDToString(id);
         for (ConnectionEnt c : getWorkflow().getConnections()) {
             if(c.getDest().equals(nodeID)) {
                 res.add(ClientProxyUtil.getConnectionContainer(c, m_objCache));
@@ -304,7 +306,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
     public ConnectionContainerUI getConnection(final ConnectionID id) {
         //TODO introduce a more efficient data structure to access the right connection
         for (ConnectionEnt c : getWorkflow().getConnections()) {
-            if (getWorkflow().getNodes().get(c.getDest()).getNodeID().equals(id.getDestinationNode().toString())
+            if (getWorkflow().getNodes().get(c.getDest()).getNodeID().equals(nodeIDToString(id.getDestinationNode()))
                 && id.getDestinationPort() == c.getDestPort()) {
                 return ClientProxyUtil.getConnectionContainer(c, m_objCache);
             }
@@ -618,7 +620,7 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
         Collection<NodeEnt> nodes = getWorkflow().getNodes().values();
         //return exactly the same node container instance for the same node entity
         return nodes.stream()
-            .map(n -> ClientProxyUtil.getNodeContainer(n, Optional.of(getWorkflow()), n.getNodeID(), m_objCache, m_serviceConfig))
+            .map(n -> ClientProxyUtil.getNodeContainer(n, Optional.of(getWorkflow()), m_objCache, m_serviceConfig))
             .collect(Collectors.toList());
     }
 
@@ -641,9 +643,9 @@ public class ClientProxyWorkflowManager extends ClientProxyNodeContainer impleme
     @Override
     public NodeContainerUI getNodeContainer(final NodeID id) {
         //TODO e.g. put the node entities into a hash map for quicker access
-        final NodeEnt nodeEnt = getWorkflow().getNodes().get(id.toString());
+        final NodeEnt nodeEnt = getWorkflow().getNodes().get(nodeIDToString(id));
         //return exactly the same node container instance for the same node entity
-        return ClientProxyUtil.getNodeContainer(nodeEnt, Optional.of(getWorkflow()), id.toString(), m_objCache, m_serviceConfig);
+        return ClientProxyUtil.getNodeContainer(nodeEnt, Optional.of(getWorkflow()), m_objCache, m_serviceConfig);
     }
 
 

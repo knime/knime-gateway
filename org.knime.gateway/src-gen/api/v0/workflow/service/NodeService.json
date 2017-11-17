@@ -19,7 +19,7 @@
                     "type" : "String"
                 },
                 {
-                    "description" : "The id of the node itself.",
+                    "description" : "The id of the node itself. The node id must not contain the node id of the root workflow!",
                     "name" : "nodeID",
                     "type" : "String"
                 }
@@ -40,7 +40,7 @@
                     "type" : "String"
                 },
                 {
-                    "description" : "The node ID requested. If not present the root workflow node will be returned.",
+                    "description" : "The node ID requested. If not present the root workflow node will be returned.  The node id must not contain the node id of the root workflow!",
                     "name" : "nodeID",
                     "type" : "Optional<String>"
                 }

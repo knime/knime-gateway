@@ -516,7 +516,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeID getID() {
-        return NodeID.fromString(m_node.getNodeID());
+        return ClientProxyUtil.StringToNodeID(m_node.getNodeID());
     }
 
     /**

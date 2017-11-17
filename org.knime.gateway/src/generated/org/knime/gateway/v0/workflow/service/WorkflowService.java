@@ -61,7 +61,7 @@ public interface WorkflowService extends GatewayService {
     /**
      * Get the workflow entity for a given ID.
      * @param rootWorkflowID The identifier as per RepositoryService#getAllWorkflows of the root 'node'
-     * @param nodeID An optional node id if a subworkflow (contained in a meta node) is requested.
+     * @param nodeID An optional node id if a subworkflow (contained in a meta node) is requested. The node id must not contain the node id of the root workflow!
      * @return BERND
      * 
      */ 

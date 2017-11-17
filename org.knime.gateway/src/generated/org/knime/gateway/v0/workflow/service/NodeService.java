@@ -61,7 +61,7 @@ public interface NodeService extends GatewayService {
     /**
      * Get the settings tree for a given node in a JSON structure.
      * @param rootWorkflowID The id of the workflow the node is in.
-     * @param nodeID The id of the node itself.
+     * @param nodeID The id of the node itself. The node id must not contain the node id of the root workflow!
      * @return the node settings as json structure
      * 
      */ 
@@ -70,7 +70,7 @@ public interface NodeService extends GatewayService {
     /**
      * Get the node entity for a given root workflow and node ID.
      * @param rootWorkflowID The identifier as per #getAllWorkflows of the root workflow
-     * @param nodeID The node ID requested. If not present the root workflow node will be returned.
+     * @param nodeID The node ID requested. If not present the root workflow node will be returned.  The node id must not contain the node id of the root workflow!
      * @return the node entity
      * 
      */ 

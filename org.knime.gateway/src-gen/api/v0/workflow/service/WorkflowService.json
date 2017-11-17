@@ -19,7 +19,7 @@
                     "type" : "String"
                 },
                 {
-                    "description" : "An optional node id if a subworkflow (contained in a meta node) is requested.",
+                    "description" : "An optional node id if a subworkflow (contained in a meta node) is requested. The node id must not contain the node id of the root workflow!",
                     "name" : "nodeID",
                     "type" : "Optional<String>"
                 }

@@ -52,6 +52,8 @@ import static org.knime.gateway.local.service.ServiceManager.service;
 
 import java.util.Optional;
 
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.workflow.ClientProxyConnectionContainer;
 import org.knime.gateway.local.workflow.ClientProxyNativeNodeContainer;
@@ -109,23 +111,21 @@ public class ClientProxyUtil {
      * @param nodeEnt the node entity to be wrapped
      * @param workflowEnt must be provided if the node entity is a metanode (i.e. {@link MetaNodeEnt}) - it represents
      *            the workflow associated with the meta node
-     * @param key a unique key representing the node entity to ensure that the very same object instance is returned for
-     *            the same key
      * @param objCache the cache that allows one to re-use class instances
      * @param serviceConfig
      * @return the {@link ClientProxyNodeContainer} - either the cached one or newly created
      */
     public static ClientProxyNodeContainer getNodeContainer(final NodeEnt nodeEnt,
-        final Optional<WorkflowEnt> workflowEnt, final Object key, final ObjectCache objCache, final ServerServiceConfig serviceConfig) {
+        final Optional<WorkflowEnt> workflowEnt, final ObjectCache objCache, final ServerServiceConfig serviceConfig) {
         //return exactly the same node container instance for the same node entity
-        return objCache.getOrCreate(key, k -> {
+        return objCache.getOrCreate(nodeEnt.getRootWorkflowID() + "#" + nodeEnt.getNodeID(), k -> {
             if (nodeEnt instanceof NativeNodeEnt) {
                 return new ClientProxyNativeNodeContainer((NativeNodeEnt)nodeEnt, objCache, serviceConfig);
             }
             if (nodeEnt instanceof WorkflowNodeEnt) {
                 return new ClientProxyWorkflowManager((WorkflowNodeEnt)nodeEnt, objCache, serviceConfig);
             }
-            if(nodeEnt instanceof WrappedWorkflowNodeEnt) {
+            if (nodeEnt instanceof WrappedWorkflowNodeEnt) {
                 return new ClientProxySubNodeContainer((WrappedWorkflowNodeEnt)nodeEnt, objCache, serviceConfig);
             }
             throw new IllegalStateException("Node entity type " + nodeEnt.getClass().getName() + " not supported.");
@@ -188,6 +188,29 @@ public class ClientProxyUtil {
     public static ClientProxyWorkflowOutPort getWorkflowOutPort(final NodeOutPortEnt p, final NodeEnt node, final ObjectCache objCache) {
         //possibly return the same node out port instance for the same index
         return objCache.getOrCreate(p, o -> new ClientProxyWorkflowOutPort(o, node), ClientProxyWorkflowOutPort.class);
+    }
+
+    /**
+     * Unifies the conversion from a node id to a string.
+     * It removes the root id.
+     *
+     * @param nodeID
+     * @return the string
+     */
+    public static String nodeIDToString(final NodeID nodeID) {
+        return nodeID.toString().substring(2);
+    }
+
+
+    /**
+     * Unifies the conversion from a string to the node id.
+     * Adds a '0' to the id.
+     *
+     * @param s
+     * @return the node id
+     */
+    public static NodeID StringToNodeID(final String s) {
+        return NodeIDSuffix.fromString(s).prependParent(NodeID.fromString("0"));
     }
 
 }
