@@ -353,8 +353,8 @@ public class EntityBuilderUtil {
                 .setWorkflowOutgoingPorts(buildWorkflowOutgoingPortEnts(subNode.getWorkflowManager()))
                 .setRootWorkflowID(rootWorkflowID)
                 .setIsEncrypted(subNode.getWorkflowManager().isEncrypted())
-                .setVirtualInNodeID(subNode.getVirtualInNodeID().toString())
-                .setVirtualOutNodeID(subNode.getVirtualOutNodeID().toString()).build();
+                .setVirtualInNodeID(nodeIdAsString(subNode.getVirtualInNodeID()))
+                .setVirtualOutNodeID(nodeIdAsString(subNode.getVirtualOutNodeID())).build();
     }
 
     /**
