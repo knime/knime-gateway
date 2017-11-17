@@ -204,13 +204,14 @@ public class ClientProxyUtil {
 
     /**
      * Unifies the conversion from a string to the node id.
-     * Adds a '0' to the id.
+     * A root node id is prepended.
      *
-     * @param s
-     * @return the node id
+     * @param prependedNodeId the root node id to be prepended
+     * @param nodeID the actual node id without the root node id
+     * @return the node id as {@link NodeID} object with the root node id prepended
      */
-    public static NodeID StringToNodeID(final String s) {
-        return NodeIDSuffix.fromString(s).prependParent(NodeID.fromString("0"));
+    public static NodeID stringToNodeID(final String prependedNodeId, final String nodeID) {
+        return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(prependedNodeId));
     }
 
 }

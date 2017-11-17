@@ -52,6 +52,8 @@ import static org.knime.gateway.local.service.ServiceManager.service;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -99,6 +101,15 @@ import org.knime.gateway.v0.workflow.service.NodeService;
  */
 public abstract class ClientProxyNodeContainer implements NodeContainerUI {
 
+    /**
+     * Map that keeps track of all root workflow ids and maps them to a unique node ids.
+     * It's the id the will be prepended to the node's id (see {@link #getID()}).
+     *
+     * TODO: remove worklfow id's from the list that aren't in memory anymore
+     */
+    private static final Map<String, String> ROOT_ID_MAP =
+        new HashMap<String, String>();
+
     private final NodeEnt m_node;
 
     private NodeAnnotation m_nodeAnnotation;
@@ -136,6 +147,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
         m_node = node;
         m_objCache = objCache;
         m_serviceConfig = serviceConfig;
+        ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }
 
     /**
@@ -516,7 +528,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeID getID() {
-        return ClientProxyUtil.StringToNodeID(m_node.getNodeID());
+        return ClientProxyUtil.stringToNodeID(ROOT_ID_MAP.get(m_node.getRootWorkflowID()), m_node.getNodeID());
     }
 
     /**
