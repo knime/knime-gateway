@@ -75,6 +75,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -283,11 +284,11 @@ public class EntityBuilderUtil {
             nc.getNode().getFactory().saveAdditionalFactorySettings(settings);
             nodeFactoryKeyBuilder.setSettings(Optional.of(JSONConfig.toJSONString(settings, WriterConfig.PRETTY)));
         }
-        return builder(NativeNodeEntBuilder.class).setName(nc.getName()).setNodeID(nc.getID().toString())
+        return builder(NativeNodeEntBuilder.class).setName(nc.getName()).setNodeID(nodeIdAsString(nc.getID()))
             .setNodeMessage(buildNodeMessageEnt(nc)).setNodeType(nc.getType().toString())
             .setBounds(buildBoundsEnt(nc.getUIInformation())).setIsDeletable(nc.isDeletable())
             .setNodeState(nc.getNodeContainerState().toString()).setOutPorts(buildNodeOutPortEnts(nc))
-            .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? Optional.empty() : Optional.of(nc.getParent().getID().toString()))
+            .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? Optional.empty() : Optional.of(nodeIdAsString(nc.getParent().getID())))
             .setRootWorkflowID(rootWorkflowID)
             .setJobManager(buildJobManagerEnt(Optional.ofNullable(nc.getJobManager()))).setNodeAnnotation(buildNodeAnnotationEnt(nc))
             .setInPorts(buildNodeInPortEnts(nc)).setHasDialog(nc.hasDialog())
@@ -312,9 +313,9 @@ public class EntityBuilderUtil {
         if (wm.getParent() == null || wm.getParent() == WorkflowManager.ROOT) {
             parentNodeID = Optional.empty();
         } else {
-            parentNodeID = Optional.of(wm.getParent().getID().toString());
+            parentNodeID = Optional.of(nodeIdAsString(wm.getParent().getID()));
         }
-        return builder(WorkflowNodeEntBuilder.class).setName(wm.getName()).setNodeID(wm.getID().toString())
+        return builder(WorkflowNodeEntBuilder.class).setName(wm.getName()).setNodeID(nodeIdAsString(wm.getID()))
                 .setNodeMessage(buildNodeMessageEnt(wm)).setNodeType(wm.getType().toString())
                 .setBounds(buildBoundsEnt(wm.getUIInformation())).setIsDeletable(wm.isDeletable())
                 .setNodeState(wm.getNodeContainerState().toString()).setOutPorts(buildNodeOutPortEnts(wm))
@@ -341,11 +342,11 @@ public class EntityBuilderUtil {
         } else {
             jobManager = Optional.ofNullable(subNode.getJobManager());
         }
-        return builder(WrappedWorkflowNodeEntBuilder.class).setName(subNode.getName()).setNodeID(subNode.getID().toString())
+        return builder(WrappedWorkflowNodeEntBuilder.class).setName(subNode.getName()).setNodeID(nodeIdAsString(subNode.getID()))
                 .setNodeMessage(buildNodeMessageEnt(subNode)).setNodeType(subNode.getType().toString())
                 .setBounds(buildBoundsEnt(subNode.getUIInformation())).setIsDeletable(subNode.isDeletable())
                 .setNodeState(subNode.getNodeContainerState().toString()).setOutPorts(buildNodeOutPortEnts(subNode))
-                .setParentNodeID(subNode.getParent() == WorkflowManager.ROOT ? Optional.empty() : Optional.of(subNode.getParent().getID().toString()))
+                .setParentNodeID(subNode.getParent() == WorkflowManager.ROOT ? Optional.empty() : Optional.of(nodeIdAsString(subNode.getParent().getID())))
                 .setJobManager(buildJobManagerEnt(jobManager)).setNodeAnnotation(buildNodeAnnotationEnt(subNode))
                 .setInPorts(buildNodeInPortEnts(subNode)).setHasDialog(subNode.hasDialog())
                 .setWorkflowIncomingPorts(buildWorkflowIncomingPortEnts(subNode.getWorkflowManager()))
@@ -356,6 +357,20 @@ public class EntityBuilderUtil {
                 .setVirtualOutNodeID(subNode.getVirtualOutNodeID().toString()).build();
     }
 
+    /**
+     * @param nodeId
+     * @return the node id as string with the very first id (root) removed.
+     */
+    private static String nodeIdAsString(final NodeID nodeId) {
+        String s = nodeId.toString();
+        int firstIdx = s.indexOf(":");
+        if (firstIdx > 0) {
+            return s.substring(firstIdx + 1);
+        } else {
+            return "";
+        }
+    }
+
     private static ConnectionEnt buildContainerEnt(final ConnectionContainer cc) {
         //TODO
         //cc.getUIInfo() gives null!
@@ -364,8 +379,8 @@ public class EntityBuilderUtil {
         //         return builder(XYEntBuilder.class).setX(a[0]).setY(a[1]).build();
         //      }).collect(Collectors.toList());
         List<XYEnt> bendpoints = Collections.emptyList();
-        return builder(ConnectionEntBuilder.class).setDest(cc.getDest().toString()).setDestPort(cc.getDestPort())
-            .setSource(cc.getSource().toString()).setSourcePort(cc.getSourcePort()).setIsDeleteable(cc.isDeletable())
+        return builder(ConnectionEntBuilder.class).setDest(nodeIdAsString(cc.getDest())).setDestPort(cc.getDestPort())
+            .setSource(nodeIdAsString(cc.getSource())).setSourcePort(cc.getSourcePort()).setIsDeleteable(cc.isDeletable())
             .setType(cc.getType().toString()).setBendPoints(bendpoints).setIsFlowVariablePortConnection(cc.isFlowVariablePortConnection()).build();
     }
 

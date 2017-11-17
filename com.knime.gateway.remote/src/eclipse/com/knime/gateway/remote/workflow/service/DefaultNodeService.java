@@ -57,7 +57,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.service.NodeService;
@@ -75,7 +75,7 @@ public class DefaultNodeService implements NodeService {
     public String getNodeSettingsJSON(final String rootWorkflowID, final String nodeID) {
         WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-        NodeContainer nodeContainer = wfm.findNodeContainer(NodeID.fromString(nodeID));
+        NodeContainer nodeContainer = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
         NodeSettings settings = nodeContainer.getNodeSettings();
         return JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
     }
@@ -87,10 +87,10 @@ public class DefaultNodeService implements NodeService {
     public NodeEnt getNode(final String rootWorkflowID, final Optional<String> nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID.isPresent()) {
-            NodeContainer node = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)
-                .orElseThrow(
-                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."))
-                .findNodeContainer(NodeID.fromString(nodeID.get()));
+            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+            NodeContainer node =
+                wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID.get()).prependParent(wfm.getID()));
             return buildNodeEnt(node, rootWorkflowID);
         } else {
             return buildNodeEnt(

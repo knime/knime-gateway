@@ -54,7 +54,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
@@ -76,10 +76,11 @@ public class DefaultWorkflowService implements WorkflowService {
     public WorkflowEnt getWorkflow(final String rootWorkflowID, final Optional<String> nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID.isPresent()) {
-            NodeContainer metaNode = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)
-                .orElseThrow(
-                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."))
-                .findNodeContainer(NodeID.fromString(nodeID.get()));
+            WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)
+            .orElseThrow(
+                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+            NodeContainer metaNode =
+                rootWfm.findNodeContainer(NodeIDSuffix.fromString(nodeID.get()).prependParent(rootWfm.getID()));
             if(metaNode instanceof WorkflowManager) {
                 WorkflowManager wfm = (WorkflowManager)metaNode;
                 if (wfm.isEncrypted()) {
