@@ -2,10 +2,4 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension-point id="org.knime.gateway.local.service.ServiceFactory" name="ServiceFactory" schema="schema/org.knime.gateway.local.service.ServiceFactory.exsd"/>
- <extension
-       point="com.knime.explorer.server.JobWorkflowProvider">
-    <JobWorkflowProvider
-          JobWorkflowProvider="org.knime.gateway.local.GatewayJobWorkflowProvider">
-    </JobWorkflowProvider>
- </extension>
 </plugin>

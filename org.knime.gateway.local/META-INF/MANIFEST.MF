@@ -15,15 +15,12 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-annotations;bundle-version="[
  org.knime.workbench.repository;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.ui.ide;bundle-version="[3.12.1,4.0.0)",
  org.knime.workbench.explorer.view;bundle-version="[8.1.0,9.0.0)",
- org.eclipse.jface,
- org.eclipse.core.filesystem,
- org.eclipse.ui;bundle-version="3.108.0",
+ org.eclipse.jface;bundle-version="[3.12.0,4.0.0)",
+ org.eclipse.core.filesystem;bundle-version="[1.6.0,2.0.0)",
+ org.eclipse.ui;bundle-version="[3.108.0,4.0.0)",
  org.knime.workbench.editor;bundle-version="[3.5.0,4.0.0)",
- org.eclipse.core.resources;bundle-version="3.11.0",
- com.knime.enterprise.client.api;bundle-version="[4.6.0,5.0.0)",
- com.knime.enterprise.client.filesystem;bundle-version="[4.6.0,5.0.0)",
+ org.eclipse.core.resources;bundle-version="[3.11.0,4.0.0)",
  org.knime.core.ui;bundle-version="[3.5.0,4.0.0)",
- com.knime.explorer.server;bundle-version="[4.6.0,5.0.0)",
  org.knime.gateway.builder;bundle-version="[3.5.0,4.0.0)"
 Eclipse-RegisterBuddy: org.apache.log4j
 Eclipse-BuddyPolicy: dependent
