@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.knime.features.gateway.local"
-      label="KNIME Remote Workflow Control (experimental)"
+      label="KNIME Gateway (experimental, don&apos;t install)"
       version="3.5.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
