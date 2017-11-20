@@ -65,9 +65,6 @@ import org.knime.gateway.workflow.service.GatewayService;
  * @author Martin Horn, University of Konstanz
  */
 public class ServiceManager {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(ServiceManager.class);
-
     private static ServiceFactory SERVICE_FACTORY;
 
     /* SERVICES SINGLEON INSTANCES */
@@ -128,11 +125,12 @@ public class ServiceManager {
         List<ServiceFactory> instances =
             ExtPointUtil.collectExecutableExtensions(ServiceFactory.EXT_POINT_ID, ServiceFactory.EXT_POINT_ATTR);
 
-        if(instances.size() == 0) {
+        if (instances.size() == 0) {
             throw new IllegalStateException("No service factory registered!");
-        } else if(instances.size() > 1) {
-            LOGGER.warn("Multiple service factories registered! The one with the highest priority is used.");
-            Collections.sort(instances, (o1,o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+        } else if (instances.size() > 1) {
+            NodeLogger.getLogger(ServiceManager.class)
+                .warn("Multiple service factories registered! The one with the highest priority is used.");
+            Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
         }
         return instances.get(0);
     }
