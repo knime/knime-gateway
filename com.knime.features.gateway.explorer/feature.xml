@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.knime.features.gateway.remote"
-      label="KNIME Remote Workflow Control Executor (experimental)"
+      id="com.knime.features.gateway.explorer"
+      label="KNIME Remote Workflow Control (experimental)"
       version="3.5.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
-      This features enables control of jobs that are currently executing
-on a server.
+      This features contains the server-side libraries (i.e. for the
+executor) enabling access to executor&apos;s workflows via the gateway
+API. It mainly allows an executor to respond to gateway API
+requests (e.g. via jsonrpc) from the server via MQ or RMI.
 This feature and the contained plug-ins are the intellectual
 property of KNIME AG, Zurich, Switzerland. 
 This plug-in is not part of the Open Source KNIME Platform. 
