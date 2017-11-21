@@ -16,3 +16,4 @@ Require-Bundle: org.knime.gateway;bundle-version="[3.5.0,4.0.0)",
  com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.knime.gateway.jsonrpc.local
+Bundle-ActivationPolicy: lazy
