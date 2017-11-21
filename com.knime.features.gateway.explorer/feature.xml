@@ -38,14 +38,7 @@ In case of any questions, please contact KNIME at contact@knime.com
    </license>
 
    <plugin
-         id="com.knime.gateway.jsonrpc.remote"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.knime.gateway.remote"
+         id="com.knime.gateway.explorer"
          download-size="0"
          install-size="0"
          version="0.0.0"
