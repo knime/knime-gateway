@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.local.service;
 
+import java.net.URI;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,49 +62,25 @@ import org.knime.core.node.util.CheckUtils;
  */
 public class ServerServiceConfig implements ServiceConfig {
 
-    private String m_host;
-
-    private int m_port;
-
-    private String m_path;
-
     private String m_jwt;
+    private URI m_uri;
 
     /**
-     * @param host the host, never <code>null</code>
-     * @param port the server's port
-     * @param path the path, never <code>null</code>
+     * @param uri the server uri
      * @param jwt a json web token for authentication, can be <code>null</code> if there is none
      */
-    public ServerServiceConfig(final String host, final int port, final String path, final String jwt) {
-        CheckUtils.checkArgumentNotNull(host);
-        CheckUtils.checkArgumentNotNull(path);
-        m_host = host;
-        m_port = port;
-        m_path = path;
+    public ServerServiceConfig(final URI uri, final String jwt) {
+        CheckUtils.checkArgumentNotNull(uri);
+        m_uri = uri;
         m_jwt = jwt;
 
     }
 
     /**
-     * @return the host name
+     * @return the server uri
      */
-    public String getHost() {
-        return m_host;
-    }
-
-    /**
-     * @return the host's port
-     */
-    public int getPort() {
-        return m_port;
-    }
-
-    /**
-     * @return the server path
-     */
-    public String getPath() {
-        return m_path;
+    public URI getURI() {
+        return m_uri;
     }
 
     /**
@@ -117,8 +94,8 @@ public class ServerServiceConfig implements ServiceConfig {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + m_host.hashCode();
-        result = prime * result + m_port;
+        result = prime * result + m_uri.hashCode();
+        result = prime * result + m_jwt.hashCode();
         return result;
     }
 
@@ -134,15 +111,9 @@ public class ServerServiceConfig implements ServiceConfig {
             return false;
         }
         ServerServiceConfig other = (ServerServiceConfig)obj;
-        if (m_host == null) {
-            if (other.m_host != null) {
-                return false;
-            }
-        } else if (!m_host.equals(other.m_host)) {
+        if (!m_uri.equals(other.m_uri)) {
             return false;
-        } else if (m_port != other.m_port) {
-            return false;
-        } else if (StringUtils.equals(m_jwt, other.m_jwt)) {
+        } else if (!StringUtils.equals(m_jwt, other.m_jwt)) {
             return false;
         }
         return true;

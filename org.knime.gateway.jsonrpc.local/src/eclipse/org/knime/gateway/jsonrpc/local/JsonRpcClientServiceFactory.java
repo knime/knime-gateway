@@ -50,17 +50,24 @@ package org.knime.gateway.jsonrpc.local;
 
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+
+import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceConfig;
 import org.knime.gateway.local.service.ServiceFactory;
 import org.knime.gateway.workflow.service.GatewayService;
 import org.knime.gateway.workflow.service.ServiceException;
+import org.osgi.framework.FrameworkUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -69,13 +76,34 @@ import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import com.googlecode.jsonrpc4j.ProxyUtil;
 
 /**
- * Service factories whose returned services talk to a http server at "v4/gateway/jsonrpc" by 'posting' json-rpc messages.
+ * Service factories whose returned services talk to a http(s) server at "v4/gateway/jsonrpc" by 'posting' json-rpc
+ * messages.
  *
  * @author Martin Horn, University of Konstanz
  */
 public class JsonRpcClientServiceFactory implements ServiceFactory {
 
-    private static final String GATEWAY_PATH = "v4/jobs/{uuid}/gateway/jsonrpc";
+    private static final String GATEWAY_PATH = "/v4/jobs/{uuid}/gateway/jsonrpc";
+
+    /**
+     * COPIED from com.knime.enterprise.server.rest.api.Util!
+     */
+    private static final HostnameVerifier HOSTNAME_VERIFIER = new HostnameVerifier() {
+        private final HostnameVerifier m_defaultVerifier = new BrowserCompatHostnameVerifier();
+
+        @Override
+        public boolean verify(final String hostname, final SSLSession session) {
+            // we accept if the certificate hostname does not match the actual hostname but the certificate was
+            // signed by us; this is for default server installations that all use a common certificate
+            try {
+                return m_defaultVerifier.verify(hostname, session)
+                    || session.getPeerCertificateChain()[0].getSubjectDN().toString().equals(
+                        "CN=default-server-installation.knime.local, O=KNIME.com AG, L=Atlantis, ST=Utopia, C=AA");
+            } catch (SSLPeerUnverifiedException ex) {
+                return false;
+            }
+        }
+    };
 
     /**
      * {@inheritDoc}
@@ -85,15 +113,13 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
         final ServiceConfig serviceConfig) {
         if (serviceConfig instanceof ServerServiceConfig) {
             ServerServiceConfig serverServiceConfig = (ServerServiceConfig)serviceConfig;
-            String url = "http://" + serverServiceConfig.getHost() + ":" + serverServiceConfig.getPort()
-                + serverServiceConfig.getPath() + "/";
             String serviceName = org.knime.gateway.ObjectSpecUtil.extractNameFromClass(serviceInterface, "api");
             String serviceNamespace =
                 org.knime.gateway.ObjectSpecUtil.extractNamespaceFromClass(serviceInterface, "api");
             try {
                 Class<?> proxyInterface = org.knime.gateway.jsonrpc.local.ObjectSpecUtil
                     .getClassForFullyQualifiedName(serviceNamespace, serviceName, "jsonrpc");
-                return (S)createService(proxyInterface, url, serverServiceConfig.getJWT());
+                return (S)createService(proxyInterface, serverServiceConfig.getURI(), serverServiceConfig.getJWT());
             } catch (ClassNotFoundException ex) {
                 // TODO better exception handling
                 throw new RuntimeException(ex);
@@ -103,7 +129,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
         }
     }
 
-    private <T> T createService(final Class<T> proxyInterface, final String url, final Optional<String> jwt) {
+    private <T> T createService(final Class<T> proxyInterface, final URI uri, final Optional<String> jwt) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new Jdk8Module());
@@ -113,7 +139,9 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
             jwt.ifPresent(s -> headers.put("Authorization", "Bearer " + s));
-            JsonRpcHttpClient httpClient = new JsonRpcHttpClient(mapper, new URL(url), headers) {
+            headers.put("KNIME-API-Version",
+                FrameworkUtil.getBundle(JsonRpcClientServiceFactory.class).getVersion().toString());
+            JsonRpcHttpClient httpClient = new JsonRpcHttpClient(mapper, uri.toURL(), headers) {
                 /**
                  * {@inheritDoc}
                  */
@@ -133,15 +161,14 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                     //set the service URL to /v4/jobs/{uuid}/gateway/jsonrpc
                     //assuming that the very first argument ('argument' is an array) contains the job id
                     String jobId = (String)((Object[]) argument)[0];
-                    setServiceUrl(new URL(url + GATEWAY_PATH.replace("{uuid}", jobId)));
+                    setServiceUrl(new URL(uri + GATEWAY_PATH.replace("{uuid}", jobId)));
                     return super.invoke(methodName, argument, returnType, extraHeaders);
                 }
             };
-            //JsonRpcRestClient restClient = new JsonRpcRestClient(new URL(url), mapper, null, headers);
+            httpClient.setHostNameVerifier(HOSTNAME_VERIFIER);
             return ProxyUtil.createClientProxy(proxyInterface.getClassLoader(), proxyInterface, httpClient);
         } catch (MalformedURLException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 }
