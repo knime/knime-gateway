@@ -72,6 +72,6 @@ public class GatewayJobWorkflowProvider implements JobWorkflowProvider {
     @Override
     public WorkflowManagerUI getWorkflowForJob(final UUID jobId, final URI uri, final String jwt) {
         return ClientProxyUtil.getWorkflowManager(jobId.toString(), Optional.empty(), new ObjectCache(),
-            new ServerServiceConfig(uri.getHost(), uri.getPort(), uri.getPath(), jwt));
+            new ServerServiceConfig(uri, jwt));
     }
 }
