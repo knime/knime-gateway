@@ -51,7 +51,6 @@ package org.knime.gateway.jsonrpc.local;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +58,7 @@ import java.util.Optional;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
@@ -67,7 +67,6 @@ import org.knime.gateway.local.service.ServiceConfig;
 import org.knime.gateway.local.service.ServiceFactory;
 import org.knime.gateway.workflow.service.GatewayService;
 import org.knime.gateway.workflow.service.ServiceException;
-import org.osgi.framework.FrameworkUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -139,8 +138,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
             jwt.ifPresent(s -> headers.put("Authorization", "Bearer " + s));
-            headers.put("KNIME-API-Version",
-                FrameworkUtil.getBundle(JsonRpcClientServiceFactory.class).getVersion().toString());
+            headers.put("KNIME-API-Version", "4.6.0");
             JsonRpcHttpClient httpClient = new JsonRpcHttpClient(mapper, uri.toURL(), headers) {
                 /**
                  * {@inheritDoc}
@@ -161,7 +159,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                     //set the service URL to /v4/jobs/{uuid}/gateway/jsonrpc
                     //assuming that the very first argument ('argument' is an array) contains the job id
                     String jobId = (String)((Object[]) argument)[0];
-                    setServiceUrl(new URL(uri + GATEWAY_PATH.replace("{uuid}", jobId)));
+                    setServiceUrl(UriBuilder.fromUri(uri).path(GATEWAY_PATH).build(jobId).toURL());
                     return super.invoke(methodName, argument, returnType, extraHeaders);
                 }
             };

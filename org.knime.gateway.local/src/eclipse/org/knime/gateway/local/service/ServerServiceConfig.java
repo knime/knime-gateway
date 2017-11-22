@@ -61,9 +61,8 @@ import org.knime.core.node.util.CheckUtils;
  * @author Martin Horn, University of Konstanz
  */
 public class ServerServiceConfig implements ServiceConfig {
-
-    private String m_jwt;
-    private URI m_uri;
+    private final String m_jwt;
+    private final URI m_uri;
 
     /**
      * @param uri the server uri
@@ -118,5 +117,4 @@ public class ServerServiceConfig implements ServiceConfig {
         }
         return true;
     }
-
 }
