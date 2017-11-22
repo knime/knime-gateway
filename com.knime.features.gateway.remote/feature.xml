@@ -39,6 +39,10 @@ by the copyright owner.
 In case of any questions, please contact KNIME at contact@knime.com
    </license>
 
+   <includes
+         id="org.knime.features.gateway.local"
+         version="0.0.0"/>
+
    <plugin
          id="com.knime.gateway.jsonrpc.remote"
          download-size="0"
