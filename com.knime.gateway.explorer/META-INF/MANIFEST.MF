@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: KNIME Remote Workflow Control support for KNIM Explorer
+Bundle-Name: KNIME Remote Workflow Control support for KNIME Explorer
 Bundle-SymbolicName: com.knime.gateway.explorer;singleton:=true
 Bundle-Version: 4.6.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
