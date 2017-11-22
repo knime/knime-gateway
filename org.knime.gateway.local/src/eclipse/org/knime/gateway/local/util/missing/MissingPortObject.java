@@ -44,142 +44,83 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 9, 2016 (hornm): created
+ *   Nov 22, 2017 (hornm): created
  */
-package org.knime.gateway.local.workflow;
+package org.knime.gateway.local.util.missing;
 
-import org.knime.core.node.port.PortObject;
+import java.io.IOException;
+
+import javax.swing.JComponent;
+
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.port.AbstractPortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortObjectZipInputStream;
+import org.knime.core.node.port.PortObjectZipOutputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.node.workflow.NodeContainerState;
-import org.knime.core.node.workflow.NodeStateChangeListener;
-import org.knime.core.node.workflow.NodeStateEvent;
-import org.knime.core.ui.node.workflow.NodeOutPortUI;
-import org.knime.gateway.local.util.missing.MissingPortObject;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 
 /**
+ * Placeholder for a missing/unknown port object (i.e. port type) that cannot be found in the {@link PortTypeRegistry}
+ * (e.g. because the respective extension is not available).
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeOutPort implements NodeOutPortUI {
-
-    private NodeOutPortEnt m_outPort;
-    private NodeEnt m_node;
+public class MissingPortObject extends AbstractPortObject {
 
     /**
-     * @param outPort
-     * @param node the node this port belongs to
-     *
+     * Convenience accessor for the port type.
      */
-    public ClientProxyNodeOutPort(final NodeOutPortEnt outPort, final NodeEnt node) {
-        m_outPort = outPort;
-        m_node = node;
+    public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(MissingPortObject.class);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSummary() {
+        return "Unknown Port Object (Extension not available)";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getPortIndex() {
-        return m_outPort.getPortIndex();
+    public PortObjectSpec getSpec() {
+        return new PortObjectSpec() {
+
+            @Override
+            public JComponent[] getViews() {
+                return null;
+            }
+        };
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PortType getPortType() {
-        PortTypeEnt pte = m_outPort.getPortType();
-        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
-        Class<? extends PortObject> portObjectClass =
-            ptr.getObjectClass(pte.getPortObjectClassName()).orElseGet(() -> MissingPortObject.class);
-        return ptr.getPortType(portObjectClass, pte.getIsOptional());
+    public JComponent[] getViews() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getPortName() {
-        return m_outPort.getPortName();
+    protected void save(final PortObjectZipOutputStream out, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        // nothing to do
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setPortName(final String portName) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void stateChanged(final NodeStateEvent state) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeContainerState getNodeContainerState() {
-        return getNodeState();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean addNodeStateChangeListener(final NodeStateChangeListener listener) {
-        // TODO
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean removeNodeStateChangeListener(final NodeStateChangeListener listener) {
-        //TODO
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPortSummary() {
-        return "TODO port summary";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isInactive() {
-        //TODO
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeContainerState getNodeState() {
-        return ClientProxyNodeContainer.getNodeContainerState(m_node);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void notifyNodeStateChangeListener(final NodeStateEvent e) {
-        throw new UnsupportedOperationException();
+    protected void load(final PortObjectZipInputStream in, final PortObjectSpec spec, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        //nothing to do
     }
 
 }

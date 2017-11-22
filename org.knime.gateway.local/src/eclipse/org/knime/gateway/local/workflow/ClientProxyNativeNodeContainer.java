@@ -60,6 +60,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.util.ObjectCache;
+import org.knime.gateway.local.util.missing.MissingNodeFactory;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
 import org.knime.workbench.repository.RepositoryManager;
@@ -72,7 +73,7 @@ import org.w3c.dom.Element;
 public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContainer {
 
     private NativeNodeEnt m_nativeNode;
-    private NodeFactory<NodeModel> m_nodeFactory = null;
+    private NodeFactory<? extends NodeModel> m_nodeFactory = null;
 
     /**
      * @param node
@@ -84,6 +85,17 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
         super(node, objCache, serviceConfig);
         m_nativeNode = node;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        String prefix = (m_nodeFactory instanceof MissingNodeFactory) ? prefix = "MISSING " : "";
+        return prefix + super.getName();
+    }
+
+
 
     /**
      * {@inheritDoc}
@@ -103,7 +115,7 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
         return getNodeFactoryInstance().getIcon();
     }
 
-    private NodeFactory<NodeModel> getNodeFactoryInstance() {
+    private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
         if (m_nodeFactory == null) {
             NodeFactoryKeyEnt nodeFactoryKey = m_nativeNode.getNodeFactoryKey();
             try {
@@ -118,9 +130,10 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
                         m_nodeFactory.init();
                     }
                 }
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException | InvalidSettingsException ex) {
-                // TODO better exception handling
-                throw new RuntimeException(ex);
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException
+                    | InvalidSettingsException ex) {
+                m_nodeFactory = new MissingNodeFactory(super.getName(), ex.getMessage());
+                m_nodeFactory.init();
             }
         }
         return m_nodeFactory;
