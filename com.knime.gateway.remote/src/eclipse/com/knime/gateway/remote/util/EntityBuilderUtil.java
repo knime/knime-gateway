@@ -117,6 +117,7 @@ import org.knime.gateway.v0.workflow.entity.builder.WorkflowEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.WorkflowNodeEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.WorkflowUIInfoEntBuilder;
 import org.knime.gateway.v0.workflow.entity.builder.WrappedWorkflowNodeEntBuilder;
+import org.knime.gateway.v0.workflow.entity.builder.XYEntBuilder;
 
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
@@ -371,17 +372,20 @@ public class EntityBuilderUtil {
         }
     }
 
-    private static ConnectionEnt buildContainerEnt(final ConnectionContainer cc) {
-        //TODO
-        //cc.getUIInfo() gives null!
-        //      int[][] allBendpoints = cc.getUIInfo().getAllBendpoints();
-        //      List<XYEnt> bendpoints = Arrays.stream(allBendpoints).map(a -> {
-        //         return builder(XYEntBuilder.class).setX(a[0]).setY(a[1]).build();
-        //      }).collect(Collectors.toList());
-        List<XYEnt> bendpoints = Collections.emptyList();
+    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc) {
+        List<XYEnt> bendpoints;
+        if (cc.getUIInfo() != null) {
+            int[][] allBendpoints = cc.getUIInfo().getAllBendpoints();
+            bendpoints = Arrays.stream(allBendpoints).map(a -> {
+                return builder(XYEntBuilder.class).setX(a[0]).setY(a[1]).build();
+            }).collect(Collectors.toList());
+        } else {
+            bendpoints = Collections.emptyList();
+        }
         return builder(ConnectionEntBuilder.class).setDest(nodeIdAsString(cc.getDest())).setDestPort(cc.getDestPort())
-            .setSource(nodeIdAsString(cc.getSource())).setSourcePort(cc.getSourcePort()).setIsDeleteable(cc.isDeletable())
-            .setType(cc.getType().toString()).setBendPoints(bendpoints).setIsFlowVariablePortConnection(cc.isFlowVariablePortConnection()).build();
+            .setSource(nodeIdAsString(cc.getSource())).setSourcePort(cc.getSourcePort())
+            .setIsDeleteable(cc.isDeletable()).setType(cc.getType().toString()).setBendPoints(bendpoints)
+            .setIsFlowVariablePortConnection(cc.isFlowVariablePortConnection()).build();
     }
 
     private static WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
@@ -441,7 +445,7 @@ public class EntityBuilderUtil {
         }).collect(Collectors.toMap(n -> n.getNodeID(), n -> n));
         Collection<ConnectionContainer> connectionContainers = wfm.getConnectionContainers();
         List<ConnectionEnt> connections = connectionContainers.stream().map(cc -> {
-            return buildContainerEnt(cc);
+            return buildConnectionEnt(cc);
         }).collect(Collectors.toList());
         return builder(WorkflowEntBuilder.class)
             .setNodes(nodes)
