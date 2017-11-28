@@ -154,7 +154,7 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
      */
     @Override
     public String getPortSummary() {
-        return "TODO port summary";
+        return null;
     }
 
     /**
