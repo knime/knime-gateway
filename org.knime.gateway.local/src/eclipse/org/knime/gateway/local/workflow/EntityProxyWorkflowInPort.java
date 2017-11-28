@@ -44,97 +44,55 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 14, 2017 (hornm): created
+ *   Nov 9, 2016 (hornm): created
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.ui.node.workflow.NodeOutPortUI;
+import org.knime.core.ui.node.workflow.WorkflowInPortUI;
+import org.knime.gateway.v0.workflow.entity.NodeEnt;
+import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
+import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 
 /**
- * Mainly COPIED from org.knime.core.node.workflow.InternalNodeContainerState!
+ * Entity-proxy class that proxies {@link NodeInPortEnt} and implements {@link WorkflowInPortUI}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public enum ClientProxyNodeContainerState implements NodeContainerState {
+public class EntityProxyWorkflowInPort extends EntityProxyNodeInPort implements WorkflowInPortUI {
 
-    IDLE,
-    CONFIGURED,
-    UNCONFIGURED_MARKEDFOREXEC,
-    CONFIGURED_MARKEDFOREXEC,
-    EXECUTED_MARKEDFOREXEC,
-    CONFIGURED_QUEUED,
-    EXECUTED_QUEUED,
-    PREEXECUTE,
-    EXECUTING,
-    EXECUTINGREMOTELY,
-    POSTEXECUTE,
-    EXECUTED;
+    private NodeOutPortEnt m_underlyingPort;
 
+    private NodeEnt m_node;
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isIdle() {
-        return IDLE.equals(this);
+    /**
+     * @param inPort
+     * @param underlyingPort
+     * @param node
+     * @param access
+     *
+     */
+    public EntityProxyWorkflowInPort(final NodeInPortEnt inPort, final NodeOutPortEnt underlyingPort,
+        final NodeEnt node, final EntityProxyAccess access) {
+        super(inPort, access);
+        m_underlyingPort = underlyingPort;
+        m_node = node;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean isConfigured() {
-        return CONFIGURED.equals(this);
+    public void setPortIndex(final int portIndex) {
+        throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean isExecuted() {
-        return EXECUTED.equals(this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isExecutionInProgress() {
-        switch (this) {
-            case IDLE:
-            case EXECUTED:
-            case CONFIGURED: return false;
-            default: return true;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isWaitingToBeExecuted() {
-        switch (this) {
-            case UNCONFIGURED_MARKEDFOREXEC:
-            case CONFIGURED_MARKEDFOREXEC:
-            case EXECUTED_MARKEDFOREXEC:
-            case CONFIGURED_QUEUED:
-            case EXECUTED_QUEUED:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isHalted() {
-        switch (this) {
-            case CONFIGURED_QUEUED:
-            case EXECUTED_QUEUED:
-            case EXECUTING:
-            case EXECUTINGREMOTELY:
-            case POSTEXECUTE:
-            case PREEXECUTE:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isExecutingRemotely() {
-        return EXECUTINGREMOTELY.equals(this);
+    public NodeOutPortUI getUnderlyingPort() {
+        return getAccess().getNodeOutPort(m_underlyingPort, m_node);
     }
 
 }

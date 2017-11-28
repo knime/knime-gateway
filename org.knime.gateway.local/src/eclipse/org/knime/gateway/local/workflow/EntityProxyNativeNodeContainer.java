@@ -58,8 +58,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
-import org.knime.gateway.local.service.ServerServiceConfig;
-import org.knime.gateway.local.util.ObjectCache;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.gateway.local.util.missing.MissingNodeFactory;
 import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
@@ -67,23 +66,20 @@ import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
 /**
+ * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContainer {
+public class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<NativeNodeEnt> {
 
-    private NativeNodeEnt m_nativeNode;
     private NodeFactory<? extends NodeModel> m_nodeFactory = null;
 
     /**
      * @param node
-     * @param objCache
-     * @param serviceConfig
+     * @param access
      */
-    public ClientProxyNativeNodeContainer(final NativeNodeEnt node, final ObjectCache objCache,
-        final ServerServiceConfig serviceConfig) {
-        super(node, objCache, serviceConfig);
-        m_nativeNode = node;
+    EntityProxyNativeNodeContainer(final NativeNodeEnt node, final EntityProxyAccess access) {
+        super(node, access);
     }
 
     /**
@@ -94,8 +90,6 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
         String prefix = (m_nodeFactory instanceof MissingNodeFactory) ? prefix = "MISSING " : "";
         return prefix + super.getName();
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -117,7 +111,7 @@ public class ClientProxyNativeNodeContainer extends ClientProxySingleNodeContain
 
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
         if (m_nodeFactory == null) {
-            NodeFactoryKeyEnt nodeFactoryKey = m_nativeNode.getNodeFactoryKey();
+            NodeFactoryKeyEnt nodeFactoryKey = getEntity().getNodeFactoryKey();
             try {
                 m_nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
                 if (m_nodeFactory instanceof DynamicNodeFactory) {

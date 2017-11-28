@@ -44,63 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 9, 2016 (hornm): created
+ *   Apr 25, 2017 (hornm): created
  */
-package org.knime.gateway.local.workflow;
+package org.knime.gateway.local.util;
 
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.ui.node.workflow.NodeInPortUI;
-import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
-import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 
 /**
+ * Collection of entity proxy helper methods
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeInPort implements NodeInPortUI {
-
-    private NodeInPortEnt m_inPort;
+public class EntityProxyUtil {
 
     /**
      *
      */
-    public ClientProxyNodeInPort(final NodeInPortEnt inPort) {
-        m_inPort = inPort;
+    private EntityProxyUtil() {
+        // utility class
     }
 
     /**
-     * {@inheritDoc}
+     * Unifies the conversion from a node id to a string.
+     * It removes the root id.
+     *
+     * @param nodeID
+     * @return the string
      */
-    @Override
-    public int getPortIndex() {
-        return m_inPort.getPortIndex();
+    public static String nodeIDToString(final NodeID nodeID) {
+        return nodeID.toString().substring(2);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PortType getPortType() {
-        PortTypeEnt pte = m_inPort.getPortType();
-        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
-        return ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
-    }
 
     /**
-     * {@inheritDoc}
+     * Unifies the conversion from a string to the node id.
+     * A root node id is prepended.
+     *
+     * @param prependedNodeId the root node id to be prepended
+     * @param nodeID the actual node id without the root node id
+     * @return the node id as {@link NodeID} object with the root node id prepended
      */
-    @Override
-    public String getPortName() {
-        return m_inPort.getPortName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortName(final String portName) {
-        throw new UnsupportedOperationException();
+    public static NodeID stringToNodeID(final String prependedNodeId, final String nodeID) {
+        return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(prependedNodeId));
     }
 
 }

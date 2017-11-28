@@ -62,18 +62,19 @@ import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
 import org.knime.gateway.v0.workflow.entity.XYEnt;
 
 /**
+ * Entity-proxy class that proxies {@link ConnectionEnt} and implements {@link ConnectionContainerUI}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyConnectionContainer implements ConnectionContainerUI {
-
-    private ConnectionEnt m_connection;
+public class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
+    implements ConnectionContainerUI {
 
     /**
-     *
+     * @param conn
+     * @param access
      */
-    public ClientProxyConnectionContainer(final ConnectionEnt conn) {
-        m_connection = conn;
+    public EntityProxyConnectionContainer(final ConnectionEnt conn, final EntityProxyAccess access) {
+        super(conn, access);
     }
 
     /**
@@ -81,8 +82,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public void progressChanged(final ConnectionProgressEvent pe) {
-        // TODO Auto-generated method stub
-
+        //nothing to do so far
     }
 
     /**
@@ -90,7 +90,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public ConnectionUIInformation getUIInfo() {
-        List<? extends XYEnt> bendPoints = m_connection.getBendPoints();
+        List<? extends XYEnt> bendPoints = getEntity().getBendPoints();
         ConnectionUIInformation.Builder builder = ConnectionUIInformation.builder();
         for (int i = 0; i < bendPoints.size(); i++) {
             XYEnt xy = bendPoints.get(i);
@@ -104,7 +104,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public NodeID getDest() {
-        return NodeID.fromString(m_connection.getDest());
+        return NodeID.fromString(getEntity().getDest());
     }
 
     /**
@@ -112,7 +112,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public int getDestPort() {
-        return m_connection.getDestPort();
+        return getEntity().getDestPort();
     }
 
     /**
@@ -120,7 +120,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public NodeID getSource() {
-        return NodeID.fromString(m_connection.getSource());
+        return NodeID.fromString(getEntity().getSource());
     }
 
     /**
@@ -128,7 +128,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public int getSourcePort() {
-        return m_connection.getSourcePort();
+        return getEntity().getSourcePort();
     }
 
     /**
@@ -136,7 +136,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public boolean isDeletable() {
-        return m_connection.getIsDeleteable();
+        return getEntity().getIsDeleteable();
     }
 
     /**
@@ -144,7 +144,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public boolean isFlowVariablePortConnection() {
-        return m_connection.getIsFlowVariablePortConnection();
+        return getEntity().getIsFlowVariablePortConnection();
     }
 
     /**
@@ -152,7 +152,7 @@ public class ClientProxyConnectionContainer implements ConnectionContainerUI {
      */
     @Override
     public ConnectionType getType() {
-        return ConnectionType.valueOf(m_connection.getType());
+        return ConnectionType.valueOf(getEntity().getType());
     }
 
     /**

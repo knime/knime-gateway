@@ -48,13 +48,10 @@
  */
 package org.knime.gateway.local.workflow;
 
-import static org.knime.gateway.local.service.ServiceManager.service;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -63,9 +60,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
-import org.knime.core.node.workflow.AnnotationData;
-import org.knime.core.node.workflow.AnnotationData.StyleRange;
-import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeAnnotationData;
 import org.knime.core.node.workflow.NodeContainer.NodeLock;
@@ -80,39 +74,38 @@ import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.NodeUIInformationEvent;
 import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.gateway.local.service.ServerServiceConfig;
-import org.knime.gateway.local.util.ClientProxyUtil;
-import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.v0.workflow.entity.AnnotationEnt;
+import org.knime.gateway.local.util.EntityProxyUtil;
 import org.knime.gateway.v0.workflow.entity.BoundsEnt;
 import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
-import org.knime.gateway.v0.workflow.service.NodeService;
 
 /**
+ * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.
  *
  * @author Martin Horn, University of Konstanz
+ * @param <E>
  */
-public abstract class ClientProxyNodeContainer implements NodeContainerUI {
+public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends AbstractEntityProxy<E>
+    implements NodeContainerUI {
 
     /**
-     * Map that keeps track of all root workflow ids and maps them to a unique node ids.
-     * It's the id the will be prepended to the node's id (see {@link #getID()}).
+     * Map that keeps track of all root workflow ids and maps them to a unique node ids. It's the id the will be
+     * prepended to the node's id (see {@link #getID()}).
      *
      * TODO: remove worklfow id's from the list that aren't in memory anymore
      */
-    private static final Map<String, String> ROOT_ID_MAP =
-        new HashMap<String, String>();
-
-    private final NodeEnt m_node;
+    private static final Map<String, String> ROOT_ID_MAP = new HashMap<String, String>();
 
     private NodeAnnotation m_nodeAnnotation;
+
+    private WorkflowManagerUI m_parent;
 
     /*--------- listener administration------------*/
 
@@ -131,22 +124,15 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
     private final CopyOnWriteArraySet<NodePropertyChangedListener> m_nodePropertyChangedListeners =
         new CopyOnWriteArraySet<NodePropertyChangedListener>();
 
-    protected ServerServiceConfig m_serviceConfig;
-
-    protected ObjectCache m_objCache;
-
     /**
      * If the underlying entity is a node.
      *
      * @param node
-     * @param objCache
-     * @param serviceConfig
+     * @param access
+     *
      */
-    public ClientProxyNodeContainer(final NodeEnt node, final ObjectCache objCache,
-        final ServerServiceConfig serviceConfig) {
-        m_node = node;
-        m_objCache = objCache;
-        m_serviceConfig = serviceConfig;
+    public EntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
+        super(node, access);
         ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }
 
@@ -163,18 +149,21 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public WorkflowManagerUI getParent() {
-        return m_node.getParentNodeID().map(s -> {
+        if(m_parent != null) {
+            return m_parent;
+        }
+        return getEntity().getParentNodeID().map(s -> {
             //get parent wf
             String parentNodeID;
-            if (NodeID.fromString(s).getPrefix() == NodeID.ROOTID) {
+            if (s.length() == 0) {
                 //parent is the highest level workflow
                 //the node id has then no meaning here and need to be empty
                 parentNodeID = null;
             } else {
                 parentNodeID = s;
             }
-            return ClientProxyUtil.getWorkflowManager(m_node.getRootWorkflowID(), Optional.ofNullable(parentNodeID),
-                m_objCache, m_serviceConfig);
+            m_parent = getAccess().getWorkflowManager(getEntity().getRootWorkflowID(), parentNodeID);
+            return m_parent;
         }).orElse(null);
     }
 
@@ -183,8 +172,8 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeExecutionJobManager getJobManager() {
-        if (m_node.getJobManager().isPresent()) {
-            return m_node.getJobManager()
+        if (getEntity().getJobManager().isPresent()) {
+            return getEntity().getJobManager()
                 .map(jm -> NodeExecutionJobManagerPool.getJobManagerFactory(jm.getJobManagerID()).getInstance()).get();
         } else if (getParent() == null) {
             //if it's the root workflow and no job manager set, return the default one
@@ -201,7 +190,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
     @Override
     public NodeExecutionJobManager findJobManager() {
         //optionally derive the job manager from the parent
-        return m_node.getJobManager()
+        return getEntity().getJobManager()
             .map(jm -> NodeExecutionJobManagerPool.getJobManagerFactory(jm.getJobManagerID()).getInstance())
             .orElseGet(() -> {
                 if (getParent() == null) {
@@ -281,7 +270,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeMessage getNodeMessage() {
-        NodeMessageEnt nme = m_node.getNodeMessage();
+        NodeMessageEnt nme = getEntity().getNodeMessage();
         return new NodeMessage(NodeMessage.Type.valueOf(nme.getType()), nme.getMessage());
     }
 
@@ -315,11 +304,22 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
     }
 
     /**
+     * Notifies the registered UI listeners.
+     *
+     * @param evt some additional information about the actual event
+     */
+    protected void notifyUIListeners(final NodeUIInformationEvent evt) {
+        for (NodeUIInformationListener l : m_uiListeners) {
+            l.nodeUIInformationChanged(evt);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public NodeUIInformation getUIInformation() {
-        BoundsEnt bounds = m_node.getBounds();
+        BoundsEnt bounds = getEntity().getBounds();
         return NodeUIInformation.builder()
             .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()).build();
     }
@@ -356,19 +356,18 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeContainerState getNodeContainerState() {
-        return getNodeContainerState(m_node);
+        return getNodeContainerState(getEntity());
     }
 
     static NodeContainerState getNodeContainerState(final NodeEnt node) {
         String state = node.getNodeState();
-        return ClientProxyNodeContainerState.valueOf(state);
+        return EntityProxyNodeContainerState.valueOf(state);
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigBaseRO getNodeSettings() {
-        String json = service(NodeService.class, m_serviceConfig).getNodeSettingsJSON(m_node.getRootWorkflowID(),
-            m_node.getNodeID());
+        String json = getAccess().getSettingsAsJson(getEntity());
         try {
             return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
         } catch (IOException ex) {
@@ -422,7 +421,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public boolean hasDialog() {
-        return m_node.getHasDialog();
+        return getEntity().getHasDialog();
     }
 
     /**
@@ -438,7 +437,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public int getNrInPorts() {
-        return m_node.getInPorts().size();
+        return getEntity().getInPorts().size();
     }
 
     /**
@@ -446,7 +445,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeInPortUI getInPort(final int index) {
-        return ClientProxyUtil.getNodeInPort(m_node.getInPorts().get(index), m_objCache);
+        return getAccess().getNodeInPort(getEntity().getInPorts().get(index));
     }
 
     /**
@@ -454,7 +453,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeOutPortUI getOutPort(final int index) {
-        return ClientProxyUtil.getNodeOutPort(m_node.getOutPorts().get(index), m_node, m_objCache);
+        return getAccess().getNodeOutPort(getEntity().getOutPorts().get(index), getEntity());
     }
 
     /**
@@ -462,7 +461,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public int getNrOutPorts() {
-        return m_node.getOutPorts().size();
+        return getEntity().getOutPorts().size();
     }
 
     /**
@@ -520,7 +519,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeType getType() {
-        return Enum.valueOf(NodeType.class, m_node.getNodeType());
+        return Enum.valueOf(NodeType.class, getEntity().getNodeType());
     }
 
     /**
@@ -528,7 +527,8 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public NodeID getID() {
-        return ClientProxyUtil.stringToNodeID(ROOT_ID_MAP.get(m_node.getRootWorkflowID()), m_node.getNodeID());
+        return EntityProxyUtil.stringToNodeID(ROOT_ID_MAP.get(getEntity().getRootWorkflowID()),
+            getEntity().getNodeID());
     }
 
     /**
@@ -536,7 +536,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public String getName() {
-        return m_node.getName();
+        return getEntity().getName();
     }
 
     /**
@@ -577,57 +577,16 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
     @Override
     public NodeAnnotation getNodeAnnotation() {
         if (m_nodeAnnotation == null) {
-            NodeAnnotationEnt anno = m_node.getNodeAnnotation();
+            NodeAnnotationEnt anno = getEntity().getNodeAnnotation();
             NodeAnnotationData data = NodeAnnotationData.createFromObsoleteCustomName(null);
             if (!anno.getIsDefault()) {
-                data.copyFrom(getAnnotationData(anno), false);
+                data.copyFrom(EntityProxyWorkflowAnnotation.getAnnotationData(anno), false);
             }
             m_nodeAnnotation = new NodeAnnotation(data);
             m_nodeAnnotation.registerOnNodeContainer(getID(), () -> setDirty());
             addUIInformationListener(m_nodeAnnotation);
         }
         return m_nodeAnnotation;
-    }
-
-    static AnnotationData getAnnotationData(final AnnotationEnt annoEnt) {
-        StyleRange[] styleRanges = annoEnt.getStyleRanges().stream().map(sr -> {
-            StyleRange newSR = new StyleRange();
-            newSR.setStart(sr.getStart());
-            newSR.setLength(sr.getLength());
-            newSR.setFontName(sr.getFontName());
-            newSR.setFontSize(sr.getFontSize());
-            newSR.setFgColor(sr.getForegroundColor());
-            newSR.setFontStyle(getFontStyleIdx(sr.getFontStyle()));
-            return newSR;
-        }).toArray(StyleRange[]::new);
-        AnnotationData ad = new AnnotationData();
-        ad.setText(annoEnt.getText());
-        ad.setX(annoEnt.getBounds().getX());
-        ad.setY(annoEnt.getBounds().getY());
-        ad.setBgColor(annoEnt.getBackgroundColor());
-        ad.setBorderColor(annoEnt.getBorderColor());
-        ad.setBorderSize(annoEnt.getBorderSize());
-        ad.setDefaultFontSize(annoEnt.getDefaultFontSize());
-        ad.setHeight(annoEnt.getBounds().getHeight());
-        ad.setWidth(annoEnt.getBounds().getWidth());
-        ad.setAlignment(TextAlignment.valueOf(annoEnt.getTextAlignment()));
-        ad.setStyleRanges(styleRanges);
-        return ad;
-    }
-
-
-    static int getFontStyleIdx(final String fontStyle) {
-        //indices from SWT-class
-        if (fontStyle.equals("normal")) {
-            return 0;
-        } else if (fontStyle.equals("bold")) {
-            return 1;
-        } else if (fontStyle.equals("italic")) {
-            return 2;
-        } else {
-            //return normal style by default
-            return 0;
-        }
     }
 
     /**
@@ -659,7 +618,7 @@ public abstract class ClientProxyNodeContainer implements NodeContainerUI {
      */
     @Override
     public boolean isDeletable() {
-        return m_node.getIsDeletable();
+        return getEntity().getIsDeletable();
     }
 
     /**

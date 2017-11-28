@@ -44,54 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 9, 2016 (hornm): created
+ *   Nov 27, 2017 (hornm): created
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.ui.node.workflow.NodeOutPortUI;
-import org.knime.core.ui.node.workflow.WorkflowInPortUI;
-import org.knime.gateway.local.util.ClientProxyUtil;
-import org.knime.gateway.local.util.ObjectCache;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
-import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
+import org.knime.gateway.workflow.entity.GatewayEntity;
 
 /**
+ * Implementations translate/proxy certain calls to the entities they use as the main source of information.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, Univerity of Konstanz
+ * @param <E> the underlying entity
  */
-public class ClientProxyWorkflowInPort extends ClientProxyNodeInPort implements WorkflowInPortUI {
-
-    private NodeOutPortEnt m_underlyingPort;
-    private ObjectCache m_objCache;
-    private NodeEnt m_node;
+public interface EntityProxy<E extends GatewayEntity> {
 
     /**
+     * @return the proxy's entity
+     */
+    E getEntity();
+
+    /**
+     * @return the entity proxy store to create/get (new) entity proxy instances
+     */
+    EntityProxyAccess getAccess();
+
+    /**
+     * Updates the proxy's entity.
      *
+     * @param entity the new entity
      */
-    public ClientProxyWorkflowInPort(final NodeInPortEnt inPort, final NodeOutPortEnt underlyingPort, final NodeEnt node,
-        final ObjectCache objCache) {
-        super(inPort);
-        m_underlyingPort = underlyingPort;
-        m_node = node;
-        m_objCache = objCache;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortIndex(final int portIndex) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeOutPortUI getUnderlyingPort() {
-        return ClientProxyUtil.getNodeOutPort(m_underlyingPort, m_node, m_objCache);
-    }
-
+    void update(final E entity);
 }

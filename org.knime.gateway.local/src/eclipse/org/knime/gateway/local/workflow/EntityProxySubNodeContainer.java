@@ -49,7 +49,6 @@
 package org.knime.gateway.local.workflow;
 
 import java.net.URL;
-import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,9 +60,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.gateway.local.service.ServerServiceConfig;
-import org.knime.gateway.local.service.ServiceManager;
-import org.knime.gateway.local.util.ObjectCache;
 import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
 import org.knime.gateway.v0.workflow.entity.WrappedWorkflowNodeEnt;
 import org.w3c.dom.DOMException;
@@ -71,33 +67,28 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
+ * Entity-proxy class that proxies {@link WrappedWorkflowNodeEnt} and implements {@link SubNodeContainerUI}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer implements SubNodeContainerUI {
+public class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<WrappedWorkflowNodeEnt>
+    implements SubNodeContainerUI {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(ClientProxyNodeContainer.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyNodeContainer.class);
 
     private WorkflowEnt m_workflowEnt;
-    private WrappedWorkflowNodeEnt m_wrappedWorkflowNodeEnt;
 
     /**
      * @param node
-     * @param objCache
-     * @param serviceConfig
+     * @param access
      */
-    public ClientProxySubNodeContainer(final WrappedWorkflowNodeEnt node, final ObjectCache objCache,
-        final ServerServiceConfig serviceConfig) {
-        super(node, objCache, serviceConfig);
-        m_wrappedWorkflowNodeEnt = node;
+    public EntityProxySubNodeContainer(final WrappedWorkflowNodeEnt node, final EntityProxyAccess access) {
+        super(node, access);
     }
 
     private WorkflowEnt getWorkflow() {
         if (m_workflowEnt == null) {
-            Optional<String> nodeID = m_wrappedWorkflowNodeEnt.getParentNodeID().isPresent()
-                ? Optional.of(m_wrappedWorkflowNodeEnt.getNodeID()) : Optional.empty();
-            m_workflowEnt = ServiceManager.workflowService(m_serviceConfig)
-                .getWorkflow(m_wrappedWorkflowNodeEnt.getRootWorkflowID(), nodeID);
+            m_workflowEnt = getAccess().getWorkflowEnt(getEntity());
         }
         return m_workflowEnt;
     }
@@ -107,7 +98,7 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
      */
     @Override
     public NodeID getVirtualInNodeID() {
-        return NodeID.fromString(m_wrappedWorkflowNodeEnt.getVirtualInNodeID());
+        return NodeID.fromString(getEntity().getVirtualInNodeID());
     }
 
     /**
@@ -115,7 +106,7 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
      */
     @Override
     public NodeID getVirtualOutNodeID() {
-        return NodeID.fromString(m_wrappedWorkflowNodeEnt.getVirtualOutNodeID());
+        return NodeID.fromString(getEntity().getVirtualOutNodeID());
     }
 
     /**
@@ -123,10 +114,7 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
      */
     @Override
     public WorkflowManagerUI getWorkflowManager() {
-        return m_objCache.getOrCreate(
-            m_wrappedWorkflowNodeEnt.getRootWorkflowID() + "_" + m_wrappedWorkflowNodeEnt.getNodeID(), we -> {
-                return new ClientProxyWrappedWorkflowManager(m_wrappedWorkflowNodeEnt, m_objCache, m_serviceConfig);
-            });
+        return getAccess().getWrappedWorkflowManager(getEntity());
     }
 
     /**
@@ -190,32 +178,32 @@ public class ClientProxySubNodeContainer extends ClientProxySingleNodeContainer 
             // ports
             Element ports = doc.createElement("ports");
             knimeNode.appendChild(ports);
-//            // inPort
-//            for (int i = 0; i < inPortNames.length; i++) {
-//                Element inPort = doc.createElement("inPort");
-//                ports.appendChild(inPort);
-//                inPort.setAttribute("index", "" + i);
-//                inPort.setAttribute("name", inPortNames[i]);
-//                String defaultText = NO_DESCRIPTION_SET;
-//                if (i == 0) {
-//                    defaultText += "\nChange this label by browsing the input node contained in the Wrapped Metanode "
-//                            + "and changing its configuration.";
-//                }
-//                addText(inPort, inPortDescriptions[i], defaultText);
-//            }
-//            // outPort
-//            for (int i = 0; i < outPortNames.length; i++) {
-//                Element outPort = doc.createElement("outPort");
-//                ports.appendChild(outPort);
-//                outPort.setAttribute("index", "" + i);
-//                outPort.setAttribute("name", outPortNames[i]);
-//                String defaultText = NO_DESCRIPTION_SET;
-//                if (i == 0) {
-//                    defaultText += "\nChange this label by browsing the output node contained in the Wrapped Metanode "
-//                            + "and changing its configuration.";
-//                }
-//                addText(outPort, outPortDescriptions[i], defaultText);
-//            }
+            //            // inPort
+            //            for (int i = 0; i < inPortNames.length; i++) {
+            //                Element inPort = doc.createElement("inPort");
+            //                ports.appendChild(inPort);
+            //                inPort.setAttribute("index", "" + i);
+            //                inPort.setAttribute("name", inPortNames[i]);
+            //                String defaultText = NO_DESCRIPTION_SET;
+            //                if (i == 0) {
+            //                    defaultText += "\nChange this label by browsing the input node contained in the Wrapped Metanode "
+            //                            + "and changing its configuration.";
+            //                }
+            //                addText(inPort, inPortDescriptions[i], defaultText);
+            //            }
+            //            // outPort
+            //            for (int i = 0; i < outPortNames.length; i++) {
+            //                Element outPort = doc.createElement("outPort");
+            //                ports.appendChild(outPort);
+            //                outPort.setAttribute("index", "" + i);
+            //                outPort.setAttribute("name", outPortNames[i]);
+            //                String defaultText = NO_DESCRIPTION_SET;
+            //                if (i == 0) {
+            //                    defaultText += "\nChange this label by browsing the output node contained in the Wrapped Metanode "
+            //                            + "and changing its configuration.";
+            //                }
+            //                addText(outPort, outPortDescriptions[i], defaultText);
+            //            }
 
             return new NodeDescription27Proxy(doc).getXMLDescription();
         } catch (XmlException | DOMException | ParserConfigurationException ex) {

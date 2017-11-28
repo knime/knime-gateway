@@ -53,16 +53,18 @@ import org.knime.gateway.v0.workflow.entity.NodeEnt;
 import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
 
 /**
+ * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link WorkflowOutPortUI}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyWorkflowOutPort extends ClientProxyNodeOutPort implements WorkflowOutPortUI {
+public class EntityProxyWorkflowOutPort extends EntityProxyNodeOutPort implements WorkflowOutPortUI {
 
     /**
      *
      */
-    public ClientProxyWorkflowOutPort(final NodeOutPortEnt outPort, final NodeEnt node) {
-        super(outPort, node);
+    public EntityProxyWorkflowOutPort(final NodeOutPortEnt outPort, final NodeEnt node,
+        final EntityProxyAccess access) {
+        super(outPort, node, access);
     }
 
     /**

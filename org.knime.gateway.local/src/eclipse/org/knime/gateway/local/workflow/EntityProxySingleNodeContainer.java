@@ -48,121 +48,31 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.node.workflow.NodeContainerState;
-import org.knime.core.node.workflow.NodeStateChangeListener;
-import org.knime.core.node.workflow.NodeStateEvent;
-import org.knime.core.ui.node.workflow.NodeOutPortUI;
-import org.knime.gateway.local.util.missing.MissingPortObject;
+import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
 
 /**
+ * Entity-proxy class that proxies {@link NodeEnt} and implements {@link SingleNodeContainerUI}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ClientProxyNodeOutPort implements NodeOutPortUI {
-
-    private NodeOutPortEnt m_outPort;
-    private NodeEnt m_node;
+public abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends EntityProxyNodeContainer<E>
+    implements SingleNodeContainerUI {
 
     /**
-     * @param outPort
-     * @param node the node this port belongs to
-     *
+     * @param node
+     * @param access
      */
-    public ClientProxyNodeOutPort(final NodeOutPortEnt outPort, final NodeEnt node) {
-        m_outPort = outPort;
-        m_node = node;
+    public EntityProxySingleNodeContainer(final E node, final EntityProxyAccess access) {
+        super(node, access);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getPortIndex() {
-        return m_outPort.getPortIndex();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PortType getPortType() {
-        PortTypeEnt pte = m_outPort.getPortType();
-        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
-        Class<? extends PortObject> portObjectClass =
-            ptr.getObjectClass(pte.getPortObjectClassName()).orElseGet(() -> MissingPortObject.class);
-        return ptr.getPortType(portObjectClass, pte.getIsOptional());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPortName() {
-        return m_outPort.getPortName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortName(final String portName) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void stateChanged(final NodeStateEvent state) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeContainerState getNodeContainerState() {
-        return getNodeState();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean addNodeStateChangeListener(final NodeStateChangeListener listener) {
+    public boolean isMemberOfScope() {
         // TODO
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean removeNodeStateChangeListener(final NodeStateChangeListener listener) {
-        //TODO
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPortSummary() {
-        return "TODO port summary";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isInactive() {
-        //TODO
         return false;
     }
 
@@ -170,16 +80,9 @@ public class ClientProxyNodeOutPort implements NodeOutPortUI {
      * {@inheritDoc}
      */
     @Override
-    public NodeContainerState getNodeState() {
-        return ClientProxyNodeContainer.getNodeContainerState(m_node);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void notifyNodeStateChangeListener(final NodeStateEvent e) {
-        throw new UnsupportedOperationException();
+    public boolean isInactive() {
+        // TODO
+        return false;
     }
 
 }
