@@ -69,11 +69,13 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
+import org.knime.core.node.workflow.NodeMessageEvent;
 import org.knime.core.node.workflow.NodeMessageListener;
 import org.knime.core.node.workflow.NodeProgressEvent;
 import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
 import org.knime.core.node.workflow.NodeUIInformationListener;
@@ -260,6 +262,15 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     }
 
     /**
+     * Notifies the registered node message listeners.
+     * 
+     * @param event essentially the new node message
+     */
+    protected void notifyNodeMessageListener(final NodeMessageEvent event) {
+        m_messageListeners.forEach(l -> l.messageChanged(event));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -356,6 +367,15 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     @Override
     public boolean removeNodeStateChangeListener(final NodeStateChangeListener listener) {
         return m_stateChangeListeners.remove(listener);
+    }
+
+    /**
+     * Notifies the node state change listeners (e.g. the UI).
+     * 
+     * @param state the new node state
+     */
+    protected void notifyNodeStateChangeListener(final NodeStateEvent state) {
+        m_stateChangeListeners.forEach(l -> l.stateChanged(state));
     }
 
     /**
@@ -660,4 +680,13 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
         return new NodeLocks(false, false, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void update(final NodeEnt entity) {
+        super.update((E)entity);
+        notifyNodeStateChangeListener(new NodeStateEvent(getID()));
+        notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
+    }
 }

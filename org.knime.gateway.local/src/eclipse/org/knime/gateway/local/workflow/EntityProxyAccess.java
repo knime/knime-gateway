@@ -173,6 +173,17 @@ public class EntityProxyAccess {
     }
 
     /**
+     * If an {@link EntityProxyNodeContainer} already exists for the 'oldNode', the entity will be replaced with
+     * 'newNode'. Otherwise nothing happens.
+     *
+     * @param oldNode the entity to be replaced in an {@link EntityProxyNodeContainer}
+     * @param newNode the entity to replace with
+     */
+    void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
+        update(oldNode, newNode, EntityProxyNodeContainer.class);
+    }
+
+    /**
      * Returns the entity proxy for the given connection entity.
      *
      * With every call the same entity proxy instance will be returned for the same entity.
@@ -340,6 +351,19 @@ public class EntityProxyAccess {
                 m_entityProxyMap.put(key, proxy);
             }
             return proxy;
+        }
+    }
+
+    private <E extends GatewayEntity, P extends EntityProxy<E>> void update(final E oldEntity, final E newEntity, final Class<P> proxyClass) {
+        Pair<GatewayEntity, Class<EntityProxy>> oldKey =
+                new Pair<GatewayEntity, Class<EntityProxy>>(oldEntity, (Class<EntityProxy>)proxyClass);
+        Pair<GatewayEntity, Class<EntityProxy>> newKey =
+                new Pair<GatewayEntity, Class<EntityProxy>>(newEntity, (Class<EntityProxy>)proxyClass);
+        EntityProxy entityProxy = m_entityProxyMap.get(oldKey);
+        if (entityProxy != null) {
+            entityProxy.update(newEntity);
+            m_entityProxyMap.put(newKey, entityProxy);
+            m_entityProxyMap.remove(oldKey);
         }
     }
 }
