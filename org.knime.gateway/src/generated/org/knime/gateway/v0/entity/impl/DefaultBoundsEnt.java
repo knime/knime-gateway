@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,63 +40,109 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Nov 9, 2016 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.entity;
+package org.knime.gateway.v0.entity.impl;
 
-import java.util.Collections;
-import java.util.List;
 
-import org.knime.core.node.NodeLogger;
-import org.knime.gateway.util.ExtPointUtil;
+import org.knime.gateway.v0.entity.BoundsEnt;
 
 /**
- * Manages entity builders (i.e. {@link GatewayEntityBuilder}s) and gives access to they implementations (that are
- * injected via the {@link EntityBuilderFactory} extension point).
+ * Node dimensions - position and size.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityBuilderManager {
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class DefaultBoundsEnt  implements BoundsEnt {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityBuilderManager.class);
+  protected Integer m_x;
+  protected Integer m_y;
+  protected Integer m_width;
+  protected Integer m_height;
+  
+  protected DefaultBoundsEnt() {
+    //for sub-classes
+  }
+  
+  private DefaultBoundsEnt(DefaultBoundsEntBuilder builder) {
+    
+    m_x = builder.m_x;
+    m_y = builder.m_y;
+    m_width = builder.m_width;
+    m_height = builder.m_height;
+  }
 
-    private static EntityBuilderFactory BUILDER_FACTORY;
 
-    private EntityBuilderManager() {
-        //utility class
+  /**
+   * Get x
+   * @return x
+   **/
+  @Override
+    public Integer getX() {
+        return m_x;
     }
-
-    /**
-     * Delivers implementations for entity builder interfaces (see {@link GatewayEntityBuilder}). Implementations are
-     * injected via {@link EntityBuilderFactory} extension point.
-     *
-     * @param builderInterface the builder interface the implementation is requested for
-     * @return an implementation of the requested builder interface (it returns a new instance with every method call)
-     */
-    public static <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
-        builder(final Class<B> builderInterface) {
-        if (BUILDER_FACTORY == null) {
-            BUILDER_FACTORY = createBuilderFactory();
-        }
-        return BUILDER_FACTORY.createEntityBuilder(builderInterface);
+  /**
+   * Get y
+   * @return y
+   **/
+  @Override
+    public Integer getY() {
+        return m_y;
     }
-
-    private static EntityBuilderFactory createBuilderFactory() {
-
-        List<EntityBuilderFactory> instances = ExtPointUtil
-            .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
-        if (instances.size() == 0) {
-            LOGGER.warn("No entity builder factory registered. Default factory used.");
-            return new DefaultEntityBuilderFactory();
-
-        } else if (instances.size() > 1) {
-            LOGGER.warn("Multiple entity builder factories registered. The one with the highest priority used.");
-            Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+  /**
+   * Get width
+   * @return width
+   **/
+  @Override
+    public Integer getWidth() {
+        return m_width;
+    }
+  /**
+   * Get height
+   * @return height
+   **/
+  @Override
+    public Integer getHeight() {
+        return m_height;
+    }
+  
+    public static class DefaultBoundsEntBuilder implements BoundsEntBuilder {
+    
+        public DefaultBoundsEntBuilder(){
+            
         }
-        return instances.get(0);
+    
+        private Integer m_x;
+        private Integer m_y;
+        private Integer m_width;
+        private Integer m_height;
+
+        @Override
+        public DefaultBoundsEntBuilder setX(Integer x) {
+             m_x = x;
+             return this;
+        }
+        @Override
+        public DefaultBoundsEntBuilder setY(Integer y) {
+             m_y = y;
+             return this;
+        }
+        @Override
+        public DefaultBoundsEntBuilder setWidth(Integer width) {
+             m_width = width;
+             return this;
+        }
+        @Override
+        public DefaultBoundsEntBuilder setHeight(Integer height) {
+             m_height = height;
+             return this;
+        }
+        
+        @Override
+        public DefaultBoundsEnt build() {
+            return new DefaultBoundsEnt(this);
+        }
+    
     }
 
 }

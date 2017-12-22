@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,63 +40,93 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Nov 9, 2016 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.entity;
+package org.knime.gateway.v0.entity;
 
-import java.util.Collections;
-import java.util.List;
 
-import org.knime.core.node.NodeLogger;
-import org.knime.gateway.util.ExtPointUtil;
+import org.knime.gateway.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.entity.GatewayEntity;
 
 /**
- * Manages entity builders (i.e. {@link GatewayEntityBuilder}s) and gives access to they implementations (that are
- * injected via the {@link EntityBuilderFactory} extension point).
- *
+ * Defines the style of a range (e.g. within a workflow annotation).
+ * 
  * @author Martin Horn, University of Konstanz
  */
-public class EntityBuilderManager {
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public interface StyleRangeEnt extends GatewayEntity {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityBuilderManager.class);
+  /**
+   * The font style, e.g. normal, bold or italic.
+   */
+  public enum FontStyleEnum {
+    NORMAL("normal"),
+    
+    BOLD("bold"),
+    
+    ITALIC("italic");
 
-    private static EntityBuilderFactory BUILDER_FACTORY;
+    private String value;
 
-    private EntityBuilderManager() {
-        //utility class
+    FontStyleEnum(String value) {
+      this.value = value;
     }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * Style range start.
+   * @return start
+   **/
+  public Integer getStart();
+  /**
+   * Style range length.
+   * @return length
+   **/
+  public Integer getLength();
+  /**
+   * Style range font name.
+   * @return fontName
+   **/
+  public String getFontName();
+  /**
+   * The font style, e.g. normal, bold or italic.
+   * @return fontStyle
+   **/
+  public FontStyleEnum getFontStyle();
+  /**
+   * Style range font size.
+   * @return fontSize
+   **/
+  public Integer getFontSize();
+  /**
+   * Style range foreground color.
+   * @return foregroundColor
+   **/
+  public Integer getForegroundColor();
 
     /**
-     * Delivers implementations for entity builder interfaces (see {@link GatewayEntityBuilder}). Implementations are
-     * injected via {@link EntityBuilderFactory} extension point.
-     *
-     * @param builderInterface the builder interface the implementation is requested for
-     * @return an implementation of the requested builder interface (it returns a new instance with every method call)
+     * The builder for the entity.
      */
-    public static <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
-        builder(final Class<B> builderInterface) {
-        if (BUILDER_FACTORY == null) {
-            BUILDER_FACTORY = createBuilderFactory();
-        }
-        return BUILDER_FACTORY.createEntityBuilder(builderInterface);
-    }
+    public interface StyleRangeEntBuilder extends GatewayEntityBuilder<StyleRangeEnt> {
 
-    private static EntityBuilderFactory createBuilderFactory() {
-
-        List<EntityBuilderFactory> instances = ExtPointUtil
-            .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
-        if (instances.size() == 0) {
-            LOGGER.warn("No entity builder factory registered. Default factory used.");
-            return new DefaultEntityBuilderFactory();
-
-        } else if (instances.size() > 1) {
-            LOGGER.warn("Multiple entity builder factories registered. The one with the highest priority used.");
-            Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
-        }
-        return instances.get(0);
+        StyleRangeEntBuilder setStart(Integer start);
+        StyleRangeEntBuilder setLength(Integer length);
+        StyleRangeEntBuilder setFontName(String fontName);
+        StyleRangeEntBuilder setFontStyle(FontStyleEnum fontStyle);
+        StyleRangeEntBuilder setFontSize(Integer fontSize);
+        StyleRangeEntBuilder setForegroundColor(Integer foregroundColor);
+        
+        StyleRangeEnt build();
+    
     }
 
 }

@@ -1,1 +1,0 @@
-For a detailed description and documentation what's going on here in this folder please refer to the javadoc of "org.knime.gateway.builder.SourceCodeBuilder" (in the org.knime.gateway.builder-project).

@@ -48,56 +48,17 @@
  */
 package org.knime.gateway.entity;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.knime.core.node.NodeLogger;
-import org.knime.gateway.util.ExtPointUtil;
+import org.knime.gateway.service.GatewayService;
 
 /**
- * Manages entity builders (i.e. {@link GatewayEntityBuilder}s) and gives access to they implementations (that are
- * injected via the {@link EntityBuilderFactory} extension point).
+ * Represents an object (i.e. a message) to be passed between remote endpoints, usually as parameter or return type of
+ * service methods (see {@link GatewayService}).
+ *
+ * Entities therefor need be able to be serialized in a way and are either composed of other entities or primitives.
+ * Entites should be immutable and be created with the respective builder (see {@link GatewayEntityBuilder}).
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityBuilderManager {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityBuilderManager.class);
-
-    private static EntityBuilderFactory BUILDER_FACTORY;
-
-    private EntityBuilderManager() {
-        //utility class
-    }
-
-    /**
-     * Delivers implementations for entity builder interfaces (see {@link GatewayEntityBuilder}). Implementations are
-     * injected via {@link EntityBuilderFactory} extension point.
-     *
-     * @param builderInterface the builder interface the implementation is requested for
-     * @return an implementation of the requested builder interface (it returns a new instance with every method call)
-     */
-    public static <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
-        builder(final Class<B> builderInterface) {
-        if (BUILDER_FACTORY == null) {
-            BUILDER_FACTORY = createBuilderFactory();
-        }
-        return BUILDER_FACTORY.createEntityBuilder(builderInterface);
-    }
-
-    private static EntityBuilderFactory createBuilderFactory() {
-
-        List<EntityBuilderFactory> instances = ExtPointUtil
-            .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
-        if (instances.size() == 0) {
-            LOGGER.warn("No entity builder factory registered. Default factory used.");
-            return new DefaultEntityBuilderFactory();
-
-        } else if (instances.size() > 1) {
-            LOGGER.warn("Multiple entity builder factories registered. The one with the highest priority used.");
-            Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
-        }
-        return instances.get(0);
-    }
+public interface GatewayEntity {
 
 }

@@ -62,13 +62,16 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.jsonrpc.local.service.util.ServiceInterface2JsonRpcMap;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceConfig;
 import org.knime.gateway.local.service.ServiceFactory;
-import org.knime.gateway.workflow.service.GatewayService;
-import org.knime.gateway.workflow.service.ServiceException;
+import org.knime.gateway.service.GatewayService;
+import org.knime.gateway.service.ServiceException;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
@@ -112,17 +115,8 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
         final ServiceConfig serviceConfig) {
         if (serviceConfig instanceof ServerServiceConfig) {
             ServerServiceConfig serverServiceConfig = (ServerServiceConfig)serviceConfig;
-            String serviceName = org.knime.gateway.ObjectSpecUtil.extractNameFromClass(serviceInterface, "api");
-            String serviceNamespace =
-                org.knime.gateway.ObjectSpecUtil.extractNamespaceFromClass(serviceInterface, "api");
-            try {
-                Class<?> proxyInterface = org.knime.gateway.jsonrpc.local.ObjectSpecUtil
-                    .getClassForFullyQualifiedName(serviceNamespace, serviceName, "jsonrpc");
-                return (S)createService(proxyInterface, serverServiceConfig.getURI(), serverServiceConfig.getJWT());
-            } catch (ClassNotFoundException ex) {
-                // TODO better exception handling
-                throw new RuntimeException(ex);
-            }
+            Class<?> proxyInterface = ServiceInterface2JsonRpcMap.get(serviceInterface);
+            return (S)createService(proxyInterface, serverServiceConfig.getURI(), serverServiceConfig.getJWT());
         } else {
             throw new IllegalStateException("No server service config given!");
         }
@@ -132,6 +126,9 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new Jdk8Module());
+
+            mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+            mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
             JsonRpcUtil.addMixIns(mapper);
 
@@ -158,7 +155,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                     final Map<String, String> extraHeaders) throws Throwable {
                     //set the service URL to /v4/jobs/{uuid}/gateway/jsonrpc
                     //assuming that the very first argument ('argument' is an array) contains the job id
-                    String jobId = (String)((Object[]) argument)[0];
+                    String jobId = (String)((Object[])argument)[0];
                     setServiceUrl(UriBuilder.fromUri(uri).path(GATEWAY_PATH).build(jobId).toURL());
                     return super.invoke(methodName, argument, returnType, extraHeaders);
                 }

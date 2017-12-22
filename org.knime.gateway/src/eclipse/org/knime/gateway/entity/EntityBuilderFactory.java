@@ -48,9 +48,6 @@
  */
 package org.knime.gateway.entity;
 
-import org.knime.gateway.workflow.entity.GatewayEntity;
-import org.knime.gateway.workflow.entity.builder.GatewayEntityBuilder;
-
 /**
  * Interface to be implemented by plugins that make use of the entity builder factory extension point.
  * Delivers concrete implementations for given entity builder interfaces (see also {@link EntityBuilderManager}).

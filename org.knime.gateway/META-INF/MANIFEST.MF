@@ -16,21 +16,11 @@ Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  org.mockito.mockito-core;bundle-version="1.10.19"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.knime.gateway,
- org.knime.gateway.entity,
+Export-Package: org.knime.gateway.entity,
+ org.knime.gateway.service,
  org.knime.gateway.util,
- org.knime.gateway.v0.node.entity,
- org.knime.gateway.v0.node.entity.builder,
- org.knime.gateway.v0.node.entity.impl,
- org.knime.gateway.v0.node.service,
- org.knime.gateway.v0.test.entity,
- org.knime.gateway.v0.test.entity.builder,
- org.knime.gateway.v0.test.entity.impl,
- org.knime.gateway.v0.test.service,
- org.knime.gateway.v0.workflow.entity,
- org.knime.gateway.v0.workflow.entity.builder,
- org.knime.gateway.v0.workflow.entity.impl,
- org.knime.gateway.v0.workflow.service,
- org.knime.gateway.workflow.entity,
- org.knime.gateway.workflow.entity.builder,
- org.knime.gateway.workflow.service
+ org.knime.gateway.v0.entity,
+ org.knime.gateway.v0.entity.impl,
+ org.knime.gateway.v0.entity.util,
+ org.knime.gateway.v0.service,
+ org.knime.gateway.v0.service.util

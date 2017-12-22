@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,63 +40,72 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Nov 9, 2016 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.entity;
+package org.knime.gateway.v0.entity.impl;
 
-import java.util.Collections;
-import java.util.List;
+import org.knime.gateway.v0.entity.PortTypeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
 
-import org.knime.core.node.NodeLogger;
-import org.knime.gateway.util.ExtPointUtil;
+import org.knime.gateway.v0.entity.NodeOutPortEnt;
 
 /**
- * Manages entity builders (i.e. {@link GatewayEntityBuilder}s) and gives access to they implementations (that are
- * injected via the {@link EntityBuilderFactory} extension point).
+ * The output port of a node.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityBuilderManager {
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOutPortEnt {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityBuilderManager.class);
+  
+  
+  private DefaultNodeOutPortEnt(DefaultNodeOutPortEntBuilder builder) {
+    super();
+    m_type = builder.m_type;
+    m_portIndex = builder.m_portIndex;
+    m_portType = builder.m_portType;
+    m_portName = builder.m_portName;
+  }
 
-    private static EntityBuilderFactory BUILDER_FACTORY;
 
-    private EntityBuilderManager() {
-        //utility class
-    }
-
-    /**
-     * Delivers implementations for entity builder interfaces (see {@link GatewayEntityBuilder}). Implementations are
-     * injected via {@link EntityBuilderFactory} extension point.
-     *
-     * @param builderInterface the builder interface the implementation is requested for
-     * @return an implementation of the requested builder interface (it returns a new instance with every method call)
-     */
-    public static <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
-        builder(final Class<B> builderInterface) {
-        if (BUILDER_FACTORY == null) {
-            BUILDER_FACTORY = createBuilderFactory();
+  
+    public static class DefaultNodeOutPortEntBuilder implements NodeOutPortEntBuilder {
+    
+        public DefaultNodeOutPortEntBuilder(){
+            super();
         }
-        return BUILDER_FACTORY.createEntityBuilder(builderInterface);
-    }
+    
+        private Integer m_type;
+        private Integer m_portIndex;
+        private PortTypeEnt m_portType;
+        private String m_portName;
 
-    private static EntityBuilderFactory createBuilderFactory() {
-
-        List<EntityBuilderFactory> instances = ExtPointUtil
-            .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
-        if (instances.size() == 0) {
-            LOGGER.warn("No entity builder factory registered. Default factory used.");
-            return new DefaultEntityBuilderFactory();
-
-        } else if (instances.size() > 1) {
-            LOGGER.warn("Multiple entity builder factories registered. The one with the highest priority used.");
-            Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+        @Override
+        public DefaultNodeOutPortEntBuilder setType(Integer type) {
+             m_type = type;
+             return this;
         }
-        return instances.get(0);
+        @Override
+        public DefaultNodeOutPortEntBuilder setPortIndex(Integer portIndex) {
+             m_portIndex = portIndex;
+             return this;
+        }
+        @Override
+        public DefaultNodeOutPortEntBuilder setPortType(PortTypeEnt portType) {
+             m_portType = portType;
+             return this;
+        }
+        @Override
+        public DefaultNodeOutPortEntBuilder setPortName(String portName) {
+             m_portName = portName;
+             return this;
+        }
+        
+        @Override
+        public DefaultNodeOutPortEnt build() {
+            return new DefaultNodeOutPortEnt(this);
+        }
+    
     }
 
 }

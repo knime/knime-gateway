@@ -48,9 +48,7 @@
  */
 package org.knime.gateway.entity;
 
-import org.knime.gateway.ObjectSpecUtil;
-import org.knime.gateway.workflow.entity.GatewayEntity;
-import org.knime.gateway.workflow.entity.builder.GatewayEntityBuilder;
+import org.knime.gateway.v0.entity.impl.util.Interface2ImplMap;
 
 /**
  * Default implementation of the {@link EntityBuilderFactory}. It returns the default implementation of the respective
@@ -66,14 +64,7 @@ public class DefaultEntityBuilderFactory implements EntityBuilderFactory {
     @Override
     public <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
         createEntityBuilder(final Class<B> builderInterface) {
-        try {
-            String name = ObjectSpecUtil.extractNameFromClass(builderInterface, "builder");
-            String namespace = ObjectSpecUtil.extractNamespaceFromClass(builderInterface, "builder");
-            return (B)ObjectSpecUtil.getClassForFullyQualifiedName(namespace, name, "builder-impl").newInstance();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-            // TODO better exception handling
-            throw new RuntimeException(ex);
-        }
+        return (B)Interface2ImplMap.get(builderInterface);
     }
 
 }
