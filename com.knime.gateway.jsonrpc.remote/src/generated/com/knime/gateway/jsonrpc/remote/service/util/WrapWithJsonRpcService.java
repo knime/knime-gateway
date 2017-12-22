@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,51 +40,53 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.remote.node.service;
 
-import java.util.List;
-import org.knime.gateway.v0.node.service.RepositoryService;
-import org.knime.gateway.v0.node.entity.RepoCategoryEnt;
+package com.knime.gateway.jsonrpc.remote.service.util;
 
-import com.googlecode.jsonrpc4j.JsonRpcMethod;
-import com.googlecode.jsonrpc4j.JsonRpcParam;
-import com.googlecode.jsonrpc4j.JsonRpcService;
+import com.knime.gateway.jsonrpc.remote.service.JsonRpcNodeServiceWrapper;
+import org.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.jsonrpc.remote.service.JsonRpcWorkflowServiceWrapper;
+import org.knime.gateway.v0.service.WorkflowService;
+
+import org.knime.gateway.service.GatewayService;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls. 
+ * Wraps the given gateway service with the appropriate json rpc service.
  *
  * @author Martin Horn, University of Konstanz
  */
-@JsonRpcService(value = "RepositoryService")
 // AUTO-GENERATED CODE; DO NOT MODIFY
-public class JsonRpcRepositoryServiceWrapper implements RepositoryService {
+public class WrapWithJsonRpcService {
 
-	private RepositoryService m_service;
-
-	public JsonRpcRepositoryServiceWrapper(RepositoryService service) {
-		m_service = service;
-	}
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getNodeRepository")
-    public List<RepoCategoryEnt> getNodeRepository() {
-		return m_service.getNodeRepository();
+    private WrapWithJsonRpcService() {
+        //utility class
     }
-
-	/**
-     * {@inheritDoc}
+    
+    /**
+     * Lists all gateway service classes of package <code>org.knime.gateway.v0.service</code>.
+     *
+     * @param service the service to be wrapped
+     * @param serviceInterface the service interface to select the right wrapper
+     *
+     * @return the class list
      */
-    @Override
-    @JsonRpcMethod(value = "getNodeDescription")
-    public String getNodeDescription(@JsonRpcParam(value="nodeTypeID") final String nodeTypeID) {
-		return m_service.getNodeDescription(nodeTypeID);
+    public static GatewayService wrap(final GatewayService service, final Class<?> serviceInterface) {
+        try {
+        
+            if(serviceInterface == NodeService.class) {
+                return JsonRpcNodeServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
+            if(serviceInterface == WorkflowService.class) {
+                return JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException ex) {
+            throw new RuntimeException(ex);
+        }
+        throw new IllegalArgumentException("No wrapper available!");
     }
-
-
 }

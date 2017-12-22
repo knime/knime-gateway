@@ -50,23 +50,24 @@ package com.knime.gateway.jsonrpc.remote;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.lang3.tuple.Pair;
-import org.knime.gateway.ServiceDefUtil;
 import org.knime.gateway.jsonrpc.JsonRpcUtil;
-import org.knime.gateway.workflow.service.GatewayService;
+import org.knime.gateway.service.GatewayService;
+import org.knime.gateway.v0.service.util.ListServices;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
+import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
 
 /**
  * Implementation of the {@link GenericServerRequestHandler} extension point that executes json-rpc 2.0 requests and
@@ -78,7 +79,7 @@ import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
  */
 public class JsonRpcServerRequestHandler implements GenericServerRequestHandler {
 
-    private static final String DEFAULT_SERVICE_PACKAGE = "com.knime.gateway.remote";
+    private static final String DEFAULT_SERVICE_PACKAGE = "com.knime.gateway.remote.service";
 
     private static final String DEFAULT_SERVICE_PREFIX = "Default";
 
@@ -91,6 +92,9 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
         //setup json-rpc server
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new Jdk8Module());
+
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
         JsonRpcUtil.addMixIns(mapper);
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
@@ -126,31 +130,20 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
 
     private static Map<String, GatewayService> createWrappedServices() {
         //create all default services and wrap them with the rest wrapper services
-        Collection<Pair<String, String>> serviceDefs = ServiceDefUtil.getServices();
+        List<Class<?>> serviceInterfaces = ListServices.listServiceInterfaces();
         Map<String, GatewayService> wrappedServices = new HashMap<String, GatewayService>();
-        for (Pair<String, String> p : serviceDefs) {
+        for (Class<?> serviceInterface : serviceInterfaces) {
             Class<?> defaultServiceClass;
             String defaultServiceFullClassName =
-                DEFAULT_SERVICE_PACKAGE + "." + p.getRight() + "." + DEFAULT_SERVICE_PREFIX + p.getLeft();
+                DEFAULT_SERVICE_PACKAGE + "." + DEFAULT_SERVICE_PREFIX + serviceInterface.getSimpleName();
             try {
                 defaultServiceClass = Class.forName(defaultServiceFullClassName);
+                GatewayService wrappedService = WrapWithJsonRpcService.wrap((GatewayService)defaultServiceClass.newInstance(), serviceInterface);
+                wrappedServices.put(serviceInterface.getSimpleName(), wrappedService);
             } catch (ClassNotFoundException ex1) {
                 throw new RuntimeException(
                     "No default service implementation found (" + defaultServiceFullClassName + ")", ex1);
-            }
-            try {
-                Class<GatewayService> wrapperServiceClass =
-                    (Class<GatewayService>)org.knime.gateway.jsonrpc.remote.ObjectSpecUtil
-                        .getClassForFullyQualifiedName(p.getRight(), p.getLeft(), "jsonrpc-wrapper");
-                Class<?> serviceInterface =
-                    org.knime.gateway.ObjectSpecUtil.getClassForFullyQualifiedName(p.getRight(), p.getLeft(), "api");
-                //dots (.) in namespace need to be replaced by '_' and concatenated with the name by '_', too!
-                //Because the json-rpc lib uses the dot (.) to separate the service method to be called from the service (or service identifier)
-                wrappedServices.put(p.getRight().replace(".", "_") + "_" + p.getLeft(), wrapperServiceClass
-                    .getConstructor(serviceInterface).newInstance(defaultServiceClass.newInstance()));
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | NoSuchMethodException | SecurityException
-                    | ClassNotFoundException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
         }
