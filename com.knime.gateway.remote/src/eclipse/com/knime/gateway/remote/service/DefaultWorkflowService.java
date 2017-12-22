@@ -44,60 +44,62 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 23, 2016 (hornm): created
+ *   Nov 11, 2016 (hornm): created
  */
-package com.knime.gateway.remote.workflow.service;
+package com.knime.gateway.remote.service;
 
-import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
+import static com.knime.gateway.remote.util.EntityBuilderUtil.buildWorkflowEnt;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.config.base.JSONConfig;
-import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.service.NodeService;
+import org.knime.gateway.v0.entity.WorkflowEnt;
+import org.knime.gateway.v0.service.WorkflowService;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.knime.gateway.remote.util.EntityBuilderUtil;
 
 /**
  *
  * @author Martin Horn, University of Konstanz
  */
-public class DefaultNodeService implements NodeService {
-
-    /** {@inheritDoc} */
-    @Override
-    public String getNodeSettingsJSON(final String rootWorkflowID, final String nodeID) {
-        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-        NodeContainer nodeContainer = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
-        NodeSettings settings = nodeContainer.getNodeSettings();
-        return JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
-    }
+public class DefaultWorkflowService implements WorkflowService {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeEnt getNode(final String rootWorkflowID, final Optional<String> nodeID) {
+    public WorkflowEnt getWorkflow(final String rootWorkflowID, final String nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
-        if (nodeID.isPresent()) {
-            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+        if (nodeID != null) {
+            WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)
+            .orElseThrow(
                 () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-            NodeContainer node =
-                wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID.get()).prependParent(wfm.getID()));
-            return buildNodeEnt(node, rootWorkflowID);
+            NodeContainer metaNode =
+                rootWfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(rootWfm.getID()));
+            if(metaNode instanceof WorkflowManager) {
+                WorkflowManager wfm = (WorkflowManager)metaNode;
+                if (wfm.isEncrypted()) {
+                    throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
+                }
+                return buildWorkflowEnt(wfm, rootWorkflowID);
+            } else if(metaNode instanceof SubNodeContainer) {
+                SubNodeContainer snc = (SubNodeContainer)metaNode;
+                return EntityBuilderUtil.buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
+            } else {
+                throw new IllegalArgumentException("Node for the given node id ('" + nodeID.toString() + "') is neither a metanode nor a wrapped metanode.");
+            }
         } else {
-            return buildNodeEnt(
+            WorkflowManager wfm =
                 WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found.")),
-                rootWorkflowID);
+                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+            if (wfm.isEncrypted()) {
+                throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
+            }
+            return buildWorkflowEnt(wfm, rootWorkflowID);
         }
     }
-
 }

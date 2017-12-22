@@ -6,10 +6,8 @@ Bundle-Version: 4.6.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: com.knime.gateway.remote.endpoint,
- com.knime.gateway.remote.node.service,
- com.knime.gateway.remote.test.service,
- com.knime.gateway.remote.util,
- com.knime.gateway.remote.workflow.service
+ com.knime.gateway.remote.service,
+ com.knime.gateway.remote.util
 Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  org.knime.gateway;bundle-version="[3.5.0,4.0.0)",
  org.knime.workbench.repository;bundle-version="[3.5.0,4.0.0)",

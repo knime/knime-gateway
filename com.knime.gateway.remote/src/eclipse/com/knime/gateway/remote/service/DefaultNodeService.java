@@ -44,31 +44,59 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 16, 2017 (hornm): created
+ *   Dec 23, 2016 (hornm): created
  */
-package com.knime.gateway.remote.workflow.service;
+package com.knime.gateway.remote.service;
 
-import java.util.List;
+import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
 
-import org.knime.gateway.v0.workflow.service.RepositoryService;
+import java.util.NoSuchElementException;
+
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.service.NodeService;
+
+import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
- * EXPERIMENTAL. DO NOT USE!
  *
  * @author Martin Horn, University of Konstanz
  */
-public class DefaultRepositoryService implements RepositoryService {
+public class DefaultNodeService implements NodeService {
+
+    /** {@inheritDoc} */
+    @Override
+    public String getNodeSettings(final String rootWorkflowID, final String nodeID) {
+        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+        NodeContainer nodeContainer = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+        NodeSettings settings = nodeContainer.getNodeSettings();
+        return JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<String> getAllWorkflows() {
-        //        return WorkflowProjectManager.getInstance().getWorkflowProjects().stream().map((wp) -> {
-        //            return wp.getID();
-        //        }).collect(Collectors.toList());
-        throw new UnsupportedOperationException(
-            "This method is supposed to be processed on the server and not by the executor");
+    public NodeEnt getNode(final String rootWorkflowID, final String nodeID) {
+        //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
+        if (nodeID != null) {
+            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+            NodeContainer node =
+                wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+            return buildNodeEnt(node, rootWorkflowID);
+        } else {
+            return buildNodeEnt(
+                WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found.")),
+                rootWorkflowID);
+        }
     }
 
 }

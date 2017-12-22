@@ -56,7 +56,7 @@ import java.util.Optional;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 
-import com.knime.gateway.remote.workflow.service.DefaultWorkflowService;
+import com.knime.gateway.remote.service.DefaultWorkflowService;
 
 /**
  * Manages workflow projects that are eventually used by the default service implementations (e.g.
