@@ -1,0 +1,53 @@
+{{>licenseInfo}}
+package {{listEntities.mustache#package}};
+
+{{#models}}
+{{#model}}
+import org.knime.gateway.v0.entity.{{classname}};
+{{/model}}
+{{/models}}
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ * Lists all gateway entities of package <code>org.knime.gateway.v0.entity</code>.
+ *
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class ListEntities {
+
+    private ListEntities() {
+        //utility class
+    }
+
+    /**
+     * Lists all gateway entity classes of package <code>org.knime.gateway.v0.entity</code>.
+     * @return the class list
+     */
+    public static List<Class<?>> listEntityClasses() {
+        List<Class<?>> res = new ArrayList<>();
+        {{#models}}
+        {{#model}}
+        res.add({{classname}}.class);
+        {{/model}}
+        {{/models}}
+        return res;
+    }
+    
+    /**
+     * Lists all gateway entity builder classes of package <code>org.knime.gateway.v0.entity</code>.
+     * @return the class list
+     */
+    public static List<Class<?>> listEntityBuilderClasses() {
+        List<Class<?>> res = new ArrayList<>();
+        {{#models}}
+        {{#model}}
+        res.add({{classname}}.{{classname}}Builder.class);
+        {{/model}}
+        {{/models}}
+        return res;
+    }
+}

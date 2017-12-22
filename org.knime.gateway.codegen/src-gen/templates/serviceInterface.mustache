@@ -1,0 +1,21 @@
+{{>licenseInfo}}
+package {{package}};
+
+import org.knime.gateway.service.GatewayService;
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+
+{{#operations}}
+/**
+ * {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+ *
+ {{>authors}}
+ */
+public interface {{classname}} extends GatewayService {
+    {{#operation}}
+    {{#returnType}}{{{returnType}}} {{/returnType}}{{^returnType}}void {{/returnType}}{{nickname}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{^-last}}, {{/-last}}{{/allParams}});
+    {{/operation}}
+}
+{{/operations}}

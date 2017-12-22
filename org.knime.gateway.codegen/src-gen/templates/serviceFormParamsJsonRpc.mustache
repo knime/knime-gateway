@@ -1,0 +1,1 @@
+{{#isFormParam}}{{#notFile}}{{{dataType}}}@JsonRpcParam(value="{{paramName}}")  {{paramName}}{{/notFile}}{{#isFile}}InputStream {{paramName}}InputStream, FormDataContentDisposition {{paramName}}Detail{{/isFile}}{{/isFormParam}}

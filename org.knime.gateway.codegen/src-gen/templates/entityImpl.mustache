@@ -1,0 +1,87 @@
+{{>licenseInfo}}
+package {{package}};
+
+{{#imports}}
+import {{import}};
+{{/imports}}
+
+{{#models}}
+{{#model}}
+import org.knime.gateway.v0.entity.{{name}}Ent;
+
+/**
+ * {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+ *
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} implements {{name}}Ent {
+
+  {{#vars}}
+  protected {{{datatypeWithEnum}}} m_{{name}};
+  {{/vars}}
+  
+  {{^parent}}
+  protected {{classname}}() {
+    //for sub-classes
+  }
+  {{/parent}}
+  
+  private {{classname}}({{classname}}Builder builder) {
+    {{#parent}}super();{{/parent}}
+    {{#allVars}}
+    m_{{name}} = builder.m_{{name}};
+    {{/allVars}}
+  }
+
+
+  {{#vars}}
+  /**
+  {{#description}}
+   * {{description}}
+  {{/description}}
+  {{^description}}
+   * Get {{name}}
+  {{/description}}
+  {{#minimum}}
+   * minimum: {{minimum}}
+  {{/minimum}}
+  {{#maximum}}
+   * maximum: {{maximum}}
+  {{/maximum}}
+   * @return {{name}}
+   **/
+  @Override
+  {{#useBeanValidation}}{{>beanValidation}}{{/useBeanValidation}}  public {{{datatypeWithEnum}}} {{getter}}() {
+        return m_{{name}};
+    }
+  {{/vars}}
+  
+    public static class {{classname}}Builder implements {{name}}EntBuilder {
+    
+        public {{classname}}Builder(){
+            {{#parent}}super();{{/parent}}
+        }
+    
+        {{#allVars}}
+        private {{{datatypeWithEnum}}} m_{{name}};
+        {{/allVars}}
+
+        {{#allVars}}
+        @Override
+        public {{classname}}Builder {{setter}}({{{datatypeWithEnum}}} {{name}}) {
+             m_{{name}} = {{name}};
+             return this;
+        }
+        {{/allVars}}
+        
+        @Override
+        public {{classname}} build() {
+            return new {{classname}}(this);
+        }
+    
+    }
+
+}
+{{/model}}
+{{/models}}

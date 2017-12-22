@@ -1,0 +1,48 @@
+{{>licenseInfo}}
+
+package {{wrapWithJsonRpcService.mustache#package}};
+
+{{#tags}}
+import com.knime.gateway.jsonrpc.remote.service.JsonRpc{{.}}ServiceWrapper;
+import org.knime.gateway.v0.service.{{.}}Service;
+{{/tags}}
+
+import org.knime.gateway.service.GatewayService;
+
+import java.lang.reflect.InvocationTargetException;
+
+/**
+ * Wraps the given gateway service with the appropriate json rpc service.
+ *
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class WrapWithJsonRpcService {
+
+    private WrapWithJsonRpcService() {
+        //utility class
+    }
+    
+    /**
+     * Lists all gateway service classes of package <code>org.knime.gateway.v0.service</code>.
+     *
+     * @param service the service to be wrapped
+     * @param serviceInterface the service interface to select the right wrapper
+     *
+     * @return the class list
+     */
+    public static GatewayService wrap(final GatewayService service, final Class<?> serviceInterface) {
+        try {
+        
+        {{#tags}}
+            if(serviceInterface == {{.}}Service.class) {
+                return JsonRpc{{.}}ServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
+        {{/tags}}
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException ex) {
+            throw new RuntimeException(ex);
+        }
+        throw new IllegalArgumentException("No wrapper available!");
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "lang" : "org.knime.gateway.codegen.GatewayCodegen",
+    "inputSpec" : "../org.knime.gateway/api/gateway.yaml",
+    "outputDir" : "../org.knime.gateway",
+    "modelPackage" : "org.knime.gateway.v0.entity.impl",
+    "apiPackage"   : "NOT GENERATED",
+    "fullJavaUtil" : true,
+    "dateLibrary" : "java8",
+    "sourceFolder" : "src/generated",
+    "templateDir" : "src-gen/templates",
+    "additionalProperties" : {
+        "codegenName" : "entity-implementations",
+        "modelTemplateFile" : "entityImpl.mustache",
+        "modelNamePattern" : "Default##name##Ent",
+        "modelPropertyNamePattern" : "##name##Ent",
+        "modelPropertyPackage" : "org.knime.gateway.v0.entity",
+        "supportingFiles" : [
+            {
+                "templateFile" : "entityBuilderInterface2ImplMap.mustache",
+                "package" : "org.knime.gateway.v0.entity.impl.util",
+                "destinationFileName" : "Interface2ImplMap.java"
+            }
+        ]
+    }
+}

@@ -1,0 +1,35 @@
+{{>licenseInfo}}
+package {{listServices.mustache#package}};
+
+{{#tags}}
+import org.knime.gateway.v0.service.{{.}}Service;
+{{/tags}}
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ * Lists all gateway services of package <code>org.knime.gateway.v0.service</code>.
+ *
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class ListServices {
+
+    private ListServices() {
+        //utility class
+    }
+
+    /**
+     * Lists all gateway service classes of package <code>org.knime.gateway.v0.service</code>.
+     * @return the class list
+     */
+    public static List<Class<?>> listServiceInterfaces() {
+        List<Class<?>> res = new ArrayList<>();
+        {{#tags}}
+        res.add({{.}}Service.class);
+        {{/tags}}
+        return res;
+    }
+}

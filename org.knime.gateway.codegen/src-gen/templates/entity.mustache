@@ -1,0 +1,74 @@
+{{>licenseInfo}}
+package {{package}};
+
+{{#imports}}
+import {{import}};
+{{/imports}}
+
+import org.knime.gateway.entity.GatewayEntityBuilder;
+
+{{#models}}
+{{#model}}
+
+{{^parent}}
+import org.knime.gateway.entity.GatewayEntity;
+{{/parent}}
+
+/**
+ * {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+ * 
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public interface {{classname}} extends {{#parent}}{{{parent}}}{{/parent}}{{^parent}}GatewayEntity{{/parent}} {
+
+    {{#vars}}
+    {{#isEnum}}
+    {{^isContainer}}
+{{>enumClass}}
+    {{/isContainer}}
+    {{/isEnum}}
+    {{#items.isEnum}}
+      {{#items}}
+      {{^isContainer}}
+{{>enumClass}}
+      {{/isContainer}}
+      {{/items}}
+    {{/items.isEnum}}
+  {{/vars}}
+
+  {{#vars}}
+  /**
+  {{#description}}
+   * {{description}}
+  {{/description}}
+  {{^description}}
+   * Get {{name}}
+  {{/description}}
+  {{#minimum}}
+   * minimum: {{minimum}}
+  {{/minimum}}
+  {{#maximum}}
+   * maximum: {{maximum}}
+  {{/maximum}}
+   * @return {{name}}
+   **/
+{{#useBeanValidation}}{{>beanValidation}}{{/useBeanValidation}}  public {{{datatypeWithEnum}}} {{getter}}();
+  {{/vars}}
+
+    /**
+     * The builder for the entity.
+     */
+    public interface {{classname}}Builder extends GatewayEntityBuilder<{{classname}}> {
+
+        {{#allVars}}
+        {{classname}}Builder {{setter}}({{{datatypeWithEnum}}} {{name}});
+        {{/allVars}}
+        
+        {{classname}} build();
+    
+    }
+
+}
+{{/model}}
+{{/models}}

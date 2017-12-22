@@ -1,0 +1,34 @@
+{{>licenseInfo}}
+
+package {{serviceInterface2JsonRpcMap.mustache#package}};
+
+{{#tags}}
+import org.knime.gateway.jsonrpc.local.service.JsonRpc{{.}}Service;
+import org.knime.gateway.v0.service.{{.}}Service;
+{{/tags}}
+
+import org.knime.gateway.service.GatewayService;
+
+/**
+ * TODO
+ *
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class ServiceInterface2JsonRpcMap {
+
+    private ServiceInterface2JsonRpcMap() {
+        //utility class
+    }
+
+    public static Class<?> get(Class<? extends GatewayService> clazz) {
+    {{#tags}}
+        if(clazz == {{.}}Service.class) {
+            return JsonRpc{{.}}Service.class;
+        }        
+    {{/tags}}
+        else {
+            throw new IllegalArgumentException("No service mapping.");
+        }    
+    }
+}

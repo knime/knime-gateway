@@ -1,0 +1,36 @@
+{{>licenseInfo}}
+package {{entityBuilderInterface2ImplMap.mustache#package}};
+
+{{#models}}
+{{#model}}
+import org.knime.gateway.v0.entity.{{name}}Ent.{{name}}EntBuilder;
+import org.knime.gateway.v0.entity.impl.Default{{name}}Ent;
+{{/model}}
+{{/models}}
+
+import org.knime.gateway.entity.GatewayEntityBuilder;
+
+/**
+ * TODO
+ {{>authors}}
+ */
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public class Interface2ImplMap {
+
+    private Interface2ImplMap() {
+        //utility class
+    }
+
+    public static GatewayEntityBuilder get(Class<? extends GatewayEntityBuilder> clazz) {
+    {{#models}}
+    {{#model}}
+        if(clazz == {{name}}EntBuilder.class) {
+            return new Default{{name}}Ent.Default{{name}}EntBuilder();
+        }        
+    {{/model}}
+    {{/models}}
+        else {
+            throw new IllegalArgumentException("No entity mapping.");
+        }    
+    }
+}

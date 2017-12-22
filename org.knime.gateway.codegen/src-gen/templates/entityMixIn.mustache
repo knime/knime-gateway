@@ -1,0 +1,94 @@
+{{>licenseInfo}}
+package {{package}};
+
+{{#imports}}
+import {{import}};
+{{/imports}}
+
+
+import org.knime.gateway.jsonrpc.JsonRpcUtil;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+{{#models}}
+{{#model}}
+
+import org.knime.gateway.v0.entity.{{name}}Ent;
+import org.knime.gateway.v0.entity.impl.Default{{name}}Ent;
+import org.knime.gateway.v0.entity.impl.Default{{name}}Ent.Default{{name}}EntBuilder;
+{{#children}}
+import org.knime.gateway.v0.entity.impl.Default{{name}}Ent;
+{{/children}}
+
+/**
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
+ {{>authors}}
+ */
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    defaultImpl = Default{{name}}Ent.class)
+@JsonSubTypes({
+    @Type(value = Default{{name}}Ent.class, name="{{name}}")
+{{#children}}
+,
+  @Type(value = Default{{name}}Ent.class, name = "{{name}}")
+{{/children}}
+})
+@JsonDeserialize(builder=Default{{name}}EntBuilder.class)
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public interface {{classname}} extends {{name}}Ent {
+
+{{#allVars}}
+    @Override
+    @JsonProperty("{{name}}")
+    public {{{datatypeWithEnum}}} {{getter}}();
+    
+{{/allVars}}
+{{/model}}
+{{/models}}
+
+    /**
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
+     */
+    {{#models}}
+    {{#model}}
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        defaultImpl = Default{{name}}EntBuilder.class)
+    @JsonSubTypes({
+        @Type(value = Default{{name}}Ent.Default{{name}}EntBuilder.class, name="{{name}}")
+    {{#children}}
+        ,
+      @Type(value = Default{{name}}Ent.Default{{name}}EntBuilder.class, name = "{{name}}")
+    {{/children}}
+    })
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface {{classname}}Builder extends {{name}}EntBuilder {
+    
+        @Override
+        public {{classname}} build();
+    
+    {{#allVars}}
+        @Override
+        @JsonProperty("{{name}}")
+        public {{classname}}Builder {{setter}}(final {{{datatypeWithEnum}}} {{name}});
+        
+    {{/allVars}}
+    }
+    {{/model}}
+    {{/models}}
+
+
+}
+
