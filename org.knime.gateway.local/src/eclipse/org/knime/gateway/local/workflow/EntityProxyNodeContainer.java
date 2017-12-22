@@ -81,10 +81,10 @@ import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.gateway.local.util.EntityProxyUtil;
-import org.knime.gateway.v0.workflow.entity.BoundsEnt;
-import org.knime.gateway.v0.workflow.entity.NodeAnnotationEnt;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeMessageEnt;
+import org.knime.gateway.v0.entity.NodeAnnotationEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.NodeMessageEnt;
+import org.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.
@@ -149,22 +149,24 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      */
     @Override
     public WorkflowManagerUI getParent() {
-        if(m_parent != null) {
+        if (m_parent != null) {
             return m_parent;
         }
-        return getEntity().getParentNodeID().map(s -> {
+        if (getEntity().getParentNodeID() != null) {
             //get parent wf
             String parentNodeID;
-            if (s.length() == 0) {
+            if (getEntity().getParentNodeID().length() == 0) {
                 //parent is the highest level workflow
                 //the node id has then no meaning here and need to be empty
                 parentNodeID = null;
             } else {
-                parentNodeID = s;
+                parentNodeID = getEntity().getParentNodeID();
             }
             m_parent = getAccess().getWorkflowManager(getEntity().getRootWorkflowID(), parentNodeID);
             return m_parent;
-        }).orElse(null);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -172,9 +174,8 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      */
     @Override
     public NodeExecutionJobManager getJobManager() {
-        if (getEntity().getJobManager().isPresent()) {
-            return getEntity().getJobManager()
-                .map(jm -> NodeExecutionJobManagerPool.getJobManagerFactory(jm.getJobManagerID()).getInstance()).get();
+        if (getEntity().getJobManager() != null) {
+            return NodeExecutionJobManagerPool.getJobManagerFactory(getEntity().getJobManager().getId()).getInstance();
         } else if (getParent() == null) {
             //if it's the root workflow and no job manager set, return the default one
             return NodeExecutionJobManagerPool.getDefaultJobManagerFactory().getInstance();
@@ -190,17 +191,17 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     @Override
     public NodeExecutionJobManager findJobManager() {
         //optionally derive the job manager from the parent
-        return getEntity().getJobManager()
-            .map(jm -> NodeExecutionJobManagerPool.getJobManagerFactory(jm.getJobManagerID()).getInstance())
-            .orElseGet(() -> {
-                if (getParent() == null) {
-                    //if it's the root workflow, there must be a job manager set
-                    return getJobManager();
-                } else {
-                    return getParent().findJobManager();
-                }
+        if (getEntity().getJobManager() != null) {
+            return NodeExecutionJobManagerPool.getJobManagerFactory(getEntity().getJobManager().getId()).getInstance();
+        } else {
+            if (getParent() == null) {
+                //if it's the root workflow, there must be a job manager set
+                return getJobManager();
+            } else {
+                return getParent().findJobManager();
+            }
 
-            });
+        }
     }
 
     /**
@@ -319,9 +320,14 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      */
     @Override
     public NodeUIInformation getUIInformation() {
-        BoundsEnt bounds = getEntity().getBounds();
+        NodeUIInfoEnt uiInfo = getEntity().getUIInfo();
         return NodeUIInformation.builder()
-            .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()).build();
+            .setNodeLocation(uiInfo.getBounds().getX(), uiInfo.getBounds().getY(), uiInfo.getBounds().getWidth(),
+                uiInfo.getBounds().getHeight())
+            .setIsSymbolRelative(uiInfo.isSymbolRelative())
+            .setHasAbsoluteCoordinates(uiInfo.isHasAbsoluteCoordinates())
+            .setIsDropLocation(uiInfo.isDropLocation())
+            .setSnapToGrid(uiInfo.isSnapToGrid()).build();
     }
 
     /**
@@ -360,8 +366,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     }
 
     static NodeContainerState getNodeContainerState(final NodeEnt node) {
-        String state = node.getNodeState();
-        return EntityProxyNodeContainerState.valueOf(state);
+        return EntityProxyNodeContainerState.valueOf(node.getNodeState().toString());
     }
 
     /** {@inheritDoc} */
@@ -421,7 +426,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      */
     @Override
     public boolean hasDialog() {
-        return getEntity().getHasDialog();
+        return getEntity().isHasDialog();
     }
 
     /**
@@ -519,7 +524,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      */
     @Override
     public NodeType getType() {
-        return Enum.valueOf(NodeType.class, getEntity().getNodeType());
+        return NodeType.valueOf(getEntity().getNodeType().toString());
     }
 
     /**
@@ -579,7 +584,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
         if (m_nodeAnnotation == null) {
             NodeAnnotationEnt anno = getEntity().getNodeAnnotation();
             NodeAnnotationData data = NodeAnnotationData.createFromObsoleteCustomName(null);
-            if (!anno.getIsDefault()) {
+            if (!anno.isDefault()) {
                 data.copyFrom(EntityProxyWorkflowAnnotation.getAnnotationData(anno), false);
             }
             m_nodeAnnotation = new NodeAnnotation(data);
@@ -618,7 +623,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      */
     @Override
     public boolean isDeletable() {
-        return getEntity().getIsDeletable();
+        return getEntity().isDeletable();
     }
 
     /**

@@ -55,9 +55,9 @@ import java.util.Map;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.Pair;
+import org.knime.gateway.service.GatewayService;
 import org.knime.gateway.util.ExtPointUtil;
-import org.knime.gateway.v0.workflow.service.WorkflowService;
-import org.knime.gateway.workflow.service.GatewayService;
+import org.knime.gateway.v0.service.WorkflowService;
 
 /**
  * Manages services (i.e. {@link GatewayService}s) and gives access to service interface implementations.
@@ -78,9 +78,9 @@ public class ServiceManager {
      * Delivers implementations for service interfaces (see {@link GatewayService}. Implementations are injected via
      * {@link ServiceFactory} extension point.
      *
-     * In order to be sure that the right service is delivered at any time and stateful
-     * services are handled correctly, always use this method to access the desired service and never keep a service
-     * reference (unless you know what you are doing).
+     * In order to be sure that the right service is delivered at any time and stateful services are handled correctly,
+     * always use this method to access the desired service and never keep a service reference (unless you know what you
+     * are doing).
      *
      * TODO add more shortcuts for services (e.g. ServiceManager.nodeService())
      *
@@ -89,7 +89,8 @@ public class ServiceManager {
      * @return an implementation of the requested service interface (it returns the same instance with every method
      *         call)
      */
-    public static <S extends GatewayService> S service(final Class<S> serviceInterface, final ServiceConfig serviceConfig) {
+    public static <S extends GatewayService> S service(final Class<S> serviceInterface,
+        final ServiceConfig serviceConfig) {
         Pair<Class<? extends GatewayService>, ServiceConfig> pair = Pair.create(serviceInterface, serviceConfig);
         S service = (S)SERVICES.get(pair);
         if (service == null) {
@@ -111,15 +112,6 @@ public class ServiceManager {
     public static WorkflowService workflowService(final ServiceConfig serviceConfig) {
         return service(WorkflowService.class, serviceConfig);
     }
-
-//    /**
-//     * @return a list of all available gateway services (as determined by the api definition files) - see also
-//     *         {@link ServiceMap}
-//     */
-//    public static List<Class<? extends GatewayService>> getAllServices() {
-//        return ObjectDefMap.getAllServices().stream().map(s -> ObjectDefMap.getServiceInterface(s))
-//            .collect(Collectors.toList());
-//    }
 
     private static ServiceFactory createServiceFactory() {
         List<ServiceFactory> instances =

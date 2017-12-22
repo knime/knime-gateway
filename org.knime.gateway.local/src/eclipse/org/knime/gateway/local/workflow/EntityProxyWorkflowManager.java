@@ -89,13 +89,13 @@ import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
 import org.knime.core.util.Pair;
-import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
-import org.knime.gateway.v0.workflow.entity.MetaPortInfoEnt;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowNodeEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowUIInfoEnt;
+import org.knime.gateway.v0.entity.ConnectionEnt;
+import org.knime.gateway.v0.entity.MetaPortInfoEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.PortTypeEnt;
+import org.knime.gateway.v0.entity.WorkflowEnt;
+import org.knime.gateway.v0.entity.WorkflowNodeEnt;
+import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 
 /**
  * {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
@@ -314,8 +314,8 @@ public final class EntityProxyWorkflowManager extends EntityProxyNodeContainer<W
             PortTypeEnt pte = in.getPortType();
             PortTypeRegistry ptr = PortTypeRegistry.getInstance();
             PortType portType =
-                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
-            res[i] = MetaPortInfo.builder().setIsConnected(in.getIsConnected()).setMessage(in.getMessage())
+                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.isOptional());
+            res[i] = MetaPortInfo.builder().setIsConnected(in.isConnected()).setMessage(in.getMessage())
                 .setNewIndex(in.getNewIndex()).setOldIndex(in.getOldIndex()).setPortType(portType).build();
         }
         return res;
@@ -334,8 +334,8 @@ public final class EntityProxyWorkflowManager extends EntityProxyNodeContainer<W
             PortTypeEnt pte = out.getPortType();
             PortTypeRegistry ptr = PortTypeRegistry.getInstance();
             PortType portType =
-                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
-            res[i] = MetaPortInfo.builder().setIsConnected(out.getIsConnected()).setMessage(out.getMessage())
+                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.isOptional());
+            res[i] = MetaPortInfo.builder().setIsConnected(out.isConnected()).setMessage(out.getMessage())
                 .setNewIndex(out.getNewIndex()).setOldIndex(out.getOldIndex()).setPortType(portType).build();
         }
         return res;
@@ -732,7 +732,7 @@ public final class EntityProxyWorkflowManager extends EntityProxyNodeContainer<W
      */
     @Override
     public boolean isEncrypted() {
-        return getEntity().getIsEncrypted();
+        return getEntity().isEncrypted();
     }
 
     /**
@@ -831,9 +831,10 @@ public final class EntityProxyWorkflowManager extends EntityProxyNodeContainer<W
     public EditorUIInformation getEditorUIInformation() {
         WorkflowUIInfoEnt uiEnt = getWorkflow().getWorkflowUIInfo();
         return EditorUIInformation.builder().setGridX(uiEnt.getGridX()).setGridY(uiEnt.getGridY())
-            .setShowGrid(uiEnt.getShowGrid()).setSnapToGrid(uiEnt.getSnapToGrid()).setZoomLevel(uiEnt.getZoomLevel())
-            .setHasCurvedConnections(uiEnt.getHasCurvedConnection())
-            .setConnectionLineWidth(uiEnt.getConnectionLineWidtdh()).build();
+            .setShowGrid(uiEnt.isShowGrid()).setSnapToGrid(uiEnt.isSnapToGrid())
+            .setZoomLevel(uiEnt.getZoomLevel().doubleValue())
+            .setHasCurvedConnections(uiEnt.isHasCurvedConnection())
+            .setConnectionLineWidth(uiEnt.getConnectionLineWidth()).build();
     }
 
     /**

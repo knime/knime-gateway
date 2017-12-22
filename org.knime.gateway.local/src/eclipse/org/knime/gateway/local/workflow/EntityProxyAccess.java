@@ -53,24 +53,23 @@ import static org.knime.gateway.local.service.ServiceManager.workflowService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
+import org.knime.gateway.entity.GatewayEntity;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceManager;
-import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
-import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
-import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowNodeEnt;
-import org.knime.gateway.v0.workflow.entity.WrappedWorkflowNodeEnt;
-import org.knime.gateway.v0.workflow.service.NodeService;
-import org.knime.gateway.workflow.entity.GatewayEntity;
+import org.knime.gateway.v0.entity.ConnectionEnt;
+import org.knime.gateway.v0.entity.NativeNodeEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.NodeInPortEnt;
+import org.knime.gateway.v0.entity.NodeOutPortEnt;
+import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.v0.entity.WorkflowEnt;
+import org.knime.gateway.v0.entity.WorkflowNodeEnt;
+import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import org.knime.gateway.v0.service.NodeService;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
@@ -118,8 +117,7 @@ public class EntityProxyAccess {
      * @return the newly created {@link EntityProxyWorkflowManager} (the returned wrapper object doesn't get cached!!
      */
     EntityProxyWorkflowManager getWorkflowManager(final String rootWorkflowID, final String nodeID) {
-        Optional<String> optNodeID = Optional.ofNullable(nodeID);
-        NodeEnt node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, optNodeID);
+        NodeEnt node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
         assert node instanceof WorkflowNodeEnt;
         return new EntityProxyWorkflowManager((WorkflowNodeEnt)node, this);
     }
@@ -251,8 +249,7 @@ public class EntityProxyAccess {
      * @return the workflow entity
      */
     WorkflowEnt getWorkflowEnt(final WrappedWorkflowNodeEnt workflowNodeEnt) {
-        Optional<String> nodeID =
-            workflowNodeEnt.getParentNodeID().isPresent() ? Optional.of(workflowNodeEnt.getNodeID()) : Optional.empty();
+        String nodeID = workflowNodeEnt.getParentNodeID() != null ? workflowNodeEnt.getNodeID() : null;
         return ServiceManager.workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
     }
 
@@ -263,8 +260,7 @@ public class EntityProxyAccess {
      * @return the workflow entity
      */
     WorkflowEnt getWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt) {
-        Optional<String> nodeID =
-            workflowNodeEnt.getParentNodeID().isPresent() ? Optional.of(workflowNodeEnt.getNodeID()) : Optional.empty();
+        String nodeID = workflowNodeEnt.getParentNodeID() != null ? workflowNodeEnt.getNodeID() : null;
         return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
     }
 
@@ -275,7 +271,7 @@ public class EntityProxyAccess {
      * @return the settings formatted as json
      */
     String getSettingsAsJson(final NodeEnt node) {
-        return service(NodeService.class, m_serviceConfig).getNodeSettingsJSON(node.getRootWorkflowID(),
+        return service(NodeService.class, m_serviceConfig).getNodeSettings(node.getRootWorkflowID(),
             node.getNodeID());
     }
 

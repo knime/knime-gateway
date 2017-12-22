@@ -49,8 +49,8 @@
 package org.knime.gateway.local.workflow;
 
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.NodeOutPortEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link WorkflowOutPortUI}.

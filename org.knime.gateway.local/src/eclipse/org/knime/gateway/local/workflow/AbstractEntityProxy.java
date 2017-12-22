@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.gateway.workflow.entity.GatewayEntity;
+import org.knime.gateway.entity.GatewayEntity;
 
 /**
  * Abstract class for entity proxies - i.e. implementations that use a {@link GatewayEntity} as main source of

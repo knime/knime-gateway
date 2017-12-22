@@ -56,9 +56,9 @@ import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.gateway.local.util.missing.MissingPortObject;
-import org.knime.gateway.v0.workflow.entity.NodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.NodeOutPortEnt;
+import org.knime.gateway.v0.entity.PortTypeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link NodeOutPortUI}.
@@ -96,7 +96,7 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
         PortTypeRegistry ptr = PortTypeRegistry.getInstance();
         Class<? extends PortObject> portObjectClass =
             ptr.getObjectClass(pte.getPortObjectClassName()).orElseGet(() -> MissingPortObject.class);
-        return ptr.getPortType(portObjectClass, pte.getIsOptional());
+        return ptr.getPortType(portObjectClass, pte.isOptional());
     }
 
     /**

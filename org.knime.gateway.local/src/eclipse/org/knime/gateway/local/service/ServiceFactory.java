@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.service;
 
-import org.knime.gateway.workflow.service.GatewayService;
+import org.knime.gateway.service.GatewayService;
 
 /**
  * Interface to be implemented by plugins that make use of the service factory extension point. Delivers concrete

@@ -58,8 +58,8 @@ import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.ConnectionUIInformationListener;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
-import org.knime.gateway.v0.workflow.entity.ConnectionEnt;
-import org.knime.gateway.v0.workflow.entity.XYEnt;
+import org.knime.gateway.v0.entity.ConnectionEnt;
+import org.knime.gateway.v0.entity.XYEnt;
 
 /**
  * Entity-proxy class that proxies {@link ConnectionEnt} and implements {@link ConnectionContainerUI}.
@@ -136,7 +136,7 @@ public class EntityProxyConnectionContainer extends AbstractEntityProxy<Connecti
      */
     @Override
     public boolean isDeletable() {
-        return getEntity().getIsDeleteable();
+        return getEntity().isDeletable();
     }
 
     /**
@@ -144,7 +144,7 @@ public class EntityProxyConnectionContainer extends AbstractEntityProxy<Connecti
      */
     @Override
     public boolean isFlowVariablePortConnection() {
-        return getEntity().getIsFlowVariablePortConnection();
+        return getEntity().isFlowVariablePortConnection();
     }
 
     /**
@@ -152,7 +152,7 @@ public class EntityProxyConnectionContainer extends AbstractEntityProxy<Connecti
      */
     @Override
     public ConnectionType getType() {
-        return ConnectionType.valueOf(getEntity().getType());
+        return ConnectionType.valueOf(getEntity().getType().toString());
     }
 
     /**

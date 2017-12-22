@@ -52,8 +52,9 @@ import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.gateway.v0.workflow.entity.AnnotationEnt;
-import org.knime.gateway.v0.workflow.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.v0.entity.AnnotationEnt;
+import org.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
+import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 
 /**
  * Entity-proxy class that proxies {@link WorkflowAnnotationEnt} and extends {@link WorkflowAnnotation}.
@@ -120,17 +121,18 @@ public class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements
         return ad;
     }
 
-    static int getFontStyleIdx(final String fontStyle) {
+    static int getFontStyleIdx(final FontStyleEnum fontStyle) {
         //indices from SWT-class
-        if (fontStyle.equals("normal")) {
-            return 0;
-        } else if (fontStyle.equals("bold")) {
-            return 1;
-        } else if (fontStyle.equals("italic")) {
-            return 2;
-        } else {
-            //return normal style by default
-            return 0;
+        switch (fontStyle) {
+            case NORMAL:
+                return 0;
+            case BOLD:
+                return 1;
+            case ITALIC:
+                return 2;
+            default:
+                //return normal style by default
+                return 0;
         }
     }
 

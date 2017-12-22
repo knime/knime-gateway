@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.local.workflow;
 
-import org.knime.gateway.workflow.entity.GatewayEntity;
+import org.knime.gateway.entity.GatewayEntity;
 
 /**
  * Implementations translate/proxy certain calls to the entities they use as the main source of information.

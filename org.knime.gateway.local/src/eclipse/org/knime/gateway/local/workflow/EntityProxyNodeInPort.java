@@ -52,8 +52,8 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.gateway.local.util.missing.MissingPortObject;
-import org.knime.gateway.v0.workflow.entity.NodeInPortEnt;
-import org.knime.gateway.v0.workflow.entity.PortTypeEnt;
+import org.knime.gateway.v0.entity.NodeInPortEnt;
+import org.knime.gateway.v0.entity.PortTypeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeInPortEnt} and implements {@link NodeInPortUI}.
@@ -87,7 +87,7 @@ public class EntityProxyNodeInPort extends AbstractEntityProxy<NodeInPortEnt> im
         PortTypeEnt pte = getEntity().getPortType();
         PortTypeRegistry ptr = PortTypeRegistry.getInstance();
         return ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).orElse(MissingPortObject.class),
-            pte.getIsOptional());
+            pte.isOptional());
     }
 
     /**

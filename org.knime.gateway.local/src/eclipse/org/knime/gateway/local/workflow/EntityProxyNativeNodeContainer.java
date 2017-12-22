@@ -60,8 +60,8 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.gateway.local.util.missing.MissingNodeFactory;
-import org.knime.gateway.v0.workflow.entity.NativeNodeEnt;
-import org.knime.gateway.v0.workflow.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.v0.entity.NativeNodeEnt;
+import org.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
@@ -115,10 +115,10 @@ public class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContain
             try {
                 m_nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
                 if (m_nodeFactory instanceof DynamicNodeFactory) {
-                    if (nodeFactoryKey.getSettings().isPresent()) {
+                    if (nodeFactoryKey.getSettings() != null) {
                         //in case of a dynamic node factory additional settings need to be loaded
                         NodeSettings config = JSONConfig.readJSON(new NodeSettings("settings"),
-                            new StringReader(nodeFactoryKey.getSettings().get()));
+                            new StringReader(nodeFactoryKey.getSettings()));
                         m_nodeFactory.loadAdditionalFactorySettings(config);
                     } else {
                         m_nodeFactory.init();
