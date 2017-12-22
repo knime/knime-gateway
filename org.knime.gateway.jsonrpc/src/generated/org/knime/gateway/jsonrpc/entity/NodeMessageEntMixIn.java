@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,51 +40,80 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Aug 1, 2017 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc;
+package org.knime.gateway.jsonrpc.entity;
 
-import java.util.List;
 
-import org.knime.gateway.v0.entity.util.ListEntities;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.knime.gateway.jsonrpc.JsonRpcUtil;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+
+import org.knime.gateway.v0.entity.NodeMessageEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
 
 /**
- * Utility class for json rpc stuff.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class JsonRpcUtil {
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    defaultImpl = DefaultNodeMessageEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultNodeMessageEnt.class, name="NodeMessage")
+})
+@JsonDeserialize(builder=DefaultNodeMessageEntBuilder.class)
+// AUTO-GENERATED CODE; DO NOT MODIFY
+public interface NodeMessageEntMixIn extends NodeMessageEnt {
+
+    @Override
+    @JsonProperty("type")
+    public String getType();
+    
+    @Override
+    @JsonProperty("message")
+    public String getMessage();
+    
 
     /**
-     * Name of the property to encode the entity type in a json-serialized entity object.
-     */
-    public static final String ENTITY_TYPE_KEY = "EntityType";
-
-    private JsonRpcUtil() {
-        //utility class
-    }
-
-    /**
-     * Adds entity and entity builder mixin classes to the passed mapper in order to add jackson-annotations to the
-     * respective entity (and entity builder) interface for de-/serialization.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * @param mapper the object mapper to add the mixins to
+     * @author Martin Horn, University of Konstanz
      */
-    public static final void addMixIns(final ObjectMapper mapper) {
-        List<Class<?>> entityClasses = ListEntities.listEntityClasses();
-        List<Class<?>> entityBuilderClasses = ListEntities.listEntityBuilderClasses();
-        List<Class<?>> entityMixInClasses = org.knime.gateway.jsonrpc.entity.util.ListEntities.listEntityClasses();
-        List<Class<?>> entityBuilderMixInClasses =
-            org.knime.gateway.jsonrpc.entity.util.ListEntities.listEntityBuilderClasses();
-
-        for (int i = 0; i < entityClasses.size(); i++) {
-            mapper.addMixIn(entityClasses.get(i), entityMixInClasses.get(i));
-            mapper.addMixIn(entityBuilderClasses.get(i), entityBuilderMixInClasses.get(i));
-        }
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        defaultImpl = DefaultNodeMessageEntBuilder.class)
+    @JsonSubTypes({
+        @Type(value = DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder.class, name="NodeMessage")
+    })
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NodeMessageEntMixInBuilder extends NodeMessageEntBuilder {
+    
+        @Override
+        public NodeMessageEntMixIn build();
+    
+        @Override
+        @JsonProperty("type")
+        public NodeMessageEntMixInBuilder setType(final String type);
+        
+        @Override
+        @JsonProperty("message")
+        public NodeMessageEntMixInBuilder setMessage(final String message);
+        
     }
+
+
 }
+

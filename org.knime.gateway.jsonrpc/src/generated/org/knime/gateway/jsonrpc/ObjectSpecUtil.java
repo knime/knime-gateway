@@ -133,30 +133,30 @@ public final class ObjectSpecUtil {
     }
 
     private static String getPattern(final String specId) {
-		if(specId.equals("builder-mixin")) {
-			return "##name##BuilderMixIn";
-		}				
 		if(specId.equals("mixin")) {
 			return "##name##MixIn";
+		}				
+		if(specId.equals("builder-mixin")) {
+			return "##name##BuilderMixIn";
 		}				
 		return null;
     }
 
     private static String getPackagePrefix(final String specId) {
-		if(specId.equals("builder-mixin")) {
+		if(specId.equals("mixin")) {
 			return "org.knime.gateway.jsonrpc";
 		}				
-		if(specId.equals("mixin")) {
+		if(specId.equals("builder-mixin")) {
 			return "org.knime.gateway.jsonrpc";
 		}				
 		return null;
     }
 
     private static String getPackageSuffix(final String specId) {
-		if(specId.equals("builder-mixin")) {
+		if(specId.equals("mixin")) {
 			return "";
 		}				
-		if(specId.equals("mixin")) {
+		if(specId.equals("builder-mixin")) {
 			return "";
 		}				
 		return null;
