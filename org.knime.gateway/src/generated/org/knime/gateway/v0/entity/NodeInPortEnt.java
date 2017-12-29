@@ -66,11 +66,46 @@ public interface NodeInPortEnt extends NodePortEnt {
      */
     public interface NodeInPortEntBuilder extends GatewayEntityBuilder<NodeInPortEnt> {
 
-        NodeInPortEntBuilder setType(Integer type);
+        /**
+         * Discriminator for inheritance. Must be the base name of this type/schema.
+         * 
+         * @param type the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeInPortEntBuilder setType(String type);
+        
+        /**
+         * The index starting at 0.
+         * 
+         * @param portIndex the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodeInPortEntBuilder setPortIndex(Integer portIndex);
+        
+        /**
+         * The type of the port.
+         * 
+         * @param portType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodeInPortEntBuilder setPortType(PortTypeEnt portType);
+        
+        /**
+         * The name of the port.
+         * 
+         * @param portName the property value,  
+         * @return this entity builder for chaining
+         */
         NodeInPortEntBuilder setPortName(String portName);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         NodeInPortEnt build();
     
     }

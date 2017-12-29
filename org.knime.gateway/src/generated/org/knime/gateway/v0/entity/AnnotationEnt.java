@@ -62,72 +62,151 @@ public interface AnnotationEnt extends GatewayEntity {
 
 
   /**
-   * discriminator for inheritance
-   * @return type
+   * Discriminator for inheritance. Must be the base name of this type/schema.
+   * @return type , never <code>null</code>
    **/
-  public Integer getType();
+  public String getType();
+
   /**
    * Get text
-   * @return text
+   * @return text 
    **/
   public String getText();
+
   /**
    * Get backgroundColor
-   * @return backgroundColor
+   * @return backgroundColor 
    **/
   public Integer getBackgroundColor();
+
   /**
    * Get bounds
-   * @return bounds
+   * @return bounds 
    **/
   public BoundsEnt getBounds();
+
   /**
    * Get textAlignment
-   * @return textAlignment
+   * @return textAlignment 
    **/
   public String getTextAlignment();
+
   /**
    * Get borderSize
-   * @return borderSize
+   * @return borderSize 
    **/
   public Integer getBorderSize();
+
   /**
    * Get borderColor
-   * @return borderColor
+   * @return borderColor 
    **/
   public Integer getBorderColor();
+
   /**
    * Get defaultFontSize
-   * @return defaultFontSize
+   * @return defaultFontSize 
    **/
   public Integer getDefaultFontSize();
+
   /**
    * Get version
-   * @return version
+   * @return version 
    **/
   public Integer getVersion();
+
   /**
    * Defines ranges of different styles within the annotation.
-   * @return styleRanges
+   * @return styleRanges 
    **/
   public java.util.List<StyleRangeEnt> getStyleRanges();
+
 
     /**
      * The builder for the entity.
      */
     public interface AnnotationEntBuilder extends GatewayEntityBuilder<AnnotationEnt> {
 
-        AnnotationEntBuilder setType(Integer type);
+        /**
+         * Discriminator for inheritance. Must be the base name of this type/schema.
+         * 
+         * @param type the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AnnotationEntBuilder setType(String type);
+        
+        /**
+         * 
+         * @param text the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setText(String text);
+        
+        /**
+         * 
+         * @param backgroundColor the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setBackgroundColor(Integer backgroundColor);
+        
+        /**
+         * 
+         * @param bounds the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setBounds(BoundsEnt bounds);
+        
+        /**
+         * 
+         * @param textAlignment the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setTextAlignment(String textAlignment);
+        
+        /**
+         * 
+         * @param borderSize the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setBorderSize(Integer borderSize);
+        
+        /**
+         * 
+         * @param borderColor the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setBorderColor(Integer borderColor);
+        
+        /**
+         * 
+         * @param defaultFontSize the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
+        
+        /**
+         * 
+         * @param version the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setVersion(Integer version);
+        
+        /**
+         * Defines ranges of different styles within the annotation.
+         * 
+         * @param styleRanges the property value,  
+         * @return this entity builder for chaining
+         */
         AnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         AnnotationEnt build();
     
     }

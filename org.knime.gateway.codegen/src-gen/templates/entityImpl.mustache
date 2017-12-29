@@ -30,31 +30,22 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} implements
   private {{classname}}({{classname}}Builder builder) {
     {{#parent}}super();{{/parent}}
     {{#allVars}}
+    {{#required}}
+    if(builder.m_{{name}} == null) {
+        throw new IllegalArgumentException("{{name}} must not be null.");
+    }
+    {{/required}}
     m_{{name}} = builder.m_{{name}};
     {{/allVars}}
   }
 
 
   {{#vars}}
-  /**
-  {{#description}}
-   * {{description}}
-  {{/description}}
-  {{^description}}
-   * Get {{name}}
-  {{/description}}
-  {{#minimum}}
-   * minimum: {{minimum}}
-  {{/minimum}}
-  {{#maximum}}
-   * maximum: {{maximum}}
-  {{/maximum}}
-   * @return {{name}}
-   **/
   @Override
-  {{#useBeanValidation}}{{>beanValidation}}{{/useBeanValidation}}  public {{{datatypeWithEnum}}} {{getter}}() {
+  {{#useBeanValidation}}{{>beanValidation}}{{/useBeanValidation}}public {{{datatypeWithEnum}}} {{getter}}() {
         return m_{{name}};
     }
+    
   {{/vars}}
   
     public static class {{classname}}Builder implements {{name}}EntBuilder {
@@ -64,15 +55,23 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} implements
         }
     
         {{#allVars}}
-        private {{{datatypeWithEnum}}} m_{{name}};
+        private {{{datatypeWithEnum}}} m_{{name}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}};
         {{/allVars}}
 
         {{#allVars}}
+        {{^isReadOnly}}
         @Override
         public {{classname}}Builder {{setter}}({{{datatypeWithEnum}}} {{name}}) {
+             {{#required}}
+             if({{name}} == null) {
+                 throw new IllegalArgumentException("{{name}} must not be null.");
+             }
+             {{/required}}
              m_{{name}} = {{name}};
              return this;
         }
+
+        {{/isReadOnly}}        
         {{/allVars}}
         
         @Override

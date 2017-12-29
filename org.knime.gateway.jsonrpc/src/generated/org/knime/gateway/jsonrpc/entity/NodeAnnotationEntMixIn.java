@@ -69,8 +69,9 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt.DefaultNodeAnno
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultNodeAnnotationEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNodeAnnotationEnt.class, name="NodeAnnotation")
@@ -81,7 +82,7 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
 
     @Override
     @JsonProperty("type")
-    public Integer getType();
+    public String getType();
     
     @Override
     @JsonProperty("text")
@@ -131,8 +132,8 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultNodeAnnotationEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name="NodeAnnotation")
@@ -145,7 +146,7 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
     
         @Override
         @JsonProperty("type")
-        public NodeAnnotationEntMixInBuilder setType(final Integer type);
+        public NodeAnnotationEntMixInBuilder setType(final String type);
         
         @Override
         @JsonProperty("text")

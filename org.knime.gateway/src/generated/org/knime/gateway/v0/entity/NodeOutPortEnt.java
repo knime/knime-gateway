@@ -66,11 +66,46 @@ public interface NodeOutPortEnt extends NodePortEnt {
      */
     public interface NodeOutPortEntBuilder extends GatewayEntityBuilder<NodeOutPortEnt> {
 
-        NodeOutPortEntBuilder setType(Integer type);
+        /**
+         * Discriminator for inheritance. Must be the base name of this type/schema.
+         * 
+         * @param type the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeOutPortEntBuilder setType(String type);
+        
+        /**
+         * The index starting at 0.
+         * 
+         * @param portIndex the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodeOutPortEntBuilder setPortIndex(Integer portIndex);
+        
+        /**
+         * The type of the port.
+         * 
+         * @param portType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodeOutPortEntBuilder setPortType(PortTypeEnt portType);
+        
+        /**
+         * The name of the port.
+         * 
+         * @param portName the property value,  
+         * @return this entity builder for chaining
+         */
         NodeOutPortEntBuilder setPortName(String portName);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         NodeOutPortEnt build();
     
     }

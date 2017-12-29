@@ -53,7 +53,7 @@ import org.knime.gateway.v0.service.WorkflowService;
 import org.knime.gateway.service.GatewayService;
 
 /**
- * TODO
+ * Maps a service interface (i.e. it's class) to the respective JsonRpc-service.
  *
  * @author Martin Horn, University of Konstanz
  */

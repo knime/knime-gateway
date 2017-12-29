@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultPortTypeEnt.DefaultPortTypeEntBui
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultPortTypeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultPortTypeEnt.class, name="PortType")
@@ -92,8 +93,8 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultPortTypeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultPortTypeEnt.DefaultPortTypeEntBuilder.class, name="PortType")

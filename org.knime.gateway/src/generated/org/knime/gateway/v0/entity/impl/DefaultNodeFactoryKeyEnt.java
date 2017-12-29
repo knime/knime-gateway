@@ -64,27 +64,24 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
   
   private DefaultNodeFactoryKeyEnt(DefaultNodeFactoryKeyEntBuilder builder) {
     
+    if(builder.m_className == null) {
+        throw new IllegalArgumentException("className must not be null.");
+    }
     m_className = builder.m_className;
     m_settings = builder.m_settings;
   }
 
 
-  /**
-   * The fully qualified java classname.
-   * @return className
-   **/
   @Override
-    public String getClassName() {
+  public String getClassName() {
         return m_className;
     }
-  /**
-   * Additional settings in order to be able to re-create nodes. Only required in case of &#39;dynamic&#39; node factories.
-   * @return settings
-   **/
+    
   @Override
-    public String getSettings() {
+  public String getSettings() {
         return m_settings;
     }
+    
   
     public static class DefaultNodeFactoryKeyEntBuilder implements NodeFactoryKeyEntBuilder {
     
@@ -92,19 +89,24 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
             
         }
     
-        private String m_className;
-        private String m_settings;
+        private String m_className = null;
+        private String m_settings = null;
 
         @Override
         public DefaultNodeFactoryKeyEntBuilder setClassName(String className) {
+             if(className == null) {
+                 throw new IllegalArgumentException("className must not be null.");
+             }
              m_className = className;
              return this;
         }
+
         @Override
         public DefaultNodeFactoryKeyEntBuilder setSettings(String settings) {
              m_settings = settings;
              return this;
         }
+
         
         @Override
         public DefaultNodeFactoryKeyEnt build() {

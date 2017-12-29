@@ -65,26 +65,23 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
   private DefaultNodeMessageEnt(DefaultNodeMessageEntBuilder builder) {
     
     m_type = builder.m_type;
+    if(builder.m_message == null) {
+        throw new IllegalArgumentException("message must not be null.");
+    }
     m_message = builder.m_message;
   }
 
 
-  /**
-   * Get type
-   * @return type
-   **/
   @Override
-    public String getType() {
+  public String getType() {
         return m_type;
     }
-  /**
-   * Get message
-   * @return message
-   **/
+    
   @Override
-    public String getMessage() {
+  public String getMessage() {
         return m_message;
     }
+    
   
     public static class DefaultNodeMessageEntBuilder implements NodeMessageEntBuilder {
     
@@ -92,19 +89,24 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
             
         }
     
-        private String m_type;
-        private String m_message;
+        private String m_type = null;
+        private String m_message = null;
 
         @Override
         public DefaultNodeMessageEntBuilder setType(String type) {
              m_type = type;
              return this;
         }
+
         @Override
         public DefaultNodeMessageEntBuilder setMessage(String message) {
+             if(message == null) {
+                 throw new IllegalArgumentException("message must not be null.");
+             }
              m_message = message;
              return this;
         }
+
         
         @Override
         public DefaultNodeMessageEnt build() {

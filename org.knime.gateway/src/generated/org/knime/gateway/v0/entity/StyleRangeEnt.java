@@ -84,47 +84,102 @@ public interface StyleRangeEnt extends GatewayEntity {
 
   /**
    * Style range start.
-   * @return start
+   * @return start 
    **/
   public Integer getStart();
+
   /**
    * Style range length.
-   * @return length
+   * @return length 
    **/
   public Integer getLength();
+
   /**
    * Style range font name.
-   * @return fontName
+   * @return fontName 
    **/
   public String getFontName();
+
   /**
    * The font style, e.g. normal, bold or italic.
-   * @return fontStyle
+   * @return fontStyle 
    **/
   public FontStyleEnum getFontStyle();
+
   /**
    * Style range font size.
-   * @return fontSize
+   * @return fontSize 
    **/
   public Integer getFontSize();
+
   /**
    * Style range foreground color.
-   * @return foregroundColor
+   * @return foregroundColor 
    **/
   public Integer getForegroundColor();
+
 
     /**
      * The builder for the entity.
      */
     public interface StyleRangeEntBuilder extends GatewayEntityBuilder<StyleRangeEnt> {
 
+        /**
+         * Style range start.
+         * 
+         * @param start the property value,  
+         * @return this entity builder for chaining
+         */
         StyleRangeEntBuilder setStart(Integer start);
+        
+        /**
+         * Style range length.
+         * 
+         * @param length the property value,  
+         * @return this entity builder for chaining
+         */
         StyleRangeEntBuilder setLength(Integer length);
+        
+        /**
+         * Style range font name.
+         * 
+         * @param fontName the property value,  
+         * @return this entity builder for chaining
+         */
         StyleRangeEntBuilder setFontName(String fontName);
+        
+        /**
+         * The font style, e.g. normal, bold or italic.
+         * 
+         * @param fontStyle the property value,  
+         * @return this entity builder for chaining
+         */
         StyleRangeEntBuilder setFontStyle(FontStyleEnum fontStyle);
+        
+        /**
+         * Style range font size.
+         * 
+         * @param fontSize the property value,  
+         * @return this entity builder for chaining
+         */
         StyleRangeEntBuilder setFontSize(Integer fontSize);
+        
+        /**
+         * Style range foreground color.
+         * 
+         * @param foregroundColor the property value,  
+         * @return this entity builder for chaining
+         */
         StyleRangeEntBuilder setForegroundColor(Integer foregroundColor);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         StyleRangeEnt build();
     
     }

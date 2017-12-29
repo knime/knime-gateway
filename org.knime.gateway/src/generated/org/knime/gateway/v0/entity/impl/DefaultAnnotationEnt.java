@@ -57,7 +57,7 @@ import org.knime.gateway.v0.entity.AnnotationEnt;
 // AUTO-GENERATED CODE; DO NOT MODIFY
 public class DefaultAnnotationEnt  implements AnnotationEnt {
 
-  protected Integer m_type;
+  protected String m_type;
   protected String m_text;
   protected Integer m_backgroundColor;
   protected BoundsEnt m_bounds;
@@ -74,6 +74,9 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
   
   private DefaultAnnotationEnt(DefaultAnnotationEntBuilder builder) {
     
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = builder.m_type;
     m_text = builder.m_text;
     m_backgroundColor = builder.m_backgroundColor;
@@ -87,86 +90,56 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
   }
 
 
-  /**
-   * discriminator for inheritance
-   * @return type
-   **/
   @Override
-    public Integer getType() {
+  public String getType() {
         return m_type;
     }
-  /**
-   * Get text
-   * @return text
-   **/
+    
   @Override
-    public String getText() {
+  public String getText() {
         return m_text;
     }
-  /**
-   * Get backgroundColor
-   * @return backgroundColor
-   **/
+    
   @Override
-    public Integer getBackgroundColor() {
+  public Integer getBackgroundColor() {
         return m_backgroundColor;
     }
-  /**
-   * Get bounds
-   * @return bounds
-   **/
+    
   @Override
-    public BoundsEnt getBounds() {
+  public BoundsEnt getBounds() {
         return m_bounds;
     }
-  /**
-   * Get textAlignment
-   * @return textAlignment
-   **/
+    
   @Override
-    public String getTextAlignment() {
+  public String getTextAlignment() {
         return m_textAlignment;
     }
-  /**
-   * Get borderSize
-   * @return borderSize
-   **/
+    
   @Override
-    public Integer getBorderSize() {
+  public Integer getBorderSize() {
         return m_borderSize;
     }
-  /**
-   * Get borderColor
-   * @return borderColor
-   **/
+    
   @Override
-    public Integer getBorderColor() {
+  public Integer getBorderColor() {
         return m_borderColor;
     }
-  /**
-   * Get defaultFontSize
-   * @return defaultFontSize
-   **/
+    
   @Override
-    public Integer getDefaultFontSize() {
+  public Integer getDefaultFontSize() {
         return m_defaultFontSize;
     }
-  /**
-   * Get version
-   * @return version
-   **/
+    
   @Override
-    public Integer getVersion() {
+  public Integer getVersion() {
         return m_version;
     }
-  /**
-   * Defines ranges of different styles within the annotation.
-   * @return styleRanges
-   **/
+    
   @Override
-    public java.util.List<StyleRangeEnt> getStyleRanges() {
+  public java.util.List<StyleRangeEnt> getStyleRanges() {
         return m_styleRanges;
     }
+    
   
     public static class DefaultAnnotationEntBuilder implements AnnotationEntBuilder {
     
@@ -174,67 +147,80 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
             
         }
     
-        private Integer m_type;
-        private String m_text;
-        private Integer m_backgroundColor;
+        private String m_type = null;
+        private String m_text = null;
+        private Integer m_backgroundColor = null;
         private BoundsEnt m_bounds;
-        private String m_textAlignment;
-        private Integer m_borderSize;
-        private Integer m_borderColor;
-        private Integer m_defaultFontSize;
-        private Integer m_version;
-        private java.util.List<StyleRangeEnt> m_styleRanges;
+        private String m_textAlignment = null;
+        private Integer m_borderSize = null;
+        private Integer m_borderColor = null;
+        private Integer m_defaultFontSize = null;
+        private Integer m_version = null;
+        private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
 
         @Override
-        public DefaultAnnotationEntBuilder setType(Integer type) {
+        public DefaultAnnotationEntBuilder setType(String type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setText(String text) {
              m_text = text;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setBackgroundColor(Integer backgroundColor) {
              m_backgroundColor = backgroundColor;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setBounds(BoundsEnt bounds) {
              m_bounds = bounds;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setTextAlignment(String textAlignment) {
              m_textAlignment = textAlignment;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setBorderSize(Integer borderSize) {
              m_borderSize = borderSize;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setBorderColor(Integer borderColor) {
              m_borderColor = borderColor;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
              m_defaultFontSize = defaultFontSize;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setVersion(Integer version) {
              m_version = version;
              return this;
         }
+
         @Override
         public DefaultAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
              m_styleRanges = styleRanges;
              return this;
         }
+
         
         @Override
         public DefaultAnnotationEnt build() {

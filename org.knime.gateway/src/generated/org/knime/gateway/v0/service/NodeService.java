@@ -48,13 +48,31 @@ import org.knime.gateway.service.GatewayService;
 
 import org.knime.gateway.v0.entity.NodeEnt;
 
-
 /**
- * NodeService
+ * Operations on single nodes.
  *
  * @author Martin Horn, University of Konstanz
  */
 public interface NodeService extends GatewayService {
+
+    /**
+     * Retrieves the node for the given node-id.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node the information is requested for.
+     *
+     * @return the result
+     */
     NodeEnt getNode(String jobId, String nodeId);
+    
+    /**
+     * Retrieves the node&#39;s settings for the given node-id.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node the information is requested for.
+     *
+     * @return the result
+     */
     String getNodeSettings(String jobId, String nodeId);
+    
 }

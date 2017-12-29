@@ -68,13 +68,31 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
   
   private DefaultNativeNodeEnt(DefaultNativeNodeEntBuilder builder) {
     super();
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = builder.m_type;
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
+    }
     m_name = builder.m_name;
+    if(builder.m_nodeID == null) {
+        throw new IllegalArgumentException("nodeID must not be null.");
+    }
     m_nodeID = builder.m_nodeID;
+    if(builder.m_nodeType == null) {
+        throw new IllegalArgumentException("nodeType must not be null.");
+    }
     m_nodeType = builder.m_nodeType;
     m_parentNodeID = builder.m_parentNodeID;
+    if(builder.m_rootWorkflowID == null) {
+        throw new IllegalArgumentException("rootWorkflowID must not be null.");
+    }
     m_rootWorkflowID = builder.m_rootWorkflowID;
     m_nodeMessage = builder.m_nodeMessage;
+    if(builder.m_nodeState == null) {
+        throw new IllegalArgumentException("nodeState must not be null.");
+    }
     m_nodeState = builder.m_nodeState;
     m_inPorts = builder.m_inPorts;
     m_outPorts = builder.m_outPorts;
@@ -83,18 +101,18 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
     m_nodeAnnotation = builder.m_nodeAnnotation;
     m_jobManager = builder.m_jobManager;
     m_uIInfo = builder.m_uIInfo;
+    if(builder.m_nodeFactoryKey == null) {
+        throw new IllegalArgumentException("nodeFactoryKey must not be null.");
+    }
     m_nodeFactoryKey = builder.m_nodeFactoryKey;
   }
 
 
-  /**
-   * The key/ID of the node factory defining all details.
-   * @return nodeFactoryKey
-   **/
   @Override
-    public NodeFactoryKeyEnt getNodeFactoryKey() {
+  public NodeFactoryKeyEnt getNodeFactoryKey() {
         return m_nodeFactoryKey;
     }
+    
   
     public static class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {
     
@@ -102,18 +120,18 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
             super();
         }
     
-        private String m_type;
-        private String m_name;
-        private String m_nodeID;
-        private NodeTypeEnum m_nodeType;
-        private String m_parentNodeID;
-        private String m_rootWorkflowID;
+        private String m_type = null;
+        private String m_name = null;
+        private String m_nodeID = null;
+        private NodeTypeEnum m_nodeType = null;
+        private String m_parentNodeID = null;
+        private String m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
-        private NodeStateEnum m_nodeState;
-        private java.util.List<NodeInPortEnt> m_inPorts;
-        private java.util.List<NodeOutPortEnt> m_outPorts;
-        private Boolean m_deletable;
-        private Boolean m_hasDialog;
+        private NodeStateEnum m_nodeState = null;
+        private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
+        private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
+        private Boolean m_deletable = false;
+        private Boolean m_hasDialog = null;
         private NodeAnnotationEnt m_nodeAnnotation;
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
@@ -121,84 +139,121 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
 
         @Override
         public DefaultNativeNodeEntBuilder setType(String type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
+             }
              m_name = name;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setNodeID(String nodeID) {
+             if(nodeID == null) {
+                 throw new IllegalArgumentException("nodeID must not be null.");
+             }
              m_nodeID = nodeID;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setNodeType(NodeTypeEnum nodeType) {
+             if(nodeType == null) {
+                 throw new IllegalArgumentException("nodeType must not be null.");
+             }
              m_nodeType = nodeType;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setParentNodeID(String parentNodeID) {
              m_parentNodeID = parentNodeID;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setRootWorkflowID(String rootWorkflowID) {
+             if(rootWorkflowID == null) {
+                 throw new IllegalArgumentException("rootWorkflowID must not be null.");
+             }
              m_rootWorkflowID = rootWorkflowID;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage) {
              m_nodeMessage = nodeMessage;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setNodeState(NodeStateEnum nodeState) {
+             if(nodeState == null) {
+                 throw new IllegalArgumentException("nodeState must not be null.");
+             }
              m_nodeState = nodeState;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts) {
              m_inPorts = inPorts;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts) {
              m_outPorts = outPorts;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setDeletable(Boolean deletable) {
              m_deletable = deletable;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setHasDialog(Boolean hasDialog) {
              m_hasDialog = hasDialog;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation) {
              m_nodeAnnotation = nodeAnnotation;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setJobManager(JobManagerEnt jobManager) {
              m_jobManager = jobManager;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo) {
              m_uIInfo = uIInfo;
              return this;
         }
+
         @Override
         public DefaultNativeNodeEntBuilder setNodeFactoryKey(NodeFactoryKeyEnt nodeFactoryKey) {
+             if(nodeFactoryKey == null) {
+                 throw new IllegalArgumentException("nodeFactoryKey must not be null.");
+             }
              m_nodeFactoryKey = nodeFactoryKey;
              return this;
         }
+
         
         @Override
         public DefaultNativeNodeEnt build() {

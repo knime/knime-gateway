@@ -80,62 +80,41 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
   }
 
 
-  /**
-   * Grid size in X direction.
-   * @return gridX
-   **/
   @Override
-    public Integer getGridX() {
+  public Integer getGridX() {
         return m_gridX;
     }
-  /**
-   * Grid size in Y direction.
-   * @return gridY
-   **/
+    
   @Override
-    public Integer getGridY() {
+  public Integer getGridY() {
         return m_gridY;
     }
-  /**
-   * Whether to snap to the grid.
-   * @return snapToGrid
-   **/
+    
   @Override
-    public Boolean isSnapToGrid() {
+  public Boolean isSnapToGrid() {
         return m_snapToGrid;
     }
-  /**
-   * Whether to show the grid lines.
-   * @return showGrid
-   **/
+    
   @Override
-    public Boolean isShowGrid() {
+  public Boolean isShowGrid() {
         return m_showGrid;
     }
-  /**
-   * Workflow zoom leve, i.e. its magnification.
-   * @return zoomLevel
-   **/
+    
   @Override
-    public BigDecimal getZoomLevel() {
+  public BigDecimal getZoomLevel() {
         return m_zoomLevel;
     }
-  /**
-   * Whether connections are rendered as curves.
-   * @return hasCurvedConnection
-   **/
+    
   @Override
-    public Boolean isHasCurvedConnection() {
+  public Boolean isHasCurvedConnection() {
         return m_hasCurvedConnection;
     }
-  /**
-   * Width of the line connecting two nodes.
-   * @return connectionLineWidth
-   **/
+    
   @Override
-    public Integer getConnectionLineWidth() {
+  public Integer getConnectionLineWidth() {
         return m_connectionLineWidth;
     }
+    
   
     public static class DefaultWorkflowUIInfoEntBuilder implements WorkflowUIInfoEntBuilder {
     
@@ -143,49 +122,56 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
             
         }
     
-        private Integer m_gridX;
-        private Integer m_gridY;
-        private Boolean m_snapToGrid;
-        private Boolean m_showGrid;
-        private BigDecimal m_zoomLevel;
-        private Boolean m_hasCurvedConnection;
-        private Integer m_connectionLineWidth;
+        private Integer m_gridX = null;
+        private Integer m_gridY = null;
+        private Boolean m_snapToGrid = null;
+        private Boolean m_showGrid = null;
+        private BigDecimal m_zoomLevel = null;
+        private Boolean m_hasCurvedConnection = null;
+        private Integer m_connectionLineWidth = null;
 
         @Override
         public DefaultWorkflowUIInfoEntBuilder setGridX(Integer gridX) {
              m_gridX = gridX;
              return this;
         }
+
         @Override
         public DefaultWorkflowUIInfoEntBuilder setGridY(Integer gridY) {
              m_gridY = gridY;
              return this;
         }
+
         @Override
         public DefaultWorkflowUIInfoEntBuilder setSnapToGrid(Boolean snapToGrid) {
              m_snapToGrid = snapToGrid;
              return this;
         }
+
         @Override
         public DefaultWorkflowUIInfoEntBuilder setShowGrid(Boolean showGrid) {
              m_showGrid = showGrid;
              return this;
         }
+
         @Override
         public DefaultWorkflowUIInfoEntBuilder setZoomLevel(BigDecimal zoomLevel) {
              m_zoomLevel = zoomLevel;
              return this;
         }
+
         @Override
         public DefaultWorkflowUIInfoEntBuilder setHasCurvedConnection(Boolean hasCurvedConnection) {
              m_hasCurvedConnection = hasCurvedConnection;
              return this;
         }
+
         @Override
         public DefaultWorkflowUIInfoEntBuilder setConnectionLineWidth(Integer connectionLineWidth) {
              m_connectionLineWidth = connectionLineWidth;
              return this;
         }
+
         
         @Override
         public DefaultWorkflowUIInfoEnt build() {

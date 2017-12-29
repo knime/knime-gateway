@@ -48,12 +48,21 @@ import org.knime.gateway.service.GatewayService;
 
 import org.knime.gateway.v0.entity.WorkflowEnt;
 
-
 /**
- * WorkflowService
+ * Operations on workflows.
  *
  * @author Martin Horn, University of Konstanz
  */
 public interface WorkflowService extends GatewayService {
+
+    /**
+     * Retrieves the complete structure of the workflow (nodes, connections, annotations).
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node this sub(!)-workflow is requested for. If not given, the root-workflow will be returned.
+     *
+     * @return the result
+     */
     WorkflowEnt getWorkflow(String jobId, String nodeId);
+    
 }

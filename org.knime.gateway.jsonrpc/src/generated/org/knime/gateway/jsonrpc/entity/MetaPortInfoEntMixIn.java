@@ -67,8 +67,9 @@ import org.knime.gateway.v0.entity.impl.DefaultMetaPortInfoEnt.DefaultMetaPortIn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultMetaPortInfoEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultMetaPortInfoEnt.class, name="MetaPortInfo")
@@ -105,8 +106,8 @@ public interface MetaPortInfoEntMixIn extends MetaPortInfoEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultMetaPortInfoEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultMetaPortInfoEnt.DefaultMetaPortInfoEntBuilder.class, name="MetaPortInfo")

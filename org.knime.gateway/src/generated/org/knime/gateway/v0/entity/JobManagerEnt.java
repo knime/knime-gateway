@@ -61,17 +61,31 @@ public interface JobManagerEnt extends GatewayEntity {
 
   /**
    * Get id
-   * @return id
+   * @return id , never <code>null</code>
    **/
   public String getId();
+
 
     /**
      * The builder for the entity.
      */
     public interface JobManagerEntBuilder extends GatewayEntityBuilder<JobManagerEnt> {
 
+        /**
+         * 
+         * @param id the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         JobManagerEntBuilder setId(String id);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         JobManagerEnt build();
     
     }

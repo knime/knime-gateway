@@ -56,7 +56,7 @@ import org.knime.gateway.v0.entity.NodePortEnt;
 // AUTO-GENERATED CODE; DO NOT MODIFY
 public class DefaultNodePortEnt  implements NodePortEnt {
 
-  protected Integer m_type;
+  protected String m_type;
   protected Integer m_portIndex;
   protected PortTypeEnt m_portType;
   protected String m_portName;
@@ -67,45 +67,42 @@ public class DefaultNodePortEnt  implements NodePortEnt {
   
   private DefaultNodePortEnt(DefaultNodePortEntBuilder builder) {
     
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = builder.m_type;
+    if(builder.m_portIndex == null) {
+        throw new IllegalArgumentException("portIndex must not be null.");
+    }
     m_portIndex = builder.m_portIndex;
+    if(builder.m_portType == null) {
+        throw new IllegalArgumentException("portType must not be null.");
+    }
     m_portType = builder.m_portType;
     m_portName = builder.m_portName;
   }
 
 
-  /**
-   * discriminator for inheritance.
-   * @return type
-   **/
   @Override
-    public Integer getType() {
+  public String getType() {
         return m_type;
     }
-  /**
-   * The index starting at 0.
-   * @return portIndex
-   **/
+    
   @Override
-    public Integer getPortIndex() {
+  public Integer getPortIndex() {
         return m_portIndex;
     }
-  /**
-   * The type of the port.
-   * @return portType
-   **/
+    
   @Override
-    public PortTypeEnt getPortType() {
+  public PortTypeEnt getPortType() {
         return m_portType;
     }
-  /**
-   * The name of the port.
-   * @return portName
-   **/
+    
   @Override
-    public String getPortName() {
+  public String getPortName() {
         return m_portName;
     }
+    
   
     public static class DefaultNodePortEntBuilder implements NodePortEntBuilder {
     
@@ -113,31 +110,44 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             
         }
     
-        private Integer m_type;
-        private Integer m_portIndex;
+        private String m_type = null;
+        private Integer m_portIndex = null;
         private PortTypeEnt m_portType;
-        private String m_portName;
+        private String m_portName = null;
 
         @Override
-        public DefaultNodePortEntBuilder setType(Integer type) {
+        public DefaultNodePortEntBuilder setType(String type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
+
         @Override
         public DefaultNodePortEntBuilder setPortIndex(Integer portIndex) {
+             if(portIndex == null) {
+                 throw new IllegalArgumentException("portIndex must not be null.");
+             }
              m_portIndex = portIndex;
              return this;
         }
+
         @Override
         public DefaultNodePortEntBuilder setPortType(PortTypeEnt portType) {
+             if(portType == null) {
+                 throw new IllegalArgumentException("portType must not be null.");
+             }
              m_portType = portType;
              return this;
         }
+
         @Override
         public DefaultNodePortEntBuilder setPortName(String portName) {
              m_portName = portName;
              return this;
         }
+
         
         @Override
         public DefaultNodePortEnt build() {

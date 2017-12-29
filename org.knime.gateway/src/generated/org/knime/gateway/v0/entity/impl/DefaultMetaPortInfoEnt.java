@@ -68,6 +68,9 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
   
   private DefaultMetaPortInfoEnt(DefaultMetaPortInfoEntBuilder builder) {
     
+    if(builder.m_portType == null) {
+        throw new IllegalArgumentException("portType must not be null.");
+    }
     m_portType = builder.m_portType;
     m_connected = builder.m_connected;
     m_message = builder.m_message;
@@ -76,46 +79,31 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
   }
 
 
-  /**
-   * The type.
-   * @return portType
-   **/
   @Override
-    public PortTypeEnt getPortType() {
+  public PortTypeEnt getPortType() {
         return m_portType;
     }
-  /**
-   * Whether it is connected.
-   * @return connected
-   **/
+    
   @Override
-    public Boolean isConnected() {
+  public Boolean isConnected() {
         return m_connected;
     }
-  /**
-   * The message (summary of upstream node port).
-   * @return message
-   **/
+    
   @Override
-    public String getMessage() {
+  public String getMessage() {
         return m_message;
     }
-  /**
-   * The old index.
-   * @return oldIndex
-   **/
+    
   @Override
-    public Integer getOldIndex() {
+  public Integer getOldIndex() {
         return m_oldIndex;
     }
-  /**
-   * The new index.
-   * @return newIndex
-   **/
+    
   @Override
-    public Integer getNewIndex() {
+  public Integer getNewIndex() {
         return m_newIndex;
     }
+    
   
     public static class DefaultMetaPortInfoEntBuilder implements MetaPortInfoEntBuilder {
     
@@ -124,36 +112,44 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
         }
     
         private PortTypeEnt m_portType;
-        private Boolean m_connected;
-        private String m_message;
-        private Integer m_oldIndex;
-        private Integer m_newIndex;
+        private Boolean m_connected = null;
+        private String m_message = null;
+        private Integer m_oldIndex = null;
+        private Integer m_newIndex = null;
 
         @Override
         public DefaultMetaPortInfoEntBuilder setPortType(PortTypeEnt portType) {
+             if(portType == null) {
+                 throw new IllegalArgumentException("portType must not be null.");
+             }
              m_portType = portType;
              return this;
         }
+
         @Override
         public DefaultMetaPortInfoEntBuilder setConnected(Boolean connected) {
              m_connected = connected;
              return this;
         }
+
         @Override
         public DefaultMetaPortInfoEntBuilder setMessage(String message) {
              m_message = message;
              return this;
         }
+
         @Override
         public DefaultMetaPortInfoEntBuilder setOldIndex(Integer oldIndex) {
              m_oldIndex = oldIndex;
              return this;
         }
+
         @Override
         public DefaultMetaPortInfoEntBuilder setNewIndex(Integer newIndex) {
              m_newIndex = newIndex;
              return this;
         }
+
         
         @Override
         public DefaultMetaPortInfoEnt build() {

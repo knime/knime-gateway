@@ -67,8 +67,9 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeUIInfoEnt.DefaultNodeUIInfoEn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultNodeUIInfoEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNodeUIInfoEnt.class, name="NodeUIInfo")
@@ -105,8 +106,8 @@ public interface NodeUIInfoEntMixIn extends NodeUIInfoEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultNodeUIInfoEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodeUIInfoEnt.DefaultNodeUIInfoEntBuilder.class, name="NodeUIInfo")

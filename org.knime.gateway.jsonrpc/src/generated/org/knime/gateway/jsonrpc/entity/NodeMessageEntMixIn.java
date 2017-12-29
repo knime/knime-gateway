@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessage
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultNodeMessageEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNodeMessageEnt.class, name="NodeMessage")
@@ -92,8 +93,8 @@ public interface NodeMessageEntMixIn extends NodeMessageEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultNodeMessageEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder.class, name="NodeMessage")

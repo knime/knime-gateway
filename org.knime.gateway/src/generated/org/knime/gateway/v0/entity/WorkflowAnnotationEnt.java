@@ -67,17 +67,86 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
      */
     public interface WorkflowAnnotationEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationEnt> {
 
-        WorkflowAnnotationEntBuilder setType(Integer type);
+        /**
+         * Discriminator for inheritance. Must be the base name of this type/schema.
+         * 
+         * @param type the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setType(String type);
+        
+        /**
+         * 
+         * @param text the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setText(String text);
+        
+        /**
+         * 
+         * @param backgroundColor the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setBackgroundColor(Integer backgroundColor);
+        
+        /**
+         * 
+         * @param bounds the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds);
+        
+        /**
+         * 
+         * @param textAlignment the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setTextAlignment(String textAlignment);
+        
+        /**
+         * 
+         * @param borderSize the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setBorderSize(Integer borderSize);
+        
+        /**
+         * 
+         * @param borderColor the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setBorderColor(Integer borderColor);
+        
+        /**
+         * 
+         * @param defaultFontSize the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
+        
+        /**
+         * 
+         * @param version the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setVersion(Integer version);
+        
+        /**
+         * Defines ranges of different styles within the annotation.
+         * 
+         * @param styleRanges the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         WorkflowAnnotationEnt build();
     
     }

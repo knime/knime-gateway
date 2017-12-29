@@ -68,8 +68,9 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt.DefaultNodeInPortEn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultNodeInPortEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNodeInPortEnt.class, name="NodeInPort")
@@ -80,7 +81,7 @@ public interface NodeInPortEntMixIn extends NodeInPortEnt {
 
     @Override
     @JsonProperty("type")
-    public Integer getType();
+    public String getType();
     
     @Override
     @JsonProperty("portIndex")
@@ -102,8 +103,8 @@ public interface NodeInPortEntMixIn extends NodeInPortEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultNodeInPortEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name="NodeInPort")
@@ -116,7 +117,7 @@ public interface NodeInPortEntMixIn extends NodeInPortEnt {
     
         @Override
         @JsonProperty("type")
-        public NodeInPortEntMixInBuilder setType(final Integer type);
+        public NodeInPortEntMixInBuilder setType(final String type);
         
         @Override
         @JsonProperty("portIndex")

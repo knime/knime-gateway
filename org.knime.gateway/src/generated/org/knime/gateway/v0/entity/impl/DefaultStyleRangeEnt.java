@@ -77,54 +77,36 @@ public class DefaultStyleRangeEnt  implements StyleRangeEnt {
   }
 
 
-  /**
-   * Style range start.
-   * @return start
-   **/
   @Override
-    public Integer getStart() {
+  public Integer getStart() {
         return m_start;
     }
-  /**
-   * Style range length.
-   * @return length
-   **/
+    
   @Override
-    public Integer getLength() {
+  public Integer getLength() {
         return m_length;
     }
-  /**
-   * Style range font name.
-   * @return fontName
-   **/
+    
   @Override
-    public String getFontName() {
+  public String getFontName() {
         return m_fontName;
     }
-  /**
-   * The font style, e.g. normal, bold or italic.
-   * @return fontStyle
-   **/
+    
   @Override
-    public FontStyleEnum getFontStyle() {
+  public FontStyleEnum getFontStyle() {
         return m_fontStyle;
     }
-  /**
-   * Style range font size.
-   * @return fontSize
-   **/
+    
   @Override
-    public Integer getFontSize() {
+  public Integer getFontSize() {
         return m_fontSize;
     }
-  /**
-   * Style range foreground color.
-   * @return foregroundColor
-   **/
+    
   @Override
-    public Integer getForegroundColor() {
+  public Integer getForegroundColor() {
         return m_foregroundColor;
     }
+    
   
     public static class DefaultStyleRangeEntBuilder implements StyleRangeEntBuilder {
     
@@ -132,43 +114,49 @@ public class DefaultStyleRangeEnt  implements StyleRangeEnt {
             
         }
     
-        private Integer m_start;
-        private Integer m_length;
-        private String m_fontName;
-        private FontStyleEnum m_fontStyle;
-        private Integer m_fontSize;
-        private Integer m_foregroundColor;
+        private Integer m_start = null;
+        private Integer m_length = null;
+        private String m_fontName = null;
+        private FontStyleEnum m_fontStyle = null;
+        private Integer m_fontSize = null;
+        private Integer m_foregroundColor = null;
 
         @Override
         public DefaultStyleRangeEntBuilder setStart(Integer start) {
              m_start = start;
              return this;
         }
+
         @Override
         public DefaultStyleRangeEntBuilder setLength(Integer length) {
              m_length = length;
              return this;
         }
+
         @Override
         public DefaultStyleRangeEntBuilder setFontName(String fontName) {
              m_fontName = fontName;
              return this;
         }
+
         @Override
         public DefaultStyleRangeEntBuilder setFontStyle(FontStyleEnum fontStyle) {
              m_fontStyle = fontStyle;
              return this;
         }
+
         @Override
         public DefaultStyleRangeEntBuilder setFontSize(Integer fontSize) {
              m_fontSize = fontSize;
              return this;
         }
+
         @Override
         public DefaultStyleRangeEntBuilder setForegroundColor(Integer foregroundColor) {
              m_foregroundColor = foregroundColor;
              return this;
         }
+
         
         @Override
         public DefaultStyleRangeEnt build() {

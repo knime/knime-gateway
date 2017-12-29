@@ -51,9 +51,10 @@ public interface {{classname}} extends {{#parent}}{{{parent}}}{{/parent}}{{^pare
   {{#maximum}}
    * maximum: {{maximum}}
   {{/maximum}}
-   * @return {{name}}
+   * @return {{name}} {{#required}}, never <code>null</code>{{/required}}
    **/
 {{#useBeanValidation}}{{>beanValidation}}{{/useBeanValidation}}  public {{{datatypeWithEnum}}} {{getter}}();
+
   {{/vars}}
 
     /**
@@ -62,9 +63,27 @@ public interface {{classname}} extends {{#parent}}{{{parent}}}{{/parent}}{{^pare
     public interface {{classname}}Builder extends GatewayEntityBuilder<{{classname}}> {
 
         {{#allVars}}
+        {{^isReadOnly}}
+        /**
+         {{#description}}
+         * {{description}}
+         {{/description}} 
+         * 
+         * @param {{name}} the property value, {{#required}}NOT <code>null</code>!{{/required}} 
+         * @return this entity builder for chaining
+         */
         {{classname}}Builder {{setter}}({{{datatypeWithEnum}}} {{name}});
+        
+        {{/isReadOnly}}
         {{/allVars}}
         
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         {{classname}} build();
     
     }

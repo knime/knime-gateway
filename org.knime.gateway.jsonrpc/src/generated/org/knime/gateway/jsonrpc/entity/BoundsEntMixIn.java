@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt.DefaultBoundsEntBuilder
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultBoundsEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultBoundsEnt.class, name="Bounds")
@@ -100,8 +101,8 @@ public interface BoundsEntMixIn extends BoundsEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultBoundsEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultBoundsEnt.DefaultBoundsEntBuilder.class, name="Bounds")

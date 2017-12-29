@@ -61,36 +61,75 @@ public interface NodePortEnt extends GatewayEntity {
 
 
   /**
-   * discriminator for inheritance.
-   * @return type
+   * Discriminator for inheritance. Must be the base name of this type/schema.
+   * @return type , never <code>null</code>
    **/
-  public Integer getType();
+  public String getType();
+
   /**
    * The index starting at 0.
-   * @return portIndex
+   * @return portIndex , never <code>null</code>
    **/
   public Integer getPortIndex();
+
   /**
    * The type of the port.
-   * @return portType
+   * @return portType , never <code>null</code>
    **/
   public PortTypeEnt getPortType();
+
   /**
    * The name of the port.
-   * @return portName
+   * @return portName 
    **/
   public String getPortName();
+
 
     /**
      * The builder for the entity.
      */
     public interface NodePortEntBuilder extends GatewayEntityBuilder<NodePortEnt> {
 
-        NodePortEntBuilder setType(Integer type);
+        /**
+         * Discriminator for inheritance. Must be the base name of this type/schema.
+         * 
+         * @param type the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setType(String type);
+        
+        /**
+         * The index starting at 0.
+         * 
+         * @param portIndex the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodePortEntBuilder setPortIndex(Integer portIndex);
+        
+        /**
+         * The type of the port.
+         * 
+         * @param portType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodePortEntBuilder setPortType(PortTypeEnt portType);
+        
+        /**
+         * The name of the port.
+         * 
+         * @param portName the property value,  
+         * @return this entity builder for chaining
+         */
         NodePortEntBuilder setPortName(String portName);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         NodePortEnt build();
     
     }

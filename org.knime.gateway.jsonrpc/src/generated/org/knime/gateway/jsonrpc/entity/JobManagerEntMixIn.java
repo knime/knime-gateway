@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultJobManagerEnt.DefaultJobManagerEn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultJobManagerEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultJobManagerEnt.class, name="JobManager")
@@ -88,8 +89,8 @@ public interface JobManagerEntMixIn extends JobManagerEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultJobManagerEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultJobManagerEnt.DefaultJobManagerEntBuilder.class, name="JobManager")

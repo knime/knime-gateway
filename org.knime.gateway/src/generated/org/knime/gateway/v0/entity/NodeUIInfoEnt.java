@@ -62,41 +62,83 @@ public interface NodeUIInfoEnt extends GatewayEntity {
 
   /**
    * Get bounds
-   * @return bounds
+   * @return bounds 
    **/
   public BoundsEnt getBounds();
+
   /**
    * Get symbolRelative
-   * @return symbolRelative
+   * @return symbolRelative 
    **/
   public Boolean isSymbolRelative();
+
   /**
    * Get hasAbsoluteCoordinates
-   * @return hasAbsoluteCoordinates
+   * @return hasAbsoluteCoordinates 
    **/
   public Boolean isHasAbsoluteCoordinates();
+
   /**
    * Get dropLocation
-   * @return dropLocation
+   * @return dropLocation 
    **/
   public Boolean isDropLocation();
+
   /**
    * Get snapToGrid
-   * @return snapToGrid
+   * @return snapToGrid 
    **/
   public Boolean isSnapToGrid();
+
 
     /**
      * The builder for the entity.
      */
     public interface NodeUIInfoEntBuilder extends GatewayEntityBuilder<NodeUIInfoEnt> {
 
+        /**
+         * 
+         * @param bounds the property value,  
+         * @return this entity builder for chaining
+         */
         NodeUIInfoEntBuilder setBounds(BoundsEnt bounds);
+        
+        /**
+         * 
+         * @param symbolRelative the property value,  
+         * @return this entity builder for chaining
+         */
         NodeUIInfoEntBuilder setSymbolRelative(Boolean symbolRelative);
+        
+        /**
+         * 
+         * @param hasAbsoluteCoordinates the property value,  
+         * @return this entity builder for chaining
+         */
         NodeUIInfoEntBuilder setHasAbsoluteCoordinates(Boolean hasAbsoluteCoordinates);
+        
+        /**
+         * 
+         * @param dropLocation the property value,  
+         * @return this entity builder for chaining
+         */
         NodeUIInfoEntBuilder setDropLocation(Boolean dropLocation);
+        
+        /**
+         * 
+         * @param snapToGrid the property value,  
+         * @return this entity builder for chaining
+         */
         NodeUIInfoEntBuilder setSnapToGrid(Boolean snapToGrid);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         NodeUIInfoEnt build();
     
     }

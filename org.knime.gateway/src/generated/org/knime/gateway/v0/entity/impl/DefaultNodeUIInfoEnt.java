@@ -76,46 +76,31 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
   }
 
 
-  /**
-   * Get bounds
-   * @return bounds
-   **/
   @Override
-    public BoundsEnt getBounds() {
+  public BoundsEnt getBounds() {
         return m_bounds;
     }
-  /**
-   * Get symbolRelative
-   * @return symbolRelative
-   **/
+    
   @Override
-    public Boolean isSymbolRelative() {
+  public Boolean isSymbolRelative() {
         return m_symbolRelative;
     }
-  /**
-   * Get hasAbsoluteCoordinates
-   * @return hasAbsoluteCoordinates
-   **/
+    
   @Override
-    public Boolean isHasAbsoluteCoordinates() {
+  public Boolean isHasAbsoluteCoordinates() {
         return m_hasAbsoluteCoordinates;
     }
-  /**
-   * Get dropLocation
-   * @return dropLocation
-   **/
+    
   @Override
-    public Boolean isDropLocation() {
+  public Boolean isDropLocation() {
         return m_dropLocation;
     }
-  /**
-   * Get snapToGrid
-   * @return snapToGrid
-   **/
+    
   @Override
-    public Boolean isSnapToGrid() {
+  public Boolean isSnapToGrid() {
         return m_snapToGrid;
     }
+    
   
     public static class DefaultNodeUIInfoEntBuilder implements NodeUIInfoEntBuilder {
     
@@ -124,36 +109,41 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
         }
     
         private BoundsEnt m_bounds;
-        private Boolean m_symbolRelative;
-        private Boolean m_hasAbsoluteCoordinates;
-        private Boolean m_dropLocation;
-        private Boolean m_snapToGrid;
+        private Boolean m_symbolRelative = null;
+        private Boolean m_hasAbsoluteCoordinates = null;
+        private Boolean m_dropLocation = null;
+        private Boolean m_snapToGrid = null;
 
         @Override
         public DefaultNodeUIInfoEntBuilder setBounds(BoundsEnt bounds) {
              m_bounds = bounds;
              return this;
         }
+
         @Override
         public DefaultNodeUIInfoEntBuilder setSymbolRelative(Boolean symbolRelative) {
              m_symbolRelative = symbolRelative;
              return this;
         }
+
         @Override
         public DefaultNodeUIInfoEntBuilder setHasAbsoluteCoordinates(Boolean hasAbsoluteCoordinates) {
              m_hasAbsoluteCoordinates = hasAbsoluteCoordinates;
              return this;
         }
+
         @Override
         public DefaultNodeUIInfoEntBuilder setDropLocation(Boolean dropLocation) {
              m_dropLocation = dropLocation;
              return this;
         }
+
         @Override
         public DefaultNodeUIInfoEntBuilder setSnapToGrid(Boolean snapToGrid) {
              m_snapToGrid = snapToGrid;
              return this;
         }
+
         
         @Override
         public DefaultNodeUIInfoEnt build() {

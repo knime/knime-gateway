@@ -1,18 +1,18 @@
 ---
-# This is a sample Swagger spec, describing a simple API as a starting point.  
+# This is the Swagger spec, describing the KNIME gateway.  
 swagger: "2.0"
 info:
   description: KNIME Gateway
   version: 1.0.0
   title: KNIME Gateway
+# TODO
 host: knime.org
+# TODO
 basePath: /rest/v4
 schemes:
 - http
+- https
 
-# Tags organize operations into groups for presentation in the Swagger UI.
-# Each tag has an optional description, which the Swagger UI will display in 
-# the tag group header.
 tags:
 - name: Workflow
   description: Operations on workflows.
@@ -29,12 +29,8 @@ parameters:
 
 paths:
 
-  # Each Path Item Object describes a resource, containing a set of operations
-  # at a specified path.  The Path Item object can define parameters and 
-  # responses common all of its contained operations.
+  # the workflow endpoint
   /jobs/{job-id}/workflow:
-
-    # Operations are identified by an HTTP method.  
     get:
       tags:
       - Workflow
@@ -53,13 +49,12 @@ paths:
         200:
           description: Successful response, with a representation of the Workflow.
           schema:
-            # Reference to a Schema Object described in 'definitions' section
             $ref: "#/definitions/Workflow"
         404:
           description: The requested worklow was not found.
     
     
-          
+  # the node endpoint
   /jobs/{job-id}/workflow/node/{node-id}:
     get:
       tags:
@@ -79,11 +74,11 @@ paths:
         200:
           description: Successful response, with a representation of the Node.
           schema:
-            # Reference to a Schema Object described in 'definitions' section
             $ref: "#/definitions/Node"
         404:
           description: The requested node was not found.
-          
+  
+  # endpoint for node settings        
   /jobs/{job-id}/workflow/node/{node-id}/settings:
     get:
       tags:
@@ -103,24 +98,30 @@ paths:
         200:
           description: Successful response, with a json-representation of the settings
           schema:
-            # Reference to a Schema Object described in 'definitions' section
             type: string
         404:
           description: The requested node was not found.
-          
-          
 
-# The definitions section contains a set of named Schema Objects.  Each schema
-# object describes a reusable data type, which can be reference by name.
 definitions:
+# A comment on object/schema/model inheritance: polymorphism/subtyping in swagger is achieved by the 'allOf'-property
+# and the specification of a 'dicriminator'-property to be able to tell them apart (see, e.g., Node).
+# However, in Swagger 2.0 it has it's issues and it has been improved in OpenAPI 3.0 (introducing a mapping of
+# discriminator-values to the respective schemas). Here, one could at least set the 'discriminator'-property
+# to "read-only" and provide the respective default values in the spec already.
+# But I chose to not clutter the API-spec too much at the expense of few actually unnecessary method calls within the
+# generated java-code (the 'discriminator'-property has to be explicitly set every time an object is created). 
+
+
   Annotation:
     description: A text annotation.
     type: object
     discriminator: type
+    required:
+     - type
     properties:
       type:
-        description: discriminator for inheritance
-        type: integer
+        description: Discriminator for inheritance. Must be the base name of this type/schema.
+        type: string
       text:
         type: string
       backgroundColor:
@@ -159,6 +160,11 @@ definitions:
   Connection:
     description: A single connection between two nodes.
     type: object
+    required:
+      - dest
+      - destPort
+      - source
+      - sourcePort
     properties:
       dest:
         type: string
@@ -191,6 +197,8 @@ definitions:
   JobManager:
     description: node's job manager
     type: object
+    required:
+      - id
     properties:
       id:
         type: string 
@@ -198,6 +206,8 @@ definitions:
   MetaPortInfo:
     description: The port of a metanode.
     type: object
+    required:
+      - portType
     properties:
       portType:
         description: The type.
@@ -221,6 +231,8 @@ definitions:
     allOf:
       - $ref: '#/definitions/Node'
       - type: object
+        required:
+          - nodeFactoryKey
         properties:
           nodeFactoryKey:
             description: The key/ID of the node factory defining all details.
@@ -245,12 +257,12 @@ definitions:
       - nodeType
       - nodeState
       - type
+      - rootWorkflowID
     discriminator: type
     properties:
       type:
         type: string
-        description: Discriminator for inheritance.
-        #enum: [NativeNode, ...]
+        description: Discriminator for inheritance. Must be the base name of this type/schema.
       name:
         description: The node's name.
         type: string
@@ -319,6 +331,7 @@ definitions:
       deletable:
         description: Whether the node is deletable.
         type: boolean
+        default: false
       hasDialog:
         description: Whether the node has a configuration dialog / user settings.
         type: boolean
@@ -352,6 +365,8 @@ definitions:
   NodeMessage:
     description: node message
     type: object
+    required:
+     - message
     properties:
       type:
         type: string
@@ -367,10 +382,14 @@ definitions:
     description: A single port of a node.
     type: object
     discriminator: type
+    required:
+    - type
+    - portIndex
+    - portType
     properties:
       type:
-        description: discriminator for inheritance.
-        type: integer
+        description: Discriminator for inheritance. Must be the base name of this type/schema.
+        type: string
       portIndex:
         description: The index starting at 0.
         type: integer
@@ -398,6 +417,9 @@ definitions:
   PortType:
     description: The type of a port.
     type: object
+    required:
+     - portObjectClassName
+     - optional
     properties:
       portObjectClassName:
         description: Port type class name (for coloring, connection checks).

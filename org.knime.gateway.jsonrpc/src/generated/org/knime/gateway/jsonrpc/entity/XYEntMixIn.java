@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultXYEnt.DefaultXYEntBuilder;
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultXYEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultXYEnt.class, name="XY")
@@ -92,8 +93,8 @@ public interface XYEntMixIn extends XYEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultXYEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultXYEnt.DefaultXYEntBuilder.class, name="XY")

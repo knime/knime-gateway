@@ -31,8 +31,9 @@ import org.knime.gateway.v0.entity.impl.Default{{name}}Ent;
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "{{discriminator}}",
+    visible = true,
     defaultImpl = Default{{name}}Ent.class)
 @JsonSubTypes({
     @Type(value = Default{{name}}Ent.class, name="{{name}}")
@@ -63,8 +64,8 @@ public interface {{classname}} extends {{name}}Ent {
     {{#model}}
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "{{discriminator}}",
         defaultImpl = Default{{name}}EntBuilder.class)
     @JsonSubTypes({
         @Type(value = Default{{name}}Ent.Default{{name}}EntBuilder.class, name="{{name}}")

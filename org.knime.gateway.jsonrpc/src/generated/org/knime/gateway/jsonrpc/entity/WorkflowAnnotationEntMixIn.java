@@ -69,8 +69,9 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt.DefaultWork
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultWorkflowAnnotationEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultWorkflowAnnotationEnt.class, name="WorkflowAnnotation")
@@ -81,7 +82,7 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
 
     @Override
     @JsonProperty("type")
-    public Integer getType();
+    public String getType();
     
     @Override
     @JsonProperty("text")
@@ -127,8 +128,8 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultWorkflowAnnotationEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name="WorkflowAnnotation")
@@ -141,7 +142,7 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     
         @Override
         @JsonProperty("type")
-        public WorkflowAnnotationEntMixInBuilder setType(final Integer type);
+        public WorkflowAnnotationEntMixInBuilder setType(final String type);
         
         @Override
         @JsonProperty("text")

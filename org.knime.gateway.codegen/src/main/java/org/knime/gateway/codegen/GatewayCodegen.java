@@ -1,5 +1,6 @@
 package org.knime.gateway.codegen;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -13,22 +14,26 @@ import org.slf4j.LoggerFactory;
 
 import io.swagger.codegen.CodegenModelFactory;
 import io.swagger.codegen.CodegenModelType;
+import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.SupportingFile;
 import io.swagger.codegen.languages.AbstractJavaCodegen;
+import io.swagger.models.Operation;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 
 /**
- * Service and entity-class/interface generation for the KNIME gateway based on a
- * swagger/openapi spec.
+ * Service and entity-class/interface generation for the KNIME gateway based on
+ * a swagger/openapi spec.
  * 
  * @author Martin Horn, University of Konstanz
  */
 public class GatewayCodegen extends AbstractJavaCodegen {
 
 	static Logger LOGGER = LoggerFactory.getLogger(GatewayCodegen.class);
+
+	private final Map<String, String> m_tagDescriptions = new HashMap<String, String>();
 
 	private String m_apiTemplateFile;
 	private String m_modelNamePattern;
@@ -109,9 +114,40 @@ public class GatewayCodegen extends AbstractJavaCodegen {
 	}
 
 	@Override
+	public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co,
+			Map<String, List<CodegenOperation>> operations) {
+		// makes the tag descriptions available to the mustache templates
+		// (e.g. to be used in the javadoc of the service interfaces)
+		// TODO is there a better way?
+		String tagDesc = null;
+		for (int i = 0; i < co.tags.size(); i++) {
+			if (co.tags.get(i).getName().equals(tag)) {
+				tagDesc = co.tags.get(i).getDescription();
+				break;
+			}
+		}
+		if (tagDesc != null) {
+			m_tagDescriptions.put(tag.toLowerCase(), tagDesc);
+		}
+		super.addOperationToGroup(tag, resourcePath, operation, co, operations);
+	}
+
+	@Override
+	public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+		// TODO is there a better way
+		String tagDesc = (String) m_tagDescriptions
+				.get(((Map<String, Object>) objs.get("operations")).get("pathPrefix"));
+		if ((tagDesc != null)) {
+			objs.put("tagDescription", tagDesc);
+		}
+		return super.postProcessOperations(objs);
+	}
+
+	@Override
 	public String toApiName(String name) {
 		// make original name available to templates
-		// these form the basis of the service names, e.g. WorkflowService, NodeService 
+		// these form the basis of the service names, e.g. WorkflowService,
+		// NodeService
 		if (additionalProperties().get("tags") == null) {
 			additionalProperties().put("tags", new HashSet<String>());
 		} else {
@@ -136,8 +172,10 @@ public class GatewayCodegen extends AbstractJavaCodegen {
 
 	@Override
 	public CodegenProperty fromProperty(String name, Property p) {
-		//enables properties to have another name then the property they are part of
-		//e.g. DefaultNodeEnt.getNodeMessage() returns NodeMessageEnt instead of DefaultNodeMessageEnt
+		// enables properties to have another name then the property they are
+		// part of
+		// e.g. DefaultNodeEnt.getNodeMessage() returns NodeMessageEnt instead
+		// of DefaultNodeMessageEnt
 		if (m_modelPropertyNamePattern != null && p instanceof RefProperty) {
 			CodegenProperty property = CodegenModelFactory.newInstance(CodegenModelType.PROPERTY);
 			property.name = toVarName(name);

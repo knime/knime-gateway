@@ -82,54 +82,36 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   }
 
 
-  /**
-   * The node map.
-   * @return nodes
-   **/
   @Override
-    public java.util.Map<String, NodeEnt> getNodes() {
+  public java.util.Map<String, NodeEnt> getNodes() {
         return m_nodes;
     }
-  /**
-   * The list of connections.
-   * @return connections
-   **/
+    
   @Override
-    public java.util.List<ConnectionEnt> getConnections() {
+  public java.util.List<ConnectionEnt> getConnections() {
         return m_connections;
     }
-  /**
-   * The inputs of a metanode (if this workflow is one).
-   * @return metaInPortInfos
-   **/
+    
   @Override
-    public java.util.List<MetaPortInfoEnt> getMetaInPortInfos() {
+  public java.util.List<MetaPortInfoEnt> getMetaInPortInfos() {
         return m_metaInPortInfos;
     }
-  /**
-   * The outputs of a metanode (if this workflow is one).
-   * @return metaOutPortInfos
-   **/
+    
   @Override
-    public java.util.List<MetaPortInfoEnt> getMetaOutPortInfos() {
+  public java.util.List<MetaPortInfoEnt> getMetaOutPortInfos() {
         return m_metaOutPortInfos;
     }
-  /**
-   * List of all workflow annotations. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
-   * @return workflowAnnotations
-   **/
+    
   @Override
-    public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
+  public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
         return m_workflowAnnotations;
     }
-  /**
-   * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
-   * @return workflowUIInfo
-   **/
+    
   @Override
-    public WorkflowUIInfoEnt getWorkflowUIInfo() {
+  public WorkflowUIInfoEnt getWorkflowUIInfo() {
         return m_workflowUIInfo;
     }
+    
   
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
     
@@ -137,11 +119,11 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             
         }
     
-        private java.util.Map<String, NodeEnt> m_nodes;
-        private java.util.List<ConnectionEnt> m_connections;
-        private java.util.List<MetaPortInfoEnt> m_metaInPortInfos;
-        private java.util.List<MetaPortInfoEnt> m_metaOutPortInfos;
-        private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
+        private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
+        private java.util.List<ConnectionEnt> m_connections = new java.util.ArrayList<>();
+        private java.util.List<MetaPortInfoEnt> m_metaInPortInfos = new java.util.ArrayList<>();
+        private java.util.List<MetaPortInfoEnt> m_metaOutPortInfos = new java.util.ArrayList<>();
+        private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
         private WorkflowUIInfoEnt m_workflowUIInfo;
 
         @Override
@@ -149,31 +131,37 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
              m_nodes = nodes;
              return this;
         }
+
         @Override
         public DefaultWorkflowEntBuilder setConnections(java.util.List<ConnectionEnt> connections) {
              m_connections = connections;
              return this;
         }
+
         @Override
         public DefaultWorkflowEntBuilder setMetaInPortInfos(java.util.List<MetaPortInfoEnt> metaInPortInfos) {
              m_metaInPortInfos = metaInPortInfos;
              return this;
         }
+
         @Override
         public DefaultWorkflowEntBuilder setMetaOutPortInfos(java.util.List<MetaPortInfoEnt> metaOutPortInfos) {
              m_metaOutPortInfos = metaOutPortInfos;
              return this;
         }
+
         @Override
         public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations) {
              m_workflowAnnotations = workflowAnnotations;
              return this;
         }
+
         @Override
         public DefaultWorkflowEntBuilder setWorkflowUIInfo(WorkflowUIInfoEnt workflowUIInfo) {
              m_workflowUIInfo = workflowUIInfo;
              return this;
         }
+
         
         @Override
         public DefaultWorkflowEnt build() {

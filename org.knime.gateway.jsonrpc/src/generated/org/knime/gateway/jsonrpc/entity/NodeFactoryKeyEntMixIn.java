@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt.DefaultNodeFact
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultNodeFactoryKeyEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNodeFactoryKeyEnt.class, name="NodeFactoryKey")
@@ -92,8 +93,8 @@ public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultNodeFactoryKeyEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder.class, name="NodeFactoryKey")

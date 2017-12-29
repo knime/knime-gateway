@@ -6,16 +6,26 @@ import org.knime.gateway.service.GatewayService;
 {{#imports}}import {{import}};
 {{/imports}}
 
-
 {{#operations}}
 /**
- * {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+ * {{tagDescription}}
  *
  {{>authors}}
  */
 public interface {{classname}} extends GatewayService {
+
     {{#operation}}
+    /**
+     * {{#notes}}{{.}}{{/notes}}
+     *
+     {{#allParams}}
+     * @param {{paramName}} {{description}}
+     {{/allParams}}
+     *
+     * {{#returnType}}@return the result{{/returnType}}
+     */
     {{#returnType}}{{{returnType}}} {{/returnType}}{{^returnType}}void {{/returnType}}{{nickname}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{^-last}}, {{/-last}}{{/allParams}});
+    
     {{/operation}}
 }
 {{/operations}}

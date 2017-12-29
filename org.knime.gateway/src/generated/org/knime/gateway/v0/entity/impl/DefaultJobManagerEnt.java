@@ -63,18 +63,18 @@ public class DefaultJobManagerEnt  implements JobManagerEnt {
   
   private DefaultJobManagerEnt(DefaultJobManagerEntBuilder builder) {
     
+    if(builder.m_id == null) {
+        throw new IllegalArgumentException("id must not be null.");
+    }
     m_id = builder.m_id;
   }
 
 
-  /**
-   * Get id
-   * @return id
-   **/
   @Override
-    public String getId() {
+  public String getId() {
         return m_id;
     }
+    
   
     public static class DefaultJobManagerEntBuilder implements JobManagerEntBuilder {
     
@@ -82,13 +82,17 @@ public class DefaultJobManagerEnt  implements JobManagerEnt {
             
         }
     
-        private String m_id;
+        private String m_id = null;
 
         @Override
         public DefaultJobManagerEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("id must not be null.");
+             }
              m_id = id;
              return this;
         }
+
         
         @Override
         public DefaultJobManagerEnt build() {

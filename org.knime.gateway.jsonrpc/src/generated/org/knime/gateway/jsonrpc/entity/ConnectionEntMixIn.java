@@ -67,8 +67,9 @@ import org.knime.gateway.v0.entity.impl.DefaultConnectionEnt.DefaultConnectionEn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultConnectionEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultConnectionEnt.class, name="Connection")
@@ -117,8 +118,8 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultConnectionEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultConnectionEnt.DefaultConnectionEntBuilder.class, name="Connection")

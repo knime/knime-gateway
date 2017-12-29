@@ -61,11 +61,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JsonRpcUtil {
 
-    /**
-     * Name of the property to encode the entity type in a json-serialized entity object.
-     */
-    public static final String ENTITY_TYPE_KEY = "EntityType";
-
     private JsonRpcUtil() {
         //utility class
     }

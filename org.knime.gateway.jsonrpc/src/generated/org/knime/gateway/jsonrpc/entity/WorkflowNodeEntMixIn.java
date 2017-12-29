@@ -73,8 +73,9 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt.DefaultWorkflowNo
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultWorkflowNodeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultWorkflowNodeEnt.class, name="WorkflowNode")
@@ -163,8 +164,8 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultWorkflowNodeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name="WorkflowNode")

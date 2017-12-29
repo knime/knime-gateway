@@ -69,22 +69,16 @@ public class DefaultXYEnt  implements XYEnt {
   }
 
 
-  /**
-   * Get x
-   * @return x
-   **/
   @Override
-    public Integer getX() {
+  public Integer getX() {
         return m_x;
     }
-  /**
-   * Get y
-   * @return y
-   **/
+    
   @Override
-    public Integer getY() {
+  public Integer getY() {
         return m_y;
     }
+    
   
     public static class DefaultXYEntBuilder implements XYEntBuilder {
     
@@ -92,19 +86,21 @@ public class DefaultXYEnt  implements XYEnt {
             
         }
     
-        private Integer m_x;
-        private Integer m_y;
+        private Integer m_x = null;
+        private Integer m_y = null;
 
         @Override
         public DefaultXYEntBuilder setX(Integer x) {
              m_x = x;
              return this;
         }
+
         @Override
         public DefaultXYEntBuilder setY(Integer y) {
              m_y = y;
              return this;
         }
+
         
         @Override
         public DefaultXYEnt build() {

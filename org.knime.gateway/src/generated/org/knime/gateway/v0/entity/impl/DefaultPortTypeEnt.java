@@ -64,27 +64,27 @@ public class DefaultPortTypeEnt  implements PortTypeEnt {
   
   private DefaultPortTypeEnt(DefaultPortTypeEntBuilder builder) {
     
+    if(builder.m_portObjectClassName == null) {
+        throw new IllegalArgumentException("portObjectClassName must not be null.");
+    }
     m_portObjectClassName = builder.m_portObjectClassName;
+    if(builder.m_optional == null) {
+        throw new IllegalArgumentException("optional must not be null.");
+    }
     m_optional = builder.m_optional;
   }
 
 
-  /**
-   * Port type class name (for coloring, connection checks).
-   * @return portObjectClassName
-   **/
   @Override
-    public String getPortObjectClassName() {
+  public String getPortObjectClassName() {
         return m_portObjectClassName;
     }
-  /**
-   * Whether the port is optional, only applies to input ports.
-   * @return optional
-   **/
+    
   @Override
-    public Boolean isOptional() {
+  public Boolean isOptional() {
         return m_optional;
     }
+    
   
     public static class DefaultPortTypeEntBuilder implements PortTypeEntBuilder {
     
@@ -92,19 +92,27 @@ public class DefaultPortTypeEnt  implements PortTypeEnt {
             
         }
     
-        private String m_portObjectClassName;
-        private Boolean m_optional;
+        private String m_portObjectClassName = null;
+        private Boolean m_optional = null;
 
         @Override
         public DefaultPortTypeEntBuilder setPortObjectClassName(String portObjectClassName) {
+             if(portObjectClassName == null) {
+                 throw new IllegalArgumentException("portObjectClassName must not be null.");
+             }
              m_portObjectClassName = portObjectClassName;
              return this;
         }
+
         @Override
         public DefaultPortTypeEntBuilder setOptional(Boolean optional) {
+             if(optional == null) {
+                 throw new IllegalArgumentException("optional must not be null.");
+             }
              m_optional = optional;
              return this;
         }
+
         
         @Override
         public DefaultPortTypeEnt build() {

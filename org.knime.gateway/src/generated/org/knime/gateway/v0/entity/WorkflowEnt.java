@@ -66,47 +66,102 @@ public interface WorkflowEnt extends GatewayEntity {
 
   /**
    * The node map.
-   * @return nodes
+   * @return nodes 
    **/
   public java.util.Map<String, NodeEnt> getNodes();
+
   /**
    * The list of connections.
-   * @return connections
+   * @return connections 
    **/
   public java.util.List<ConnectionEnt> getConnections();
+
   /**
    * The inputs of a metanode (if this workflow is one).
-   * @return metaInPortInfos
+   * @return metaInPortInfos 
    **/
   public java.util.List<MetaPortInfoEnt> getMetaInPortInfos();
+
   /**
    * The outputs of a metanode (if this workflow is one).
-   * @return metaOutPortInfos
+   * @return metaOutPortInfos 
    **/
   public java.util.List<MetaPortInfoEnt> getMetaOutPortInfos();
+
   /**
    * List of all workflow annotations. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
-   * @return workflowAnnotations
+   * @return workflowAnnotations 
    **/
   public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
+
   /**
    * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
-   * @return workflowUIInfo
+   * @return workflowUIInfo 
    **/
   public WorkflowUIInfoEnt getWorkflowUIInfo();
+
 
     /**
      * The builder for the entity.
      */
     public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
 
+        /**
+         * The node map.
+         * 
+         * @param nodes the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        
+        /**
+         * The list of connections.
+         * 
+         * @param connections the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowEntBuilder setConnections(java.util.List<ConnectionEnt> connections);
+        
+        /**
+         * The inputs of a metanode (if this workflow is one).
+         * 
+         * @param metaInPortInfos the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowEntBuilder setMetaInPortInfos(java.util.List<MetaPortInfoEnt> metaInPortInfos);
+        
+        /**
+         * The outputs of a metanode (if this workflow is one).
+         * 
+         * @param metaOutPortInfos the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowEntBuilder setMetaOutPortInfos(java.util.List<MetaPortInfoEnt> metaOutPortInfos);
+        
+        /**
+         * List of all workflow annotations. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
+         * 
+         * @param workflowAnnotations the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        
+        /**
+         * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
+         * 
+         * @param workflowUIInfo the property value,  
+         * @return this entity builder for chaining
+         */
         WorkflowEntBuilder setWorkflowUIInfo(WorkflowUIInfoEnt workflowUIInfo);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         WorkflowEnt build();
     
     }

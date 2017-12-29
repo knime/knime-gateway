@@ -74,8 +74,9 @@ import org.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultNativeNodeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNativeNodeEnt.class, name="NativeNode")
@@ -156,8 +157,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultNativeNodeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name="NativeNode")

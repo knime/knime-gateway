@@ -73,38 +73,26 @@ public class DefaultBoundsEnt  implements BoundsEnt {
   }
 
 
-  /**
-   * Get x
-   * @return x
-   **/
   @Override
-    public Integer getX() {
+  public Integer getX() {
         return m_x;
     }
-  /**
-   * Get y
-   * @return y
-   **/
+    
   @Override
-    public Integer getY() {
+  public Integer getY() {
         return m_y;
     }
-  /**
-   * Get width
-   * @return width
-   **/
+    
   @Override
-    public Integer getWidth() {
+  public Integer getWidth() {
         return m_width;
     }
-  /**
-   * Get height
-   * @return height
-   **/
+    
   @Override
-    public Integer getHeight() {
+  public Integer getHeight() {
         return m_height;
     }
+    
   
     public static class DefaultBoundsEntBuilder implements BoundsEntBuilder {
     
@@ -112,31 +100,35 @@ public class DefaultBoundsEnt  implements BoundsEnt {
             
         }
     
-        private Integer m_x;
-        private Integer m_y;
-        private Integer m_width;
-        private Integer m_height;
+        private Integer m_x = null;
+        private Integer m_y = null;
+        private Integer m_width = null;
+        private Integer m_height = null;
 
         @Override
         public DefaultBoundsEntBuilder setX(Integer x) {
              m_x = x;
              return this;
         }
+
         @Override
         public DefaultBoundsEntBuilder setY(Integer y) {
              m_y = y;
              return this;
         }
+
         @Override
         public DefaultBoundsEntBuilder setWidth(Integer width) {
              m_width = width;
              return this;
         }
+
         @Override
         public DefaultBoundsEntBuilder setHeight(Integer height) {
              m_height = height;
              return this;
         }
+
         
         @Override
         public DefaultBoundsEnt build() {

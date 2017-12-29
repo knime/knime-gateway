@@ -61,23 +61,46 @@ public interface PortTypeEnt extends GatewayEntity {
 
   /**
    * Port type class name (for coloring, connection checks).
-   * @return portObjectClassName
+   * @return portObjectClassName , never <code>null</code>
    **/
   public String getPortObjectClassName();
+
   /**
    * Whether the port is optional, only applies to input ports.
-   * @return optional
+   * @return optional , never <code>null</code>
    **/
   public Boolean isOptional();
+
 
     /**
      * The builder for the entity.
      */
     public interface PortTypeEntBuilder extends GatewayEntityBuilder<PortTypeEnt> {
 
+        /**
+         * Port type class name (for coloring, connection checks).
+         * 
+         * @param portObjectClassName the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         PortTypeEntBuilder setPortObjectClassName(String portObjectClassName);
+        
+        /**
+         * Whether the port is optional, only applies to input ports.
+         * 
+         * @param optional the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         PortTypeEntBuilder setOptional(Boolean optional);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         PortTypeEnt build();
     
     }

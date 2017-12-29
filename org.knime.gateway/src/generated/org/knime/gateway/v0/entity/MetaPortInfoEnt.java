@@ -62,41 +62,88 @@ public interface MetaPortInfoEnt extends GatewayEntity {
 
   /**
    * The type.
-   * @return portType
+   * @return portType , never <code>null</code>
    **/
   public PortTypeEnt getPortType();
+
   /**
    * Whether it is connected.
-   * @return connected
+   * @return connected 
    **/
   public Boolean isConnected();
+
   /**
    * The message (summary of upstream node port).
-   * @return message
+   * @return message 
    **/
   public String getMessage();
+
   /**
    * The old index.
-   * @return oldIndex
+   * @return oldIndex 
    **/
   public Integer getOldIndex();
+
   /**
    * The new index.
-   * @return newIndex
+   * @return newIndex 
    **/
   public Integer getNewIndex();
+
 
     /**
      * The builder for the entity.
      */
     public interface MetaPortInfoEntBuilder extends GatewayEntityBuilder<MetaPortInfoEnt> {
 
+        /**
+         * The type.
+         * 
+         * @param portType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         MetaPortInfoEntBuilder setPortType(PortTypeEnt portType);
+        
+        /**
+         * Whether it is connected.
+         * 
+         * @param connected the property value,  
+         * @return this entity builder for chaining
+         */
         MetaPortInfoEntBuilder setConnected(Boolean connected);
+        
+        /**
+         * The message (summary of upstream node port).
+         * 
+         * @param message the property value,  
+         * @return this entity builder for chaining
+         */
         MetaPortInfoEntBuilder setMessage(String message);
+        
+        /**
+         * The old index.
+         * 
+         * @param oldIndex the property value,  
+         * @return this entity builder for chaining
+         */
         MetaPortInfoEntBuilder setOldIndex(Integer oldIndex);
+        
+        /**
+         * The new index.
+         * 
+         * @param newIndex the property value,  
+         * @return this entity builder for chaining
+         */
         MetaPortInfoEntBuilder setNewIndex(Integer newIndex);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         MetaPortInfoEnt build();
     
     }

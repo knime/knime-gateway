@@ -61,23 +61,44 @@ public interface NodeMessageEnt extends GatewayEntity {
 
   /**
    * Get type
-   * @return type
+   * @return type 
    **/
   public String getType();
+
   /**
    * Get message
-   * @return message
+   * @return message , never <code>null</code>
    **/
   public String getMessage();
+
 
     /**
      * The builder for the entity.
      */
     public interface NodeMessageEntBuilder extends GatewayEntityBuilder<NodeMessageEnt> {
 
+        /**
+         * 
+         * @param type the property value,  
+         * @return this entity builder for chaining
+         */
         NodeMessageEntBuilder setType(String type);
+        
+        /**
+         * 
+         * @param message the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
         NodeMessageEntBuilder setMessage(String message);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         NodeMessageEnt build();
     
     }

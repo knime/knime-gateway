@@ -62,6 +62,9 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
   
   private DefaultWorkflowAnnotationEnt(DefaultWorkflowAnnotationEntBuilder builder) {
     super();
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = builder.m_type;
     m_text = builder.m_text;
     m_backgroundColor = builder.m_backgroundColor;
@@ -82,67 +85,80 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
             super();
         }
     
-        private Integer m_type;
-        private String m_text;
-        private Integer m_backgroundColor;
+        private String m_type = null;
+        private String m_text = null;
+        private Integer m_backgroundColor = null;
         private BoundsEnt m_bounds;
-        private String m_textAlignment;
-        private Integer m_borderSize;
-        private Integer m_borderColor;
-        private Integer m_defaultFontSize;
-        private Integer m_version;
-        private java.util.List<StyleRangeEnt> m_styleRanges;
+        private String m_textAlignment = null;
+        private Integer m_borderSize = null;
+        private Integer m_borderColor = null;
+        private Integer m_defaultFontSize = null;
+        private Integer m_version = null;
+        private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
 
         @Override
-        public DefaultWorkflowAnnotationEntBuilder setType(Integer type) {
+        public DefaultWorkflowAnnotationEntBuilder setType(String type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setText(String text) {
              m_text = text;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBackgroundColor(Integer backgroundColor) {
              m_backgroundColor = backgroundColor;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds) {
              m_bounds = bounds;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setTextAlignment(String textAlignment) {
              m_textAlignment = textAlignment;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBorderSize(Integer borderSize) {
              m_borderSize = borderSize;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBorderColor(Integer borderColor) {
              m_borderColor = borderColor;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
              m_defaultFontSize = defaultFontSize;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setVersion(Integer version) {
              m_version = version;
              return this;
         }
+
         @Override
         public DefaultWorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
              m_styleRanges = styleRanges;
              return this;
         }
+
         
         @Override
         public DefaultWorkflowAnnotationEnt build() {

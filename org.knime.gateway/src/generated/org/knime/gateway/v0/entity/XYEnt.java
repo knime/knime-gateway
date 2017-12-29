@@ -61,23 +61,44 @@ public interface XYEnt extends GatewayEntity {
 
   /**
    * Get x
-   * @return x
+   * @return x 
    **/
   public Integer getX();
+
   /**
    * Get y
-   * @return y
+   * @return y 
    **/
   public Integer getY();
+
 
     /**
      * The builder for the entity.
      */
     public interface XYEntBuilder extends GatewayEntityBuilder<XYEnt> {
 
+        /**
+         * 
+         * @param x the property value,  
+         * @return this entity builder for chaining
+         */
         XYEntBuilder setX(Integer x);
+        
+        /**
+         * 
+         * @param y the property value,  
+         * @return this entity builder for chaining
+         */
         XYEntBuilder setY(Integer y);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         XYEnt build();
     
     }

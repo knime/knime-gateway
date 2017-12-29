@@ -61,8 +61,17 @@ public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPo
   
   private DefaultNodeInPortEnt(DefaultNodeInPortEntBuilder builder) {
     super();
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = builder.m_type;
+    if(builder.m_portIndex == null) {
+        throw new IllegalArgumentException("portIndex must not be null.");
+    }
     m_portIndex = builder.m_portIndex;
+    if(builder.m_portType == null) {
+        throw new IllegalArgumentException("portType must not be null.");
+    }
     m_portType = builder.m_portType;
     m_portName = builder.m_portName;
   }
@@ -75,31 +84,44 @@ public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPo
             super();
         }
     
-        private Integer m_type;
-        private Integer m_portIndex;
+        private String m_type = null;
+        private Integer m_portIndex = null;
         private PortTypeEnt m_portType;
-        private String m_portName;
+        private String m_portName = null;
 
         @Override
-        public DefaultNodeInPortEntBuilder setType(Integer type) {
+        public DefaultNodeInPortEntBuilder setType(String type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
+
         @Override
         public DefaultNodeInPortEntBuilder setPortIndex(Integer portIndex) {
+             if(portIndex == null) {
+                 throw new IllegalArgumentException("portIndex must not be null.");
+             }
              m_portIndex = portIndex;
              return this;
         }
+
         @Override
         public DefaultNodeInPortEntBuilder setPortType(PortTypeEnt portType) {
+             if(portType == null) {
+                 throw new IllegalArgumentException("portType must not be null.");
+             }
              m_portType = portType;
              return this;
         }
+
         @Override
         public DefaultNodeInPortEntBuilder setPortName(String portName) {
              m_portName = portName;
              return this;
         }
+
         
         @Override
         public DefaultNodeInPortEnt build() {

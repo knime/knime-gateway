@@ -61,35 +61,70 @@ public interface BoundsEnt extends GatewayEntity {
 
   /**
    * Get x
-   * @return x
+   * @return x 
    **/
   public Integer getX();
+
   /**
    * Get y
-   * @return y
+   * @return y 
    **/
   public Integer getY();
+
   /**
    * Get width
-   * @return width
+   * @return width 
    **/
   public Integer getWidth();
+
   /**
    * Get height
-   * @return height
+   * @return height 
    **/
   public Integer getHeight();
+
 
     /**
      * The builder for the entity.
      */
     public interface BoundsEntBuilder extends GatewayEntityBuilder<BoundsEnt> {
 
+        /**
+         * 
+         * @param x the property value,  
+         * @return this entity builder for chaining
+         */
         BoundsEntBuilder setX(Integer x);
+        
+        /**
+         * 
+         * @param y the property value,  
+         * @return this entity builder for chaining
+         */
         BoundsEntBuilder setY(Integer y);
+        
+        /**
+         * 
+         * @param width the property value,  
+         * @return this entity builder for chaining
+         */
         BoundsEntBuilder setWidth(Integer width);
+        
+        /**
+         * 
+         * @param height the property value,  
+         * @return this entity builder for chaining
+         */
         BoundsEntBuilder setHeight(Integer height);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
         BoundsEnt build();
     
     }

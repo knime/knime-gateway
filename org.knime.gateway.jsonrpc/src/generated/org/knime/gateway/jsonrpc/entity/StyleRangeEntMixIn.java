@@ -66,8 +66,9 @@ import org.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt.DefaultStyleRangeEn
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = JsonRpcUtil.ENTITY_TYPE_KEY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "",
+    visible = true,
     defaultImpl = DefaultStyleRangeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultStyleRangeEnt.class, name="StyleRange")
@@ -108,8 +109,8 @@ public interface StyleRangeEntMixIn extends StyleRangeEnt {
      */
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = JsonRpcUtil.ENTITY_TYPE_KEY,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "",
         defaultImpl = DefaultStyleRangeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder.class, name="StyleRange")
