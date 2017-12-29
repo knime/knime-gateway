@@ -64,6 +64,8 @@ import org.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
 /**
+ * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.
+ * {@link WorkflowManager} etc.).
  *
  * @author Martin Horn, University of Konstanz
  */

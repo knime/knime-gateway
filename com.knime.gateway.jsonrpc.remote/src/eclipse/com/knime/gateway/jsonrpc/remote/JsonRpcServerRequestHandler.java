@@ -138,7 +138,8 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
                 DEFAULT_SERVICE_PACKAGE + "." + DEFAULT_SERVICE_PREFIX + serviceInterface.getSimpleName();
             try {
                 defaultServiceClass = Class.forName(defaultServiceFullClassName);
-                GatewayService wrappedService = WrapWithJsonRpcService.wrap((GatewayService)defaultServiceClass.newInstance(), serviceInterface);
+                GatewayService wrappedService =
+                    WrapWithJsonRpcService.wrap((GatewayService)defaultServiceClass.newInstance(), serviceInterface);
                 wrappedServices.put(serviceInterface.getSimpleName(), wrappedService);
             } catch (ClassNotFoundException ex1) {
                 throw new RuntimeException(

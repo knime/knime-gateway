@@ -13,7 +13,7 @@ import org.knime.gateway.v0.service.NodeService;
  *
  * @author Martin Horn, University of Konstanz
  */
-@JsonRpcService(value = "Service")
+@JsonRpcService(value = "NodeService")
 // AUTO-GENERATED CODE; DO NOT MODIFY
 public class JsonRpcNodeServiceWrapper implements NodeService {
 

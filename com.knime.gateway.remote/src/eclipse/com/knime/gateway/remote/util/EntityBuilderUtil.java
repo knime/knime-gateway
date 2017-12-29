@@ -163,7 +163,8 @@ public class EntityBuilderUtil {
         return builder(NodeInPortEntBuilder.class)
                 .setPortIndex(inPort.getPortIndex())
                 .setPortName(inPort.getPortName())
-                .setPortType(pType).build();
+                .setPortType(pType)
+                .setType("NodeInPort").build();
     }
 
     private static List<NodeOutPortEnt> buildNodeOutPortEnts(final NodeContainer nc) {
@@ -187,7 +188,8 @@ public class EntityBuilderUtil {
         return builder(NodeOutPortEntBuilder.class)
                 .setPortIndex(outPort.getPortIndex())
                 .setPortName(outPort.getPortName())
-                .setPortType(pType).build();
+                .setPortType(pType)
+                .setType("NodeOutPort").build();
     }
 
     private static NodeAnnotationEnt buildNodeAnnotationEnt(final NodeContainer nc) {
@@ -204,7 +206,8 @@ public class EntityBuilderUtil {
             .setBorderColor(na.getBorderColor()).setBorderSize(na.getBorderSize())
             .setDefaultFontSize(na.getDefaultFontSize()).setBounds(bounds).setText(na.getText())
             .setTextAlignment(na.getAlignment().toString()).setVersion(na.getVersion())
-            .setDefault(na.getData().isDefault()).setStyleRanges(styleRanges).build();
+            .setDefault(na.getData().isDefault()).setStyleRanges(styleRanges)
+            .setType("NodeAnnotation").build();
     }
 
     private static JobManagerEnt buildJobManagerEnt(final NodeExecutionJobManager jobManager) {
@@ -294,7 +297,8 @@ public class EntityBuilderUtil {
             .setNodeAnnotation(buildNodeAnnotationEnt(nc))
             .setInPorts(buildNodeInPortEnts(nc))
             .setHasDialog(nc.hasDialog())
-            .setNodeFactoryKey(nodeFactoryKeyBuilder.build()).build();
+            .setNodeFactoryKey(nodeFactoryKeyBuilder.build())
+            .setType("NativeNode").build();
     }
 
     private static NodeUIInfoEnt buildNodeUIInfoEnt(final NodeUIInformation uiInfo) {
@@ -347,7 +351,8 @@ public class EntityBuilderUtil {
                 .setWorkflowIncomingPorts(buildWorkflowIncomingPortEnts(wm))
                 .setWorkflowOutgoingPorts(buildWorkflowOutgoingPortEnts(wm))
                 .setRootWorkflowID(rootWorkflowID)
-                .setEncrypted(wm.isEncrypted()).build();
+                .setEncrypted(wm.isEncrypted())
+                .setType("WorkflowNode").build();
     }
 
     /**
@@ -380,7 +385,8 @@ public class EntityBuilderUtil {
                 .setRootWorkflowID(rootWorkflowID)
                 .setEncrypted(subNode.getWorkflowManager().isEncrypted())
                 .setVirtualInNodeID(nodeIdAsString(subNode.getVirtualInNodeID()))
-                .setVirtualOutNodeID(nodeIdAsString(subNode.getVirtualOutNodeID())).build();
+                .setVirtualOutNodeID(nodeIdAsString(subNode.getVirtualOutNodeID()))
+                .setType("WrappedWorkflowNode").build();
     }
 
     /**
@@ -432,6 +438,7 @@ public class EntityBuilderUtil {
                 .setBounds(bounds)
                 .setText(wa.getText())
                 .setStyleRanges(styleRanges)
+                .setType("WorkflowAnnotation")
                 .build();
     }
 

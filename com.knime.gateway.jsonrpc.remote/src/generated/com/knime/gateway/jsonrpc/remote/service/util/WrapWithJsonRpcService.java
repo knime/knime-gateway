@@ -67,12 +67,12 @@ public class WrapWithJsonRpcService {
     }
     
     /**
-     * Lists all gateway service classes of package <code>org.knime.gateway.v0.service</code>.
+     * Wraps a service instance with a JsonRpc-wrapper (that brings the json-rpc annotations).
      *
      * @param service the service to be wrapped
      * @param serviceInterface the service interface to select the right wrapper
      *
-     * @return the class list
+     * @return the service wrapper
      */
     public static GatewayService wrap(final GatewayService service, final Class<?> serviceInterface) {
         try {

@@ -13,7 +13,7 @@ import org.knime.gateway.v0.service.WorkflowService;
  *
  * @author Martin Horn, University of Konstanz
  */
-@JsonRpcService(value = "Service")
+@JsonRpcService(value = "WorkflowService")
 // AUTO-GENERATED CODE; DO NOT MODIFY
 public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
 

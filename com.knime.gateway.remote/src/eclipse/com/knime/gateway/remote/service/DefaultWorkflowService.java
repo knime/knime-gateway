@@ -63,7 +63,9 @@ import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.util.EntityBuilderUtil;
 
 /**
- *
+ * Default implementation of {@link WorkflowService} that delegates the operations to knime.core (e.g.
+ * {@link WorkflowManager} etc.).
+
  * @author Martin Horn, University of Konstanz
  */
 public class DefaultWorkflowService implements WorkflowService {
