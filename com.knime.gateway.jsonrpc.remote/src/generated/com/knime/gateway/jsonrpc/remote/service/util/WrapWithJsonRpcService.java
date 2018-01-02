@@ -59,7 +59,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Martin Horn, University of Konstanz
  */
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:34.776+01:00")
 public class WrapWithJsonRpcService {
 
     private WrapWithJsonRpcService() {
