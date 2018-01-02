@@ -4,16 +4,20 @@
 
 ### _org.knime.gateway_: 
 * contains all the entity, entity builder and service interfaces (e.g. WorkflowEnt, NodeEnt, WorkflowService, ExecutionService etc.)
-* interfaces (among others) are auto-generated from a home-brewn json-based interface definition language (IDL) - see 'src-gen' folder and the 'SourceCodeBuilder'-class of the _org.knime.gateway.builder_-project below
+* interfaces (among others) are auto-generated from a Swagger 2.0 specification (a yaml-file) - see 'api/gateway.yaml'
 * contains also the (auto-generated) default implementations of the entity interfaces
 * some 'API'-remarks
   * there are entities that are the messages to be send in between two computers consisting either of other entities or primitives (or list/maps of those)
   * entity interfaces have all a trailing 'Ent'
   * entities are generated with a corresponding entity builder ("EntBuilder"-suffix)
-  * service interfaces all have a trailing "Service" and represent a collection of methods that either have entities or primitives as parameters/return types
+  * service interfaces all have a trailing "Service" and represent a collection of methods that either have entities or primitives as parameters/return types - a service-method corresponds to a resource-endpoint in the swagger specification
 
-### _org.knime.gateway.builder_:
-* contains the code to auto-generate code from a api definition, an object specification (see 'SourceCodeBuilder'-class for more details) and [velocity-templates](https://velocity.apache.org/)
+### _org.knime.gateway.codegen_:
+* contains the code to auto-generate code from the api definition (in org.knime.gateway/api)
+* it auto-generates code for various projects and assumes their static existence relative to this project
+* the 'src-gen/*-config.json'-file determine the what is generated where
+* for auto-generation the swagger-codegen tools are used and extended (which in turn uses mustache templates, see 'src-gen/templates')
+* for code generation run org.knime.gateway.codegen.Generate
 * only needed for development, never deployed with the actual product
 
 ### _org.knime.gateway.local_:
