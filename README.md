@@ -10,4 +10,4 @@
 ### _com.knime.gateway.jsonrpc.remote_:
 * to be shipped with the KNIME executor on the server-side
 * receives [json-rpc 2.0](www.jsonrpc.org) messages from the server (e.g. via MQ or RMI) and turns them into gateway API service calls that in turn uses the default service implementations from _com.knime.gateway.remote_
-* the json-rpc service implementations (that wrap the default service implementations) are auto-generated (see _org.knime.gateway.builder_)
+* the json-rpc service implementations (that wrap the default service implementations) are auto-generated (see _org.knime.gateway.codegen_)
