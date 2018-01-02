@@ -75,7 +75,7 @@ import org.knime.gateway.v0.entity.impl.DefaultMetaPortInfoEnt.DefaultMetaPortIn
     @Type(value = DefaultMetaPortInfoEnt.class, name="MetaPortInfo")
 })
 @JsonDeserialize(builder=DefaultMetaPortInfoEntBuilder.class)
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
 public interface MetaPortInfoEntMixIn extends MetaPortInfoEnt {
 
     @Override

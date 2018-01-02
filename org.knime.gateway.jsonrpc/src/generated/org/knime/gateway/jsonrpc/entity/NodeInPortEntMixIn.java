@@ -76,7 +76,7 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt.DefaultNodeInPortEn
     @Type(value = DefaultNodeInPortEnt.class, name="NodeInPort")
 })
 @JsonDeserialize(builder=DefaultNodeInPortEntBuilder.class)
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
 public interface NodeInPortEntMixIn extends NodeInPortEnt {
 
     @Override

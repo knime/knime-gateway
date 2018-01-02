@@ -61,7 +61,7 @@ import org.knime.gateway.entity.GatewayEntityBuilder;
  * 
  * @author Martin Horn, University of Konstanz
  */
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.284+01:00")
 public interface WorkflowNodeEnt extends NodeEnt {
 
 

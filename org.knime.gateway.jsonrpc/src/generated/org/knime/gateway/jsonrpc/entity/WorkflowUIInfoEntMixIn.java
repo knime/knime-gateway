@@ -75,7 +75,7 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflow
     @Type(value = DefaultWorkflowUIInfoEnt.class, name="WorkflowUIInfo")
 })
 @JsonDeserialize(builder=DefaultWorkflowUIInfoEntBuilder.class)
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
 public interface WorkflowUIInfoEntMixIn extends WorkflowUIInfoEnt {
 
     @Override

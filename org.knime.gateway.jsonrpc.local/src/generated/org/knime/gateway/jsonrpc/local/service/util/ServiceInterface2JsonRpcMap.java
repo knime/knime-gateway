@@ -57,7 +57,7 @@ import org.knime.gateway.service.GatewayService;
  *
  * @author Martin Horn, University of Konstanz
  */
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.405+01:00")
 public class ServiceInterface2JsonRpcMap {
 
     private ServiceInterface2JsonRpcMap() {

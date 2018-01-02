@@ -55,7 +55,7 @@ import org.knime.gateway.v0.service.WorkflowService;
  *
  * @author Martin Horn, University of Konstanz
  */
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.405+01:00")
 public interface JsonRpcWorkflowService extends WorkflowService {
 
 	/**

@@ -53,6 +53,7 @@ import org.knime.gateway.v0.entity.NodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.284+01:00")
 public interface NodeService extends GatewayService {
 
     /**

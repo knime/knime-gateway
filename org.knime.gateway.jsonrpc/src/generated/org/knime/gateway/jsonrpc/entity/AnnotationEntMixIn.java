@@ -82,7 +82,7 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
   @Type(value = DefaultWorkflowAnnotationEnt.class, name = "WorkflowAnnotation")
 })
 @JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
-// AUTO-GENERATED CODE; DO NOT MODIFY
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
 public interface AnnotationEntMixIn extends AnnotationEnt {
 
     @Override
