@@ -2,8 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Gateway Specification
 Bundle-SymbolicName: org.knime.gateway;singleton:=true
-Bundle-Version: 3.5.0.qualifier
+Bundle-Version: 3.6.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
+Export-Package: org.knime.gateway.entity,
+ org.knime.gateway.service,
+ org.knime.gateway.util,
+ org.knime.gateway.v0.entity,
+ org.knime.gateway.v0.entity.impl,
+ org.knime.gateway.v0.entity.util,
+ org.knime.gateway.v0.service,
+ org.knime.gateway.v0.service.util
 Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  org.knime.core;bundle-version="[3.3.0,4.0.0)",
  org.junit;bundle-version="[4.12.0,5.0.0)",
@@ -14,13 +22,5 @@ Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.7.1,3.0.0)",
  org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
  org.mockito.mockito-core;bundle-version="1.10.19"
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.knime.gateway.entity,
- org.knime.gateway.service,
- org.knime.gateway.util,
- org.knime.gateway.v0.entity,
- org.knime.gateway.v0.entity.impl,
- org.knime.gateway.v0.entity.util,
- org.knime.gateway.v0.service,
- org.knime.gateway.v0.service.util
+Bundle-ActivationPolicy: lazy
