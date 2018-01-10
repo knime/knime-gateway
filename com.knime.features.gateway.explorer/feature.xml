@@ -2,7 +2,7 @@
 <feature
       id="com.knime.features.gateway.explorer"
       label="KNIME Job View (experimental)"
-      version="3.5.0.qualifier"
+      version="3.6.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
