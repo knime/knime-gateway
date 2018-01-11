@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.DynamicNodeFactory;
@@ -262,7 +263,7 @@ public class EntityBuilderUtil {
      * @param rootWorkflowID must be present, if nc is of type {@link WorkflowManager}
      * @return
      */
-    public static NodeEnt buildNodeEnt(final NodeContainer nc, final String rootWorkflowID) {
+    public static NodeEnt buildNodeEnt(final NodeContainer nc, final UUID rootWorkflowID) {
         if(nc instanceof NativeNodeContainer) {
             return buildNativeNodeEnt((NativeNodeContainer) nc, rootWorkflowID);
         } else if(nc instanceof WorkflowManager) {
@@ -274,7 +275,7 @@ public class EntityBuilderUtil {
         }
     }
 
-    private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc, final String rootWorkflowID) {
+    private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc, final UUID rootWorkflowID) {
         NodeFactory<NodeModel> factory = nc.getNode().getFactory();
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)
                 .setClassName(factory.getClass().getCanonicalName());
@@ -325,7 +326,7 @@ public class EntityBuilderUtil {
      * @param rootWorkflowID
      * @return
      */
-    public static WorkflowNodeEnt buildWorkflowNodeEnt(final WorkflowManager wm, final String rootWorkflowID) {
+    public static WorkflowNodeEnt buildWorkflowNodeEnt(final WorkflowManager wm, final UUID rootWorkflowID) {
         NodeExecutionJobManager jobManager;
         if (wm.getParent() == WorkflowManager.ROOT) {
             //TODO somehow get the default job manager from the workflow manager itself!!
@@ -361,7 +362,7 @@ public class EntityBuilderUtil {
      * @return
      */
     public static WrappedWorkflowNodeEnt buildWrappedWorkflowNodeEnt(final SubNodeContainer subNode,
-        final String rootWorkflowID) {
+        final UUID rootWorkflowID) {
         NodeExecutionJobManager jobManager;
         if (subNode.getParent() == WorkflowManager.ROOT) {
             //TODO somehow get the default job manager from the workflow manager itself!!
@@ -471,7 +472,7 @@ public class EntityBuilderUtil {
      * @param rootWorkflowID the workflow ID of the root workflow
      * @return
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final String rootWorkflowID) {
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final UUID rootWorkflowID) {
         Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
         Map<String, NodeEnt> nodes = nodeContainers.stream().map(nc -> {
             return buildNodeEnt(nc, rootWorkflowID);

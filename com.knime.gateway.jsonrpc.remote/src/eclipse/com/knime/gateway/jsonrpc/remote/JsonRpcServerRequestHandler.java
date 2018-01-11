@@ -98,6 +98,7 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
 
         JsonRpcUtil.addMixIns(mapper);
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
+        m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
 
         for (Entry<String, GatewayService> entry : createWrappedServices().entrySet()) {
             m_jsonRpcMultiServer.addService(entry.getKey(), entry.getValue());

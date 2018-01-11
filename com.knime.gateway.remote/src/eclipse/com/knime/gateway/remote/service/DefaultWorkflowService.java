@@ -51,6 +51,7 @@ package com.knime.gateway.remote.service;
 import static com.knime.gateway.remote.util.EntityBuilderUtil.buildWorkflowEnt;
 
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
@@ -74,7 +75,7 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowEnt getWorkflow(final String rootWorkflowID, final String nodeID) {
+    public WorkflowEnt getWorkflow(final UUID rootWorkflowID, final String nodeID) {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID != null) {
             WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)

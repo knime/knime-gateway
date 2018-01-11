@@ -69,6 +69,6 @@ public class GatewayJobWorkflowProvider implements JobWorkflowProvider {
      */
     @Override
     public WorkflowManagerUI getWorkflowForJob(final UUID jobId, final URI uri, final String jwt) {
-        return EntityProxyAccess.createWorkflowManager(new ServerServiceConfig(uri, jwt), jobId.toString());
+        return EntityProxyAccess.createWorkflowManager(new ServerServiceConfig(uri, jwt), jobId);
     }
 }

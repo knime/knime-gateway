@@ -51,6 +51,7 @@ package com.knime.gateway.remote.service;
 import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
 
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
@@ -60,6 +61,8 @@ import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.v0.entity.NodeEnt;
 import org.knime.gateway.v0.service.NodeService;
+import org.knime.gateway.v0.service.util.ServiceExceptions;
+import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 
@@ -71,12 +74,19 @@ import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
  */
 public class DefaultNodeService implements NodeService {
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getNodeSettings(final String rootWorkflowID, final String nodeID) {
+    public String getNodeSettings(final UUID rootWorkflowID, final String nodeID) throws NodeNotFoundException {
         WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-        NodeContainer nodeContainer = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+        NodeContainer nodeContainer;
+        try{
+            nodeContainer = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+        } catch(IllegalArgumentException e) {
+            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
+        }
         NodeSettings settings = nodeContainer.getNodeSettings();
         return JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
     }
@@ -85,13 +95,17 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public NodeEnt getNode(final String rootWorkflowID, final String nodeID) {
+    public NodeEnt getNode(final UUID rootWorkflowID, final String nodeID) throws NodeNotFoundException {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         if (nodeID != null) {
             WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
                 () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-            NodeContainer node =
-                wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+            NodeContainer node;
+            try {
+                node = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+            } catch (IllegalArgumentException e) {
+                throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
+            }
             return buildNodeEnt(node, rootWorkflowID);
         } else {
             return buildNodeEnt(

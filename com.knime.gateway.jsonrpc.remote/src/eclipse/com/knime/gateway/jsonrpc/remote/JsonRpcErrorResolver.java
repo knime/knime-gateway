@@ -22,7 +22,7 @@
  *  Hence, KNIME and ECLIPSE are both independent programs and are not
  *  derived from each other. Should, however, the interpretation of the
  *  GNU GPL Version 3 ("License") under any applicable laws result in
- *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  KNIME and ECLIPSE being a combined program, KNIME GMBH herewith grants
  *  you the additional permission to use and propagate KNIME together with
  *  ECLIPSE with only the license terms in place for ECLIPSE applying to
  *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
@@ -44,55 +44,69 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 8, 2017 (hornm): created
+ *   Jan 10, 2018 (hornm): created
  */
 package com.knime.gateway.jsonrpc.remote;
 
-import java.util.UUID;
+import java.lang.reflect.Method;
+import java.util.List;
 
-import org.knime.core.node.workflow.WorkflowManager;
-
-import com.knime.gateway.remote.endpoint.WorkflowProject;
-import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.googlecode.jsonrpc4j.AnnotationsErrorResolver;
+import com.googlecode.jsonrpc4j.ErrorResolver;
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
+import com.googlecode.jsonrpc4j.ReflectionUtil;
 
 /**
- * It keeps track of created and discarded jobs at the executor (and adds/removes the them to/from the
- * {@link WorkflowProjectManager}).
+ * Resolves exceptions by looking at {@link JsonRpcErrors} annotations. Almost the same as
+ * {@link AnnotationsErrorResolver} (can not be derived, some code copied from there), except the error data object.
  *
- *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class JobPoolListener implements com.knime.enterprise.executor.JobPoolListener {
+public class JsonRpcErrorResolver implements ErrorResolver {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void jobLoaded(final UUID id, final WorkflowManager wfm) {
-        WorkflowProjectManager.addWorkflowProject(id, new WorkflowProject() {
+    public JsonError resolveError(final Throwable thrownException, final Method method,
+        final List<JsonNode> arguments) {
+        JsonRpcError resolver = getResolverForException(thrownException, method);
+        if (notFoundResolver(resolver)) {
+            return null;
+        }
 
-            @Override
-            public WorkflowManager openProject() {
-                return wfm;
-            }
-
-            @Override
-            public String getName() {
-                return wfm.getName();
-            }
-
-            @Override
-            public String getID() {
-                return id.toString();
-            }
-        });
+        String message = hasErrorMessage(resolver) ? resolver.message() : thrownException.getMessage();
+        return new JsonError(resolver.code(), message, resolver.data());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void jobDiscarded(final UUID id) {
-        WorkflowProjectManager.removeWorkflowProject(id);
+    private JsonRpcError getResolverForException(final Throwable thrownException, final Method method) {
+        JsonRpcErrors errors = ReflectionUtil.getAnnotation(method, JsonRpcErrors.class);
+        if (hasAnnotations(errors)) {
+            for (JsonRpcError errorDefined : errors.value()) {
+                if (isExceptionInstanceOfError(thrownException, errorDefined)) {
+                    return errorDefined;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean notFoundResolver(final JsonRpcError resolver) {
+        return resolver == null;
+    }
+
+    private boolean hasErrorMessage(final JsonRpcError em) {
+        // noinspection ConstantConditions
+        return em.message() != null && em.message().trim().length() > 0;
+    }
+
+    private boolean hasAnnotations(final JsonRpcErrors errors) {
+        return errors != null;
+    }
+
+    private boolean isExceptionInstanceOfError(final Throwable target, final JsonRpcError em) {
+        return em.exception().isInstance(target);
     }
 }

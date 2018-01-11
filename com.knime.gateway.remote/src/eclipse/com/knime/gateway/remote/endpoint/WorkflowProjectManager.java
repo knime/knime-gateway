@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -69,12 +70,12 @@ public final class WorkflowProjectManager {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowProjectManager.class);
 
-    private static Map<String, WorkflowProject> m_workflowProjectMap = new HashMap<String, WorkflowProject>();
+    private static Map<UUID, WorkflowProject> m_workflowProjectMap = new HashMap<UUID, WorkflowProject>();
 
     /**
      * Maps of already opened/loaded workflow projects.
      */
-    private static Map<String, WorkflowManager> m_cachedWorkflowsMap = new HashMap<String, WorkflowManager>();
+    private static Map<UUID, WorkflowManager> m_cachedWorkflowsMap = new HashMap<UUID, WorkflowManager>();
 
     private WorkflowProjectManager() {
         //~ static utility class
@@ -94,7 +95,7 @@ public final class WorkflowProjectManager {
      * @param worklfowProjectID id of the project to be added
      * @param project the actual workflow project to be added
      */
-    public static void addWorkflowProject(final String worklfowProjectID, final WorkflowProject project) {
+    public static void addWorkflowProject(final UUID worklfowProjectID, final WorkflowProject project) {
         m_workflowProjectMap.put(worklfowProjectID, project);
     }
 
@@ -103,7 +104,7 @@ public final class WorkflowProjectManager {
      *
      * @param workflowProjectID id of the project to be removed
      */
-    public static void removeWorkflowProject(final String workflowProjectID) {
+    public static void removeWorkflowProject(final UUID workflowProjectID) {
          m_workflowProjectMap.remove(workflowProjectID);
          m_cachedWorkflowsMap.remove(workflowProjectID);
     }
@@ -112,7 +113,7 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID
      * @return the workflow project for the given id or an empty optional if doesn't exist
      */
-    public static Optional<WorkflowProject> getWorkflowProject(final String workflowProjectID) {
+    public static Optional<WorkflowProject> getWorkflowProject(final UUID workflowProjectID) {
         return Optional.ofNullable(m_workflowProjectMap.get(workflowProjectID));
     }
 
@@ -123,7 +124,7 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID
      * @return the opened workflow or an empty optional if there is no workflow project with the given id
      */
-    public static Optional<WorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
+    public static Optional<WorkflowManager> openAndCacheWorkflow(final UUID workflowProjectID) {
         WorkflowManager iwfm = getCachedWorkflow(workflowProjectID).orElse(null);
         if (iwfm == null) {
             WorkflowProject wp = getWorkflowProject(workflowProjectID).orElse(null);
@@ -140,7 +141,7 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID
      * @return the cached workflow or an empty optional if none has been found for the given workflow project ID.
      */
-    private static Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
+    private static Optional<WorkflowManager> getCachedWorkflow(final UUID workflowProjectID) {
         return Optional.ofNullable(m_cachedWorkflowsMap.get(workflowProjectID));
     }
 
@@ -150,7 +151,7 @@ public final class WorkflowProjectManager {
      *
      * @param wfm
      */
-    private static void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
+    private static void cacheWorkflow(final UUID workflowProjectID, final WorkflowManager wfm) {
         m_cachedWorkflowsMap.put(workflowProjectID, wfm);
     }
 }

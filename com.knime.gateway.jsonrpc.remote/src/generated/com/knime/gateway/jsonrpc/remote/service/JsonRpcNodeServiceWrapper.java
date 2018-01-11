@@ -2,9 +2,13 @@ package com.knime.gateway.jsonrpc.remote.service;
 
 import org.knime.gateway.v0.entity.NodeEnt;
 
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
+
+import org.knime.gateway.v0.service.util.ServiceExceptions;
 
 import org.knime.gateway.v0.service.NodeService;
 
@@ -14,7 +18,7 @@ import org.knime.gateway.v0.service.NodeService;
  * @author Martin Horn, University of Konstanz
  */
 @JsonRpcService(value = "NodeService")
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:34.776+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.417+01:00")
 public class JsonRpcNodeServiceWrapper implements NodeService {
 
     private final NodeService m_service;
@@ -28,7 +32,11 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      */
     @Override
     @JsonRpcMethod(value = "getNode")
-    public NodeEnt getNode(@JsonRpcParam(value="jobId") String jobId, String nodeId) {
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public NodeEnt getNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId) throws ServiceExceptions.NodeNotFoundException {
         return m_service.getNode(jobId, nodeId);    
     }
 
@@ -37,7 +45,11 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      */
     @Override
     @JsonRpcMethod(value = "getNodeSettings")
-    public String getNodeSettings(@JsonRpcParam(value="jobId") String jobId, String nodeId) {
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public String getNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId) throws ServiceExceptions.NodeNotFoundException {
         return m_service.getNodeSettings(jobId, nodeId);    
     }
 
