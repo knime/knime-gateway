@@ -45,6 +45,7 @@
 package org.knime.gateway.v0.service;
 
 import org.knime.gateway.service.GatewayService;
+import org.knime.gateway.v0.service.util.ServiceExceptions;
 
 import org.knime.gateway.v0.entity.WorkflowEnt;
 
@@ -53,7 +54,7 @@ import org.knime.gateway.v0.entity.WorkflowEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.284+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
 public interface WorkflowService extends GatewayService {
 
     /**
@@ -63,7 +64,8 @@ public interface WorkflowService extends GatewayService {
      * @param nodeId The ID of the node this sub(!)-workflow is requested for. If not given, the root-workflow will be returned.
      *
      * @return the result
+;
      */
-    WorkflowEnt getWorkflow(String jobId, String nodeId);
-    
+    WorkflowEnt getWorkflow(java.util.UUID jobId, String nodeId);
+        
 }

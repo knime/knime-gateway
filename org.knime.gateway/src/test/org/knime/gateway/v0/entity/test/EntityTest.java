@@ -51,6 +51,8 @@ package org.knime.gateway.v0.entity.test;
 import static org.junit.Assert.assertEquals;
 import static org.knime.gateway.entity.EntityBuilderManager.builder;
 
+import java.util.UUID;
+
 import org.junit.Test;
 import org.knime.gateway.entity.EntityBuilderManager;
 import org.knime.gateway.v0.entity.NativeNodeEnt;
@@ -77,6 +79,7 @@ public class EntityTest {
      */
     @Test
     public void testNativeNodeEnt() {
+        UUID wfId = UUID.randomUUID();
         NativeNodeEnt ent = builder(NativeNodeEntBuilder.class)
         .setName("name")
         .setHasDialog(true)
@@ -84,7 +87,7 @@ public class EntityTest {
         .setNodeState(NodeStateEnum.CONFIGURED)
         .setNodeType(NodeTypeEnum.LEARNER)
         .setType("NativeNode")
-        .setRootWorkflowID("root_workflow_id")
+        .setRootWorkflowID(wfId)
         .setNodeFactoryKey(createNodeFactoryKeyEnt())
         .setOutPorts(null).build();
 
@@ -94,7 +97,7 @@ public class EntityTest {
         assertEquals(ent.getNodeState(), NodeStateEnum.CONFIGURED);
         assertEquals(ent.getNodeType(), NodeTypeEnum.LEARNER);
         assertEquals(ent.getType(), "NativeNode");
-        assertEquals(ent.getRootWorkflowID(), "root_workflow_id");
+        assertEquals(ent.getRootWorkflowID(), wfId);
         assertEquals(ent.getNodeFactoryKey().getClassName(), "node_factory_class_name");
         assertEquals(ent.getNodeFactoryKey().getSettings(), "settings");
         assertEquals(ent.getOutPorts(), null);

@@ -82,7 +82,7 @@ import org.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEn
     @Type(value = DefaultNativeNodeEnt.class, name="NativeNode")
 })
 @JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.542+01:00")
 public interface NativeNodeEntMixIn extends NativeNodeEnt {
 
     @Override
@@ -107,7 +107,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     
     @Override
     @JsonProperty("rootWorkflowID")
-    public String getRootWorkflowID();
+    public java.util.UUID getRootWorkflowID();
     
     @Override
     @JsonProperty("nodeMessage")
@@ -191,7 +191,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         
         @Override
         @JsonProperty("rootWorkflowID")
-        public NativeNodeEntMixInBuilder setRootWorkflowID(final String rootWorkflowID);
+        public NativeNodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
         
         @Override
         @JsonProperty("nodeMessage")

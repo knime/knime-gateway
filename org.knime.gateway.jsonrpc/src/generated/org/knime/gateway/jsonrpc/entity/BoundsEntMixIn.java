@@ -74,7 +74,7 @@ import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt.DefaultBoundsEntBuilder
     @Type(value = DefaultBoundsEnt.class, name="Bounds")
 })
 @JsonDeserialize(builder=DefaultBoundsEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.542+01:00")
 public interface BoundsEntMixIn extends BoundsEnt {
 
     @Override

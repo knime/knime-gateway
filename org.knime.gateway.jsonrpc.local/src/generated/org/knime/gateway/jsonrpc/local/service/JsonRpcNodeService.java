@@ -55,7 +55,7 @@ import org.knime.gateway.v0.service.NodeService;
  *
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.405+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.803+01:00")
 public interface JsonRpcNodeService extends NodeService {
 
 	/**
@@ -63,13 +63,13 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNode")
-    NodeEnt getNode(String jobId, String nodeId);
+    NodeEnt getNode(java.util.UUID jobId, String nodeId);
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNodeSettings")
-    String getNodeSettings(String jobId, String nodeId);
+    String getNodeSettings(java.util.UUID jobId, String nodeId);
 
 }

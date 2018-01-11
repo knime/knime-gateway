@@ -59,7 +59,7 @@ import org.knime.gateway.v0.entity.WorkflowNodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.027+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.092+01:00")
 public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNodeEnt {
 
   protected java.util.List<NodeOutPortEnt> m_workflowIncomingPorts;
@@ -135,7 +135,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private String m_nodeID = null;
         private NodeTypeEnum m_nodeType = null;
         private String m_parentNodeID = null;
-        private String m_rootWorkflowID = null;
+        private java.util.UUID m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnum m_nodeState = null;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
@@ -192,7 +192,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setRootWorkflowID(String rootWorkflowID) {
+        public DefaultWorkflowNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID) {
              if(rootWorkflowID == null) {
                  throw new IllegalArgumentException("rootWorkflowID must not be null.");
              }

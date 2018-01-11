@@ -74,7 +74,7 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessage
     @Type(value = DefaultNodeMessageEnt.class, name="NodeMessage")
 })
 @JsonDeserialize(builder=DefaultNodeMessageEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.542+01:00")
 public interface NodeMessageEntMixIn extends NodeMessageEnt {
 
     @Override

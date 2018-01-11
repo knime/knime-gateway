@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -101,7 +102,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      *
      * TODO: remove worklfow id's from the list that aren't in memory anymore
      */
-    private static final Map<String, String> ROOT_ID_MAP = new HashMap<String, String>();
+    private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
 
     private NodeAnnotation m_nodeAnnotation;
 

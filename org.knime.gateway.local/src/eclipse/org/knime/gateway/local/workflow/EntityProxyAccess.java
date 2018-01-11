@@ -53,6 +53,7 @@ import static org.knime.gateway.local.service.ServiceManager.workflowService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -70,6 +71,7 @@ import org.knime.gateway.v0.entity.WorkflowEnt;
 import org.knime.gateway.v0.entity.WorkflowNodeEnt;
 import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import org.knime.gateway.v0.service.NodeService;
+import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
@@ -103,7 +105,7 @@ public class EntityProxyAccess {
      * @return the workflow manager
      */
     public static EntityProxyWorkflowManager createWorkflowManager(final ServerServiceConfig serviceConfig,
-        final String rootWorkflowID) {
+        final UUID rootWorkflowID) {
         return new EntityProxyAccess(serviceConfig).getWorkflowManager(rootWorkflowID, null);
     }
 
@@ -116,8 +118,13 @@ public class EntityProxyAccess {
      * @param nodeID an optional node id to retrieve a sub workflow (i.e. metanode) - can be <code>null</code>
      * @return the newly created {@link EntityProxyWorkflowManager} (the returned wrapper object doesn't get cached!!
      */
-    EntityProxyWorkflowManager getWorkflowManager(final String rootWorkflowID, final String nodeID) {
-        NodeEnt node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
+    EntityProxyWorkflowManager getWorkflowManager(final UUID rootWorkflowID, final String nodeID) {
+        NodeEnt node;
+        try {
+            node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
         assert node instanceof WorkflowNodeEnt;
         return new EntityProxyWorkflowManager((WorkflowNodeEnt)node, this);
     }
@@ -271,8 +278,12 @@ public class EntityProxyAccess {
      * @return the settings formatted as json
      */
     String getSettingsAsJson(final NodeEnt node) {
-        return service(NodeService.class, m_serviceConfig).getNodeSettings(node.getRootWorkflowID(),
-            node.getNodeID());
+        try {
+            return service(NodeService.class, m_serviceConfig).getNodeSettings(node.getRootWorkflowID(),
+                node.getNodeID());
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**

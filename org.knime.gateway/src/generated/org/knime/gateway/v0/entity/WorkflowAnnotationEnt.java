@@ -57,7 +57,7 @@ import org.knime.gateway.entity.GatewayEntityBuilder;
  * 
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.284+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
 public interface WorkflowAnnotationEnt extends AnnotationEnt {
 
 

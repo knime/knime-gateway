@@ -58,7 +58,7 @@ import org.knime.gateway.v0.entity.NodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.027+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.092+01:00")
 public class DefaultNodeEnt  implements NodeEnt {
 
   protected String m_type;
@@ -66,7 +66,7 @@ public class DefaultNodeEnt  implements NodeEnt {
   protected String m_nodeID;
   protected NodeTypeEnum m_nodeType;
   protected String m_parentNodeID;
-  protected String m_rootWorkflowID;
+  protected java.util.UUID m_rootWorkflowID;
   protected NodeMessageEnt m_nodeMessage;
   protected NodeStateEnum m_nodeState;
   protected java.util.List<NodeInPortEnt> m_inPorts;
@@ -145,7 +145,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public String getRootWorkflowID() {
+  public java.util.UUID getRootWorkflowID() {
         return m_rootWorkflowID;
     }
     
@@ -206,7 +206,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         private String m_nodeID = null;
         private NodeTypeEnum m_nodeType = null;
         private String m_parentNodeID = null;
-        private String m_rootWorkflowID = null;
+        private java.util.UUID m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnum m_nodeState = null;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
@@ -260,7 +260,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setRootWorkflowID(String rootWorkflowID) {
+        public DefaultNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID) {
              if(rootWorkflowID == null) {
                  throw new IllegalArgumentException("rootWorkflowID must not be null.");
              }

@@ -45,6 +45,7 @@
 package org.knime.gateway.v0.service;
 
 import org.knime.gateway.service.GatewayService;
+import org.knime.gateway.v0.service.util.ServiceExceptions;
 
 import org.knime.gateway.v0.entity.NodeEnt;
 
@@ -53,7 +54,7 @@ import org.knime.gateway.v0.entity.NodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.284+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
 public interface NodeService extends GatewayService {
 
     /**
@@ -63,9 +64,11 @@ public interface NodeService extends GatewayService {
      * @param nodeId The ID of the node the information is requested for.
      *
      * @return the result
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     ;
      */
-    NodeEnt getNode(String jobId, String nodeId);
-    
+    NodeEnt getNode(java.util.UUID jobId, String nodeId) throws ServiceExceptions.NodeNotFoundException;
+        
     /**
      * Retrieves the node&#39;s settings for the given node-id.
      *
@@ -73,7 +76,9 @@ public interface NodeService extends GatewayService {
      * @param nodeId The ID of the node the information is requested for.
      *
      * @return the result
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     ;
      */
-    String getNodeSettings(String jobId, String nodeId);
-    
+    String getNodeSettings(java.util.UUID jobId, String nodeId) throws ServiceExceptions.NodeNotFoundException;
+        
 }

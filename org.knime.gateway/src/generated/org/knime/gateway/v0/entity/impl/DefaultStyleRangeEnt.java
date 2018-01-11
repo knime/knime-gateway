@@ -52,7 +52,7 @@ import org.knime.gateway.v0.entity.StyleRangeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.027+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.092+01:00")
 public class DefaultStyleRangeEnt  implements StyleRangeEnt {
 
   protected Integer m_start;

@@ -61,7 +61,7 @@ import org.knime.gateway.entity.GatewayEntity;
  * 
  * @author Martin Horn, University of Konstanz
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.284+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
 public interface NodeEnt extends GatewayEntity {
 
   /**
@@ -193,7 +193,7 @@ public interface NodeEnt extends GatewayEntity {
    * The id of the root workflow this node is contained in or represents.
    * @return rootWorkflowID , never <code>null</code>
    **/
-  public String getRootWorkflowID();
+  public java.util.UUID getRootWorkflowID();
 
   /**
    * The current node message (warning, error, none).
@@ -301,7 +301,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param rootWorkflowID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setRootWorkflowID(String rootWorkflowID);
+        NodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
         
         /**
          * The current node message (warning, error, none).

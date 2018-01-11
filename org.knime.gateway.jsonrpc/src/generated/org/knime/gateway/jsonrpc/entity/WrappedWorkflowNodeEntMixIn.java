@@ -81,7 +81,7 @@ import org.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt.DefaultWra
     @Type(value = DefaultWrappedWorkflowNodeEnt.class, name="WrappedWorkflowNode")
 })
 @JsonDeserialize(builder=DefaultWrappedWorkflowNodeEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-02T16:29:35.171+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.542+01:00")
 public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
 
     @Override
@@ -106,7 +106,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     
     @Override
     @JsonProperty("rootWorkflowID")
-    public String getRootWorkflowID();
+    public java.util.UUID getRootWorkflowID();
     
     @Override
     @JsonProperty("nodeMessage")
@@ -206,7 +206,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         
         @Override
         @JsonProperty("rootWorkflowID")
-        public WrappedWorkflowNodeEntMixInBuilder setRootWorkflowID(final String rootWorkflowID);
+        public WrappedWorkflowNodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
         
         @Override
         @JsonProperty("nodeMessage")

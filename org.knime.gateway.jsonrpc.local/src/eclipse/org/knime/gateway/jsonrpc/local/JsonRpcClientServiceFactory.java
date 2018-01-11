@@ -54,6 +54,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -155,8 +156,8 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                     final Map<String, String> extraHeaders) throws Throwable {
                     //set the service URL to /v4/jobs/{uuid}/gateway/jsonrpc
                     //assuming that the very first argument ('argument' is an array) contains the job id
-                    String jobId = (String)((Object[])argument)[0];
-                    setServiceUrl(UriBuilder.fromUri(uri).path(GATEWAY_PATH).build(jobId).toURL());
+                    UUID jobId = (UUID)((Object[])argument)[0];
+                    setServiceUrl(UriBuilder.fromUri(uri).path(GATEWAY_PATH).build(jobId.toString()).toURL());
                     return super.invoke(methodName, argument, returnType, extraHeaders);
                 }
             };
