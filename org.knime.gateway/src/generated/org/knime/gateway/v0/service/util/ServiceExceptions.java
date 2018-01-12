@@ -47,9 +47,9 @@ package org.knime.gateway.v0.service.util;
 /**
  * Summarizes auto-generated exceptions that can occur in the executor.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public final class ServiceExceptions {
 
     /**

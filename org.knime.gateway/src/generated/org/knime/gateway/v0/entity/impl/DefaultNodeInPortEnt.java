@@ -52,9 +52,9 @@ import org.knime.gateway.v0.entity.NodeInPortEnt;
 /**
  * An input port of a node.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.092+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPortEnt {
 
   

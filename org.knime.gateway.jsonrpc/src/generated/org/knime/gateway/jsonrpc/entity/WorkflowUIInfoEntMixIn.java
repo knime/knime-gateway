@@ -63,7 +63,7 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflow
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -75,7 +75,7 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflow
     @Type(value = DefaultWorkflowUIInfoEnt.class, name="WorkflowUIInfo")
 })
 @JsonDeserialize(builder=DefaultWorkflowUIInfoEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.542+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface WorkflowUIInfoEntMixIn extends WorkflowUIInfoEnt {
 
     @Override

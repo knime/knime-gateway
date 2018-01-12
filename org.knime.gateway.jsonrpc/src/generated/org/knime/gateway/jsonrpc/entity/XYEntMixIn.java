@@ -62,7 +62,7 @@ import org.knime.gateway.v0.entity.impl.DefaultXYEnt.DefaultXYEntBuilder;
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -74,7 +74,7 @@ import org.knime.gateway.v0.entity.impl.DefaultXYEnt.DefaultXYEntBuilder;
     @Type(value = DefaultXYEnt.class, name="XY")
 })
 @JsonDeserialize(builder=DefaultXYEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.542+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface XYEntMixIn extends XYEnt {
 
     @Override

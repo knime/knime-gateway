@@ -52,9 +52,9 @@ import org.knime.gateway.v0.entity.WorkflowEnt;
 /**
  * Operations on workflows.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface WorkflowService extends GatewayService {
 
     /**
@@ -64,8 +64,9 @@ public interface WorkflowService extends GatewayService {
      * @param nodeId The ID of the node this sub(!)-workflow is requested for. If not given, the root-workflow will be returned.
      *
      * @return the result
-;
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     ;
      */
-    WorkflowEnt getWorkflow(java.util.UUID jobId, String nodeId);
+    WorkflowEnt getWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
 }

@@ -53,9 +53,9 @@ import org.knime.gateway.entity.GatewayEntity;
 /**
  * Defines the style of a range (e.g. within a workflow annotation).
  * 
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface StyleRangeEnt extends GatewayEntity {
 
   /**

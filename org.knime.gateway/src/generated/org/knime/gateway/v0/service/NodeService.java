@@ -52,9 +52,9 @@ import org.knime.gateway.v0.entity.NodeEnt;
 /**
  * Operations on single nodes.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.679+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface NodeService extends GatewayService {
 
     /**
@@ -67,7 +67,7 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      ;
      */
-    NodeEnt getNode(java.util.UUID jobId, String nodeId) throws ServiceExceptions.NodeNotFoundException;
+    NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
     /**
      * Retrieves the node&#39;s settings for the given node-id.
@@ -79,6 +79,6 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      ;
      */
-    String getNodeSettings(java.util.UUID jobId, String nodeId) throws ServiceExceptions.NodeNotFoundException;
+    String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
 }
