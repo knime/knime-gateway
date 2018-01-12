@@ -57,9 +57,9 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Wraps the given gateway service with the appropriate json rpc service.
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen", date = "2018-01-10T17:43:16.417+01:00")
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class WrapWithJsonRpcService {
 
     private WrapWithJsonRpcService() {
