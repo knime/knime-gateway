@@ -257,7 +257,11 @@ public class EntityProxyAccess {
      */
     WorkflowEnt getWorkflowEnt(final WrappedWorkflowNodeEnt workflowNodeEnt) {
         String nodeID = workflowNodeEnt.getParentNodeID() != null ? workflowNodeEnt.getNodeID() : null;
-        return ServiceManager.workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
+        try {
+            return ServiceManager.workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
@@ -268,7 +272,11 @@ public class EntityProxyAccess {
      */
     WorkflowEnt getWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt) {
         String nodeID = workflowNodeEnt.getParentNodeID() != null ? workflowNodeEnt.getNodeID() : null;
-        return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
+        try {
+            return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
