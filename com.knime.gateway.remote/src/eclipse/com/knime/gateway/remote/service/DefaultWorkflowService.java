@@ -59,6 +59,9 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.v0.entity.WorkflowEnt;
 import org.knime.gateway.v0.service.WorkflowService;
+import org.knime.gateway.v0.service.util.ServiceExceptions;
+import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.util.EntityBuilderUtil;
@@ -75,34 +78,43 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowEnt getWorkflow(final UUID rootWorkflowID, final String nodeID) {
-        //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
-        if (nodeID != null) {
-            WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID)
-            .orElseThrow(
-                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-            NodeContainer metaNode =
-                rootWfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(rootWfm.getID()));
-            if(metaNode instanceof WorkflowManager) {
-                WorkflowManager wfm = (WorkflowManager)metaNode;
-                if (wfm.isEncrypted()) {
-                    throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
-                }
-                return buildWorkflowEnt(wfm, rootWorkflowID);
-            } else if(metaNode instanceof SubNodeContainer) {
-                SubNodeContainer snc = (SubNodeContainer)metaNode;
-                return EntityBuilderUtil.buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
-            } else {
-                throw new IllegalArgumentException("Node for the given node id ('" + nodeID.toString() + "') is neither a metanode nor a wrapped metanode.");
-            }
-        } else {
-            WorkflowManager wfm =
+    public WorkflowEnt getWorkflow(final UUID rootWorkflowID) {
+        WorkflowManager wfm =
                 WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
                     () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
             if (wfm.isEncrypted()) {
                 throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
             }
             return buildWorkflowEnt(wfm, rootWorkflowID);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkflowEnt getSubWorkflow(final UUID rootWorkflowID, final String nodeID)
+        throws NotASubWorkflowException, NodeNotFoundException {
+        //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
+        WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+        try {
+            NodeContainer metaNode =
+                rootWfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(rootWfm.getID()));
+            if (metaNode instanceof WorkflowManager) {
+                WorkflowManager wfm = (WorkflowManager)metaNode;
+                if (wfm.isEncrypted()) {
+                    throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
+                }
+                return buildWorkflowEnt(wfm, rootWorkflowID);
+            } else if (metaNode instanceof SubNodeContainer) {
+                SubNodeContainer snc = (SubNodeContainer)metaNode;
+                return EntityBuilderUtil.buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
+            } else {
+                throw new ServiceExceptions.NotASubWorkflowException("Node for the given node id ('" + nodeID.toString()
+                    + "') is neither a metanode nor a wrapped metanode.");
+            }
+        } catch (IllegalArgumentException e) {
+            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
         }
     }
 }

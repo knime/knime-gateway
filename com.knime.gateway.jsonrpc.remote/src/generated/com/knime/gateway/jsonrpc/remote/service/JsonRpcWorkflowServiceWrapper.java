@@ -31,13 +31,24 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "getWorkflow")
+    @JsonRpcMethod(value = "getSubWorkflow")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "400" /*per convention the data property contains the status code*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/)
     })
-    public WorkflowEnt getWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
-        return m_service.getWorkflow(jobId, nodeId);    
+    public WorkflowEnt getSubWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+        return m_service.getSubWorkflow(jobId, nodeId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getWorkflow")
+    public WorkflowEnt getWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
+        return m_service.getWorkflow(jobId);    
     }
 
 }
