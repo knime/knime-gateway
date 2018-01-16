@@ -58,15 +58,24 @@ import org.knime.gateway.v0.entity.WorkflowEnt;
 public interface WorkflowService extends GatewayService {
 
     /**
-     * Retrieves the complete structure of the workflow (nodes, connections, annotations).
+     * Retrieves the complete structure (nodes, connections, annotations) of sub-workflows.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node this sub(!)-workflow is requested for. If not given, the root-workflow will be returned.
+     * @param nodeId The ID of the node this sub-workflow is requested for. For nested sub-workflows the node id&#39;s are concatenated with an &#39;:&#39; (e.g. 6:4:3).
      *
      * @return the result
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     ;
      */
-    WorkflowEnt getWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    WorkflowEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+        
+    /**
+     * Retrieves the complete structure (nodes, connections, annotations) of the workflow
+     *
+     * @param jobId ID the job the workflow is requested for
+     *
+     * @return the result
+     */
+    WorkflowEnt getWorkflow(java.util.UUID jobId) ;
         
 }

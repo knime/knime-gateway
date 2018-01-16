@@ -61,5 +61,14 @@ public final class ServiceExceptions {
         }
     }
     
+    /**
+    * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+    */
+    public static class NotASubWorkflowException extends Exception {
+        public NotASubWorkflowException(String message) {
+            super(message);
+        }
+    }
+    
     
 }

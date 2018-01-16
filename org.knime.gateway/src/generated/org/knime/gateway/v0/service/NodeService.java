@@ -65,7 +65,6 @@ public interface NodeService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     ;
      */
     NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
@@ -73,11 +72,10 @@ public interface NodeService extends GatewayService {
      * Retrieves the node&#39;s settings for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for.
+     * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     ;
      */
     String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         

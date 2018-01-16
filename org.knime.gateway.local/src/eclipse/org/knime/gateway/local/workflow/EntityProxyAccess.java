@@ -60,7 +60,6 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
 import org.knime.gateway.entity.GatewayEntity;
 import org.knime.gateway.local.service.ServerServiceConfig;
-import org.knime.gateway.local.service.ServiceManager;
 import org.knime.gateway.v0.entity.ConnectionEnt;
 import org.knime.gateway.v0.entity.NativeNodeEnt;
 import org.knime.gateway.v0.entity.NodeEnt;
@@ -72,6 +71,7 @@ import org.knime.gateway.v0.entity.WorkflowNodeEnt;
 import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import org.knime.gateway.v0.service.NodeService;
 import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
@@ -256,11 +256,15 @@ public class EntityProxyAccess {
      * @return the workflow entity
      */
     WorkflowEnt getWorkflowEnt(final WrappedWorkflowNodeEnt workflowNodeEnt) {
-        String nodeID = workflowNodeEnt.getParentNodeID() != null ? workflowNodeEnt.getNodeID() : null;
-        try {
-            return ServiceManager.workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
-        } catch (NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
+        if (workflowNodeEnt.getParentNodeID() != null) {
+            try {
+                return workflowService(m_serviceConfig)
+                    .getSubWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
+            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
+            return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID());
         }
     }
 
@@ -271,11 +275,15 @@ public class EntityProxyAccess {
      * @return the workflow entity
      */
     WorkflowEnt getWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt) {
-        String nodeID = workflowNodeEnt.getParentNodeID() != null ? workflowNodeEnt.getNodeID() : null;
-        try {
-            return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID(), nodeID);
-        } catch (NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
+        if (workflowNodeEnt.getParentNodeID() != null) {
+            try {
+                return workflowService(m_serviceConfig)
+                    .getSubWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
+            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
+            return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID());
         }
     }
 

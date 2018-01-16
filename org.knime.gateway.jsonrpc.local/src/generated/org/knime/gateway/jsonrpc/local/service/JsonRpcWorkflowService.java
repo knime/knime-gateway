@@ -62,7 +62,14 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "WorkflowService.getSubWorkflow")
+    WorkflowEnt getSubWorkflow(java.util.UUID jobId, String nodeId);
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "WorkflowService.getWorkflow")
-    WorkflowEnt getWorkflow(java.util.UUID jobId, String nodeId);
+    WorkflowEnt getWorkflow(java.util.UUID jobId);
 
 }
