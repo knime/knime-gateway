@@ -7,7 +7,7 @@ Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.gateway.jsonrpc.local
 Require-Bundle: org.knime.gateway;bundle-version="[3.5.0,4.0.0)",
- org.knime.gateway.jsonrpc;bundle-version="[3.5.0,4.0.0)",
+ org.knime.gateway.json;bundle-version="[3.5.0,4.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.8.1,3.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.7.1,3.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.7.1,3.0.0)",
