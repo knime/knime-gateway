@@ -57,7 +57,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 import org.knime.gateway.service.GatewayService;
 import org.knime.gateway.v0.service.util.ListServices;
 
@@ -96,7 +96,7 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
-        JsonRpcUtil.addMixIns(mapper);
+        JsonUtil.addMixIns(mapper);
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
         m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
 
