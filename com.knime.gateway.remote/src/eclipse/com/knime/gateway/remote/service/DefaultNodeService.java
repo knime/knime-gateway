@@ -97,22 +97,26 @@ public class DefaultNodeService implements NodeService {
     @Override
     public NodeEnt getNode(final UUID rootWorkflowID, final String nodeID) throws NodeNotFoundException {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
-        if (nodeID != null) {
-            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-            NodeContainer node;
-            try {
-                node = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
-            } catch (IllegalArgumentException e) {
-                throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
-            }
-            return buildNodeEnt(node, rootWorkflowID);
-        } else {
-            return buildNodeEnt(
-                WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found.")),
-                rootWorkflowID);
+        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+        NodeContainer node;
+        try {
+            node = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+        } catch (IllegalArgumentException e) {
+            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
         }
+        return buildNodeEnt(node, rootWorkflowID);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeEnt getRootNode(final UUID rootWorkflowID) {
+        return buildNodeEnt(
+            WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found.")),
+            rootWorkflowID);
     }
 
 }

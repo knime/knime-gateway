@@ -53,4 +53,13 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         return m_service.getNodeSettings(jobId, nodeId);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getRootNode")
+    public NodeEnt getRootNode(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
+        return m_service.getRootNode(jobId);    
+    }
+
 }
