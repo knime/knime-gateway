@@ -42,11 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,9 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.StyleRangeEnt;
-import org.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
-import org.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder;
+import org.knime.gateway.v0.entity.PortTypeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultPortTypeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -69,37 +69,21 @@ import org.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt.DefaultStyleRangeEn
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultStyleRangeEnt.class)
+    defaultImpl = DefaultPortTypeEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultStyleRangeEnt.class, name="StyleRange")
+    @Type(value = DefaultPortTypeEnt.class, name="PortType")
 })
-@JsonDeserialize(builder=DefaultStyleRangeEntBuilder.class)
+@JsonDeserialize(builder=DefaultPortTypeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface StyleRangeEntMixIn extends StyleRangeEnt {
+public interface PortTypeEntMixIn extends PortTypeEnt {
 
     @Override
-    @JsonProperty("start")
-    public Integer getStart();
+    @JsonProperty("portObjectClassName")
+    public String getPortObjectClassName();
     
     @Override
-    @JsonProperty("length")
-    public Integer getLength();
-    
-    @Override
-    @JsonProperty("fontName")
-    public String getFontName();
-    
-    @Override
-    @JsonProperty("fontStyle")
-    public FontStyleEnum getFontStyle();
-    
-    @Override
-    @JsonProperty("fontSize")
-    public Integer getFontSize();
-    
-    @Override
-    @JsonProperty("foregroundColor")
-    public Integer getForegroundColor();
+    @JsonProperty("optional")
+    public Boolean isOptional();
     
 
     /**
@@ -111,39 +95,23 @@ public interface StyleRangeEntMixIn extends StyleRangeEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultStyleRangeEntBuilder.class)
+        defaultImpl = DefaultPortTypeEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder.class, name="StyleRange")
+        @Type(value = DefaultPortTypeEnt.DefaultPortTypeEntBuilder.class, name="PortType")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface StyleRangeEntMixInBuilder extends StyleRangeEntBuilder {
+    public static interface PortTypeEntMixInBuilder extends PortTypeEntBuilder {
     
         @Override
-        public StyleRangeEntMixIn build();
+        public PortTypeEntMixIn build();
     
         @Override
-        @JsonProperty("start")
-        public StyleRangeEntMixInBuilder setStart(final Integer start);
+        @JsonProperty("portObjectClassName")
+        public PortTypeEntMixInBuilder setPortObjectClassName(final String portObjectClassName);
         
         @Override
-        @JsonProperty("length")
-        public StyleRangeEntMixInBuilder setLength(final Integer length);
-        
-        @Override
-        @JsonProperty("fontName")
-        public StyleRangeEntMixInBuilder setFontName(final String fontName);
-        
-        @Override
-        @JsonProperty("fontStyle")
-        public StyleRangeEntMixInBuilder setFontStyle(final FontStyleEnum fontStyle);
-        
-        @Override
-        @JsonProperty("fontSize")
-        public StyleRangeEntMixInBuilder setFontSize(final Integer fontSize);
-        
-        @Override
-        @JsonProperty("foregroundColor")
-        public StyleRangeEntMixInBuilder setForegroundColor(final Integer foregroundColor);
+        @JsonProperty("optional")
+        public PortTypeEntMixInBuilder setOptional(final Boolean optional);
         
     }
 

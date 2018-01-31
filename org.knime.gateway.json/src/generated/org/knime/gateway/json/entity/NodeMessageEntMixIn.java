@@ -42,14 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
-
-import org.knime.gateway.jsonrpc.entity.AnnotationEntMixIn;
-import org.knime.gateway.v0.entity.BoundsEnt;
-import org.knime.gateway.v0.entity.StyleRangeEnt;
+package org.knime.gateway.json.entity;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -58,9 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder;
+import org.knime.gateway.v0.entity.NodeMessageEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -72,53 +69,21 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt.DefaultWork
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowAnnotationEnt.class)
+    defaultImpl = DefaultNodeMessageEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowAnnotationEnt.class, name="WorkflowAnnotation")
+    @Type(value = DefaultNodeMessageEnt.class, name="NodeMessage")
 })
-@JsonDeserialize(builder=DefaultWorkflowAnnotationEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeMessageEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
+public interface NodeMessageEntMixIn extends NodeMessageEnt {
 
     @Override
     @JsonProperty("type")
     public String getType();
     
     @Override
-    @JsonProperty("text")
-    public String getText();
-    
-    @Override
-    @JsonProperty("backgroundColor")
-    public Integer getBackgroundColor();
-    
-    @Override
-    @JsonProperty("bounds")
-    public BoundsEnt getBounds();
-    
-    @Override
-    @JsonProperty("textAlignment")
-    public String getTextAlignment();
-    
-    @Override
-    @JsonProperty("borderSize")
-    public Integer getBorderSize();
-    
-    @Override
-    @JsonProperty("borderColor")
-    public Integer getBorderColor();
-    
-    @Override
-    @JsonProperty("defaultFontSize")
-    public Integer getDefaultFontSize();
-    
-    @Override
-    @JsonProperty("version")
-    public Integer getVersion();
-    
-    @Override
-    @JsonProperty("styleRanges")
-    public java.util.List<StyleRangeEnt> getStyleRanges();
+    @JsonProperty("message")
+    public String getMessage();
     
 
     /**
@@ -130,55 +95,23 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowAnnotationEntBuilder.class)
+        defaultImpl = DefaultNodeMessageEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name="WorkflowAnnotation")
+        @Type(value = DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder.class, name="NodeMessage")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowAnnotationEntMixInBuilder extends WorkflowAnnotationEntBuilder {
+    public static interface NodeMessageEntMixInBuilder extends NodeMessageEntBuilder {
     
         @Override
-        public WorkflowAnnotationEntMixIn build();
+        public NodeMessageEntMixIn build();
     
         @Override
         @JsonProperty("type")
-        public WorkflowAnnotationEntMixInBuilder setType(final String type);
+        public NodeMessageEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("text")
-        public WorkflowAnnotationEntMixInBuilder setText(final String text);
-        
-        @Override
-        @JsonProperty("backgroundColor")
-        public WorkflowAnnotationEntMixInBuilder setBackgroundColor(final Integer backgroundColor);
-        
-        @Override
-        @JsonProperty("bounds")
-        public WorkflowAnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
-        
-        @Override
-        @JsonProperty("textAlignment")
-        public WorkflowAnnotationEntMixInBuilder setTextAlignment(final String textAlignment);
-        
-        @Override
-        @JsonProperty("borderSize")
-        public WorkflowAnnotationEntMixInBuilder setBorderSize(final Integer borderSize);
-        
-        @Override
-        @JsonProperty("borderColor")
-        public WorkflowAnnotationEntMixInBuilder setBorderColor(final Integer borderColor);
-        
-        @Override
-        @JsonProperty("defaultFontSize")
-        public WorkflowAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
-        
-        @Override
-        @JsonProperty("version")
-        public WorkflowAnnotationEntMixInBuilder setVersion(final Integer version);
-        
-        @Override
-        @JsonProperty("styleRanges")
-        public WorkflowAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
+        @JsonProperty("message")
+        public NodeMessageEntMixInBuilder setMessage(final String message);
         
     }
 

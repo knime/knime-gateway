@@ -42,11 +42,12 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
+
+import org.knime.gateway.v0.entity.XYEnt;
 
 
-
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,9 +56,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.PortTypeEnt;
-import org.knime.gateway.v0.entity.impl.DefaultPortTypeEnt;
-import org.knime.gateway.v0.entity.impl.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
+import org.knime.gateway.v0.entity.ConnectionEnt;
+import org.knime.gateway.v0.entity.impl.DefaultConnectionEnt;
+import org.knime.gateway.v0.entity.impl.DefaultConnectionEnt.DefaultConnectionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -69,21 +70,45 @@ import org.knime.gateway.v0.entity.impl.DefaultPortTypeEnt.DefaultPortTypeEntBui
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultPortTypeEnt.class)
+    defaultImpl = DefaultConnectionEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultPortTypeEnt.class, name="PortType")
+    @Type(value = DefaultConnectionEnt.class, name="Connection")
 })
-@JsonDeserialize(builder=DefaultPortTypeEntBuilder.class)
+@JsonDeserialize(builder=DefaultConnectionEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface PortTypeEntMixIn extends PortTypeEnt {
+public interface ConnectionEntMixIn extends ConnectionEnt {
 
     @Override
-    @JsonProperty("portObjectClassName")
-    public String getPortObjectClassName();
+    @JsonProperty("dest")
+    public String getDest();
     
     @Override
-    @JsonProperty("optional")
-    public Boolean isOptional();
+    @JsonProperty("destPort")
+    public Integer getDestPort();
+    
+    @Override
+    @JsonProperty("source")
+    public String getSource();
+    
+    @Override
+    @JsonProperty("sourcePort")
+    public Integer getSourcePort();
+    
+    @Override
+    @JsonProperty("deletable")
+    public Boolean isDeletable();
+    
+    @Override
+    @JsonProperty("flowVariablePortConnection")
+    public Boolean isFlowVariablePortConnection();
+    
+    @Override
+    @JsonProperty("bendPoints")
+    public java.util.List<XYEnt> getBendPoints();
+    
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
     
 
     /**
@@ -95,23 +120,47 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultPortTypeEntBuilder.class)
+        defaultImpl = DefaultConnectionEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultPortTypeEnt.DefaultPortTypeEntBuilder.class, name="PortType")
+        @Type(value = DefaultConnectionEnt.DefaultConnectionEntBuilder.class, name="Connection")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface PortTypeEntMixInBuilder extends PortTypeEntBuilder {
+    public static interface ConnectionEntMixInBuilder extends ConnectionEntBuilder {
     
         @Override
-        public PortTypeEntMixIn build();
+        public ConnectionEntMixIn build();
     
         @Override
-        @JsonProperty("portObjectClassName")
-        public PortTypeEntMixInBuilder setPortObjectClassName(final String portObjectClassName);
+        @JsonProperty("dest")
+        public ConnectionEntMixInBuilder setDest(final String dest);
         
         @Override
-        @JsonProperty("optional")
-        public PortTypeEntMixInBuilder setOptional(final Boolean optional);
+        @JsonProperty("destPort")
+        public ConnectionEntMixInBuilder setDestPort(final Integer destPort);
+        
+        @Override
+        @JsonProperty("source")
+        public ConnectionEntMixInBuilder setSource(final String source);
+        
+        @Override
+        @JsonProperty("sourcePort")
+        public ConnectionEntMixInBuilder setSourcePort(final Integer sourcePort);
+        
+        @Override
+        @JsonProperty("deletable")
+        public ConnectionEntMixInBuilder setDeletable(final Boolean deletable);
+        
+        @Override
+        @JsonProperty("flowVariablePortConnection")
+        public ConnectionEntMixInBuilder setFlowVariablePortConnection(final Boolean flowVariablePortConnection);
+        
+        @Override
+        @JsonProperty("bendPoints")
+        public ConnectionEntMixInBuilder setBendPoints(final java.util.List<XYEnt> bendPoints);
+        
+        @Override
+        @JsonProperty("type")
+        public ConnectionEntMixInBuilder setType(final TypeEnum type);
         
     }
 

@@ -42,16 +42,13 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
-import org.knime.gateway.v0.entity.ConnectionEnt;
-import org.knime.gateway.v0.entity.MetaPortInfoEnt;
-import org.knime.gateway.v0.entity.NodeEnt;
-import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
+import org.knime.gateway.v0.entity.BoundsEnt;
+import org.knime.gateway.v0.entity.StyleRangeEnt;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -60,9 +57,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.WorkflowEnt;
-import org.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
-import org.knime.gateway.v0.entity.impl.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import org.knime.gateway.v0.entity.AnnotationEnt;
+import org.knime.gateway.v0.entity.impl.DefaultAnnotationEnt;
+import org.knime.gateway.v0.entity.impl.DefaultAnnotationEnt.DefaultAnnotationEntBuilder;
+import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt;
+import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -72,39 +71,59 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowEnt.DefaultWorkflowEntBui
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
+    property = "type",
     visible = true,
-    defaultImpl = DefaultWorkflowEnt.class)
+    defaultImpl = DefaultAnnotationEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
+    @Type(value = DefaultAnnotationEnt.class, name="Annotation")
+,
+  @Type(value = DefaultNodeAnnotationEnt.class, name = "NodeAnnotation")
+,
+  @Type(value = DefaultWorkflowAnnotationEnt.class, name = "WorkflowAnnotation")
 })
-@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WorkflowEntMixIn extends WorkflowEnt {
+public interface AnnotationEntMixIn extends AnnotationEnt {
 
     @Override
-    @JsonProperty("nodes")
-    public java.util.Map<String, NodeEnt> getNodes();
+    @JsonProperty("type")
+    public String getType();
     
     @Override
-    @JsonProperty("connections")
-    public java.util.List<ConnectionEnt> getConnections();
+    @JsonProperty("text")
+    public String getText();
     
     @Override
-    @JsonProperty("metaInPortInfos")
-    public java.util.List<MetaPortInfoEnt> getMetaInPortInfos();
+    @JsonProperty("backgroundColor")
+    public Integer getBackgroundColor();
     
     @Override
-    @JsonProperty("metaOutPortInfos")
-    public java.util.List<MetaPortInfoEnt> getMetaOutPortInfos();
+    @JsonProperty("bounds")
+    public BoundsEnt getBounds();
     
     @Override
-    @JsonProperty("workflowAnnotations")
-    public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
+    @JsonProperty("textAlignment")
+    public String getTextAlignment();
     
     @Override
-    @JsonProperty("workflowUIInfo")
-    public WorkflowUIInfoEnt getWorkflowUIInfo();
+    @JsonProperty("borderSize")
+    public Integer getBorderSize();
+    
+    @Override
+    @JsonProperty("borderColor")
+    public Integer getBorderColor();
+    
+    @Override
+    @JsonProperty("defaultFontSize")
+    public Integer getDefaultFontSize();
+    
+    @Override
+    @JsonProperty("version")
+    public Integer getVersion();
+    
+    @Override
+    @JsonProperty("styleRanges")
+    public java.util.List<StyleRangeEnt> getStyleRanges();
     
 
     /**
@@ -115,40 +134,60 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultWorkflowEntBuilder.class)
+        property = "type",
+        defaultImpl = DefaultAnnotationEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
+        @Type(value = DefaultAnnotationEnt.DefaultAnnotationEntBuilder.class, name="Annotation")
+        ,
+      @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name = "NodeAnnotation")
+        ,
+      @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name = "WorkflowAnnotation")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
+    public static interface AnnotationEntMixInBuilder extends AnnotationEntBuilder {
     
         @Override
-        public WorkflowEntMixIn build();
+        public AnnotationEntMixIn build();
     
         @Override
-        @JsonProperty("nodes")
-        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
+        @JsonProperty("type")
+        public AnnotationEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.List<ConnectionEnt> connections);
+        @JsonProperty("text")
+        public AnnotationEntMixInBuilder setText(final String text);
         
         @Override
-        @JsonProperty("metaInPortInfos")
-        public WorkflowEntMixInBuilder setMetaInPortInfos(final java.util.List<MetaPortInfoEnt> metaInPortInfos);
+        @JsonProperty("backgroundColor")
+        public AnnotationEntMixInBuilder setBackgroundColor(final Integer backgroundColor);
         
         @Override
-        @JsonProperty("metaOutPortInfos")
-        public WorkflowEntMixInBuilder setMetaOutPortInfos(final java.util.List<MetaPortInfoEnt> metaOutPortInfos);
+        @JsonProperty("bounds")
+        public AnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
         
         @Override
-        @JsonProperty("workflowAnnotations")
-        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        @JsonProperty("textAlignment")
+        public AnnotationEntMixInBuilder setTextAlignment(final String textAlignment);
         
         @Override
-        @JsonProperty("workflowUIInfo")
-        public WorkflowEntMixInBuilder setWorkflowUIInfo(final WorkflowUIInfoEnt workflowUIInfo);
+        @JsonProperty("borderSize")
+        public AnnotationEntMixInBuilder setBorderSize(final Integer borderSize);
+        
+        @Override
+        @JsonProperty("borderColor")
+        public AnnotationEntMixInBuilder setBorderColor(final Integer borderColor);
+        
+        @Override
+        @JsonProperty("defaultFontSize")
+        public AnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
+        
+        @Override
+        @JsonProperty("version")
+        public AnnotationEntMixInBuilder setVersion(final Integer version);
+        
+        @Override
+        @JsonProperty("styleRanges")
+        public AnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
         
     }
 

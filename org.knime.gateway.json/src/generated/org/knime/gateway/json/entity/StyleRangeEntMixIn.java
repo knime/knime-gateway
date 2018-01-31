@@ -42,12 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
-
-import org.knime.gateway.v0.entity.PortTypeEnt;
+package org.knime.gateway.json.entity;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -56,11 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NodePortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodePortEnt.DefaultNodePortEntBuilder;
-import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
+import org.knime.gateway.v0.entity.StyleRangeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -70,35 +67,39 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type",
+    property = "",
     visible = true,
-    defaultImpl = DefaultNodePortEnt.class)
+    defaultImpl = DefaultStyleRangeEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodePortEnt.class, name="NodePort")
-,
-  @Type(value = DefaultNodeOutPortEnt.class, name = "NodeOutPort")
-,
-  @Type(value = DefaultNodeInPortEnt.class, name = "NodeInPort")
+    @Type(value = DefaultStyleRangeEnt.class, name="StyleRange")
 })
-@JsonDeserialize(builder=DefaultNodePortEntBuilder.class)
+@JsonDeserialize(builder=DefaultStyleRangeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodePortEntMixIn extends NodePortEnt {
+public interface StyleRangeEntMixIn extends StyleRangeEnt {
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("start")
+    public Integer getStart();
     
     @Override
-    @JsonProperty("portIndex")
-    public Integer getPortIndex();
+    @JsonProperty("length")
+    public Integer getLength();
     
     @Override
-    @JsonProperty("portType")
-    public PortTypeEnt getPortType();
+    @JsonProperty("fontName")
+    public String getFontName();
     
     @Override
-    @JsonProperty("portName")
-    public String getPortName();
+    @JsonProperty("fontStyle")
+    public FontStyleEnum getFontStyle();
+    
+    @Override
+    @JsonProperty("fontSize")
+    public Integer getFontSize();
+    
+    @Override
+    @JsonProperty("foregroundColor")
+    public Integer getForegroundColor();
     
 
     /**
@@ -109,36 +110,40 @@ public interface NodePortEntMixIn extends NodePortEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type",
-        defaultImpl = DefaultNodePortEntBuilder.class)
+        property = "",
+        defaultImpl = DefaultStyleRangeEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodePortEnt.DefaultNodePortEntBuilder.class, name="NodePort")
-        ,
-      @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name = "NodeOutPort")
-        ,
-      @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name = "NodeInPort")
+        @Type(value = DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder.class, name="StyleRange")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortEntMixInBuilder extends NodePortEntBuilder {
+    public static interface StyleRangeEntMixInBuilder extends StyleRangeEntBuilder {
     
         @Override
-        public NodePortEntMixIn build();
+        public StyleRangeEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodePortEntMixInBuilder setType(final String type);
+        @JsonProperty("start")
+        public StyleRangeEntMixInBuilder setStart(final Integer start);
         
         @Override
-        @JsonProperty("portIndex")
-        public NodePortEntMixInBuilder setPortIndex(final Integer portIndex);
+        @JsonProperty("length")
+        public StyleRangeEntMixInBuilder setLength(final Integer length);
         
         @Override
-        @JsonProperty("portType")
-        public NodePortEntMixInBuilder setPortType(final PortTypeEnt portType);
+        @JsonProperty("fontName")
+        public StyleRangeEntMixInBuilder setFontName(final String fontName);
         
         @Override
-        @JsonProperty("portName")
-        public NodePortEntMixInBuilder setPortName(final String portName);
+        @JsonProperty("fontStyle")
+        public StyleRangeEntMixInBuilder setFontStyle(final FontStyleEnum fontStyle);
+        
+        @Override
+        @JsonProperty("fontSize")
+        public StyleRangeEntMixInBuilder setFontSize(final Integer fontSize);
+        
+        @Override
+        @JsonProperty("foregroundColor")
+        public StyleRangeEntMixInBuilder setForegroundColor(final Integer foregroundColor);
         
     }
 

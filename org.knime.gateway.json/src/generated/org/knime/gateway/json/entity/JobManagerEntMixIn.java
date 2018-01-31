@@ -42,14 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
-
-import org.knime.gateway.jsonrpc.entity.AnnotationEntMixIn;
-import org.knime.gateway.v0.entity.BoundsEnt;
-import org.knime.gateway.v0.entity.StyleRangeEnt;
+package org.knime.gateway.json.entity;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -58,9 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NodeAnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder;
+import org.knime.gateway.v0.entity.JobManagerEnt;
+import org.knime.gateway.v0.entity.impl.DefaultJobManagerEnt;
+import org.knime.gateway.v0.entity.impl.DefaultJobManagerEnt.DefaultJobManagerEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -72,57 +69,17 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt.DefaultNodeAnno
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeAnnotationEnt.class)
+    defaultImpl = DefaultJobManagerEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeAnnotationEnt.class, name="NodeAnnotation")
+    @Type(value = DefaultJobManagerEnt.class, name="JobManager")
 })
-@JsonDeserialize(builder=DefaultNodeAnnotationEntBuilder.class)
+@JsonDeserialize(builder=DefaultJobManagerEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
+public interface JobManagerEntMixIn extends JobManagerEnt {
 
     @Override
-    @JsonProperty("type")
-    public String getType();
-    
-    @Override
-    @JsonProperty("text")
-    public String getText();
-    
-    @Override
-    @JsonProperty("backgroundColor")
-    public Integer getBackgroundColor();
-    
-    @Override
-    @JsonProperty("bounds")
-    public BoundsEnt getBounds();
-    
-    @Override
-    @JsonProperty("textAlignment")
-    public String getTextAlignment();
-    
-    @Override
-    @JsonProperty("borderSize")
-    public Integer getBorderSize();
-    
-    @Override
-    @JsonProperty("borderColor")
-    public Integer getBorderColor();
-    
-    @Override
-    @JsonProperty("defaultFontSize")
-    public Integer getDefaultFontSize();
-    
-    @Override
-    @JsonProperty("version")
-    public Integer getVersion();
-    
-    @Override
-    @JsonProperty("styleRanges")
-    public java.util.List<StyleRangeEnt> getStyleRanges();
-    
-    @Override
-    @JsonProperty("_default")
-    public Boolean isDefault();
+    @JsonProperty("id")
+    public String getId();
     
 
     /**
@@ -134,59 +91,19 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeAnnotationEntBuilder.class)
+        defaultImpl = DefaultJobManagerEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name="NodeAnnotation")
+        @Type(value = DefaultJobManagerEnt.DefaultJobManagerEntBuilder.class, name="JobManager")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeAnnotationEntMixInBuilder extends NodeAnnotationEntBuilder {
+    public static interface JobManagerEntMixInBuilder extends JobManagerEntBuilder {
     
         @Override
-        public NodeAnnotationEntMixIn build();
+        public JobManagerEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeAnnotationEntMixInBuilder setType(final String type);
-        
-        @Override
-        @JsonProperty("text")
-        public NodeAnnotationEntMixInBuilder setText(final String text);
-        
-        @Override
-        @JsonProperty("backgroundColor")
-        public NodeAnnotationEntMixInBuilder setBackgroundColor(final Integer backgroundColor);
-        
-        @Override
-        @JsonProperty("bounds")
-        public NodeAnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
-        
-        @Override
-        @JsonProperty("textAlignment")
-        public NodeAnnotationEntMixInBuilder setTextAlignment(final String textAlignment);
-        
-        @Override
-        @JsonProperty("borderSize")
-        public NodeAnnotationEntMixInBuilder setBorderSize(final Integer borderSize);
-        
-        @Override
-        @JsonProperty("borderColor")
-        public NodeAnnotationEntMixInBuilder setBorderColor(final Integer borderColor);
-        
-        @Override
-        @JsonProperty("defaultFontSize")
-        public NodeAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
-        
-        @Override
-        @JsonProperty("version")
-        public NodeAnnotationEntMixInBuilder setVersion(final Integer version);
-        
-        @Override
-        @JsonProperty("styleRanges")
-        public NodeAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
-        
-        @Override
-        @JsonProperty("_default")
-        public NodeAnnotationEntMixInBuilder setDefault(final Boolean _default);
+        @JsonProperty("id")
+        public JobManagerEntMixInBuilder setId(final String id);
         
     }
 

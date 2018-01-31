@@ -42,11 +42,12 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
+
+import java.math.BigDecimal;
 
 
-
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,9 +56,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.JobManagerEnt;
-import org.knime.gateway.v0.entity.impl.DefaultJobManagerEnt;
-import org.knime.gateway.v0.entity.impl.DefaultJobManagerEnt.DefaultJobManagerEntBuilder;
+import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
+import org.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt;
+import org.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflowUIInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -69,17 +70,41 @@ import org.knime.gateway.v0.entity.impl.DefaultJobManagerEnt.DefaultJobManagerEn
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultJobManagerEnt.class)
+    defaultImpl = DefaultWorkflowUIInfoEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultJobManagerEnt.class, name="JobManager")
+    @Type(value = DefaultWorkflowUIInfoEnt.class, name="WorkflowUIInfo")
 })
-@JsonDeserialize(builder=DefaultJobManagerEntBuilder.class)
+@JsonDeserialize(builder=DefaultWorkflowUIInfoEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface JobManagerEntMixIn extends JobManagerEnt {
+public interface WorkflowUIInfoEntMixIn extends WorkflowUIInfoEnt {
 
     @Override
-    @JsonProperty("id")
-    public String getId();
+    @JsonProperty("gridX")
+    public Integer getGridX();
+    
+    @Override
+    @JsonProperty("gridY")
+    public Integer getGridY();
+    
+    @Override
+    @JsonProperty("snapToGrid")
+    public Boolean isSnapToGrid();
+    
+    @Override
+    @JsonProperty("showGrid")
+    public Boolean isShowGrid();
+    
+    @Override
+    @JsonProperty("zoomLevel")
+    public BigDecimal getZoomLevel();
+    
+    @Override
+    @JsonProperty("hasCurvedConnection")
+    public Boolean isHasCurvedConnection();
+    
+    @Override
+    @JsonProperty("connectionLineWidth")
+    public Integer getConnectionLineWidth();
     
 
     /**
@@ -91,19 +116,43 @@ public interface JobManagerEntMixIn extends JobManagerEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultJobManagerEntBuilder.class)
+        defaultImpl = DefaultWorkflowUIInfoEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultJobManagerEnt.DefaultJobManagerEntBuilder.class, name="JobManager")
+        @Type(value = DefaultWorkflowUIInfoEnt.DefaultWorkflowUIInfoEntBuilder.class, name="WorkflowUIInfo")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface JobManagerEntMixInBuilder extends JobManagerEntBuilder {
+    public static interface WorkflowUIInfoEntMixInBuilder extends WorkflowUIInfoEntBuilder {
     
         @Override
-        public JobManagerEntMixIn build();
+        public WorkflowUIInfoEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public JobManagerEntMixInBuilder setId(final String id);
+        @JsonProperty("gridX")
+        public WorkflowUIInfoEntMixInBuilder setGridX(final Integer gridX);
+        
+        @Override
+        @JsonProperty("gridY")
+        public WorkflowUIInfoEntMixInBuilder setGridY(final Integer gridY);
+        
+        @Override
+        @JsonProperty("snapToGrid")
+        public WorkflowUIInfoEntMixInBuilder setSnapToGrid(final Boolean snapToGrid);
+        
+        @Override
+        @JsonProperty("showGrid")
+        public WorkflowUIInfoEntMixInBuilder setShowGrid(final Boolean showGrid);
+        
+        @Override
+        @JsonProperty("zoomLevel")
+        public WorkflowUIInfoEntMixInBuilder setZoomLevel(final BigDecimal zoomLevel);
+        
+        @Override
+        @JsonProperty("hasCurvedConnection")
+        public WorkflowUIInfoEntMixInBuilder setHasCurvedConnection(final Boolean hasCurvedConnection);
+        
+        @Override
+        @JsonProperty("connectionLineWidth")
+        public WorkflowUIInfoEntMixInBuilder setConnectionLineWidth(final Integer connectionLineWidth);
         
     }
 

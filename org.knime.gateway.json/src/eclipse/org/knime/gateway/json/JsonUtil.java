@@ -46,7 +46,7 @@
  * History
  *   Aug 1, 2017 (hornm): created
  */
-package org.knime.gateway.jsonrpc;
+package org.knime.gateway.json;
 
 import java.util.List;
 
@@ -59,9 +59,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class JsonRpcUtil {
+public class JsonUtil {
 
-    private JsonRpcUtil() {
+    private JsonUtil() {
         //utility class
     }
 
@@ -74,9 +74,9 @@ public class JsonRpcUtil {
     public static final void addMixIns(final ObjectMapper mapper) {
         List<Class<?>> entityClasses = ListEntities.listEntityClasses();
         List<Class<?>> entityBuilderClasses = ListEntities.listEntityBuilderClasses();
-        List<Class<?>> entityMixInClasses = org.knime.gateway.jsonrpc.entity.util.ListEntities.listEntityClasses();
+        List<Class<?>> entityMixInClasses = org.knime.gateway.json.entity.util.ListEntities.listEntityClasses();
         List<Class<?>> entityBuilderMixInClasses =
-            org.knime.gateway.jsonrpc.entity.util.ListEntities.listEntityBuilderClasses();
+            org.knime.gateway.json.entity.util.ListEntities.listEntityBuilderClasses();
 
         for (int i = 0; i < entityClasses.size(); i++) {
             mapper.addMixIn(entityClasses.get(i), entityMixInClasses.get(i));

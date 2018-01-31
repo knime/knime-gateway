@@ -42,13 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
-
-import org.knime.gateway.jsonrpc.entity.NodePortEntMixIn;
-import org.knime.gateway.v0.entity.PortTypeEnt;
+package org.knime.gateway.json.entity;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -57,9 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NodeInPortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder;
+import org.knime.gateway.v0.entity.XYEnt;
+import org.knime.gateway.v0.entity.impl.DefaultXYEnt;
+import org.knime.gateway.v0.entity.impl.DefaultXYEnt.DefaultXYEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -71,29 +69,21 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt.DefaultNodeInPortEn
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeInPortEnt.class)
+    defaultImpl = DefaultXYEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeInPortEnt.class, name="NodeInPort")
+    @Type(value = DefaultXYEnt.class, name="XY")
 })
-@JsonDeserialize(builder=DefaultNodeInPortEntBuilder.class)
+@JsonDeserialize(builder=DefaultXYEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeInPortEntMixIn extends NodeInPortEnt {
+public interface XYEntMixIn extends XYEnt {
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("x")
+    public Integer getX();
     
     @Override
-    @JsonProperty("portIndex")
-    public Integer getPortIndex();
-    
-    @Override
-    @JsonProperty("portType")
-    public PortTypeEnt getPortType();
-    
-    @Override
-    @JsonProperty("portName")
-    public String getPortName();
+    @JsonProperty("y")
+    public Integer getY();
     
 
     /**
@@ -105,31 +95,23 @@ public interface NodeInPortEntMixIn extends NodeInPortEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeInPortEntBuilder.class)
+        defaultImpl = DefaultXYEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name="NodeInPort")
+        @Type(value = DefaultXYEnt.DefaultXYEntBuilder.class, name="XY")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeInPortEntMixInBuilder extends NodeInPortEntBuilder {
+    public static interface XYEntMixInBuilder extends XYEntBuilder {
     
         @Override
-        public NodeInPortEntMixIn build();
+        public XYEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeInPortEntMixInBuilder setType(final String type);
+        @JsonProperty("x")
+        public XYEntMixInBuilder setX(final Integer x);
         
         @Override
-        @JsonProperty("portIndex")
-        public NodeInPortEntMixInBuilder setPortIndex(final Integer portIndex);
-        
-        @Override
-        @JsonProperty("portType")
-        public NodeInPortEntMixInBuilder setPortType(final PortTypeEnt portType);
-        
-        @Override
-        @JsonProperty("portName")
-        public NodeInPortEntMixInBuilder setPortName(final String portName);
+        @JsonProperty("y")
+        public XYEntMixInBuilder setY(final Integer y);
         
     }
 

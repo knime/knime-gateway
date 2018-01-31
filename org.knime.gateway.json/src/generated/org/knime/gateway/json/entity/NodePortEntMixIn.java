@@ -42,11 +42,12 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
+
+import org.knime.gateway.v0.entity.PortTypeEnt;
 
 
-
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,9 +56,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder;
+import org.knime.gateway.v0.entity.NodePortEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodePortEnt.DefaultNodePortEntBuilder;
+import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -67,23 +70,35 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt.DefaultNodeFact
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
+    property = "type",
     visible = true,
-    defaultImpl = DefaultNodeFactoryKeyEnt.class)
+    defaultImpl = DefaultNodePortEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeFactoryKeyEnt.class, name="NodeFactoryKey")
+    @Type(value = DefaultNodePortEnt.class, name="NodePort")
+,
+  @Type(value = DefaultNodeOutPortEnt.class, name = "NodeOutPort")
+,
+  @Type(value = DefaultNodeInPortEnt.class, name = "NodeInPort")
 })
-@JsonDeserialize(builder=DefaultNodeFactoryKeyEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodePortEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
+public interface NodePortEntMixIn extends NodePortEnt {
 
     @Override
-    @JsonProperty("className")
-    public String getClassName();
+    @JsonProperty("type")
+    public String getType();
     
     @Override
-    @JsonProperty("settings")
-    public String getSettings();
+    @JsonProperty("portIndex")
+    public Integer getPortIndex();
+    
+    @Override
+    @JsonProperty("portType")
+    public PortTypeEnt getPortType();
+    
+    @Override
+    @JsonProperty("portName")
+    public String getPortName();
     
 
     /**
@@ -94,24 +109,36 @@ public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultNodeFactoryKeyEntBuilder.class)
+        property = "type",
+        defaultImpl = DefaultNodePortEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder.class, name="NodeFactoryKey")
+        @Type(value = DefaultNodePortEnt.DefaultNodePortEntBuilder.class, name="NodePort")
+        ,
+      @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name = "NodeOutPort")
+        ,
+      @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name = "NodeInPort")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeFactoryKeyEntMixInBuilder extends NodeFactoryKeyEntBuilder {
+    public static interface NodePortEntMixInBuilder extends NodePortEntBuilder {
     
         @Override
-        public NodeFactoryKeyEntMixIn build();
+        public NodePortEntMixIn build();
     
         @Override
-        @JsonProperty("className")
-        public NodeFactoryKeyEntMixInBuilder setClassName(final String className);
+        @JsonProperty("type")
+        public NodePortEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("settings")
-        public NodeFactoryKeyEntMixInBuilder setSettings(final String settings);
+        @JsonProperty("portIndex")
+        public NodePortEntMixInBuilder setPortIndex(final Integer portIndex);
+        
+        @Override
+        @JsonProperty("portType")
+        public NodePortEntMixInBuilder setPortType(final PortTypeEnt portType);
+        
+        @Override
+        @JsonProperty("portName")
+        public NodePortEntMixInBuilder setPortName(final String portName);
         
     }
 

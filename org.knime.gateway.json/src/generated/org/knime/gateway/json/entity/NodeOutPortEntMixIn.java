@@ -42,13 +42,13 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
-import org.knime.gateway.v0.entity.BoundsEnt;
-import org.knime.gateway.v0.entity.StyleRangeEnt;
+import org.knime.gateway.json.entity.NodePortEntMixIn;
+import org.knime.gateway.v0.entity.PortTypeEnt;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -57,11 +57,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.AnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultAnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultAnnotationEnt.DefaultAnnotationEntBuilder;
-import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt;
-import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
+import org.knime.gateway.v0.entity.NodeOutPortEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -71,59 +69,31 @@ import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type",
+    property = "",
     visible = true,
-    defaultImpl = DefaultAnnotationEnt.class)
+    defaultImpl = DefaultNodeOutPortEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultAnnotationEnt.class, name="Annotation")
-,
-  @Type(value = DefaultNodeAnnotationEnt.class, name = "NodeAnnotation")
-,
-  @Type(value = DefaultWorkflowAnnotationEnt.class, name = "WorkflowAnnotation")
+    @Type(value = DefaultNodeOutPortEnt.class, name="NodeOutPort")
 })
-@JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeOutPortEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface AnnotationEntMixIn extends AnnotationEnt {
+public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
 
     @Override
     @JsonProperty("type")
     public String getType();
     
     @Override
-    @JsonProperty("text")
-    public String getText();
+    @JsonProperty("portIndex")
+    public Integer getPortIndex();
     
     @Override
-    @JsonProperty("backgroundColor")
-    public Integer getBackgroundColor();
+    @JsonProperty("portType")
+    public PortTypeEnt getPortType();
     
     @Override
-    @JsonProperty("bounds")
-    public BoundsEnt getBounds();
-    
-    @Override
-    @JsonProperty("textAlignment")
-    public String getTextAlignment();
-    
-    @Override
-    @JsonProperty("borderSize")
-    public Integer getBorderSize();
-    
-    @Override
-    @JsonProperty("borderColor")
-    public Integer getBorderColor();
-    
-    @Override
-    @JsonProperty("defaultFontSize")
-    public Integer getDefaultFontSize();
-    
-    @Override
-    @JsonProperty("version")
-    public Integer getVersion();
-    
-    @Override
-    @JsonProperty("styleRanges")
-    public java.util.List<StyleRangeEnt> getStyleRanges();
+    @JsonProperty("portName")
+    public String getPortName();
     
 
     /**
@@ -134,60 +104,32 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type",
-        defaultImpl = DefaultAnnotationEntBuilder.class)
+        property = "",
+        defaultImpl = DefaultNodeOutPortEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultAnnotationEnt.DefaultAnnotationEntBuilder.class, name="Annotation")
-        ,
-      @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name = "NodeAnnotation")
-        ,
-      @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name = "WorkflowAnnotation")
+        @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name="NodeOutPort")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AnnotationEntMixInBuilder extends AnnotationEntBuilder {
+    public static interface NodeOutPortEntMixInBuilder extends NodeOutPortEntBuilder {
     
         @Override
-        public AnnotationEntMixIn build();
+        public NodeOutPortEntMixIn build();
     
         @Override
         @JsonProperty("type")
-        public AnnotationEntMixInBuilder setType(final String type);
+        public NodeOutPortEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("text")
-        public AnnotationEntMixInBuilder setText(final String text);
+        @JsonProperty("portIndex")
+        public NodeOutPortEntMixInBuilder setPortIndex(final Integer portIndex);
         
         @Override
-        @JsonProperty("backgroundColor")
-        public AnnotationEntMixInBuilder setBackgroundColor(final Integer backgroundColor);
+        @JsonProperty("portType")
+        public NodeOutPortEntMixInBuilder setPortType(final PortTypeEnt portType);
         
         @Override
-        @JsonProperty("bounds")
-        public AnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
-        
-        @Override
-        @JsonProperty("textAlignment")
-        public AnnotationEntMixInBuilder setTextAlignment(final String textAlignment);
-        
-        @Override
-        @JsonProperty("borderSize")
-        public AnnotationEntMixInBuilder setBorderSize(final Integer borderSize);
-        
-        @Override
-        @JsonProperty("borderColor")
-        public AnnotationEntMixInBuilder setBorderColor(final Integer borderColor);
-        
-        @Override
-        @JsonProperty("defaultFontSize")
-        public AnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
-        
-        @Override
-        @JsonProperty("version")
-        public AnnotationEntMixInBuilder setVersion(final Integer version);
-        
-        @Override
-        @JsonProperty("styleRanges")
-        public AnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
+        @JsonProperty("portName")
+        public NodeOutPortEntMixInBuilder setPortName(final String portName);
         
     }
 

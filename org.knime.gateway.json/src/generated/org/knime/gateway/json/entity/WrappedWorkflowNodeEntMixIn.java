@@ -42,9 +42,9 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
-import org.knime.gateway.jsonrpc.entity.NodeEntMixIn;
+import org.knime.gateway.json.entity.NodeEntMixIn;
 import org.knime.gateway.v0.entity.JobManagerEnt;
 import org.knime.gateway.v0.entity.NodeAnnotationEnt;
 import org.knime.gateway.v0.entity.NodeInPortEnt;
@@ -53,7 +53,7 @@ import org.knime.gateway.v0.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;

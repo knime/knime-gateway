@@ -62,7 +62,7 @@ import javax.net.ssl.SSLSession;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.jsonrpc.JsonUtil;
 import org.knime.gateway.jsonrpc.local.service.util.ServiceInterface2JsonRpcMap;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceConfig;
@@ -131,7 +131,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
             mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
             mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
-            JsonRpcUtil.addMixIns(mapper);
+            JsonUtil.addMixIns(mapper);
 
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");

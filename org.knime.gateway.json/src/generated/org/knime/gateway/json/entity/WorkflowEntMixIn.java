@@ -42,13 +42,16 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
-import org.knime.gateway.jsonrpc.entity.NodePortEntMixIn;
-import org.knime.gateway.v0.entity.PortTypeEnt;
+import org.knime.gateway.v0.entity.ConnectionEnt;
+import org.knime.gateway.v0.entity.MetaPortInfoEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -57,9 +60,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder;
+import org.knime.gateway.v0.entity.WorkflowEnt;
+import org.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
+import org.knime.gateway.v0.entity.impl.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -71,29 +74,37 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt.DefaultNodeOutPort
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeOutPortEnt.class)
+    defaultImpl = DefaultWorkflowEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeOutPortEnt.class, name="NodeOutPort")
+    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
 })
-@JsonDeserialize(builder=DefaultNodeOutPortEntBuilder.class)
+@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
+public interface WorkflowEntMixIn extends WorkflowEnt {
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("nodes")
+    public java.util.Map<String, NodeEnt> getNodes();
     
     @Override
-    @JsonProperty("portIndex")
-    public Integer getPortIndex();
+    @JsonProperty("connections")
+    public java.util.List<ConnectionEnt> getConnections();
     
     @Override
-    @JsonProperty("portType")
-    public PortTypeEnt getPortType();
+    @JsonProperty("metaInPortInfos")
+    public java.util.List<MetaPortInfoEnt> getMetaInPortInfos();
     
     @Override
-    @JsonProperty("portName")
-    public String getPortName();
+    @JsonProperty("metaOutPortInfos")
+    public java.util.List<MetaPortInfoEnt> getMetaOutPortInfos();
+    
+    @Override
+    @JsonProperty("workflowAnnotations")
+    public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
+    
+    @Override
+    @JsonProperty("workflowUIInfo")
+    public WorkflowUIInfoEnt getWorkflowUIInfo();
     
 
     /**
@@ -105,31 +116,39 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeOutPortEntBuilder.class)
+        defaultImpl = DefaultWorkflowEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name="NodeOutPort")
+        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeOutPortEntMixInBuilder extends NodeOutPortEntBuilder {
+    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
     
         @Override
-        public NodeOutPortEntMixIn build();
+        public WorkflowEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeOutPortEntMixInBuilder setType(final String type);
+        @JsonProperty("nodes")
+        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
         
         @Override
-        @JsonProperty("portIndex")
-        public NodeOutPortEntMixInBuilder setPortIndex(final Integer portIndex);
+        @JsonProperty("connections")
+        public WorkflowEntMixInBuilder setConnections(final java.util.List<ConnectionEnt> connections);
         
         @Override
-        @JsonProperty("portType")
-        public NodeOutPortEntMixInBuilder setPortType(final PortTypeEnt portType);
+        @JsonProperty("metaInPortInfos")
+        public WorkflowEntMixInBuilder setMetaInPortInfos(final java.util.List<MetaPortInfoEnt> metaInPortInfos);
         
         @Override
-        @JsonProperty("portName")
-        public NodeOutPortEntMixInBuilder setPortName(final String portName);
+        @JsonProperty("metaOutPortInfos")
+        public WorkflowEntMixInBuilder setMetaOutPortInfos(final java.util.List<MetaPortInfoEnt> metaOutPortInfos);
+        
+        @Override
+        @JsonProperty("workflowAnnotations")
+        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        
+        @Override
+        @JsonProperty("workflowUIInfo")
+        public WorkflowEntMixInBuilder setWorkflowUIInfo(final WorkflowUIInfoEnt workflowUIInfo);
         
     }
 

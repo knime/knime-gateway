@@ -42,19 +42,17 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
-import org.knime.gateway.jsonrpc.entity.NodeEntMixIn;
 import org.knime.gateway.v0.entity.JobManagerEnt;
 import org.knime.gateway.v0.entity.NodeAnnotationEnt;
-import org.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.v0.entity.NodeInPortEnt;
 import org.knime.gateway.v0.entity.NodeMessageEnt;
 import org.knime.gateway.v0.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -63,9 +61,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NativeNodeEnt;
+import org.knime.gateway.v0.entity.NodeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeEnt.DefaultNodeEntBuilder;
 import org.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder;
+import org.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
+import org.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -75,15 +76,21 @@ import org.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEn
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
+    property = "type",
     visible = true,
-    defaultImpl = DefaultNativeNodeEnt.class)
+    defaultImpl = DefaultNodeEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNativeNodeEnt.class, name="NativeNode")
+    @Type(value = DefaultNodeEnt.class, name="Node")
+,
+  @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
+,
+  @Type(value = DefaultWorkflowNodeEnt.class, name = "WorkflowNode")
+,
+  @Type(value = DefaultWrappedWorkflowNodeEnt.class, name = "WrappedWorkflowNode")
 })
-@JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NativeNodeEntMixIn extends NativeNodeEnt {
+public interface NodeEntMixIn extends NodeEnt {
 
     @Override
     @JsonProperty("type")
@@ -145,10 +152,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonProperty("uIInfo")
     public NodeUIInfoEnt getUIInfo();
     
-    @Override
-    @JsonProperty("nodeFactoryKey")
-    public NodeFactoryKeyEnt getNodeFactoryKey();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -158,80 +161,82 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultNativeNodeEntBuilder.class)
+        property = "type",
+        defaultImpl = DefaultNodeEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name="NativeNode")
+        @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
+        ,
+      @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
+        ,
+      @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name = "WorkflowNode")
+        ,
+      @Type(value = DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder.class, name = "WrappedWorkflowNode")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeEntMixInBuilder extends NativeNodeEntBuilder {
+    public static interface NodeEntMixInBuilder extends NodeEntBuilder {
     
         @Override
-        public NativeNodeEntMixIn build();
+        public NodeEntMixIn build();
     
         @Override
         @JsonProperty("type")
-        public NativeNodeEntMixInBuilder setType(final String type);
+        public NodeEntMixInBuilder setType(final String type);
         
         @Override
         @JsonProperty("name")
-        public NativeNodeEntMixInBuilder setName(final String name);
+        public NodeEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("nodeID")
-        public NativeNodeEntMixInBuilder setNodeID(final String nodeID);
+        public NodeEntMixInBuilder setNodeID(final String nodeID);
         
         @Override
         @JsonProperty("nodeType")
-        public NativeNodeEntMixInBuilder setNodeType(final NodeTypeEnum nodeType);
+        public NodeEntMixInBuilder setNodeType(final NodeTypeEnum nodeType);
         
         @Override
         @JsonProperty("parentNodeID")
-        public NativeNodeEntMixInBuilder setParentNodeID(final String parentNodeID);
+        public NodeEntMixInBuilder setParentNodeID(final String parentNodeID);
         
         @Override
         @JsonProperty("rootWorkflowID")
-        public NativeNodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
+        public NodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
         
         @Override
         @JsonProperty("nodeMessage")
-        public NativeNodeEntMixInBuilder setNodeMessage(final NodeMessageEnt nodeMessage);
+        public NodeEntMixInBuilder setNodeMessage(final NodeMessageEnt nodeMessage);
         
         @Override
         @JsonProperty("nodeState")
-        public NativeNodeEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
+        public NodeEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
         
         @Override
         @JsonProperty("inPorts")
-        public NativeNodeEntMixInBuilder setInPorts(final java.util.List<NodeInPortEnt> inPorts);
+        public NodeEntMixInBuilder setInPorts(final java.util.List<NodeInPortEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public NativeNodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
+        public NodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
         
         @Override
         @JsonProperty("deletable")
-        public NativeNodeEntMixInBuilder setDeletable(final Boolean deletable);
+        public NodeEntMixInBuilder setDeletable(final Boolean deletable);
         
         @Override
         @JsonProperty("hasDialog")
-        public NativeNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        public NodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
         
         @Override
         @JsonProperty("nodeAnnotation")
-        public NativeNodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
+        public NodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
         
         @Override
         @JsonProperty("jobManager")
-        public NativeNodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
+        public NodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
         
         @Override
         @JsonProperty("uIInfo")
-        public NativeNodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
-        
-        @Override
-        @JsonProperty("nodeFactoryKey")
-        public NativeNodeEntMixInBuilder setNodeFactoryKey(final NodeFactoryKeyEnt nodeFactoryKey);
+        public NodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
         
     }
 

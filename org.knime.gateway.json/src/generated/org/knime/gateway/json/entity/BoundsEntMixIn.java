@@ -42,11 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,9 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.NodeMessageEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
-import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
+import org.knime.gateway.v0.entity.BoundsEnt;
+import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt;
+import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt.DefaultBoundsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -69,21 +69,29 @@ import org.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessage
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeMessageEnt.class)
+    defaultImpl = DefaultBoundsEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeMessageEnt.class, name="NodeMessage")
+    @Type(value = DefaultBoundsEnt.class, name="Bounds")
 })
-@JsonDeserialize(builder=DefaultNodeMessageEntBuilder.class)
+@JsonDeserialize(builder=DefaultBoundsEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeMessageEntMixIn extends NodeMessageEnt {
+public interface BoundsEntMixIn extends BoundsEnt {
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("x")
+    public Integer getX();
     
     @Override
-    @JsonProperty("message")
-    public String getMessage();
+    @JsonProperty("y")
+    public Integer getY();
+    
+    @Override
+    @JsonProperty("width")
+    public Integer getWidth();
+    
+    @Override
+    @JsonProperty("height")
+    public Integer getHeight();
     
 
     /**
@@ -95,23 +103,31 @@ public interface NodeMessageEntMixIn extends NodeMessageEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeMessageEntBuilder.class)
+        defaultImpl = DefaultBoundsEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder.class, name="NodeMessage")
+        @Type(value = DefaultBoundsEnt.DefaultBoundsEntBuilder.class, name="Bounds")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeMessageEntMixInBuilder extends NodeMessageEntBuilder {
+    public static interface BoundsEntMixInBuilder extends BoundsEntBuilder {
     
         @Override
-        public NodeMessageEntMixIn build();
+        public BoundsEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeMessageEntMixInBuilder setType(final String type);
+        @JsonProperty("x")
+        public BoundsEntMixInBuilder setX(final Integer x);
         
         @Override
-        @JsonProperty("message")
-        public NodeMessageEntMixInBuilder setMessage(final String message);
+        @JsonProperty("y")
+        public BoundsEntMixInBuilder setY(final Integer y);
+        
+        @Override
+        @JsonProperty("width")
+        public BoundsEntMixInBuilder setWidth(final Integer width);
+        
+        @Override
+        @JsonProperty("height")
+        public BoundsEntMixInBuilder setHeight(final Integer height);
         
     }
 

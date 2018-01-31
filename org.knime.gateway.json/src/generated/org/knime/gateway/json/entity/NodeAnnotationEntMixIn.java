@@ -42,12 +42,14 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
-import org.knime.gateway.v0.entity.XYEnt;
+import org.knime.gateway.json.entity.AnnotationEntMixIn;
+import org.knime.gateway.v0.entity.BoundsEnt;
+import org.knime.gateway.v0.entity.StyleRangeEnt;
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -56,9 +58,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.ConnectionEnt;
-import org.knime.gateway.v0.entity.impl.DefaultConnectionEnt;
-import org.knime.gateway.v0.entity.impl.DefaultConnectionEnt.DefaultConnectionEntBuilder;
+import org.knime.gateway.v0.entity.NodeAnnotationEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -70,45 +72,57 @@ import org.knime.gateway.v0.entity.impl.DefaultConnectionEnt.DefaultConnectionEn
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultConnectionEnt.class)
+    defaultImpl = DefaultNodeAnnotationEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultConnectionEnt.class, name="Connection")
+    @Type(value = DefaultNodeAnnotationEnt.class, name="NodeAnnotation")
 })
-@JsonDeserialize(builder=DefaultConnectionEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface ConnectionEntMixIn extends ConnectionEnt {
+public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
 
     @Override
-    @JsonProperty("dest")
-    public String getDest();
-    
-    @Override
-    @JsonProperty("destPort")
-    public Integer getDestPort();
-    
-    @Override
-    @JsonProperty("source")
-    public String getSource();
-    
-    @Override
-    @JsonProperty("sourcePort")
-    public Integer getSourcePort();
-    
-    @Override
-    @JsonProperty("deletable")
-    public Boolean isDeletable();
-    
-    @Override
-    @JsonProperty("flowVariablePortConnection")
-    public Boolean isFlowVariablePortConnection();
-    
-    @Override
-    @JsonProperty("bendPoints")
-    public java.util.List<XYEnt> getBendPoints();
-    
-    @Override
     @JsonProperty("type")
-    public TypeEnum getType();
+    public String getType();
+    
+    @Override
+    @JsonProperty("text")
+    public String getText();
+    
+    @Override
+    @JsonProperty("backgroundColor")
+    public Integer getBackgroundColor();
+    
+    @Override
+    @JsonProperty("bounds")
+    public BoundsEnt getBounds();
+    
+    @Override
+    @JsonProperty("textAlignment")
+    public String getTextAlignment();
+    
+    @Override
+    @JsonProperty("borderSize")
+    public Integer getBorderSize();
+    
+    @Override
+    @JsonProperty("borderColor")
+    public Integer getBorderColor();
+    
+    @Override
+    @JsonProperty("defaultFontSize")
+    public Integer getDefaultFontSize();
+    
+    @Override
+    @JsonProperty("version")
+    public Integer getVersion();
+    
+    @Override
+    @JsonProperty("styleRanges")
+    public java.util.List<StyleRangeEnt> getStyleRanges();
+    
+    @Override
+    @JsonProperty("_default")
+    public Boolean isDefault();
     
 
     /**
@@ -120,47 +134,59 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultConnectionEntBuilder.class)
+        defaultImpl = DefaultNodeAnnotationEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultConnectionEnt.DefaultConnectionEntBuilder.class, name="Connection")
+        @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name="NodeAnnotation")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ConnectionEntMixInBuilder extends ConnectionEntBuilder {
+    public static interface NodeAnnotationEntMixInBuilder extends NodeAnnotationEntBuilder {
     
         @Override
-        public ConnectionEntMixIn build();
+        public NodeAnnotationEntMixIn build();
     
-        @Override
-        @JsonProperty("dest")
-        public ConnectionEntMixInBuilder setDest(final String dest);
-        
-        @Override
-        @JsonProperty("destPort")
-        public ConnectionEntMixInBuilder setDestPort(final Integer destPort);
-        
-        @Override
-        @JsonProperty("source")
-        public ConnectionEntMixInBuilder setSource(final String source);
-        
-        @Override
-        @JsonProperty("sourcePort")
-        public ConnectionEntMixInBuilder setSourcePort(final Integer sourcePort);
-        
-        @Override
-        @JsonProperty("deletable")
-        public ConnectionEntMixInBuilder setDeletable(final Boolean deletable);
-        
-        @Override
-        @JsonProperty("flowVariablePortConnection")
-        public ConnectionEntMixInBuilder setFlowVariablePortConnection(final Boolean flowVariablePortConnection);
-        
-        @Override
-        @JsonProperty("bendPoints")
-        public ConnectionEntMixInBuilder setBendPoints(final java.util.List<XYEnt> bendPoints);
-        
         @Override
         @JsonProperty("type")
-        public ConnectionEntMixInBuilder setType(final TypeEnum type);
+        public NodeAnnotationEntMixInBuilder setType(final String type);
+        
+        @Override
+        @JsonProperty("text")
+        public NodeAnnotationEntMixInBuilder setText(final String text);
+        
+        @Override
+        @JsonProperty("backgroundColor")
+        public NodeAnnotationEntMixInBuilder setBackgroundColor(final Integer backgroundColor);
+        
+        @Override
+        @JsonProperty("bounds")
+        public NodeAnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
+        
+        @Override
+        @JsonProperty("textAlignment")
+        public NodeAnnotationEntMixInBuilder setTextAlignment(final String textAlignment);
+        
+        @Override
+        @JsonProperty("borderSize")
+        public NodeAnnotationEntMixInBuilder setBorderSize(final Integer borderSize);
+        
+        @Override
+        @JsonProperty("borderColor")
+        public NodeAnnotationEntMixInBuilder setBorderColor(final Integer borderColor);
+        
+        @Override
+        @JsonProperty("defaultFontSize")
+        public NodeAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
+        
+        @Override
+        @JsonProperty("version")
+        public NodeAnnotationEntMixInBuilder setVersion(final Integer version);
+        
+        @Override
+        @JsonProperty("styleRanges")
+        public NodeAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
+        
+        @Override
+        @JsonProperty("_default")
+        public NodeAnnotationEntMixInBuilder setDefault(final Boolean _default);
         
     }
 

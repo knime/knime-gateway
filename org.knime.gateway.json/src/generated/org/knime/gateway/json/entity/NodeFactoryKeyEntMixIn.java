@@ -42,11 +42,11 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity;
+package org.knime.gateway.json.entity;
 
 
 
-import org.knime.gateway.jsonrpc.JsonRpcUtil;
+import org.knime.gateway.json.JsonUtil;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,9 +55,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.v0.entity.BoundsEnt;
-import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt;
-import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt.DefaultBoundsEntBuilder;
+import org.knime.gateway.v0.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt;
+import org.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -69,29 +69,21 @@ import org.knime.gateway.v0.entity.impl.DefaultBoundsEnt.DefaultBoundsEntBuilder
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultBoundsEnt.class)
+    defaultImpl = DefaultNodeFactoryKeyEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultBoundsEnt.class, name="Bounds")
+    @Type(value = DefaultNodeFactoryKeyEnt.class, name="NodeFactoryKey")
 })
-@JsonDeserialize(builder=DefaultBoundsEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeFactoryKeyEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface BoundsEntMixIn extends BoundsEnt {
+public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
 
     @Override
-    @JsonProperty("x")
-    public Integer getX();
+    @JsonProperty("className")
+    public String getClassName();
     
     @Override
-    @JsonProperty("y")
-    public Integer getY();
-    
-    @Override
-    @JsonProperty("width")
-    public Integer getWidth();
-    
-    @Override
-    @JsonProperty("height")
-    public Integer getHeight();
+    @JsonProperty("settings")
+    public String getSettings();
     
 
     /**
@@ -103,31 +95,23 @@ public interface BoundsEntMixIn extends BoundsEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultBoundsEntBuilder.class)
+        defaultImpl = DefaultNodeFactoryKeyEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultBoundsEnt.DefaultBoundsEntBuilder.class, name="Bounds")
+        @Type(value = DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder.class, name="NodeFactoryKey")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface BoundsEntMixInBuilder extends BoundsEntBuilder {
+    public static interface NodeFactoryKeyEntMixInBuilder extends NodeFactoryKeyEntBuilder {
     
         @Override
-        public BoundsEntMixIn build();
+        public NodeFactoryKeyEntMixIn build();
     
         @Override
-        @JsonProperty("x")
-        public BoundsEntMixInBuilder setX(final Integer x);
+        @JsonProperty("className")
+        public NodeFactoryKeyEntMixInBuilder setClassName(final String className);
         
         @Override
-        @JsonProperty("y")
-        public BoundsEntMixInBuilder setY(final Integer y);
-        
-        @Override
-        @JsonProperty("width")
-        public BoundsEntMixInBuilder setWidth(final Integer width);
-        
-        @Override
-        @JsonProperty("height")
-        public BoundsEntMixInBuilder setHeight(final Integer height);
+        @JsonProperty("settings")
+        public NodeFactoryKeyEntMixInBuilder setSettings(final String settings);
         
     }
 

@@ -42,30 +42,30 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.jsonrpc.entity.util;
+package org.knime.gateway.json.entity.util;
 
-import org.knime.gateway.jsonrpc.entity.AnnotationEntMixIn;
-import org.knime.gateway.jsonrpc.entity.BoundsEntMixIn;
-import org.knime.gateway.jsonrpc.entity.ConnectionEntMixIn;
-import org.knime.gateway.jsonrpc.entity.JobManagerEntMixIn;
-import org.knime.gateway.jsonrpc.entity.MetaPortInfoEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeFactoryKeyEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeMessageEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodePortEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeUIInfoEntMixIn;
-import org.knime.gateway.jsonrpc.entity.PortTypeEntMixIn;
-import org.knime.gateway.jsonrpc.entity.StyleRangeEntMixIn;
-import org.knime.gateway.jsonrpc.entity.WorkflowEntMixIn;
-import org.knime.gateway.jsonrpc.entity.WorkflowUIInfoEntMixIn;
-import org.knime.gateway.jsonrpc.entity.XYEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NativeNodeEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeAnnotationEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeInPortEntMixIn;
-import org.knime.gateway.jsonrpc.entity.NodeOutPortEntMixIn;
-import org.knime.gateway.jsonrpc.entity.WorkflowAnnotationEntMixIn;
-import org.knime.gateway.jsonrpc.entity.WorkflowNodeEntMixIn;
-import org.knime.gateway.jsonrpc.entity.WrappedWorkflowNodeEntMixIn;
+import org.knime.gateway.json.entity.AnnotationEntMixIn;
+import org.knime.gateway.json.entity.BoundsEntMixIn;
+import org.knime.gateway.json.entity.ConnectionEntMixIn;
+import org.knime.gateway.json.entity.JobManagerEntMixIn;
+import org.knime.gateway.json.entity.MetaPortInfoEntMixIn;
+import org.knime.gateway.json.entity.NodeEntMixIn;
+import org.knime.gateway.json.entity.NodeFactoryKeyEntMixIn;
+import org.knime.gateway.json.entity.NodeMessageEntMixIn;
+import org.knime.gateway.json.entity.NodePortEntMixIn;
+import org.knime.gateway.json.entity.NodeUIInfoEntMixIn;
+import org.knime.gateway.json.entity.PortTypeEntMixIn;
+import org.knime.gateway.json.entity.StyleRangeEntMixIn;
+import org.knime.gateway.json.entity.WorkflowEntMixIn;
+import org.knime.gateway.json.entity.WorkflowUIInfoEntMixIn;
+import org.knime.gateway.json.entity.XYEntMixIn;
+import org.knime.gateway.json.entity.NativeNodeEntMixIn;
+import org.knime.gateway.json.entity.NodeAnnotationEntMixIn;
+import org.knime.gateway.json.entity.NodeInPortEntMixIn;
+import org.knime.gateway.json.entity.NodeOutPortEntMixIn;
+import org.knime.gateway.json.entity.WorkflowAnnotationEntMixIn;
+import org.knime.gateway.json.entity.WorkflowNodeEntMixIn;
+import org.knime.gateway.json.entity.WrappedWorkflowNodeEntMixIn;
 
 import java.util.ArrayList;
 import java.util.List;
