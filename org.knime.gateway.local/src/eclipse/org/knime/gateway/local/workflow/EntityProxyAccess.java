@@ -121,7 +121,11 @@ public class EntityProxyAccess {
     EntityProxyWorkflowManager getWorkflowManager(final UUID rootWorkflowID, final String nodeID) {
         NodeEnt node;
         try {
-            node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
+            if (nodeID == null) {
+                node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
+            } else {
+                node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
+            }
         } catch (NodeNotFoundException ex) {
             throw new RuntimeException(ex);
         }

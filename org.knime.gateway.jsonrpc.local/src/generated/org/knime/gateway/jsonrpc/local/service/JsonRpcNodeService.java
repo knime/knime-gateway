@@ -72,4 +72,11 @@ public interface JsonRpcNodeService extends NodeService {
     @JsonRpcMethod(value = "NodeService.getNodeSettings")
     String getNodeSettings(java.util.UUID jobId, String nodeId);
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "NodeService.getRootNode")
+    NodeEnt getRootNode(java.util.UUID jobId);
+
 }

@@ -79,4 +79,13 @@ public interface NodeService extends GatewayService {
      */
     String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
+    /**
+     * Retrieves the root node referencing the workflow
+     *
+     * @param jobId ID the job the workflow is requested for
+     *
+     * @return the result
+     */
+    NodeEnt getRootNode(java.util.UUID jobId) ;
+        
 }
