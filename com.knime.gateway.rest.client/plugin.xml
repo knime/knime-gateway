@@ -4,7 +4,7 @@
    <extension
          point="org.knime.gateway.local.service.ServiceFactory">
       <ServiceFactory
-            ServiceFactory="com.knime.gateway.rest.client.JaxRsClientServiceFactory">
+            ServiceFactory="com.knime.gateway.rest.client.RestClientServiceFactory">
       </ServiceFactory>
    </extension>
 

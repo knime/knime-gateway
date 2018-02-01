@@ -24,11 +24,6 @@ import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceConfig;
 import org.knime.gateway.local.service.ServiceFactory;
 import org.knime.gateway.service.GatewayService;
-import org.knime.gateway.v0.service.NodeService;
-import org.knime.gateway.v0.service.WorkflowService;
-
-import com.knime.gateway.rest.client.service.NodeClient;
-import com.knime.gateway.rest.client.service.WorkflowClient;
 
 /**
  * Service factories whose returned services talk to a http(s) server at "v4/gateway/jsonrpc" by 'posting' json-rpc
@@ -36,36 +31,22 @@ import com.knime.gateway.rest.client.service.WorkflowClient;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class JaxRsClientServiceFactory implements ServiceFactory {
-
-    private static final String GATEWAY_PATH = "/v4/jobs/{uuid}/gateway/jsonrpc";
+public class RestClientServiceFactory implements ServiceFactory {
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <S extends GatewayService> S createService(final Class<S> serviceInterface,
         final ServiceConfig serviceConfig) {
         if (serviceConfig instanceof ServerServiceConfig) {
             ServerServiceConfig serverServiceConfig = (ServerServiceConfig)serviceConfig;
-            if (serviceInterface == WorkflowService.class) {
-                try {
-                    return (S)new WorkflowClient(serverServiceConfig.getURI(),
-                        serverServiceConfig.getJWT().orElse(null));
-                } catch (InstantiationException | IllegalAccessException | IOException ex) {
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
-                }
-            } else if(serviceInterface == NodeService.class){
-                try {
-                    return (S)new NodeClient(serverServiceConfig.getURI(),
-                        serverServiceConfig.getJWT().orElse(null));
-                } catch (InstantiationException | IllegalAccessException | IOException ex) {
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
-                }
-            } else {
-                throw new IllegalArgumentException("Unsupported service.");
+            try {
+                return (S)ServiceInterface2RestClientMap.get(serviceInterface, serverServiceConfig.getURI(),
+                    serverServiceConfig.getJWT().orElse(null));
+            } catch (InstantiationException | IllegalAccessException | IOException ex) {
+                throw new RuntimeException(ex);
             }
         } else {
             throw new IllegalStateException("No server service config given!");
