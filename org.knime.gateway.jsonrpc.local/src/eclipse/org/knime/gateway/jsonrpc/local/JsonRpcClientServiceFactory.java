@@ -62,7 +62,7 @@ import javax.net.ssl.SSLSession;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.knime.gateway.jsonrpc.JsonUtil;
+import org.knime.gateway.json.JsonUtil;
 import org.knime.gateway.jsonrpc.local.service.util.ServiceInterface2JsonRpcMap;
 import org.knime.gateway.local.service.ServerServiceConfig;
 import org.knime.gateway.local.service.ServiceConfig;
