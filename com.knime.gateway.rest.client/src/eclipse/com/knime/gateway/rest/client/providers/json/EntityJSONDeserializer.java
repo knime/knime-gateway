@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
+ * Deserializes gateway entities.
  *
  * Note: might later be moved to gateway.rest.api since gateway.rest.impl might need it, too (for parameter
  * deserialization).
@@ -54,7 +55,7 @@ public class EntityJSONDeserializer implements MessageBodyReader<GatewayEntity> 
     private ObjectMapper m_objectMapper;
 
     /**
-     *
+     * Creates a new deserializer.
      */
     public EntityJSONDeserializer() {
         m_objectMapper = setupObjectMapper();
