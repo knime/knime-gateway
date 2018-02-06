@@ -59,12 +59,12 @@ import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.v0.entity.NodeEnt;
-import org.knime.gateway.v0.service.NodeService;
-import org.knime.gateway.v0.service.util.ServiceExceptions;
-import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.

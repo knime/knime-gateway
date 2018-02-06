@@ -19,14 +19,14 @@
 package com.knime.gateway.rest.client;
 
 import com.knime.gateway.rest.client.service.NodeClient;
-import org.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.rest.client.service.WorkflowClient;
-import org.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.v0.service.WorkflowService;
 
 import java.io.IOException;
 import java.net.URI;
 
-import org.knime.gateway.service.GatewayService;
+import com.knime.gateway.service.GatewayService;
 
 /**
  * Maps a service interface (i.e. it's class) to the respective rest client implementation.

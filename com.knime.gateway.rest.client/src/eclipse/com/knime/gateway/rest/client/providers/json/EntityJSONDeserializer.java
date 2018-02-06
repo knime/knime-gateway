@@ -30,15 +30,14 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
-import org.knime.gateway.entity.GatewayEntity;
-import org.knime.gateway.json.JsonUtil;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.json.JsonUtil;
 
 /**
  * Deserializes gateway entities.

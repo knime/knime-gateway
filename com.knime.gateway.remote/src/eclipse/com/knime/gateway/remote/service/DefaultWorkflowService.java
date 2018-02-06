@@ -57,14 +57,14 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.v0.entity.WorkflowEnt;
-import org.knime.gateway.v0.service.WorkflowService;
-import org.knime.gateway.v0.service.util.ServiceExceptions;
-import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.util.EntityBuilderUtil;
+import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 /**
  * Default implementation of {@link WorkflowService} that delegates the operations to knime.core (e.g.

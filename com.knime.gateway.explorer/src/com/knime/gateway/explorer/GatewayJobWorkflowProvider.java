@@ -52,10 +52,10 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.gateway.local.service.ServerServiceConfig;
-import org.knime.gateway.local.workflow.EntityProxyAccess;
 
 import com.knime.explorer.server.internal.view.actions.jobworkflow.JobWorkflowProvider;
+import com.knime.gateway.local.service.ServerServiceConfig;
+import com.knime.gateway.local.workflow.EntityProxyAccess;
 
 /**
  * Implementation of the {@link JobWorkflowProvider} to provide the actual workflow to the server explorer retrieved via

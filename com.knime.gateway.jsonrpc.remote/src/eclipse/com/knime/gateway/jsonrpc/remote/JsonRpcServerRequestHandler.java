@@ -57,9 +57,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.knime.gateway.json.JsonUtil;
-import org.knime.gateway.service.GatewayService;
-import org.knime.gateway.v0.service.util.ListServices;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,7 +64,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
+import com.knime.gateway.json.JsonUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
+import com.knime.gateway.service.GatewayService;
+import com.knime.gateway.v0.service.util.ListServices;
 
 /**
  * Implementation of the {@link GenericServerRequestHandler} extension point that executes json-rpc 2.0 requests and

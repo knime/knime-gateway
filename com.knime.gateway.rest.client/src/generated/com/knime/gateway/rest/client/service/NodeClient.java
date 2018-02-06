@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.rest.client.service;
 
-import org.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
 
 
 import java.io.IOException;
@@ -27,9 +27,9 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.WebApplicationException;
 
-import org.knime.gateway.service.ServiceException;
-import org.knime.gateway.v0.service.NodeService;
-import org.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.ServiceException;
+import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
 
 import com.knime.enterprise.gateway.rest.api.Node;
 import com.knime.enterprise.utility.ExecutorException;
