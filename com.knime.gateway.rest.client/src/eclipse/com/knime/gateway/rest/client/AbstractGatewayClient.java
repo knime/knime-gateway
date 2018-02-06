@@ -123,16 +123,16 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
     protected static String readExceptionMessage(final Response r) {
         List<Object> contentType = r.getMetadata().get("Content-Type");
 
-        String enconding = "UTF-8";
+        String encoding = "UTF-8";
         if ((contentType != null) && !contentType.isEmpty()) {
             String type = contentType.get(0).toString();
             int index = type.indexOf("charset=");
             if (index >= 0) {
-                enconding = type.substring(index + "charset=".length());
+                encoding = type.substring(index + "charset=".length());
             }
         }
         try {
-            return IOUtils.toString((InputStream)r.getEntity(), enconding);
+            return IOUtils.toString((InputStream)r.getEntity(), encoding);
         } catch (IOException ex) {
             NodeLogger.getLogger(AbstractGatewayClient.class)
                 .error("Could not read exception message from server: " + ex.getMessage(), ex);
