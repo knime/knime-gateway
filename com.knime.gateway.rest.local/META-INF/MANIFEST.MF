@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Gateway REST Client
-Bundle-SymbolicName: com.knime.gateway.rest.client;singleton:=true
+Bundle-SymbolicName: com.knime.gateway.rest.local;singleton:=true
 Bundle-Version: 3.6.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
