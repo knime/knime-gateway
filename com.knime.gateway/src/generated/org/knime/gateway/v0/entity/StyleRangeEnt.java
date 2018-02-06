@@ -45,10 +45,8 @@
 package org.knime.gateway.v0.entity;
 
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 /**
  * Defines the style of a range (e.g. within a workflow annotation).

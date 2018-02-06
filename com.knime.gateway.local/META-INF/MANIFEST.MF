@@ -5,8 +5,8 @@ Bundle-SymbolicName: com.knime.gateway.local;singleton:=true
 Bundle-Version: 3.6.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Export-Package: org.knime.gateway.local.service,
- org.knime.gateway.local.workflow
+Export-Package: com.knime.gateway.local.service,
+ com.knime.gateway.local.workflow
 Require-Bundle: com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.4.3,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.4.3,3.0.0)",
  org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",

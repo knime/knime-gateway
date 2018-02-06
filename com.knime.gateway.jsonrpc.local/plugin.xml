@@ -4,7 +4,7 @@
    <extension
          point="org.knime.gateway.local.service.ServiceFactory">
       <ServiceFactory
-            ServiceFactory="org.knime.gateway.jsonrpc.local.JsonRpcClientServiceFactory">
+            ServiceFactory="com.knime.gateway.jsonrpc.local.JsonRpcClientServiceFactory">
       </ServiceFactory>
    </extension>
 

@@ -46,10 +46,8 @@ package org.knime.gateway.v0.entity;
 
 import org.knime.gateway.v0.entity.PortTypeEnt;
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 /**
  * A single port of a node.

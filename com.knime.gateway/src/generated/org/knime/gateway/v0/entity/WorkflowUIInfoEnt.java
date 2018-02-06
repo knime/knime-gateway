@@ -46,10 +46,8 @@ package org.knime.gateway.v0.entity;
 
 import java.math.BigDecimal;
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 /**
  * Contains workflow UI-related properties such as grid settings, connection appearance etc.

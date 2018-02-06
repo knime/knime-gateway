@@ -50,10 +50,8 @@ import org.knime.gateway.v0.entity.NodeEnt;
 import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 /**
  * The structure of a workflow.

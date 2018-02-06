@@ -4,14 +4,14 @@ Bundle-Name: KNIME Gateway Specification
 Bundle-SymbolicName: com.knime.gateway;singleton:=true
 Bundle-Version: 3.6.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Export-Package: org.knime.gateway.entity,
- org.knime.gateway.service,
- org.knime.gateway.util,
- org.knime.gateway.v0.entity,
- org.knime.gateway.v0.entity.impl,
- org.knime.gateway.v0.entity.util,
- org.knime.gateway.v0.service,
- org.knime.gateway.v0.service.util
+Export-Package: com.knime.gateway.entity,
+ com.knime.gateway.service,
+ com.knime.gateway.util,
+ com.knime.gateway.v0.entity,
+ com.knime.gateway.v0.entity.impl,
+ com.knime.gateway.v0.entity.util,
+ com.knime.gateway.v0.service,
+ com.knime.gateway.v0.service.util
 Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  org.knime.core;bundle-version="[3.3.0,4.0.0)",
  org.junit;bundle-version="[4.12.0,5.0.0)",

@@ -44,8 +44,9 @@
  */
 package org.knime.gateway.v0.service;
 
-import org.knime.gateway.service.GatewayService;
 import org.knime.gateway.v0.service.util.ServiceExceptions;
+
+import com.knime.gateway.service.GatewayService;
 
 import org.knime.gateway.v0.entity.NodeEnt;
 

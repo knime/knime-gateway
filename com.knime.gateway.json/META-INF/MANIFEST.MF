@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.knime.gateway.json;singleton:=true
 Bundle-Version: 3.6.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Export-Package: org.knime.gateway.json
+Export-Package: com.knime.gateway.json
 Require-Bundle: com.knime.gateway;bundle-version="[3.5.0,4.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.7.1,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.8.1,3.0.0)",

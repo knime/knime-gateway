@@ -50,15 +50,12 @@ import org.knime.gateway.v0.entity.NodeEnt;
 import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 
-
-import org.knime.gateway.json.JsonUtil;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
+import com.knime.gateway.json.JsonUtil;
 
 import org.knime.gateway.v0.entity.WorkflowEnt;
 import org.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;

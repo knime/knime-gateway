@@ -52,7 +52,7 @@ import org.knime.gateway.v0.entity.NodeMessageEnt;
 import org.knime.gateway.v0.entity.NodeOutPortEnt;
 import org.knime.gateway.v0.entity.NodeUIInfoEnt;
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 
 

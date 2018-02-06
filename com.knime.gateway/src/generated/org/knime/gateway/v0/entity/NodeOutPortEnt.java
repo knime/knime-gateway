@@ -47,7 +47,7 @@ package org.knime.gateway.v0.entity;
 import org.knime.gateway.v0.entity.NodePortEnt;
 import org.knime.gateway.v0.entity.PortTypeEnt;
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 
 

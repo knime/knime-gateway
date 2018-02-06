@@ -48,7 +48,7 @@ import org.knime.gateway.v0.entity.AnnotationEnt;
 import org.knime.gateway.v0.entity.BoundsEnt;
 import org.knime.gateway.v0.entity.StyleRangeEnt;
 
-import org.knime.gateway.entity.GatewayEntityBuilder;
+import com.knime.gateway.entity.GatewayEntityBuilder;
 
 
 

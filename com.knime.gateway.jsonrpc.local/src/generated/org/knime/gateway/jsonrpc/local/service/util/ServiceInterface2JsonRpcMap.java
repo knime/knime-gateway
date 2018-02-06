@@ -50,7 +50,7 @@ import org.knime.gateway.v0.service.NodeService;
 import org.knime.gateway.jsonrpc.local.service.JsonRpcWorkflowService;
 import org.knime.gateway.v0.service.WorkflowService;
 
-import org.knime.gateway.service.GatewayService;
+import com.knime.gateway.service.GatewayService;
 
 /**
  * Maps a service interface (i.e. it's class) to the respective JsonRpc-service.

@@ -48,15 +48,12 @@ import org.knime.gateway.json.entity.AnnotationEntMixIn;
 import org.knime.gateway.v0.entity.BoundsEnt;
 import org.knime.gateway.v0.entity.StyleRangeEnt;
 
-
-import org.knime.gateway.json.JsonUtil;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
+import com.knime.gateway.json.JsonUtil;
 
 import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;

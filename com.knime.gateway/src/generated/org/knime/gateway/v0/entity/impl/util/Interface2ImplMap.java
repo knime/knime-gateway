@@ -74,6 +74,9 @@ import org.knime.gateway.v0.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
 import org.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt;
 import org.knime.gateway.v0.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.v0.entity.impl.DefaultXYEnt;
+
+import com.knime.gateway.entity.GatewayEntityBuilder;
+
 import org.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
 import org.knime.gateway.v0.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
@@ -88,8 +91,6 @@ import org.knime.gateway.v0.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
 import org.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
 import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt.WrappedWorkflowNodeEntBuilder;
 import org.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
-
-import org.knime.gateway.entity.GatewayEntityBuilder;
 
 /**
  * TODO
