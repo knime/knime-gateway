@@ -48,7 +48,7 @@
  */
 package com.knime.gateway.entity;
 
-import org.knime.gateway.v0.entity.impl.util.Interface2ImplMap;
+import com.knime.gateway.v0.entity.impl.util.Interface2ImplMap;
 
 /**
  * Default implementation of the {@link EntityBuilderFactory}. It returns the default implementation of the respective

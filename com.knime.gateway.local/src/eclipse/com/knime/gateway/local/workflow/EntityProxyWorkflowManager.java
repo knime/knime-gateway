@@ -88,8 +88,15 @@ import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
-import org.knime.gateway.v0.entity.WorkflowEnt;
-import org.knime.gateway.v0.entity.WorkflowNodeEnt;
+import org.knime.core.util.Pair;
+
+import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.MetaPortInfoEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.PortTypeEnt;
+import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 
 /**
  * {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a

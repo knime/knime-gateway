@@ -50,9 +50,8 @@ package com.knime.gateway.json;
 
 import java.util.List;
 
-import org.knime.gateway.v0.entity.util.ListEntities;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knime.gateway.v0.entity.util.ListEntities;
 
 /**
  * Utility class for json rpc stuff.
@@ -74,9 +73,9 @@ public class JsonUtil {
     public static final void addMixIns(final ObjectMapper mapper) {
         List<Class<?>> entityClasses = ListEntities.listEntityClasses();
         List<Class<?>> entityBuilderClasses = ListEntities.listEntityBuilderClasses();
-        List<Class<?>> entityMixInClasses = org.knime.gateway.json.entity.util.ListEntities.listEntityClasses();
+        List<Class<?>> entityMixInClasses = com.knime.gateway.json.entity.util.ListEntities.listEntityClasses();
         List<Class<?>> entityBuilderMixInClasses =
-            org.knime.gateway.json.entity.util.ListEntities.listEntityBuilderClasses();
+            com.knime.gateway.json.entity.util.ListEntities.listEntityBuilderClasses();
 
         for (int i = 0; i < entityClasses.size(); i++) {
             mapper.addMixIn(entityClasses.get(i), entityMixInClasses.get(i));

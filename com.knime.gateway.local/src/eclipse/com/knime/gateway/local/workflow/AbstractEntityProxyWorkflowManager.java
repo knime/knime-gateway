@@ -48,7 +48,7 @@
  */
 package com.knime.gateway.local.workflow;
 
-import static org.knime.gateway.local.util.EntityProxyUtil.nodeIDToString;
+import static com.knime.gateway.local.util.EntityProxyUtil.nodeIDToString;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -89,14 +89,15 @@ import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
 import org.knime.core.util.Pair;
-import org.knime.gateway.v0.entity.ConnectionEnt;
-import org.knime.gateway.v0.entity.MetaPortInfoEnt;
-import org.knime.gateway.v0.entity.NodeEnt;
-import org.knime.gateway.v0.entity.PortTypeEnt;
-import org.knime.gateway.v0.entity.WorkflowEnt;
-import org.knime.gateway.v0.entity.WorkflowNodeEnt;
-import org.knime.gateway.v0.entity.WorkflowUIInfoEnt;
-import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+
+import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.MetaPortInfoEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.PortTypeEnt;
+import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
+import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
 /**
  * Abstract {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a

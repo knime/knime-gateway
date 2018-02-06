@@ -49,7 +49,8 @@
 package com.knime.gateway.local.workflow;
 
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
-import org.knime.gateway.v0.entity.NodeEnt;
+
+import com.knime.gateway.v0.entity.NodeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link SingleNodeContainerUI}.

@@ -58,21 +58,21 @@ import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
-import org.knime.gateway.v0.entity.ConnectionEnt;
-import org.knime.gateway.v0.entity.NativeNodeEnt;
-import org.knime.gateway.v0.entity.NodeEnt;
-import org.knime.gateway.v0.entity.NodeInPortEnt;
-import org.knime.gateway.v0.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.v0.entity.WorkflowEnt;
-import org.knime.gateway.v0.entity.WorkflowNodeEnt;
-import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
-import org.knime.gateway.v0.service.NodeService;
-import org.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.service.ServerServiceConfig;
+import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.NativeNodeEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeInPortEnt;
+import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.

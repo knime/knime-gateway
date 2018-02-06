@@ -54,14 +54,14 @@ import static org.junit.Assert.assertEquals;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.knime.gateway.v0.entity.NativeNodeEnt;
-import org.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
-import org.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
-import org.knime.gateway.v0.entity.NodeEnt.NodeTypeEnum;
-import org.knime.gateway.v0.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 
 import com.knime.gateway.entity.EntityBuilderManager;
+import com.knime.gateway.v0.entity.NativeNodeEnt;
+import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
+import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
+import com.knime.gateway.v0.entity.NodeEnt.NodeTypeEnum;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 
 /**
  * Basic test of the entities and the entity builders. Not testing all of them since they are auto-generated, anyway.

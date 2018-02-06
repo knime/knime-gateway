@@ -60,10 +60,12 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
 /**
  * Entity-proxy class that proxies {@link WrappedWorkflowNodeEnt} and implements {@link SubNodeContainerUI}.

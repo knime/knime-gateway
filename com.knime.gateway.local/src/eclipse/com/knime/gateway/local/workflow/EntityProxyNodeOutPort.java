@@ -55,11 +55,11 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
-import org.knime.gateway.v0.entity.NodeEnt;
-import org.knime.gateway.v0.entity.NodeOutPortEnt;
-import org.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.knime.gateway.local.util.missing.MissingPortObject;
+import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.PortTypeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link NodeOutPortUI}.

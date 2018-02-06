@@ -62,7 +62,6 @@ import javax.net.ssl.SSLSession;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.knime.gateway.jsonrpc.local.service.util.ServiceInterface2JsonRpcMap;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,6 +71,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import com.googlecode.jsonrpc4j.ProxyUtil;
 import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.jsonrpc.local.service.util.ServiceInterface2JsonRpcMap;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.local.service.ServiceConfig;
 import com.knime.gateway.local.service.ServiceFactory;

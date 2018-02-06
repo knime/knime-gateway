@@ -83,12 +83,12 @@ import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.gateway.v0.entity.NodeAnnotationEnt;
-import org.knime.gateway.v0.entity.NodeEnt;
-import org.knime.gateway.v0.entity.NodeMessageEnt;
-import org.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.local.util.EntityProxyUtil;
+import com.knime.gateway.v0.entity.NodeAnnotationEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeMessageEnt;
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.

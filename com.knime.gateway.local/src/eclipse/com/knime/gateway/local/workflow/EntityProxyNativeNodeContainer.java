@@ -59,12 +59,12 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.gateway.v0.entity.NativeNodeEnt;
-import org.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
+import com.knime.gateway.v0.entity.NativeNodeEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 
 /**
  * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.

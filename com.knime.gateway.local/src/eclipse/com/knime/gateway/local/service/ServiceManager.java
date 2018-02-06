@@ -59,10 +59,10 @@ import java.util.Map;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.Pair;
-import org.knime.gateway.v0.service.WorkflowService;
 
 import com.knime.gateway.service.GatewayService;
 import com.knime.gateway.util.ExtPointUtil;
+import com.knime.gateway.v0.service.WorkflowService;
 
 /**
  * Manages services (i.e. {@link GatewayService}s) and gives access to service interface implementations.

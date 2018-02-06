@@ -52,9 +52,10 @@ import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.gateway.v0.entity.AnnotationEnt;
-import org.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
-import org.knime.gateway.v0.entity.WorkflowAnnotationEnt;
+
+import com.knime.gateway.v0.entity.AnnotationEnt;
+import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
+import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 
 /**
  * Entity-proxy class that proxies {@link WorkflowAnnotationEnt} and extends {@link WorkflowAnnotation}.

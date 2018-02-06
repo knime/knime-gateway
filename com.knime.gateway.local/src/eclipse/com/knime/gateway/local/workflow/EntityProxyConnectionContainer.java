@@ -58,8 +58,9 @@ import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.ConnectionUIInformationListener;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
-import org.knime.gateway.v0.entity.ConnectionEnt;
-import org.knime.gateway.v0.entity.XYEnt;
+
+import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.XYEnt;
 
 /**
  * Entity-proxy class that proxies {@link ConnectionEnt} and implements {@link ConnectionContainerUI}.
