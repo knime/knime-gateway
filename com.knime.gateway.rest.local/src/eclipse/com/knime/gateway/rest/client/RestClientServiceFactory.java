@@ -36,6 +36,14 @@ public class RestClientServiceFactory implements ServiceFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public int getPriority() {
+        return NORMAL_PRIORITY + 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <S extends GatewayService> S createService(final Class<S> serviceInterface,
