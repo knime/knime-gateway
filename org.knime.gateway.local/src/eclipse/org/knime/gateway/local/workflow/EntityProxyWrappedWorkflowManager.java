@@ -136,6 +136,6 @@ public final class EntityProxyWrappedWorkflowManager
      */
     @Override
     public boolean isEncrypted() {
-        return getEntity().getIsEncrypted();
+        return getEntity().isEncrypted();
     }
 }

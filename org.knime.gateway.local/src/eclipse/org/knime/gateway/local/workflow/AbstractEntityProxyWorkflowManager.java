@@ -22,7 +22,7 @@
  *  Hence, KNIME and ECLIPSE are both independent programs and are not
  *  derived from each other. Should, however, the interpretation of the
  *  GNU GPL Version 3 ("License") under any applicable laws result in
- *  KNIME and ECLIPSE being a combined program, KNIME GMBH herewith grants
+ *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
  *  you the additional permission to use and propagate KNIME together with
  *  ECLIPSE with only the license terms in place for ECLIPSE applying to
  *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
@@ -322,8 +322,8 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
             PortTypeEnt pte = in.getPortType();
             PortTypeRegistry ptr = PortTypeRegistry.getInstance();
             PortType portType =
-                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
-            res[i] = MetaPortInfo.builder().setIsConnected(in.getIsConnected()).setMessage(in.getMessage())
+                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.isOptional());
+            res[i] = MetaPortInfo.builder().setIsConnected(in.isConnected()).setMessage(in.getMessage())
                 .setNewIndex(in.getNewIndex()).setOldIndex(in.getOldIndex()).setPortType(portType).build();
         }
         return res;
@@ -342,8 +342,8 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
             PortTypeEnt pte = out.getPortType();
             PortTypeRegistry ptr = PortTypeRegistry.getInstance();
             PortType portType =
-                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.getIsOptional());
-            res[i] = MetaPortInfo.builder().setIsConnected(out.getIsConnected()).setMessage(out.getMessage())
+                ptr.getPortType(ptr.getObjectClass(pte.getPortObjectClassName()).get(), pte.isOptional());
+            res[i] = MetaPortInfo.builder().setIsConnected(out.isConnected()).setMessage(out.getMessage())
                 .setNewIndex(out.getNewIndex()).setOldIndex(out.getOldIndex()).setPortType(portType).build();
         }
         return res;
@@ -827,9 +827,10 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
     public EditorUIInformation getEditorUIInformation() {
         WorkflowUIInfoEnt uiEnt = getWorkflow().getWorkflowUIInfo();
         return EditorUIInformation.builder().setGridX(uiEnt.getGridX()).setGridY(uiEnt.getGridY())
-            .setShowGrid(uiEnt.getShowGrid()).setSnapToGrid(uiEnt.getSnapToGrid()).setZoomLevel(uiEnt.getZoomLevel())
-            .setHasCurvedConnections(uiEnt.getHasCurvedConnection())
-            .setConnectionLineWidth(uiEnt.getConnectionLineWidtdh()).build();
+            .setShowGrid(uiEnt.isShowGrid()).setSnapToGrid(uiEnt.isSnapToGrid())
+            .setZoomLevel(uiEnt.getZoomLevel().doubleValue())
+            .setHasCurvedConnections(uiEnt.isHasCurvedConnection())
+            .setConnectionLineWidth(uiEnt.getConnectionLineWidth()).build();
     }
 
     /**
