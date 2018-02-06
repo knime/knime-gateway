@@ -6,7 +6,10 @@
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
-      This features contains the client-side libraries for connecting to a KNIME server via the gateway API. It mainly enables remote access to jobs on the server, e.g. to be viewed via the KNIME explorer.
+      This features contains the client-side libraries for connecting
+to a KNIME server via the gateway API. It mainly enables remote
+access to jobs on the server, e.g. to be viewed via the KNIME
+explorer.
    </description>
 
    <copyright>
@@ -750,6 +753,13 @@ propagated with or for interoperation with KNIME.
 
    <plugin
          id="org.knime.gateway.json"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.knime.gateway.explorer"
          download-size="0"
          install-size="0"
          version="0.0.0"
