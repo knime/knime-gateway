@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -82,9 +82,7 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
         bean.setAddress(baseAddress.toString());
         bean.setServiceClass(cls);
         if (jwt != null) {
-            HashMap<String, String> headers = new HashMap<String, String>();
-            headers.put("Authorization", "Bearer " + jwt);
-            bean.setHeaders(headers);
+            bean.setHeaders(Collections.singletonMap("Authorization", "Bearer " + jwt));
         }
         bean.setProviders(providers);
         return bean.create(cls);
@@ -121,15 +119,11 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
      * @return the exception message
      */
     protected static String readExceptionMessage(final Response r) {
-        List<Object> contentType = r.getMetadata().get("Content-Type");
-
         String encoding = "UTF-8";
-        if ((contentType != null) && !contentType.isEmpty()) {
-            String type = contentType.get(0).toString();
-            int index = type.indexOf("charset=");
-            if (index >= 0) {
-                encoding = type.substring(index + "charset=".length());
-            }
+
+        MediaType mt = r.getMediaType();
+        if (mt != null) {
+            encoding = mt.getParameters().getOrDefault(MediaType.CHARSET_PARAMETER, encoding);
         }
         try {
             return IOUtils.toString((InputStream)r.getEntity(), encoding);
