@@ -94,28 +94,28 @@ competent court at the domicile of the Licensee.
    </license>
 
    <plugin
-         id="org.knime.gateway.jsonrpc.local"
+         id="com.knime.gateway.jsonrpc.local"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.knime.gateway.local"
+         id="com.knime.gateway.local"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.knime.gateway"
+         id="com.knime.gateway"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.knime.gateway.json"
+         id="com.knime.gateway.json"
          download-size="0"
          install-size="0"
          version="0.0.0"
