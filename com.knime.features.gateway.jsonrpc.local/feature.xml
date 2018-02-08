@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.gateway.jsonrpc.local"
       label="KNIME Remote Gateway via JSON-RPC (experimental, don&apos;t install)"
-      version="3.6.0.qualifier"
+      version="4.7.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
