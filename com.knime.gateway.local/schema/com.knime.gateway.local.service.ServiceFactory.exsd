@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.knime.gateway" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.knime.gateway.local" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.knime.gateway" id="org.knime.gateway.service.ServiceFactory" name="ServiceFactory"/>
+         <meta.schema plugin="com.knime.gateway.local" id="com.knime.gateway.local.service.ServiceFactory" name="ServiceFactory"/>
       </appinfo>
       <documentation>
          Extension point to plug-in services, most likely java-clients that communicate with a particular gateway server.
@@ -18,9 +18,7 @@
       </annotation>
       <complexType>
          <sequence>
-            <choice>
-               <element ref="ServiceFactory"/>
-            </choice>
+            <element ref="ServiceFactory"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -57,7 +55,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.knime.gateway.local.service.ServiceFactory"/>
+                  <meta.attribute kind="java" basedOn=":com.knime.gateway.local.service.ServiceFactory"/>
                </appinfo>
             </annotation>
          </attribute>

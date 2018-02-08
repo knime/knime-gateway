@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.knime.gateway.entity.EntityBuilderFactory" name="EntityBuilderFactory" schema="schema/org.knime.gateway.entity.EntityBuilderFactory.exsd"/>
+   <extension-point id="com.knime.gateway.entity.EntityBuilderFactory" name="EntityBuilderFactory" schema="schema/com.knime.gateway.entity.EntityBuilderFactory.exsd"/>
 </plugin>

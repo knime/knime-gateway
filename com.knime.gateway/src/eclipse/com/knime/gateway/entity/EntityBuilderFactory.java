@@ -56,7 +56,7 @@ package com.knime.gateway.entity;
  */
 public interface EntityBuilderFactory {
 
-    static final String EXT_POINT_ID = "org.knime.gateway.entity.EntityBuilderFactory";
+    static final String EXT_POINT_ID = "com.knime.gateway.entity.EntityBuilderFactory";
 
     static final String EXT_POINT_ATTR = "EntityBuilderFactory";
 

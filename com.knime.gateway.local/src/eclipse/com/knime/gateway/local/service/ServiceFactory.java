@@ -61,7 +61,7 @@ import com.knime.gateway.service.GatewayService;
  */
 public interface ServiceFactory {
 
-    static final String EXT_POINT_ID = "org.knime.gateway.local.service.ServiceFactory";
+    static final String EXT_POINT_ID = "com.knime.gateway.local.service.ServiceFactory";
 
     static final String EXT_POINT_ATTR = "ServiceFactory";
 
