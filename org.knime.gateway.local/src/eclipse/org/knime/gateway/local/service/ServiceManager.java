@@ -95,7 +95,7 @@ public class ServiceManager {
      * @return an implementation of the requested service interface (it returns the same instance with every method
      *         call)
      */
-    public static <S extends GatewayService> S service(final Class<S> serviceInterface,
+    public static synchronized <S extends GatewayService> S service(final Class<S> serviceInterface,
         final ServiceConfig serviceConfig) {
         Pair<Class<? extends GatewayService>, ServiceConfig> pair = Pair.create(serviceInterface, serviceConfig);
         S service = (S)SERVICES.get(pair);
