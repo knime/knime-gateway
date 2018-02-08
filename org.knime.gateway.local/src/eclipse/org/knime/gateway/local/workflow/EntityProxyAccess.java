@@ -85,6 +85,8 @@ public class EntityProxyAccess {
 
     private final Map<Pair<GatewayEntity, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
+    private final Map<Pair<UUID, String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>> m_wfmMap;
+
     private final ServerServiceConfig m_serviceConfig;
 
     /**
@@ -94,6 +96,7 @@ public class EntityProxyAccess {
      */
     EntityProxyAccess(final ServerServiceConfig serviceConfig) {
         m_entityProxyMap = new HashMap<Pair<GatewayEntity, Class<EntityProxy>>, EntityProxy>();
+        m_wfmMap = new HashMap<Pair<UUID,String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>>();
         m_serviceConfig = serviceConfig;
     }
 
@@ -112,39 +115,59 @@ public class EntityProxyAccess {
     /**
      * Retrieves for the given workflow ID the respective entities and returns a workflow manager to access it.
      *
-     * With every call a <b>new</b> {@link EntityProxyWorkflowManager} instance will be returned!!
+     * The returned {@link EntityProxyWorkflowManager} is or will be cached.
      *
      * @param rootWorkflowID the ID of the workflow manager to retrieve
      * @param nodeID an optional node id to retrieve a sub workflow (i.e. metanode) - can be <code>null</code>
-     * @return the newly created {@link EntityProxyWorkflowManager} (the returned wrapper object doesn't get cached!!
+     * @return a newly created {@link EntityProxyWorkflowManager} or retrieved from the cache
      */
     EntityProxyWorkflowManager getWorkflowManager(final UUID rootWorkflowID, final String nodeID) {
-        NodeEnt node;
-        try {
-            if (nodeID == null) {
-                node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
-            } else {
-                node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
+        Pair<UUID, String> keyPair = Pair.create(rootWorkflowID, nodeID);
+        if (m_wfmMap.get(keyPair) != null) {
+            return (EntityProxyWorkflowManager) m_wfmMap.get(keyPair);
+        } else {
+            NodeEnt node;
+            try {
+                if (nodeID == null) {
+                    node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
+                } else {
+                    node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
+                }
+            } catch (NodeNotFoundException ex) {
+                throw new RuntimeException(ex);
             }
-        } catch (NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
+            assert node instanceof WorkflowNodeEnt;
+            EntityProxyWorkflowManager wfm = getOrCreate((WorkflowNodeEnt)node,
+                n -> new EntityProxyWorkflowManager(n, this), EntityProxyWorkflowManager.class);
+            m_wfmMap.put(keyPair, wfm);
+            return wfm;
         }
-        assert node instanceof WorkflowNodeEnt;
-        return new EntityProxyWorkflowManager((WorkflowNodeEnt)node, this);
     }
 
     /**
      * Returns the workflow manager for the respective node ent. With every call the same entity proxy instance will be
-     * returned for the same entity.
+     * returned for the same rootWorkflowID- and nodeID-combination (taken from the wrapped worklfow node entity).
      *
      * @param rootWorkflowID
      * @param nodeID
+     * @param indicates whether a refresh (of the internally hold workflow) is required in case of a newly created
+     *            entity proxy
      * @return the {@link EntityProxyWrappedWorkflowManager} - either the cached one or newly created
      */
     EntityProxyWrappedWorkflowManager getWrappedWorkflowManager(final WrappedWorkflowNodeEnt ent) {
-        return getOrCreate(ent, we -> {
-            return new EntityProxyWrappedWorkflowManager(ent, this);
-        }, EntityProxyWrappedWorkflowManager.class);
+        Pair<UUID, String> keyPair = Pair.create(ent.getRootWorkflowID(), ent.getNodeID());
+        if (m_wfmMap.get(keyPair) != null) {
+            EntityProxyWrappedWorkflowManager wfm = (EntityProxyWrappedWorkflowManager)m_wfmMap.get(keyPair);
+            //put the workflow manager also into the entity map (in case it's a varying node entity
+            getOrCreate(ent, e -> wfm, EntityProxyWrappedWorkflowManager.class);
+            return wfm;
+        } else {
+            //put the workflow manager also into the entity map
+            EntityProxyWrappedWorkflowManager wfm = getOrCreate(ent,
+                n -> new EntityProxyWrappedWorkflowManager(n, this), EntityProxyWrappedWorkflowManager.class);
+            m_wfmMap.put(keyPair, wfm);
+            return wfm;
+        }
     }
 
     /**
