@@ -84,6 +84,7 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
+import org.knime.core.ui.node.workflow.SubNodeContainerUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
@@ -1025,9 +1026,14 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
 
             //refresh all contained workflows (i.e. metanodes)
             for (NodeEnt node : m_workflowEnt.getNodes().values()) {
-                EntityProxyNodeContainer nodeContainer = getAccess().getNodeContainer(node);
-                if (nodeContainer instanceof WorkflowManagerUI && ((WorkflowManagerUI)nodeContainer).isRefreshable()) {
-                    ((WorkflowManagerUI)nodeContainer).refresh();
+                WorkflowManagerUI wfm = null;
+                if (node instanceof WorkflowNodeEnt) {
+                    wfm = (WorkflowManagerUI)getAccess().getNodeContainer(node);
+                } else if (node instanceof WrappedWorkflowNodeEnt) {
+                    wfm = ((SubNodeContainerUI)getAccess().getNodeContainer(node)).getWorkflowManager();
+                }
+                if (wfm != null && wfm.isRefreshable()) {
+                    wfm.refresh();
                 }
             }
         }
