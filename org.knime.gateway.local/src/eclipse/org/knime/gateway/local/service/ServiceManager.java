@@ -48,6 +48,10 @@
  */
 package org.knime.gateway.local.service;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +69,8 @@ import org.knime.gateway.v0.service.WorkflowService;
  * @author Martin Horn, University of Konstanz
  */
 public class ServiceManager {
+    private static NodeLogger LOGGER = NodeLogger.getLogger(ServiceManager.class);
+
     private static ServiceFactory SERVICE_FACTORY;
 
     /* SERVICES SINGLEON INSTANCES */
@@ -97,10 +103,34 @@ public class ServiceManager {
             if (SERVICE_FACTORY == null) {
                 SERVICE_FACTORY = createServiceFactory();
             }
-            service = SERVICE_FACTORY.createService(serviceInterface, serviceConfig);
+            service = createLogDelegateService(serviceInterface,
+                SERVICE_FACTORY.createService(serviceInterface, serviceConfig));
             SERVICES.put(pair, service);
         }
         return service;
+    }
+
+
+    /**
+     * Wrap the service with a proxy class that logs the method calls and subsequently delegates them.
+     *
+     * @param serviceInterface the service interface to proxy
+     * @param delegate the service to delegate the method calls to
+     * @return the wrapped service instance
+     */
+    @SuppressWarnings("unchecked")
+    private static <S extends GatewayService> S createLogDelegateService(final Class<S> serviceInterface,
+        final S delegate) {
+        return (S)Proxy.newProxyInstance(serviceInterface.getClassLoader(), new Class<?>[]{serviceInterface},
+            new InvocationHandler() {
+
+                @Override
+                public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+                    LOGGER.info("Gateway service call: " + serviceInterface.getSimpleName() + "." + method.getName()
+                        + "(" + Arrays.deepToString(args) + ")");
+                    return method.invoke(delegate, args);
+                }
+            });
     }
 
     /**
