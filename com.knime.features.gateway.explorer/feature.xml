@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.knime.features.gateway.explorer"
+      label="KNIME Job View (experimental)"
+      version="4.7.0.qualifier"
+      provider-name="KNIME AG, Zurich, Switzerland">
+
+   <description>
+      This features enables viewing of jobs that are currently executing
+on a server.
+This feature and the contained plug-ins are the intellectual
+property of KNIME AG, Zurich, Switzerland. 
+This plug-in is not part of the Open Source KNIME Platform. 
+It is not released under GPL, like most parts of KNIME. It 
+is available at no charge and it can be used without 
+restrictions. It is provided &quot;as is&quot;, without any warranty. 
+You may NOT freely copy it, nor modify or distribute it. 
+For details, please refer to the license agreement.
+   </description>
+
+   <copyright>
+      The KNIME Job View is a copyrighted work owned by
+KNIME AG, Zurich, Switzerland (&quot;KNIME&quot;), or a third party.
+All rights reserved.
+   </copyright>
+
+   <license url="">
+      Terms for License of the KNIME Job View
+1. Application
+1.1 These terms regulate the conclusion, content and performance
+of contracts with respect to the use of the software KNIME Job View,
+which is available for download from the website
+http://www.knime.com (&quot;Website&quot;) (&quot;KNIME Job View&quot;).
+1.2 These terms shall be deemed accepted as soon as the user
+(&quot;Licensee&quot;) downloads the KNIME Job View.
+2. Ownership
+The KNIME Job View is a copyrighted work owned by KNIME, 
+Zurich, Switzerland (&quot;KNIME&quot;), or a third party.
+3. License
+3.1 The Licensee is granted a non-exclusive and worldwide right
+to use the KNIME Job View.
+3.2 The Licensee may make copies of the KNIME Job View for
+installation and backup purposes only.
+4. Restrictions
+4.1 Licensee shall not and agrees not to transfer, rent, sublicense,
+copy, alter, modify, create derivative works of, reverse engineer,
+disassemble (except as permitted by law) or distribute the KNIME
+Job View or any part thereof. 
+4.2 KNIME reserves any rights not expressly granted to the
+Licensee and retains all rights, title to and interest in the
+KNIME Job View.
+5. WARRANTY AND LIABILITY
+5.1 THE KNIME Job View IS PROVIDED &quot;AS IS&quot; WITHOUT
+WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE EXTENT PERMITTED
+BY LAW, ALL WARRANTY IS EXCLUDED, INCLUDING, BUT NOT LIMITED
+TO, WARRANTIES FOR UNINTERRUPTED AND ERROR-FREE OPERATION, FOR
+OPERATION IN COMBINATION WITH OTHER HARDWARE, SOFTWARE, SYSTEMS
+OR DATA, FOR MERCHANTABILITY, FOR FITNESS FOR A PARTICULAR PURPOSE
+AND FOR NON-INFRINGEMENT OF THIRD PARTY RIGHTS.
+5.2 TO THE EXTENT PERMITTED BY LAW, ALL LIABILITY OF KNIME.COM
+IS HEREBY WAIVED, INCLUDING, BUT NOT LIMITED TO, LIABILITY FOR
+FINANCIAL DAMAGE, PROPERTY DAMAGE AND PERSONAL INJURY IN CONNECTION
+WITH THE USE OF THE KNIME Job View, LOSS OF DATA,
+DAMAGE OF DATA, DAMAGE TO COMPUTER SYSTEMS, FUNCTIONAL DISRUPTION
+OF COMPUTER SYSTEMS, DAMAGE OR LOSS OF PROFITS DUE TO THE WRONGFUL
+OPERATION OR NON-OPERATION OF THE KNIME Example Server View.
+6. Duration of contract
+6.1 This license contract is concluded for an indefinite period.
+6.2 However, KNIME may terminate this contract at any time
+without financial consequences in case the Licensee is in breach
+of the contract. In the events of such termination, the Licensee
+shall cease to use the KNIME Job View and destroy
+all copies in his/her possession immediately.
+7. Data Protection
+KNIME complies with the applicable Swiss data protection
+laws. The Licensee consents to KNIME using the Licensee&apos;s
+personal data for its own marketing purposes.
+8. General
+8.1 All reports, requests and other communication shall be deemed
+effective upon dispatch to the last address communicated to the
+other party of this contract.
+8.2 If any provision of this contract shall be judged to be invalid,
+that provision shall be replaced by an economically equivalent
+provision and the remaining provisions of this contract will
+remain in full force and effect.
+9. Applicable Law and Place of Jurisdiction
+9.1 This contract shall be governed by Swiss law, excluding its
+conflicts of laws principles and the Vienna Convention on the
+Sale of Goods and Services.
+9.2 Exclusive place of jurisdiction shall be the city of Zurich/Switzerland.
+KNIME is, however, entitled to take legal action before any
+competent court at the domicile of the Licensee.
+   </license>
+
+   <includes
+         id="org.knime.features.gateway.local"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.knime.gateway.explorer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

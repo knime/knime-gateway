@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.knime.enterprise.slave.GenericServerRequestHandler">
+      <GenericServerRequestHandler
+            GenericServerRequestHandler="com.knime.gateway.jsonrpc.remote.JsonRpcServerRequestHandler">
+      </GenericServerRequestHandler>
+   </extension>
+   <extension
+         point="com.knime.enterprise.slave.JobPoolListener">
+      <JobPoolListener
+            JobPoolListener="com.knime.gateway.jsonrpc.remote.JobPoolListener">
+      </JobPoolListener>
+   </extension>
+
+</plugin>
