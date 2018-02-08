@@ -69,7 +69,7 @@ import org.knime.gateway.v0.service.WorkflowService;
  * @author Martin Horn, University of Konstanz
  */
 public class ServiceManager {
-    private static NodeLogger LOGGER = NodeLogger.getLogger(ServiceManager.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(ServiceManager.class);
 
     private static ServiceFactory SERVICE_FACTORY;
 
