@@ -263,7 +263,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
 
     /**
      * Notifies the registered node message listeners.
-     * 
+     *
      * @param event essentially the new node message
      */
     protected void notifyNodeMessageListener(final NodeMessageEvent event) {
@@ -371,7 +371,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
 
     /**
      * Notifies the node state change listeners (e.g. the UI).
-     * 
+     *
      * @param state the new node state
      */
     protected void notifyNodeStateChangeListener(final NodeStateEvent state) {
@@ -683,6 +683,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void update(final NodeEnt entity) {
         super.update((E)entity);

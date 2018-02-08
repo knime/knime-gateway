@@ -60,7 +60,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.gateway.v0.entity.WorkflowEnt;
 import org.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -76,21 +75,12 @@ public class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyNodeContainer.class);
 
-    private WorkflowEnt m_workflowEnt;
-
     /**
      * @param node
      * @param access
      */
     public EntityProxySubNodeContainer(final WrappedWorkflowNodeEnt node, final EntityProxyAccess access) {
         super(node, access);
-    }
-
-    private WorkflowEnt getWorkflow() {
-        if (m_workflowEnt == null) {
-            m_workflowEnt = getAccess().getWorkflowEnt(getEntity());
-        }
-        return m_workflowEnt;
     }
 
     /**
@@ -217,8 +207,6 @@ public class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<
      */
     @Override
     public boolean isWriteProtected() {
-        // TODO
-        return false;
+        return true;
     }
-
 }

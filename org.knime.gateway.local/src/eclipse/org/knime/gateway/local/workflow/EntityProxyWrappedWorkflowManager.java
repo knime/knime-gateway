@@ -69,7 +69,7 @@ public final class EntityProxyWrappedWorkflowManager
      * @param wrappedWorkflowNodeEnt
      * @param access
      */
-    public EntityProxyWrappedWorkflowManager(final WrappedWorkflowNodeEnt wrappedWorkflowNodeEnt,
+    EntityProxyWrappedWorkflowManager(final WrappedWorkflowNodeEnt wrappedWorkflowNodeEnt,
         final EntityProxyAccess access) {
         super(wrappedWorkflowNodeEnt, access);
     }

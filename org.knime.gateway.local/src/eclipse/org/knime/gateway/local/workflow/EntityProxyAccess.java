@@ -94,7 +94,7 @@ public class EntityProxyAccess {
      *
      * @param serviceConfig information how to connect to the server to retrieve entities
      */
-    EntityProxyAccess(final ServerServiceConfig serviceConfig) {
+    private EntityProxyAccess(final ServerServiceConfig serviceConfig) {
         m_entityProxyMap = new HashMap<Pair<GatewayEntity, Class<EntityProxy>>, EntityProxy>();
         m_wfmMap = new HashMap<Pair<UUID,String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>>();
         m_serviceConfig = serviceConfig;
@@ -150,8 +150,6 @@ public class EntityProxyAccess {
      *
      * @param rootWorkflowID
      * @param nodeID
-     * @param indicates whether a refresh (of the internally hold workflow) is required in case of a newly created
-     *            entity proxy
      * @return the {@link EntityProxyWrappedWorkflowManager} - either the cached one or newly created
      */
     EntityProxyWrappedWorkflowManager getWrappedWorkflowManager(final WrappedWorkflowNodeEnt ent) {
