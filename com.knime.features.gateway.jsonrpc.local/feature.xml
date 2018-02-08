@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.knime.features.gateway.jsonrpc.local"
+      id="com.knime.features.gateway.jsonrpc.local"
       label="KNIME Remote Gateway via JSON-RPC (experimental, don&apos;t install)"
       version="4.7.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
