@@ -116,7 +116,7 @@ competent court at the domicile of the Licensee.
          unpack="false"/>
 
    <plugin
-         id="com.knime.gateway.explorer"
+         id="com.knime.gateway.rest.local"
          download-size="0"
          install-size="0"
          version="0.0.0"

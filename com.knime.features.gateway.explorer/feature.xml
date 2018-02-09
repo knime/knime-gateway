@@ -93,7 +93,11 @@ competent court at the domicile of the Licensee.
    </license>
 
    <includes
-         id="org.knime.features.gateway.local"
+         id="com.knime.features.gateway.rest.local"
+         version="0.0.0"/>
+
+   <includes
+         id="com.knime.features.gateway.jsonrpc.local"
          version="0.0.0"/>
 
    <plugin
