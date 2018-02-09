@@ -15,7 +15,10 @@
 * essentially an implementation of _org.knime.core.ui_ that turns the respective UI-commands, -actions, -requests etc. into gateway API service calls (as defined in _org.knime.core.gateway_) usually communicated to a KNIME server (another local-only implementation of _org.knime.core.ui_ is _org.knime.core_)
 * the actual service implementations, e.g. defining how to forward the actual service calls to the server, are injected via the respective extension point 'ServiceFactory'
 
-### _com.knime.gateway.jsonrpc_:
+### _com.knime.gateway.explorer_:
+* establishes the connection between the gateway client (that communicates with the KNIME-server, e.g. via REST) and the KNIME explorer's (remote) job workflow view
+
+### _com.knime.gateway.json_:
 * mainly contains json-based implementations of the entity and entity builder interfaces (i.e. the entities are de-/serialized from/to json via jackson)
 * entity and entity builder implementations are auto-generated
 
@@ -23,6 +26,9 @@
 * an actual implementation of the gateway services that forward the service calls to a specific rest-endpoint at the KNIME-server (extends the 'ServiceFactory'-extension point of _org.knime.gateway.local_)
 * the service calls are translated into [json-rpc 2.0](http://www.jsonrpc.org/) requests and responses in order to be transfered
 * the service implementations are auto-generated
+
+### _com.knime.gateway.rest.local_:
+* an implementation of the gateway services that forward the service calls to rest-endpoints at the KNIME-server (extends the 'ServiceFactory'-extension point of _org.knime.gateway.local_)
 
 ### _com.knime.gateway.remote_: 
 * to be shipped with a KNIME executor on the server-side
