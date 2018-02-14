@@ -49,6 +49,7 @@
 package com.knime.gateway.local.service;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
@@ -129,7 +130,11 @@ public class ServiceManager {
                 public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                     LOGGER.info("Gateway service call: " + serviceInterface.getSimpleName() + "." + method.getName()
                         + "(" + Arrays.deepToString(args) + ")");
-                    return method.invoke(delegate, args);
+                    try {
+                        return method.invoke(delegate, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getTargetException();
+                    }
                 }
             });
     }
