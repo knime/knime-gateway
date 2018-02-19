@@ -20,6 +20,8 @@ package com.knime.gateway.jsonrpc.local.service;
 
 import com.knime.gateway.v0.entity.NodeEnt;
 
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 
 import com.knime.gateway.v0.service.NodeService;
@@ -37,20 +39,20 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNode")
-    NodeEnt getNode(java.util.UUID jobId, String nodeId);
+    NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNodeSettings")
-    String getNodeSettings(java.util.UUID jobId, String nodeId);
+    String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getRootNode")
-    NodeEnt getRootNode(java.util.UUID jobId);
+    NodeEnt getRootNode(java.util.UUID jobId) ;
 
 }

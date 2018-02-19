@@ -20,6 +20,8 @@ package com.knime.gateway.jsonrpc.local.service;
 
 import com.knime.gateway.v0.entity.WorkflowEnt;
 
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 
 import com.knime.gateway.v0.service.WorkflowService;
@@ -37,13 +39,13 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.getSubWorkflow")
-    WorkflowEnt getSubWorkflow(java.util.UUID jobId, String nodeId);
+    WorkflowEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.getWorkflow")
-    WorkflowEnt getWorkflow(java.util.UUID jobId);
+    WorkflowEnt getWorkflow(java.util.UUID jobId) ;
 
 }
