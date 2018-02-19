@@ -76,7 +76,6 @@ import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.local.service.ServiceConfig;
 import com.knime.gateway.local.service.ServiceFactory;
 import com.knime.gateway.service.GatewayService;
-import com.knime.gateway.service.ServiceException;
 
 /**
  * Service factories whose returned services talk to a http(s) server at "v4/gateway/jsonrpc" by 'posting' json-rpc
@@ -144,7 +143,10 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                 @Override
                 protected void handleErrorResponse(final ObjectNode jsonObject) throws Throwable {
                     if (hasError(jsonObject)) {
-                        throw new ServiceException(jsonObject.get("error").get("message").asText());
+                        String message = jsonObject.get("error").get("message").asText();
+                        throw (Exception)Class
+                            .forName(jsonObject.get("error").get("data").get("exceptionTypeName").asText())
+                            .getConstructor(String.class).newInstance(message);
                     }
                 }
 
