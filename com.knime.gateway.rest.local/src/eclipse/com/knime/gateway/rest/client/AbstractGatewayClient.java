@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -32,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator.AuthenticationCloseable;
@@ -51,7 +50,6 @@ import com.knime.gateway.rest.client.service.WorkflowClient;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public abstract class AbstractGatewayClient<C> extends AbstractClient {
-
     private C m_client;
 
     /**
@@ -73,19 +71,11 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
         List<Object> jaxRSProviders = Util.getJaxRSProviders();
         //is there a better way than adding the required provider manually?
         jaxRSProviders.add(new EntityJSONDeserializer());
-        m_client = createProxy(m_restAddress, resourceClass, jaxRSProviders, jwt);
-        configureRESTClient(m_client, DEFAULT_TIMEOUT);
-    }
-
-    private C createProxy(final URI baseAddress, final Class<C> cls, final List<?> providers, final String jwt) {
-        JAXRSClientFactoryBean bean = new JAXRSClientFactoryBean();
-        bean.setAddress(baseAddress.toString());
-        bean.setServiceClass(cls);
+        m_client = createProxy(resourceClass, m_restAddress, null, null, jaxRSProviders, "Explorer01",
+            AbstractClient.DEFAULT_TIMEOUT);
         if (jwt != null) {
-            bean.setHeaders(Collections.singletonMap("Authorization", "Bearer " + jwt));
+            WebClient.client(m_client).header("Authorization", "Bearer " + jwt);
         }
-        bean.setProviders(providers);
-        return bean.create(cls);
     }
 
     /**
