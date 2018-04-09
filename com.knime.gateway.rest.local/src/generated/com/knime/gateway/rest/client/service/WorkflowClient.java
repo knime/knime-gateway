@@ -73,13 +73,13 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
         } catch (WebApplicationException ex) {
             //executor errors
             if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex.getResponse()));
+                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
             }
             if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex.getResponse()));
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
             }
             throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex.getResponse()));
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }
     }
     
@@ -98,7 +98,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
         } catch (WebApplicationException ex) {
             //executor errors
             throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex.getResponse()));
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }
     }
     

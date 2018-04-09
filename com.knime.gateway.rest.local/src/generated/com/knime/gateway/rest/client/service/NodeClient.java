@@ -73,10 +73,10 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
         } catch (WebApplicationException ex) {
             //executor errors
             if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex.getResponse()));
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
             }
             throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex.getResponse()));
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }
     }
     
@@ -95,10 +95,10 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
         } catch (WebApplicationException ex) {
             //executor errors
             if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex.getResponse()));
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
             }
             throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex.getResponse()));
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }
     }
     
@@ -117,7 +117,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
         } catch (WebApplicationException ex) {
             //executor errors
             throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex.getResponse()));
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }
     }
     

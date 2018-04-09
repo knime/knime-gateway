@@ -19,7 +19,6 @@
 package com.knime.gateway.rest.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.util.List;
@@ -30,7 +29,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
@@ -38,6 +37,7 @@ import org.knime.core.util.ThreadLocalHTTPAuthenticator.AuthenticationCloseable;
 
 import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
+import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 
@@ -104,23 +104,23 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
     }
 
     /**
-     * Extracts the exception message from the http response.
-     * @param r the response
+     * Extracts the exception message from a {@link WebApplicationException} directly or from its referencing http
+     * response if there isn't any.
+     *
+     * @param webAppEx the exception to extract the exception message from
      * @return the exception message
      */
-    protected static String readExceptionMessage(final Response r) {
-        String encoding = "UTF-8";
-
-        MediaType mt = r.getMediaType();
-        if (mt != null) {
-            encoding = mt.getParameters().getOrDefault(MediaType.CHARSET_PARAMETER, encoding);
-        }
-        try {
-            return IOUtils.toString((InputStream)r.getEntity(), encoding);
-        } catch (IOException ex) {
-            NodeLogger.getLogger(AbstractGatewayClient.class)
-                .error("Could not read exception message from server: " + ex.getMessage(), ex);
-            return "Unknown message";
+    protected static String readExceptionMessage(final WebApplicationException webAppEx) {
+        if (!StringUtils.isEmpty(webAppEx.getMessage())) {
+            return webAppEx.getMessage();
+        } else {
+            try {
+                return ResponseToExceptionMapper.readMessage(webAppEx.getResponse());
+            } catch (IOException ex) {
+                NodeLogger.getLogger(AbstractGatewayClient.class)
+                    .error("Could not read exception message from server: " + ex.getMessage(), ex);
+                return "Unknown message";
+            }
         }
     }
 
