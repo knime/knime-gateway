@@ -66,14 +66,15 @@ public class EntityProxyUtil {
     }
 
     /**
-     * Unifies the conversion from a node id to a string.
-     * It removes the root id.
+     * Unifies the conversion from a node id to a string. The root id is either removed or replaced by 'root' if the
+     * node id consist of the root id only.
      *
      * @param nodeID
      * @return the string
      */
     public static String nodeIDToString(final NodeID nodeID) {
-        return nodeID.toString().substring(2);
+        String s = nodeID.toString();
+        return s.contains(":") ? s.substring(s.indexOf(":") + 1) : "root";
     }
 
 
@@ -81,12 +82,16 @@ public class EntityProxyUtil {
      * Unifies the conversion from a string to the node id.
      * A root node id is prepended.
      *
-     * @param prependedNodeId the root node id to be prepended
-     * @param nodeID the actual node id without the root node id
+     * @param rootID the root node id to be prepended
+     * @param nodeID the actual node id or 'root' if the root id
      * @return the node id as {@link NodeID} object with the root node id prepended
      */
-    public static NodeID stringToNodeID(final String prependedNodeId, final String nodeID) {
-        return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(prependedNodeId));
+    public static NodeID stringToNodeID(final String rootID, final String nodeID) {
+        if (nodeID.equals("root")) {
+            return NodeID.fromString(rootID);
+        } else {
+            return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(rootID));
+        }
     }
 
 }

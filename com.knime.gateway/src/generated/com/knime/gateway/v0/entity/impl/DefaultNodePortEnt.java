@@ -39,6 +39,11 @@ public class DefaultNodePortEnt  implements NodePortEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "NodePort";
+  }
+  
   private DefaultNodePortEnt(DefaultNodePortEntBuilder builder) {
     
     if(builder.m_type == null) {

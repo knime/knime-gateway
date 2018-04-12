@@ -18,7 +18,8 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
-import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -56,7 +57,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/)
     })
-    public WorkflowEnt getSubWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public WorkflowSnapshotEnt getSubWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         return m_service.getSubWorkflow(jobId, nodeId);    
     }
 
@@ -64,9 +65,37 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "getSubWorkflowDiff")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "400" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public PatchEnt getSubWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        return m_service.getSubWorkflowDiff(jobId, nodeId, snapshotId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getWorkflow")
-    public WorkflowEnt getWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
+    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
         return m_service.getWorkflow(jobId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getWorkflowDiff")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public PatchEnt getWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException {
+        return m_service.getWorkflowDiff(jobId, snapshotId);    
     }
 
 }

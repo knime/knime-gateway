@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -51,6 +52,10 @@ import com.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflow
 @JsonDeserialize(builder=DefaultWorkflowUIInfoEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface WorkflowUIInfoEntMixIn extends WorkflowUIInfoEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("gridX")

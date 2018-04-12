@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.BoundsEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -51,6 +52,10 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeUIInfoEnt.DefaultNodeUIInfoEn
 @JsonDeserialize(builder=DefaultNodeUIInfoEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface NodeUIInfoEntMixIn extends NodeUIInfoEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("bounds")

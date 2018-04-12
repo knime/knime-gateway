@@ -33,6 +33,14 @@ import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implements WorkflowAnnotationEnt {
 
   
+  protected DefaultWorkflowAnnotationEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "WorkflowAnnotation";
+  }
   
   private DefaultWorkflowAnnotationEnt(DefaultWorkflowAnnotationEntBuilder builder) {
     super();

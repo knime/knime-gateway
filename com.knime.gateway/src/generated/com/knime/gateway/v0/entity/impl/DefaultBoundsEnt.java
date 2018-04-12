@@ -38,6 +38,11 @@ public class DefaultBoundsEnt  implements BoundsEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "Bounds";
+  }
+  
   private DefaultBoundsEnt(DefaultBoundsEntBuilder builder) {
     
     m_x = builder.m_x;

@@ -40,6 +40,11 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "MetaPortInfo";
+  }
+  
   private DefaultMetaPortInfoEnt(DefaultMetaPortInfoEntBuilder builder) {
     
     if(builder.m_portType == null) {

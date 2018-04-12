@@ -36,6 +36,11 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "NodeMessage";
+  }
+  
   private DefaultNodeMessageEnt(DefaultNodeMessageEntBuilder builder) {
     
     m_type = builder.m_type;

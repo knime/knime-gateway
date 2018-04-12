@@ -46,18 +46,15 @@
  * History
  *   Nov 8, 2017 (hornm): created
  */
-package com.knime.gateway.jsonrpc.remote;
+package com.knime.gateway.remote.endpoint;
 
 import java.util.UUID;
 
 import org.knime.core.node.workflow.WorkflowManager;
 
-import com.knime.gateway.remote.endpoint.WorkflowProject;
-import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-
 /**
- * It keeps track of created and discarded jobs at the executor (and adds/removes the them to/from the
- * {@link WorkflowProjectManager}).
+ * It keeps track of created and discarded jobs at the executor and adds/removes the them to/from the
+ * {@link WorkflowProjectManager}.
  *
  *
  * @author Martin Horn, University of Konstanz

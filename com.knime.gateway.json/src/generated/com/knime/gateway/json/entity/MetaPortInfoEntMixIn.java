@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -51,6 +52,10 @@ import com.knime.gateway.v0.entity.impl.DefaultMetaPortInfoEnt.DefaultMetaPortIn
 @JsonDeserialize(builder=DefaultMetaPortInfoEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface MetaPortInfoEntMixIn extends MetaPortInfoEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("portType")

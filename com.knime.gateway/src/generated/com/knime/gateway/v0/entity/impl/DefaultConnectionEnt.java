@@ -43,6 +43,11 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "Connection";
+  }
+  
   private DefaultConnectionEnt(DefaultConnectionEntBuilder builder) {
     
     if(builder.m_dest == null) {

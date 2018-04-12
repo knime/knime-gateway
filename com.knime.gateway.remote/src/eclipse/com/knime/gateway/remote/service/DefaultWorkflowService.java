@@ -59,42 +59,88 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.remote.util.EntityBuilderUtil;
+import com.knime.gateway.remote.util.JaversRepository;
+import com.knime.gateway.remote.util.WorkflowEntRepository;
+import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Default implementation of {@link WorkflowService} that delegates the operations to knime.core (e.g.
  * {@link WorkflowManager} etc.).
-
+ *
  * @author Martin Horn, University of Konstanz
  */
 public class DefaultWorkflowService implements WorkflowService {
 
+    private final WorkflowEntRepository m_entityRepo = new JaversRepository();
+
+
     /**
-     * {@inheritDoc}
+     *
      */
-    @Override
-    public WorkflowEnt getWorkflow(final UUID rootWorkflowID) {
-        WorkflowManager wfm =
-                WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-                    () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-            if (wfm.isEncrypted()) {
-                throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
-            }
-            return buildWorkflowEnt(wfm, rootWorkflowID);
+    public DefaultWorkflowService() {
+        WorkflowProjectManager.addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(uuid));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public WorkflowEnt getSubWorkflow(final UUID rootWorkflowID, final String nodeID)
+    public WorkflowSnapshotEnt getWorkflow(final UUID rootWorkflowID) {
+        WorkflowEnt ent = createWorkflowEnt(rootWorkflowID);
+        return m_entityRepo.commit(rootWorkflowID, null, ent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PatchEnt getWorkflowDiff(final UUID rootWorkflowID, final UUID snapshotID) throws NotFoundException {
+        return createWorkflowDiff(rootWorkflowID, null, snapshotID, createWorkflowEnt(rootWorkflowID));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkflowSnapshotEnt getSubWorkflow(final UUID rootWorkflowID, final String nodeID)
         throws NotASubWorkflowException, NodeNotFoundException {
-        //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
+        WorkflowEnt ent = createSubWorkflowEnt(rootWorkflowID, nodeID);
+        return m_entityRepo.commit(rootWorkflowID, nodeID, ent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PatchEnt getSubWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID)
+        throws NotASubWorkflowException, NotFoundException {
+        try {
+            return createWorkflowDiff(rootWorkflowID, nodeID, snapshotID, createSubWorkflowEnt(rootWorkflowID, nodeID));
+        } catch (NodeNotFoundException ex) {
+            throw new NotFoundException(ex.getMessage());
+        }
+    }
+
+    private WorkflowEnt createWorkflowEnt(final UUID rootWorkflowID) {
+        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+        if (wfm.isEncrypted()) {
+            throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
+        }
+        //TODO build the new workflow only if the corresponding workflow manager has been modified
+        return buildWorkflowEnt(wfm, rootWorkflowID);
+    }
+
+    private WorkflowEnt createSubWorkflowEnt(final UUID rootWorkflowID, final String nodeID)
+        throws NotASubWorkflowException, NodeNotFoundException {
+        // get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
         try {
@@ -108,7 +154,7 @@ public class DefaultWorkflowService implements WorkflowService {
                 return buildWorkflowEnt(wfm, rootWorkflowID);
             } else if (metaNode instanceof SubNodeContainer) {
                 SubNodeContainer snc = (SubNodeContainer)metaNode;
-                return EntityBuilderUtil.buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
+                return buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
             } else {
                 throw new ServiceExceptions.NotASubWorkflowException("Node for the given node id ('" + nodeID.toString()
                     + "') is neither a metanode nor a wrapped metanode.");
@@ -117,4 +163,15 @@ public class DefaultWorkflowService implements WorkflowService {
             throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
         }
     }
+
+    private PatchEnt createWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID,
+        final WorkflowEnt ent) throws NotFoundException {
+        try {
+            return m_entityRepo.getChangesAndCommit(snapshotID, ent);
+        } catch (IllegalArgumentException e) {
+            //thrown when there is no snapshot for the given snapshot id
+            throw new NotFoundException(e.getMessage());
+        }
+    }
+
 }

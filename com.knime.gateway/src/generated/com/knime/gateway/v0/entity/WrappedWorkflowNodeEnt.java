@@ -20,11 +20,11 @@ package com.knime.gateway.v0.entity;
 
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
+import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -36,26 +36,8 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WrappedWorkflowNodeEnt extends NodeEnt {
+public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
 
-
-  /**
-   * List of all incoming workflow ports.
-   * @return workflowIncomingPorts 
-   **/
-  public java.util.List<NodeOutPortEnt> getWorkflowIncomingPorts();
-
-  /**
-   * List of all outgoing workflow ports.
-   * @return workflowOutgoingPorts 
-   **/
-  public java.util.List<NodeInPortEnt> getWorkflowOutgoingPorts();
-
-  /**
-   * Whether the referenced workflow is encrypted is required to be unlocked before it can be accessed.
-   * @return encrypted 
-   **/
-  public Boolean isEncrypted();
 
   /**
    * Node ID of the virtual in-node (i.e. source).

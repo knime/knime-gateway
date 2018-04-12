@@ -55,6 +55,11 @@ public class DefaultNodeEnt  implements NodeEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "Node";
+  }
+  
   private DefaultNodeEnt(DefaultNodeEntBuilder builder) {
     
     if(builder.m_type == null) {

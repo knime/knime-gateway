@@ -39,6 +39,14 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
 
   protected NodeFactoryKeyEnt m_nodeFactoryKey;
   
+  protected DefaultNativeNodeEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "NativeNode";
+  }
   
   private DefaultNativeNodeEnt(DefaultNativeNodeEntBuilder builder) {
     super();

@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.json.entity.NodeEntMixIn;
+import com.knime.gateway.json.entity.WorkflowNodeEntMixIn;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
@@ -29,6 +29,7 @@ import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -57,6 +58,10 @@ import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt.DefaultWra
 @JsonDeserialize(builder=DefaultWrappedWorkflowNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("type")

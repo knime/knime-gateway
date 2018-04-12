@@ -40,6 +40,11 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "NodeUIInfo";
+  }
+  
   private DefaultNodeUIInfoEnt(DefaultNodeUIInfoEntBuilder builder) {
     
     m_bounds = builder.m_bounds;

@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -33,8 +34,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.knime.gateway.v0.entity.NodePortEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodePortEnt.DefaultNodePortEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -50,13 +51,17 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
 @JsonSubTypes({
     @Type(value = DefaultNodePortEnt.class, name="NodePort")
 ,
-  @Type(value = DefaultNodeOutPortEnt.class, name = "NodeOutPort")
-,
   @Type(value = DefaultNodeInPortEnt.class, name = "NodeInPort")
+,
+  @Type(value = DefaultNodeOutPortEnt.class, name = "NodeOutPort")
 })
 @JsonDeserialize(builder=DefaultNodePortEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface NodePortEntMixIn extends NodePortEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("type")
@@ -88,9 +93,9 @@ public interface NodePortEntMixIn extends NodePortEnt {
     @JsonSubTypes({
         @Type(value = DefaultNodePortEnt.DefaultNodePortEntBuilder.class, name="NodePort")
         ,
-      @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name = "NodeOutPort")
-        ,
       @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name = "NodeInPort")
+        ,
+      @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name = "NodeOutPort")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodePortEntMixInBuilder extends NodePortEntBuilder {

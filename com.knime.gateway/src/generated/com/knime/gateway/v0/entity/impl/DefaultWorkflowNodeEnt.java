@@ -40,6 +40,14 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
   protected java.util.List<NodeInPortEnt> m_workflowOutgoingPorts;
   protected Boolean m_encrypted;
   
+  protected DefaultWorkflowNodeEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "WorkflowNode";
+  }
   
   private DefaultWorkflowNodeEnt(DefaultWorkflowNodeEntBuilder builder) {
     super();

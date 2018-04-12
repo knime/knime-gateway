@@ -60,19 +60,23 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
@@ -124,7 +128,7 @@ public class EntityProxyAccess {
      */
     EntityProxyWorkflowManager getWorkflowManager(final UUID rootWorkflowID, final String nodeID) {
         Pair<UUID, String> keyPair = Pair.create(rootWorkflowID, nodeID);
-        if (m_wfmMap.get(keyPair) != null) {
+        if (m_wfmMap.containsKey(keyPair)) {
             return (EntityProxyWorkflowManager) m_wfmMap.get(keyPair);
         } else {
             NodeEnt node;
@@ -184,11 +188,12 @@ public class EntityProxyAccess {
             if (nodeEnt instanceof NativeNodeEnt) {
                 return new EntityProxyNativeNodeContainer((NativeNodeEnt)nodeEnt, this);
             }
-            if (nodeEnt instanceof WorkflowNodeEnt) {
-                return new EntityProxyWorkflowManager((WorkflowNodeEnt)nodeEnt, this);
-            }
+            //order of checking very important here, since WrappedWorkflowNode derived from WorkflowNode
             if (nodeEnt instanceof WrappedWorkflowNodeEnt) {
                 return new EntityProxySubNodeContainer((WrappedWorkflowNodeEnt)nodeEnt, this);
+            }
+            if (nodeEnt instanceof WorkflowNodeEnt) {
+                return new EntityProxyWorkflowManager((WorkflowNodeEnt)nodeEnt, this);
             }
             throw new IllegalStateException("Node entity type " + nodeEnt.getClass().getName() + " not supported.");
         }, EntityProxyNodeContainer.class);
@@ -287,13 +292,14 @@ public class EntityProxyAccess {
     }
 
     /**
-     * Gets the actual {@link WorkflowEnt} from the server for the given workflow node.
+     * Gets the actual {@link WorkflowSnapshotEnt} from the server for the given workflow node.
      *
      * @param workflowNodeEnt the entity to get the workflow for
      * @return the workflow entity
      */
-    WorkflowEnt getWorkflowEnt(final WrappedWorkflowNodeEnt workflowNodeEnt) {
+    WorkflowSnapshotEnt getWorkflowSnapshotEnt(final WorkflowNodeEnt workflowNodeEnt) {
         if (workflowNodeEnt.getParentNodeID() != null) {
+            //in case it's a sub-workflow
             try {
                 return workflowService(m_serviceConfig)
                     .getSubWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
@@ -301,26 +307,47 @@ public class EntityProxyAccess {
                 throw new RuntimeException(ex);
             }
         } else {
+            //in case it's the root workflow
             return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID());
         }
     }
 
     /**
-     * Gets the actual {@link WorkflowEnt} from the server for the given workflow node.
+     * Updates the status of a workflow entity.
      *
-     * @param workflowNodeEnt the entity to get the workflow for
-     * @return the workflow entity
+     * @param rootWorkflowId the root workflow id of the workflow to update
+     * @param nodeID the node id in case it's a sub-workflow, otherwise <code>null</code> (if it's the root workflow)
+     * @param workflowEntToUpdate the actual entity to be updated
+     * @param snapshotID the id of the currently available snapshot
+     * @return the updated (new) entity or the very same entity if there are no changes (both accompanied with the
+     *         (new) snapshot id)
      */
-    WorkflowEnt getWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt) {
-        if (workflowNodeEnt.getParentNodeID() != null) {
+    Pair<WorkflowEnt, UUID> updateWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt,
+        final WorkflowEnt workflowEntToUpdate, final UUID snapshotID) {
+        PatchEnt patch;
+        if (workflowNodeEnt.getParentNodeID() == null) {
+            //in case it's the root workflow
             try {
-                return workflowService(m_serviceConfig)
-                    .getSubWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
-            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                patch = workflowService(m_serviceConfig).getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
+                    snapshotID);
+            } catch (NotFoundException ex) {
                 throw new RuntimeException(ex);
             }
         } else {
-            return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID());
+            // in case it's a sub-workflow
+            try {
+                patch = workflowService(m_serviceConfig).getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
+                    workflowNodeEnt.getNodeID(), snapshotID);
+            } catch (NotASubWorkflowException | NotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        // apply patch and return new version
+        if (patch.getOps().size() > 0) {
+            return Pair.create(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
+                patch.getSnapshotID());
+        } else {
+            return Pair.create(workflowEntToUpdate, null);
         }
     }
 

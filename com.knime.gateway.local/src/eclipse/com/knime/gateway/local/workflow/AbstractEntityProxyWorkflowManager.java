@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -84,6 +85,8 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
+import org.knime.core.ui.node.workflow.NodeInPortUI;
+import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
@@ -96,6 +99,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
@@ -106,10 +110,11 @@ import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> extends EntityProxyNodeContainer<E>
+public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends EntityProxyNodeContainer<E>
     implements WorkflowManagerUI {
 
     private WorkflowEnt m_workflowEnt;
+    private UUID m_snapshotID;
 
     /**
      * @param workflowNodeEnt
@@ -120,17 +125,12 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
 
     private WorkflowEnt getWorkflow() {
         if (m_workflowEnt == null) {
-            m_workflowEnt = getWorkflowEnt();
+            WorkflowSnapshotEnt wfs = getAccess().getWorkflowSnapshotEnt(getEntity());
+            m_workflowEnt = wfs.getWorkflow();
+            m_snapshotID = wfs.getSnapshotID();
         }
         return m_workflowEnt;
     }
-
-    /**
-     * With this method the actual {@link WorkflowEnt} is retrieved from the server.
-     *
-     * @return the actual {@link WorkflowEnt}
-     */
-    protected abstract WorkflowEnt getWorkflowEnt();
 
     /**
      * {@inheritDoc}
@@ -575,7 +575,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
      */
     @Override
     public boolean waitWhileInExecution(final long time, final TimeUnit unit) throws InterruptedException {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     /**
@@ -1015,28 +1015,76 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends NodeEnt> exte
     @Override
     public void refresh() {
         //only refresh if the workflow was retrieved already
-        //TODO only refresh if there really is a new 'version' available
         if (m_workflowEnt != null) {
             WorkflowEnt oldWorkflow = m_workflowEnt;
-            m_workflowEnt = null;
-            getWorkflow();
+            // update workflow
+            Pair<WorkflowEnt, UUID> res = getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
+            m_workflowEnt = res.getFirst();
 
-            for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
-                getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
+
+            if (oldWorkflow != m_workflowEnt) {
+                // refresh the workflow manager only if there is a new (updated) workflow entity
+
+                m_snapshotID = res.getSecond();
+                assert(m_snapshotID != null);
+                for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
+                    getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
+                }
             }
 
             //refresh all contained workflows (i.e. metanodes)
             for (NodeEnt node : m_workflowEnt.getNodes().values()) {
                 WorkflowManagerUI wfm = null;
-                if (node instanceof WorkflowNodeEnt) {
-                    wfm = (WorkflowManagerUI)getAccess().getNodeContainer(node);
-                } else if (node instanceof WrappedWorkflowNodeEnt) {
+                //order of checking very important here since WrappedWorkflowNodeEnt is a subclass of WorkflowNodeEnt
+                if (node instanceof WrappedWorkflowNodeEnt) {
                     wfm = ((SubNodeContainerUI)getAccess().getNodeContainer(node)).getWorkflowManager();
+                } else if (node instanceof WorkflowNodeEnt) {
+                    wfm = (WorkflowManagerUI)getAccess().getNodeContainer(node);
                 }
                 if (wfm != null && wfm.isRefreshable()) {
                     wfm.refresh();
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrWorkflowIncomingPorts() {
+        return getEntity().getWorkflowIncomingPorts().size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrWorkflowOutgoingPorts() {
+        return getEntity().getWorkflowOutgoingPorts().size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeOutPortUI getWorkflowIncomingPort(final int i) {
+        return getAccess().getNodeOutPort(getEntity().getWorkflowIncomingPorts().get(i), getEntity());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeInPortUI getWorkflowOutgoingPort(final int i) {
+        return getAccess().getNodeInPort(getEntity().getWorkflowOutgoingPorts().get(i));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEncrypted() {
+        return getEntity().isEncrypted();
     }
 }

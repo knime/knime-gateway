@@ -34,6 +34,14 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
 
   protected Boolean m__default;
   
+  protected DefaultNodeAnnotationEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "NodeAnnotation";
+  }
   
   private DefaultNodeAnnotationEnt(DefaultNodeAnnotationEntBuilder builder) {
     super();

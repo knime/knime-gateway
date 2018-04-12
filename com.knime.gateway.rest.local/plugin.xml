@@ -7,5 +7,11 @@
             ServiceFactory="com.knime.gateway.rest.client.RestClientServiceFactory">
       </ServiceFactory>
    </extension>
+   <extension
+         point="com.knime.gateway.local.patch.EntityPatchApplier">
+      <EntityPatchApplier
+            EntityPatchApplier="com.knime.gateway.rest.client.patch.JsonPatchApplier">
+      </EntityPatchApplier>
+   </extension>
 
 </plugin>

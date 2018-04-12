@@ -26,8 +26,7 @@ import com.knime.gateway.local.service.ServiceFactory;
 import com.knime.gateway.service.GatewayService;
 
 /**
- * Service factories whose returned services talk to a http(s) server at "v4/gateway/jsonrpc" by 'posting' json-rpc
- * messages.
+ * Service factories whose returned services talk to the KNIME server's gateway rest interface.
  *
  * @author Martin Horn, University of Konstanz
  */

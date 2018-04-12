@@ -159,7 +159,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
         if (getEntity().getParentNodeID() != null) {
             //get parent wf
             String parentNodeID;
-            if (getEntity().getParentNodeID().length() == 0) {
+            if (getEntity().getParentNodeID().equals("root")) {
                 //parent is the highest level workflow
                 //the node id has then no meaning here and need to be empty
                 parentNodeID = null;

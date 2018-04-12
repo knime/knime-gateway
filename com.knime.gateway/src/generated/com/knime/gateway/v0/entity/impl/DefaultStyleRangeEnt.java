@@ -40,6 +40,11 @@ public class DefaultStyleRangeEnt  implements StyleRangeEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "StyleRange";
+  }
+  
   private DefaultStyleRangeEnt(DefaultStyleRangeEntBuilder builder) {
     
     m_start = builder.m_start;

@@ -393,7 +393,8 @@ public class EntityBuilderUtil {
 
     /**
      * @param nodeId
-     * @return the node id as string with the very first id (root) removed.
+     * @return the node id as string with the very first id (root) removed. If the nodeId only consist of the root id,
+     *         it will return 'root'.
      */
     private static String nodeIdAsString(final NodeID nodeId) {
         String s = nodeId.toString();
@@ -401,7 +402,7 @@ public class EntityBuilderUtil {
         if (firstIdx > 0) {
             return s.substring(firstIdx + 1);
         } else {
-            return "";
+            return "root";
         }
     }
 

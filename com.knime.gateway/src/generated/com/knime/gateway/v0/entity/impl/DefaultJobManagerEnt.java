@@ -35,6 +35,11 @@ public class DefaultJobManagerEnt  implements JobManagerEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "JobManager";
+  }
+  
   private DefaultJobManagerEnt(DefaultJobManagerEntBuilder builder) {
     
     if(builder.m_id == null) {

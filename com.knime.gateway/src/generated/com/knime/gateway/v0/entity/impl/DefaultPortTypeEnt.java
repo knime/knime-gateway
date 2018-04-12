@@ -36,6 +36,11 @@ public class DefaultPortTypeEnt  implements PortTypeEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "PortType";
+  }
+  
   private DefaultPortTypeEnt(DefaultPortTypeEntBuilder builder) {
     
     if(builder.m_portObjectClassName == null) {

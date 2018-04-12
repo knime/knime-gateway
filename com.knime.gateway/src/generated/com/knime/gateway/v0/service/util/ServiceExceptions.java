@@ -44,5 +44,14 @@ public final class ServiceExceptions {
         }
     }
     
+    /**
+    * A resource couldn&#39;t be found. Please refer to the exception message for more details.
+    */
+    public static class NotFoundException extends Exception {
+        public NotFoundException(String message) {
+            super(message);
+        }
+    }
+    
     
 }

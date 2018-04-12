@@ -42,6 +42,11 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "WorkflowUIInfo";
+  }
+  
   private DefaultWorkflowUIInfoEnt(DefaultWorkflowUIInfoEntBuilder builder) {
     
     m_gridX = builder.m_gridX;

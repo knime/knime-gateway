@@ -32,6 +32,14 @@ import com.knime.gateway.v0.entity.NodeOutPortEnt;
 public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOutPortEnt {
 
   
+  protected DefaultNodeOutPortEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "NodeOutPort";
+  }
   
   private DefaultNodeOutPortEnt(DefaultNodeOutPortEntBuilder builder) {
     super();

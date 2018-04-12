@@ -29,6 +29,7 @@ import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -39,6 +40,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -53,10 +55,16 @@ import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt.DefaultWorkflowNo
     defaultImpl = DefaultWorkflowNodeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultWorkflowNodeEnt.class, name="WorkflowNode")
+,
+  @Type(value = DefaultWrappedWorkflowNodeEnt.class, name = "WrappedWorkflowNode")
 })
 @JsonDeserialize(builder=DefaultWorkflowNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("type")
@@ -143,6 +151,8 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         defaultImpl = DefaultWorkflowNodeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name="WorkflowNode")
+        ,
+      @Type(value = DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder.class, name = "WrappedWorkflowNode")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowNodeEntMixInBuilder extends WorkflowNodeEntBuilder {

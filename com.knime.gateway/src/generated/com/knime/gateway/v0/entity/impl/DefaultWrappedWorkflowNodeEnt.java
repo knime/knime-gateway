@@ -24,7 +24,7 @@ import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
 
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
@@ -34,14 +34,19 @@ import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultWrappedWorkflowNodeEnt extends DefaultNodeEnt implements WrappedWorkflowNodeEnt {
+public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implements WrappedWorkflowNodeEnt {
 
-  protected java.util.List<NodeOutPortEnt> m_workflowIncomingPorts;
-  protected java.util.List<NodeInPortEnt> m_workflowOutgoingPorts;
-  protected Boolean m_encrypted;
   protected String m_virtualInNodeID;
   protected String m_virtualOutNodeID;
   
+  protected DefaultWrappedWorkflowNodeEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "WrappedWorkflowNode";
+  }
   
   private DefaultWrappedWorkflowNodeEnt(DefaultWrappedWorkflowNodeEntBuilder builder) {
     super();
@@ -86,21 +91,6 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultNodeEnt implements Wra
   }
 
 
-  @Override
-  public java.util.List<NodeOutPortEnt> getWorkflowIncomingPorts() {
-        return m_workflowIncomingPorts;
-    }
-    
-  @Override
-  public java.util.List<NodeInPortEnt> getWorkflowOutgoingPorts() {
-        return m_workflowOutgoingPorts;
-    }
-    
-  @Override
-  public Boolean isEncrypted() {
-        return m_encrypted;
-    }
-    
   @Override
   public String getVirtualInNodeID() {
         return m_virtualInNodeID;

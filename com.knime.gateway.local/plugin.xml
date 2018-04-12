@@ -2,4 +2,5 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension-point id="com.knime.gateway.local.service.ServiceFactory" name="ServiceFactory" schema="schema/com.knime.gateway.local.service.ServiceFactory.exsd"/>
+ <extension-point id="com.knime.gateway.local.patch.EntityPatchApplier" name="EntityPatchApplier" schema="schema/com.knime.gateway.local.patch.EntityPatchApplier.exsd"/>
 </plugin>

@@ -36,6 +36,11 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "NodeFactoryKey";
+  }
+  
   private DefaultNodeFactoryKeyEnt(DefaultNodeFactoryKeyEntBuilder builder) {
     
     if(builder.m_className == null) {

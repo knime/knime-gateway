@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.StyleRangeEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -58,6 +59,10 @@ import com.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
 @JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface AnnotationEntMixIn extends AnnotationEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("type")

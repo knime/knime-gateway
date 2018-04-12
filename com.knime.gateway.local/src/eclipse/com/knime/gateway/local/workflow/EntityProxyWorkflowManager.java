@@ -48,55 +48,9 @@
  */
 package com.knime.gateway.local.workflow;
 
-import static com.knime.gateway.local.util.EntityProxyUtil.nodeIDToString;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.dialog.ExternalNodeData;
-import org.knime.core.node.port.MetaPortInfo;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.EditorUIInformation;
-import org.knime.core.node.workflow.NodeAnnotation;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeMessage;
-import org.knime.core.node.workflow.NodeMessage.Type;
-import org.knime.core.node.workflow.NodeUIInformation;
-import org.knime.core.node.workflow.NodeUIInformationEvent;
-import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowContext;
-import org.knime.core.node.workflow.WorkflowListener;
-import org.knime.core.ui.node.workflow.ConnectionContainerUI;
-import org.knime.core.ui.node.workflow.NodeContainerUI;
-import org.knime.core.ui.node.workflow.NodeInPortUI;
-import org.knime.core.ui.node.workflow.NodeOutPortUI;
-import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
-import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
-import org.knime.core.util.Pair;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.MetaPortInfoEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.PortTypeEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
-import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 
 /**
  * {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
@@ -111,70 +65,5 @@ public final class EntityProxyWorkflowManager extends AbstractEntityProxyWorkflo
      */
     EntityProxyWorkflowManager(final WorkflowNodeEnt workflowNodeEnt, final EntityProxyAccess access) {
         super(workflowNodeEnt, access);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected WorkflowEnt getWorkflowEnt() {
-        return getAccess().getWorkflowEnt(getEntity());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public WorkflowInPortUI getInPort(final int index) {
-        //get underlying port
-        return getAccess().getWorkflowInPort(getEntity().getInPorts().get(index), null, getEntity());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public WorkflowOutPortUI getOutPort(final int index) {
-        return getAccess().getWorkflowOutPort(getEntity().getOutPorts().get(index), getEntity());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrWorkflowIncomingPorts() {
-        return getEntity().getWorkflowIncomingPorts().size();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrWorkflowOutgoingPorts() {
-        return getEntity().getWorkflowOutgoingPorts().size();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeOutPortUI getWorkflowIncomingPort(final int i) {
-        return getAccess().getNodeOutPort(getEntity().getWorkflowIncomingPorts().get(i), getEntity());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeInPortUI getWorkflowOutgoingPort(final int i) {
-        return getAccess().getNodeInPort(getEntity().getWorkflowOutgoingPorts().get(i));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isEncrypted() {
-        return getEntity().isEncrypted();
     }
 }

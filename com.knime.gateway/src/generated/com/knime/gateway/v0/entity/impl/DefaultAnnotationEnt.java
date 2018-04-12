@@ -46,6 +46,11 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "Annotation";
+  }
+  
   private DefaultAnnotationEnt(DefaultAnnotationEntBuilder builder) {
     
     if(builder.m_type == null) {

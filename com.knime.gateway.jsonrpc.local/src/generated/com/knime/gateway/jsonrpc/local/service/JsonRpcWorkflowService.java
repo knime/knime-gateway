@@ -18,7 +18,8 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
-import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 
@@ -39,13 +40,27 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.getSubWorkflow")
-    WorkflowEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    WorkflowSnapshotEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.getSubWorkflowDiff")
+    PatchEnt getSubWorkflowDiff(java.util.UUID jobId, String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.getWorkflow")
-    WorkflowEnt getWorkflow(java.util.UUID jobId) ;
+    WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId) ;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.getWorkflowDiff")
+    PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException;
 
 }

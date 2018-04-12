@@ -32,6 +32,14 @@ import com.knime.gateway.v0.entity.NodeInPortEnt;
 public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPortEnt {
 
   
+  protected DefaultNodeInPortEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "NodeInPort";
+  }
   
   private DefaultNodeInPortEnt(DefaultNodeInPortEntBuilder builder) {
     super();

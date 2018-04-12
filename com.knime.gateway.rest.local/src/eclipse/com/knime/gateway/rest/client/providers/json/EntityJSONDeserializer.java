@@ -31,13 +31,10 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.knime.gateway.entity.GatewayEntity;
-import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.rest.client.util.ObjectMapperUtil;
 
 /**
  * Deserializes gateway entities.
@@ -57,18 +54,7 @@ public class EntityJSONDeserializer implements MessageBodyReader<GatewayEntity> 
      * Creates a new deserializer.
      */
     public EntityJSONDeserializer() {
-        m_objectMapper = setupObjectMapper();
-    }
-
-    private static ObjectMapper setupObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Jdk8Module());
-
-        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-
-        JsonUtil.addMixIns(mapper);
-        return mapper;
+        m_objectMapper = ObjectMapperUtil.getInstance().getObjectMapper();
     }
 
     /**

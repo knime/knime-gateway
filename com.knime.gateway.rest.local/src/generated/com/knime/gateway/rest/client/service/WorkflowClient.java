@@ -18,7 +18,8 @@
  */
 package com.knime.gateway.rest.client.service;
 
-import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public WorkflowEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public WorkflowSnapshotEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
@@ -69,7 +70,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     // TODO exception handling
                     throw new RuntimeException(ex);
                 }
-            }, WorkflowEnt.class);
+            }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             if (ex.getResponse().getStatus() == 400) {
@@ -84,7 +85,32 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public WorkflowEnt getWorkflow(java.util.UUID jobId)  {
+    public PatchEnt getSubWorkflowDiff(java.util.UUID jobId, String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.getSubWorkflowDiff(jobId, nodeId, snapshotId);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, PatchEnt.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 400) {
+                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId)  {
         try{
             return doRequest(c -> {
                 try {
@@ -94,9 +120,31 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     // TODO exception handling
                     throw new RuntimeException(ex);
                 }
-            }, WorkflowEnt.class);
+            }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.getWorkflowDiff(jobId, snapshotId);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, PatchEnt.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }

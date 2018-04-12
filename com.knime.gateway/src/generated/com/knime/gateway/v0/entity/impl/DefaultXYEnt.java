@@ -36,6 +36,11 @@ public class DefaultXYEnt  implements XYEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "XY";
+  }
+  
   private DefaultXYEnt(DefaultXYEntBuilder builder) {
     
     m_x = builder.m_x;

@@ -38,12 +38,18 @@ import com.knime.gateway.v0.entity.NodePortEnt.NodePortEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt.NodeUIInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeUIInfoEnt;
+import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultPatchEnt;
+import com.knime.gateway.v0.entity.PatchOpEnt.PatchOpEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPortTypeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultWorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt;
 import com.knime.gateway.v0.entity.XYEnt.XYEntBuilder;
@@ -107,6 +113,12 @@ public class Interface2ImplMap {
         if(clazz == NodeUIInfoEntBuilder.class) {
             return new DefaultNodeUIInfoEnt.DefaultNodeUIInfoEntBuilder();
         }        
+        if(clazz == PatchEntBuilder.class) {
+            return new DefaultPatchEnt.DefaultPatchEntBuilder();
+        }        
+        if(clazz == PatchOpEntBuilder.class) {
+            return new DefaultPatchOpEnt.DefaultPatchOpEntBuilder();
+        }        
         if(clazz == PortTypeEntBuilder.class) {
             return new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();
         }        
@@ -115,6 +127,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowEntBuilder.class) {
             return new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();
+        }        
+        if(clazz == WorkflowSnapshotEntBuilder.class) {
+            return new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();
         }        
         if(clazz == WorkflowUIInfoEntBuilder.class) {
             return new DefaultWorkflowUIInfoEnt.DefaultWorkflowUIInfoEntBuilder();

@@ -61,4 +61,9 @@ import com.knime.gateway.service.GatewayService;
  */
 public interface GatewayEntity {
 
+    /**
+     * @return a unique identifier for the type of the entity
+     */
+    String getTypeID();
+
 }

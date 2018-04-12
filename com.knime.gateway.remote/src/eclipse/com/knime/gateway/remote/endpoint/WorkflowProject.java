@@ -54,6 +54,7 @@ import org.knime.core.node.workflow.WorkflowManager;
  * Represents a workflow project.
  *
  * @author Martin Horn, University of Konstanz
+ * @noreference This interface is not intended to be referenced by clients.
  */
 public interface WorkflowProject {
 

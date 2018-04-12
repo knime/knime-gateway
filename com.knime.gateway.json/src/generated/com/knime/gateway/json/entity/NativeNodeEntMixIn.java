@@ -30,6 +30,7 @@ import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -58,6 +59,10 @@ import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEn
 @JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface NativeNodeEntMixIn extends NativeNodeEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("type")

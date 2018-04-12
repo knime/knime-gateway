@@ -45,6 +45,11 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     //for sub-classes
   }
   
+  @Override
+  public String getTypeID() {
+    return "Workflow";
+  }
+  
   private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
     
     m_nodes = builder.m_nodes;

@@ -9,6 +9,7 @@ Export-Package: com.knime.gateway.entity,
  com.knime.gateway.util,
  com.knime.gateway.v0.entity,
  com.knime.gateway.v0.entity.impl,
+ com.knime.gateway.v0.entity.impl.util,
  com.knime.gateway.v0.entity.util,
  com.knime.gateway.v0.service,
  com.knime.gateway.v0.service.util
@@ -20,7 +21,6 @@ Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.7.1,3.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.7.1,3.0.0)",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.7.1,3.0.0)",
- org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
- org.mockito.mockito-core;bundle-version="1.10.19"
+ org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

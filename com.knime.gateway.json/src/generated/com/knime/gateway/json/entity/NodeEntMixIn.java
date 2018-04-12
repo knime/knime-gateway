@@ -28,6 +28,7 @@ import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.json.JsonUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -38,8 +39,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt.DefaultNodeEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
 
 /**
@@ -56,15 +57,19 @@ import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
 @JsonSubTypes({
     @Type(value = DefaultNodeEnt.class, name="Node")
 ,
-  @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
-,
   @Type(value = DefaultWorkflowNodeEnt.class, name = "WorkflowNode")
+,
+  @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
 ,
   @Type(value = DefaultWrappedWorkflowNodeEnt.class, name = "WrappedWorkflowNode")
 })
 @JsonDeserialize(builder=DefaultNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface NodeEntMixIn extends NodeEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
     @Override
     @JsonProperty("type")
@@ -140,9 +145,9 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonSubTypes({
         @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
         ,
-      @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
-        ,
       @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name = "WorkflowNode")
+        ,
+      @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
         ,
       @Type(value = DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder.class, name = "WrappedWorkflowNode")
     })
