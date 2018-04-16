@@ -136,6 +136,9 @@ public class DefaultWorkflowService implements WorkflowService {
 
     private PatchEnt createWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID,
         final WorkflowEnt ent) throws NotFoundException {
+        if(snapshotID == null) {
+            throw new NotFoundException("No snapshot id given!");
+        }
         try {
             return m_entityRepo.getChangesAndCommit(snapshotID, ent);
         } catch (IllegalArgumentException e) {
