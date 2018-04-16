@@ -50,6 +50,7 @@ import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.v0.entity.PatchEnt;
 
 /**
+ * Applies patches ({@link PatchEnt}) to {@link GatewayEntity gateway entities}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

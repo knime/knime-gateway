@@ -105,8 +105,7 @@ import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
 /**
  * Abstract {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
- * {@link NodeEnt} that represents a workflow (e.g. {@link WorkflowNodeEnt} or {@link WrappedWorkflowNodeEnt}) most
- * likely received remotely.
+ * {@link WorkflowNodeEnt} that represents a workflow most likely received remotely.
  *
  * @author Martin Horn, University of Konstanz
  */
@@ -114,6 +113,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     implements WorkflowManagerUI {
 
     private WorkflowEnt m_workflowEnt;
+
     private UUID m_snapshotID;
 
     /**
@@ -1021,12 +1021,11 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
             Pair<WorkflowEnt, UUID> res = getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
             m_workflowEnt = res.getFirst();
 
-
             if (oldWorkflow != m_workflowEnt) {
                 // refresh the workflow manager only if there is a new (updated) workflow entity
 
                 m_snapshotID = res.getSecond();
-                assert(m_snapshotID != null);
+                assert (m_snapshotID != null);
                 for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
                     getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
                 }

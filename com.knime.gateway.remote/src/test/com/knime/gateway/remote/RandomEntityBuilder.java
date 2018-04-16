@@ -65,13 +65,23 @@ import com.knime.gateway.v0.entity.impl.util.Interface2ImplMap;
 import com.knime.gateway.v0.entity.util.ListEntities;
 
 /**
- *
+ * Helper class to create random entities (mainly for unit tests).
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class RandomEntityBuilder {
 
     private static final Random RANDOM = new Random();
 
+    /**
+     * Creates new entity builder with all properties assigned with random values.
+     * 
+     * @param entityBuilderInterface the builder interface to create a random instance for
+     * @return the entity builder interface with random values
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public static <E extends GatewayEntityBuilder> E buildRandomEntityBuilder(final Class<E> entityBuilderInterface)
         throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 

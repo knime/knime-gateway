@@ -30,7 +30,11 @@ import com.knime.gateway.rest.client.util.ObjectMapperUtil;
 import com.knime.gateway.v0.entity.PatchEnt;
 
 /**
+ * Entity patch applier implementation that uses {@link JsonPatch} to apply the {@link PatchEnt}. It assumes that
+ * {@link PatchEnt} conforms with the <a href="http://jsonpatch.com/">json patch standard</a>.
  *
+ * Note: so far there is some overhead converting the gateway entities (the patch itself as well as the entity to be
+ * patched) into intermediate json-representations and back again to entities again.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

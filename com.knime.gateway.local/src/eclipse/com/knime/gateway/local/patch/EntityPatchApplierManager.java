@@ -54,6 +54,7 @@ import org.knime.core.node.NodeLogger;
 import com.knime.gateway.util.ExtPointUtil;
 
 /**
+ * Manages the {@link EntityPatchApplier} extension point, i.e. collecting and providing the implementations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -68,14 +69,16 @@ public class EntityPatchApplierManager {
     }
 
     /**
+     * Collects and returns the available patch applier with the highest priority.
+     * 
      * @return the available patch applier
      * @throws IllegalStateException if no patch applier is available
      */
     public static EntityPatchApplier getPatchApplier() {
-       if(PATCH_APPLIER == null) {
-           PATCH_APPLIER = createPatchApplier();
-       }
-       return PATCH_APPLIER;
+        if (PATCH_APPLIER == null) {
+            PATCH_APPLIER = createPatchApplier();
+        }
+        return PATCH_APPLIER;
     }
 
     private static EntityPatchApplier createPatchApplier() {
