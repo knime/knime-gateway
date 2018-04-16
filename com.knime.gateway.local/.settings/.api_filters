@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="com.knime.gateway.local" version="2">
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/AbstractEntityProxyWorkflowManager.java" type="com.knime.gateway.local.workflow.AbstractEntityProxyWorkflowManager">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="WorkflowManagerUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
