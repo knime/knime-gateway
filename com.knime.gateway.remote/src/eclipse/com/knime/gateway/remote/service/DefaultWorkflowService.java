@@ -94,7 +94,7 @@ public class DefaultWorkflowService implements WorkflowService {
         try {
             return createWorkflowDiff(rootWorkflowID, nodeID, snapshotID, createSubWorkflowEnt(rootWorkflowID, nodeID));
         } catch (NodeNotFoundException ex) {
-            throw new NotFoundException(ex.getMessage());
+            throw new NotFoundException(ex.getMessage(), ex);
         }
     }
 
@@ -130,7 +130,7 @@ public class DefaultWorkflowService implements WorkflowService {
                     + "') is neither a metanode nor a wrapped metanode.");
             }
         } catch (IllegalArgumentException e) {
-            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
+            throw new ServiceExceptions.NodeNotFoundException(e.getMessage(), e);
         }
     }
 
@@ -143,7 +143,7 @@ public class DefaultWorkflowService implements WorkflowService {
             return m_entityRepo.getChangesAndCommit(snapshotID, ent);
         } catch (IllegalArgumentException e) {
             //thrown when there is no snapshot for the given snapshot id
-            throw new NotFoundException(e.getMessage());
+            throw new NotFoundException(e.getMessage(), e);
         }
     }
 }

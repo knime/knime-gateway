@@ -33,6 +33,10 @@ public final class ServiceExceptions {
         public NodeNotFoundException(String message) {
             super(message);
         }
+        
+        public NodeNotFoundException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
     
     /**
@@ -42,6 +46,10 @@ public final class ServiceExceptions {
         public NotASubWorkflowException(String message) {
             super(message);
         }
+        
+        public NotASubWorkflowException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
     
     /**
@@ -50,6 +58,10 @@ public final class ServiceExceptions {
     public static class NotFoundException extends Exception {
         public NotFoundException(String message) {
             super(message);
+        }
+        
+        public NotFoundException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
     
