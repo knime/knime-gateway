@@ -36,6 +36,7 @@ import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
 import com.knime.gateway.json.JsonUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
+import com.knime.gateway.remote.service.DefaultServices;
 import com.knime.gateway.service.GatewayService;
 import com.knime.gateway.v0.service.util.ListServices;
 
@@ -48,10 +49,6 @@ import com.knime.gateway.v0.service.util.ListServices;
  * @author Martin Horn, University of Konstanz
  */
 public class JsonRpcServerRequestHandler implements GenericServerRequestHandler {
-
-    private static final String DEFAULT_SERVICE_PACKAGE = "com.knime.gateway.remote.service";
-
-    private static final String DEFAULT_SERVICE_PREFIX = "Default";
 
     private JsonRpcMultiServer m_jsonRpcMultiServer;
 
@@ -104,20 +101,9 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
         List<Class<?>> serviceInterfaces = ListServices.listServiceInterfaces();
         Map<String, GatewayService> wrappedServices = new HashMap<String, GatewayService>();
         for (Class<?> serviceInterface : serviceInterfaces) {
-            Class<?> defaultServiceClass;
-            String defaultServiceFullClassName =
-                DEFAULT_SERVICE_PACKAGE + "." + DEFAULT_SERVICE_PREFIX + serviceInterface.getSimpleName();
-            try {
-                defaultServiceClass = Class.forName(defaultServiceFullClassName);
-                GatewayService wrappedService =
-                    WrapWithJsonRpcService.wrap((GatewayService)defaultServiceClass.newInstance(), serviceInterface);
-                wrappedServices.put(serviceInterface.getSimpleName(), wrappedService);
-            } catch (ClassNotFoundException ex1) {
-                throw new RuntimeException(
-                    "No default service implementation found (" + defaultServiceFullClassName + ")", ex1);
-            } catch (InstantiationException | IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            }
+            GatewayService wrappedService = WrapWithJsonRpcService.wrap(
+                DefaultServices.getDefaultService((Class<? extends GatewayService>)serviceInterface), serviceInterface);
+            wrappedServices.put(serviceInterface.getSimpleName(), wrappedService);
         }
         return wrappedServices;
     }

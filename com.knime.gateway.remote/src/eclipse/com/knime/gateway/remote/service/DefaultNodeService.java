@@ -43,6 +43,20 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @author Martin Horn, University of Konstanz
  */
 public class DefaultNodeService implements NodeService {
+    private static final DefaultNodeService INSTANCE = new DefaultNodeService();
+
+    private DefaultNodeService() {
+        //private constructor since it's a singleton
+    }
+
+    /**
+     * Returns the singleton instance for this service.
+     *
+     * @return the singleton instance
+     */
+    public static DefaultNodeService getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * {@inheritDoc}

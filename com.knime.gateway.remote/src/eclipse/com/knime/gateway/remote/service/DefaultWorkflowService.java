@@ -47,15 +47,24 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
  * @author Martin Horn, University of Konstanz
  */
 public class DefaultWorkflowService implements WorkflowService {
-    private final WorkflowEntRepository m_entityRepo = new JaversRepository();
+    private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
+    private final WorkflowEntRepository m_entityRepo = new JaversRepository();
 
     /**
      * Creates a new workflow service.
      */
-    public DefaultWorkflowService() {
-        // This class is instantiated via reflection, therefore you won't find any callers for the constructor.
+    private DefaultWorkflowService() {
         WorkflowProjectManager.addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(uuid));
+    }
+
+    /**
+     * Returns the singleton instance for this service.
+     *
+     * @return the singleton instance
+     */
+    public static DefaultWorkflowService getInstance() {
+       return INSTANCE;
     }
 
     /**
