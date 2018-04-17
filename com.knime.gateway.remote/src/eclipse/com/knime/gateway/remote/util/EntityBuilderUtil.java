@@ -369,11 +369,7 @@ public class EntityBuilderUtil {
     private static String nodeIdAsString(final NodeID nodeId) {
         String s = nodeId.toString();
         int firstIdx = s.indexOf(":");
-        if (firstIdx > 0) {
-            return s.substring(firstIdx + 1);
-        } else {
-            return "root";
-        }
+        return (firstIdx >= 0) ? s.substring(firstIdx + 1) : "root";
     }
 
     private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc) {

@@ -31,38 +31,36 @@ import com.knime.gateway.util.ExtPointUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class EntityPatchApplierManager {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityPatchApplierManager.class);
-
-    private static EntityPatchApplier PATCH_APPLIER;
+    private static final EntityPatchApplier INSTANCE = createPatchApplier();
 
     private EntityPatchApplierManager() {
         //utility class
     }
 
     /**
-     * Collects and returns the available patch applier with the highest priority.
+     * Returns the available patch applier with the highest priority.
      *
      * @return the available patch applier
      * @throws IllegalStateException if no patch applier is available
      */
     public static EntityPatchApplier getPatchApplier() {
-        if (PATCH_APPLIER == null) {
-            PATCH_APPLIER = createPatchApplier();
-        }
-        return PATCH_APPLIER;
+        return INSTANCE;
     }
 
     private static EntityPatchApplier createPatchApplier() {
         List<EntityPatchApplier> instances = ExtPointUtil.collectExecutableExtensions(EntityPatchApplier.EXT_POINT_ID,
             EntityPatchApplier.EXT_POINT_ATTR);
-        if (instances.size() == 0) {
-            throw new IllegalStateException("No patch applier registered.");
+
+        if (instances.isEmpty()) {
+            throw new IllegalStateException(
+                "No patch applier registered at extension point " + EntityPatchApplier.EXT_POINT_ID + ".");
         } else if (instances.size() > 1) {
-            LOGGER.warn("Multiple patch appliers registered. The one with the highest priority used.");
             Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+            NodeLogger.getLogger(EntityPatchApplierManager.class)
+                .warn("Multiple patch appliers registered at extension point " + EntityPatchApplier.EXT_POINT_ID
+                    + ". The one with the highest priority will be used (" + instances.get(0).getClass().getName()
+                    + ".");
         }
         return instances.get(0);
     }
-
 }

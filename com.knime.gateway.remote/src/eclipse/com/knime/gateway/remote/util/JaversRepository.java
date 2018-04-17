@@ -112,7 +112,7 @@ public class JaversRepository implements WorkflowEntRepository {
         List<Change> changes = repo.compare(snapshot, entity).getChanges();
         logStats();
 
-        if (changes.size() > 0) {
+        if (!changes.isEmpty()) {
             //try committing the current version of the workflow entity if there are changes
             //(doesn't mean that there are changes relative to the last commit)
             UUID newSnapshotID = commitInternal(snapshotMeta.getRootWorkflowID(), snapshotMeta.getNodeID(), entity);
@@ -164,12 +164,10 @@ public class JaversRepository implements WorkflowEntRepository {
     }
 
     private Javers getOrCreateRepo(final UUID workflowID) {
-        return m_repos.computeIfAbsent(workflowID, id -> {
-            return JaversBuilder.javers().build();
-        });
+        return m_repos.computeIfAbsent(workflowID, id -> JaversBuilder.javers().build());
     }
 
-    private String getNonNullNodeID(final String nodeID) {
+    private static String getNonNullNodeID(final String nodeID) {
         return nodeID == null ? "" : nodeID;
     }
 
@@ -178,8 +176,7 @@ public class JaversRepository implements WorkflowEntRepository {
         LOGGER.info("WorkflowEnt Repo Stats: " + m_snapshotMetadataMap.size() + "  snapshots/shadows");
     }
 
-    private class WorkflowEntWrapper {
-
+    private static class WorkflowEntWrapper {
         private final DefaultWorkflowEnt m_ent;
 
         @Id
@@ -195,13 +192,12 @@ public class JaversRepository implements WorkflowEntRepository {
         }
     }
 
-    private class SnapshotMetadata {
+    private static class SnapshotMetadata {
+        private final UUID m_rootWorkflowID;
 
-        private UUID m_rootWorkflowID;
+        private final String m_nodeID;
 
-        private String m_nodeID;
-
-        private CommitId m_commitID;
+        private final CommitId m_commitID;
 
         public SnapshotMetadata(final UUID rootWorkflowID, final String nodeID, final CommitId commitID) {
             m_rootWorkflowID = rootWorkflowID;
@@ -222,13 +218,12 @@ public class JaversRepository implements WorkflowEntRepository {
         }
     }
 
-    private class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
+    private static class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
+        private final List<PatchOpEnt> m_ops = new ArrayList<PatchOpEnt>();
 
-        private List<PatchOpEnt> m_ops = new ArrayList<PatchOpEnt>();
+        private final UUID m_newSnapshotID;
 
-        private UUID m_newSnapshotID;
-
-        private String m_targetTypeID;
+        private final String m_targetTypeID;
 
         public PatchEntChangeProcessor(final UUID newSnapshotID, final String targetTypeID) {
             m_newSnapshotID = newSnapshotID;

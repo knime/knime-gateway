@@ -313,7 +313,7 @@ public class EntityProxyAccess {
             }
         }
         // apply patch and return new version
-        if (patch.getOps().size() > 0) {
+        if (!patch.getOps().isEmpty()) {
             return Pair.create(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
                 patch.getSnapshotID());
         } else {

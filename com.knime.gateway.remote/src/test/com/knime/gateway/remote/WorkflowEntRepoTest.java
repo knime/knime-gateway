@@ -53,8 +53,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessage
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WorkflowEntRepoTest {
-
-    WorkflowEntRepository m_repo;
+    private WorkflowEntRepository m_repo;
 
     /**
      * Init javers repository.

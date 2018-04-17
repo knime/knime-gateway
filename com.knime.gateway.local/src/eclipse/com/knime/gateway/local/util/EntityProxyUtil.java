@@ -27,10 +27,6 @@ import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
  * @author Martin Horn, University of Konstanz
  */
 public class EntityProxyUtil {
-
-    /**
-     *
-     */
     private EntityProxyUtil() {
         // utility class
     }
@@ -39,12 +35,13 @@ public class EntityProxyUtil {
      * Unifies the conversion from a node id to a string. The root id is either removed or replaced by 'root' if the
      * node id consist of the root id only.
      *
-     * @param nodeID
-     * @return the string
+     * @param nodeID a node ID, must not be <code>null</code>
+     * @return the node ID without the root as a string, or <tt>root</tt>
      */
     public static String nodeIDToString(final NodeID nodeID) {
         String s = nodeID.toString();
-        return s.contains(":") ? s.substring(s.indexOf(":") + 1) : "root";
+        int index = s.indexOf(":");
+        return (index >= 0) ? s.substring(index + 1) : "root";
     }
 
 
@@ -57,11 +54,10 @@ public class EntityProxyUtil {
      * @return the node id as {@link NodeID} object with the root node id prepended
      */
     public static NodeID stringToNodeID(final String rootID, final String nodeID) {
-        if (nodeID.equals("root")) {
+        if ("root".equals(nodeID)) {
             return NodeID.fromString(rootID);
         } else {
             return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(rootID));
         }
     }
-
 }

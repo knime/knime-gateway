@@ -47,14 +47,14 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
  * @author Martin Horn, University of Konstanz
  */
 public class DefaultWorkflowService implements WorkflowService {
-
     private final WorkflowEntRepository m_entityRepo = new JaversRepository();
 
 
     /**
-     *
+     * Creates a new workflow service.
      */
     public DefaultWorkflowService() {
+        // This class is instantiated via reflection, therefore you won't find any callers for the constructor.
         WorkflowProjectManager.addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(uuid));
     }
 
@@ -136,7 +136,7 @@ public class DefaultWorkflowService implements WorkflowService {
 
     private PatchEnt createWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID,
         final WorkflowEnt ent) throws NotFoundException {
-        if(snapshotID == null) {
+        if (snapshotID == null) {
             throw new NotFoundException("No snapshot id given!");
         }
         try {
@@ -146,5 +146,4 @@ public class DefaultWorkflowService implements WorkflowService {
             throw new NotFoundException(e.getMessage());
         }
     }
-
 }
