@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.util.LRUCache;
 import org.knime.core.util.Pair;
 
@@ -49,18 +50,36 @@ import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
  */
 public class SimpleRepository implements WorkflowEntRepository {
 
-    private static final int MAX_NUM_SNAPSHOTS_IN_MEM = 500;
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(SimpleRepository.class);
+
+    /* The default value of the maximum number of snapshots in memory - can be set via a system property */
+    private static final int DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM = 500;
+
+    private final int maxNumSnapshotsInMem = getMaxNumSnapShotsInMem();
 
     /* maps snapshotID to workflow */
-    private final LRUCache<UUID, WorkflowEnt> m_snapshots = new LRUCache<>(MAX_NUM_SNAPSHOTS_IN_MEM);
+    private final LRUCache<UUID, WorkflowEnt> m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
 
     /* maps snapshotID to <workflowID, nodeID> */
-    private final LRUCache<UUID, Pair<UUID, String>> m_snapshotsWorkflowMap = new LRUCache<>(MAX_NUM_SNAPSHOTS_IN_MEM);
+    private final LRUCache<UUID, Pair<UUID, String>> m_snapshotsWorkflowMap = new LRUCache<>(maxNumSnapshotsInMem);
 
     /* maps <workflowID, nodeID> to <snapshotID, workflow> */
     private final Map<Pair<UUID, String>, Pair<UUID, WorkflowEnt>> m_latestSnapshotPerWorkflow = new HashMap<>();
 
     private final Javers m_javers = JaversBuilder.javers().build();
+
+    private static int getMaxNumSnapShotsInMem() {
+        String prop = System.getProperty("com.knime.enterprise.executor.jobview.max_num_snapshots_in_mem");
+        if (prop != null) {
+            try {
+                return Integer.parseInt(prop);
+            } catch (NumberFormatException e) {
+                LOGGER.warn("Couldn't parse value for system property"
+                    + " 'com.knime.enterprise.executor.jobview.max_num_snapshots_in_mem'");
+            }
+        }
+        return DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM;
+    }
 
     /**
      * {@inheritDoc}
