@@ -67,7 +67,7 @@ public interface WorkflowService extends GatewayService {
     WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId) ;
         
     /**
-     * Gives the changes of the workflow as patch.
+     * Gives the changes of the workflow as patch. Please note that there is not always a snapshot available for the provided snapshot id, either because the snapshot never existed or has been expired
      *
      * @param jobId ID the job the workflow is requested for
      * @param snapshotId The id of the workflow-snapshot already retrieved.
