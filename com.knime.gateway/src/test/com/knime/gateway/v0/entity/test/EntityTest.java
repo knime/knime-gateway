@@ -20,18 +20,28 @@ package com.knime.gateway.v0.entity.test;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
 
 import com.knime.gateway.entity.EntityBuilderManager;
+import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
+import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeEnt.NodeTypeEnum;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 
 /**
  * Basic test of the entities and the entity builders. Not testing all of them since they are auto-generated, anyway.
@@ -51,16 +61,7 @@ public class EntityTest {
     @Test
     public void testNativeNodeEnt() {
         UUID wfId = UUID.randomUUID();
-        NativeNodeEnt ent = builder(NativeNodeEntBuilder.class)
-        .setName("name")
-        .setHasDialog(true)
-        .setNodeID("node_id")
-        .setNodeState(NodeStateEnum.CONFIGURED)
-        .setNodeType(NodeTypeEnum.LEARNER)
-        .setType("NativeNode")
-        .setRootWorkflowID(wfId)
-        .setNodeFactoryKey(createNodeFactoryKeyEnt())
-        .setOutPorts(null).build();
+        NativeNodeEnt ent = createNativeNodeEnt(wfId);
 
         assertEquals(ent.getName(), "name");
         assertEquals(ent.isHasDialog(), true);
@@ -87,10 +88,81 @@ public class EntityTest {
 
     }
 
+    private NativeNodeEnt createNativeNodeEnt(final UUID wfId) {
+        return builder(NativeNodeEntBuilder.class)
+                .setName("name")
+                .setHasDialog(true)
+                .setNodeID("node_id")
+                .setNodeState(NodeStateEnum.CONFIGURED)
+                .setNodeType(NodeTypeEnum.LEARNER)
+                .setType("NativeNode")
+                .setRootWorkflowID(wfId)
+                .setNodeFactoryKey(createNodeFactoryKeyEnt())
+                .setOutPorts(null).build();
+    }
+
     private NodeFactoryKeyEnt createNodeFactoryKeyEnt() {
         return builder(NodeFactoryKeyEntBuilder.class)
         .setClassName("node_factory_class_name")
         .setSettings("settings").build();
+    }
+
+    /**
+     * Tests the immutability of entity properties (i.e. of lists and maps).
+     */
+    @Test
+    public void testImmutability() {
+
+        /* test immutability of maps */
+        UUID node1id = UUID.randomUUID();
+        UUID node2id = UUID.randomUUID();
+        NativeNodeEnt node1 = createNativeNodeEnt(node1id);
+        NativeNodeEnt node2 = createNativeNodeEnt(node2id);
+
+        Map<String, NodeEnt> nodes = new HashMap<>();
+        nodes.put("node1", node1);
+
+        WorkflowEnt wf = builder(WorkflowEntBuilder.class).setNodes(nodes).build();
+
+        //replace node
+        nodes.replace("node1", node2);
+
+        //make sure the workflow end didn't change
+        assertEquals(wf.getNodes().get("node1").getRootWorkflowID(), node1id);
+
+        //add another node
+        nodes.put("node2", node2);
+
+        //make sure there is still just one node
+        assertEquals(wf.getNodes().size(), 1);
+
+        try {
+            wf.getNodes().put("new_node", node2);
+            fail("Exception expected to be thrown.");
+        } catch (UnsupportedOperationException e) {
+            //exception has been thrown
+        }
+
+        /* test immutability of lists */
+        ConnectionEnt con = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
+            .setSourcePort(3).build();
+        ConnectionEnt con2 = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
+            .setSourcePort(3).build();
+
+        List<ConnectionEnt> connections = new ArrayList<ConnectionEnt>();
+        connections.add(con);
+        wf = builder(WorkflowEntBuilder.class).setConnections(connections).build();
+
+        connections.add(con2);
+
+        assertEquals(wf.getConnections().size(), 1);
+
+        try {
+            wf.getConnections().add(con2);
+            fail("Exception expected to be thrown");
+        } catch (UnsupportedOperationException e) {
+            //exception has been thrown
+        }
     }
 
     /**
