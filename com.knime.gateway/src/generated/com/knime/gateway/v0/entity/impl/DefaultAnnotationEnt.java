@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 
@@ -56,16 +58,16 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
     }
-    m_type = builder.m_type;
-    m_text = builder.m_text;
-    m_backgroundColor = builder.m_backgroundColor;
-    m_bounds = builder.m_bounds;
-    m_textAlignment = builder.m_textAlignment;
-    m_borderSize = builder.m_borderSize;
-    m_borderColor = builder.m_borderColor;
-    m_defaultFontSize = builder.m_defaultFontSize;
-    m_version = builder.m_version;
-    m_styleRanges = builder.m_styleRanges;
+    m_type = immutable(builder.m_type);
+    m_text = immutable(builder.m_text);
+    m_backgroundColor = immutable(builder.m_backgroundColor);
+    m_bounds = immutable(builder.m_bounds);
+    m_textAlignment = immutable(builder.m_textAlignment);
+    m_borderSize = immutable(builder.m_borderSize);
+    m_borderColor = immutable(builder.m_borderColor);
+    m_defaultFontSize = immutable(builder.m_defaultFontSize);
+    m_version = immutable(builder.m_version);
+    m_styleRanges = immutable(builder.m_styleRanges);
   }
 
 

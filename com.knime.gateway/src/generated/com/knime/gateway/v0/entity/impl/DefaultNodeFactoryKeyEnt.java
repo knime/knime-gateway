@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 
@@ -46,8 +48,8 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
     if(builder.m_className == null) {
         throw new IllegalArgumentException("className must not be null.");
     }
-    m_className = builder.m_className;
-    m_settings = builder.m_settings;
+    m_className = immutable(builder.m_className);
+    m_settings = immutable(builder.m_settings);
   }
 
 

@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.XYEnt;
 
 import com.knime.gateway.v0.entity.ConnectionEnt;
@@ -53,23 +55,23 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     if(builder.m_dest == null) {
         throw new IllegalArgumentException("dest must not be null.");
     }
-    m_dest = builder.m_dest;
+    m_dest = immutable(builder.m_dest);
     if(builder.m_destPort == null) {
         throw new IllegalArgumentException("destPort must not be null.");
     }
-    m_destPort = builder.m_destPort;
+    m_destPort = immutable(builder.m_destPort);
     if(builder.m_source == null) {
         throw new IllegalArgumentException("source must not be null.");
     }
-    m_source = builder.m_source;
+    m_source = immutable(builder.m_source);
     if(builder.m_sourcePort == null) {
         throw new IllegalArgumentException("sourcePort must not be null.");
     }
-    m_sourcePort = builder.m_sourcePort;
-    m_deletable = builder.m_deletable;
-    m_flowVariablePortConnection = builder.m_flowVariablePortConnection;
-    m_bendPoints = builder.m_bendPoints;
-    m_type = builder.m_type;
+    m_sourcePort = immutable(builder.m_sourcePort);
+    m_deletable = immutable(builder.m_deletable);
+    m_flowVariablePortConnection = immutable(builder.m_flowVariablePortConnection);
+    m_bendPoints = immutable(builder.m_bendPoints);
+    m_type = immutable(builder.m_type);
   }
 
 

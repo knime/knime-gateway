@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.knime.gateway.v0.entity.NodePortEnt;
@@ -49,16 +51,16 @@ public class DefaultNodePortEnt  implements NodePortEnt {
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
     }
-    m_type = builder.m_type;
+    m_type = immutable(builder.m_type);
     if(builder.m_portIndex == null) {
         throw new IllegalArgumentException("portIndex must not be null.");
     }
-    m_portIndex = builder.m_portIndex;
+    m_portIndex = immutable(builder.m_portIndex);
     if(builder.m_portType == null) {
         throw new IllegalArgumentException("portType must not be null.");
     }
-    m_portType = builder.m_portType;
-    m_portName = builder.m_portName;
+    m_portType = immutable(builder.m_portType);
+    m_portName = immutable(builder.m_portName);
   }
 
 

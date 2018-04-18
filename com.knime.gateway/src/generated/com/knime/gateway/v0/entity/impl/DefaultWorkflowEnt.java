@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -52,12 +54,12 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   
   private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
     
-    m_nodes = builder.m_nodes;
-    m_connections = builder.m_connections;
-    m_metaInPortInfos = builder.m_metaInPortInfos;
-    m_metaOutPortInfos = builder.m_metaOutPortInfos;
-    m_workflowAnnotations = builder.m_workflowAnnotations;
-    m_workflowUIInfo = builder.m_workflowUIInfo;
+    m_nodes = immutable(builder.m_nodes);
+    m_connections = immutable(builder.m_connections);
+    m_metaInPortInfos = immutable(builder.m_metaInPortInfos);
+    m_metaOutPortInfos = immutable(builder.m_metaOutPortInfos);
+    m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
+    m_workflowUIInfo = immutable(builder.m_workflowUIInfo);
   }
 
 

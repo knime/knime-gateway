@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.PortTypeEnt;
 
@@ -46,11 +48,11 @@ public class DefaultPortTypeEnt  implements PortTypeEnt {
     if(builder.m_portObjectClassName == null) {
         throw new IllegalArgumentException("portObjectClassName must not be null.");
     }
-    m_portObjectClassName = builder.m_portObjectClassName;
+    m_portObjectClassName = immutable(builder.m_portObjectClassName);
     if(builder.m_optional == null) {
         throw new IllegalArgumentException("optional must not be null.");
     }
-    m_optional = builder.m_optional;
+    m_optional = immutable(builder.m_optional);
   }
 
 

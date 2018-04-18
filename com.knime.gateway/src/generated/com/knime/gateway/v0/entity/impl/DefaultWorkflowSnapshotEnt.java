@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.WorkflowEnt;
 
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
@@ -47,11 +49,11 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
     if(builder.m_workflow == null) {
         throw new IllegalArgumentException("workflow must not be null.");
     }
-    m_workflow = builder.m_workflow;
+    m_workflow = immutable(builder.m_workflow);
     if(builder.m_snapshotID == null) {
         throw new IllegalArgumentException("snapshotID must not be null.");
     }
-    m_snapshotID = builder.m_snapshotID;
+    m_snapshotID = immutable(builder.m_snapshotID);
   }
 
 

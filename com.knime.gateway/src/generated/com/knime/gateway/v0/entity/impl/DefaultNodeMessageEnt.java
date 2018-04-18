@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 
@@ -43,11 +45,11 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
   
   private DefaultNodeMessageEnt(DefaultNodeMessageEntBuilder builder) {
     
-    m_type = builder.m_type;
+    m_type = immutable(builder.m_type);
     if(builder.m_message == null) {
         throw new IllegalArgumentException("message must not be null.");
     }
-    m_message = builder.m_message;
+    m_message = immutable(builder.m_message);
   }
 
 

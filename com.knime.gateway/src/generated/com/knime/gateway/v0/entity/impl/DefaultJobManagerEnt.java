@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.JobManagerEnt;
 
@@ -45,7 +47,7 @@ public class DefaultJobManagerEnt  implements JobManagerEnt {
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
     }
-    m_id = builder.m_id;
+    m_id = immutable(builder.m_id);
   }
 
 

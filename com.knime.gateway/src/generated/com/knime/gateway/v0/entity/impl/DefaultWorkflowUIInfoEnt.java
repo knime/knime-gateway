@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import java.math.BigDecimal;
 
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
@@ -49,13 +51,13 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
   
   private DefaultWorkflowUIInfoEnt(DefaultWorkflowUIInfoEntBuilder builder) {
     
-    m_gridX = builder.m_gridX;
-    m_gridY = builder.m_gridY;
-    m_snapToGrid = builder.m_snapToGrid;
-    m_showGrid = builder.m_showGrid;
-    m_zoomLevel = builder.m_zoomLevel;
-    m_hasCurvedConnection = builder.m_hasCurvedConnection;
-    m_connectionLineWidth = builder.m_connectionLineWidth;
+    m_gridX = immutable(builder.m_gridX);
+    m_gridY = immutable(builder.m_gridY);
+    m_snapToGrid = immutable(builder.m_snapToGrid);
+    m_showGrid = immutable(builder.m_showGrid);
+    m_zoomLevel = immutable(builder.m_zoomLevel);
+    m_hasCurvedConnection = immutable(builder.m_hasCurvedConnection);
+    m_connectionLineWidth = immutable(builder.m_connectionLineWidth);
   }
 
 

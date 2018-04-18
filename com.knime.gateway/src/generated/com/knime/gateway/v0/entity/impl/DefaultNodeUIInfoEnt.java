@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.BoundsEnt;
 
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
@@ -47,11 +49,11 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
   
   private DefaultNodeUIInfoEnt(DefaultNodeUIInfoEntBuilder builder) {
     
-    m_bounds = builder.m_bounds;
-    m_symbolRelative = builder.m_symbolRelative;
-    m_hasAbsoluteCoordinates = builder.m_hasAbsoluteCoordinates;
-    m_dropLocation = builder.m_dropLocation;
-    m_snapToGrid = builder.m_snapToGrid;
+    m_bounds = immutable(builder.m_bounds);
+    m_symbolRelative = immutable(builder.m_symbolRelative);
+    m_hasAbsoluteCoordinates = immutable(builder.m_hasAbsoluteCoordinates);
+    m_dropLocation = immutable(builder.m_dropLocation);
+    m_snapToGrid = immutable(builder.m_snapToGrid);
   }
 
 

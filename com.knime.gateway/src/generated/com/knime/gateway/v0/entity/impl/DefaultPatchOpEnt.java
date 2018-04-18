@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.PatchOpEnt;
 
@@ -48,13 +50,13 @@ public class DefaultPatchOpEnt  implements PatchOpEnt {
     if(builder.m_op == null) {
         throw new IllegalArgumentException("op must not be null.");
     }
-    m_op = builder.m_op;
+    m_op = immutable(builder.m_op);
     if(builder.m_path == null) {
         throw new IllegalArgumentException("path must not be null.");
     }
-    m_path = builder.m_path;
-    m_value = builder.m_value;
-    m_from = builder.m_from;
+    m_path = immutable(builder.m_path);
+    m_value = immutable(builder.m_value);
+    m_from = immutable(builder.m_from);
   }
 
 

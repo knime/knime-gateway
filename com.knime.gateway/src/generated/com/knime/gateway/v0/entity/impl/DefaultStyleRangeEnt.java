@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 
@@ -47,12 +49,12 @@ public class DefaultStyleRangeEnt  implements StyleRangeEnt {
   
   private DefaultStyleRangeEnt(DefaultStyleRangeEntBuilder builder) {
     
-    m_start = builder.m_start;
-    m_length = builder.m_length;
-    m_fontName = builder.m_fontName;
-    m_fontStyle = builder.m_fontStyle;
-    m_fontSize = builder.m_fontSize;
-    m_foregroundColor = builder.m_foregroundColor;
+    m_start = immutable(builder.m_start);
+    m_length = immutable(builder.m_length);
+    m_fontName = immutable(builder.m_fontName);
+    m_fontStyle = immutable(builder.m_fontStyle);
+    m_fontSize = immutable(builder.m_fontSize);
+    m_foregroundColor = immutable(builder.m_foregroundColor);
   }
 
 

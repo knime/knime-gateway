@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
@@ -50,11 +52,11 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
     if(builder.m_portType == null) {
         throw new IllegalArgumentException("portType must not be null.");
     }
-    m_portType = builder.m_portType;
-    m_connected = builder.m_connected;
-    m_message = builder.m_message;
-    m_oldIndex = builder.m_oldIndex;
-    m_newIndex = builder.m_newIndex;
+    m_portType = immutable(builder.m_portType);
+    m_connected = immutable(builder.m_connected);
+    m_message = immutable(builder.m_message);
+    m_oldIndex = immutable(builder.m_oldIndex);
+    m_newIndex = immutable(builder.m_newIndex);
   }
 
 

@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.BoundsEnt;
 
@@ -45,10 +47,10 @@ public class DefaultBoundsEnt  implements BoundsEnt {
   
   private DefaultBoundsEnt(DefaultBoundsEntBuilder builder) {
     
-    m_x = builder.m_x;
-    m_y = builder.m_y;
-    m_width = builder.m_width;
-    m_height = builder.m_height;
+    m_x = immutable(builder.m_x);
+    m_y = immutable(builder.m_y);
+    m_width = immutable(builder.m_width);
+    m_height = immutable(builder.m_height);
   }
 
 

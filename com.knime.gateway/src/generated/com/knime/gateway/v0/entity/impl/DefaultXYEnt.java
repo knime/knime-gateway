@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 
 import com.knime.gateway.v0.entity.XYEnt;
 
@@ -43,8 +45,8 @@ public class DefaultXYEnt  implements XYEnt {
   
   private DefaultXYEnt(DefaultXYEntBuilder builder) {
     
-    m_x = builder.m_x;
-    m_y = builder.m_y;
+    m_x = immutable(builder.m_x);
+    m_y = immutable(builder.m_y);
   }
 
 

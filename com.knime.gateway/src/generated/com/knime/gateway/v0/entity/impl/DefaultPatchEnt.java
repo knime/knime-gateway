@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.PatchOpEnt;
 
 import com.knime.gateway.v0.entity.PatchEnt;
@@ -45,9 +47,9 @@ public class DefaultPatchEnt  implements PatchEnt {
   
   private DefaultPatchEnt(DefaultPatchEntBuilder builder) {
     
-    m_ops = builder.m_ops;
-    m_snapshotID = builder.m_snapshotID;
-    m_targetTypeID = builder.m_targetTypeID;
+    m_ops = immutable(builder.m_ops);
+    m_snapshotID = immutable(builder.m_snapshotID);
+    m_targetTypeID = immutable(builder.m_targetTypeID);
   }
 
 

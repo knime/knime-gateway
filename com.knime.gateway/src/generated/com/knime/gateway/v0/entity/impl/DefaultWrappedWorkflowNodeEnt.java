@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
+import static com.knime.gateway.util.DefaultEntUtil.immutable;
+
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
@@ -53,41 +55,41 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
     }
-    m_type = builder.m_type;
+    m_type = immutable(builder.m_type);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
-    m_name = builder.m_name;
+    m_name = immutable(builder.m_name);
     if(builder.m_nodeID == null) {
         throw new IllegalArgumentException("nodeID must not be null.");
     }
-    m_nodeID = builder.m_nodeID;
+    m_nodeID = immutable(builder.m_nodeID);
     if(builder.m_nodeType == null) {
         throw new IllegalArgumentException("nodeType must not be null.");
     }
-    m_nodeType = builder.m_nodeType;
-    m_parentNodeID = builder.m_parentNodeID;
+    m_nodeType = immutable(builder.m_nodeType);
+    m_parentNodeID = immutable(builder.m_parentNodeID);
     if(builder.m_rootWorkflowID == null) {
         throw new IllegalArgumentException("rootWorkflowID must not be null.");
     }
-    m_rootWorkflowID = builder.m_rootWorkflowID;
-    m_nodeMessage = builder.m_nodeMessage;
+    m_rootWorkflowID = immutable(builder.m_rootWorkflowID);
+    m_nodeMessage = immutable(builder.m_nodeMessage);
     if(builder.m_nodeState == null) {
         throw new IllegalArgumentException("nodeState must not be null.");
     }
-    m_nodeState = builder.m_nodeState;
-    m_inPorts = builder.m_inPorts;
-    m_outPorts = builder.m_outPorts;
-    m_deletable = builder.m_deletable;
-    m_hasDialog = builder.m_hasDialog;
-    m_nodeAnnotation = builder.m_nodeAnnotation;
-    m_jobManager = builder.m_jobManager;
-    m_uIInfo = builder.m_uIInfo;
-    m_workflowIncomingPorts = builder.m_workflowIncomingPorts;
-    m_workflowOutgoingPorts = builder.m_workflowOutgoingPorts;
-    m_encrypted = builder.m_encrypted;
-    m_virtualInNodeID = builder.m_virtualInNodeID;
-    m_virtualOutNodeID = builder.m_virtualOutNodeID;
+    m_nodeState = immutable(builder.m_nodeState);
+    m_inPorts = immutable(builder.m_inPorts);
+    m_outPorts = immutable(builder.m_outPorts);
+    m_deletable = immutable(builder.m_deletable);
+    m_hasDialog = immutable(builder.m_hasDialog);
+    m_nodeAnnotation = immutable(builder.m_nodeAnnotation);
+    m_jobManager = immutable(builder.m_jobManager);
+    m_uIInfo = immutable(builder.m_uIInfo);
+    m_workflowIncomingPorts = immutable(builder.m_workflowIncomingPorts);
+    m_workflowOutgoingPorts = immutable(builder.m_workflowOutgoingPorts);
+    m_encrypted = immutable(builder.m_encrypted);
+    m_virtualInNodeID = immutable(builder.m_virtualInNodeID);
+    m_virtualOutNodeID = immutable(builder.m_virtualOutNodeID);
   }
 
 
