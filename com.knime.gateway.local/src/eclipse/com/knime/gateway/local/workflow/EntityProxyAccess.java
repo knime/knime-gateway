@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
 
@@ -57,6 +58,8 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
  * @author Martin Horn, University of Konstanz
  */
 public class EntityProxyAccess {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyAccess.class);
 
     private final Map<Pair<GatewayEntity, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
@@ -294,30 +297,40 @@ public class EntityProxyAccess {
      */
     Pair<WorkflowEnt, UUID> updateWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt,
         final WorkflowEnt workflowEntToUpdate, final UUID snapshotID) {
-        PatchEnt patch;
+        PatchEnt patch = null;
         if (workflowNodeEnt.getParentNodeID() == null) {
             //in case it's the root workflow
             try {
                 patch = workflowService(m_serviceConfig).getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
                     snapshotID);
             } catch (NotFoundException ex) {
-                throw new RuntimeException(ex);
+                //no snapshot for the given id -> download entire workflow again
+                LOGGER.debug("No patch available. Entire workflow downloaded again.");
             }
         } else {
             // in case it's a sub-workflow
             try {
                 patch = workflowService(m_serviceConfig).getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
                     workflowNodeEnt.getNodeID(), snapshotID);
-            } catch (NotASubWorkflowException | NotFoundException ex) {
+            } catch (NotASubWorkflowException ex) {
                 throw new RuntimeException(ex);
+            } catch (NotFoundException ex) {
+                //no snapshot for the given id -> downlaod entire workflow again
+                LOGGER.debug("No patch available. Entire workflow downloaded again.");
             }
         }
-        // apply patch and return new version
-        if (!patch.getOps().isEmpty()) {
-            return Pair.create(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
-                patch.getSnapshotID());
+        if (patch == null) {
+            //no patch available -> retrieve entire workflow again
+            WorkflowSnapshotEnt snapshot = getWorkflowSnapshotEnt(workflowNodeEnt);
+            return Pair.create(snapshot.getWorkflow(), snapshot.getSnapshotID());
         } else {
-            return Pair.create(workflowEntToUpdate, null);
+            // apply patch and return new version
+            if (!patch.getOps().isEmpty()) {
+                return Pair.create(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
+                    patch.getSnapshotID());
+            } else {
+                return Pair.create(workflowEntToUpdate, null);
+            }
         }
     }
 
