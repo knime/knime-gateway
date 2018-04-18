@@ -983,7 +983,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      * {@inheritDoc}
      */
     @Override
-    public void refresh() {
+    public void refresh(final boolean deepRefresh) {
         //only refresh if the workflow was retrieved already
         if (m_workflowEnt != null) {
             WorkflowEnt oldWorkflow = m_workflowEnt;
@@ -1001,17 +1001,19 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
                 }
             }
 
-            //refresh all contained workflows (i.e. metanodes)
-            for (NodeEnt node : m_workflowEnt.getNodes().values()) {
-                WorkflowManagerUI wfm = null;
-                //order of checking very important here since WrappedWorkflowNodeEnt is a subclass of WorkflowNodeEnt
-                if (node instanceof WrappedWorkflowNodeEnt) {
-                    wfm = ((SubNodeContainerUI)getAccess().getNodeContainer(node)).getWorkflowManager();
-                } else if (node instanceof WorkflowNodeEnt) {
-                    wfm = (WorkflowManagerUI)getAccess().getNodeContainer(node);
-                }
-                if (wfm != null && wfm.isRefreshable()) {
-                    wfm.refresh();
+            if (deepRefresh) {
+                //refresh all contained workflows (i.e. metanodes)
+                for (NodeEnt node : m_workflowEnt.getNodes().values()) {
+                    WorkflowManagerUI wfm = null;
+                    //order of checking very important here since WrappedWorkflowNodeEnt is a subclass of WorkflowNodeEnt
+                    if (node instanceof WrappedWorkflowNodeEnt) {
+                        wfm = ((SubNodeContainerUI)getAccess().getNodeContainer(node)).getWorkflowManager();
+                    } else if (node instanceof WorkflowNodeEnt) {
+                        wfm = (WorkflowManagerUI)getAccess().getNodeContainer(node);
+                    }
+                    if (wfm != null && wfm.isRefreshable()) {
+                        wfm.refresh(true);
+                    }
                 }
             }
         }
