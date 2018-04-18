@@ -48,22 +48,27 @@ import com.knime.gateway.v0.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
 
 /**
- * Tests for {@link WorkflowEntRepository} and it's {@link JaversRepository}-implementation.
+ * Tests for {@link WorkflowEntRepository}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class WorkflowEntRepoTest {
+public abstract class AbstractWorkflowEntRepositoryTest {
     private WorkflowEntRepository m_repo;
 
     /**
-     * Init javers repository.
+     * Init repository.
      *
      * @throws Exception
      */
     @Before
     public void setup() throws Exception {
-        m_repo = new JaversRepository();
+        m_repo = createRepo();
     }
+
+    /**
+     * @return an instance of the {@link WorkflowEntRepository}
+     */
+    protected abstract WorkflowEntRepository createRepo();
 
     /**
      * Tests the {@link JaversRepository#commit(UUID, String, WorkflowEnt)} method.
