@@ -18,7 +18,6 @@
  */
 package com.knime.gateway.remote.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,25 +25,10 @@ import java.util.UUID;
 
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
-import org.javers.core.changelog.ChangeProcessor;
 import org.javers.core.commit.Commit;
 import org.javers.core.commit.CommitId;
-import org.javers.core.commit.CommitMetadata;
 import org.javers.core.diff.Change;
-import org.javers.core.diff.changetype.NewObject;
-import org.javers.core.diff.changetype.ObjectRemoved;
-import org.javers.core.diff.changetype.PropertyChange;
-import org.javers.core.diff.changetype.ReferenceChange;
-import org.javers.core.diff.changetype.ValueChange;
-import org.javers.core.diff.changetype.container.ArrayChange;
-import org.javers.core.diff.changetype.container.ContainerChange;
-import org.javers.core.diff.changetype.container.ListChange;
-import org.javers.core.diff.changetype.container.SetChange;
-import org.javers.core.diff.changetype.map.MapChange;
 import org.javers.core.metamodel.annotation.Id;
-import org.javers.core.metamodel.object.GlobalId;
-import org.javers.core.metamodel.object.UnboundedValueObjectId;
-import org.javers.core.metamodel.object.ValueObjectId;
 import org.javers.repository.jql.JqlQuery;
 import org.javers.repository.jql.QueryBuilder;
 import org.javers.shadow.Shadow;
@@ -53,14 +37,9 @@ import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
-import com.knime.gateway.v0.entity.PatchOpEnt;
-import com.knime.gateway.v0.entity.PatchOpEnt.OpEnum;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultPatchEnt.DefaultPatchEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
 
 /**
@@ -70,13 +49,15 @@ import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
  * NOTE: for simplicity the javers repository for now assumes the default implementations of the entities (i.e.
  * DefaultWorkflowEnt) and will fail otherwise.
  *
+ * NOTE: it turned out that querying for snapshots ({@link #getSnapshot(UUID)} is slowed down considerably the more
+ * commits are there. Thus the simpler {@link SimpleRepository}-implementation.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class JaversRepository implements WorkflowEntRepository {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(JaversRepository.class);
 
-    private static final PatchEnt EMPTY_PATCH = EntityBuilderManager.builder(PatchEntBuilder.class).build();
 
     // one javers repository per workflow id
     private final Map<UUID, Javers> m_repos = new HashMap<UUID, Javers>();
@@ -120,7 +101,7 @@ public class JaversRepository implements WorkflowEntRepository {
             // create patch ent
             return repo.processChangeList(changes, new PatchEntChangeProcessor(newSnapshotID, entity.getTypeID()));
         } else {
-            return EMPTY_PATCH;
+            return PatchEntChangeProcessor.EMPTY_PATCH;
         }
     }
 
@@ -215,128 +196,6 @@ public class JaversRepository implements WorkflowEntRepository {
 
         public CommitId getCommitID() {
             return m_commitID;
-        }
-    }
-
-    private static class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
-        private final List<PatchOpEnt> m_ops = new ArrayList<PatchOpEnt>();
-
-        private final UUID m_newSnapshotID;
-
-        private final String m_targetTypeID;
-
-        public PatchEntChangeProcessor(final UUID newSnapshotID, final String targetTypeID) {
-            m_newSnapshotID = newSnapshotID;
-            m_targetTypeID = targetTypeID;
-        }
-
-        @Override
-        public void onCommit(final CommitMetadata commitMetadata) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void onAffectedObject(final GlobalId globalId) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void beforeChangeList() {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void afterChangeList() {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void beforeChange(final Change change) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void afterChange(final Change change) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onPropertyChange(final PropertyChange propertyChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onValueChange(final ValueChange valueChange) {
-            GlobalId globalId = valueChange.getAffectedGlobalId();
-            String path = "";
-            if (globalId instanceof ValueObjectId) {
-                path = "/" + ((ValueObjectId)globalId).getFragment().replaceAll("m_", "");
-                path += "/" + valueChange.getPropertyName().replace("m_", "");
-            }
-            if (globalId instanceof UnboundedValueObjectId) {
-                path = "/" + valueChange.getPropertyName().replace("m_", "");
-            }
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REPLACE).setPath(path)
-                .setValue(valueChange.getRight()).build());
-        }
-
-        @Override
-        public void onReferenceChange(final ReferenceChange referenceChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onNewObject(final NewObject newObject) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onObjectRemoved(final ObjectRemoved objectRemoved) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onContainerChange(final ContainerChange containerChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onSetChange(final SetChange setChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onArrayChange(final ArrayChange arrayChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onListChange(final ListChange listChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onMapChange(final MapChange mapChange) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public PatchEnt result() {
-            return new DefaultPatchEntBuilder().setOps(m_ops).setSnapshotID(m_newSnapshotID)
-                .setTargetTypeID(m_targetTypeID).build();
         }
     }
 }

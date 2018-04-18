@@ -29,7 +29,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.remote.util.JaversRepository;
+import com.knime.gateway.remote.util.SimpleRepository;
 import com.knime.gateway.remote.util.WorkflowEntRepository;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
@@ -49,7 +49,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 public class DefaultWorkflowService implements WorkflowService {
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
-    private final WorkflowEntRepository m_entityRepo = new JaversRepository();
+    private final WorkflowEntRepository m_entityRepo = new SimpleRepository();
 
     /**
      * Creates a new workflow service.
