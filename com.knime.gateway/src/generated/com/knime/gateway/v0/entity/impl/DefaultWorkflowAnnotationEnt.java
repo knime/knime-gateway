@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultAnnotationEnt;
@@ -60,6 +62,24 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
     m_version = immutable(builder.m_version);
     m_styleRanges = immutable(builder.m_styleRanges);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultWorkflowAnnotationEnt ent = (DefaultWorkflowAnnotationEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_textAlignment, ent.m_textAlignment) && Objects.equals(m_borderSize, ent.m_borderSize) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_version, ent.m_version) && Objects.equals(m_styleRanges, ent.m_styleRanges);
+    }
 
 
   

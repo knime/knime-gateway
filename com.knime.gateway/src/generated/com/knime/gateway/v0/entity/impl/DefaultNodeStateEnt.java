@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.NodeStateEnt;
 
@@ -49,6 +51,24 @@ public class DefaultNodeStateEnt  implements NodeStateEnt {
     }
     m_state = immutable(builder.m_state);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNodeStateEnt ent = (DefaultNodeStateEnt)o;
+        return Objects.equals(m_state, ent.m_state);
+    }
 
 
   @Override

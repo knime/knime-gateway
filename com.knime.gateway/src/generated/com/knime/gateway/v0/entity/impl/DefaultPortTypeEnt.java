@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.PortTypeEnt;
 
@@ -54,6 +56,24 @@ public class DefaultPortTypeEnt  implements PortTypeEnt {
     }
     m_optional = immutable(builder.m_optional);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultPortTypeEnt ent = (DefaultPortTypeEnt)o;
+        return Objects.equals(m_portObjectClassName, ent.m_portObjectClassName) && Objects.equals(m_optional, ent.m_optional);
+    }
 
 
   @Override

@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 
@@ -51,6 +53,24 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
     }
     m_message = immutable(builder.m_message);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNodeMessageEnt ent = (DefaultNodeMessageEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_message, ent.m_message);
+    }
 
 
   @Override

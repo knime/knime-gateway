@@ -20,11 +20,14 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
@@ -80,6 +83,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         throw new IllegalArgumentException("nodeState must not be null.");
     }
     m_nodeState = immutable(builder.m_nodeState);
+    m_progress = immutable(builder.m_progress);
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
     m_deletable = immutable(builder.m_deletable);
@@ -96,6 +100,24 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     m_virtualOutNodeID = immutable(builder.m_virtualOutNodeID);
     m_inactive = immutable(builder.m_inactive);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultWrappedWorkflowNodeEnt ent = (DefaultWrappedWorkflowNodeEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_workflowIncomingPorts, ent.m_workflowIncomingPorts) && Objects.equals(m_workflowOutgoingPorts, ent.m_workflowOutgoingPorts) && Objects.equals(m_encrypted, ent.m_encrypted) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates) && Objects.equals(m_virtualInNodeID, ent.m_virtualInNodeID) && Objects.equals(m_virtualOutNodeID, ent.m_virtualOutNodeID) && Objects.equals(m_inactive, ent.m_inactive);
+    }
 
 
   @Override
@@ -128,6 +150,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         private java.util.UUID m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnt m_nodeState;
+        private NodeProgressEnt m_progress;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
@@ -207,6 +230,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
                  throw new IllegalArgumentException("nodeState must not be null.");
              }
              m_nodeState = nodeState;
+             return this;
+        }
+
+        @Override
+        public DefaultWrappedWorkflowNodeEntBuilder setProgress(NodeProgressEnt progress) {
+             m_progress = progress;
              return this;
         }
 

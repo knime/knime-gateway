@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
 
@@ -61,6 +63,24 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
     m_portName = immutable(builder.m_portName);
     m_inactive = immutable(builder.m_inactive);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNodeOutPortEnt ent = (DefaultNodeOutPortEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName) && Objects.equals(m_inactive, ent.m_inactive);
+    }
 
 
   @Override

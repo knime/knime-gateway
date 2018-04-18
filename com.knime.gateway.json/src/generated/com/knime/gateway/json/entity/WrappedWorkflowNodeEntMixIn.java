@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
@@ -95,6 +96,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     @Override
     @JsonProperty("nodeState")
     public NodeStateEnt getNodeState();
+    
+    @Override
+    @JsonProperty("progress")
+    public NodeProgressEnt getProgress();
     
     @Override
     @JsonProperty("inPorts")
@@ -207,6 +212,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         @Override
         @JsonProperty("nodeState")
         public WrappedWorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
+        
+        @Override
+        @JsonProperty("progress")
+        public WrappedWorkflowNodeEntMixInBuilder setProgress(final NodeProgressEnt progress);
         
         @Override
         @JsonProperty("inPorts")

@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.WorkflowEnt;
 
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
@@ -55,6 +57,24 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
     }
     m_snapshotID = immutable(builder.m_snapshotID);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultWorkflowSnapshotEnt ent = (DefaultWorkflowSnapshotEnt)o;
+        return Objects.equals(m_workflow, ent.m_workflow) && Objects.equals(m_snapshotID, ent.m_snapshotID);
+    }
 
 
   @Override

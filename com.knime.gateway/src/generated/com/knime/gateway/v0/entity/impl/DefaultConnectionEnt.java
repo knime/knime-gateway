@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.XYEnt;
 
 import com.knime.gateway.v0.entity.ConnectionEnt;
@@ -73,6 +75,24 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     m_bendPoints = immutable(builder.m_bendPoints);
     m_type = immutable(builder.m_type);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultConnectionEnt ent = (DefaultConnectionEnt)o;
+        return Objects.equals(m_dest, ent.m_dest) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_source, ent.m_source) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_flowVariablePortConnection, ent.m_flowVariablePortConnection) && Objects.equals(m_bendPoints, ent.m_bendPoints) && Objects.equals(m_type, ent.m_type);
+    }
 
 
   @Override

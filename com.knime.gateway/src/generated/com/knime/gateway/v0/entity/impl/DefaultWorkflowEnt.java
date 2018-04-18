@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -61,6 +63,24 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
     m_workflowUIInfo = immutable(builder.m_workflowUIInfo);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
+        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_metaInPortInfos, ent.m_metaInPortInfos) && Objects.equals(m_metaOutPortInfos, ent.m_metaOutPortInfos) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_workflowUIInfo, ent.m_workflowUIInfo);
+    }
 
 
   @Override

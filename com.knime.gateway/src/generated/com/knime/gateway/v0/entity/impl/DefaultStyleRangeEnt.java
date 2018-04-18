@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 
@@ -56,6 +58,24 @@ public class DefaultStyleRangeEnt  implements StyleRangeEnt {
     m_fontSize = immutable(builder.m_fontSize);
     m_foregroundColor = immutable(builder.m_foregroundColor);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultStyleRangeEnt ent = (DefaultStyleRangeEnt)o;
+        return Objects.equals(m_start, ent.m_start) && Objects.equals(m_length, ent.m_length) && Objects.equals(m_fontName, ent.m_fontName) && Objects.equals(m_fontStyle, ent.m_fontStyle) && Objects.equals(m_fontSize, ent.m_fontSize) && Objects.equals(m_foregroundColor, ent.m_foregroundColor);
+    }
 
 
   @Override

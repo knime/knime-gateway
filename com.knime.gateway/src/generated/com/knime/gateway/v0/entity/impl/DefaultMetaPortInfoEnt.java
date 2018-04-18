@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
@@ -58,6 +60,24 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
     m_oldIndex = immutable(builder.m_oldIndex);
     m_newIndex = immutable(builder.m_newIndex);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultMetaPortInfoEnt ent = (DefaultMetaPortInfoEnt)o;
+        return Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_connected, ent.m_connected) && Objects.equals(m_message, ent.m_message) && Objects.equals(m_oldIndex, ent.m_oldIndex) && Objects.equals(m_newIndex, ent.m_newIndex);
+    }
 
 
   @Override

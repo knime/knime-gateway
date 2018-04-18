@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 
@@ -51,6 +53,24 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
     m_className = immutable(builder.m_className);
     m_settings = immutable(builder.m_settings);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNodeFactoryKeyEnt ent = (DefaultNodeFactoryKeyEnt)o;
+        return Objects.equals(m_className, ent.m_className) && Objects.equals(m_settings, ent.m_settings);
+    }
 
 
   @Override

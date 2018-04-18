@@ -22,33 +22,34 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
 import java.util.Objects;
 
+import java.math.BigDecimal;
 
-import com.knime.gateway.v0.entity.XYEnt;
+import com.knime.gateway.v0.entity.NodeProgressEnt;
 
 /**
- * XY coordinate
+ * Represents the node&#39;s progress.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultXYEnt  implements XYEnt {
+public class DefaultNodeProgressEnt  implements NodeProgressEnt {
 
-  protected Integer m_x;
-  protected Integer m_y;
+  protected BigDecimal m_progress;
+  protected String m_message;
   
-  protected DefaultXYEnt() {
+  protected DefaultNodeProgressEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "XY";
+    return "NodeProgress";
   }
   
-  private DefaultXYEnt(DefaultXYEntBuilder builder) {
+  private DefaultNodeProgressEnt(DefaultNodeProgressEntBuilder builder) {
     
-    m_x = immutable(builder.m_x);
-    m_y = immutable(builder.m_y);
+    m_progress = immutable(builder.m_progress);
+    m_message = immutable(builder.m_message);
   }
   
    /**
@@ -65,47 +66,47 @@ public class DefaultXYEnt  implements XYEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultXYEnt ent = (DefaultXYEnt)o;
-        return Objects.equals(m_x, ent.m_x) && Objects.equals(m_y, ent.m_y);
+        DefaultNodeProgressEnt ent = (DefaultNodeProgressEnt)o;
+        return Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_message, ent.m_message);
     }
 
 
   @Override
-  public Integer getX() {
-        return m_x;
+  public BigDecimal getProgress() {
+        return m_progress;
     }
     
   @Override
-  public Integer getY() {
-        return m_y;
+  public String getMessage() {
+        return m_message;
     }
     
   
-    public static class DefaultXYEntBuilder implements XYEntBuilder {
+    public static class DefaultNodeProgressEntBuilder implements NodeProgressEntBuilder {
     
-        public DefaultXYEntBuilder(){
+        public DefaultNodeProgressEntBuilder(){
             
         }
     
-        private Integer m_x = null;
-        private Integer m_y = null;
+        private BigDecimal m_progress = null;
+        private String m_message = null;
 
         @Override
-        public DefaultXYEntBuilder setX(Integer x) {
-             m_x = x;
+        public DefaultNodeProgressEntBuilder setProgress(BigDecimal progress) {
+             m_progress = progress;
              return this;
         }
 
         @Override
-        public DefaultXYEntBuilder setY(Integer y) {
-             m_y = y;
+        public DefaultNodeProgressEntBuilder setMessage(String message) {
+             m_message = message;
              return this;
         }
 
         
         @Override
-        public DefaultXYEnt build() {
-            return new DefaultXYEnt(this);
+        public DefaultNodeProgressEnt build() {
+            return new DefaultNodeProgressEnt(this);
         }
     
     }

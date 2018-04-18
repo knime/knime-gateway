@@ -36,6 +36,8 @@ import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
 import com.knime.gateway.v0.entity.NodePortEnt.NodePortEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
+import com.knime.gateway.v0.entity.NodeProgressEnt.NodeProgressEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt.NodeUIInfoEntBuilder;
@@ -111,6 +113,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodePortEntBuilder.class) {
             return new DefaultNodePortEnt.DefaultNodePortEntBuilder();
+        }        
+        if(clazz == NodeProgressEntBuilder.class) {
+            return new DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder();
         }        
         if(clazz == NodeStateEntBuilder.class) {
             return new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();

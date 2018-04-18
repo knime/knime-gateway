@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.JobManagerEnt;
 
@@ -49,6 +51,24 @@ public class DefaultJobManagerEnt  implements JobManagerEnt {
     }
     m_id = immutable(builder.m_id);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultJobManagerEnt ent = (DefaultJobManagerEnt)o;
+        return Objects.equals(m_id, ent.m_id);
+    }
 
 
   @Override

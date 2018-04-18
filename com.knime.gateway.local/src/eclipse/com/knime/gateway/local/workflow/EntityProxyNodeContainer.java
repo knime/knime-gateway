@@ -41,6 +41,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessageEvent;
 import org.knime.core.node.workflow.NodeMessageListener;
+import org.knime.core.node.workflow.NodeProgress;
 import org.knime.core.node.workflow.NodeProgressEvent;
 import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodePropertyChangedListener;
@@ -354,6 +355,17 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     }
 
     /**
+     * Notifies all registered {@link NodeProgressListener}s about the new progress.
+     *
+     * @param e the new progress event
+     */
+    protected void notifyNodeProgressListeners(final NodeProgressEvent e) {
+        for (NodeProgressListener l : m_progressListeners) {
+            l.progressChanged(e);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -661,6 +673,8 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     public void postUpdate() {
         notifyNodeStateChangeListener(new NodeStateEvent(getID()));
         notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
+        notifyNodeProgressListeners(new NodeProgressEvent(getID(), new NodeProgress(
+            getEntity().getProgress().getProgress().doubleValue(), getEntity().getProgress().getMessage())));
         //no post update for nested entities necessary, yet
     }
 

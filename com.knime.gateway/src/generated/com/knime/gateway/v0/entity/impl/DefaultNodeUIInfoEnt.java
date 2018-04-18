@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import com.knime.gateway.v0.entity.BoundsEnt;
 
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
@@ -55,6 +57,24 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
     m_dropLocation = immutable(builder.m_dropLocation);
     m_snapToGrid = immutable(builder.m_snapToGrid);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNodeUIInfoEnt ent = (DefaultNodeUIInfoEnt)o;
+        return Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_symbolRelative, ent.m_symbolRelative) && Objects.equals(m_hasAbsoluteCoordinates, ent.m_hasAbsoluteCoordinates) && Objects.equals(m_dropLocation, ent.m_dropLocation) && Objects.equals(m_snapToGrid, ent.m_snapToGrid);
+    }
 
 
   @Override

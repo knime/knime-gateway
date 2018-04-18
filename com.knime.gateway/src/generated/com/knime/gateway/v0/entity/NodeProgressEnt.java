@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.v0.entity;
 
-import com.knime.gateway.v0.entity.PatchOpEnt;
+import java.math.BigDecimal;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -26,61 +26,47 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * A list of patch operations.
+ * Represents the node&#39;s progress.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface PatchEnt extends GatewayEntity {
+public interface NodeProgressEnt extends GatewayEntity {
 
 
   /**
-   * The operations that make up this patch.
-   * @return ops 
+   * The actual progress, a value between 0 and 1.
+   * @return progress 
    **/
-  public java.util.List<PatchOpEnt> getOps();
+  public BigDecimal getProgress();
 
   /**
-   * A unique identifier for the version of the object this patch is applied to. Should only be missing if the patch is empty!
-   * @return snapshotID 
+   * A progress message.
+   * @return message 
    **/
-  public java.util.UUID getSnapshotID();
-
-  /**
-   * ID of the entity this patch can exclusively be applied to. Should only be missing, if the patch is empty!
-   * @return targetTypeID 
-   **/
-  public String getTargetTypeID();
+  public String getMessage();
 
 
     /**
      * The builder for the entity.
      */
-    public interface PatchEntBuilder extends GatewayEntityBuilder<PatchEnt> {
+    public interface NodeProgressEntBuilder extends GatewayEntityBuilder<NodeProgressEnt> {
 
         /**
-         * The operations that make up this patch.
+         * The actual progress, a value between 0 and 1.
          * 
-         * @param ops the property value,  
+         * @param progress the property value,  
          * @return this entity builder for chaining
          */
-        PatchEntBuilder setOps(java.util.List<PatchOpEnt> ops);
+        NodeProgressEntBuilder setProgress(BigDecimal progress);
         
         /**
-         * A unique identifier for the version of the object this patch is applied to. Should only be missing if the patch is empty!
+         * A progress message.
          * 
-         * @param snapshotID the property value,  
+         * @param message the property value,  
          * @return this entity builder for chaining
          */
-        PatchEntBuilder setSnapshotID(java.util.UUID snapshotID);
-        
-        /**
-         * ID of the entity this patch can exclusively be applied to. Should only be missing, if the patch is empty!
-         * 
-         * @param targetTypeID the property value,  
-         * @return this entity builder for chaining
-         */
-        PatchEntBuilder setTargetTypeID(String targetTypeID);
+        NodeProgressEntBuilder setMessage(String message);
         
         
         /**
@@ -90,7 +76,7 @@ public interface PatchEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        PatchEnt build();
+        NodeProgressEnt build();
     
     }
 

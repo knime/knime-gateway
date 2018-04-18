@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
@@ -133,6 +134,14 @@ public interface WorkflowNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         WorkflowNodeEntBuilder setNodeState(NodeStateEnt nodeState);
+        
+        /**
+         * The node&#39;s progress.
+         * 
+         * @param progress the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowNodeEntBuilder setProgress(NodeProgressEnt progress);
         
         /**
          * The list of inputs.

@@ -45,11 +45,11 @@ public interface WorkflowService extends GatewayService {
     WorkflowSnapshotEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
     /**
-     * Gives the changes of the sub-workflow as patch.
+     * Gives the changes of the sub-workflow as a patch.
      *
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node this sub-workflow is requested for. For nested sub-workflows the node id&#39;s are concatenated with an &#39;:&#39; (e.g. 6:4:3).
-     * @param snapshotId The id of the workflow-snapshot already retrieved.
+     * @param snapshotId The id of the workflow snapshot already retrieved.
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
@@ -67,10 +67,10 @@ public interface WorkflowService extends GatewayService {
     WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId) ;
         
     /**
-     * Gives the changes of the workflow as patch. Please note that there is not always a snapshot available for the provided snapshot id, either because the snapshot never existed or has been expired
+     * Gives the changes of the workflow as patch. Please note that there is not always a snapshot available for the provided snapshot id, either because the snapshot never existed or has expired.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param snapshotId The id of the workflow-snapshot already retrieved.
+     * @param snapshotId The id of the workflow snapshot already retrieved.
      *
      * @return the result
      * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found. Please refer to the exception message for more details.

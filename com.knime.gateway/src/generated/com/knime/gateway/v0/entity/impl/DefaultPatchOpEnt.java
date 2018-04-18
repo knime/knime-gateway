@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.PatchOpEnt;
 
@@ -58,6 +60,24 @@ public class DefaultPatchOpEnt  implements PatchOpEnt {
     m_value = immutable(builder.m_value);
     m_from = immutable(builder.m_from);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultPatchOpEnt ent = (DefaultPatchOpEnt)o;
+        return Objects.equals(m_op, ent.m_op) && Objects.equals(m_path, ent.m_path) && Objects.equals(m_value, ent.m_value) && Objects.equals(m_from, ent.m_from);
+    }
 
 
   @Override

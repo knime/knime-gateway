@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 
 import com.knime.gateway.v0.entity.BoundsEnt;
 
@@ -52,6 +54,24 @@ public class DefaultBoundsEnt  implements BoundsEnt {
     m_width = immutable(builder.m_width);
     m_height = immutable(builder.m_height);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultBoundsEnt ent = (DefaultBoundsEnt)o;
+        return Objects.equals(m_x, ent.m_x) && Objects.equals(m_y, ent.m_y) && Objects.equals(m_width, ent.m_width) && Objects.equals(m_height, ent.m_height);
+    }
 
 
   @Override

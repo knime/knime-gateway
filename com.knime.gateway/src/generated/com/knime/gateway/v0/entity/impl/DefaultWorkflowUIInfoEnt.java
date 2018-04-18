@@ -20,6 +20,8 @@ package com.knime.gateway.v0.entity.impl;
 
 import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
+import java.util.Objects;
+
 import java.math.BigDecimal;
 
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
@@ -59,6 +61,24 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
     m_hasCurvedConnection = immutable(builder.m_hasCurvedConnection);
     m_connectionLineWidth = immutable(builder.m_connectionLineWidth);
   }
+  
+   /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultWorkflowUIInfoEnt ent = (DefaultWorkflowUIInfoEnt)o;
+        return Objects.equals(m_gridX, ent.m_gridX) && Objects.equals(m_gridY, ent.m_gridY) && Objects.equals(m_snapToGrid, ent.m_snapToGrid) && Objects.equals(m_showGrid, ent.m_showGrid) && Objects.equals(m_zoomLevel, ent.m_zoomLevel) && Objects.equals(m_hasCurvedConnection, ent.m_hasCurvedConnection) && Objects.equals(m_connectionLineWidth, ent.m_connectionLineWidth);
+    }
 
 
   @Override

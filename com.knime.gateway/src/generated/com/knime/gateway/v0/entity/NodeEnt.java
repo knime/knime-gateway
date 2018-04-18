@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
@@ -142,6 +143,12 @@ public interface NodeEnt extends GatewayEntity {
   public NodeStateEnt getNodeState();
 
   /**
+   * The node&#39;s progress.
+   * @return progress 
+   **/
+  public NodeProgressEnt getProgress();
+
+  /**
    * The list of inputs.
    * @return inPorts 
    **/
@@ -258,6 +265,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setNodeState(NodeStateEnt nodeState);
+        
+        /**
+         * The node&#39;s progress.
+         * 
+         * @param progress the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setProgress(NodeProgressEnt progress);
         
         /**
          * The list of inputs.
