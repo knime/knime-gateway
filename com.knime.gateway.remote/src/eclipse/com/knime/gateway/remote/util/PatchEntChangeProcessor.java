@@ -53,14 +53,13 @@ import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt.DefaultPatchOpEntBuild
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
-
     static final PatchEnt EMPTY_PATCH = EntityBuilderManager.builder(PatchEntBuilder.class).build();
 
-    private List<PatchOpEnt> m_ops = new ArrayList<PatchOpEnt>();
+    private final List<PatchOpEnt> m_ops = new ArrayList<PatchOpEnt>();
 
-    private UUID m_newSnapshotID;
+    private final UUID m_newSnapshotID;
 
-    private String m_targetTypeID;
+    private final String m_targetTypeID;
 
     public PatchEntChangeProcessor(final UUID newSnapshotID, final String targetTypeID) {
         m_newSnapshotID = newSnapshotID;
@@ -69,42 +68,30 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
 
     @Override
     public void onCommit(final CommitMetadata commitMetadata) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void onAffectedObject(final GlobalId globalId) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void beforeChangeList() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void afterChangeList() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void beforeChange(final Change change) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void afterChange(final Change change) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onPropertyChange(final PropertyChange propertyChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -124,50 +111,34 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
 
     @Override
     public void onReferenceChange(final ReferenceChange referenceChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onNewObject(final NewObject newObject) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onObjectRemoved(final ObjectRemoved objectRemoved) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onContainerChange(final ContainerChange containerChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onSetChange(final SetChange setChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onArrayChange(final ArrayChange arrayChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onListChange(final ListChange listChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onMapChange(final MapChange mapChange) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

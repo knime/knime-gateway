@@ -49,7 +49,6 @@ import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class SimpleRepository implements WorkflowEntRepository {
-
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SimpleRepository.class);
 
     /* The default value of the maximum number of snapshots in memory - can be set via a system property */
