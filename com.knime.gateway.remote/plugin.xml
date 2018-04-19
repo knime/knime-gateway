@@ -7,11 +7,4 @@
             JobPoolListener="com.knime.gateway.remote.endpoint.JobPoolListener">
       </JobPoolListener>
    </extension>
-   <extension
-         point="com.knime.enterprise.slave.JobPoolListener">
-      <JobPoolListener
-            JobPoolListener="com.knime.gateway.remote.JobPoolListener1">
-      </JobPoolListener>
-   </extension>
-
 </plugin>
