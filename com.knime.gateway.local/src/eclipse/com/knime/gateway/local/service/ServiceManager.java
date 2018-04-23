@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.Pair;
 
@@ -95,11 +96,13 @@ public class ServiceManager {
         final S delegate) {
         return (S)Proxy.newProxyInstance(serviceInterface.getClassLoader(), new Class<?>[]{serviceInterface},
             new InvocationHandler() {
-
                 @Override
                 public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-                    LOGGER.info("Gateway service call: " + serviceInterface.getSimpleName() + "." + method.getName()
-                        + "(" + Arrays.deepToString(args) + ")");
+                    if (KNIMEConstants.ASSERTIONS_ENABLED) {
+                        // this produces lots of message therefore only enabled for development and tests
+                        LOGGER.debug("Gateway service call: " + serviceInterface.getSimpleName() + "."
+                            + method.getName() + "(" + Arrays.deepToString(args) + ")");
+                    }
                     try {
                         return method.invoke(delegate, args);
                     } catch (InvocationTargetException e) {
@@ -127,7 +130,7 @@ public class ServiceManager {
             throw new IllegalStateException("No service factory registered!");
         } else if (instances.size() > 1) {
             NodeLogger.getLogger(ServiceManager.class)
-                .warn("Multiple service factories registered! The one with the highest priority is used.");
+                .debug("Multiple service factories registered! The one with the highest priority is used.");
             Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
         }
         return instances.get(0);
