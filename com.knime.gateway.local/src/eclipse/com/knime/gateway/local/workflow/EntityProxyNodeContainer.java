@@ -20,6 +20,7 @@ package com.knime.gateway.local.workflow;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -61,6 +62,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
@@ -673,8 +675,11 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     public void postUpdate() {
         notifyNodeStateChangeListener(new NodeStateEvent(getID()));
         notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
-        notifyNodeProgressListeners(new NodeProgressEvent(getID(), new NodeProgress(
-            getEntity().getProgress().getProgress().doubleValue(), getEntity().getProgress().getMessage())));
+        if (getEntity().getNodeState().equals(StateEnum.EXECUTING)) {
+            BigDecimal progress = getEntity().getProgress().getProgress();
+            notifyNodeProgressListeners(new NodeProgressEvent(getID(), new NodeProgress(
+                progress != null ? progress.doubleValue() : null, getEntity().getProgress().getMessage())));
+        }
         //no post update for nested entities necessary, yet
     }
 
