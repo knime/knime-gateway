@@ -21,6 +21,8 @@ package com.knime.gateway.local.util;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 
+import com.knime.gateway.util.DefaultEntUtil;
+
 /**
  * Collection of entity proxy helper methods
  *
@@ -41,7 +43,7 @@ public class EntityProxyUtil {
     public static String nodeIDToString(final NodeID nodeID) {
         String s = nodeID.toString();
         int index = s.indexOf(":");
-        return (index >= 0) ? s.substring(index + 1) : "root";
+        return (index >= 0) ? s.substring(index + 1) : DefaultEntUtil.ROOT_NODE_ID;
     }
 
 
@@ -54,7 +56,7 @@ public class EntityProxyUtil {
      * @return the node id as {@link NodeID} object with the root node id prepended
      */
     public static NodeID stringToNodeID(final String rootID, final String nodeID) {
-        if ("root".equals(nodeID)) {
+        if (DefaultEntUtil.ROOT_NODE_ID.equals(nodeID)) {
             return NodeID.fromString(rootID);
         } else {
             return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(rootID));

@@ -54,6 +54,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 
+import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt;
@@ -371,7 +372,7 @@ public class EntityBuilderUtil {
     private static String nodeIdAsString(final NodeID nodeId) {
         String s = nodeId.toString();
         int firstIdx = s.indexOf(":");
-        return (firstIdx >= 0) ? s.substring(firstIdx + 1) : "root";
+        return (firstIdx >= 0) ? s.substring(firstIdx + 1) : DefaultEntUtil.ROOT_NODE_ID;
     }
 
     private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc) {

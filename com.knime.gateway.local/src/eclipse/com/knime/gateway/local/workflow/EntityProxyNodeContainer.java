@@ -55,6 +55,7 @@ import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
 import com.knime.gateway.local.util.EntityProxyUtil;
+import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
@@ -129,7 +130,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
         if (getEntity().getParentNodeID() != null) {
             //get parent wf
             String parentNodeID;
-            if ("root".equals(getEntity().getParentNodeID())) {
+            if (DefaultEntUtil.ROOT_NODE_ID.equals(getEntity().getParentNodeID())) {
                 //parent is the highest level workflow
                 //the node id has then no meaning here and need to be empty
                 parentNodeID = null;

@@ -32,6 +32,11 @@ import java.util.Map;
  */
 public final class DefaultEntUtil {
 
+    /**
+     * Node id of the root node.
+     */
+    public static final String ROOT_NODE_ID = "root";
+
     private DefaultEntUtil() {
         // utility class
     }
