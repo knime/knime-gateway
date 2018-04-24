@@ -58,8 +58,11 @@ import com.knime.gateway.local.util.EntityProxyUtil;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.
@@ -395,7 +398,6 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     @Override
     public boolean canExecuteUpToHere() {
         throw new UnsupportedOperationException();
-        //        return service(ExecutionService.class).getCanExecuteUpToHere(null, null);
     }
 
     /**
@@ -662,4 +664,67 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
         notifyNodeStateChangeListener(new NodeStateEvent(getID()));
         notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
     }
+
+    /**
+     * Requests to cancel the nodes execution via the respective service.
+     */
+    void cancelExecution() {
+        try {
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "cancel");
+        } catch (NodeNotFoundException | ActionNotAllowedException ex) {
+            // TODO
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Determines whether the node can be reseted without considering its context (e.g. the node's successors)
+     *
+     * @return whether the node is resetable
+     */
+    boolean canReset() {
+       return getEntity().isResetable();
+    }
+
+    /**
+     * Requests to reset the node via the respective service.
+     *
+     * @throws IllegalStateException when reset fails
+     */
+    void reset() {
+        try {
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "reset");
+        } catch (ActionNotAllowedException ex) {
+            throw new IllegalStateException(ex.getMessage(), ex);
+        } catch (NodeNotFoundException ex) {
+            //should actually not happen
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Very simple logic to determine whether the node can be executed. Doesn't take predecessors, connections etc. into
+     * account!
+     *
+     * @return whether the node can be executed
+     */
+    boolean canExecute() {
+        return getEntity().getNodeState().equals(NodeStateEnum.CONFIGURED);
+    }
+
+    /**
+     * Requests to execute the node via the respective service.
+     */
+    void execute() {
+        try {
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "execute");
+        } catch (NodeNotFoundException | ActionNotAllowedException ex) {
+            // TODO translate into an appropriate exception!
+            throw new RuntimeException(ex);
+        }
+    }
+
 }

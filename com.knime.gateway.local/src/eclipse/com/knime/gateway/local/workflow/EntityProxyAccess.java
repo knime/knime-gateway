@@ -350,6 +350,13 @@ public class EntityProxyAccess {
     }
 
     /**
+     * @return the current node service in use
+     */
+    NodeService nodeService() {
+        return service(NodeService.class, m_serviceConfig);
+    }
+
+    /**
      * Creates or returns a cached entity proxy.
      *
      * Its primary purpose is to workaround "1:1" wrappers. Within the eclipse UI very often instances are checked for

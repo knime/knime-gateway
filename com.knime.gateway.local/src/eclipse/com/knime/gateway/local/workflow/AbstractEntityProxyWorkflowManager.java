@@ -376,7 +376,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public void resetAll() {
-        throw new UnsupportedOperationException();
+        reset();
     }
 
     /**
@@ -392,7 +392,11 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public void executeUpToHere(final NodeID... ids) {
-        throw new UnsupportedOperationException();
+        for(NodeID id : ids) {
+            NodeContainerUI nc = getNodeContainer(id);
+            assert nc instanceof EntityProxyNodeContainer;
+            ((EntityProxyNodeContainer)nc).execute();
+        }
     }
 
     /**
@@ -448,7 +452,11 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public boolean canResetNode(final NodeID nodeID) {
-        return false;
+        //TODO ask server whether the node can be reset (i.e. whether there are executing successors etc.)
+        //very simple (but not complete!) logic to check whether a node can be reset
+        NodeContainerUI nc = getNodeContainer(nodeID);
+        assert nc instanceof EntityProxyNodeContainer;
+        return ((EntityProxyNodeContainer) nc).canReset();
     }
 
     /**
@@ -464,7 +472,9 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public void resetAndConfigureNode(final NodeID id) {
-        throw new UnsupportedOperationException();
+        NodeContainerUI nc = getNodeContainer(id);
+        assert nc instanceof EntityProxyNodeContainer;
+        ((EntityProxyNodeContainer) nc).reset();
     }
 
     /**
@@ -488,7 +498,9 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public boolean canExecuteNode(final NodeID nodeID) {
-        return false;
+        NodeContainerUI nc = getNodeContainer(nodeID);
+        assert nc instanceof EntityProxyNodeContainer;
+        return ((EntityProxyNodeContainer)nc).canExecute();
     }
 
     /**
@@ -496,7 +508,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public boolean canCancelNode(final NodeID nodeID) {
-        return false;
+        return getNodeContainer(nodeID).getNodeContainerState().isExecutionInProgress();
     }
 
     /**
@@ -504,8 +516,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public boolean canCancelAll() {
-        //TODO
-        return false;
+        return getNodeContainerState().isExecutionInProgress();
     }
 
     /**
@@ -514,6 +525,18 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     @Override
     public boolean canSetJobManager(final NodeID nodeID) {
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cancelExecution(final NodeContainerUI nc) {
+        if (nc instanceof EntityProxyNodeContainer) {
+            ((EntityProxyNodeContainer)nc).cancelExecution();
+        } else {
+            throw new IllegalArgumentException("NodeContainerUI implementation not supported.");
+        }
     }
 
     /**
@@ -553,8 +576,16 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public boolean canExecuteAll() {
-        //TODO
-        return false;
+        //simple (and possibly not complete strategy) to determine whether the entire workflow can be executed
+        return getNodeContainers().stream().anyMatch(nc -> {
+            assert nc instanceof EntityProxyNodeContainer;
+            @SuppressWarnings("rawtypes")
+            EntityProxyNodeContainer epnc = (EntityProxyNodeContainer)nc;
+            if (epnc.canExecute()) {
+                return true;
+            }
+            return false;
+        });
     }
 
     /**
@@ -562,7 +593,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      */
     @Override
     public void executeAll() {
-        throw new UnsupportedOperationException();
+        execute();
     }
 
     /**
