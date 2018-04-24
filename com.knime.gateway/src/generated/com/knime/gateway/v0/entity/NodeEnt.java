@@ -200,6 +200,12 @@ public interface NodeEnt extends GatewayEntity {
   public Boolean isDeletable();
 
   /**
+   * Whether the node is resetable. Please note that it only represents the &#39;local&#39; reset-state but doesn&#39;t take the whole workflow into account (e.g. executing successors).
+   * @return resetable 
+   **/
+  public Boolean isResetable();
+
+  /**
    * Whether the node has a configuration dialog / user settings.
    * @return hasDialog 
    **/
@@ -316,6 +322,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setDeletable(Boolean deletable);
+        
+        /**
+         * Whether the node is resetable. Please note that it only represents the &#39;local&#39; reset-state but doesn&#39;t take the whole workflow into account (e.g. executing successors).
+         * 
+         * @param resetable the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setResetable(Boolean resetable);
         
         /**
          * Whether the node has a configuration dialog / user settings.

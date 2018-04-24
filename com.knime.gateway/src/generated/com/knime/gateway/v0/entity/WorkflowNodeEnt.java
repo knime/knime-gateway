@@ -152,6 +152,14 @@ public interface WorkflowNodeEnt extends NodeEnt {
         WorkflowNodeEntBuilder setDeletable(Boolean deletable);
         
         /**
+         * Whether the node is resetable. Please note that it only represents the &#39;local&#39; reset-state but doesn&#39;t take the whole workflow into account (e.g. executing successors).
+         * 
+         * @param resetable the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowNodeEntBuilder setResetable(Boolean resetable);
+        
+        /**
          * Whether the node has a configuration dialog / user settings.
          * 
          * @param hasDialog the property value,  

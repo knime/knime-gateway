@@ -109,6 +109,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public Boolean isDeletable();
     
     @Override
+    @JsonProperty("resetable")
+    public Boolean isResetable();
+    
+    @Override
     @JsonProperty("hasDialog")
     public Boolean isHasDialog();
     
@@ -191,6 +195,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("deletable")
         public NativeNodeEntMixInBuilder setDeletable(final Boolean deletable);
+        
+        @Override
+        @JsonProperty("resetable")
+        public NativeNodeEntMixInBuilder setResetable(final Boolean resetable);
         
         @Override
         @JsonProperty("hasDialog")

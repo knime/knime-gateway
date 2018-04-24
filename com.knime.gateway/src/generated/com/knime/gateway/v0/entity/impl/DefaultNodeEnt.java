@@ -48,6 +48,7 @@ public class DefaultNodeEnt  implements NodeEnt {
   protected java.util.List<NodeInPortEnt> m_inPorts;
   protected java.util.List<NodeOutPortEnt> m_outPorts;
   protected Boolean m_deletable;
+  protected Boolean m_resetable;
   protected Boolean m_hasDialog;
   protected NodeAnnotationEnt m_nodeAnnotation;
   protected JobManagerEnt m_jobManager;
@@ -93,6 +94,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
     m_deletable = immutable(builder.m_deletable);
+    m_resetable = immutable(builder.m_resetable);
     m_hasDialog = immutable(builder.m_hasDialog);
     m_nodeAnnotation = immutable(builder.m_nodeAnnotation);
     m_jobManager = immutable(builder.m_jobManager);
@@ -156,6 +158,11 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
+  public Boolean isResetable() {
+        return m_resetable;
+    }
+    
+  @Override
   public Boolean isHasDialog() {
         return m_hasDialog;
     }
@@ -193,6 +200,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
+        private Boolean m_resetable = false;
         private Boolean m_hasDialog = null;
         private NodeAnnotationEnt m_nodeAnnotation;
         private JobManagerEnt m_jobManager;
@@ -279,6 +287,12 @@ public class DefaultNodeEnt  implements NodeEnt {
         @Override
         public DefaultNodeEntBuilder setDeletable(Boolean deletable) {
              m_deletable = deletable;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeEntBuilder setResetable(Boolean resetable) {
+             m_resetable = resetable;
              return this;
         }
 

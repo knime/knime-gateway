@@ -116,6 +116,10 @@ public interface NodeEntMixIn extends NodeEnt {
     public Boolean isDeletable();
     
     @Override
+    @JsonProperty("resetable")
+    public Boolean isResetable();
+    
+    @Override
     @JsonProperty("hasDialog")
     public Boolean isHasDialog();
     
@@ -200,6 +204,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("deletable")
         public NodeEntMixInBuilder setDeletable(final Boolean deletable);
+        
+        @Override
+        @JsonProperty("resetable")
+        public NodeEntMixInBuilder setResetable(final Boolean resetable);
         
         @Override
         @JsonProperty("hasDialog")

@@ -111,6 +111,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public Boolean isDeletable();
     
     @Override
+    @JsonProperty("resetable")
+    public Boolean isResetable();
+    
+    @Override
     @JsonProperty("hasDialog")
     public Boolean isHasDialog();
     
@@ -203,6 +207,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         @Override
         @JsonProperty("deletable")
         public WorkflowNodeEntMixInBuilder setDeletable(final Boolean deletable);
+        
+        @Override
+        @JsonProperty("resetable")
+        public WorkflowNodeEntMixInBuilder setResetable(final Boolean resetable);
         
         @Override
         @JsonProperty("hasDialog")

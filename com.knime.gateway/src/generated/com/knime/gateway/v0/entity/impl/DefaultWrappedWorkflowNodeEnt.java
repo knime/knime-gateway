@@ -81,6 +81,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
     m_deletable = immutable(builder.m_deletable);
+    m_resetable = immutable(builder.m_resetable);
     m_hasDialog = immutable(builder.m_hasDialog);
     m_nodeAnnotation = immutable(builder.m_nodeAnnotation);
     m_jobManager = immutable(builder.m_jobManager);
@@ -121,6 +122,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
+        private Boolean m_resetable = false;
         private Boolean m_hasDialog = null;
         private NodeAnnotationEnt m_nodeAnnotation;
         private JobManagerEnt m_jobManager;
@@ -212,6 +214,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         @Override
         public DefaultWrappedWorkflowNodeEntBuilder setDeletable(Boolean deletable) {
              m_deletable = deletable;
+             return this;
+        }
+
+        @Override
+        public DefaultWrappedWorkflowNodeEntBuilder setResetable(Boolean resetable) {
+             m_resetable = resetable;
              return this;
         }
 
