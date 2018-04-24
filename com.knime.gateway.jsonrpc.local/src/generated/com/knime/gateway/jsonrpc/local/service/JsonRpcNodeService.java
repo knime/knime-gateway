@@ -38,6 +38,13 @@ public interface JsonRpcNodeService extends NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "NodeService.changeAndGetNodeState")
+    String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "NodeService.getNode")
     NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
 

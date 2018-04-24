@@ -49,6 +49,21 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "changeAndGetNodeState")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
+    })
+    public String changeAndGetNodeState(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+        return m_service.changeAndGetNodeState(jobId, nodeId, action);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getNode")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,

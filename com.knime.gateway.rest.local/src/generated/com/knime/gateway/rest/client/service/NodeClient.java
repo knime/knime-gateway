@@ -59,6 +59,31 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
+    public String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.changeAndGetNodeState(jobId, nodeId, action);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, String.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 405) {
+                throw new ServiceExceptions.ActionNotAllowedException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
     public NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
