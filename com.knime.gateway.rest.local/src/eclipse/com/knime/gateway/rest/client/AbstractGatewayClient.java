@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.rest.client;
 
+import static com.knime.enterprise.server.rest.AutocloseableResponse.acr;
+
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
@@ -35,6 +37,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator.AuthenticationCloseable;
 
+import com.knime.enterprise.server.rest.AutocloseableResponse;
 import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
@@ -89,8 +92,8 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
      * @throws WebApplicationException in case of an exception as response, e.g. not found, etc.
      */
     protected <R> R doRequest(final Function<C, Response> call, final Class<R> resultClass) {
-        try (AuthenticationCloseable c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups()) {
-            Response res = call.apply(m_client);
+        try (AuthenticationCloseable c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups();
+                AutocloseableResponse res = acr(call.apply(m_client))) {
             if (!MediaType.APPLICATION_JSON_TYPE.isCompatible(res.getMediaType())) {
                 throw new IllegalArgumentException(
                     "REST address '" + m_restAddress + "' does not point to a KNIME server's REST interface.");
