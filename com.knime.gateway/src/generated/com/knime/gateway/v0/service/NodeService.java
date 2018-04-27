@@ -32,16 +32,17 @@ import com.knime.gateway.v0.entity.NodeEnt;
 public interface NodeService extends GatewayService {
 
     /**
-     * Changes the node&#39;s state for the given node-id. The following actions on the node state will be performed (if &lt;state&gt; -&gt; then &lt;action&gt;): executing -&gt; cancel; configured/idle -&gt; execute; executed -&gt; reset. If state cannot be changed (e.g. because of blocking successors), a &#39;not-allowed&#39; status/exception will be returned.
+     * Retrieves and manipulates the node&#39;s state for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
+     * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.NotAllowedException A operation is not allowed to be performed. Please refer ot the exception message for more details.
+     * @throws ServiceExceptions.ActionNotAllowedException If the following action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
      */
-    String changeAndGetNodeState(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotAllowedException;
+    String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
         
     /**
      * Retrieves the node for the given node-id.

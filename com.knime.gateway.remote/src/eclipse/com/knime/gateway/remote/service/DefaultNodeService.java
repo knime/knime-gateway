@@ -27,19 +27,17 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.WorkflowManager;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.service.ServiceException;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotAllowedException;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.
@@ -113,45 +111,46 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String changeAndGetNodeState(final UUID rootWorkflowID, final String nodeId)
-        throws NodeNotFoundException, NotAllowedException {
+    public String changeAndGetNodeState(final UUID rootWorkflowID, final String nodeId, final String action)
+        throws NodeNotFoundException, ActionNotAllowedException {
         WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+        NodeID nodeID;
         WorkflowManager wfm;
-        NodeContainer nc;
         if (nodeId.equals(DefaultEntUtil.ROOT_NODE_ID)) {
-            nc = rootWfm;
+            nodeID = rootWfm.getID();
             wfm = rootWfm.getParent();
         } else {
-            NodeID nodeID = NodeIDSuffix.fromString(nodeId).prependParent(rootWfm.getID());
+            nodeID = NodeIDSuffix.fromString(nodeId).prependParent(rootWfm.getID());
             try {
-                nc = rootWfm.findNodeContainer(nodeID);
+                NodeContainer nc = rootWfm.findNodeContainer(nodeID);
                 wfm = nc.getParent();
             } catch (IllegalArgumentException e) {
                 throw new ServiceExceptions.NodeNotFoundException(e.getMessage(), e);
             }
         }
 
-        NodeContainerState ncs = nc.getNodeContainerState();
-        if (ncs.isExecuted()) {
+        if (action == null || action.isEmpty()) {
+            //if there is no action (null or empty), do nothing and just return the node's state
+        } else if (action.equals("reset")) {
             try {
-                wfm.resetAndConfigureNode(nc.getID());
+                wfm.resetAndConfigureNode(nodeID);
             } catch (IllegalStateException e) {
                 //thrown when, e.g., there are executing successors
-                throw new ServiceExceptions.NotAllowedException(e.getMessage(), e);
+                throw new ServiceExceptions.ActionNotAllowedException(e.getMessage(), e);
             }
-        } else if (ncs.isExecutionInProgress()) {
-            wfm.cancelExecution(wfm.getNodeContainer(nc.getID()));
-        } else if (ncs.isConfigured() || ncs.isIdle()) {
-            wfm.executeUpToHere(nc.getID());
+        } else if (action.equals("cancel")) {
+            wfm.cancelExecution(wfm.getNodeContainer(nodeID));
+        } else if (action.equals("execute")) {
+            wfm.executeUpToHere(nodeID);
         } else {
-            //should not happen!!
-            throw new ServiceException("Invalid node state!");
+            throw new ServiceExceptions.ActionNotAllowedException("Unknown action '" + action + "'");
         }
 
         //return the node's state
         try {
-            return ncs.toString();
+            NodeContainer nc = wfm.findNodeContainer(nodeID);
+            return nc.getNodeContainerState().toString();
         } catch (IllegalArgumentException e) {
             throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
         }

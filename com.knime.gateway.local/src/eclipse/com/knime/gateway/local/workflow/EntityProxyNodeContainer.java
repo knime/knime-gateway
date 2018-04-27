@@ -61,8 +61,8 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotAllowedException;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.
@@ -675,11 +675,12 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
             throw new IllegalStateException("Node is not in the right state to be canceled.");
         }
         try {
-            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID());
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "cancel");
         } catch (NodeNotFoundException ex) {
-            // TODO
+            // should not happen
             throw new RuntimeException(ex);
-        } catch (NotAllowedException ex) {
+        } catch (ActionNotAllowedException ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -703,11 +704,12 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
             throw new IllegalStateException("Node is not in the right state to be reseted.");
         }
         try {
-            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID());
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "reset");
         } catch (NodeNotFoundException ex) {
             //should actually not happen
             throw new RuntimeException(ex);
-        } catch (NotAllowedException ex) {
+        } catch (ActionNotAllowedException ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -732,11 +734,12 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
             throw new IllegalStateException("Node is not the right state to be executed.");
         }
         try {
-            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID());
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "execute");
         } catch (NodeNotFoundException ex) {
-            // TODO translate into an appropriate exception!
+            // should not happen
             throw new RuntimeException(ex);
-        } catch (NotAllowedException ex) {
+        } catch (ActionNotAllowedException ex) {
             throw new IllegalStateException(ex);
         }
     }
