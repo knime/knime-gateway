@@ -31,6 +31,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.util.SimpleRepository;
 import com.knime.gateway.remote.util.WorkflowEntRepository;
+import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
@@ -90,6 +91,9 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public WorkflowSnapshotEnt getSubWorkflow(final UUID rootWorkflowID, final String nodeID)
         throws NotASubWorkflowException, NodeNotFoundException {
+        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+            return getWorkflow(rootWorkflowID);
+        }
         WorkflowEnt ent = createSubWorkflowEnt(rootWorkflowID, nodeID);
         return m_entityRepo.commit(rootWorkflowID, nodeID, ent);
     }
@@ -100,6 +104,9 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public PatchEnt getSubWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID)
         throws NotASubWorkflowException, NotFoundException {
+        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+            return getWorkflowDiff(rootWorkflowID, snapshotID);
+        }
         try {
             return createWorkflowDiff(rootWorkflowID, nodeID, snapshotID, createSubWorkflowEnt(rootWorkflowID, nodeID));
         } catch (NodeNotFoundException ex) {

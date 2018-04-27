@@ -86,6 +86,9 @@ public class DefaultNodeService implements NodeService {
         //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+            return getRootNode(rootWorkflowID);
+        }
         NodeContainer node;
         try {
             node = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
