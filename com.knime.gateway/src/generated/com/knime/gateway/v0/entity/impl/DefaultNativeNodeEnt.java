@@ -40,6 +40,7 @@ import com.knime.gateway.v0.entity.NativeNodeEnt;
 public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEnt {
 
   protected NodeFactoryKeyEnt m_nodeFactoryKey;
+  protected Boolean m_inactive;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -90,12 +91,18 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         throw new IllegalArgumentException("nodeFactoryKey must not be null.");
     }
     m_nodeFactoryKey = immutable(builder.m_nodeFactoryKey);
+    m_inactive = immutable(builder.m_inactive);
   }
 
 
   @Override
   public NodeFactoryKeyEnt getNodeFactoryKey() {
         return m_nodeFactoryKey;
+    }
+    
+  @Override
+  public Boolean isInactive() {
+        return m_inactive;
     }
     
   
@@ -122,6 +129,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
         private NodeFactoryKeyEnt m_nodeFactoryKey;
+        private Boolean m_inactive = null;
 
         @Override
         public DefaultNativeNodeEntBuilder setType(String type) {
@@ -243,6 +251,12 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
                  throw new IllegalArgumentException("nodeFactoryKey must not be null.");
              }
              m_nodeFactoryKey = nodeFactoryKey;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeEntBuilder setInactive(Boolean inactive) {
+             m_inactive = inactive;
              return this;
         }
 

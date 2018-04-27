@@ -162,6 +162,7 @@ public class EntityBuilderUtil {
                 .setPortIndex(outPort.getPortIndex())
                 .setPortName(outPort.getPortName())
                 .setPortType(pType)
+                .setInactive(outPort.isInactive())
                 .setType("NodeOutPort").build();
     }
 
@@ -272,6 +273,7 @@ public class EntityBuilderUtil {
             .setInPorts(buildNodeInPortEnts(nc))
             .setHasDialog(nc.hasDialog())
             .setNodeFactoryKey(nodeFactoryKeyBuilder.build())
+            .setInactive(nc.isInactive())
             .setType("NativeNode").build();
     }
 
@@ -363,6 +365,7 @@ public class EntityBuilderUtil {
                 .setEncrypted(subNode.getWorkflowManager().isEncrypted())
                 .setVirtualInNodeID(nodeIdAsString(subNode.getVirtualInNodeID()))
                 .setVirtualOutNodeID(nodeIdAsString(subNode.getVirtualOutNodeID()))
+                .setInactive(subNode.isInactive())
                 .setType("WrappedWorkflowNode").build();
     }
 

@@ -133,8 +133,7 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
      */
     @Override
     public boolean isInactive() {
-        //TODO
-        return false;
+        return getEntity().isInactive();
     }
 
     /**

@@ -34,6 +34,12 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 public interface NodeOutPortEnt extends NodePortEnt {
 
 
+  /**
+   * Determines whether the output is inactive.
+   * @return inactive 
+   **/
+  public Boolean isInactive();
+
 
     /**
      * The builder for the entity.
@@ -71,6 +77,14 @@ public interface NodeOutPortEnt extends NodePortEnt {
          * @return this entity builder for chaining
          */
         NodeOutPortEntBuilder setPortName(String portName);
+        
+        /**
+         * Determines whether the output is inactive.
+         * 
+         * @param inactive the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeOutPortEntBuilder setInactive(Boolean inactive);
         
         
         /**

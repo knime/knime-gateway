@@ -74,6 +74,10 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
     @JsonProperty("portName")
     public String getPortName();
     
+    @Override
+    @JsonProperty("inactive")
+    public Boolean isInactive();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -109,6 +113,10 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
         @Override
         @JsonProperty("portName")
         public NodeOutPortEntMixInBuilder setPortName(final String portName);
+        
+        @Override
+        @JsonProperty("inactive")
+        public NodeOutPortEntMixInBuilder setInactive(final Boolean inactive);
         
     }
 

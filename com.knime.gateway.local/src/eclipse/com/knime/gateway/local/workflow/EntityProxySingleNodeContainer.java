@@ -47,13 +47,4 @@ public abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends 
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isInactive() {
-        // TODO
-        return false;
-    }
-
 }

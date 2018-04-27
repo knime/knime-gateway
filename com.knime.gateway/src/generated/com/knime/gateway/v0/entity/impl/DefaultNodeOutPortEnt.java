@@ -33,6 +33,7 @@ import com.knime.gateway.v0.entity.NodeOutPortEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOutPortEnt {
 
+  protected Boolean m_inactive;
   
   protected DefaultNodeOutPortEnt() {
     //for sub-classes
@@ -58,9 +59,15 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
     }
     m_portType = immutable(builder.m_portType);
     m_portName = immutable(builder.m_portName);
+    m_inactive = immutable(builder.m_inactive);
   }
 
 
+  @Override
+  public Boolean isInactive() {
+        return m_inactive;
+    }
+    
   
     public static class DefaultNodeOutPortEntBuilder implements NodeOutPortEntBuilder {
     
@@ -72,6 +79,7 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
         private Integer m_portIndex = null;
         private PortTypeEnt m_portType;
         private String m_portName = null;
+        private Boolean m_inactive = null;
 
         @Override
         public DefaultNodeOutPortEntBuilder setType(String type) {
@@ -103,6 +111,12 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
         @Override
         public DefaultNodeOutPortEntBuilder setPortName(String portName) {
              m_portName = portName;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeOutPortEntBuilder setInactive(Boolean inactive) {
+             m_inactive = inactive;
              return this;
         }
 

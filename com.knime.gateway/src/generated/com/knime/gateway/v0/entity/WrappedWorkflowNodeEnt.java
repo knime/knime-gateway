@@ -51,6 +51,12 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
    **/
   public String getVirtualOutNodeID();
 
+  /**
+   * Whether this node is inactive, e.g. due to inactive connections
+   * @return inactive 
+   **/
+  public Boolean isInactive();
+
 
     /**
      * The builder for the entity.
@@ -223,6 +229,14 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         WrappedWorkflowNodeEntBuilder setVirtualOutNodeID(String virtualOutNodeID);
+        
+        /**
+         * Whether this node is inactive, e.g. due to inactive connections
+         * 
+         * @param inactive the property value,  
+         * @return this entity builder for chaining
+         */
+        WrappedWorkflowNodeEntBuilder setInactive(Boolean inactive);
         
         
         /**

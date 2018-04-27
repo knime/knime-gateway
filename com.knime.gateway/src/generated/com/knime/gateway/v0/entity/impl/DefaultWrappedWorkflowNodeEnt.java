@@ -40,6 +40,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
 
   protected String m_virtualInNodeID;
   protected String m_virtualOutNodeID;
+  protected Boolean m_inactive;
   
   protected DefaultWrappedWorkflowNodeEnt() {
     //for sub-classes
@@ -91,6 +92,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     m_encrypted = immutable(builder.m_encrypted);
     m_virtualInNodeID = immutable(builder.m_virtualInNodeID);
     m_virtualOutNodeID = immutable(builder.m_virtualOutNodeID);
+    m_inactive = immutable(builder.m_inactive);
   }
 
 
@@ -102,6 +104,11 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
   @Override
   public String getVirtualOutNodeID() {
         return m_virtualOutNodeID;
+    }
+    
+  @Override
+  public Boolean isInactive() {
+        return m_inactive;
     }
     
   
@@ -132,6 +139,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         private Boolean m_encrypted = null;
         private String m_virtualInNodeID = null;
         private String m_virtualOutNodeID = null;
+        private Boolean m_inactive = null;
 
         @Override
         public DefaultWrappedWorkflowNodeEntBuilder setType(String type) {
@@ -274,6 +282,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         @Override
         public DefaultWrappedWorkflowNodeEntBuilder setVirtualOutNodeID(String virtualOutNodeID) {
              m_virtualOutNodeID = virtualOutNodeID;
+             return this;
+        }
+
+        @Override
+        public DefaultWrappedWorkflowNodeEntBuilder setInactive(Boolean inactive) {
+             m_inactive = inactive;
              return this;
         }
 

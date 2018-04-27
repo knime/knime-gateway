@@ -80,6 +80,14 @@ public class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContain
         return getNodeFactoryInstance().getIcon();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isInactive() {
+        return getEntity().isInactive();
+    }
+
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
         if (m_nodeFactory == null) {
             NodeFactoryKeyEnt nodeFactoryKey = getEntity().getNodeFactoryKey();

@@ -180,4 +180,12 @@ public class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<
     public boolean isWriteProtected() {
         return true;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isInactive() {
+        return getEntity().isInactive();
+    }
 }

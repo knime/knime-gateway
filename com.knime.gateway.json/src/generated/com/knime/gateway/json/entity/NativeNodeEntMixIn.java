@@ -132,6 +132,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonProperty("nodeFactoryKey")
     public NodeFactoryKeyEnt getNodeFactoryKey();
     
+    @Override
+    @JsonProperty("inactive")
+    public Boolean isInactive();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -219,6 +223,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("nodeFactoryKey")
         public NativeNodeEntMixInBuilder setNodeFactoryKey(final NodeFactoryKeyEnt nodeFactoryKey);
+        
+        @Override
+        @JsonProperty("inactive")
+        public NativeNodeEntMixInBuilder setInactive(final Boolean inactive);
         
     }
 

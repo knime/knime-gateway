@@ -147,6 +147,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     @JsonProperty("virtualOutNodeID")
     public String getVirtualOutNodeID();
     
+    @Override
+    @JsonProperty("inactive")
+    public Boolean isInactive();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -250,6 +254,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         @Override
         @JsonProperty("virtualOutNodeID")
         public WrappedWorkflowNodeEntMixInBuilder setVirtualOutNodeID(final String virtualOutNodeID);
+        
+        @Override
+        @JsonProperty("inactive")
+        public WrappedWorkflowNodeEntMixInBuilder setInactive(final Boolean inactive);
         
     }
 

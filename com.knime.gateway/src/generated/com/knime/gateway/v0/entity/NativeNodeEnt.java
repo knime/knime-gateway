@@ -46,6 +46,12 @@ public interface NativeNodeEnt extends NodeEnt {
    **/
   public NodeFactoryKeyEnt getNodeFactoryKey();
 
+  /**
+   * Whether this node is inactive, e.g. due to inactive connections
+   * @return inactive 
+   **/
+  public Boolean isInactive();
+
 
     /**
      * The builder for the entity.
@@ -186,6 +192,14 @@ public interface NativeNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setNodeFactoryKey(NodeFactoryKeyEnt nodeFactoryKey);
+        
+        /**
+         * Whether this node is inactive, e.g. due to inactive connections
+         * 
+         * @param inactive the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setInactive(Boolean inactive);
         
         
         /**
