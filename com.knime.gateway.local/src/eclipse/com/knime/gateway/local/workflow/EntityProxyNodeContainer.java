@@ -61,8 +61,8 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotAllowedException;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.
@@ -667,14 +667,20 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
 
     /**
      * Requests to cancel the nodes execution via the respective service.
+     *
+     * @throws IllegalStateException when the node cannot be canceled
      */
     void cancelExecution() {
+        if (!getNodeContainerState().isExecutionInProgress()) {
+            throw new IllegalStateException("Node is not in the right state to be canceled.");
+        }
         try {
-            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
-                "cancel");
-        } catch (NodeNotFoundException | ActionNotAllowedException ex) {
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID());
+        } catch (NodeNotFoundException ex) {
             // TODO
             throw new RuntimeException(ex);
+        } catch (NotAllowedException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -684,23 +690,25 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * @return whether the node is resetable
      */
     boolean canReset() {
-       return getEntity().isResetable();
+       return getEntity().getNodeState().equals(NodeStateEnum.EXECUTED) && getEntity().isResetable();
     }
 
     /**
      * Requests to reset the node via the respective service.
      *
-     * @throws IllegalStateException when reset fails
+     * @throws IllegalStateException when the node cannot be reseted
      */
     void reset() {
+        if(!canReset()) {
+            throw new IllegalStateException("Node is not in the right state to be reseted.");
+        }
         try {
-            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
-                "reset");
-        } catch (ActionNotAllowedException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID());
         } catch (NodeNotFoundException ex) {
             //should actually not happen
             throw new RuntimeException(ex);
+        } catch (NotAllowedException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -711,19 +719,26 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * @return whether the node can be executed
      */
     boolean canExecute() {
-        return getEntity().getNodeState().equals(NodeStateEnum.CONFIGURED);
+        return getEntity().getNodeState().equals(NodeStateEnum.CONFIGURED)
+            || getEntity().getNodeState().equals(NodeStateEnum.IDLE);
     }
 
     /**
      * Requests to execute the node via the respective service.
+     *
+     * @throws IllegalStateException if the node is not in the proper state for execution
      */
     void execute() {
+        if (!canExecute()) {
+            throw new IllegalStateException("Node is not the right state to be executed.");
+        }
         try {
-            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
-                "execute");
-        } catch (NodeNotFoundException | ActionNotAllowedException ex) {
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID());
+        } catch (NodeNotFoundException ex) {
             // TODO translate into an appropriate exception!
             throw new RuntimeException(ex);
+        } catch (NotAllowedException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 

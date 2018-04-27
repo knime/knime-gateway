@@ -66,14 +66,14 @@ public final class ServiceExceptions {
     }
     
     /**
-    * If the following action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
+    * A operation is not allowed to be performed. Please refer ot the exception message for more details.
     */
-    public static class ActionNotAllowedException extends Exception {
-        public ActionNotAllowedException(String message) {
+    public static class NotAllowedException extends Exception {
+        public NotAllowedException(String message) {
             super(message);
         }
         
-        public ActionNotAllowedException(String message, Throwable cause) {
+        public NotAllowedException(String message, Throwable cause) {
             super(message, cause);
         }
     }
