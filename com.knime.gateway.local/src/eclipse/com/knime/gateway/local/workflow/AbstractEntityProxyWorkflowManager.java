@@ -72,6 +72,7 @@ import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Abstract {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
@@ -1029,6 +1030,13 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
 
             if (oldWorkflow != m_workflowEnt) {
                 // refresh the workflow manager only if there is a new (updated) workflow entity
+
+                //refresh the workflow node entity, too (e.g. that contains the state of this metanode)
+                try {
+                    update(getAccess().nodeService().getNode(getEntity().getRootWorkflowID(), getEntity().getNodeID()));
+                } catch (NodeNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 m_snapshotID = res.getSecond();
                 assert (m_snapshotID != null);
