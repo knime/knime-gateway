@@ -710,7 +710,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
             //should actually not happen
             throw new RuntimeException(ex);
         } catch (ActionNotAllowedException ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException("", ex);
         }
     }
 
