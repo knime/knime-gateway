@@ -72,6 +72,7 @@ import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
@@ -590,16 +591,19 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
      * {@inheritDoc}
      */
     @Override
-    boolean canExecute() {
-        return canExecuteAll();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void executeAll() {
-        execute();
+        if (!canExecuteAll()) {
+            throw new IllegalStateException("Node is not the right state to be executed.");
+        }
+        try {
+            getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                "execute");
+        } catch (NodeNotFoundException ex) {
+            // should not happen
+            throw new RuntimeException(ex);
+        } catch (ActionNotAllowedException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**
