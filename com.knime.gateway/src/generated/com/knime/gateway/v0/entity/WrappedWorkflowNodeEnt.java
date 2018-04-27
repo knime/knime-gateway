@@ -90,7 +90,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setNodeType(NodeTypeEnum nodeType);
         
         /**
-         * The parent node id of the node or not present if it&#39;s the root node.
+         * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
          * 
          * @param parentNodeID the property value,  
          * @return this entity builder for chaining
