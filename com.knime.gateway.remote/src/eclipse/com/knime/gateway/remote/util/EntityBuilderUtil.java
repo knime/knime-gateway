@@ -321,6 +321,7 @@ public class EntityBuilderUtil {
                 .setOutPorts(buildNodeOutPortEnts(wm))
                 .setParentNodeID(parentNodeID)
                 .setDeletable(wm.isDeletable())
+                .setResetable(true)
                 .setJobManager(buildJobManagerEnt(jobManager)).setNodeAnnotation(buildNodeAnnotationEnt(wm))
                 .setInPorts(buildNodeInPortEnts(wm)).setHasDialog(wm.hasDialog())
                 .setWorkflowIncomingPorts(buildWorkflowIncomingPortEnts(wm))
@@ -349,6 +350,7 @@ public class EntityBuilderUtil {
                 .setNodeMessage(buildNodeMessageEnt(subNode))
                 .setNodeType(NodeTypeEnum.valueOf(subNode.getType().toString().toUpperCase()))
                 .setUIInfo(buildNodeUIInfoEnt(subNode.getUIInformation())).setDeletable(subNode.isDeletable())
+                .setResetable(subNode.isResetable())
                 .setNodeState(NodeStateEnum.valueOf(subNode.getNodeContainerState().toString()))
                 .setOutPorts(buildNodeOutPortEnts(subNode))
                 .setParentNodeID(

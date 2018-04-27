@@ -719,8 +719,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * @return whether the node can be executed
      */
     boolean canExecute() {
-        return getEntity().getNodeState().equals(NodeStateEnum.CONFIGURED)
-            || getEntity().getNodeState().equals(NodeStateEnum.IDLE);
+        return getEntity().getNodeState().equals(NodeStateEnum.CONFIGURED);
     }
 
     /**
