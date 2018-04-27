@@ -34,6 +34,7 @@ import org.knime.core.util.Pair;
 
 import com.knime.gateway.service.GatewayService;
 import com.knime.gateway.util.ExtPointUtil;
+import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.WorkflowService;
 
 /**
@@ -120,6 +121,16 @@ public class ServiceManager {
      */
     public static WorkflowService workflowService(final ServiceConfig serviceConfig) {
         return service(WorkflowService.class, serviceConfig);
+    }
+
+    /**
+     * Shortcut for {@link #service(NodeService.class, ServiceConfig)}.
+     *
+     * @param serviceConfig see {@link #service(Class, ServiceConfig)}
+     * @return the node service implementation
+     */
+    public static NodeService nodeService(final ServiceConfig serviceConfig) {
+        return service(NodeService.class, serviceConfig);
     }
 
     private static ServiceFactory createServiceFactory() {
