@@ -581,11 +581,16 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
             assert nc instanceof EntityProxyNodeContainer;
             @SuppressWarnings("rawtypes")
             EntityProxyNodeContainer epnc = (EntityProxyNodeContainer)nc;
-            if (epnc.canExecute()) {
-                return true;
-            }
-            return false;
+            return epnc.canExecute();
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    boolean canExecute() {
+        return canExecuteAll();
     }
 
     /**
