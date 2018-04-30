@@ -58,4 +58,12 @@ public abstract class AbstractEntityProxy<E extends GatewayEntity> implements En
     public void update(final E entity) {
         m_entity = entity;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postUpdate() {
+        //Override if something needs to be done after updating the entity
+    }
 }

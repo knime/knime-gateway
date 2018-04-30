@@ -66,6 +66,11 @@ public class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements
         m_entity = entity;
     }
 
+    @Override
+    public void postUpdate() {
+        //nothing to be done here
+    }
+
     static AnnotationData getAnnotationData(final AnnotationEnt annoEnt) {
         StyleRange[] styleRanges = annoEnt.getStyleRanges().stream().map(sr -> {
             StyleRange newSR = new StyleRange();

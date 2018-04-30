@@ -61,11 +61,15 @@ public class EntityProxyAccess {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyAccess.class);
 
-    private final Map<Pair<GatewayEntity, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
+    /* Maps the identity hash code of a entity to the entity proxy object */
+    private final Map<Pair<Integer, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
     private final Map<Pair<UUID, String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>> m_wfmMap;
 
     private final ServerServiceConfig m_serviceConfig;
+
+    //for debugging purposes
+    private int m_numCreatedEntityProxies = 0;
 
     /**
      * Creates a new access instance.
@@ -73,7 +77,7 @@ public class EntityProxyAccess {
      * @param serviceConfig information how to connect to the server to retrieve entities
      */
     private EntityProxyAccess(final ServerServiceConfig serviceConfig) {
-        m_entityProxyMap = new HashMap<Pair<GatewayEntity, Class<EntityProxy>>, EntityProxy>();
+        m_entityProxyMap = new HashMap<Pair<Integer, Class<EntityProxy>>, EntityProxy>();
         m_wfmMap = new HashMap<Pair<UUID,String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>>();
         m_serviceConfig = serviceConfig;
     }
@@ -173,17 +177,6 @@ public class EntityProxyAccess {
     }
 
     /**
-     * If an {@link EntityProxyNodeContainer} already exists for the 'oldNode', the entity will be replaced with
-     * 'newNode'. Otherwise nothing happens.
-     *
-     * @param oldNode the entity to be replaced in an {@link EntityProxyNodeContainer}
-     * @param newNode the entity to replace with
-     */
-    void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
-        update(oldNode, newNode, EntityProxyNodeContainer.class);
-    }
-
-    /**
      * Returns the entity proxy for the given connection entity.
      *
      * With every call the same entity proxy instance will be returned for the same entity.
@@ -215,7 +208,7 @@ public class EntityProxyAccess {
      * With every call the same entity proxy instance will be returned for the same entity.
      *
      * @param p the entity to get the client-proxy wrapper for
-     * @param node the node the passed port belongs to
+     * @param node the node the passed port belongs to (only required for the new creation of the entity proxy)
      * @return the {@link EntityProxyNodeOutPort} - either the cached one or newly created
      */
     EntityProxyNodeOutPort getNodeOutPort(final NodeOutPortEnt p, final NodeEnt node) {
@@ -247,7 +240,7 @@ public class EntityProxyAccess {
      * @param node
      * @return the {@link EntityProxyWorkflowOutPort} - either the cached one or newly created
      */
-    EntityProxyWorkflowOutPort getWorkflowOutPort(final NodeOutPortEnt p, final NodeEnt node) {
+    EntityProxyWorkflowOutPort getWorkflowOutPort(final NodeOutPortEnt p, final WorkflowNodeEnt node) {
         //possibly return the same node out port instance for the same index
         return getOrCreate(p, o -> new EntityProxyWorkflowOutPort(o, node, this), EntityProxyWorkflowOutPort.class);
     }
@@ -357,6 +350,75 @@ public class EntityProxyAccess {
     }
 
     /**
+     * If an {@link EntityProxyNodeContainer} already exists for the 'oldNode', the entity will be replaced with
+     * 'newNode'. Otherwise nothing happens.
+     *
+     * After the update is done, {@link EntityProxy#postUpdate()} will be called, too.
+     *
+     * @param oldNode the entity to be replaced in an {@link EntityProxyNodeContainer}
+     * @param newNode the entity to replace with
+     */
+    void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
+        if (update(oldNode, newNode, EntityProxyNodeContainer.class)) {
+            postUpdate(newNode, EntityProxyNodeContainer.class);
+        }
+    }
+
+    /**
+     * Updates the node port entities and the referenced node entity of a EntityProxyNode*Port instance.
+     *
+     * @param oldNode
+     * @param newNode
+     */
+    void updateNodeOutPorts(final NodeEnt oldNode, final NodeEnt newNode) {
+        for (int i = 0; i < oldNode.getOutPorts().size(); i++) {
+            if (update(oldNode.getOutPorts().get(i), newNode.getOutPorts().get(i), EntityProxyNodeOutPort.class)) {
+                //also update the node entity referenced by the port
+                getNodeOutPort(newNode.getOutPorts().get(i), null).updateNodeEnt(newNode);
+            }
+        }
+    }
+
+    /**
+     * Same as {@link #updateNodeOutPorts(NodeEnt, NodeEnt)} but for workflow out ports.
+     *
+     * @param oldNode
+     * @param newNode
+     */
+    void updateWorkflowNodeOutPorts(final WorkflowNodeEnt oldNode, final WorkflowNodeEnt newNode) {
+        for (int i = 0; i < oldNode.getOutPorts().size(); i++) {
+            if (update(oldNode.getOutPorts().get(i), newNode.getOutPorts().get(i), EntityProxyWorkflowOutPort.class)) {
+                //also update the node entity referenced by the port
+                getWorkflowOutPort(newNode.getOutPorts().get(i), null).updateNodeEnt(newNode);
+            }
+        }
+    }
+
+    /**
+     * Updates the node port entities and the referenced node entity of a EntityProxyNode*Port instance.
+     *
+     * @param oldNode
+     * @param newNode
+     */
+    void updateNodeInPorts(final NodeEnt oldNode, final NodeEnt newNode) {
+        for (int i = 0; i < oldNode.getInPorts().size(); i++) {
+            update(oldNode.getInPorts().get(i), newNode.getInPorts().get(i), EntityProxyNodeInPort.class);
+        }
+    }
+
+    /**
+     * Same as {@link #updateNodeInPorts(NodeEnt, NodeEnt)} but for workflow ports.
+     *
+     * @param oldNode
+     * @param newNode
+     */
+    void updateWorkflowNodeInPorts(final WorkflowNodeEnt oldNode, final WorkflowNodeEnt newNode) {
+        for (int i = 0; i < oldNode.getInPorts().size(); i++) {
+            update(oldNode.getInPorts().get(i), newNode.getInPorts().get(i), EntityProxyWorkflowInPort.class);
+        }
+    }
+
+    /**
      * Creates or returns a cached entity proxy.
      *
      * Its primary purpose is to workaround "1:1" wrappers. Within the eclipse UI very often instances are checked for
@@ -381,28 +443,46 @@ public class EntityProxyAccess {
         if (entity == null) {
             return null;
         } else {
-            Pair<GatewayEntity, Class<EntityProxy>> key =
-                new Pair<GatewayEntity, Class<EntityProxy>>(entity, (Class<EntityProxy>)proxyClass);
+            Pair<Integer, Class<EntityProxy>> key =
+                new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(entity), (Class<EntityProxy>)proxyClass);
             P proxy = (P)m_entityProxyMap.get(key);
             if (proxy == null) {
                 //create proxy entry
                 proxy = fct.apply(entity);
                 m_entityProxyMap.put(key, proxy);
+                LOGGER.debug("New entity proxy of type '" + proxy.getClass().getSimpleName() + "' created (total number: "
+                    + ++m_numCreatedEntityProxies + ")");
             }
             return proxy;
         }
     }
 
-    private <E extends GatewayEntity, P extends EntityProxy<E>> void update(final E oldEntity, final E newEntity, final Class<P> proxyClass) {
-        Pair<GatewayEntity, Class<EntityProxy>> oldKey =
-                new Pair<GatewayEntity, Class<EntityProxy>>(oldEntity, (Class<EntityProxy>)proxyClass);
-        Pair<GatewayEntity, Class<EntityProxy>> newKey =
-                new Pair<GatewayEntity, Class<EntityProxy>>(newEntity, (Class<EntityProxy>)proxyClass);
+    private <E extends GatewayEntity, P extends EntityProxy<E>> boolean update(final E oldEntity, final E newEntity,
+        final Class<P> proxyClass) {
+        if (oldEntity == newEntity) {
+            return false;
+        }
+        Pair<Integer, Class<EntityProxy>> oldKey =
+            new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(oldEntity), (Class<EntityProxy>)proxyClass);
+        Pair<Integer, Class<EntityProxy>> newKey =
+            new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(newEntity), (Class<EntityProxy>)proxyClass);
         EntityProxy entityProxy = m_entityProxyMap.get(oldKey);
         if (entityProxy != null) {
             entityProxy.update(newEntity);
             m_entityProxyMap.put(newKey, entityProxy);
             m_entityProxyMap.remove(oldKey);
+            return true;
+        }
+        return false;
+    }
+
+    private <E extends GatewayEntity, P extends EntityProxy<E>> void postUpdate(final E entity,
+        final Class<P> proxyClass) {
+        Pair<Integer, Class<EntityProxy>> key =
+                new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(entity), (Class<EntityProxy>)proxyClass);
+        EntityProxy ep;
+        if((ep = m_entityProxyMap.get(key)) != null) {
+            ep.postUpdate();
         }
     }
 }

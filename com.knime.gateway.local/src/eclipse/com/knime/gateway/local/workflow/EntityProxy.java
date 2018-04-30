@@ -39,9 +39,17 @@ public interface EntityProxy<E extends GatewayEntity> {
     EntityProxyAccess getAccess();
 
     /**
-     * Updates the proxy's entity.
+     * Updates the proxy's entity. This method is really only meant to propagate the entity updates! No events should be triggered here or other method of entity proxy-classes accessed.
+     * The whole object tree might be in a 'inconsistent' state while updating.
+     *
+     * Use {@link #postUpdate()}, e.g., in order trigger events necessary after the update.
      *
      * @param entity the new entity
      */
     void update(final E entity);
+
+    /**
+     * Called after the underlying entity has been updated via {@link #update(GatewayEntity)}.
+     */
+    void postUpdate();
 }

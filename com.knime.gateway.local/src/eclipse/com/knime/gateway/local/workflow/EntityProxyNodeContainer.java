@@ -657,12 +657,11 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public void update(final NodeEnt entity) {
-        super.update((E)entity);
+    public void postUpdate() {
         notifyNodeStateChangeListener(new NodeStateEvent(getID()));
         notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
+        //no post update for nested entities necessary, yet
     }
 
     /**

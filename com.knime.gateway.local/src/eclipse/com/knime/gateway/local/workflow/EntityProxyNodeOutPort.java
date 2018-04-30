@@ -18,6 +18,9 @@
  */
 package com.knime.gateway.local.workflow;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
@@ -35,19 +38,24 @@ import com.knime.gateway.v0.entity.PortTypeEnt;
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link NodeOutPortUI}.
  *
  * @author Martin Horn, University of Konstanz
+ * @param <N> type of the node the port belongs to
  */
-public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> implements NodeOutPortUI {
+public class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<NodeOutPortEnt> implements NodeOutPortUI {
 
-    private NodeEnt m_node;
+    private N m_node;
+
+    private final Set<NodeStateChangeListener> m_listener;
 
     /**
      * @param outPort
      * @param node the node this port belongs to
+     * @param access
      *
      */
-    public EntityProxyNodeOutPort(final NodeOutPortEnt outPort, final NodeEnt node, final EntityProxyAccess access) {
+    public EntityProxyNodeOutPort(final NodeOutPortEnt outPort, final N node, final EntityProxyAccess access) {
         super(outPort, access);
         m_node = node;
+        m_listener = new LinkedHashSet<>();
     }
 
     /**
@@ -91,7 +99,7 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
      */
     @Override
     public void stateChanged(final NodeStateEvent state) {
-        throw new UnsupportedOperationException();
+        notifyNodeStateChangeListener(state);
     }
 
     /**
@@ -107,8 +115,7 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
      */
     @Override
     public boolean addNodeStateChangeListener(final NodeStateChangeListener listener) {
-        // TODO
-        return true;
+        return m_listener.add(listener);
     }
 
     /**
@@ -116,8 +123,7 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
      */
     @Override
     public boolean removeNodeStateChangeListener(final NodeStateChangeListener listener) {
-        //TODO
-        return true;
+        return m_listener.remove(listener);
     }
 
     /**
@@ -149,7 +155,18 @@ public class EntityProxyNodeOutPort extends AbstractEntityProxy<NodeOutPortEnt> 
      */
     @Override
     public void notifyNodeStateChangeListener(final NodeStateEvent e) {
-        throw new UnsupportedOperationException();
+        m_listener.stream().forEach(l -> l.stateChanged(e));
+    }
+
+    /**
+     * @return the node entity representing the node this port belongs to
+     */
+    protected N getNodeEnt() {
+        return m_node;
+    }
+
+    void updateNodeEnt(final N newNodeEnt) {
+        m_node = newNodeEnt;
     }
 
 }

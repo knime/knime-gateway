@@ -18,22 +18,25 @@
  */
 package com.knime.gateway.local.workflow;
 
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
 
-import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link WorkflowOutPortUI}.
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyWorkflowOutPort extends EntityProxyNodeOutPort implements WorkflowOutPortUI {
+public class EntityProxyWorkflowOutPort extends EntityProxyNodeOutPort<WorkflowNodeEnt> implements WorkflowOutPortUI {
 
     /**
-     *
+     * @param outPort
+     * @param node
+     * @param access
      */
-    public EntityProxyWorkflowOutPort(final NodeOutPortEnt outPort, final NodeEnt node,
+    public EntityProxyWorkflowOutPort(final NodeOutPortEnt outPort, final WorkflowNodeEnt node,
         final EntityProxyAccess access) {
         super(outPort, node, access);
     }
@@ -46,4 +49,20 @@ public class EntityProxyWorkflowOutPort extends EntityProxyNodeOutPort implement
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeContainerState getNodeState() {
+        return getNodeContainerState();
+
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeContainerState getNodeContainerState() {
+        return EntityProxyNodeContainerState
+            .valueOf(getNodeEnt().getWorkflowOutgoingPortNodeStates().get(getPortIndex()).getState().toString());
+    }
 }

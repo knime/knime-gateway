@@ -63,6 +63,7 @@ import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
 import org.knime.core.util.Pair;
 
+import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -1035,19 +1036,22 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
             if (oldWorkflow != m_workflowEnt) {
                 // refresh the workflow manager only if there is a new (updated) workflow entity
 
-                //refresh the workflow node entity, too (e.g. that contains the state of this metanode)
-                try {
-                    update(getAccess().nodeService().getNode(getEntity().getRootWorkflowID(), getEntity().getNodeID()));
-                } catch (NodeNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
-
                 m_snapshotID = res.getSecond();
                 assert (m_snapshotID != null);
                 for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
                     getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
                 }
-            }
+
+                //refresh the workflow node entity, too, if it is the root workflow (e.g. that contains the state of this metanode)
+                if (getEntity().getNodeID().equals(DefaultEntUtil.ROOT_NODE_ID)) {
+                    try {
+                        super.update((E)getAccess().nodeService().getNode(getEntity().getRootWorkflowID(),
+                            getEntity().getNodeID()));
+                    } catch (NodeNotFoundException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+           }
 
             if (deepRefresh) {
                 //refresh all contained workflows (i.e. metanodes)
@@ -1105,5 +1109,32 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     @Override
     public boolean isEncrypted() {
         return getEntity().isEncrypted();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void update(final E entity) {
+        //update port entities, too -> makes sure that still the very same entity proxy classes are used
+        for (int i = 0; i < getEntity().getOutPorts().size(); i++) {
+            getAccess().updateWorkflowNodeOutPorts(getEntity(), entity);
+        }
+        for (int i = 0; i < getEntity().getInPorts().size(); i++) {
+            getAccess().updateWorkflowNodeInPorts(getEntity(), entity);
+        }
+        super.update(entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postUpdate() {
+        super.postUpdate();
+        // notify listeners for nodes state changes at the nodes connected to the out ports
+        for (int i = 0; i < getNrOutPorts(); i++) {
+            getOutPort(i).notifyNodeStateChangeListener(null);
+        }
     }
 }

@@ -47,4 +47,20 @@ public abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends 
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void update(final NodeEnt entity) {
+        //update port entities, too -> makes sure that still the very same entity proxy classes are used
+        getAccess().updateNodeInPorts(getEntity(), entity);
+        getAccess().updateNodeOutPorts(getEntity(), entity);
+
+        //TODO update all other entity proxies referenced from the node container,
+        //e.g. node annotation, node connections, etc.
+
+        super.update((E)entity);
+    }
+
 }
