@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
@@ -120,7 +121,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeState(NodeStateEnum nodeState);
+        NativeNodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
          * The list of inputs.

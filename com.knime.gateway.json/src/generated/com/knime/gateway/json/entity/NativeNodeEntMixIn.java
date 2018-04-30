@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 
@@ -94,7 +95,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     
     @Override
     @JsonProperty("nodeState")
-    public NodeStateEnum getNodeState();
+    public NodeStateEnt getNodeState();
     
     @Override
     @JsonProperty("inPorts")
@@ -186,7 +187,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         
         @Override
         @JsonProperty("nodeState")
-        public NativeNodeEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
+        public NativeNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
         
         @Override
         @JsonProperty("inPorts")

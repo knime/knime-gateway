@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
@@ -56,6 +57,12 @@ public interface WorkflowNodeEnt extends NodeEnt {
    * @return encrypted 
    **/
   public Boolean isEncrypted();
+
+  /**
+   * The state of the inner node connected to a particular outport. TODO Should actually be part of a specialization of NodeOutPort (i.e. WorkflowOutPort) but doesn&#39;t work with inheritance and generics in Java.
+   * @return workflowOutgoingPortNodeStates 
+   **/
+  public java.util.List<NodeStateEnt> getWorkflowOutgoingPortNodeStates();
 
 
     /**
@@ -125,7 +132,7 @@ public interface WorkflowNodeEnt extends NodeEnt {
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setNodeState(NodeStateEnum nodeState);
+        WorkflowNodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
          * The list of inputs.
@@ -213,6 +220,14 @@ public interface WorkflowNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         WorkflowNodeEntBuilder setEncrypted(Boolean encrypted);
+        
+        /**
+         * The state of the inner node connected to a particular outport. TODO Should actually be part of a specialization of NodeOutPort (i.e. WorkflowOutPort) but doesn&#39;t work with inheritance and generics in Java.
+         * 
+         * @param workflowOutgoingPortNodeStates the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
         
         
         /**

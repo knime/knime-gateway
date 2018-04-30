@@ -69,7 +69,6 @@ import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeEnt.NodeTypeEnum;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
@@ -78,6 +77,8 @@ import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt.NodeOutPortEntBuilder;
+import com.knime.gateway.v0.entity.NodeStateEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt.NodeUIInfoEntBuilder;
 import com.knime.gateway.v0.entity.PortTypeEnt;
@@ -264,7 +265,7 @@ public class EntityBuilderUtil {
             .setUIInfo(buildNodeUIInfoEnt(nc.getUIInformation()))
             .setDeletable(nc.isDeletable())
             .setResetable(nc.isResetable())
-            .setNodeState(NodeStateEnum.valueOf(nc.getNodeContainerState().toString()))
+            .setNodeState(buildNodeStateEnt(nc.getNodeContainerState().toString()))
             .setOutPorts(buildNodeOutPortEnts(nc))
             .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? null : nodeIdAsString(nc.getParent().getID()))
             .setRootWorkflowID(rootWorkflowID)
@@ -316,10 +317,17 @@ public class EntityBuilderUtil {
         } else {
             parentNodeID = nodeIdAsString(wm.getParent().getID());
         }
+
+        //retrieve states of nodes connected to the workflow outports
+        List<NodeStateEnt> outNodeStates = new ArrayList<>();
+        for (int i = 0; i < wm.getNrOutPorts(); i++) {
+            outNodeStates.add(buildNodeStateEnt(wm.getOutPort(i).getNodeContainerState().toString()));
+        }
+
         return builder(WorkflowNodeEntBuilder.class).setName(wm.getName()).setNodeID(nodeIdAsString(wm.getID()))
                 .setNodeMessage(buildNodeMessageEnt(wm)).setNodeType(NodeTypeEnum.valueOf(wm.getType().toString().toUpperCase()))
                 .setUIInfo(buildNodeUIInfoEnt(wm.getUIInformation())).setDeletable(wm.isDeletable())
-                .setNodeState(NodeStateEnum.valueOf(wm.getNodeContainerState().toString()))
+                .setNodeState(buildNodeStateEnt(wm.getNodeContainerState().toString()))
                 .setOutPorts(buildNodeOutPortEnts(wm))
                 .setParentNodeID(parentNodeID)
                 .setDeletable(wm.isDeletable())
@@ -330,6 +338,7 @@ public class EntityBuilderUtil {
                 .setWorkflowOutgoingPorts(buildWorkflowOutgoingPortEnts(wm))
                 .setRootWorkflowID(rootWorkflowID)
                 .setEncrypted(wm.isEncrypted())
+                .setWorkflowOutgoingPortNodeStates(outNodeStates)
                 .setType("WorkflowNode").build();
     }
 
@@ -353,7 +362,7 @@ public class EntityBuilderUtil {
                 .setNodeType(NodeTypeEnum.valueOf(subNode.getType().toString().toUpperCase()))
                 .setUIInfo(buildNodeUIInfoEnt(subNode.getUIInformation())).setDeletable(subNode.isDeletable())
                 .setResetable(subNode.isResetable())
-                .setNodeState(NodeStateEnum.valueOf(subNode.getNodeContainerState().toString()))
+                .setNodeState(buildNodeStateEnt((subNode.getNodeContainerState().toString())))
                 .setOutPorts(buildNodeOutPortEnts(subNode))
                 .setParentNodeID(
                     subNode.getParent() == WorkflowManager.ROOT ? null : nodeIdAsString(subNode.getParent().getID()))
@@ -427,6 +436,12 @@ public class EntityBuilderUtil {
                 .setLength(sr.getLength())
                 .setStart(sr.getStart())
                 .setFontStyle(FontStyleEnum.valueOf(getFontStyleString(sr.getFontStyle())))
+                .build();
+    }
+
+    private static NodeStateEnt buildNodeStateEnt(final String state) {
+        return builder(NodeStateEntBuilder.class)
+                .setState(NodeStateEnt.StateEnum.valueOf(state))
                 .build();
     }
 

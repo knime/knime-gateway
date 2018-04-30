@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 
@@ -101,7 +102,7 @@ public interface NodeEntMixIn extends NodeEnt {
     
     @Override
     @JsonProperty("nodeState")
-    public NodeStateEnum getNodeState();
+    public NodeStateEnt getNodeState();
     
     @Override
     @JsonProperty("inPorts")
@@ -191,7 +192,7 @@ public interface NodeEntMixIn extends NodeEnt {
         
         @Override
         @JsonProperty("nodeState")
-        public NodeEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
+        public NodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
         
         @Override
         @JsonProperty("inPorts")

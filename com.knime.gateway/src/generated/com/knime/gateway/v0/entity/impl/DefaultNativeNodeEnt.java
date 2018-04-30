@@ -26,6 +26,7 @@ import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 
@@ -119,7 +120,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         private String m_parentNodeID = null;
         private java.util.UUID m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
-        private NodeStateEnum m_nodeState = null;
+        private NodeStateEnt m_nodeState;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
@@ -189,7 +190,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setNodeState(NodeStateEnum nodeState) {
+        public DefaultNativeNodeEntBuilder setNodeState(NodeStateEnt nodeState) {
              if(nodeState == null) {
                  throw new IllegalArgumentException("nodeState must not be null.");
              }

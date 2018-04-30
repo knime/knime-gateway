@@ -27,6 +27,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodePortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PatchOpEnt;
@@ -75,6 +76,7 @@ public class ListEntities {
         res.add(NodeFactoryKeyEnt.class);
         res.add(NodeMessageEnt.class);
         res.add(NodePortEnt.class);
+        res.add(NodeStateEnt.class);
         res.add(NodeUIInfoEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
@@ -109,6 +111,7 @@ public class ListEntities {
         res.add(NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder.class);
         res.add(NodeMessageEnt.NodeMessageEntBuilder.class);
         res.add(NodePortEnt.NodePortEntBuilder.class);
+        res.add(NodeStateEnt.NodeStateEntBuilder.class);
         res.add(NodeUIInfoEnt.NodeUIInfoEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);

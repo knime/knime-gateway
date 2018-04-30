@@ -58,8 +58,8 @@ import com.knime.gateway.local.util.EntityProxyUtil;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
@@ -362,7 +362,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     }
 
     static NodeContainerState getNodeContainerState(final NodeEnt node) {
-        return EntityProxyNodeContainerState.valueOf(node.getNodeState().toString());
+        return EntityProxyNodeContainerState.valueOf(node.getNodeState().getState().toString());
     }
 
     /** {@inheritDoc} */
@@ -691,7 +691,8 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * @return whether the node is resetable
      */
     boolean canReset() {
-       return getEntity().getNodeState().equals(NodeStateEnum.EXECUTED) && getEntity().isResetable();
+        return getEntity().getNodeState().getState().equals(NodeStateEnt.StateEnum.EXECUTED)
+            && getEntity().isResetable();
     }
 
     /**
@@ -721,7 +722,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * @return whether the node can be executed
      */
     boolean canExecute() {
-        return getEntity().getNodeState().equals(NodeStateEnum.CONFIGURED);
+        return getEntity().getNodeState().getState().equals(NodeStateEnt.StateEnum.CONFIGURED);
     }
 
     /**

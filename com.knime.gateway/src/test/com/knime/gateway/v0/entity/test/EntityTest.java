@@ -36,10 +36,11 @@ import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeEnt.NodeTypeEnum;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.v0.entity.NodeStateEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 
@@ -66,7 +67,7 @@ public class EntityTest {
         assertEquals(ent.getName(), "name");
         assertEquals(ent.isHasDialog(), true);
         assertEquals(ent.getNodeID(), "node_id");
-        assertEquals(ent.getNodeState(), NodeStateEnum.CONFIGURED);
+        assertEquals(ent.getNodeState(), NodeStateEnt.StateEnum.CONFIGURED);
         assertEquals(ent.getNodeType(), NodeTypeEnum.LEARNER);
         assertEquals(ent.getType(), "NativeNode");
         assertEquals(ent.getRootWorkflowID(), wfId);
@@ -93,7 +94,7 @@ public class EntityTest {
                 .setName("name")
                 .setHasDialog(true)
                 .setNodeID("node_id")
-                .setNodeState(NodeStateEnum.CONFIGURED)
+                .setNodeState(builder(NodeStateEntBuilder.class).setState(NodeStateEnt.StateEnum.CONFIGURED).build())
                 .setNodeType(NodeTypeEnum.LEARNER)
                 .setType("NativeNode")
                 .setRootWorkflowID(wfId)

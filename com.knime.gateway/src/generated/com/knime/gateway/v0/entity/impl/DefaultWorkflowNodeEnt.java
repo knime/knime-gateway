@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 
@@ -41,6 +42,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
   protected java.util.List<NodeOutPortEnt> m_workflowIncomingPorts;
   protected java.util.List<NodeInPortEnt> m_workflowOutgoingPorts;
   protected Boolean m_encrypted;
+  protected java.util.List<NodeStateEnt> m_workflowOutgoingPortNodeStates;
   
   protected DefaultWorkflowNodeEnt() {
     //for sub-classes
@@ -90,6 +92,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
     m_workflowIncomingPorts = immutable(builder.m_workflowIncomingPorts);
     m_workflowOutgoingPorts = immutable(builder.m_workflowOutgoingPorts);
     m_encrypted = immutable(builder.m_encrypted);
+    m_workflowOutgoingPortNodeStates = immutable(builder.m_workflowOutgoingPortNodeStates);
   }
 
 
@@ -108,6 +111,11 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         return m_encrypted;
     }
     
+  @Override
+  public java.util.List<NodeStateEnt> getWorkflowOutgoingPortNodeStates() {
+        return m_workflowOutgoingPortNodeStates;
+    }
+    
   
     public static class DefaultWorkflowNodeEntBuilder implements WorkflowNodeEntBuilder {
     
@@ -122,7 +130,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private String m_parentNodeID = null;
         private java.util.UUID m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
-        private NodeStateEnum m_nodeState = null;
+        private NodeStateEnt m_nodeState;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
@@ -134,6 +142,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private java.util.List<NodeOutPortEnt> m_workflowIncomingPorts = new java.util.ArrayList<>();
         private java.util.List<NodeInPortEnt> m_workflowOutgoingPorts = new java.util.ArrayList<>();
         private Boolean m_encrypted = null;
+        private java.util.List<NodeStateEnt> m_workflowOutgoingPortNodeStates = new java.util.ArrayList<>();
 
         @Override
         public DefaultWorkflowNodeEntBuilder setType(String type) {
@@ -193,7 +202,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setNodeState(NodeStateEnum nodeState) {
+        public DefaultWorkflowNodeEntBuilder setNodeState(NodeStateEnt nodeState) {
              if(nodeState == null) {
                  throw new IllegalArgumentException("nodeState must not be null.");
              }
@@ -264,6 +273,12 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         @Override
         public DefaultWorkflowNodeEntBuilder setEncrypted(Boolean encrypted) {
              m_encrypted = encrypted;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates) {
+             m_workflowOutgoingPortNodeStates = workflowOutgoingPortNodeStates;
              return this;
         }
 

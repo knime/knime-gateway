@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 
@@ -96,7 +97,7 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     
     @Override
     @JsonProperty("nodeState")
-    public NodeStateEnum getNodeState();
+    public NodeStateEnt getNodeState();
     
     @Override
     @JsonProperty("inPorts")
@@ -141,6 +142,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     @Override
     @JsonProperty("encrypted")
     public Boolean isEncrypted();
+    
+    @Override
+    @JsonProperty("workflowOutgoingPortNodeStates")
+    public java.util.List<NodeStateEnt> getWorkflowOutgoingPortNodeStates();
     
 
     /**
@@ -194,7 +199,7 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         
         @Override
         @JsonProperty("nodeState")
-        public WorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
+        public WorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
         
         @Override
         @JsonProperty("inPorts")
@@ -239,6 +244,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         @Override
         @JsonProperty("encrypted")
         public WorkflowNodeEntMixInBuilder setEncrypted(final Boolean encrypted);
+        
+        @Override
+        @JsonProperty("workflowOutgoingPortNodeStates")
+        public WorkflowNodeEntMixInBuilder setWorkflowOutgoingPortNodeStates(final java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
         
     }
 

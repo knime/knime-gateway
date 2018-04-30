@@ -34,12 +34,14 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.remote.util.JaversRepository;
 import com.knime.gateway.remote.util.WorkflowEntRepository;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeEntBuilder;
-import com.knime.gateway.v0.entity.NodeEnt.NodeStateEnum;
 import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;
+import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
+import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
@@ -106,8 +108,8 @@ public abstract class AbstractWorkflowEntRepositoryTest {
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         UUID wfID = UUID.randomUUID();
         NodeEntBuilder nodeBuilder = buildRandomEntityBuilder(NodeEntBuilder.class);
-        nodeBuilder.setNodeMessage(buildRandomEntityBuilder(NodeMessageEntBuilder.class).build())
-            .setNodeState(NodeStateEnum.CONFIGURED);
+        nodeBuilder.setNodeMessage(buildRandomEntityBuilder(NodeMessageEntBuilder.class).build()).setNodeState(
+            EntityBuilderManager.builder(NodeStateEntBuilder.class).setState(StateEnum.CONFIGURED).build());
         Map<String, NodeEnt> nodes = new HashMap<String, NodeEnt>(wfBuilder.build().getNodes());
         nodes.put("node_to_be_changed", nodeBuilder.build());
         wfBuilder.setNodes(nodes);
@@ -118,7 +120,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
         //modify workflow entity
         nodeBuilder
             .setNodeMessage(new DefaultNodeMessageEntBuilder().setMessage("a new node message").setType("type").build())
-            .setNodeState(NodeStateEnum.EXECUTED);
+            .setNodeState(EntityBuilderManager.builder(NodeStateEntBuilder.class).setState(StateEnum.EXECUTED).build());
         nodes.put("node_to_be_changed", nodeBuilder.build());
         wfBuilder.setNodes(nodes);
 
@@ -172,9 +174,11 @@ public abstract class AbstractWorkflowEntRepositoryTest {
 
         for (int i = 0; i < 10000; i++) {
             if (i % 2 == 0) {
-                nodeBuilder.setNodeState(NodeStateEnum.CONFIGURED);
+                nodeBuilder.setNodeState(
+                    EntityBuilderManager.builder(NodeStateEntBuilder.class).setState(StateEnum.CONFIGURED).build());
             } else {
-                nodeBuilder.setNodeState(NodeStateEnum.EXECUTED);
+                nodeBuilder.setNodeState(
+                    EntityBuilderManager.builder(NodeStateEntBuilder.class).setState(StateEnum.EXECUTED).build());
             }
             nodes.put("node", nodeBuilder.build());
             m_repo.commit(wfID, null, wfBuilder.setNodes(nodes).build());

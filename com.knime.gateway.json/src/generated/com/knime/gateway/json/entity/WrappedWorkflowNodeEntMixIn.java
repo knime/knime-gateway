@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 
@@ -93,7 +94,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     
     @Override
     @JsonProperty("nodeState")
-    public NodeStateEnum getNodeState();
+    public NodeStateEnt getNodeState();
     
     @Override
     @JsonProperty("inPorts")
@@ -138,6 +139,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     @Override
     @JsonProperty("encrypted")
     public Boolean isEncrypted();
+    
+    @Override
+    @JsonProperty("workflowOutgoingPortNodeStates")
+    public java.util.List<NodeStateEnt> getWorkflowOutgoingPortNodeStates();
     
     @Override
     @JsonProperty("virtualInNodeID")
@@ -201,7 +206,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         
         @Override
         @JsonProperty("nodeState")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
+        public WrappedWorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
         
         @Override
         @JsonProperty("inPorts")
@@ -246,6 +251,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         @Override
         @JsonProperty("encrypted")
         public WrappedWorkflowNodeEntMixInBuilder setEncrypted(final Boolean encrypted);
+        
+        @Override
+        @JsonProperty("workflowOutgoingPortNodeStates")
+        public WrappedWorkflowNodeEntMixInBuilder setWorkflowOutgoingPortNodeStates(final java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
         
         @Override
         @JsonProperty("virtualInNodeID")

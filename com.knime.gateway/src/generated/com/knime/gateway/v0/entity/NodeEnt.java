@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
@@ -91,47 +92,6 @@ public interface NodeEnt extends GatewayEntity {
 
   }
 
-  /**
-   * The state of the node.
-   */
-  public enum NodeStateEnum {
-    IDLE("IDLE"),
-    
-    CONFIGURED("CONFIGURED"),
-    
-    UNCONFIGURED_MARKEDFOREXEC("UNCONFIGURED_MARKEDFOREXEC"),
-    
-    CONFIGURED_MARKEDFOREXEC("CONFIGURED_MARKEDFOREXEC"),
-    
-    EXECUTED_MARKEDFOREXEC("EXECUTED_MARKEDFOREXEC"),
-    
-    CONFIGURED_QUEUED("CONFIGURED_QUEUED"),
-    
-    EXECUTED_QUEUED("EXECUTED_QUEUED"),
-    
-    PREEXECUTE("PREEXECUTE"),
-    
-    EXECUTING("EXECUTING"),
-    
-    EXECUTINGREMOTELY("EXECUTINGREMOTELY"),
-    
-    POSTEXECUTE("POSTEXECUTE"),
-    
-    EXECUTED("EXECUTED");
-
-    private String value;
-
-    NodeStateEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
 
   /**
    * Discriminator for inheritance. Must be the base name of this type/schema.
@@ -179,7 +139,7 @@ public interface NodeEnt extends GatewayEntity {
    * The state of the node.
    * @return nodeState , never <code>null</code>
    **/
-  public NodeStateEnum getNodeState();
+  public NodeStateEnt getNodeState();
 
   /**
    * The list of inputs.
@@ -297,7 +257,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setNodeState(NodeStateEnum nodeState);
+        NodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
          * The list of inputs.

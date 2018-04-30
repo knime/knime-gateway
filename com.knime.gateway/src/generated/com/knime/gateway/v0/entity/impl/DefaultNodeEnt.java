@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -44,7 +45,7 @@ public class DefaultNodeEnt  implements NodeEnt {
   protected String m_parentNodeID;
   protected java.util.UUID m_rootWorkflowID;
   protected NodeMessageEnt m_nodeMessage;
-  protected NodeStateEnum m_nodeState;
+  protected NodeStateEnt m_nodeState;
   protected java.util.List<NodeInPortEnt> m_inPorts;
   protected java.util.List<NodeOutPortEnt> m_outPorts;
   protected Boolean m_deletable;
@@ -138,7 +139,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public NodeStateEnum getNodeState() {
+  public NodeStateEnt getNodeState() {
         return m_nodeState;
     }
     
@@ -196,7 +197,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         private String m_parentNodeID = null;
         private java.util.UUID m_rootWorkflowID = null;
         private NodeMessageEnt m_nodeMessage;
-        private NodeStateEnum m_nodeState = null;
+        private NodeStateEnt m_nodeState;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
@@ -264,7 +265,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setNodeState(NodeStateEnum nodeState) {
+        public DefaultNodeEntBuilder setNodeState(NodeStateEnt nodeState) {
              if(nodeState == null) {
                  throw new IllegalArgumentException("nodeState must not be null.");
              }

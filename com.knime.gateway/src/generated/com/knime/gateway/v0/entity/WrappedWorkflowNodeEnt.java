@@ -23,6 +23,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 
@@ -125,7 +126,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WrappedWorkflowNodeEntBuilder setNodeState(NodeStateEnum nodeState);
+        WrappedWorkflowNodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
          * The list of inputs.
@@ -213,6 +214,14 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         WrappedWorkflowNodeEntBuilder setEncrypted(Boolean encrypted);
+        
+        /**
+         * The state of the inner node connected to a particular outport. TODO Should actually be part of a specialization of NodeOutPort (i.e. WorkflowOutPort) but doesn&#39;t work with inheritance and generics in Java.
+         * 
+         * @param workflowOutgoingPortNodeStates the property value,  
+         * @return this entity builder for chaining
+         */
+        WrappedWorkflowNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
         
         /**
          * Node ID of the virtual in-node (i.e. source).
