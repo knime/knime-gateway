@@ -46,4 +46,15 @@ public final class EntityProxyWorkflowManager extends AbstractEntityProxyWorkflo
         //its out ports is not connected to an inner node.
         return super.canExecute() || getEntity().getNodeState().getState().equals(StateEnum.IDLE);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    boolean canReset() {
+        // since we cannot check easily (unless we 'download' the contained workflow or ask the server directly)
+        // whether there is at least one executed node within this meta node, we for now allow a meta node
+        // even if its not executed
+        return super.canReset() || getEntity().getNodeState().getState().equals(StateEnum.CONFIGURED);
+    }
 }
