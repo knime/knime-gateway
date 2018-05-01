@@ -8,4 +8,68 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyConnectionContainer.java" type="com.knime.gateway.local.workflow.EntityProxyConnectionContainer">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="ConnectionContainerUI"/>
+                <message_argument value="EntityProxyConnectionContainer"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxyNodeContainer">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="NodeContainerUI"/>
+                <message_argument value="EntityProxyNodeContainer&lt;E&gt;"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNodeInPort.java" type="com.knime.gateway.local.workflow.EntityProxyNodeInPort">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="NodeInPortUI"/>
+                <message_argument value="EntityProxyNodeInPort"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNodeOutPort.java" type="com.knime.gateway.local.workflow.EntityProxyNodeOutPort">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="NodeOutPortUI"/>
+                <message_argument value="EntityProxyNodeOutPort&lt;N&gt;"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxySingleNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxySingleNodeContainer">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="SingleNodeContainerUI"/>
+                <message_argument value="EntityProxySingleNodeContainer&lt;E&gt;"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxySubNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxySubNodeContainer">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="SubNodeContainerUI"/>
+                <message_argument value="EntityProxySubNodeContainer"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyWorkflowInPort.java" type="com.knime.gateway.local.workflow.EntityProxyWorkflowInPort">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="WorkflowInPortUI"/>
+                <message_argument value="EntityProxyWorkflowInPort"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyWorkflowOutPort.java" type="com.knime.gateway.local.workflow.EntityProxyWorkflowOutPort">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="WorkflowOutPortUI"/>
+                <message_argument value="EntityProxyWorkflowOutPort"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
