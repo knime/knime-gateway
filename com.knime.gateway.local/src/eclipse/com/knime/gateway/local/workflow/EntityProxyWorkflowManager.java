@@ -20,6 +20,7 @@ package com.knime.gateway.local.workflow;
 
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
+import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 
 /**
@@ -35,5 +36,14 @@ public final class EntityProxyWorkflowManager extends AbstractEntityProxyWorkflo
      */
     EntityProxyWorkflowManager(final WorkflowNodeEnt workflowNodeEnt, final EntityProxyAccess access) {
         super(workflowNodeEnt, access);
+    }
+
+    @Override
+    boolean canExecute() {
+        //a meta node can be executed, if it contains at least one configured node. However, here we don't
+        //want to check that every time (we would need to 'download' the sub-workflow) and thus allow a meta node
+        //to be executed when it's in idle state, too. A metanode is in idle state, e.g., when there is one of
+        //its out ports is not connected to an inner node.
+        return super.canExecute() || getEntity().getNodeState().getState().equals(StateEnum.IDLE);
     }
 }
