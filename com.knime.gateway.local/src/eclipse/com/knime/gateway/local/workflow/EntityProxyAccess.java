@@ -53,8 +53,6 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
  * {@link EntityProxyWorkflowManager}) from the respective entity classes (e.g. {@link WorkflowEnt}).
  *
- * It also provides helper methods to retrieve entity instances (e.g. {@link #getWorkflowEnt(WorkflowNodeEnt)}).
- *
  * @author Martin Horn, University of Konstanz
  */
 public class EntityProxyAccess {
@@ -62,6 +60,7 @@ public class EntityProxyAccess {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyAccess.class);
 
     /* Maps the identity hash code of a entity to the entity proxy object */
+    @SuppressWarnings("rawtypes")
     private final Map<Pair<Integer, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
     private final Map<Pair<UUID, String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>> m_wfmMap;
@@ -76,6 +75,7 @@ public class EntityProxyAccess {
      *
      * @param serviceConfig information how to connect to the server to retrieve entities
      */
+    @SuppressWarnings("rawtypes")
     private EntityProxyAccess(final ServerServiceConfig serviceConfig) {
         m_entityProxyMap = new HashMap<Pair<Integer, Class<EntityProxy>>, EntityProxy>();
         m_wfmMap = new HashMap<Pair<UUID,String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>>();
@@ -211,6 +211,7 @@ public class EntityProxyAccess {
      * @param node the node the passed port belongs to (only required for the new creation of the entity proxy)
      * @return the {@link EntityProxyNodeOutPort} - either the cached one or newly created
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     EntityProxyNodeOutPort getNodeOutPort(final NodeOutPortEnt p, final NodeEnt node) {
         //possibly return the same node out port instance for the same index
         return getOrCreate(p, o -> new EntityProxyNodeOutPort(o, node, this), EntityProxyNodeOutPort.class);
@@ -358,6 +359,7 @@ public class EntityProxyAccess {
      * @param oldNode the entity to be replaced in an {@link EntityProxyNodeContainer}
      * @param newNode the entity to replace with
      */
+    @SuppressWarnings("unchecked")
     void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
         if (update(oldNode, newNode, EntityProxyNodeContainer.class)) {
             postUpdate(newNode, EntityProxyNodeContainer.class);
@@ -370,6 +372,7 @@ public class EntityProxyAccess {
      * @param oldNode
      * @param newNode
      */
+    @SuppressWarnings("unchecked")
     void updateNodeOutPorts(final NodeEnt oldNode, final NodeEnt newNode) {
         for (int i = 0; i < oldNode.getOutPorts().size(); i++) {
             if (update(oldNode.getOutPorts().get(i), newNode.getOutPorts().get(i), EntityProxyNodeOutPort.class)) {
@@ -438,6 +441,7 @@ public class EntityProxyAccess {
      *         <li>or the entity proxy stored in the internal map for the given entity</li>
      *         </ul>
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private <E extends GatewayEntity, P extends EntityProxy<E>> P getOrCreate(final E entity, final Function<E, P> fct,
         final Class<P> proxyClass) {
         if (entity == null) {
@@ -457,6 +461,7 @@ public class EntityProxyAccess {
         }
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private <E extends GatewayEntity, P extends EntityProxy<E>> boolean update(final E oldEntity, final E newEntity,
         final Class<P> proxyClass) {
         if (oldEntity == newEntity) {
@@ -476,6 +481,7 @@ public class EntityProxyAccess {
         return false;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private <E extends GatewayEntity, P extends EntityProxy<E>> void postUpdate(final E entity,
         final Class<P> proxyClass) {
         Pair<Integer, Class<EntityProxy>> key =

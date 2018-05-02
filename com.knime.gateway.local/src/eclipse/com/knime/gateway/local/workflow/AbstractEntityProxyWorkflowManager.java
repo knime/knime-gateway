@@ -81,6 +81,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * {@link WorkflowNodeEnt} that represents a workflow most likely received remotely.
  *
  * @author Martin Horn, University of Konstanz
+ * @param <E> the type of the workflow node entity (e.g. wrapped)
  */
 public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends EntityProxyNodeContainer<E>
     implements WorkflowManagerUI {
@@ -376,10 +377,12 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
 
     /**
      * {@inheritDoc}
+     * @deprecated
      */
+    @Deprecated
     @Override
     public void resetAll() {
-        reset();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -393,6 +396,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public void executeUpToHere(final NodeID... ids) {
         for(NodeID id : ids) {
@@ -453,6 +457,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean canResetNode(final NodeID nodeID) {
         //TODO ask server whether the node can be reset (i.e. whether there are executing successors etc.)
@@ -473,6 +478,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public void resetAndConfigureNode(final NodeID id) {
         NodeContainerUI nc = getNodeContainer(id);
@@ -499,6 +505,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean canExecuteNode(final NodeID nodeID) {
         NodeContainerUI nc = getNodeContainer(nodeID);
@@ -533,6 +540,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public void cancelExecution(final NodeContainerUI nc) {
         if (nc instanceof EntityProxyNodeContainer) {
@@ -671,7 +679,9 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
 
     /**
      * {@inheritDoc}
+     * @deprecated
      */
+    @Deprecated
     @Override
     public List<NodeMessage> getNodeErrorMessages() {
         throw new UnsupportedOperationException();
@@ -1024,6 +1034,7 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void refresh(final boolean deepRefresh) {
         //only refresh if the workflow was retrieved already

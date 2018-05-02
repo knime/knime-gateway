@@ -26,6 +26,8 @@ import com.knime.gateway.v0.entity.NodeEnt;
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link SingleNodeContainerUI}.
  *
  * @author Martin Horn, University of Konstanz
+ *
+ * @param <E> the type of the node entity
  */
 public abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends EntityProxyNodeContainer<E>
     implements SingleNodeContainerUI {

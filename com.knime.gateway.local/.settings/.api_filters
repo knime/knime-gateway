@@ -7,6 +7,48 @@
                 <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
             </message_arguments>
         </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeContainerUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+                <message_argument value="getNodeAnnotation()"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeContainerUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+                <message_argument value="getNodeContainerState()"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeOutPortUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+                <message_argument value="notifyNodeStateChangeListener(NodeStateEvent)"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="SubNodeContainerUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+                <message_argument value="getWorkflowManager()"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="WorkflowManagerUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+                <message_argument value="isRefreshable()"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="WorkflowManagerUI"/>
+                <message_argument value="AbstractEntityProxyWorkflowManager&lt;E&gt;"/>
+                <message_argument value="refresh(boolean)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyConnectionContainer.java" type="com.knime.gateway.local.workflow.EntityProxyConnectionContainer">
         <filter id="574619656">
@@ -16,11 +58,40 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNativeNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxyNativeNodeContainer">
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeFactory&lt;T&gt;"/>
+                <message_argument value="EntityProxyNativeNodeContainer"/>
+                <message_argument value="loadAdditionalFactorySettings(ConfigRO)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxyNodeContainer">
         <filter id="574619656">
             <message_arguments>
                 <message_argument value="NodeContainerUI"/>
                 <message_argument value="EntityProxyNodeContainer&lt;E&gt;"/>
+            </message_arguments>
+        </filter>
+        <filter id="640708718">
+            <message_arguments>
+                <message_argument value="NodeMessage(NodeMessageType, String)"/>
+                <message_argument value="EntityProxyNodeContainer&lt;E&gt;"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeContainerUI"/>
+                <message_argument value="EntityProxyNodeContainer&lt;E&gt;"/>
+                <message_argument value="findJobManager()"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="Type"/>
+                <message_argument value="EntityProxyNodeContainer&lt;E&gt;"/>
+                <message_argument value="valueOf(String)"/>
             </message_arguments>
         </filter>
     </resource>
