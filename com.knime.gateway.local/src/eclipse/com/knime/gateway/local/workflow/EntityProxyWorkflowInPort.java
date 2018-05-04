@@ -30,20 +30,21 @@ import com.knime.gateway.v0.entity.NodeOutPortEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyWorkflowInPort extends EntityProxyNodeInPort implements WorkflowInPortUI {
+class EntityProxyWorkflowInPort extends EntityProxyNodeInPort implements WorkflowInPortUI {
 
     private NodeOutPortEnt m_underlyingPort;
 
     private NodeEnt m_node;
 
     /**
-     * @param inPort
-     * @param underlyingPort
-     * @param node
-     * @param access
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
+     * @param inPort
+     * @param underlyingPort the underlying port that is wrapped with this port
+     * @param node the node the underlying port belongs to
+     * @param access
      */
-    public EntityProxyWorkflowInPort(final NodeInPortEnt inPort, final NodeOutPortEnt underlyingPort,
+    EntityProxyWorkflowInPort(final NodeInPortEnt inPort, final NodeOutPortEnt underlyingPort,
         final NodeEnt node, final EntityProxyAccess access) {
         super(inPort, access);
         m_underlyingPort = underlyingPort;

@@ -41,16 +41,18 @@ import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<WrappedWorkflowNodeEnt>
+class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<WrappedWorkflowNodeEnt>
     implements SubNodeContainerUI {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyNodeContainer.class);
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param node
      * @param access
      */
-    public EntityProxySubNodeContainer(final WrappedWorkflowNodeEnt node, final EntityProxyAccess access) {
+    EntityProxySubNodeContainer(final WrappedWorkflowNodeEnt node, final EntityProxyAccess access) {
         super(node, access);
     }
 

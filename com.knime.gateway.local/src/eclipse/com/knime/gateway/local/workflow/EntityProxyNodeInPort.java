@@ -31,14 +31,16 @@ import com.knime.gateway.v0.entity.PortTypeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyNodeInPort extends AbstractEntityProxy<NodeInPortEnt> implements NodeInPortUI {
+class EntityProxyNodeInPort extends AbstractEntityProxy<NodeInPortEnt> implements NodeInPortUI {
 
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param inPort
      * @param access
      */
-    public EntityProxyNodeInPort(final NodeInPortEnt inPort, final EntityProxyAccess access) {
+    EntityProxyNodeInPort(final NodeInPortEnt inPort, final EntityProxyAccess access) {
         super(inPort, access);
     }
 

@@ -29,10 +29,13 @@ import com.knime.gateway.v0.entity.WorkflowNodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public final class EntityProxyWorkflowManager extends AbstractEntityProxyWorkflowManager<WorkflowNodeEnt> {
+final class EntityProxyWorkflowManager extends AbstractEntityProxyWorkflowManager<WorkflowNodeEnt> {
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param workflowNodeEnt
+     * @param access
      */
     EntityProxyWorkflowManager(final WorkflowNodeEnt workflowNodeEnt, final EntityProxyAccess access) {
         super(workflowNodeEnt, access);

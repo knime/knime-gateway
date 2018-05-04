@@ -29,14 +29,16 @@ import com.knime.gateway.v0.entity.WorkflowNodeEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyWorkflowOutPort extends EntityProxyNodeOutPort<WorkflowNodeEnt> implements WorkflowOutPortUI {
+class EntityProxyWorkflowOutPort extends EntityProxyNodeOutPort<WorkflowNodeEnt> implements WorkflowOutPortUI {
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param outPort
-     * @param node
+     * @param node the workflow node this port belongs to
      * @param access
      */
-    public EntityProxyWorkflowOutPort(final NodeOutPortEnt outPort, final WorkflowNodeEnt node,
+    EntityProxyWorkflowOutPort(final NodeOutPortEnt outPort, final WorkflowNodeEnt node,
         final EntityProxyAccess access) {
         super(outPort, node, access);
     }

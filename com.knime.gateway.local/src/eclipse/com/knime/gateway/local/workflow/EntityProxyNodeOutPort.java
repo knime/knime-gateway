@@ -40,19 +40,20 @@ import com.knime.gateway.v0.entity.PortTypeEnt;
  * @author Martin Horn, University of Konstanz
  * @param <N> type of the node the port belongs to
  */
-public class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<NodeOutPortEnt> implements NodeOutPortUI {
+class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<NodeOutPortEnt> implements NodeOutPortUI {
 
     private N m_node;
 
     private final Set<NodeStateChangeListener> m_listener;
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param outPort
      * @param node the node this port belongs to
      * @param access
-     *
      */
-    public EntityProxyNodeOutPort(final NodeOutPortEnt outPort, final N node, final EntityProxyAccess access) {
+    EntityProxyNodeOutPort(final NodeOutPortEnt outPort, final N node, final EntityProxyAccess access) {
         super(outPort, access);
         m_node = node;
         m_listener = new LinkedHashSet<>();

@@ -32,18 +32,17 @@ import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements EntityProxy<WorkflowAnnotationEnt> {
+class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements EntityProxy<WorkflowAnnotationEnt> {
 
     private final EntityProxyAccess m_clientProxyAccess;
 
     private WorkflowAnnotationEnt m_entity;
 
     /**
-     * Creates a new entity proxy class. Deriving classes MUST never be instantiated directly but use the
-     * {@link EntityProxyAccess} in order to get/create instances.
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
-     * @param entity the entity instance
-     * @param clientProxyAccess the entity proxy access to access/create (new) entity proxy instances
+     * @param entity
+     * @param clientProxyAccess
      */
     EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final EntityProxyAccess clientProxyAccess) {
         super(getAnnotationData(entity));

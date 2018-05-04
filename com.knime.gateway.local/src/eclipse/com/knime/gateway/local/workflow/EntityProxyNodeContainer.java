@@ -103,13 +103,13 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
         new CopyOnWriteArraySet<NodePropertyChangedListener>();
 
     /**
-     * If the underlying entity is a node.
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
      * @param node
      * @param access
      *
      */
-    public EntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
+    EntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
         ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }

@@ -25,7 +25,7 @@ import org.knime.core.node.workflow.NodeContainerState;
  *
  * @author Martin Horn, University of Konstanz
  */
-public enum EntityProxyNodeContainerState implements NodeContainerState {
+enum EntityProxyNodeContainerState implements NodeContainerState {
 
     IDLE,
     CONFIGURED,

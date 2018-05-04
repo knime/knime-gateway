@@ -41,11 +41,13 @@ import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<NativeNodeEnt> {
+class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<NativeNodeEnt> {
 
     private NodeFactory<? extends NodeModel> m_nodeFactory = null;
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param node
      * @param access
      */

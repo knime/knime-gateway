@@ -37,14 +37,16 @@ import com.knime.gateway.v0.entity.XYEnt;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
+class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
     implements ConnectionContainerUI {
 
     /**
+     * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
+     *
      * @param conn
      * @param access
      */
-    public EntityProxyConnectionContainer(final ConnectionEnt conn, final EntityProxyAccess access) {
+    EntityProxyConnectionContainer(final ConnectionEnt conn, final EntityProxyAccess access) {
         super(conn, access);
     }
 
