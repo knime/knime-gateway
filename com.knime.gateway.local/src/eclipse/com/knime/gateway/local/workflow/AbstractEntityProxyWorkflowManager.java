@@ -83,7 +83,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @author Martin Horn, University of Konstanz
  * @param <E> the type of the workflow node entity (e.g. wrapped)
  */
-public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends EntityProxyNodeContainer<E>
+abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends EntityProxyNodeContainer<E>
     implements WorkflowManagerUI {
 
     private WorkflowEnt m_workflowEnt;
@@ -1128,12 +1128,8 @@ public abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeE
     @Override
     public void update(final E entity) {
         //update port entities, too -> makes sure that still the very same entity proxy classes are used
-        for (int i = 0; i < getEntity().getOutPorts().size(); i++) {
-            getAccess().updateWorkflowNodeOutPorts(getEntity(), entity);
-        }
-        for (int i = 0; i < getEntity().getInPorts().size(); i++) {
-            getAccess().updateWorkflowNodeInPorts(getEntity(), entity);
-        }
+        getAccess().updateWorkflowNodeOutPorts(getEntity(), entity);
+        getAccess().updateWorkflowNodeInPorts(getEntity(), entity);
         super.update(entity);
     }
 

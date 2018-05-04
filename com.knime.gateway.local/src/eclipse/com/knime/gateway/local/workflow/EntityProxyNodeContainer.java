@@ -687,9 +687,11 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
     /**
      * Determines whether the node can be reseted without considering its context (e.g. the node's successors)
      *
-     * @return whether the node is resetable
+     * @return <code>true</code> if the node is resetable
      */
     boolean canReset() {
+        //need to check both conditions here since, e.g. SingleNodeContainer.isResetable() returns true, even if
+        //the node is, e.g., configured
         return getEntity().getNodeState().getState().equals(NodeStateEnt.StateEnum.EXECUTED)
             && getEntity().isResetable();
     }
