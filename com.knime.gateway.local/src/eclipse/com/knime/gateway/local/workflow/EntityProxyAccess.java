@@ -130,8 +130,8 @@ public class EntityProxyAccess {
      * Returns the workflow manager for the respective node ent. With every call the same entity proxy instance will be
      * returned for the same rootWorkflowID- and nodeID-combination (taken from the wrapped worklfow node entity).
      *
-     * @param rootWorkflowID
-     * @param nodeID
+     * @param ent the workflow node referencing the workflow
+     *
      * @return the {@link EntityProxyWrappedWorkflowManager} - either the cached one or newly created
      */
     EntityProxyWrappedWorkflowManager getWrappedWorkflowManager(final WrappedWorkflowNodeEnt ent) {
@@ -208,13 +208,20 @@ public class EntityProxyAccess {
      * With every call the same entity proxy instance will be returned for the same entity.
      *
      * @param p the entity to get the client-proxy wrapper for
-     * @param node the node the passed port belongs to (only required for the new creation of the entity proxy)
+     * @param node the node the passed port belongs to. Can be <code>null</code> if no new entity proxy instance is
+     *            created (otherwise a {@link NullPointerException} will be thrown).
      * @return the {@link EntityProxyNodeOutPort} - either the cached one or newly created
+     * @throws NullPointerException if node is <code>null</code> but a new proxy instance is created
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     EntityProxyNodeOutPort getNodeOutPort(final NodeOutPortEnt p, final NodeEnt node) {
         //possibly return the same node out port instance for the same index
-        return getOrCreate(p, o -> new EntityProxyNodeOutPort(o, node, this), EntityProxyNodeOutPort.class);
+        return getOrCreate(p, o -> {
+            if (node == null) {
+                throw new NullPointerException("Node must not be null.");
+            }
+            return new EntityProxyNodeOutPort(o, node, this);
+        }, EntityProxyNodeOutPort.class);
     }
 
     /**
@@ -223,27 +230,44 @@ public class EntityProxyAccess {
      * With every call the same entity proxy instance will be returned for the same entity.
      *
      * @param p the entity to get the client-proxy wrapper for
-     * @param underlyingPort
-     * @param node
+     * @param underlyingPort the underlying port wrapped. Can be <code>null</code> if no new entity proxy instance is
+     *            created (otherwise a {@link NullPointerException} will be thrown).
+     * @param node the node the underlying port belongs to. Can be <code>null</code> if no new entity proxy instance is
+     *            created (otherwise a {@link NullPointerException} will be thrown).
      * @return the {@link EntityProxyWorkflowInPort} - either the cached one or newly created
+     * @throws NullPointerException if node or underlyingPort is <code>null</code> but a new proxy instance is created
      */
     EntityProxyWorkflowInPort getWorkflowInPort(final NodeInPortEnt p, final NodeOutPortEnt underlyingPort,
         final NodeEnt node) {
         //possibly return the same node in port instance for the same index
-        return getOrCreate(p, o -> new EntityProxyWorkflowInPort(o, underlyingPort, node, this),
-            EntityProxyWorkflowInPort.class);
+        return getOrCreate(p, o -> {
+            if (node == null) {
+                throw new NullPointerException("Node must not be null.");
+            }
+            if (underlyingPort == null) {
+                throw new NullPointerException("Underlying port must not be null.");
+            }
+            return new EntityProxyWorkflowInPort(o, underlyingPort, node, this);
+        }, EntityProxyWorkflowInPort.class);
     }
 
     /**
      * With every call the same entity proxy instance will be returned for the same entity.
      *
      * @param p the entity to get the client-proxy wrapper for
-     * @param node
+     * @param node the node the port belongs to. Can be <code>null</code> if no new entity proxy instance is created
+     *            (otherwise a {@link NullPointerException} will be thrown).
      * @return the {@link EntityProxyWorkflowOutPort} - either the cached one or newly created
+     * @throws NullPointerException if node is <code>null</code> but a new proxy instance is created
      */
     EntityProxyWorkflowOutPort getWorkflowOutPort(final NodeOutPortEnt p, final WorkflowNodeEnt node) {
         //possibly return the same node out port instance for the same index
-        return getOrCreate(p, o -> new EntityProxyWorkflowOutPort(o, node, this), EntityProxyWorkflowOutPort.class);
+        return getOrCreate(p, o -> {
+            if (node == null) {
+                throw new NullPointerException("Node must not be null.");
+            }
+            return new EntityProxyWorkflowOutPort(o, node, this);
+        }, EntityProxyWorkflowOutPort.class);
     }
 
     /**
@@ -282,8 +306,7 @@ public class EntityProxyAccess {
     /**
      * Updates the status of a workflow entity.
      *
-     * @param rootWorkflowId the root workflow id of the workflow to update
-     * @param nodeID the node id in case it's a sub-workflow, otherwise <code>null</code> (if it's the root workflow)
+     * @param workflowNodeEnt the workflow node referencing the workflow to update
      * @param workflowEntToUpdate the actual entity to be updated
      * @param snapshotID the id of the currently available snapshot
      * @return the updated (new) entity or the very same entity if there are no changes (both accompanied with the
@@ -369,8 +392,8 @@ public class EntityProxyAccess {
     /**
      * Updates the node port entities and the referenced node entity of a EntityProxyNode*Port instance.
      *
-     * @param oldNode
-     * @param newNode
+     * @param oldNode the node entity whose port entities are to be replaced
+     * @param newNode the node entity to take the new port entities from
      */
     @SuppressWarnings("unchecked")
     void updateNodeOutPorts(final NodeEnt oldNode, final NodeEnt newNode) {
