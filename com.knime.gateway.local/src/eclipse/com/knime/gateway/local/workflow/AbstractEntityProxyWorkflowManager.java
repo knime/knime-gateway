@@ -48,6 +48,7 @@ import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
+import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -1141,7 +1142,14 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         super.postUpdate();
         // notify listeners for nodes state changes at the nodes connected to the out ports
         for (int i = 0; i < getNrOutPorts(); i++) {
-            getOutPort(i).notifyNodeStateChangeListener(null);
+            getOutPort(i).notifyNodeStateChangeListener(new NodeStateEvent(NodeID.ROOTID) {
+                @Override
+                public NodeID getSource() {
+                    // since there is currently no node id available of the inner node connected to the output port,
+                    // don't allow this operation
+                    throw new UnsupportedOperationException("No node ID available.");
+                }
+            });
         }
     }
 }
