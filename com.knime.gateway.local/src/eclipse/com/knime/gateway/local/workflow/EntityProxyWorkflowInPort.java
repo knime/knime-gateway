@@ -21,9 +21,7 @@ package com.knime.gateway.local.workflow;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 
-import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
-import com.knime.gateway.v0.entity.NodeOutPortEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeInPortEnt} and implements {@link WorkflowInPortUI}.
@@ -32,23 +30,15 @@ import com.knime.gateway.v0.entity.NodeOutPortEnt;
  */
 class EntityProxyWorkflowInPort extends EntityProxyNodeInPort implements WorkflowInPortUI {
 
-    private NodeOutPortEnt m_underlyingPort;
-
-    private NodeEnt m_node;
-
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
      * @param inPort
-     * @param underlyingPort the underlying port that is wrapped with this port
      * @param node the node the underlying port belongs to
      * @param access
      */
-    EntityProxyWorkflowInPort(final NodeInPortEnt inPort, final NodeOutPortEnt underlyingPort,
-        final NodeEnt node, final EntityProxyAccess access) {
+    EntityProxyWorkflowInPort(final NodeInPortEnt inPort, final EntityProxyAccess access) {
         super(inPort, access);
-        m_underlyingPort = underlyingPort;
-        m_node = node;
     }
 
     /**
@@ -64,7 +54,8 @@ class EntityProxyWorkflowInPort extends EntityProxyNodeInPort implements Workflo
      */
     @Override
     public NodeOutPortUI getUnderlyingPort() {
-        return getAccess().getNodeOutPort(m_underlyingPort, m_node);
+        //TODO no underlying port available so far in this implementation
+        return null;
     }
 
 }

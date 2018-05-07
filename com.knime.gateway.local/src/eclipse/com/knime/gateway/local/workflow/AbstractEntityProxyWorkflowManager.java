@@ -800,8 +800,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public WorkflowInPortUI getInPort(final int index) {
-        //get underlying port
-        return getAccess().getWorkflowInPort(getEntity().getInPorts().get(index), null, getEntity());
+        //TODO pass the underlying port, too
+        return getAccess().getWorkflowInPort(getEntity().getInPorts().get(index));
     }
 
     /**

@@ -230,24 +230,13 @@ public class EntityProxyAccess {
      * With every call the same entity proxy instance will be returned for the same entity.
      *
      * @param p the entity to get the client-proxy wrapper for
-     * @param underlyingPort the underlying port wrapped. Can be <code>null</code> if no new entity proxy instance is
-     *            created (otherwise a {@link NullPointerException} will be thrown).
-     * @param node the node the underlying port belongs to. Can be <code>null</code> if no new entity proxy instance is
-     *            created (otherwise a {@link NullPointerException} will be thrown).
      * @return the {@link EntityProxyWorkflowInPort} - either the cached one or newly created
      * @throws NullPointerException if node or underlyingPort is <code>null</code> but a new proxy instance is created
      */
-    EntityProxyWorkflowInPort getWorkflowInPort(final NodeInPortEnt p, final NodeOutPortEnt underlyingPort,
-        final NodeEnt node) {
+    EntityProxyWorkflowInPort getWorkflowInPort(final NodeInPortEnt p) {
         //possibly return the same node in port instance for the same index
         return getOrCreate(p, o -> {
-            if (node == null) {
-                throw new NullPointerException("Node must not be null.");
-            }
-            if (underlyingPort == null) {
-                throw new NullPointerException("Underlying port must not be null.");
-            }
-            return new EntityProxyWorkflowInPort(o, underlyingPort, node, this);
+           return new EntityProxyWorkflowInPort(o, this);
         }, EntityProxyWorkflowInPort.class);
     }
 
