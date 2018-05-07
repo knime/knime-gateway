@@ -49,7 +49,6 @@ import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.node.workflow.NodeProgress;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -269,7 +268,8 @@ public class EntityBuilderUtil {
             .setDeletable(nc.isDeletable())
             .setResetable(nc.isResetable())
             .setNodeState(buildNodeStateEnt(nc.getNodeContainerState().toString()))
-            .setProgress(buildNodeProgressEnt(nc.getNodeProgress()))
+            .setProgress(
+                buildNodeProgressEnt(nc.getProgressMonitor().getProgress(), nc.getProgressMonitor().getMessage()))
             .setOutPorts(buildNodeOutPortEnts(nc))
             .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? null : nodeIdAsString(nc.getParent().getID()))
             .setRootWorkflowID(rootWorkflowID)
@@ -282,10 +282,10 @@ public class EntityBuilderUtil {
             .setType("NativeNode").build();
     }
 
-    private static NodeProgressEnt buildNodeProgressEnt(final NodeProgress p) {
+    private static NodeProgressEnt buildNodeProgressEnt(final Double progress, final String message) {
         return builder(NodeProgressEntBuilder.class)
-            .setProgress(p.getProgress() == null ? null : BigDecimal.valueOf(p.getProgress()))
-            .setMessage(p.getMessage()).build();
+            .setProgress(progress == null ? null : BigDecimal.valueOf(progress))
+            .setMessage(message).build();
     }
 
 
