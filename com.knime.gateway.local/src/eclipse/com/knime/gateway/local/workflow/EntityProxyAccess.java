@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
@@ -298,10 +299,11 @@ public class EntityProxyAccess {
      * @param workflowNodeEnt the workflow node referencing the workflow to update
      * @param workflowEntToUpdate the actual entity to be updated
      * @param snapshotID the id of the currently available snapshot
-     * @return the updated (new) entity or the very same entity if there are no changes (both accompanied with the
-     *         (new) snapshot id)
+     * @return the updated (new) entity or the very same entity if there are no changes (i.e. never <code>null</code>).
+     *         Accompanied by the (new) snapshot id (<code>null</code> if empty patch) and the used patch if any
+     *         (<code>null</code> if no patch is available or there are not changes).
      */
-    Pair<WorkflowEnt, UUID> updateWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt,
+    Triple<WorkflowEnt, UUID, PatchEnt> updateWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt,
         final WorkflowEnt workflowEntToUpdate, final UUID snapshotID) {
         PatchEnt patch = null;
         if (workflowNodeEnt.getParentNodeID() == null) {
@@ -328,14 +330,14 @@ public class EntityProxyAccess {
         if (patch == null) {
             //no patch available -> retrieve entire workflow again
             WorkflowSnapshotEnt snapshot = getWorkflowSnapshotEnt(workflowNodeEnt);
-            return Pair.create(snapshot.getWorkflow(), snapshot.getSnapshotID());
+            return Triple.of(snapshot.getWorkflow(), snapshot.getSnapshotID(), null);
         } else {
             // apply patch and return new version
             if (!patch.getOps().isEmpty()) {
-                return Pair.create(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
-                    patch.getSnapshotID());
+                return Triple.of(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
+                    patch.getSnapshotID(), patch);
             } else {
-                return Pair.create(workflowEntToUpdate, null);
+                return Triple.of(workflowEntToUpdate, null, null);
             }
         }
     }

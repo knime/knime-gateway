@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.MetaPortInfo;
@@ -68,6 +69,7 @@ import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
@@ -86,6 +88,11 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  */
 abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends EntityProxyNodeContainer<E>
     implements WorkflowManagerUI {
+
+    /**
+     * The name of the property of a node entity holding it's state as defined by the gateway API.
+     */
+    private static final String NODESTATE_PROPERTY = "nodeState";
 
     private WorkflowEnt m_workflowEnt;
 
@@ -1042,28 +1049,37 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         if (m_workflowEnt != null) {
             WorkflowEnt oldWorkflow = m_workflowEnt;
             // update workflow
-            Pair<WorkflowEnt, UUID> res = getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
-            m_workflowEnt = res.getFirst();
+            Triple<WorkflowEnt, UUID, PatchEnt> res =
+                getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
+            m_workflowEnt = res.getLeft();
 
             if (oldWorkflow != m_workflowEnt) {
                 // refresh the workflow manager only if there is a new (updated) workflow entity
 
-                m_snapshotID = res.getSecond();
+                m_snapshotID = res.getMiddle();
                 assert (m_snapshotID != null);
                 for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
                     getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
                 }
 
-                //refresh the workflow node entity, too, if it is the root workflow (e.g. that contains the state of this metanode)
+                //refresh the workflow node entity, too, if it is the root workflow
+                //(e.g. that contains the state of this metanode)
                 if (getEntity().getNodeID().equals(DefaultEntUtil.ROOT_NODE_ID)) {
-                    try {
-                        super.update((E)getAccess().nodeService().getNode(getEntity().getRootWorkflowID(),
-                            getEntity().getNodeID()));
-                    } catch (NodeNotFoundException ex) {
-                        throw new RuntimeException(ex);
+                    //only try updating the root workflow node entity
+                    //if there is at least one state change of the contained nodes
+                    //(saves http-requests)
+                    if (res.getRight() != null && res.getRight().getOps().stream().anyMatch(o -> {
+                        return o.getPath().contains(NODESTATE_PROPERTY);
+                    })) {
+                        try {
+                            super.update((E)getAccess().nodeService().getNode(getEntity().getRootWorkflowID(),
+                                getEntity().getNodeID()));
+                        } catch (NodeNotFoundException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
-           }
+            }
 
             if (deepRefresh) {
                 //refresh all contained workflows (i.e. metanodes)
