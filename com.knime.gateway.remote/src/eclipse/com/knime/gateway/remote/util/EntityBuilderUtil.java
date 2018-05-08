@@ -45,6 +45,7 @@ import org.knime.core.node.workflow.EditorUIInformation;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
@@ -269,7 +270,9 @@ public class EntityBuilderUtil {
             .setResetable(nc.isResetable())
             .setNodeState(buildNodeStateEnt(nc.getNodeContainerState().toString()))
             .setProgress(
-                buildNodeProgressEnt(nc.getProgressMonitor().getProgress(), nc.getProgressMonitor().getMessage()))
+                buildNodeProgressEnt(nc.getProgressMonitor().getProgress(),
+                    nc.getProgressMonitor().getMessage(),
+                    nc.getNodeContainerState()))
             .setOutPorts(buildNodeOutPortEnts(nc))
             .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? null : nodeIdAsString(nc.getParent().getID()))
             .setRootWorkflowID(rootWorkflowID)
@@ -282,12 +285,15 @@ public class EntityBuilderUtil {
             .setType("NativeNode").build();
     }
 
-    private static NodeProgressEnt buildNodeProgressEnt(final Double progress, final String message) {
-        return builder(NodeProgressEntBuilder.class)
-            .setProgress(progress == null ? null : BigDecimal.valueOf(progress))
-            .setMessage(message).build();
+    private static NodeProgressEnt buildNodeProgressEnt(final Double progress, final String message,
+        final NodeContainerState state) {
+        if (state.isExecutionInProgress()) {
+            return builder(NodeProgressEntBuilder.class)
+                .setProgress(progress == null ? null : BigDecimal.valueOf(progress)).setMessage(message).build();
+        } else {
+            return null;
+        }
     }
-
 
     private static NodeUIInfoEnt buildNodeUIInfoEnt(final NodeUIInformation uiInfo) {
         if(uiInfo == null) {
