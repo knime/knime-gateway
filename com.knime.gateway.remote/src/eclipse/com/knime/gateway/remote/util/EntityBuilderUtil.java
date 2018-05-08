@@ -291,7 +291,7 @@ public class EntityBuilderUtil {
             return builder(NodeProgressEntBuilder.class)
                 .setProgress(progress == null ? null : BigDecimal.valueOf(progress)).setMessage(message).build();
         } else {
-            return null;
+            return builder(NodeProgressEntBuilder.class).setProgress(null).setMessage(null).build();
         }
     }
 
