@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -75,6 +76,11 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  */
 public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends AbstractEntityProxy<E>
     implements NodeContainerUI {
+
+    /**
+     * The old entity used prior the update.
+     */
+    private E m_oldEntity;
 
     /**
      * Map that keeps track of all root workflow ids and maps them to a unique node ids. It's the id the will be
@@ -672,13 +678,28 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * {@inheritDoc}
      */
     @Override
+    public void update(final E entity) {
+        m_oldEntity = getEntity();
+        super.update(entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void postUpdate() {
-        notifyNodeStateChangeListener(new NodeStateEvent(getID()));
-        notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
-        if (getEntity().getNodeState().equals(StateEnum.EXECUTING)) {
-            BigDecimal progress = getEntity().getProgress().getProgress();
-            notifyNodeProgressListeners(new NodeProgressEvent(getID(), new NodeProgress(
-                progress != null ? progress.doubleValue() : null, getEntity().getProgress().getMessage())));
+        if (!Objects.equals(m_oldEntity.getNodeState(), getEntity().getNodeState())) {
+            notifyNodeStateChangeListener(new NodeStateEvent(getID()));
+        }
+        if (!Objects.equals(m_oldEntity.getNodeMessage(), getEntity().getNodeMessage())) {
+            notifyNodeMessageListener(new NodeMessageEvent(getID(), getNodeMessage()));
+        }
+        if (getEntity().getNodeState().getState().equals(StateEnum.EXECUTING)) {
+            if (!Objects.equals(m_oldEntity.getProgress(), getEntity().getProgress())) {
+                BigDecimal progress = getEntity().getProgress().getProgress();
+                notifyNodeProgressListeners(new NodeProgressEvent(getID(), new NodeProgress(
+                    progress != null ? progress.doubleValue() : null, getEntity().getProgress().getMessage())));
+            }
         }
         //no post update for nested entities necessary, yet
     }
