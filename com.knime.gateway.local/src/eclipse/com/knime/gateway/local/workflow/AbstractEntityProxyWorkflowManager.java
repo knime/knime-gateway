@@ -98,6 +98,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     private UUID m_snapshotID;
 
+    private boolean m_isDisconnected = false;
+
     /**
      * @param workflowNodeEnt
      */
@@ -468,6 +470,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @SuppressWarnings("rawtypes")
     @Override
     public boolean canResetNode(final NodeID nodeID) {
+        if(isWriteProtected()) {
+            return false;
+        }
         //TODO ask server whether the node can be reset (i.e. whether there are executing successors etc.)
         //very simple (but not complete!) logic to check whether a node can be reset
         NodeContainerUI nc = getNodeContainer(nodeID);
@@ -516,6 +521,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @SuppressWarnings("rawtypes")
     @Override
     public boolean canExecuteNode(final NodeID nodeID) {
+        if (isWriteProtected()) {
+            return false;
+        }
         NodeContainerUI nc = getNodeContainer(nodeID);
         assert nc instanceof AbstractEntityProxyNodeContainer;
         return ((AbstractEntityProxyNodeContainer)nc).canExecute();
@@ -526,6 +534,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canCancelNode(final NodeID nodeID) {
+        if (isWriteProtected()) {
+            return false;
+        }
         return getNodeContainer(nodeID).getNodeContainerState().isExecutionInProgress();
     }
 
@@ -534,6 +545,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canCancelAll() {
+        if(isWriteProtected()) {
+            return false;
+        }
         return getNodeContainerState().isExecutionInProgress();
     }
 
@@ -595,6 +609,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canExecuteAll() {
+        if (isWriteProtected()) {
+            return false;
+        }
         //simple (and possibly not complete strategy) to determine whether the entire workflow can be executed
         return getNodeContainers().stream().anyMatch(nc -> {
             assert nc instanceof AbstractEntityProxyNodeContainer;
@@ -709,7 +726,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean isWriteProtected() {
-        return false;
+        return m_isDisconnected;
     }
 
     /**
@@ -1166,5 +1183,13 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                 }
             });
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDisconnected(final boolean disconnected) {
+        m_isDisconnected = disconnected;
     }
 }
