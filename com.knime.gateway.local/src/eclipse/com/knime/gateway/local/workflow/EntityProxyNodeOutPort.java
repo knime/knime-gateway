@@ -148,7 +148,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
      */
     @Override
     public NodeContainerState getNodeState() {
-        return EntityProxyNodeContainer.getNodeContainerState(m_node);
+        return AbstractEntityProxyNodeContainer.getNodeContainerState(m_node);
     }
 
     /**

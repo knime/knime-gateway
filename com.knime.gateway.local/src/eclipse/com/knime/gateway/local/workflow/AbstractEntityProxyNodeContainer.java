@@ -74,7 +74,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @author Martin Horn, University of Konstanz
  * @param <E>
  */
-public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends AbstractEntityProxy<E>
+public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extends AbstractEntityProxy<E>
     implements NodeContainerUI {
 
     /**
@@ -118,7 +118,7 @@ public abstract class EntityProxyNodeContainer<E extends NodeEnt> extends Abstra
      * @param access
      *
      */
-    EntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
+    AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
         ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }

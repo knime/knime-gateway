@@ -157,10 +157,10 @@ public class EntityProxyAccess {
      * With every call the same entity proxy instance will be returned for the same entity.
      *
      * @param nodeEnt the node entity to be wrapped
-     * @return the {@link EntityProxyNodeContainer} - either the cached one or newly created
+     * @return the {@link AbstractEntityProxyNodeContainer} - either the cached one or newly created
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    EntityProxyNodeContainer getNodeContainer(final NodeEnt nodeEnt) {
+    AbstractEntityProxyNodeContainer getNodeContainer(final NodeEnt nodeEnt) {
         //return exactly the same node container instance for the same node entity
         return getOrCreate(nodeEnt, k -> {
             if (nodeEnt instanceof NativeNodeEnt) {
@@ -174,7 +174,7 @@ public class EntityProxyAccess {
                 return new EntityProxyWorkflowManager((WorkflowNodeEnt)nodeEnt, this);
             }
             throw new IllegalStateException("Node entity type " + nodeEnt.getClass().getName() + " not supported.");
-        }, EntityProxyNodeContainer.class);
+        }, AbstractEntityProxyNodeContainer.class);
     }
 
     /**
@@ -365,18 +365,18 @@ public class EntityProxyAccess {
     }
 
     /**
-     * If an {@link EntityProxyNodeContainer} already exists for the 'oldNode', the entity will be replaced with
+     * If an {@link AbstractEntityProxyNodeContainer} already exists for the 'oldNode', the entity will be replaced with
      * 'newNode'. Otherwise nothing happens.
      *
      * After the update is done, {@link EntityProxy#postUpdate()} will be called, too.
      *
-     * @param oldNode the entity to be replaced in an {@link EntityProxyNodeContainer}
+     * @param oldNode the entity to be replaced in an {@link AbstractEntityProxyNodeContainer}
      * @param newNode the entity to replace with
      */
     @SuppressWarnings("unchecked")
     void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
-        if (update(oldNode, newNode, EntityProxyNodeContainer.class)) {
-            postUpdate(newNode, EntityProxyNodeContainer.class);
+        if (update(oldNode, newNode, AbstractEntityProxyNodeContainer.class)) {
+            postUpdate(newNode, AbstractEntityProxyNodeContainer.class);
         }
     }
 

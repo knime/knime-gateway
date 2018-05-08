@@ -86,7 +86,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @author Martin Horn, University of Konstanz
  * @param <E> the type of the workflow node entity (e.g. wrapped)
  */
-abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends EntityProxyNodeContainer<E>
+abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends AbstractEntityProxyNodeContainer<E>
     implements WorkflowManagerUI {
 
     /**
@@ -409,8 +409,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public void executeUpToHere(final NodeID... ids) {
         for(NodeID id : ids) {
             NodeContainerUI nc = getNodeContainer(id);
-            assert nc instanceof EntityProxyNodeContainer;
-            ((EntityProxyNodeContainer)nc).execute();
+            assert nc instanceof AbstractEntityProxyNodeContainer;
+            ((AbstractEntityProxyNodeContainer)nc).execute();
         }
     }
 
@@ -471,8 +471,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         //TODO ask server whether the node can be reset (i.e. whether there are executing successors etc.)
         //very simple (but not complete!) logic to check whether a node can be reset
         NodeContainerUI nc = getNodeContainer(nodeID);
-        assert nc instanceof EntityProxyNodeContainer;
-        return ((EntityProxyNodeContainer) nc).canReset();
+        assert nc instanceof AbstractEntityProxyNodeContainer;
+        return ((AbstractEntityProxyNodeContainer) nc).canReset();
     }
 
     /**
@@ -490,8 +490,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public void resetAndConfigureNode(final NodeID id) {
         NodeContainerUI nc = getNodeContainer(id);
-        assert nc instanceof EntityProxyNodeContainer;
-        ((EntityProxyNodeContainer) nc).reset();
+        assert nc instanceof AbstractEntityProxyNodeContainer;
+        ((AbstractEntityProxyNodeContainer) nc).reset();
     }
 
     /**
@@ -517,8 +517,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public boolean canExecuteNode(final NodeID nodeID) {
         NodeContainerUI nc = getNodeContainer(nodeID);
-        assert nc instanceof EntityProxyNodeContainer;
-        return ((EntityProxyNodeContainer)nc).canExecute();
+        assert nc instanceof AbstractEntityProxyNodeContainer;
+        return ((AbstractEntityProxyNodeContainer)nc).canExecute();
     }
 
     /**
@@ -551,8 +551,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @SuppressWarnings("rawtypes")
     @Override
     public void cancelExecution(final NodeContainerUI nc) {
-        if (nc instanceof EntityProxyNodeContainer) {
-            ((EntityProxyNodeContainer)nc).cancelExecution();
+        if (nc instanceof AbstractEntityProxyNodeContainer) {
+            ((AbstractEntityProxyNodeContainer)nc).cancelExecution();
         } else {
             throw new IllegalArgumentException("NodeContainerUI implementation not supported.");
         }
@@ -597,9 +597,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public boolean canExecuteAll() {
         //simple (and possibly not complete strategy) to determine whether the entire workflow can be executed
         return getNodeContainers().stream().anyMatch(nc -> {
-            assert nc instanceof EntityProxyNodeContainer;
+            assert nc instanceof AbstractEntityProxyNodeContainer;
             @SuppressWarnings("rawtypes")
-            EntityProxyNodeContainer epnc = (EntityProxyNodeContainer)nc;
+            AbstractEntityProxyNodeContainer epnc = (AbstractEntityProxyNodeContainer)nc;
             return epnc.canExecute();
         });
     }
@@ -709,8 +709,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean isWriteProtected() {
-        //TODO
-        return true;
+        return false;
     }
 
     /**

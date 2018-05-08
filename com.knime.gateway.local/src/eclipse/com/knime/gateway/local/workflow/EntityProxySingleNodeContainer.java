@@ -29,7 +29,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
  *
  * @param <E> the type of the node entity
  */
-abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends EntityProxyNodeContainer<E>
+abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends AbstractEntityProxyNodeContainer<E>
     implements SingleNodeContainerUI {
 
     /**
