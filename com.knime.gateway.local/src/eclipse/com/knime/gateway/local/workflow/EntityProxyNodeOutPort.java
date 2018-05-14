@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.NodeContainerState;
@@ -33,6 +34,7 @@ import com.knime.gateway.local.util.missing.MissingPortObject;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link NodeOutPortUI}.
@@ -57,6 +59,18 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         super(outPort, access);
         m_node = node;
         m_listener = new LinkedHashSet<>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PortObjectSpec getPortObjectSpec() {
+        try {
+            return getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
+        } catch (NotSupportedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
