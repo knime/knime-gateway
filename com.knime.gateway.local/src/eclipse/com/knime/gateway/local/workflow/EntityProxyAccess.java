@@ -21,13 +21,29 @@ package com.knime.gateway.local.workflow;
 import static com.knime.gateway.local.service.ServiceManager.service;
 import static com.knime.gateway.local.service.ServiceManager.workflowService;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.ModelContent;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.workflow.FlowObjectStack;
+import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.util.Pair;
 
@@ -35,11 +51,14 @@ import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.entity.NodePortEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
@@ -49,6 +68,7 @@ import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
@@ -348,10 +368,90 @@ public class EntityProxyAccess {
      * @param node the node to get the settings for
      * @return the settings formatted as json
      */
-    String getSettingsAsJson(final NodeEnt node) {
+    NodeSettings getNodeSettings(final NodeEnt node) {
         try {
-            return service(NodeService.class, m_serviceConfig).getNodeSettings(node.getRootWorkflowID(),
-                node.getNodeID());
+            String json = service(NodeService.class, m_serviceConfig)
+                .getNodeSettings(node.getRootWorkflowID(), node.getNodeID());
+            return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
+        } catch (IOException ex) {
+            throw new RuntimeException("Unable to read NodeSettings from XML String", ex);
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
+        //TODO cache the port object specs
+        if (node.getOutPorts().size() > 0) {
+            try {
+                List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
+                    .getInputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
+                return createPortObjectSpecsFromEntity(entList, node.getInPorts());
+            } catch (NodeNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
+            return new PortObjectSpec[0];
+        }
+    }
+
+    PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
+        //TODO cache the port object specs
+        if (node.getOutPorts().size() > 0) {
+            try {
+                List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
+                    .getOutputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
+                return createPortObjectSpecsFromEntity(entList, node.getOutPorts());
+            } catch (NodeNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
+            return new PortObjectSpec[0];
+        }
+    }
+
+    private static PortObjectSpec[] createPortObjectSpecsFromEntity(final List<PortObjectSpecEnt> entList,
+        final List<? extends NodePortEnt> ports) {
+        assert ports.size() - 1 == entList.size();
+        PortObjectSpec[] res = new PortObjectSpec[entList.size() + 1];
+        for (int i = 1; i < res.length; i++) {
+            PortObjectSpecEnt ent = entList.get(i - 1);
+            if (ent == null) {
+                continue;
+            }
+            if (ent.getType().getPortObjectClassName().equals(BufferedDataTable.class.getCanonicalName())) {
+                try {
+                    res[i] = DataTableSpec.load(
+                        JSONConfig.readJSON(new ModelContent("model"), new StringReader(ent.getRepresentation())));
+                } catch (InvalidSettingsException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else if (ent.getType().getPortObjectClassName()
+                .equals(FlowVariablePortObject.class.getCanonicalName())) {
+                res[i] = FlowVariablePortObjectSpec.INSTANCE;
+            } else {
+                throw new IllegalArgumentException("Port type not supported, yet.");
+            }
+        }
+        return res;
+    }
+
+    FlowObjectStack getFlowVariableStack(final NodeEnt node, final NodeID nodeId) {
+        try {
+            List<FlowVariableEnt> flowVariables = service(NodeService.class, m_serviceConfig)
+                .getFlowVariables(node.getRootWorkflowID(), node.getNodeID());
+            return FlowObjectStack.createFromFlowVariableList(flowVariables.stream().map(e -> {
+                switch (e.getType()) {
+                    case DOUBLE:
+                        return new FlowVariable(e.getName(), Double.valueOf(e.getValue()));
+                    case INTEGER:
+                        return new FlowVariable(e.getName(), Integer.valueOf(e.getValue()));
+                    case STRING:
+                        return new FlowVariable(e.getName(), e.getValue());
+                    default:
+                        throw new IllegalStateException();
+                }
+            }).collect(Collectors.toList()), nodeId);
         } catch (NodeNotFoundException ex) {
             throw new RuntimeException(ex);
         }

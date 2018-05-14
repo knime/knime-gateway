@@ -18,8 +18,6 @@
  */
 package com.knime.gateway.local.workflow;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +26,10 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.ConfigBaseRO;
-import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeAnnotationData;
@@ -118,7 +116,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * @param access
      *
      */
-    AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
+    public AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
         ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }
@@ -388,12 +386,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     /** {@inheritDoc} */
     @Override
     public ConfigBaseRO getNodeSettings() {
-        String json = getAccess().getSettingsAsJson(getEntity());
-        try {
-            return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
-        } catch (IOException ex) {
-            throw new RuntimeException("Unable to read NodeSettings from XML String", ex);
-        }
+        return getAccess().getNodeSettings(getEntity());
     }
 
     /**
@@ -441,7 +434,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public boolean hasDialog() {
-        return getEntity().isHasDialog();
+        return false;
     }
 
     /**
@@ -450,6 +443,11 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     @Override
     public boolean areDialogAndNodeSettingsEqual() {
         return false;
+    }
+
+    @Override
+    public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
+        return null;
     }
 
     /**

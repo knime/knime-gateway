@@ -24,10 +24,17 @@ import java.net.URL;
 
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
@@ -35,6 +42,7 @@ import org.w3c.dom.Element;
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.
@@ -43,7 +51,11 @@ import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
  */
 class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<NativeNodeEnt> {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyNativeNodeContainer.class);
+
     private NodeFactory<? extends NodeModel> m_nodeFactory = null;
+
+    private NodeDialogPane m_dialogPane;
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -88,6 +100,36 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
     @Override
     public boolean isInactive() {
         return getEntity().isInactive();
+    }
+
+    @Override
+    public boolean hasDialog() {
+        return getEntity().isHasDialog();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
+        if (m_dialogPane == null) {
+            m_dialogPane = NodeDialogPane.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
+                getEntity().getInPorts().size(), false);
+        }
+        NodeSettings nodeSettings = getAccess().getNodeSettings(getEntity());
+        PortObjectSpec[] portObjectSpecs;
+        try {
+            portObjectSpecs = getAccess().getInputPortObjectSpecs(getEntity());
+        } catch (NotSupportedException ex) {
+            throw new NotConfigurableException("Problem retrieving settings info: " + ex.getMessage(), ex);
+        }
+        PortType[] portTypes = new PortType[portObjectSpecs.length];
+        for (int i = 1; i < portTypes.length; i++) {
+            portTypes[i] = getOutPort(i - 1).getPortType();
+        }
+        FlowObjectStack flowObjectStack = getAccess().getFlowVariableStack(getEntity(), getID());
+        return NodeDialogPane.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
+            new PortObject[portObjectSpecs.length], nodeSettings, true, null, flowObjectStack, null);
     }
 
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
