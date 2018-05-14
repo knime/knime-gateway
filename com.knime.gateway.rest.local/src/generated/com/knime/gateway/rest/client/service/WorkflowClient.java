@@ -27,6 +27,7 @@ import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 
 import com.knime.gateway.service.ServiceException;
 import com.knime.gateway.v0.service.WorkflowService;

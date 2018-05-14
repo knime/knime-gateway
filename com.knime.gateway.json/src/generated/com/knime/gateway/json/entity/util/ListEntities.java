@@ -21,6 +21,7 @@ package com.knime.gateway.json.entity.util;
 import com.knime.gateway.json.entity.AnnotationEntMixIn;
 import com.knime.gateway.json.entity.BoundsEntMixIn;
 import com.knime.gateway.json.entity.ConnectionEntMixIn;
+import com.knime.gateway.json.entity.FlowVariableEntMixIn;
 import com.knime.gateway.json.entity.JobManagerEntMixIn;
 import com.knime.gateway.json.entity.MetaPortInfoEntMixIn;
 import com.knime.gateway.json.entity.NodeEntMixIn;
@@ -32,6 +33,7 @@ import com.knime.gateway.json.entity.NodeStateEntMixIn;
 import com.knime.gateway.json.entity.NodeUIInfoEntMixIn;
 import com.knime.gateway.json.entity.PatchEntMixIn;
 import com.knime.gateway.json.entity.PatchOpEntMixIn;
+import com.knime.gateway.json.entity.PortObjectSpecEntMixIn;
 import com.knime.gateway.json.entity.PortTypeEntMixIn;
 import com.knime.gateway.json.entity.StyleRangeEntMixIn;
 import com.knime.gateway.json.entity.WorkflowEntMixIn;
@@ -71,6 +73,7 @@ public class ListEntities {
         res.add(AnnotationEntMixIn.class);
         res.add(BoundsEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
+        res.add(FlowVariableEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(MetaPortInfoEntMixIn.class);
         res.add(NodeEntMixIn.class);
@@ -82,6 +85,7 @@ public class ListEntities {
         res.add(NodeUIInfoEntMixIn.class);
         res.add(PatchEntMixIn.class);
         res.add(PatchOpEntMixIn.class);
+        res.add(PortObjectSpecEntMixIn.class);
         res.add(PortTypeEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
@@ -107,6 +111,7 @@ public class ListEntities {
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
+        res.add(FlowVariableEntMixIn.FlowVariableEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(MetaPortInfoEntMixIn.MetaPortInfoEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
@@ -118,6 +123,7 @@ public class ListEntities {
         res.add(NodeUIInfoEntMixIn.NodeUIInfoEntMixInBuilder.class);
         res.add(PatchEntMixIn.PatchEntMixInBuilder.class);
         res.add(PatchOpEntMixIn.PatchOpEntMixInBuilder.class);
+        res.add(PortObjectSpecEntMixIn.PortObjectSpecEntMixInBuilder.class);
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);

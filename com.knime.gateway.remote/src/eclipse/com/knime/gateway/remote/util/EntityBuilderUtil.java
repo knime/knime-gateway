@@ -30,18 +30,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.ModelContent;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.port.MetaPortInfo;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.EditorUIInformation;
+import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
@@ -61,6 +66,8 @@ import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt.TypeEnum;
+import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
@@ -84,6 +91,8 @@ import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt.NodeUIInfoEntBuilder;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt.PortObjectSpecEntBuilder;
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
@@ -242,6 +251,47 @@ public class EntityBuilderUtil {
                 .setVirtualOutNodeID(nodeIdAsString(subNode.getVirtualOutNodeID()))
                 .setInactive(subNode.isInactive())
                 .setType("WrappedWorkflowNode").build();
+    }
+
+    /**
+     * Newly creates a {@link PortObjectSpecEnt}.
+     *
+     * @param type port type
+     * @param spec the actual spec to create the entity from
+     * @return the entity or <code>null</code> if spec/port type is not supported
+     * @throws IllegalArgumentException if the port type and the port object spec are not compatible
+     */
+    public static PortObjectSpecEnt buildPortObjectSpecEnt(final PortType type, final PortObjectSpec spec) {
+        if(!type.acceptsPortObjectSpec(spec)) {
+            throw new IllegalArgumentException("The port type and port object spec are not compatible.");
+        }
+        String representation = null;
+        if (spec instanceof DataTableSpec) {
+            ModelContent model = new ModelContent("model");
+            ((DataTableSpec)spec).save(model);
+            representation = JSONConfig.toJSONString(model, WriterConfig.PRETTY);
+        } else if (spec instanceof FlowVariablePortObjectSpec) {
+            //flow variable port spec doesn't have any content
+        } else {
+            //port type/spec not supported, yet
+            return null;
+        }
+        return builder(PortObjectSpecEntBuilder.class).setType(buildPortTypeEnt(type)).setRepresentation(representation)
+            .build();
+    }
+
+    /**
+     * Builds a new {@link FlowVariableEnt}.
+     *
+     * @param flowVar the flow variable to create the entity from
+     * @return the newly created entity
+     */
+    public static FlowVariableEnt buildFlowVariableEnt(final FlowVariable flowVar) {
+        return builder(FlowVariableEntBuilder.class)
+                .setName(flowVar.getName())
+                .setType(FlowVariableEnt.TypeEnum.valueOf(flowVar.getType().toString()))
+                .setValue(flowVar.getValueAsString())
+                .build();
     }
 
     private static PortTypeEnt buildPortTypeEnt(final PortType portType) {

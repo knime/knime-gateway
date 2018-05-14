@@ -66,7 +66,7 @@ public final class ServiceExceptions {
     }
     
     /**
-    * If the following action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
+    * If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.0m
     */
     public static class ActionNotAllowedException extends Exception {
         public ActionNotAllowedException(String message) {
@@ -74,6 +74,19 @@ public final class ServiceExceptions {
         }
         
         public ActionNotAllowedException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+    
+    /**
+    * If the request is not supported for a reason. Please refer to the exception message for more details.
+    */
+    public static class NotSupportedException extends Exception {
+        public NotSupportedException(String message) {
+            super(message);
+        }
+        
+        public NotSupportedException(String message, Throwable cause) {
             super(message, cause);
         }
     }

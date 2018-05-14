@@ -20,24 +20,41 @@ package com.knime.gateway.remote.service;
 
 import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
 
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.FlowVariable.Scope;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.knime.gateway.remote.util.EntityBuilderUtil;
 import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.
@@ -65,16 +82,9 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String getNodeSettings(final UUID rootWorkflowID, final String nodeID) throws NodeNotFoundException {
-        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-        NodeContainer nodeContainer;
-        try{
-            nodeContainer = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
-        } catch(IllegalArgumentException e) {
-            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
-        }
-        NodeSettings settings = nodeContainer.getNodeSettings();
+    public String getNodeSettings(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException {
+        NodeSettings settings = getNodeContainer(rootWorkflowID, nodeID).getNodeSettings();
         return JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
     }
 
@@ -83,18 +93,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public NodeEnt getNode(final UUID rootWorkflowID, final String nodeID) throws NodeNotFoundException {
-        //get the right IWorkflowManager for the given id and create a WorkflowEnt from it
-        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
-            return getRootNode(rootWorkflowID);
-        }
-        NodeContainer node;
-        try {
-            node = wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
-        } catch (IllegalArgumentException e) {
-            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
-        }
+        NodeContainer node = getNodeContainer(rootWorkflowID, nodeID);
         return buildNodeEnt(node, rootWorkflowID);
     }
 
@@ -103,12 +102,8 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public NodeEnt getRootNode(final UUID rootWorkflowID) {
-        return buildNodeEnt(
-            WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-                () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found.")),
-            rootWorkflowID);
+        return buildNodeEnt(getRootWorkflowManager(rootWorkflowID), rootWorkflowID);
     }
-
 
     /**
      * {@inheritDoc}
@@ -157,5 +152,99 @@ public class DefaultNodeService implements NodeService {
         } catch (IllegalArgumentException e) {
             throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PortObjectSpecEnt> getInputPortSpecs(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException, NotSupportedException {
+        Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
+        WorkflowManager wfm = rootWfmAndNc.getFirst();
+        NodeContainer nc = rootWfmAndNc.getSecond();
+        //skip flow variable port
+        return getPortObjectSpecsAsEntityList(IntStream.range(1, nc.getNrInPorts()).mapToObj(i -> {
+            ConnectionContainer conn = wfm.getIncomingConnectionFor(nc.getID(), i);
+            if (conn != null) {
+                NodeOutPort outPort = wfm.findNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
+                return Pair.create(outPort.getPortType(), outPort.getPortObjectSpec());
+            } else {
+                return null;
+            }
+        }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException, NotSupportedException {
+        NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
+        //skip flow variable port
+        return getPortObjectSpecsAsEntityList(IntStream.range(1, nodeContainer.getNrOutPorts()).mapToObj(i -> {
+            return Pair.create(nodeContainer.getOutPort(i).getPortType(),
+                nodeContainer.getOutPort(i).getPortObjectSpec());
+        }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FlowVariableEnt> getFlowVariables(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException {
+        NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
+        Map<String, FlowVariable> flowObjectStack = nodeContainer.getFlowObjectStack().getAvailableFlowVariables();
+        return flowObjectStack.values().stream().filter(fv -> fv.getScope().equals(Scope.Flow))
+            .map(fv -> EntityBuilderUtil.buildFlowVariableEnt(fv)).collect(Collectors.toList());
+    }
+
+    private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(
+        final Stream<Pair<PortType, PortObjectSpec>> specs) throws NotSupportedException {
+        AtomicReference<NotSupportedException> exception = new AtomicReference<NotSupportedException>();
+        List<PortObjectSpecEnt> res = specs.map(port -> {
+            if (exception.get() != null) {
+                return null;
+            }
+            PortType type = port.getFirst();
+            PortObjectSpec spec = port.getSecond();
+            PortObjectSpecEnt ent = EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
+            if (ent == null) {
+                exception.set(new ServiceExceptions.NotSupportedException("Port object spec of type '"
+                    + spec.getClass().getSimpleName() + "' not supported in remote view, yet."));
+                return null;
+            } else {
+                return ent;
+
+            }
+        }).collect(Collectors.toList());
+        if (exception.get() == null) {
+            return res;
+        } else {
+            //could think of a better way to transfer a thrown exception from within a lambda-expression
+            throw exception.get();
+        }
+    }
+
+    private static NodeContainer getNodeContainer(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException {
+        WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
+       try {
+            return wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+        } catch (IllegalArgumentException e) {
+            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
+        }
+    }
+
+    private static WorkflowManager getRootWorkflowManager(final UUID rootWorkflowID) {
+        return WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
+    }
+
+    private static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException {
+        return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
     }
 }

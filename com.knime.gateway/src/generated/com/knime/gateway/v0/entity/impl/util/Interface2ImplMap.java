@@ -24,6 +24,8 @@ import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultBoundsEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultConnectionEnt;
+import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultJobManagerEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt.MetaPortInfoEntBuilder;
@@ -46,6 +48,8 @@ import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPatchEnt;
 import com.knime.gateway.v0.entity.PatchOpEnt.PatchOpEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt.PortObjectSpecEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultPortObjectSpecEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPortTypeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
@@ -96,6 +100,9 @@ public class Interface2ImplMap {
         if(clazz == ConnectionEntBuilder.class) {
             return new DefaultConnectionEnt.DefaultConnectionEntBuilder();
         }        
+        if(clazz == FlowVariableEntBuilder.class) {
+            return new DefaultFlowVariableEnt.DefaultFlowVariableEntBuilder();
+        }        
         if(clazz == JobManagerEntBuilder.class) {
             return new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
         }        
@@ -128,6 +135,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == PatchOpEntBuilder.class) {
             return new DefaultPatchOpEnt.DefaultPatchOpEntBuilder();
+        }        
+        if(clazz == PortObjectSpecEntBuilder.class) {
+            return new DefaultPortObjectSpecEnt.DefaultPortObjectSpecEntBuilder();
         }        
         if(clazz == PortTypeEntBuilder.class) {
             return new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();

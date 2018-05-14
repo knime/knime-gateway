@@ -21,6 +21,7 @@ package com.knime.gateway.v0.entity.util;
 import com.knime.gateway.v0.entity.AnnotationEnt;
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -32,6 +33,7 @@ import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PatchOpEnt;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
@@ -71,6 +73,7 @@ public class ListEntities {
         res.add(AnnotationEnt.class);
         res.add(BoundsEnt.class);
         res.add(ConnectionEnt.class);
+        res.add(FlowVariableEnt.class);
         res.add(JobManagerEnt.class);
         res.add(MetaPortInfoEnt.class);
         res.add(NodeEnt.class);
@@ -82,6 +85,7 @@ public class ListEntities {
         res.add(NodeUIInfoEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
+        res.add(PortObjectSpecEnt.class);
         res.add(PortTypeEnt.class);
         res.add(StyleRangeEnt.class);
         res.add(WorkflowEnt.class);
@@ -107,6 +111,7 @@ public class ListEntities {
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
+        res.add(FlowVariableEnt.FlowVariableEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(MetaPortInfoEnt.MetaPortInfoEntBuilder.class);
         res.add(NodeEnt.NodeEntBuilder.class);
@@ -118,6 +123,7 @@ public class ListEntities {
         res.add(NodeUIInfoEnt.NodeUIInfoEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
+        res.add(PortObjectSpecEnt.PortObjectSpecEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);

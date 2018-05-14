@@ -29,6 +29,7 @@ import java.util.function.Function;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -43,6 +44,7 @@ import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
 import com.knime.enterprise.utility.KnimeServerConstants;
+import com.knime.gateway.rest.client.providers.json.CollectionJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 
@@ -76,6 +78,7 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
         List<Object> jaxRSProviders = Util.getJaxRSProviders();
         //is there a better way than adding the required provider manually?
         jaxRSProviders.add(new EntityJSONDeserializer());
+        jaxRSProviders.add(0, new CollectionJSONDeserializer());
         m_client = createProxy(resourceClass, m_restAddress, null, null, jaxRSProviders, "Explorer01",
             Duration.ofMillis(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT));
         if (jwt != null) {
@@ -94,14 +97,48 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
      * @throws WebApplicationException in case of an exception as response, e.g. not found, etc.
      */
     protected <R> R doRequest(final Function<C, Response> call, final Class<R> resultClass) {
-        try (AuthenticationCloseable c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups();
+        if (resultClass != null) {
+            return doRequestInternal(call, (res) -> res.readEntity(resultClass));
+        } else {
+            return null;
+        }
+   }
+
+    /**
+     * Same as {@link #doRequest(Function, Class)} but for generic types.
+     *
+     * @param call see above
+     * @param resultClass see above
+     * @return see above
+     * @throws WebApplicationException see above
+     */
+    protected <R> R doRequest(final Function<C, Response> call, final GenericType<R> resultClass) {
+        if (resultClass != null) {
+            return doRequestInternal(call, (res) -> res.readEntity(resultClass));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Same as {@link #doRequest(Function, Class)} but without any return type.
+     *
+     * @param call see above
+     * @throws WebApplicationException see above
+     */
+    protected void doRequest(final Function<C, Response> call) {
+        doRequestInternal(call, null);
+    }
+
+    private <R> R doRequestInternal(final Function<C, Response> call, final Function<Response, R> readEntity) {
+         try (AuthenticationCloseable c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups();
                 AutocloseableResponse res = acr(call.apply(m_client))) {
             if (!MediaType.APPLICATION_JSON_TYPE.isCompatible(res.getMediaType())) {
                 throw new IllegalArgumentException(
                     "REST address '" + m_restAddress + "' does not point to a KNIME server's REST interface.");
             }
-            if (resultClass != null) {
-                return res.readEntity(resultClass);
+            if (readEntity != null) {
+                return readEntity.apply(res);
             } else {
                 return null;
             }
