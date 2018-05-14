@@ -123,4 +123,27 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNativeNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxyNativeNodeContainer">
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeDialogPane"/>
+                <message_argument value="EntityProxyNativeNodeContainer"/>
+                <message_argument value="createDialogPane(NodeFactory&lt;NodeModel&gt;, int, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeDialogPane"/>
+                <message_argument value="EntityProxyNativeNodeContainer"/>
+                <message_argument value="initDialogPaneWithSettings(NodeDialogPane, PortObjectSpec[], PortType[], PortObject[], NodeSettingsRO, boolean, NodeModel, FlowObjectStack, CredentialsProvider)"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeFactory&lt;T&gt;"/>
+                <message_argument value="EntityProxyNativeNodeContainer"/>
+                <message_argument value="loadAdditionalFactorySettings(ConfigRO)"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
