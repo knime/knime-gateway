@@ -38,9 +38,15 @@ import org.knime.core.node.ModelContent;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.port.AbstractSimplePortObjectSpec;
+import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeID;
@@ -50,6 +56,7 @@ import org.knime.core.util.Pair;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
+import com.knime.gateway.local.util.missing.MissingPortObject;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
@@ -59,6 +66,7 @@ import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.NodePortEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
+import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
@@ -410,27 +418,55 @@ public class EntityProxyAccess {
         }
     }
 
+
+    /**
+     * Gets the matching port type for the given port type entity.
+     *
+     * @param ent the entity to convert into the actual PortType
+     *
+     * @return the port type
+     */
+    static PortType getPortType(final PortTypeEnt ent) {
+        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
+        Class<? extends PortObject> portObjectClass =
+            ptr.getObjectClass(ent.getPortObjectClassName()).orElseGet(() -> MissingPortObject.class);
+        return ptr.getPortType(portObjectClass, ent.isOptional());
+    }
+
     private static PortObjectSpec[] createPortObjectSpecsFromEntity(final List<PortObjectSpecEnt> entList,
-        final List<? extends NodePortEnt> ports) {
-        assert ports.size() - 1 == entList.size();
-        PortObjectSpec[] res = new PortObjectSpec[entList.size() + 1];
-        for (int i = 1; i < res.length; i++) {
-            PortObjectSpecEnt ent = entList.get(i - 1);
+        final List<? extends NodePortEnt> ports) throws NotSupportedException {
+        assert ports.size() == entList.size();
+        PortObjectSpec[] res = new PortObjectSpec[entList.size()];
+        for (int i = 0; i < res.length; i++) {
+            PortObjectSpecEnt ent = entList.get(i);
             if (ent == null) {
                 continue;
             }
-            if (ent.getType().getPortObjectClassName().equals(BufferedDataTable.class.getCanonicalName())) {
+            if (ent.isInactive()) {
+                res[i] = InactiveBranchPortObjectSpec.INSTANCE;
+                continue;
+            }
+            PortType ptype = getPortType(ent.getType());
+            if (ptype.equals(BufferedDataTable.TYPE)) {
                 try {
                     res[i] = DataTableSpec.load(
                         JSONConfig.readJSON(new ModelContent("model"), new StringReader(ent.getRepresentation())));
                 } catch (InvalidSettingsException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
-            } else if (ent.getType().getPortObjectClassName()
-                .equals(FlowVariablePortObject.class.getCanonicalName())) {
+            } else if (ptype.equals(FlowVariablePortObject.TYPE)) {
                 res[i] = FlowVariablePortObjectSpec.INSTANCE;
+            } else if (AbstractSimplePortObjectSpec.class.isAssignableFrom(ptype.getPortObjectSpecClass())) {
+                ModelContent model = new ModelContent("model");
+                try {
+                    JSONConfig.readJSON(model, new StringReader(ent.getRepresentation()));
+                    res[i] = AbstractSimplePortObjectSpecSerializer.loadPortObjectSpecFromModelSettings(model);
+                } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
-                throw new IllegalArgumentException("Port type not supported, yet.");
+                throw new NotSupportedException(
+                    "Port type '" + ptype.getName() + "' not supported, yet.");
             }
         }
         return res;

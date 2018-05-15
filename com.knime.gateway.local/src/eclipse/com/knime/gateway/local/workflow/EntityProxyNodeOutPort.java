@@ -21,19 +21,15 @@ package com.knime.gateway.local.workflow;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 
-import com.knime.gateway.local.util.missing.MissingPortObject;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
-import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
@@ -86,11 +82,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
      */
     @Override
     public PortType getPortType() {
-        PortTypeEnt pte = getEntity().getPortType();
-        PortTypeRegistry ptr = PortTypeRegistry.getInstance();
-        Class<? extends PortObject> portObjectClass =
-            ptr.getObjectClass(pte.getPortObjectClassName()).orElseGet(() -> MissingPortObject.class);
-        return ptr.getPortType(portObjectClass, pte.isOptional());
+        return EntityProxyAccess.getPortType(getEntity().getPortType());
     }
 
     /**

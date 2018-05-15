@@ -38,10 +38,13 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.port.AbstractSimplePortObjectSpec;
+import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ConnectionContainer;
@@ -265,19 +268,28 @@ public class EntityBuilderUtil {
         if(!type.acceptsPortObjectSpec(spec)) {
             throw new IllegalArgumentException("The port type and port object spec are not compatible.");
         }
-        String representation = null;
+        ModelContent model = null;
+        PortObjectSpecEntBuilder builder = builder(PortObjectSpecEntBuilder.class).setInactive(false);
         if (spec instanceof DataTableSpec) {
-            ModelContent model = new ModelContent("model");
+            model = new ModelContent("model");
             ((DataTableSpec)spec).save(model);
-            representation = JSONConfig.toJSONString(model, WriterConfig.PRETTY);
         } else if (spec instanceof FlowVariablePortObjectSpec) {
             //flow variable port spec doesn't have any content
+        } else if (spec instanceof AbstractSimplePortObjectSpec) {
+            model = new ModelContent("model");
+            AbstractSimplePortObjectSpecSerializer.savePortObjectSpecToModelSettings((AbstractSimplePortObjectSpec)spec, model);
+        } else if (spec instanceof InactiveBranchPortObjectSpec) {
+            builder.setInactive(true);
         } else {
             //port type/spec not supported, yet
             return null;
         }
-        return builder(PortObjectSpecEntBuilder.class).setType(buildPortTypeEnt(type)).setRepresentation(representation)
-            .build();
+
+        builder.setType(buildPortTypeEnt(type));
+        if (model != null) {
+            builder.setRepresentation(JSONConfig.toJSONString(model, WriterConfig.PRETTY));
+        }
+        return builder.build();
     }
 
     /**

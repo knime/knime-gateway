@@ -65,6 +65,10 @@ public interface PortObjectSpecEntMixIn extends PortObjectSpecEnt {
     @JsonProperty("representation")
     public String getRepresentation();
     
+    @Override
+    @JsonProperty("inactive")
+    public Boolean isInactive();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -92,6 +96,10 @@ public interface PortObjectSpecEntMixIn extends PortObjectSpecEnt {
         @Override
         @JsonProperty("representation")
         public PortObjectSpecEntMixInBuilder setRepresentation(final String representation);
+        
+        @Override
+        @JsonProperty("inactive")
+        public PortObjectSpecEntMixInBuilder setInactive(final Boolean inactive);
         
     }
 

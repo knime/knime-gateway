@@ -124,8 +124,8 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             throw new NotConfigurableException("Problem retrieving settings info: " + ex.getMessage(), ex);
         }
         PortType[] portTypes = new PortType[portObjectSpecs.length];
-        for (int i = 1; i < portTypes.length; i++) {
-            portTypes[i] = getOutPort(i - 1).getPortType();
+        for (int i = 0; i < portTypes.length; i++) {
+            portTypes[i] = getInPort(i).getPortType();
         }
         FlowObjectStack flowObjectStack = getAccess().getFlowVariableStack(getEntity(), getID());
         return NodeDialogPane.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,

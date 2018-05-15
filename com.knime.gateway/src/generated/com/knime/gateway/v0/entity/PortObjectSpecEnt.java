@@ -36,7 +36,7 @@ public interface PortObjectSpecEnt extends GatewayEntity {
 
   /**
    * The port type the specification refers to.
-   * @return type 
+   * @return type , never <code>null</code>
    **/
   public PortTypeEnt getType();
 
@@ -45,6 +45,12 @@ public interface PortObjectSpecEnt extends GatewayEntity {
    * @return representation 
    **/
   public String getRepresentation();
+
+  /**
+   * Flag indicating whether the port is inactive. If true, there will be no representation available.
+   * @return inactive , never <code>null</code>
+   **/
+  public Boolean isInactive();
 
 
     /**
@@ -55,7 +61,7 @@ public interface PortObjectSpecEnt extends GatewayEntity {
         /**
          * The port type the specification refers to.
          * 
-         * @param type the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         PortObjectSpecEntBuilder setType(PortTypeEnt type);
@@ -67,6 +73,14 @@ public interface PortObjectSpecEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         PortObjectSpecEntBuilder setRepresentation(String representation);
+        
+        /**
+         * Flag indicating whether the port is inactive. If true, there will be no representation available.
+         * 
+         * @param inactive the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PortObjectSpecEntBuilder setInactive(Boolean inactive);
         
         
         /**

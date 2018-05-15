@@ -163,9 +163,8 @@ public class DefaultNodeService implements NodeService {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         WorkflowManager wfm = rootWfmAndNc.getFirst();
         NodeContainer nc = rootWfmAndNc.getSecond();
-        //skip flow variable port
-        return getPortObjectSpecsAsEntityList(IntStream.range(1, nc.getNrInPorts()).mapToObj(i -> {
-            ConnectionContainer conn = wfm.getIncomingConnectionFor(nc.getID(), i);
+        return getPortObjectSpecsAsEntityList(IntStream.range(0, nc.getNrInPorts()).mapToObj(i -> {
+            ConnectionContainer conn = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
             if (conn != null) {
                 NodeOutPort outPort = wfm.findNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
                 return Pair.create(outPort.getPortType(), outPort.getPortObjectSpec());
@@ -182,8 +181,7 @@ public class DefaultNodeService implements NodeService {
     public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException, NotSupportedException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
-        //skip flow variable port
-        return getPortObjectSpecsAsEntityList(IntStream.range(1, nodeContainer.getNrOutPorts()).mapToObj(i -> {
+        return getPortObjectSpecsAsEntityList(IntStream.range(0, nodeContainer.getNrOutPorts()).mapToObj(i -> {
             return Pair.create(nodeContainer.getOutPort(i).getPortType(),
                 nodeContainer.getOutPort(i).getPortObjectSpec());
         }));
@@ -205,6 +203,10 @@ public class DefaultNodeService implements NodeService {
         final Stream<Pair<PortType, PortObjectSpec>> specs) throws NotSupportedException {
         AtomicReference<NotSupportedException> exception = new AtomicReference<NotSupportedException>();
         List<PortObjectSpecEnt> res = specs.map(port -> {
+            if (port == null) {
+                //can happen in case of an optional port
+                return null;
+            }
             if (exception.get() != null) {
                 return null;
             }
@@ -212,8 +214,8 @@ public class DefaultNodeService implements NodeService {
             PortObjectSpec spec = port.getSecond();
             PortObjectSpecEnt ent = EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
             if (ent == null) {
-                exception.set(new ServiceExceptions.NotSupportedException("Port object spec of type '"
-                    + spec.getClass().getSimpleName() + "' not supported in remote view, yet."));
+                exception.set(new ServiceExceptions.NotSupportedException(
+                    "Port object spec of type '" + type.getName() + "' not supported in remote view, yet."));
                 return null;
             } else {
                 return ent;

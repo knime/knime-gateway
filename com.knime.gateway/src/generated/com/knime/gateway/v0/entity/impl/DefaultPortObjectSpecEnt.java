@@ -36,6 +36,7 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
 
   protected PortTypeEnt m_type;
   protected String m_representation;
+  protected Boolean m_inactive;
   
   protected DefaultPortObjectSpecEnt() {
     //for sub-classes
@@ -48,8 +49,15 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
   
   private DefaultPortObjectSpecEnt(DefaultPortObjectSpecEntBuilder builder) {
     
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = immutable(builder.m_type);
     m_representation = immutable(builder.m_representation);
+    if(builder.m_inactive == null) {
+        throw new IllegalArgumentException("inactive must not be null.");
+    }
+    m_inactive = immutable(builder.m_inactive);
   }
   
    /**
@@ -67,7 +75,7 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
             return false;
         }
         DefaultPortObjectSpecEnt ent = (DefaultPortObjectSpecEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_representation, ent.m_representation);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_representation, ent.m_representation) && Objects.equals(m_inactive, ent.m_inactive);
     }
 
 
@@ -81,6 +89,11 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
         return m_representation;
     }
     
+  @Override
+  public Boolean isInactive() {
+        return m_inactive;
+    }
+    
   
     public static class DefaultPortObjectSpecEntBuilder implements PortObjectSpecEntBuilder {
     
@@ -90,9 +103,13 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
     
         private PortTypeEnt m_type;
         private String m_representation = null;
+        private Boolean m_inactive = null;
 
         @Override
         public DefaultPortObjectSpecEntBuilder setType(PortTypeEnt type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
@@ -100,6 +117,15 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
         @Override
         public DefaultPortObjectSpecEntBuilder setRepresentation(String representation) {
              m_representation = representation;
+             return this;
+        }
+
+        @Override
+        public DefaultPortObjectSpecEntBuilder setInactive(Boolean inactive) {
+             if(inactive == null) {
+                 throw new IllegalArgumentException("inactive must not be null.");
+             }
+             m_inactive = inactive;
              return this;
         }
 
