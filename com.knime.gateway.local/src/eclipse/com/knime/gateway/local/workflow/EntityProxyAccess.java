@@ -388,6 +388,14 @@ public class EntityProxyAccess {
         }
     }
 
+    /**
+     * Retrieves the input port object specs.
+     *
+     * @param node node to retrieve the specs for
+     * @return the specs for all ports (including the flow var port)
+     * @throws NotSupportedException if the requested spec is not supported by the gateway (because it cannot be
+     *             serialized)
+     */
     PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
         //TODO cache the port object specs
         if (node.getOutPorts().size() > 0) {
@@ -403,6 +411,14 @@ public class EntityProxyAccess {
         }
     }
 
+    /**
+     * Retrieves the output port object specs.
+     *
+     * @param node node to retrieve the specs for
+     * @return the specs for all ports (including the flow var port)
+     * @throws NotSupportedException if the requested spec is not supported by the gateway (because it cannot be
+     *             serialized)
+     */
     PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
         //TODO cache the port object specs
         if (node.getOutPorts().size() > 0) {
