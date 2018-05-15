@@ -23,6 +23,7 @@ import static com.knime.enterprise.server.rest.AutocloseableResponse.acr;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
 
@@ -41,6 +42,7 @@ import com.knime.enterprise.server.rest.AutocloseableResponse;
 import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
+import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 
@@ -75,7 +77,7 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
         //is there a better way than adding the required provider manually?
         jaxRSProviders.add(new EntityJSONDeserializer());
         m_client = createProxy(resourceClass, m_restAddress, null, null, jaxRSProviders, "Explorer01",
-            AbstractClient.DEFAULT_TIMEOUT);
+            Duration.ofMillis(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT));
         if (jwt != null) {
             WebClient.client(m_client).header("Authorization", "Bearer " + jwt);
         }
