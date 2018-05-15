@@ -21,6 +21,8 @@ package com.knime.gateway.local.workflow;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -36,13 +38,13 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.util.ThreadPool;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.
@@ -116,20 +118,31 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             m_dialogPane = NodeDialogPane.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
                 getEntity().getInPorts().size(), false);
         }
-        NodeSettings nodeSettings = getAccess().getNodeSettings(getEntity());
-        PortObjectSpec[] portObjectSpecs;
+
+        ThreadPool tp = new ThreadPool(3);
         try {
-            portObjectSpecs = getAccess().getInputPortObjectSpecs(getEntity());
-        } catch (NotSupportedException ex) {
-            throw new NotConfigurableException("Problem retrieving settings info: " + ex.getMessage(), ex);
+            Future<NodeSettings> f1 = tp.submit(() -> getAccess().getNodeSettings(getEntity()));
+            Future<PortObjectSpec[]> f2 = tp.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
+            Future<FlowObjectStack> f3 = tp.submit(() -> getAccess().getFlowVariableStack(getEntity(), getID()));
+            tp.waitForTermination();
+
+            NodeSettings nodeSettings = f1.get();
+            PortObjectSpec[] portObjectSpecs = f2.get();
+            FlowObjectStack flowObjectStack = f3.get();
+
+            PortType[] portTypes = new PortType[portObjectSpecs.length];
+            for (int i = 0; i < portTypes.length; i++) {
+                portTypes[i] = getInPort(i).getPortType();
+            }
+            return NodeDialogPane.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
+                new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack, null);
+        } catch (InterruptedException e) {
+            throw new NotConfigurableException(e.getMessage());
+        } catch (ExecutionException e) {
+            throw new NotConfigurableException(e.getCause().getMessage());
+        } finally {
+            tp.shutdown();
         }
-        PortType[] portTypes = new PortType[portObjectSpecs.length];
-        for (int i = 0; i < portTypes.length; i++) {
-            portTypes[i] = getInPort(i).getPortType();
-        }
-        FlowObjectStack flowObjectStack = getAccess().getFlowVariableStack(getEntity(), getID());
-        return NodeDialogPane.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
-            new PortObject[portObjectSpecs.length], nodeSettings, true, null, flowObjectStack, null);
     }
 
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
