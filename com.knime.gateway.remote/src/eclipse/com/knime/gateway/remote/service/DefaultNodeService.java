@@ -233,10 +233,14 @@ public class DefaultNodeService implements NodeService {
     private static NodeContainer getNodeContainer(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
-       try {
-            return wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
-        } catch (IllegalArgumentException e) {
-            throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
+        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+            return wfm;
+        } else {
+            try {
+                return wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+            } catch (IllegalArgumentException e) {
+                throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
+            }
         }
     }
 
