@@ -219,7 +219,7 @@ public class DefaultNodeService implements NodeService {
             PortObjectSpecEnt ent = EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
             if (ent == null) {
                 exception.set(new ServiceExceptions.NotSupportedException(
-                    "Port object spec of type '" + type.getName() + "' not supported in remote view, yet."));
+                    "Port object spec of type '" + type.getName() + "' not supported in remote view."));
                 return null;
             } else {
                 return ent;
