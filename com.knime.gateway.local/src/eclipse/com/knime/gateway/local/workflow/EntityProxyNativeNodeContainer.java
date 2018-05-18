@@ -36,6 +36,7 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.util.ThreadPool;
@@ -135,7 +136,8 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
                 portTypes[i] = getInPort(i).getPortType();
             }
             return NodeDialogPane.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
-                new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack, null);
+                new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack,
+                CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER);
         } catch (InterruptedException e) {
             throw new NotConfigurableException(e.getMessage());
         } catch (ExecutionException e) {
