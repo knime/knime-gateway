@@ -116,7 +116,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * @param access
      *
      */
-    public AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
+    AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
         ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }

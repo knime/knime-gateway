@@ -28,7 +28,6 @@ import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NotConfigurableException;
@@ -53,8 +52,6 @@ import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
  * @author Martin Horn, University of Konstanz
  */
 class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<NativeNodeEnt> {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyNativeNodeContainer.class);
 
     private NodeFactory<? extends NodeModel> m_nodeFactory = null;
 

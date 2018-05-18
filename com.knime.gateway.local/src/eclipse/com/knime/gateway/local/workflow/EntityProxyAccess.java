@@ -487,7 +487,10 @@ public class EntityProxyAccess {
         }
         return res;
     }
-
+    
+    /**
+     * Retrieves the flow variables for a node.
+     */
     FlowObjectStack getFlowVariableStack(final NodeEnt node, final NodeID nodeId) {
         try {
             List<FlowVariableEnt> flowVariables = service(NodeService.class, m_serviceConfig)
