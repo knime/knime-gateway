@@ -212,6 +212,10 @@ public class DefaultNodeService implements NodeService {
             }
             PortType type = port.getFirst();
             PortObjectSpec spec = port.getSecond();
+            if (spec == null) {
+                //can happen when spec is not known, yet
+                return null;
+            }
             PortObjectSpecEnt ent = EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
             if (ent == null) {
                 exception.set(new ServiceExceptions.NotSupportedException(
