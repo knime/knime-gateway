@@ -1192,4 +1192,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public void setDisconnected(final boolean disconnected) {
         m_isDisconnected = disconnected;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasCredentials() {
+        return getWorkflow().isHasCredentials();
+    }
 }

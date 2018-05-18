@@ -74,6 +74,12 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public WorkflowUIInfoEnt getWorkflowUIInfo();
 
+  /**
+   * Flag indicating whether the workflow has credentials stored.
+   * @return hasCredentials 
+   **/
+  public Boolean isHasCredentials();
+
 
     /**
      * The builder for the entity.
@@ -127,6 +133,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setWorkflowUIInfo(WorkflowUIInfoEnt workflowUIInfo);
+        
+        /**
+         * Flag indicating whether the workflow has credentials stored.
+         * 
+         * @param hasCredentials the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setHasCredentials(Boolean hasCredentials);
         
         
         /**

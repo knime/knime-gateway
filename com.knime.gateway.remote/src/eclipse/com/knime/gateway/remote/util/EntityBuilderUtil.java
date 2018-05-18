@@ -148,6 +148,7 @@ public class EntityBuilderUtil {
             .setMetaOutPortInfos(buildMetaOutPortInfoEnts(wfm))
             .setWorkflowAnnotations(wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa)).collect(Collectors.toList()))
             .setWorkflowUIInfo(buildWorkflowUIInfoEnt(wfm.getEditorUIInformation()))
+            .setHasCredentials(wfm.getCredentialsStore().listNames().size() > 0)
             .build();
     }
 
