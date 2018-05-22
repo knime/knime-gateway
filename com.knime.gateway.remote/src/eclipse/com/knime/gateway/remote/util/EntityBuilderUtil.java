@@ -134,21 +134,22 @@ public class EntityBuilderUtil {
      */
     public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final UUID rootWorkflowID) {
         Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
-        Map<String, NodeEnt> nodes = nodeContainers.stream().map(nc -> {
-            return buildNodeEnt(nc, rootWorkflowID);
-        }).collect(Collectors.toMap(n -> n.getNodeID(), n -> n));
+        Map<String, NodeEnt> nodes = nodeContainers.stream()
+                .map(nc -> buildNodeEnt(nc, rootWorkflowID))
+                .collect(Collectors.toMap(n -> n.getNodeID(), n -> n));
         Collection<ConnectionContainer> connectionContainers = wfm.getConnectionContainers();
-        List<ConnectionEnt> connections = connectionContainers.stream().map(cc -> {
-            return buildConnectionEnt(cc);
-        }).collect(Collectors.toList());
+        List<ConnectionEnt> connections = connectionContainers.stream()
+                .map(cc -> buildConnectionEnt(cc))
+                .collect(Collectors.toList());
         return builder(WorkflowEntBuilder.class)
             .setNodes(nodes)
             .setConnections(connections)
             .setMetaInPortInfos(buildMetaInPortInfoEnts(wfm))
             .setMetaOutPortInfos(buildMetaOutPortInfoEnts(wfm))
-            .setWorkflowAnnotations(wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa)).collect(Collectors.toList()))
+            .setWorkflowAnnotations(wfm.getWorkflowAnnotations().stream()
+                .map(wa -> buildWorkflowAnnotationEnt(wa)).collect(Collectors.toList()))
             .setWorkflowUIInfo(buildWorkflowUIInfoEnt(wfm.getEditorUIInformation()))
-            .setHasCredentials(wfm.getCredentialsStore().listNames().size() > 0)
+            .setHasCredentials(!wfm.getCredentialsStore().listNames().isEmpty())
             .build();
     }
 
@@ -161,14 +162,15 @@ public class EntityBuilderUtil {
      * @return the newly created entity
      */
     public static NodeEnt buildNodeEnt(final NodeContainer nc, final UUID rootWorkflowID) {
-        if(nc instanceof NativeNodeContainer) {
+        if (nc instanceof NativeNodeContainer) {
             return buildNativeNodeEnt((NativeNodeContainer) nc, rootWorkflowID);
-        } else if(nc instanceof WorkflowManager) {
+        } else if (nc instanceof WorkflowManager) {
             return buildWorkflowNodeEnt((WorkflowManager) nc, rootWorkflowID);
-        } else if(nc instanceof SubNodeContainer) {
+        } else if (nc instanceof SubNodeContainer) {
             return buildWrappedWorkflowNodeEnt((SubNodeContainer) nc, rootWorkflowID);
         } else {
-            throw new IllegalArgumentException("Node container " + nc.getClass().getCanonicalName() + " cannot be mapped to a node entity.");
+            throw new IllegalArgumentException("Node container " + nc.getClass().getCanonicalName()
+                + " cannot be mapped to a node entity.");
         }
     }
 
@@ -202,15 +204,19 @@ public class EntityBuilderUtil {
         }
 
         return builder(WorkflowNodeEntBuilder.class).setName(wm.getName()).setNodeID(nodeIdAsString(wm.getID()))
-                .setNodeMessage(buildNodeMessageEnt(wm)).setNodeType(NodeTypeEnum.valueOf(wm.getType().toString().toUpperCase()))
-                .setUIInfo(buildNodeUIInfoEnt(wm.getUIInformation())).setDeletable(wm.isDeletable())
+                .setNodeMessage(buildNodeMessageEnt(wm))
+                .setNodeType(NodeTypeEnum.valueOf(wm.getType().toString().toUpperCase()))
+                .setUIInfo(buildNodeUIInfoEnt(wm.getUIInformation()))
+                .setDeletable(wm.isDeletable())
                 .setNodeState(buildNodeStateEnt(wm.getNodeContainerState().toString()))
                 .setOutPorts(buildNodeOutPortEnts(wm))
                 .setParentNodeID(parentNodeID)
                 .setDeletable(wm.isDeletable())
                 .setResetable(true)
-                .setJobManager(buildJobManagerEnt(jobManager)).setNodeAnnotation(buildNodeAnnotationEnt(wm))
-                .setInPorts(buildNodeInPortEnts(wm)).setHasDialog(wm.hasDialog())
+                .setJobManager(buildJobManagerEnt(jobManager))
+                .setNodeAnnotation(buildNodeAnnotationEnt(wm))
+                .setInPorts(buildNodeInPortEnts(wm))
+                .setHasDialog(wm.hasDialog())
                 .setWorkflowIncomingPorts(buildWorkflowIncomingPortEnts(wm))
                 .setWorkflowOutgoingPorts(buildWorkflowOutgoingPortEnts(wm))
                 .setRootWorkflowID(rootWorkflowID)
@@ -239,14 +245,17 @@ public class EntityBuilderUtil {
                 .setNodeID(nodeIdAsString(subNode.getID()))
                 .setNodeMessage(buildNodeMessageEnt(subNode))
                 .setNodeType(NodeTypeEnum.valueOf(subNode.getType().toString().toUpperCase()))
-                .setUIInfo(buildNodeUIInfoEnt(subNode.getUIInformation())).setDeletable(subNode.isDeletable())
+                .setUIInfo(buildNodeUIInfoEnt(subNode.getUIInformation()))
+                .setDeletable(subNode.isDeletable())
                 .setResetable(subNode.isResetable())
                 .setNodeState(buildNodeStateEnt((subNode.getNodeContainerState().toString())))
                 .setOutPorts(buildNodeOutPortEnts(subNode))
                 .setParentNodeID(
                     subNode.getParent() == WorkflowManager.ROOT ? null : nodeIdAsString(subNode.getParent().getID()))
-                .setJobManager(buildJobManagerEnt(jobManager)).setNodeAnnotation(buildNodeAnnotationEnt(subNode))
-                .setInPorts(buildNodeInPortEnts(subNode)).setHasDialog(subNode.hasDialog())
+                .setJobManager(buildJobManagerEnt(jobManager))
+                .setNodeAnnotation(buildNodeAnnotationEnt(subNode))
+                .setInPorts(buildNodeInPortEnts(subNode))
+                .setHasDialog(subNode.hasDialog())
                 .setWorkflowIncomingPorts(buildWorkflowIncomingPortEnts(subNode.getWorkflowManager()))
                 .setWorkflowOutgoingPorts(buildWorkflowOutgoingPortEnts(subNode.getWorkflowManager()))
                 .setRootWorkflowID(rootWorkflowID)
@@ -266,7 +275,7 @@ public class EntityBuilderUtil {
      * @throws IllegalArgumentException if the port type and the port object spec are not compatible
      */
     public static PortObjectSpecEnt buildPortObjectSpecEnt(final PortType type, final PortObjectSpec spec) {
-        if(!type.acceptsPortObjectSpec(spec)) {
+        if (!type.acceptsPortObjectSpec(spec)) {
             throw new IllegalArgumentException("The port type and port object spec are not compatible.");
         }
         ModelContent model = null;
@@ -278,7 +287,8 @@ public class EntityBuilderUtil {
             //flow variable port spec doesn't have any content
         } else if (spec instanceof AbstractSimplePortObjectSpec) {
             model = new ModelContent("model");
-            AbstractSimplePortObjectSpecSerializer.savePortObjectSpecToModelSettings((AbstractSimplePortObjectSpec)spec, model);
+            AbstractSimplePortObjectSpecSerializer.savePortObjectSpecToModelSettings((AbstractSimplePortObjectSpec)spec,
+                model);
         } else if (spec instanceof InactiveBranchPortObjectSpec) {
             builder.setInactive(true);
         } else {

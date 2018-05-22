@@ -398,7 +398,7 @@ public class EntityProxyAccess {
      */
     PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
         //TODO cache the port object specs
-        if (node.getOutPorts().size() > 0) {
+        if (!node.getOutPorts().isEmpty()) {
             try {
                 List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
                     .getInputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
@@ -421,7 +421,7 @@ public class EntityProxyAccess {
      */
     PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
         //TODO cache the port object specs
-        if (node.getOutPorts().size() > 0) {
+        if (!node.getOutPorts().isEmpty()) {
             try {
                 List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
                     .getOutputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
@@ -487,7 +487,7 @@ public class EntityProxyAccess {
         }
         return res;
     }
-    
+
     /**
      * Retrieves the flow variables for a node.
      */
