@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -36,9 +38,11 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -49,6 +53,10 @@ import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.
@@ -60,6 +68,8 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
     private NodeFactory<? extends NodeModel> m_nodeFactory = null;
 
     private NodeDialogPane m_dialogPane;
+
+    private NodeSettings m_nodeSettings;
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -115,6 +125,32 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
      * {@inheritDoc}
      */
     @Override
+    public boolean areDialogSettingsValid() {
+        //always return true all the time and validate settings when applied to limit the number of requests
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean areDialogAndNodeSettingsEqual() {
+        if (m_nodeSettings == null) {
+            return false;
+        }
+        NodeSettings dlgSettings = new NodeSettings("settings");
+        try {
+            m_dialogPane.finishEditingAndSaveSettingsTo(dlgSettings);
+        } catch (InvalidSettingsException e) {
+            return false;
+        }
+        return dlgSettings.equals(m_nodeSettings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
         if (m_dialogPane == null) {
             m_dialogPane = Node.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
@@ -138,6 +174,9 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             for (int i = 0; i < portTypes.length; i++) {
                 portTypes[i] = getInPort(i).getPortType();
             }
+            //cache the node settings
+            m_nodeSettings = nodeSettings;
+
             return Node.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
                 new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack,
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER);
@@ -147,6 +186,28 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             throw new NotConfigurableException(e.getCause().getMessage(), e);
         } finally {
             exec.shutdown();
+        }
+    }
+
+    @Override
+    public void applySettingsFromDialog() throws InvalidSettingsException {
+        CheckUtils.checkState(hasDialog(), "Node \"%s\" has no dialog", getName());
+        // TODO do we need to reset the node first??
+        NodeSettings sett = new NodeSettings("node settings");
+        m_dialogPane.finishEditingAndSaveSettingsTo(sett);
+
+        //convert settings into a settings entity
+        NodeSettingsEnt settingsEnt = builder(NodeSettingsEntBuilder.class)
+            .setContent(JSONConfig.toJSONString(sett, WriterConfig.PRETTY)).build();
+
+        //transfer settings to server
+        try {
+            getAccess().nodeService().setNodeSettings(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                settingsEnt);
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        } catch (ServiceExceptions.InvalidSettingsException ex) {
+            throw new InvalidSettingsException(ex);
         }
     }
 

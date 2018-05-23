@@ -430,7 +430,8 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public boolean areDialogSettingsValid() {
-        return false;
+        //by default there is no dialog
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -446,12 +447,14 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public boolean areDialogAndNodeSettingsEqual() {
-        return false;
+        //by default there is no dialog
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
-        return null;
+        //by default there is no dialog
+        throw new UnsupportedOperationException();
     }
 
     /**
