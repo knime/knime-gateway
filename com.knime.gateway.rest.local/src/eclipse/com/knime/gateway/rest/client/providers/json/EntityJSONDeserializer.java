@@ -34,13 +34,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.knime.gateway.entity.GatewayEntity;
-import com.knime.gateway.rest.client.util.ObjectMapperUtil;
+import com.knime.gateway.json.util.ObjectMapperUtil;
 
 /**
  * Deserializes gateway entities.
- *
- * Note: might later be moved to gateway.rest.api since gateway.rest.impl might need it, too (for parameter
- * deserialization).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

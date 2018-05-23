@@ -1,4 +1,4 @@
-package com.knime.gateway.rest.client.util;
+package com.knime.gateway.json.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

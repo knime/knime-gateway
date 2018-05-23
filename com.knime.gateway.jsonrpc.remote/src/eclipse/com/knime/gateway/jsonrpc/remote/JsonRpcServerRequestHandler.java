@@ -28,13 +28,11 @@ import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
-import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
 import com.knime.gateway.remote.service.DefaultServices;
 import com.knime.gateway.service.GatewayService;
@@ -57,13 +55,8 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
      */
     public JsonRpcServerRequestHandler() {
         //setup json-rpc server
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Jdk8Module());
+        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
 
-        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-
-        JsonUtil.addMixIns(mapper);
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
         m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
 

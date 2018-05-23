@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.knime.enterprise.server.mason.NamespaceRegistry;
-import com.knime.gateway.rest.client.util.ObjectMapperUtil;
+import com.knime.gateway.json.util.ObjectMapperUtil;
 
 /**
  * Deserializer for collections in JSON (or Mason) format.
