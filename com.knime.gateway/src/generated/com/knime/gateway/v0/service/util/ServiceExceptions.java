@@ -66,7 +66,7 @@ public final class ServiceExceptions {
     }
     
     /**
-    * If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.0m
+    * If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.
     */
     public static class ActionNotAllowedException extends Exception {
         public ActionNotAllowedException(String message) {
