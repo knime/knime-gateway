@@ -375,16 +375,15 @@ public class EntityProxyAccess {
      *
      * @param node the node to get the settings for
      * @return the settings formatted as json
+     * @throws NodeNotFoundException if node wasn't found
      */
-    NodeSettings getNodeSettings(final NodeEnt node) {
+    NodeSettings getNodeSettings(final NodeEnt node) throws NodeNotFoundException {
         try {
             String json = service(NodeService.class, m_serviceConfig)
                 .getNodeSettings(node.getRootWorkflowID(), node.getNodeID());
             return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
         } catch (IOException ex) {
             throw new RuntimeException("Unable to read NodeSettings from JSON String", ex);
-        } catch (NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
         }
     }
 
@@ -395,17 +394,14 @@ public class EntityProxyAccess {
      * @return the specs for all ports (including the flow var port)
      * @throws NotSupportedException if the requested spec is not supported by the gateway (because it cannot be
      *             serialized)
+     * @throws NodeNotFoundException if the node wasn't found
      */
-    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
+    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NotSupportedException, NodeNotFoundException {
         //TODO cache the port object specs
         if (!node.getOutPorts().isEmpty()) {
-            try {
-                List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
-                    .getInputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
-                return createPortObjectSpecsFromEntity(entList, node.getInPorts());
-            } catch (NodeNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
+            List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
+                .getInputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
+            return createPortObjectSpecsFromEntity(entList, node.getInPorts());
         } else {
             return new PortObjectSpec[0];
         }
@@ -418,17 +414,14 @@ public class EntityProxyAccess {
      * @return the specs for all ports (including the flow var port)
      * @throws NotSupportedException if the requested spec is not supported by the gateway (because it cannot be
      *             serialized)
+     * @throws NodeNotFoundException if the node wasn't found
      */
-    PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node) throws NotSupportedException {
+    PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node) throws NotSupportedException, NodeNotFoundException {
         //TODO cache the port object specs
         if (!node.getOutPorts().isEmpty()) {
-            try {
-                List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
-                    .getOutputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
-                return createPortObjectSpecsFromEntity(entList, node.getOutPorts());
-            } catch (NodeNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
+            List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
+                .getOutputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
+            return createPortObjectSpecsFromEntity(entList, node.getOutPorts());
         } else {
             return new PortObjectSpec[0];
         }

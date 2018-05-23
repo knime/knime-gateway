@@ -386,7 +386,11 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     /** {@inheritDoc} */
     @Override
     public ConfigBaseRO getNodeSettings() {
-        return getAccess().getNodeSettings(getEntity());
+        try {
+            return getAccess().getNodeSettings(getEntity());
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**

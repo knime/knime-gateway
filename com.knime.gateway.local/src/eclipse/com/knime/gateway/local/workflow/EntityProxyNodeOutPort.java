@@ -30,6 +30,7 @@ import org.knime.core.ui.node.workflow.NodeOutPortUI;
 
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
@@ -64,7 +65,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     public PortObjectSpec getPortObjectSpec() {
         try {
             return getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
-        } catch (NotSupportedException ex) {
+        } catch (NotSupportedException | NodeNotFoundException ex) {
             throw new RuntimeException(ex);
         }
     }
