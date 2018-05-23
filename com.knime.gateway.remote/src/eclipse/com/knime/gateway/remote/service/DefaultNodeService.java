@@ -18,8 +18,11 @@
  */
 package com.knime.gateway.remote.service;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
@@ -49,6 +53,8 @@ import com.knime.gateway.remote.util.EntityBuilderUtil;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
@@ -82,10 +88,28 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String getNodeSettings(final UUID rootWorkflowID, final String nodeID)
+    public NodeSettingsEnt getNodeSettings(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         NodeSettings settings = getNodeContainer(rootWorkflowID, nodeID).getNodeSettings();
-        return JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
+        return builder(NodeSettingsEntBuilder.class).setContent(JSONConfig.toJSONString(settings, WriterConfig.PRETTY))
+            .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setNodeSettings(final UUID rootWorkflowID, final String nodeID, final NodeSettingsEnt nodeSettings)
+        throws NodeNotFoundException, ServiceExceptions.InvalidSettingsException {
+        NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
+        WorkflowManager parent = nc.getParent();
+        NodeSettings settings = new NodeSettings("settings");
+        try {
+            JSONConfig.readJSON(settings, new StringReader(nodeSettings.getContent()));
+            parent.loadNodeSettings(nc.getID(), settings);
+        } catch (InvalidSettingsException | IOException ex) {
+            throw new ServiceExceptions.InvalidSettingsException(ex.getMessage(), ex);
+        }
     }
 
     /**

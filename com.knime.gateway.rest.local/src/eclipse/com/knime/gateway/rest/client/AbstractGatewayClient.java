@@ -39,11 +39,14 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator.AuthenticationCloseable;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.knime.enterprise.server.rest.AutocloseableResponse;
 import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
 import com.knime.enterprise.utility.KnimeServerConstants;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.rest.client.providers.json.CollectionJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
@@ -163,6 +166,20 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
                     .error("Could not read exception message from server: " + ex.getMessage(), ex);
                 return "Unknown message";
             }
+        }
+    }
+
+    /**
+     * Serializes a gateway entity as json into a byte array.
+     *
+     * @param entity the entity to serialize
+     * @return byte array result
+     */
+    protected static byte[] toByteArray(final GatewayEntity entity) {
+        try {
+            return ObjectMapperUtil.getInstance().getObjectMapper().writeValueAsString(entity).getBytes();
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

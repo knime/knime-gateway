@@ -20,6 +20,7 @@ package com.knime.gateway.rest.client.service;
 
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 
 
@@ -156,7 +157,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public NodeSettingsEnt getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
@@ -166,7 +167,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     // TODO exception handling
                     throw new RuntimeException(ex);
                 }
-            }, String.class);
+            }, NodeSettingsEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             if (ex.getResponse().getStatus() == 404) {
@@ -216,6 +217,31 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException {
+        try{
+            doRequest(c -> {
+                try {
+                    return c.setNodeSettings(jobId, nodeId, toByteArray(nodeSettings));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            });
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 405) {
+                throw new ServiceExceptions.InvalidSettingsException(readExceptionMessage(ex));
+            }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }

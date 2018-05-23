@@ -20,6 +20,7 @@ package com.knime.gateway.jsonrpc.local.service;
 
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 
 import com.knime.gateway.v0.service.util.ServiceExceptions;
@@ -69,7 +70,7 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNodeSettings")
-    String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    NodeSettingsEnt getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
@@ -84,5 +85,12 @@ public interface JsonRpcNodeService extends NodeService {
     @Override
     @JsonRpcMethod(value = "NodeService.getRootNode")
     NodeEnt getRootNode(java.util.UUID jobId) ;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "NodeService.setNodeSettings")
+    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException;
 
 }

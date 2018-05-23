@@ -20,6 +20,7 @@ package com.knime.gateway.jsonrpc.remote.service;
 
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -112,7 +113,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/)
     })
-    public String getNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public NodeSettingsEnt getNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getNodeSettings(jobId, nodeId);    
     }
 
@@ -138,6 +139,21 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getRootNode")
     public NodeEnt getRootNode(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
         return m_service.getRootNode(jobId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "setNodeSettings")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidSettingsException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
+    })
+    public void setNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="nodeSettings") NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException {
+        m_service.setNodeSettings(jobId, nodeId, nodeSettings);    
     }
 
 }

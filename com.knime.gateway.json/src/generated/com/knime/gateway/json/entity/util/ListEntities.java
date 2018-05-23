@@ -29,6 +29,7 @@ import com.knime.gateway.json.entity.NodeFactoryKeyEntMixIn;
 import com.knime.gateway.json.entity.NodeMessageEntMixIn;
 import com.knime.gateway.json.entity.NodePortEntMixIn;
 import com.knime.gateway.json.entity.NodeProgressEntMixIn;
+import com.knime.gateway.json.entity.NodeSettingsEntMixIn;
 import com.knime.gateway.json.entity.NodeStateEntMixIn;
 import com.knime.gateway.json.entity.NodeUIInfoEntMixIn;
 import com.knime.gateway.json.entity.PatchEntMixIn;
@@ -81,6 +82,7 @@ public class ListEntities {
         res.add(NodeMessageEntMixIn.class);
         res.add(NodePortEntMixIn.class);
         res.add(NodeProgressEntMixIn.class);
+        res.add(NodeSettingsEntMixIn.class);
         res.add(NodeStateEntMixIn.class);
         res.add(NodeUIInfoEntMixIn.class);
         res.add(PatchEntMixIn.class);
@@ -119,6 +121,7 @@ public class ListEntities {
         res.add(NodeMessageEntMixIn.NodeMessageEntMixInBuilder.class);
         res.add(NodePortEntMixIn.NodePortEntMixInBuilder.class);
         res.add(NodeProgressEntMixIn.NodeProgressEntMixInBuilder.class);
+        res.add(NodeSettingsEntMixIn.NodeSettingsEntMixInBuilder.class);
         res.add(NodeStateEntMixIn.NodeStateEntMixInBuilder.class);
         res.add(NodeUIInfoEntMixIn.NodeUIInfoEntMixInBuilder.class);
         res.add(PatchEntMixIn.PatchEntMixInBuilder.class);

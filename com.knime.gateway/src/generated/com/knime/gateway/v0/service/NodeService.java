@@ -23,6 +23,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions;
 
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 
 /**
@@ -89,7 +90,7 @@ public interface NodeService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    String getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    NodeSettingsEnt getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
     /**
      * Provides the node&#39;s output port specifications for the given node-id.
@@ -111,5 +112,18 @@ public interface NodeService extends GatewayService {
      * @return the result
      */
     NodeEnt getRootNode(java.util.UUID jobId) ;
+        
+    /**
+     * Sets the node&#39;s settings for the given node-id.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
+     * @param nodeSettings The node settings to set.
+     *
+     * 
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.InvalidSettingsException If settings couldn&#39;t be applied.
+     */
+    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException;
         
 }

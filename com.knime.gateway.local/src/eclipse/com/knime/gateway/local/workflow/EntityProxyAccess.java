@@ -380,7 +380,7 @@ public class EntityProxyAccess {
     NodeSettings getNodeSettings(final NodeEnt node) throws NodeNotFoundException {
         try {
             String json = service(NodeService.class, m_serviceConfig)
-                .getNodeSettings(node.getRootWorkflowID(), node.getNodeID());
+                .getNodeSettings(node.getRootWorkflowID(), node.getNodeID()).getContent();
             return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
         } catch (IOException ex) {
             throw new RuntimeException("Unable to read NodeSettings from JSON String", ex);

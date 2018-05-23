@@ -91,5 +91,18 @@ public final class ServiceExceptions {
         }
     }
     
+    /**
+    * If settings couldn&#39;t be applied.
+    */
+    public static class InvalidSettingsException extends Exception {
+        public InvalidSettingsException(String message) {
+            super(message);
+        }
+        
+        public InvalidSettingsException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+    
     
 }
