@@ -141,9 +141,9 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
                 new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack,
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER);
         } catch (InterruptedException e) {
-            throw new NotConfigurableException(e.getMessage());
+            throw new NotConfigurableException(e.getMessage(), e);
         } catch (ExecutionException e) {
-            throw new NotConfigurableException(e.getCause().getMessage());
+            throw new NotConfigurableException(e.getCause().getMessage(), e);
         } finally {
             exec.shutdown();
         }
