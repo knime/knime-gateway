@@ -382,7 +382,7 @@ public class EntityProxyAccess {
                 .getNodeSettings(node.getRootWorkflowID(), node.getNodeID());
             return JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(json));
         } catch (IOException ex) {
-            throw new RuntimeException("Unable to read NodeSettings from XML String", ex);
+            throw new RuntimeException("Unable to read NodeSettings from JSON String", ex);
         } catch (NodeNotFoundException ex) {
             throw new RuntimeException(ex);
         }
