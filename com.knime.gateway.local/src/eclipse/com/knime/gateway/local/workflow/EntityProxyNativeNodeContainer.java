@@ -22,7 +22,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -38,10 +41,10 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.util.ThreadPool;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
+import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
@@ -117,12 +120,14 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
                 getEntity().getInPorts().size(), false);
         }
 
-        ThreadPool tp = new ThreadPool(3);
+        ExecutorService exec = Executors.newFixedThreadPool(3);
         try {
-            Future<NodeSettings> f1 = tp.submit(() -> getAccess().getNodeSettings(getEntity()));
-            Future<PortObjectSpec[]> f2 = tp.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
-            Future<FlowObjectStack> f3 = tp.submit(() -> getAccess().getFlowVariableStack(getEntity(), getID()));
-            tp.waitForTermination();
+            Future<NodeSettings> f1 = exec.submit(() -> getAccess().getNodeSettings(getEntity()));
+            Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
+            Future<FlowObjectStack> f3 = exec.submit(() -> getAccess().getFlowVariableStack(getEntity(), getID()));
+            exec.shutdown();
+            //wait a bit longer than the timeouts of the individual requests
+            exec.awaitTermination(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT + 1000, TimeUnit.MILLISECONDS);
 
             NodeSettings nodeSettings = f1.get();
             PortObjectSpec[] portObjectSpecs = f2.get();
@@ -140,7 +145,7 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
         } catch (ExecutionException e) {
             throw new NotConfigurableException(e.getCause().getMessage());
         } finally {
-            tp.shutdown();
+            exec.shutdown();
         }
     }
 
