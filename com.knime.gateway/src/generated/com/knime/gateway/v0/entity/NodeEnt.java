@@ -176,7 +176,7 @@ public interface NodeEnt extends GatewayEntity {
    * Whether the node has a configuration dialog / user settings.
    * @return hasDialog 
    **/
-  public Boolean isHasDialog();
+  public Boolean hasDialog();
 
   /**
    * The annotation below the node.

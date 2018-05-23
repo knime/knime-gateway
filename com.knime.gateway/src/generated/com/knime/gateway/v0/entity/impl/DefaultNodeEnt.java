@@ -192,7 +192,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public Boolean isHasDialog() {
+  public Boolean hasDialog() {
         return m_hasDialog;
     }
     

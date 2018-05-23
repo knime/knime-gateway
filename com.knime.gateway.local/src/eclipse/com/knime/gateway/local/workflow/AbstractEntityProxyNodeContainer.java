@@ -319,7 +319,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
             .setNodeLocation(uiInfo.getBounds().getX(), uiInfo.getBounds().getY(), uiInfo.getBounds().getWidth(),
                 uiInfo.getBounds().getHeight())
             .setIsSymbolRelative(uiInfo.isSymbolRelative())
-            .setHasAbsoluteCoordinates(uiInfo.isHasAbsoluteCoordinates())
+            .setHasAbsoluteCoordinates(uiInfo.hasAbsoluteCoordinates())
             .setIsDropLocation(uiInfo.isDropLocation())
             .setSnapToGrid(uiInfo.isSnapToGrid()).build();
     }

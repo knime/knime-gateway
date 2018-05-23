@@ -78,7 +78,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * Flag indicating whether the workflow has credentials stored.
    * @return hasCredentials 
    **/
-  public Boolean isHasCredentials();
+  public Boolean hasCredentials();
 
 
     /**

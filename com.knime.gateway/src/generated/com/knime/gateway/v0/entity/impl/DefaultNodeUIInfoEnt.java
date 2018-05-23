@@ -88,7 +88,7 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
     }
     
   @Override
-  public Boolean isHasAbsoluteCoordinates() {
+  public Boolean hasAbsoluteCoordinates() {
         return m_hasAbsoluteCoordinates;
     }
     

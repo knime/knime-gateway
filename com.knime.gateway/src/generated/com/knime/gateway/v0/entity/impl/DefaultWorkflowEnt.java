@@ -116,7 +116,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     }
     
   @Override
-  public Boolean isHasCredentials() {
+  public Boolean hasCredentials() {
         return m_hasCredentials;
     }
     

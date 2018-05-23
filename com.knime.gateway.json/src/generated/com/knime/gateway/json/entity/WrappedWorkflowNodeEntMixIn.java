@@ -119,7 +119,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     
     @Override
     @JsonProperty("hasDialog")
-    public Boolean isHasDialog();
+    public Boolean hasDialog();
     
     @Override
     @JsonProperty("nodeAnnotation")

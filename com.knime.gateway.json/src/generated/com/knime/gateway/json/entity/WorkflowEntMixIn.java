@@ -87,7 +87,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("hasCredentials")
-    public Boolean isHasCredentials();
+    public Boolean hasCredentials();
     
 
     /**

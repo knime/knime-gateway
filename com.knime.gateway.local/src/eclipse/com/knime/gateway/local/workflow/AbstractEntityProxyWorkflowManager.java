@@ -877,7 +877,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         return EditorUIInformation.builder().setGridX(uiEnt.getGridX()).setGridY(uiEnt.getGridY())
             .setShowGrid(uiEnt.isShowGrid()).setSnapToGrid(uiEnt.isSnapToGrid())
             .setZoomLevel(uiEnt.getZoomLevel().doubleValue())
-            .setHasCurvedConnections(uiEnt.isHasCurvedConnection())
+            .setHasCurvedConnections(uiEnt.hasCurvedConnection())
             .setConnectionLineWidth(uiEnt.getConnectionLineWidth()).build();
     }
 
@@ -1198,6 +1198,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean hasCredentials() {
-        return getWorkflow().isHasCredentials();
+        return getWorkflow().hasCredentials();
     }
 }

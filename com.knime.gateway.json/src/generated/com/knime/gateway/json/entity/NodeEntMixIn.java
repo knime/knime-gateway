@@ -127,7 +127,7 @@ public interface NodeEntMixIn extends NodeEnt {
     
     @Override
     @JsonProperty("hasDialog")
-    public Boolean isHasDialog();
+    public Boolean hasDialog();
     
     @Override
     @JsonProperty("nodeAnnotation")

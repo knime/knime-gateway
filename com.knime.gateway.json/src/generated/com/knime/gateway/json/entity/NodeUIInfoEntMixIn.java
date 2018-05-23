@@ -67,7 +67,7 @@ public interface NodeUIInfoEntMixIn extends NodeUIInfoEnt {
     
     @Override
     @JsonProperty("hasAbsoluteCoordinates")
-    public Boolean isHasAbsoluteCoordinates();
+    public Boolean hasAbsoluteCoordinates();
     
     @Override
     @JsonProperty("dropLocation")

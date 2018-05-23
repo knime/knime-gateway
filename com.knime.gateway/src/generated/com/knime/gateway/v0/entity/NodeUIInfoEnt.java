@@ -50,7 +50,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
    * Get hasAbsoluteCoordinates
    * @return hasAbsoluteCoordinates 
    **/
-  public Boolean isHasAbsoluteCoordinates();
+  public Boolean hasAbsoluteCoordinates();
 
   /**
    * Get dropLocation

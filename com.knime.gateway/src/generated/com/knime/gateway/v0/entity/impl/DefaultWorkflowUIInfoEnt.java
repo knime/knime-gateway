@@ -107,7 +107,7 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
     }
     
   @Override
-  public Boolean isHasCurvedConnection() {
+  public Boolean hasCurvedConnection() {
         return m_hasCurvedConnection;
     }
     

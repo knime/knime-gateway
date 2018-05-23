@@ -68,7 +68,7 @@ public interface WorkflowUIInfoEnt extends GatewayEntity {
    * Whether connections are rendered as curves.
    * @return hasCurvedConnection 
    **/
-  public Boolean isHasCurvedConnection();
+  public Boolean hasCurvedConnection();
 
   /**
    * Width of the line connecting two nodes.

@@ -107,7 +107,7 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
 
     @Override
     public boolean hasDialog() {
-        return getEntity().isHasDialog();
+        return getEntity().hasDialog();
     }
 
     /**

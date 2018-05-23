@@ -65,7 +65,7 @@ public class EntityTest {
         NativeNodeEnt ent = createNativeNodeEnt(wfId);
 
         assertEquals(ent.getName(), "name");
-        assertEquals(ent.isHasDialog(), true);
+        assertEquals(ent.hasDialog(), true);
         assertEquals(ent.getNodeID(), "node_id");
         assertEquals(ent.getNodeState(), NodeStateEnt.StateEnum.CONFIGURED);
         assertEquals(ent.getNodeType(), NodeTypeEnum.LEARNER);

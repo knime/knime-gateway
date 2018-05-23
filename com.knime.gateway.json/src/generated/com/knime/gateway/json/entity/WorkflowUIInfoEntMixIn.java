@@ -79,7 +79,7 @@ public interface WorkflowUIInfoEntMixIn extends WorkflowUIInfoEnt {
     
     @Override
     @JsonProperty("hasCurvedConnection")
-    public Boolean isHasCurvedConnection();
+    public Boolean hasCurvedConnection();
     
     @Override
     @JsonProperty("connectionLineWidth")
