@@ -136,7 +136,7 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
     private <R> R doRequestInternal(final Function<C, Response> call, final Function<Response, R> readEntity) {
          try (AuthenticationCloseable c = ThreadLocalHTTPAuthenticator.suppressAuthenticationPopups();
                 AutocloseableResponse res = acr(call.apply(m_client))) {
-            if (!MediaType.APPLICATION_JSON_TYPE.isCompatible(res.getMediaType())) {
+            if (MediaType.TEXT_HTML.equals(res.getHeaderString("Content-Type"))) {
                 throw new IllegalArgumentException(
                     "REST address '" + m_restAddress + "' does not point to a KNIME server's REST interface.");
             }
