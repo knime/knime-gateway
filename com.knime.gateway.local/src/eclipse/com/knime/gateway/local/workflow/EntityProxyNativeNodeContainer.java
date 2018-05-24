@@ -178,7 +178,7 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             m_nodeSettings = nodeSettings;
 
             return Node.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
-                new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack,
+                new PortObject[portTypes.length], nodeSettings, getParent().isWriteProtected(), null, flowObjectStack,
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER);
         } catch (InterruptedException e) {
             throw new NotConfigurableException(e.getMessage(), e);
