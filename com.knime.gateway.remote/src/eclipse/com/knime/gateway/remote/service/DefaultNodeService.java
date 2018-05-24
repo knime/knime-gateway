@@ -191,7 +191,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<FlowVariableEnt> getFlowVariables(final UUID rootWorkflowID, final String nodeID)
+    public List<FlowVariableEnt> getInputFlowVariables(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         Map<String, FlowVariable> flowObjectStack = nodeContainer.getFlowObjectStack().getAvailableFlowVariables();

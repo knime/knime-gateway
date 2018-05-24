@@ -87,11 +87,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<FlowVariableEnt> getFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getFlowVariables(jobId, nodeId);
+                    return c.getInputFlowVariables(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     // TODO exception handling

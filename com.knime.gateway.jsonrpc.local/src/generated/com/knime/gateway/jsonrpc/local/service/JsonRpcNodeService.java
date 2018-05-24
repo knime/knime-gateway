@@ -47,8 +47,8 @@ public interface JsonRpcNodeService extends NodeService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "NodeService.getFlowVariables")
-    java.util.List<FlowVariableEnt> getFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    @JsonRpcMethod(value = "NodeService.getInputFlowVariables")
+    java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}

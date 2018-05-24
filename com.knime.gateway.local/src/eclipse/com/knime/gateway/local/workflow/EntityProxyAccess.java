@@ -487,7 +487,7 @@ public class EntityProxyAccess {
     FlowObjectStack getFlowVariableStack(final NodeEnt node, final NodeID nodeId) {
         try {
             List<FlowVariableEnt> flowVariables = service(NodeService.class, m_serviceConfig)
-                .getFlowVariables(node.getRootWorkflowID(), node.getNodeID());
+                .getInputFlowVariables(node.getRootWorkflowID(), node.getNodeID());
             return FlowObjectStack.createFromFlowVariableList(flowVariables.stream().map(e -> {
                 switch (e.getType()) {
                     case DOUBLE:

@@ -55,7 +55,7 @@ public interface NodeService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    java.util.List<FlowVariableEnt> getFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
         
     /**
      * Provides the node&#39;s input port specifications for the given node-id. I.e. all output port specs of the output ports connected to the input ports of this node.
