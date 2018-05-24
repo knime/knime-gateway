@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -99,6 +100,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     private UUID m_snapshotID;
 
     private boolean m_isDisconnected = false;
+
+    private final List<Runnable> m_writeProtectionChangedListeners = new ArrayList<Runnable>();
 
     /**
      * @param workflowNodeEnt
@@ -1190,7 +1193,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public void setDisconnected(final boolean disconnected) {
+        boolean changed = m_isDisconnected != disconnected;
         m_isDisconnected = disconnected;
+        if (changed) {
+            //notify write protection changed listeners since #isWriteProtected depends on the connected-state
+            m_writeProtectionChangedListeners.forEach(l -> l.run());
+        }
     }
 
     /**
@@ -1199,5 +1207,21 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public boolean hasCredentials() {
         return getWorkflow().hasCredentials();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWriteProtectionChangedListener(final Runnable listener) {
+        m_writeProtectionChangedListeners.add(listener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeWriteProtectionChangedListener(final Runnable listener) {
+        m_writeProtectionChangedListeners.remove(listener);
     }
 }
