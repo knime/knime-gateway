@@ -208,6 +208,8 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             throw new RuntimeException(ex);
         } catch (ServiceExceptions.InvalidSettingsException ex) {
             throw new InvalidSettingsException(ex);
+        } catch (ServiceExceptions.IllegalStateException ex) {
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
 

@@ -100,7 +100,8 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public void setNodeSettings(final UUID rootWorkflowID, final String nodeID, final NodeSettingsEnt nodeSettings)
-        throws NodeNotFoundException, ServiceExceptions.InvalidSettingsException {
+        throws NodeNotFoundException, ServiceExceptions.InvalidSettingsException,
+        ServiceExceptions.IllegalStateException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         WorkflowManager parent = nc.getParent();
         NodeSettings settings = new NodeSettings("settings");
@@ -108,7 +109,9 @@ public class DefaultNodeService implements NodeService {
             JSONConfig.readJSON(settings, new StringReader(nodeSettings.getContent()));
             parent.loadNodeSettings(nc.getID(), settings);
         } catch (InvalidSettingsException | IOException ex) {
-            throw new ServiceExceptions.InvalidSettingsException(ex.getMessage(), ex);
+            throw new ServiceExceptions.InvalidSettingsException(ex.getMessage());
+        } catch (IllegalStateException ex) {
+            throw new ServiceExceptions.IllegalStateException(ex.getMessage());
         }
     }
 

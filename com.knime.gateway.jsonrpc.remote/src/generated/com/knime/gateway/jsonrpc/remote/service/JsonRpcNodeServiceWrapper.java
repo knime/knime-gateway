@@ -150,9 +150,11 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidSettingsException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "405" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.IllegalStateException.class, code = -32600,
+            data = "409" /*per convention the data property contains the status code*/)
     })
-    public void setNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="nodeSettings") NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException {
+    public void setNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="nodeSettings") NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
         m_service.setNodeSettings(jobId, nodeId, nodeSettings);    
     }
 

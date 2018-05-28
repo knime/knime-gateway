@@ -104,5 +104,18 @@ public final class ServiceExceptions {
         }
     }
     
+    /**
+    * If node is not in the right state to apply the settings.
+    */
+    public static class IllegalStateException extends Exception {
+        public IllegalStateException(String message) {
+            super(message);
+        }
+        
+        public IllegalStateException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+    
     
 }

@@ -223,7 +223,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException {
+    public void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
         try{
             doRequest(c -> {
                 try {
@@ -241,6 +241,9 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }
             if (ex.getResponse().getStatus() == 405) {
                 throw new ServiceExceptions.InvalidSettingsException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 409) {
+                throw new ServiceExceptions.IllegalStateException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));

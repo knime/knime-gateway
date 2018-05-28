@@ -123,7 +123,8 @@ public interface NodeService extends GatewayService {
      * 
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidSettingsException If settings couldn&#39;t be applied.
+     * @throws ServiceExceptions.IllegalStateException If node is not in the right state to apply the settings.
      */
-    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException;
+    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
         
 }
