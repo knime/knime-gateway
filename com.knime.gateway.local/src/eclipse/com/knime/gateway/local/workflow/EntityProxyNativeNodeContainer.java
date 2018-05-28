@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.Node;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -116,7 +117,7 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
     @Override
     public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
         if (m_dialogPane == null) {
-            m_dialogPane = NodeDialogPane.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
+            m_dialogPane = Node.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
                 getEntity().getInPorts().size(), false);
         }
 
@@ -137,7 +138,7 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
             for (int i = 0; i < portTypes.length; i++) {
                 portTypes[i] = getInPort(i).getPortType();
             }
-            return NodeDialogPane.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
+            return Node.initDialogPaneWithSettings(m_dialogPane, portObjectSpecs, portTypes,
                 new PortObject[portTypes.length], nodeSettings, true, null, flowObjectStack,
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER);
         } catch (InterruptedException e) {
