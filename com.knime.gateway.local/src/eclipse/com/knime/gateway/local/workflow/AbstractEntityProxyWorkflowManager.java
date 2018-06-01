@@ -20,10 +20,7 @@ package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.local.util.EntityProxyUtil.nodeIDToString;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +32,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -131,32 +127,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public ReentrantLock getReentrantLockInstance() {
-        // TODO
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isLockedByCurrentThread() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public WorkflowManagerUI getProjectWFM() {
-        //TODO if this is a meta node
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void removeProject(final NodeID id) {
         throw new UnsupportedOperationException();
     }
@@ -182,17 +152,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public ConnectionContainerUI addConnection(final NodeID source, final int sourcePort, final NodeID dest,
-        final int destPort) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean canAddConnection(final NodeID source, final int sourcePort, final NodeID dest, final int destPort) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     /**
@@ -201,23 +162,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public boolean canAddNewConnection(final NodeID source, final int sourcePort, final NodeID dest,
         final int destPort) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean canRemoveConnection(final ConnectionContainerUI cc) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeConnection(final ConnectionContainerUI cc) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     /**
@@ -342,66 +287,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public MetaPortInfo[] getSubnodeInputPortInfo(final NodeID subNodeID) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MetaPortInfo[] getSubnodeOutputPortInfo(final NodeID subNodeID) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changeMetaNodeInputPorts(final NodeID subFlowID, final MetaPortInfo[] newPorts) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changeMetaNodeOutputPorts(final NodeID subFlowID, final MetaPortInfo[] newPorts) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changeSubNodeInputPorts(final NodeID subFlowID, final MetaPortInfo[] newPorts) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changeSubNodeOutputPorts(final NodeID subFlowID, final MetaPortInfo[] newPorts) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     * @deprecated
-     */
-    @Deprecated
-    @Override
-    public void resetAll() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void resetAndConfigureAll() {
         throw new UnsupportedOperationException();
     }
@@ -446,30 +331,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String canExpandSubNode(final NodeID subNodeID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String canExpandMetaNode(final NodeID wfmID) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String canCollapseNodesIntoMetaNode(final NodeID[] orgIDs) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("rawtypes")
     @Override
     public boolean canResetNode(final NodeID nodeID) {
@@ -486,36 +347,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean canResetContainedNodes() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("rawtypes")
     @Override
     public void resetAndConfigureNode(final NodeID id) {
         NodeContainerUI nc = getNodeContainer(id);
         assert nc instanceof AbstractEntityProxyNodeContainer;
         ((AbstractEntityProxyNodeContainer) nc).reset();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean canConfigureNodes() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean canExecuteNodeDirectly(final NodeID nodeID) {
-        return false;
     }
 
     /**
@@ -552,14 +389,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             return false;
         }
         return getNodeContainerState().isExecutionInProgress();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean canSetJobManager(final NodeID nodeID) {
-        return false;
     }
 
     /**
@@ -691,22 +520,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
-     */
-    @Override
-    public boolean containsNodeContainer(final NodeID id) {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean containsExecutedNode() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
      * @deprecated
      */
     @Deprecated
@@ -761,14 +574,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public void setWorkflowPassword(final String password, final String hint) throws NoSuchAlgorithmException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isUnlocked() {
         //unlocking not supported yet
         return !isEncrypted();
@@ -780,22 +585,6 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public String getPasswordHint() {
         return "TODO password hint";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public OutputStream cipherOutput(final OutputStream out) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getCipherFileName(final String fileName) {
-        throw new UnsupportedOperationException();
     }
 
     /**
