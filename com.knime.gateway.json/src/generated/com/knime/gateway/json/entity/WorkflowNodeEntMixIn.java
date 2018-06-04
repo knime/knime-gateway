@@ -129,6 +129,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public NodeAnnotationEnt getNodeAnnotation();
     
     @Override
+    @JsonProperty("webViewNames")
+    public java.util.List<String> getWebViewNames();
+    
+    @Override
     @JsonProperty("jobManager")
     public JobManagerEnt getJobManager();
     
@@ -233,6 +237,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         @Override
         @JsonProperty("nodeAnnotation")
         public WorkflowNodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
+        
+        @Override
+        @JsonProperty("webViewNames")
+        public WorkflowNodeEntMixInBuilder setWebViewNames(final java.util.List<String> webViewNames);
         
         @Override
         @JsonProperty("jobManager")

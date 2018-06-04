@@ -185,6 +185,12 @@ public interface NodeEnt extends GatewayEntity {
   public NodeAnnotationEnt getNodeAnnotation();
 
   /**
+   * The names of the available web views. Can be an empty list.
+   * @return webViewNames 
+   **/
+  public java.util.List<String> getWebViewNames();
+
+  /**
    * The job manager (e.g. cluster or streaming).
    * @return jobManager 
    **/
@@ -321,6 +327,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
+        
+        /**
+         * The names of the available web views. Can be an empty list.
+         * 
+         * @param webViewNames the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
         
         /**
          * The job manager (e.g. cluster or streaming).

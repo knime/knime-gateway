@@ -192,6 +192,14 @@ public interface WorkflowNodeEnt extends NodeEnt {
         WorkflowNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
         
         /**
+         * The names of the available web views. Can be an empty list.
+         * 
+         * @param webViewNames the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
+        
+        /**
          * The job manager (e.g. cluster or streaming).
          * 
          * @param jobManager the property value,  

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.DynamicNodeFactory;
@@ -46,6 +47,8 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.web.WebViewContent;
+import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.EditorUIInformation;
@@ -62,6 +65,7 @@ import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.BoundsEnt;
@@ -101,6 +105,10 @@ import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
+import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.WebViewEnt.WebViewEntBuilder;
+import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt.WebView_viewRepresentationEntBuilder;
+import com.knime.gateway.v0.entity.WebView_viewValueEnt.WebView_viewValueEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowEnt;
@@ -317,6 +325,42 @@ public class EntityBuilderUtil {
                 .build();
     }
 
+    /**
+     * Builds a new {@link WebViewEnt}.
+     *
+     * @param webViewsResult the interactive web view result to extract the web view from
+     * @param index  the index of the web view to build
+     * @return the newly created entity
+     */
+    public static WebViewEnt buildWebViewEnt(final InteractiveWebViewsResult webViewsResult, final int index) {
+        WizardNode<?, ?> wnode = (WizardNode<?, ?>)webViewsResult.get(index).getNativeNodeContainer().getNodeModel();
+        String viewRepresentation = toJsonString(wnode.getViewRepresentation());
+        String viewValue = toJsonString(wnode.getViewValue());
+        return builder(WebViewEntBuilder.class)
+                .setJavascriptObjectID(wnode.getJavascriptObjectID())
+                .setViewRepresentation(
+                    builder(WebView_viewRepresentationEntBuilder.class)
+                    .setClassname(wnode.getViewRepresentation().getClass().getCanonicalName())
+                    .setContent(viewRepresentation)
+                    .build())
+                 .setViewValue(
+                    builder(WebView_viewValueEntBuilder.class)
+                    .setClassname(wnode.getViewValue().getClass().getCanonicalName())
+                    .setContent(viewValue)
+                    .build())
+                .setViewHTMLPath(wnode.getViewHTMLPath())
+                .setHideInWizard(wnode.isHideInWizard()).build();
+    }
+
+    /**
+     * Turns a webview content into a json string via node settings.
+     */
+    private static String toJsonString(final WebViewContent webViewContent) {
+        NodeSettings settings = new NodeSettings("settings");
+        webViewContent.saveToNodeSettings(settings);
+        return JSONConfig.toJSONString(settings, WriterConfig.DEFAULT);
+    }
+
     private static PortTypeEnt buildPortTypeEnt(final PortType portType) {
         return builder(PortTypeEntBuilder.class)
             .setOptional(portType.isOptional())
@@ -450,6 +494,7 @@ public class EntityBuilderUtil {
             nc.getNode().getFactory().saveAdditionalFactorySettings(settings);
             nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.PRETTY));
         }
+        InteractiveWebViewsResult webViews = nc.getInteractiveWebViews();
         return builder(NativeNodeEntBuilder.class).setName(nc.getName()).setNodeID(nodeIdAsString(nc.getID()))
             .setNodeMessage(buildNodeMessageEnt(nc))
             .setNodeType(NodeTypeEnum.valueOf(nc.getType().toString().toUpperCase()))
@@ -470,6 +515,8 @@ public class EntityBuilderUtil {
             .setHasDialog(nc.hasDialog())
             .setNodeFactoryKey(nodeFactoryKeyBuilder.build())
             .setInactive(nc.isInactive())
+            .setWebViewNames(IntStream.range(0, webViews.size())
+                .mapToObj(i -> webViews.get(i).getViewName()).collect(Collectors.toList()))
             .setType("NativeNode").build();
     }
 

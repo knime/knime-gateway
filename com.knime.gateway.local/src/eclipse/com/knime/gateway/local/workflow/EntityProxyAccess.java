@@ -506,6 +506,28 @@ public class EntityProxyAccess {
     }
 
     /**
+     * Return the interactive web views result entity proxy for the given node entity.
+     *
+     * With every call the same entity proxy instance will be returned for the same entity.
+     *
+     * @param node the entity to get the client-proxy wrapper for
+     * @return the {@link EntityProxyInteractiveWebViewsResult} - either the cached one or newly created
+     */
+    EntityProxyInteractiveWebViewsResult getInteractiveWebViewsResult(final NativeNodeEnt node) {
+        //possibly return the same node in port instance for the same index
+        return getOrCreate(node, o -> {
+            return new EntityProxyInteractiveWebViewsResult(o, this);
+        }, EntityProxyInteractiveWebViewsResult.class);
+    }
+
+    EntityProxySingleInteractiveWebViewResult
+        getSingleInteractiveWebViewResult(final Pair<Integer, NativeNodeEnt> indexNodePair) {
+        return getOrCreate(indexNodePair, o -> {
+            return new EntityProxySingleInteractiveWebViewResult(o, this);
+        }, EntityProxySingleInteractiveWebViewResult.class);
+    }
+
+    /**
      * @return the current node service in use
      */
     NodeService nodeService() {
@@ -593,8 +615,8 @@ public class EntityProxyAccess {
      *
      * This global map caches the proxy instances for look up with the actual entity as key (weak references).
      *
-     * @param entity the key (a gateway entity) to look for in the internal map (and to store newly created objects
-     *            with)
+     * @param obj an object whose identity hash code is used as the key to look for in the internal map (and to store
+     *            newly created objects with)
      * @param fct tells how to create the entity prox if not present in the internal map
      * @return
      *         <ul>
@@ -604,17 +626,17 @@ public class EntityProxyAccess {
      *         </ul>
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private <E extends GatewayEntity, P extends EntityProxy<E>> P getOrCreate(final E entity, final Function<E, P> fct,
+    private <E, P extends EntityProxy<E>> P getOrCreate(final E obj, final Function<E, P> fct,
         final Class<P> proxyClass) {
-        if (entity == null) {
+        if (obj == null) {
             return null;
         } else {
             Pair<Integer, Class<EntityProxy>> key =
-                new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(entity), (Class<EntityProxy>)proxyClass);
+                new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(obj), (Class<EntityProxy>)proxyClass);
             P proxy = (P)m_entityProxyMap.get(key);
             if (proxy == null) {
                 //create proxy entry
-                proxy = fct.apply(entity);
+                proxy = fct.apply(obj);
                 m_entityProxyMap.put(key, proxy);
                 LOGGER.debug("New entity proxy of type '" + proxy.getClass().getSimpleName() + "' created (total number: "
                     + ++m_numCreatedEntityProxies + ")");

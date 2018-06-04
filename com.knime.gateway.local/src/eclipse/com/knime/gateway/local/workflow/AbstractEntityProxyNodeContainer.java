@@ -50,6 +50,7 @@ import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
 import org.knime.core.node.workflow.NodeUIInformationListener;
+import org.knime.core.ui.node.workflow.InteractiveWebViewsResultUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
@@ -537,6 +538,26 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     @Override
     public String getInteractiveViewName() {
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InteractiveWebViewsResultUI getInteractiveWebViews() {
+        //by default there are not web views available
+        return new InteractiveWebViewsResultUI() {
+
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public SingleInteractiveWebViewResultUI get(final int index) {
+                return null;
+            }
+        };
     }
 
     /**

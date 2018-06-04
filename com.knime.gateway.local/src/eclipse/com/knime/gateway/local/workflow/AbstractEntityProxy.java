@@ -27,7 +27,7 @@ import com.knime.gateway.entity.GatewayEntity;
  * @author Martin Horn, University of Konstanz
  * @param <E> the entity the entity proxy wraps and works on
  */
-abstract class AbstractEntityProxy<E extends GatewayEntity> implements EntityProxy<E> {
+abstract class AbstractEntityProxy<E> implements EntityProxy<E> {
 
     private final EntityProxyAccess m_clientProxyAccess;
     private E m_entity;

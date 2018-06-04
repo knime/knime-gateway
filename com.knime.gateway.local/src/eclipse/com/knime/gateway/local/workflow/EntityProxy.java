@@ -26,7 +26,7 @@ import com.knime.gateway.entity.GatewayEntity;
  * @author Martin Horn, Univerity of Konstanz
  * @param <E> the underlying entity
  */
-interface EntityProxy<E extends GatewayEntity> {
+interface EntityProxy<E> {
 
     /**
      * @return the proxy's entity

@@ -134,6 +134,10 @@ public interface NodeEntMixIn extends NodeEnt {
     public NodeAnnotationEnt getNodeAnnotation();
     
     @Override
+    @JsonProperty("webViewNames")
+    public java.util.List<String> getWebViewNames();
+    
+    @Override
     @JsonProperty("jobManager")
     public JobManagerEnt getJobManager();
     
@@ -226,6 +230,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("nodeAnnotation")
         public NodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
+        
+        @Override
+        @JsonProperty("webViewNames")
+        public NodeEntMixInBuilder setWebViewNames(final java.util.List<String> webViewNames);
         
         @Override
         @JsonProperty("jobManager")

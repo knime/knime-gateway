@@ -56,6 +56,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
+import com.knime.gateway.v0.entity.WebViewEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
@@ -226,6 +227,15 @@ public class DefaultNodeService implements NodeService {
             .map(fv -> EntityBuilderUtil.buildFlowVariableEnt(fv)).collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WebViewEnt getWebView(final UUID rootWorkflowID, final String nodeID, final Integer index) throws NodeNotFoundException {
+        NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
+        return EntityBuilderUtil.buildWebViewEnt(nc.getInteractiveWebViews(), index);
+    }
+
     private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(
         final Stream<Pair<PortType, PortObjectSpec>> specs) throws NotSupportedException {
         AtomicReference<NotSupportedException> exception = new AtomicReference<NotSupportedException>();
@@ -256,7 +266,7 @@ public class DefaultNodeService implements NodeService {
         if (exception.get() == null) {
             return res;
         } else {
-            //could think of a better way to transfer a thrown exception from within a lambda-expression
+            //couldn't think of a better way to transfer a thrown exception from within a lambda-expression
             throw exception.get();
         }
     }

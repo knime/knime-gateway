@@ -213,26 +213,40 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
 
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
         if (m_nodeFactory == null) {
-            NodeFactoryKeyEnt nodeFactoryKey = getEntity().getNodeFactoryKey();
-            try {
-                m_nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
-                if (m_nodeFactory instanceof DynamicNodeFactory) {
-                    if (nodeFactoryKey.getSettings() != null) {
-                        //in case of a dynamic node factory additional settings need to be loaded
-                        NodeSettings config = JSONConfig.readJSON(new NodeSettings("settings"),
-                            new StringReader(nodeFactoryKey.getSettings()));
-                        m_nodeFactory.loadAdditionalFactorySettings(config);
-                    } else {
-                        m_nodeFactory.init();
-                    }
-                }
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException
-                    | InvalidSettingsException ex) {
-                m_nodeFactory = new MissingNodeFactory(super.getName(), ex.getMessage());
-                m_nodeFactory.init();
-            }
+            m_nodeFactory = createNodeFactoryInstance(getEntity());
         }
         return m_nodeFactory;
+    }
+
+    static NodeFactory<? extends NodeModel> createNodeFactoryInstance(final NativeNodeEnt node) {
+        NodeFactoryKeyEnt nodeFactoryKey = node.getNodeFactoryKey();
+        NodeFactory<? extends NodeModel> nodeFactory;
+        try {
+            nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
+            if (nodeFactory instanceof DynamicNodeFactory) {
+                if (nodeFactoryKey.getSettings() != null) {
+                    //in case of a dynamic node factory additional settings need to be loaded
+                    NodeSettings config = JSONConfig.readJSON(new NodeSettings("settings"),
+                        new StringReader(nodeFactoryKey.getSettings()));
+                    nodeFactory.loadAdditionalFactorySettings(config);
+                } else {
+                    nodeFactory.init();
+                }
+            }
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException
+                | InvalidSettingsException ex) {
+            nodeFactory = new MissingNodeFactory(node.getName(), ex.getMessage());
+            nodeFactory.init();
+        }
+        return nodeFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EntityProxyInteractiveWebViewsResult getInteractiveWebViews() {
+        return getAccess().getInteractiveWebViewsResult(getEntity());
     }
 
 }
