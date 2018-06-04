@@ -204,11 +204,9 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
         try {
             getAccess().nodeService().setNodeSettings(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
                 settingsEnt);
-        } catch (NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
         } catch (ServiceExceptions.InvalidSettingsException ex) {
             throw new InvalidSettingsException(ex);
-        } catch (ServiceExceptions.IllegalStateException ex) {
+        } catch (ServiceExceptions.IllegalStateException | NodeNotFoundException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
