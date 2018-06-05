@@ -56,12 +56,12 @@ import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPortTypeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
-import com.knime.gateway.v0.entity.WebViewEnt.WebViewEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWebViewEnt;
-import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt.WebView_viewRepresentationEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWebView_viewRepresentationEnt;
-import com.knime.gateway.v0.entity.WebView_viewValueEnt.WebView_viewValueEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWebView_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt.ViewData_viewRepresentationEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultViewData_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.ViewData_viewValueEnt.ViewData_viewValueEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultViewData_viewValueEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
@@ -156,14 +156,14 @@ public class Interface2ImplMap {
         if(clazz == StyleRangeEntBuilder.class) {
             return new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
         }        
-        if(clazz == WebViewEntBuilder.class) {
-            return new DefaultWebViewEnt.DefaultWebViewEntBuilder();
+        if(clazz == ViewDataEntBuilder.class) {
+            return new DefaultViewDataEnt.DefaultViewDataEntBuilder();
         }        
-        if(clazz == WebView_viewRepresentationEntBuilder.class) {
-            return new DefaultWebView_viewRepresentationEnt.DefaultWebView_viewRepresentationEntBuilder();
+        if(clazz == ViewData_viewRepresentationEntBuilder.class) {
+            return new DefaultViewData_viewRepresentationEnt.DefaultViewData_viewRepresentationEntBuilder();
         }        
-        if(clazz == WebView_viewValueEntBuilder.class) {
-            return new DefaultWebView_viewValueEnt.DefaultWebView_viewValueEntBuilder();
+        if(clazz == ViewData_viewValueEntBuilder.class) {
+            return new DefaultViewData_viewValueEnt.DefaultViewData_viewValueEntBuilder();
         }        
         if(clazz == WorkflowEntBuilder.class) {
             return new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();

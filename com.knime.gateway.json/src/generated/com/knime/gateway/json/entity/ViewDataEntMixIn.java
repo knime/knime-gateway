@@ -18,8 +18,8 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt;
-import com.knime.gateway.v0.entity.WebView_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.ViewData_viewValueEnt;
 
 
 import com.knime.gateway.json.JsonUtil;
@@ -32,9 +32,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.WebViewEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWebViewEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWebViewEnt.DefaultWebViewEntBuilder;
+import com.knime.gateway.v0.entity.ViewDataEnt;
+import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt;
+import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt.DefaultViewDataEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -46,13 +46,13 @@ import com.knime.gateway.v0.entity.impl.DefaultWebViewEnt.DefaultWebViewEntBuild
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWebViewEnt.class)
+    defaultImpl = DefaultViewDataEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWebViewEnt.class, name="WebView")
+    @Type(value = DefaultViewDataEnt.class, name="ViewData")
 })
-@JsonDeserialize(builder=DefaultWebViewEntBuilder.class)
+@JsonDeserialize(builder=DefaultViewDataEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WebViewEntMixIn extends WebViewEnt {
+public interface ViewDataEntMixIn extends ViewDataEnt {
 
     @Override
     @JsonIgnore
@@ -64,11 +64,11 @@ public interface WebViewEntMixIn extends WebViewEnt {
     
     @Override
     @JsonProperty("viewRepresentation")
-    public WebView_viewRepresentationEnt getViewRepresentation();
+    public ViewData_viewRepresentationEnt getViewRepresentation();
     
     @Override
     @JsonProperty("viewValue")
-    public WebView_viewValueEnt getViewValue();
+    public ViewData_viewValueEnt getViewValue();
     
     @Override
     @JsonProperty("viewHTMLPath")
@@ -88,35 +88,35 @@ public interface WebViewEntMixIn extends WebViewEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWebViewEntBuilder.class)
+        defaultImpl = DefaultViewDataEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWebViewEnt.DefaultWebViewEntBuilder.class, name="WebView")
+        @Type(value = DefaultViewDataEnt.DefaultViewDataEntBuilder.class, name="ViewData")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WebViewEntMixInBuilder extends WebViewEntBuilder {
+    public static interface ViewDataEntMixInBuilder extends ViewDataEntBuilder {
     
         @Override
-        public WebViewEntMixIn build();
+        public ViewDataEntMixIn build();
     
         @Override
         @JsonProperty("javascriptObjectID")
-        public WebViewEntMixInBuilder setJavascriptObjectID(final String javascriptObjectID);
+        public ViewDataEntMixInBuilder setJavascriptObjectID(final String javascriptObjectID);
         
         @Override
         @JsonProperty("viewRepresentation")
-        public WebViewEntMixInBuilder setViewRepresentation(final WebView_viewRepresentationEnt viewRepresentation);
+        public ViewDataEntMixInBuilder setViewRepresentation(final ViewData_viewRepresentationEnt viewRepresentation);
         
         @Override
         @JsonProperty("viewValue")
-        public WebViewEntMixInBuilder setViewValue(final WebView_viewValueEnt viewValue);
+        public ViewDataEntMixInBuilder setViewValue(final ViewData_viewValueEnt viewValue);
         
         @Override
         @JsonProperty("viewHTMLPath")
-        public WebViewEntMixInBuilder setViewHTMLPath(final String viewHTMLPath);
+        public ViewDataEntMixInBuilder setViewHTMLPath(final String viewHTMLPath);
         
         @Override
         @JsonProperty("hideInWizard")
-        public WebViewEntMixInBuilder setHideInWizard(final Boolean hideInWizard);
+        public ViewDataEntMixInBuilder setHideInWizard(final Boolean hideInWizard);
         
     }
 

@@ -248,5 +248,4 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
     public EntityProxyInteractiveWebViewsResult getInteractiveWebViews() {
         return getAccess().getInteractiveWebViewsResult(getEntity());
     }
-
 }

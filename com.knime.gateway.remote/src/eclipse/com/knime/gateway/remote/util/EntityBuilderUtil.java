@@ -108,10 +108,10 @@ import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
-import com.knime.gateway.v0.entity.WebViewEnt;
-import com.knime.gateway.v0.entity.WebViewEnt.WebViewEntBuilder;
-import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt.WebView_viewRepresentationEntBuilder;
-import com.knime.gateway.v0.entity.WebView_viewValueEnt.WebView_viewValueEntBuilder;
+import com.knime.gateway.v0.entity.ViewDataEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt.ViewData_viewRepresentationEntBuilder;
+import com.knime.gateway.v0.entity.ViewData_viewValueEnt.ViewData_viewValueEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowEnt;
@@ -329,28 +329,26 @@ public class EntityBuilderUtil {
     }
 
     /**
-     * Builds a new {@link WebViewEnt}.
+     * Builds a new {@link ViewDataEnt}.
      *
-     * @param webViewsResult the interactive web view result to extract the web view from
-     * @param index  the index of the web view to build
+     * @param wnode the node to get the view data for
      * @return the newly created entity
      * @throws IOException
      * @throws UnsupportedEncodingException
      */
-    public static WebViewEnt buildWebViewEnt(final InteractiveWebViewsResult webViewsResult, final int index)
+    public static ViewDataEnt buildViewDataEnt(final WizardNode<?, ?> wnode)
         throws UnsupportedEncodingException, IOException {
-        WizardNode<?, ?> wnode = (WizardNode<?, ?>)webViewsResult.get(index).getNativeNodeContainer().getNodeModel();
         String viewRepresentation = toJsonString(wnode.getViewRepresentation());
         String viewValue = toJsonString(wnode.getViewValue());
-        return builder(WebViewEntBuilder.class)
+        return builder(ViewDataEntBuilder.class)
                 .setJavascriptObjectID(wnode.getJavascriptObjectID())
                 .setViewRepresentation(
-                    builder(WebView_viewRepresentationEntBuilder.class)
+                    builder(ViewData_viewRepresentationEntBuilder.class)
                     .setClassname(wnode.getViewRepresentation().getClass().getCanonicalName())
                     .setContent(viewRepresentation)
                     .build())
                  .setViewValue(
-                    builder(WebView_viewValueEntBuilder.class)
+                    builder(ViewData_viewValueEntBuilder.class)
                     .setClassname(wnode.getViewValue().getClass().getCanonicalName())
                     .setContent(viewValue)
                     .build())
@@ -365,6 +363,7 @@ public class EntityBuilderUtil {
         throws UnsupportedEncodingException, IOException {
         //very ugly, but it's done the same way at other places, too
         //TODO: WebViewContent should have a 'saveToStream(OutputStream)'-method
+        //TODO: right now the returning will be json, but what if not anymore?
         return ((ByteArrayOutputStream)webViewContent.saveToStream()).toString("UTF-8");
     }
 

@@ -22,35 +22,35 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
 import java.util.Objects;
 
-import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt;
-import com.knime.gateway.v0.entity.WebView_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.ViewData_viewValueEnt;
 
-import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt;
 
 /**
- * Represents a web view, e.g. Javascript.
+ * The data for a node&#39;s views.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultWebViewEnt  implements WebViewEnt {
+public class DefaultViewDataEnt  implements ViewDataEnt {
 
   protected String m_javascriptObjectID;
-  protected WebView_viewRepresentationEnt m_viewRepresentation;
-  protected WebView_viewValueEnt m_viewValue;
+  protected ViewData_viewRepresentationEnt m_viewRepresentation;
+  protected ViewData_viewValueEnt m_viewValue;
   protected String m_viewHTMLPath;
   protected Boolean m_hideInWizard;
   
-  protected DefaultWebViewEnt() {
+  protected DefaultViewDataEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WebView";
+    return "ViewData";
   }
   
-  private DefaultWebViewEnt(DefaultWebViewEntBuilder builder) {
+  private DefaultViewDataEnt(DefaultViewDataEntBuilder builder) {
     
     m_javascriptObjectID = immutable(builder.m_javascriptObjectID);
     m_viewRepresentation = immutable(builder.m_viewRepresentation);
@@ -73,7 +73,7 @@ public class DefaultWebViewEnt  implements WebViewEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWebViewEnt ent = (DefaultWebViewEnt)o;
+        DefaultViewDataEnt ent = (DefaultViewDataEnt)o;
         return Objects.equals(m_javascriptObjectID, ent.m_javascriptObjectID) && Objects.equals(m_viewRepresentation, ent.m_viewRepresentation) && Objects.equals(m_viewValue, ent.m_viewValue) && Objects.equals(m_viewHTMLPath, ent.m_viewHTMLPath) && Objects.equals(m_hideInWizard, ent.m_hideInWizard);
     }
 
@@ -84,12 +84,12 @@ public class DefaultWebViewEnt  implements WebViewEnt {
     }
     
   @Override
-  public WebView_viewRepresentationEnt getViewRepresentation() {
+  public ViewData_viewRepresentationEnt getViewRepresentation() {
         return m_viewRepresentation;
     }
     
   @Override
-  public WebView_viewValueEnt getViewValue() {
+  public ViewData_viewValueEnt getViewValue() {
         return m_viewValue;
     }
     
@@ -104,52 +104,52 @@ public class DefaultWebViewEnt  implements WebViewEnt {
     }
     
   
-    public static class DefaultWebViewEntBuilder implements WebViewEntBuilder {
+    public static class DefaultViewDataEntBuilder implements ViewDataEntBuilder {
     
-        public DefaultWebViewEntBuilder(){
+        public DefaultViewDataEntBuilder(){
             
         }
     
         private String m_javascriptObjectID = null;
-        private WebView_viewRepresentationEnt m_viewRepresentation;
-        private WebView_viewValueEnt m_viewValue;
+        private ViewData_viewRepresentationEnt m_viewRepresentation;
+        private ViewData_viewValueEnt m_viewValue;
         private String m_viewHTMLPath = null;
         private Boolean m_hideInWizard = null;
 
         @Override
-        public DefaultWebViewEntBuilder setJavascriptObjectID(String javascriptObjectID) {
+        public DefaultViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID) {
              m_javascriptObjectID = javascriptObjectID;
              return this;
         }
 
         @Override
-        public DefaultWebViewEntBuilder setViewRepresentation(WebView_viewRepresentationEnt viewRepresentation) {
+        public DefaultViewDataEntBuilder setViewRepresentation(ViewData_viewRepresentationEnt viewRepresentation) {
              m_viewRepresentation = viewRepresentation;
              return this;
         }
 
         @Override
-        public DefaultWebViewEntBuilder setViewValue(WebView_viewValueEnt viewValue) {
+        public DefaultViewDataEntBuilder setViewValue(ViewData_viewValueEnt viewValue) {
              m_viewValue = viewValue;
              return this;
         }
 
         @Override
-        public DefaultWebViewEntBuilder setViewHTMLPath(String viewHTMLPath) {
+        public DefaultViewDataEntBuilder setViewHTMLPath(String viewHTMLPath) {
              m_viewHTMLPath = viewHTMLPath;
              return this;
         }
 
         @Override
-        public DefaultWebViewEntBuilder setHideInWizard(Boolean hideInWizard) {
+        public DefaultViewDataEntBuilder setHideInWizard(Boolean hideInWizard) {
              m_hideInWizard = hideInWizard;
              return this;
         }
 
         
         @Override
-        public DefaultWebViewEnt build() {
-            return new DefaultWebViewEnt(this);
+        public DefaultViewDataEnt build() {
+            return new DefaultViewDataEnt(this);
         }
     
     }

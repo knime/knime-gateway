@@ -23,29 +23,29 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 import java.util.Objects;
 
 
-import com.knime.gateway.v0.entity.WebView_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewData_viewValueEnt;
 
 /**
- * The view&#39;s value.
+ * The views value.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultWebView_viewValueEnt  implements WebView_viewValueEnt {
+public class DefaultViewData_viewValueEnt  implements ViewData_viewValueEnt {
 
   protected String m_classname;
   protected String m_content;
   
-  protected DefaultWebView_viewValueEnt() {
+  protected DefaultViewData_viewValueEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WebView_viewValue";
+    return "ViewData_viewValue";
   }
   
-  private DefaultWebView_viewValueEnt(DefaultWebView_viewValueEntBuilder builder) {
+  private DefaultViewData_viewValueEnt(DefaultViewData_viewValueEntBuilder builder) {
     
     m_classname = immutable(builder.m_classname);
     m_content = immutable(builder.m_content);
@@ -65,7 +65,7 @@ public class DefaultWebView_viewValueEnt  implements WebView_viewValueEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWebView_viewValueEnt ent = (DefaultWebView_viewValueEnt)o;
+        DefaultViewData_viewValueEnt ent = (DefaultViewData_viewValueEnt)o;
         return Objects.equals(m_classname, ent.m_classname) && Objects.equals(m_content, ent.m_content);
     }
 
@@ -81,9 +81,9 @@ public class DefaultWebView_viewValueEnt  implements WebView_viewValueEnt {
     }
     
   
-    public static class DefaultWebView_viewValueEntBuilder implements WebView_viewValueEntBuilder {
+    public static class DefaultViewData_viewValueEntBuilder implements ViewData_viewValueEntBuilder {
     
-        public DefaultWebView_viewValueEntBuilder(){
+        public DefaultViewData_viewValueEntBuilder(){
             
         }
     
@@ -91,21 +91,21 @@ public class DefaultWebView_viewValueEnt  implements WebView_viewValueEnt {
         private String m_content = null;
 
         @Override
-        public DefaultWebView_viewValueEntBuilder setClassname(String classname) {
+        public DefaultViewData_viewValueEntBuilder setClassname(String classname) {
              m_classname = classname;
              return this;
         }
 
         @Override
-        public DefaultWebView_viewValueEntBuilder setContent(String content) {
+        public DefaultViewData_viewValueEntBuilder setContent(String content) {
              m_content = content;
              return this;
         }
 
         
         @Override
-        public DefaultWebView_viewValueEnt build() {
-            return new DefaultWebView_viewValueEnt(this);
+        public DefaultViewData_viewValueEnt build() {
+            return new DefaultViewData_viewValueEnt(this);
         }
     
     }

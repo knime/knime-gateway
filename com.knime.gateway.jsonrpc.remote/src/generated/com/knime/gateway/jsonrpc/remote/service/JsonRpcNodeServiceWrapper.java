@@ -22,7 +22,7 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -146,13 +146,15 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "getWebView")
+    @JsonRpcMethod(value = "getViewData")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.NotSupportedException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
     })
-    public WebViewEnt getWebView(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Integer index)  throws ServiceExceptions.NodeNotFoundException {
-        return m_service.getWebView(jobId, nodeId, index);    
+    public ViewDataEnt getViewData(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+        return m_service.getViewData(jobId, nodeId);    
     }
 
 	/**

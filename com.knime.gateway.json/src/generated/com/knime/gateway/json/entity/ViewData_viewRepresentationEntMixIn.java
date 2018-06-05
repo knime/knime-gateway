@@ -30,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.WebView_viewValueEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWebView_viewValueEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWebView_viewValueEnt.DefaultWebView_viewValueEntBuilder;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.impl.DefaultViewData_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.impl.DefaultViewData_viewRepresentationEnt.DefaultViewData_viewRepresentationEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -44,13 +44,13 @@ import com.knime.gateway.v0.entity.impl.DefaultWebView_viewValueEnt.DefaultWebVi
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWebView_viewValueEnt.class)
+    defaultImpl = DefaultViewData_viewRepresentationEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWebView_viewValueEnt.class, name="WebView_viewValue")
+    @Type(value = DefaultViewData_viewRepresentationEnt.class, name="ViewData_viewRepresentation")
 })
-@JsonDeserialize(builder=DefaultWebView_viewValueEntBuilder.class)
+@JsonDeserialize(builder=DefaultViewData_viewRepresentationEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WebView_viewValueEntMixIn extends WebView_viewValueEnt {
+public interface ViewData_viewRepresentationEntMixIn extends ViewData_viewRepresentationEnt {
 
     @Override
     @JsonIgnore
@@ -74,23 +74,23 @@ public interface WebView_viewValueEntMixIn extends WebView_viewValueEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWebView_viewValueEntBuilder.class)
+        defaultImpl = DefaultViewData_viewRepresentationEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWebView_viewValueEnt.DefaultWebView_viewValueEntBuilder.class, name="WebView_viewValue")
+        @Type(value = DefaultViewData_viewRepresentationEnt.DefaultViewData_viewRepresentationEntBuilder.class, name="ViewData_viewRepresentation")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WebView_viewValueEntMixInBuilder extends WebView_viewValueEntBuilder {
+    public static interface ViewData_viewRepresentationEntMixInBuilder extends ViewData_viewRepresentationEntBuilder {
     
         @Override
-        public WebView_viewValueEntMixIn build();
+        public ViewData_viewRepresentationEntMixIn build();
     
         @Override
         @JsonProperty("classname")
-        public WebView_viewValueEntMixInBuilder setClassname(final String classname);
+        public ViewData_viewRepresentationEntMixInBuilder setClassname(final String classname);
         
         @Override
         @JsonProperty("content")
-        public WebView_viewValueEntMixInBuilder setContent(final String content);
+        public ViewData_viewRepresentationEntMixInBuilder setContent(final String content);
         
     }
 

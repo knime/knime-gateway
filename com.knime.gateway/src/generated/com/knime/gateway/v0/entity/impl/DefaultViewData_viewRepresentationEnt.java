@@ -23,29 +23,29 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 import java.util.Objects;
 
 
-import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
 
 /**
- * The view&#39;s representation.
+ * The views representation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultWebView_viewRepresentationEnt  implements WebView_viewRepresentationEnt {
+public class DefaultViewData_viewRepresentationEnt  implements ViewData_viewRepresentationEnt {
 
   protected String m_classname;
   protected String m_content;
   
-  protected DefaultWebView_viewRepresentationEnt() {
+  protected DefaultViewData_viewRepresentationEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WebView_viewRepresentation";
+    return "ViewData_viewRepresentation";
   }
   
-  private DefaultWebView_viewRepresentationEnt(DefaultWebView_viewRepresentationEntBuilder builder) {
+  private DefaultViewData_viewRepresentationEnt(DefaultViewData_viewRepresentationEntBuilder builder) {
     
     m_classname = immutable(builder.m_classname);
     m_content = immutable(builder.m_content);
@@ -65,7 +65,7 @@ public class DefaultWebView_viewRepresentationEnt  implements WebView_viewRepres
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWebView_viewRepresentationEnt ent = (DefaultWebView_viewRepresentationEnt)o;
+        DefaultViewData_viewRepresentationEnt ent = (DefaultViewData_viewRepresentationEnt)o;
         return Objects.equals(m_classname, ent.m_classname) && Objects.equals(m_content, ent.m_content);
     }
 
@@ -81,9 +81,9 @@ public class DefaultWebView_viewRepresentationEnt  implements WebView_viewRepres
     }
     
   
-    public static class DefaultWebView_viewRepresentationEntBuilder implements WebView_viewRepresentationEntBuilder {
+    public static class DefaultViewData_viewRepresentationEntBuilder implements ViewData_viewRepresentationEntBuilder {
     
-        public DefaultWebView_viewRepresentationEntBuilder(){
+        public DefaultViewData_viewRepresentationEntBuilder(){
             
         }
     
@@ -91,21 +91,21 @@ public class DefaultWebView_viewRepresentationEnt  implements WebView_viewRepres
         private String m_content = null;
 
         @Override
-        public DefaultWebView_viewRepresentationEntBuilder setClassname(String classname) {
+        public DefaultViewData_viewRepresentationEntBuilder setClassname(String classname) {
              m_classname = classname;
              return this;
         }
 
         @Override
-        public DefaultWebView_viewRepresentationEntBuilder setContent(String content) {
+        public DefaultViewData_viewRepresentationEntBuilder setContent(String content) {
              m_content = content;
              return this;
         }
 
         
         @Override
-        public DefaultWebView_viewRepresentationEnt build() {
-            return new DefaultWebView_viewRepresentationEnt(this);
+        public DefaultViewData_viewRepresentationEnt build() {
+            return new DefaultViewData_viewRepresentationEnt(this);
         }
     
     }

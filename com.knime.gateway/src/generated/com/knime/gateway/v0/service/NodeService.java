@@ -25,7 +25,7 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt;
 
 /**
  * Operations on single nodes.
@@ -115,16 +115,16 @@ public interface NodeService extends GatewayService {
     NodeEnt getRootNode(java.util.UUID jobId) ;
         
     /**
-     * Provides the node&#39;s web view at a given index.
+     * Provides the data for the node&#39;s views, iff the node supports views.
      *
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
-     * @param index The index of the view to request. It&#39;s the same index as the view name provided by the node&#39;s property &#39;webViewNames&#39;.
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.NotSupportedException If the request is not supported for a reason. Please refer to the exception message for more details.
      */
-    WebViewEnt getWebView(java.util.UUID jobId, String nodeId, Integer index)  throws ServiceExceptions.NodeNotFoundException;
+    ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
         
     /**
      * Sets the node&#39;s settings for the given node-id.

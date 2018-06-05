@@ -22,7 +22,7 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt;
 
 
 import java.io.IOException;
@@ -224,21 +224,24 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public WebViewEnt getWebView(java.util.UUID jobId, String nodeId, Integer index)  throws ServiceExceptions.NodeNotFoundException {
+    public ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getWebView(jobId, nodeId, index);
+                    return c.getViewData(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     // TODO exception handling
                     throw new RuntimeException(ex);
                 }
-            }, WebViewEnt.class);
+            }, ViewDataEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 405) {
+                throw new ServiceExceptions.NotSupportedException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));

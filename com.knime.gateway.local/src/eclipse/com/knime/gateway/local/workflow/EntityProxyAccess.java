@@ -520,11 +520,17 @@ public class EntityProxyAccess {
         }, EntityProxyInteractiveWebViewsResult.class);
     }
 
-    EntityProxySingleInteractiveWebViewResult
-        getSingleInteractiveWebViewResult(final Pair<Integer, NativeNodeEnt> indexNodePair) {
-        return getOrCreate(indexNodePair, o -> {
-            return new EntityProxySingleInteractiveWebViewResult(o, this);
-        }, EntityProxySingleInteractiveWebViewResult.class);
+    /**
+     * Returns a web view model entity proxy for the given node.
+     *
+     * @param node the node to get the web view model for
+     * @param viewName the view name
+     * @return the {@link EntityProxyWebViewModel} - either the cached one or newly created
+     */
+    EntityProxyWebViewModel getEntityProxyWebViewModel(final NativeNodeEnt node, final String viewName) {
+        return getOrCreate(node, o -> {
+            return new EntityProxyWebViewModel(o, viewName, this);
+        }, EntityProxyWebViewModel.class);
     }
 
     /**

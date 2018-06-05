@@ -22,7 +22,7 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt;
 
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 
@@ -91,8 +91,8 @@ public interface JsonRpcNodeService extends NodeService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "NodeService.getWebView")
-    WebViewEnt getWebView(java.util.UUID jobId, String nodeId, Integer index)  throws ServiceExceptions.NodeNotFoundException;
+    @JsonRpcMethod(value = "NodeService.getViewData")
+    ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
 
 	/**
      * {@inheritDoc}

@@ -38,9 +38,11 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Scope;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
@@ -56,7 +58,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.WebViewEnt;
+import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
@@ -231,13 +233,19 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public WebViewEnt getWebView(final UUID rootWorkflowID, final String nodeID, final Integer index) throws NodeNotFoundException {
+    public ViewDataEnt getViewData(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException, NotSupportedException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
-        try {
-            return EntityBuilderUtil.buildWebViewEnt(nc.getInteractiveWebViews(), index);
-        } catch (IOException ex) {
-            //should not happen, that's why it's just a runtime exception
-            throw new IllegalStateException("Web views cannot be accessed.", ex);
+        if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
+            NativeNodeContainer nnc = (NativeNodeContainer)nc;
+            try {
+                return EntityBuilderUtil.buildViewDataEnt((WizardNode)nnc.getNodeModel());
+            } catch (IOException ex) {
+                //should not happen, that's why it's just a runtime exception
+                throw new IllegalStateException("Web views cannot be accessed.", ex);
+            }
+        } else {
+            throw new NotSupportedException("Node doesn't provide view data.");
         }
     }
 

@@ -18,8 +18,8 @@
  */
 package com.knime.gateway.v0.entity;
 
-import com.knime.gateway.v0.entity.WebView_viewRepresentationEnt;
-import com.knime.gateway.v0.entity.WebView_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
+import com.knime.gateway.v0.entity.ViewData_viewValueEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -27,12 +27,12 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * Represents a web view, e.g. Javascript.
+ * The data for a node&#39;s views.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WebViewEnt extends GatewayEntity {
+public interface ViewDataEnt extends GatewayEntity {
 
 
   /**
@@ -45,13 +45,13 @@ public interface WebViewEnt extends GatewayEntity {
    * Get viewRepresentation
    * @return viewRepresentation 
    **/
-  public WebView_viewRepresentationEnt getViewRepresentation();
+  public ViewData_viewRepresentationEnt getViewRepresentation();
 
   /**
    * Get viewValue
    * @return viewValue 
    **/
-  public WebView_viewValueEnt getViewValue();
+  public ViewData_viewValueEnt getViewValue();
 
   /**
    * The path to the generated HTML containing the view or null if not applicable.
@@ -69,7 +69,7 @@ public interface WebViewEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface WebViewEntBuilder extends GatewayEntityBuilder<WebViewEnt> {
+    public interface ViewDataEntBuilder extends GatewayEntityBuilder<ViewDataEnt> {
 
         /**
          * The object id used in the javascript implementation of the view.
@@ -77,21 +77,21 @@ public interface WebViewEnt extends GatewayEntity {
          * @param javascriptObjectID the property value,  
          * @return this entity builder for chaining
          */
-        WebViewEntBuilder setJavascriptObjectID(String javascriptObjectID);
+        ViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID);
         
         /**
          * 
          * @param viewRepresentation the property value,  
          * @return this entity builder for chaining
          */
-        WebViewEntBuilder setViewRepresentation(WebView_viewRepresentationEnt viewRepresentation);
+        ViewDataEntBuilder setViewRepresentation(ViewData_viewRepresentationEnt viewRepresentation);
         
         /**
          * 
          * @param viewValue the property value,  
          * @return this entity builder for chaining
          */
-        WebViewEntBuilder setViewValue(WebView_viewValueEnt viewValue);
+        ViewDataEntBuilder setViewValue(ViewData_viewValueEnt viewValue);
         
         /**
          * The path to the generated HTML containing the view or null if not applicable.
@@ -99,7 +99,7 @@ public interface WebViewEnt extends GatewayEntity {
          * @param viewHTMLPath the property value,  
          * @return this entity builder for chaining
          */
-        WebViewEntBuilder setViewHTMLPath(String viewHTMLPath);
+        ViewDataEntBuilder setViewHTMLPath(String viewHTMLPath);
         
         /**
          * Property set in the configuration dialog to the node to skip this node in the wizard execution.
@@ -107,7 +107,7 @@ public interface WebViewEnt extends GatewayEntity {
          * @param hideInWizard the property value,  
          * @return this entity builder for chaining
          */
-        WebViewEntBuilder setHideInWizard(Boolean hideInWizard);
+        ViewDataEntBuilder setHideInWizard(Boolean hideInWizard);
         
         
         /**
@@ -117,7 +117,7 @@ public interface WebViewEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WebViewEnt build();
+        ViewDataEnt build();
     
     }
 

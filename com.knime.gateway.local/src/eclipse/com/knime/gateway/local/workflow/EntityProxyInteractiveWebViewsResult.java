@@ -18,14 +18,9 @@
  */
 package com.knime.gateway.local.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.ui.node.workflow.InteractiveWebViewsResultUI;
-import org.knime.core.util.Pair;
 
-import com.knime.gateway.local.workflow.EntityProxySingleInteractiveWebViewResult.MyWebViewResultModel;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 
@@ -35,9 +30,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class EntityProxyInteractiveWebViewsResult extends AbstractEntityProxy<NativeNodeEnt>
-    implements InteractiveWebViewsResultUI<MyWebViewResultModel, WebViewContent, WebViewContent> {
-
-    private final List<Pair<Integer, NativeNodeEnt>> m_indexNodePairs;
+    implements InteractiveWebViewsResultUI<EntityProxyWebViewModel, WebViewContent, WebViewContent> {
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -47,10 +40,6 @@ public class EntityProxyInteractiveWebViewsResult extends AbstractEntityProxy<Na
      */
     EntityProxyInteractiveWebViewsResult(final NativeNodeEnt entity, final EntityProxyAccess clientProxyAccess) {
         super(entity, clientProxyAccess);
-        m_indexNodePairs = new ArrayList<Pair<Integer, NativeNodeEnt>>();
-        for (int i = 0; i < entity.getWebViewNames().size(); i++) {
-            m_indexNodePairs.add(Pair.create(i, entity));
-        }
     }
 
     @Override
@@ -59,7 +48,19 @@ public class EntityProxyInteractiveWebViewsResult extends AbstractEntityProxy<Na
     }
 
     @Override
-    public EntityProxySingleInteractiveWebViewResult get(final int index) {
-        return getAccess().getSingleInteractiveWebViewResult(m_indexNodePairs.get(index));
+    public SingleInteractiveWebViewResultUI<EntityProxyWebViewModel, WebViewContent, WebViewContent>
+        get(final int index) {
+        return new SingleInteractiveWebViewResultUI<EntityProxyWebViewModel, WebViewContent, WebViewContent>() {
+
+            @Override
+            public EntityProxyWebViewModel getModel() {
+                return getAccess().getEntityProxyWebViewModel(getEntity(), getEntity().getWebViewNames().get(index));
+            }
+
+            @Override
+            public String getViewName() {
+                return getEntity().getWebViewNames().get(index);
+            }
+        };
     }
 }

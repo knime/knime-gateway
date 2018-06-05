@@ -25,12 +25,12 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * The view&#39;s value.
+ * The views value.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WebView_viewValueEnt extends GatewayEntity {
+public interface ViewData_viewValueEnt extends GatewayEntity {
 
 
   /**
@@ -49,7 +49,7 @@ public interface WebView_viewValueEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface WebView_viewValueEntBuilder extends GatewayEntityBuilder<WebView_viewValueEnt> {
+    public interface ViewData_viewValueEntBuilder extends GatewayEntityBuilder<ViewData_viewValueEnt> {
 
         /**
          * The class name of the view content.
@@ -57,7 +57,7 @@ public interface WebView_viewValueEnt extends GatewayEntity {
          * @param classname the property value,  
          * @return this entity builder for chaining
          */
-        WebView_viewValueEntBuilder setClassname(String classname);
+        ViewData_viewValueEntBuilder setClassname(String classname);
         
         /**
          * The actual content as a json string.
@@ -65,7 +65,7 @@ public interface WebView_viewValueEnt extends GatewayEntity {
          * @param content the property value,  
          * @return this entity builder for chaining
          */
-        WebView_viewValueEntBuilder setContent(String content);
+        ViewData_viewValueEntBuilder setContent(String content);
         
         
         /**
@@ -75,7 +75,7 @@ public interface WebView_viewValueEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WebView_viewValueEnt build();
+        ViewData_viewValueEnt build();
     
     }
 

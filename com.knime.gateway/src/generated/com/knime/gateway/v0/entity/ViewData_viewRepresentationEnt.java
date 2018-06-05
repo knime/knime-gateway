@@ -25,12 +25,12 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * The view&#39;s representation.
+ * The views representation.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WebView_viewRepresentationEnt extends GatewayEntity {
+public interface ViewData_viewRepresentationEnt extends GatewayEntity {
 
 
   /**
@@ -49,7 +49,7 @@ public interface WebView_viewRepresentationEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface WebView_viewRepresentationEntBuilder extends GatewayEntityBuilder<WebView_viewRepresentationEnt> {
+    public interface ViewData_viewRepresentationEntBuilder extends GatewayEntityBuilder<ViewData_viewRepresentationEnt> {
 
         /**
          * The class name of the view representation.
@@ -57,7 +57,7 @@ public interface WebView_viewRepresentationEnt extends GatewayEntity {
          * @param classname the property value,  
          * @return this entity builder for chaining
          */
-        WebView_viewRepresentationEntBuilder setClassname(String classname);
+        ViewData_viewRepresentationEntBuilder setClassname(String classname);
         
         /**
          * The actual content as a json string.
@@ -65,7 +65,7 @@ public interface WebView_viewRepresentationEnt extends GatewayEntity {
          * @param content the property value,  
          * @return this entity builder for chaining
          */
-        WebView_viewRepresentationEntBuilder setContent(String content);
+        ViewData_viewRepresentationEntBuilder setContent(String content);
         
         
         /**
@@ -75,7 +75,7 @@ public interface WebView_viewRepresentationEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WebView_viewRepresentationEnt build();
+        ViewData_viewRepresentationEnt build();
     
     }
 
