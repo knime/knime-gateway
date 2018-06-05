@@ -283,7 +283,7 @@ public class EntityBuilderUtil {
      * @throws IllegalArgumentException if the port type and the port object spec are not compatible
      */
     public static PortObjectSpecEnt buildPortObjectSpecEnt(final PortType type, final PortObjectSpec spec) {
-        if (!type.acceptsPortObjectSpec(spec)) {
+        if (!(spec instanceof InactiveBranchPortObjectSpec) && !type.acceptsPortObjectSpec(spec)) {
             throw new IllegalArgumentException("The port type and port object spec are not compatible.");
         }
         ModelContent model = null;
