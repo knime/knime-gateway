@@ -20,6 +20,9 @@ package com.knime.gateway.remote.util;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,8 +334,11 @@ public class EntityBuilderUtil {
      * @param webViewsResult the interactive web view result to extract the web view from
      * @param index  the index of the web view to build
      * @return the newly created entity
+     * @throws IOException
+     * @throws UnsupportedEncodingException
      */
-    public static WebViewEnt buildWebViewEnt(final InteractiveWebViewsResult webViewsResult, final int index) {
+    public static WebViewEnt buildWebViewEnt(final InteractiveWebViewsResult webViewsResult, final int index)
+        throws UnsupportedEncodingException, IOException {
         WizardNode<?, ?> wnode = (WizardNode<?, ?>)webViewsResult.get(index).getNativeNodeContainer().getNodeModel();
         String viewRepresentation = toJsonString(wnode.getViewRepresentation());
         String viewValue = toJsonString(wnode.getViewValue());
@@ -353,12 +359,13 @@ public class EntityBuilderUtil {
     }
 
     /**
-     * Turns a webview content into a json string via node settings.
+     * Turns a webview content into a json string.
      */
-    private static String toJsonString(final WebViewContent webViewContent) {
-        NodeSettings settings = new NodeSettings("settings");
-        webViewContent.saveToNodeSettings(settings);
-        return JSONConfig.toJSONString(settings, WriterConfig.DEFAULT);
+    private static String toJsonString(final WebViewContent webViewContent)
+        throws UnsupportedEncodingException, IOException {
+        //very ugly, but it's done the same way at other places, too
+        //TODO: WebViewContent should have a 'saveToStream(OutputStream)'-method
+        return ((ByteArrayOutputStream)webViewContent.saveToStream()).toString("UTF-8");
     }
 
     private static PortTypeEnt buildPortTypeEnt(final PortType portType) {

@@ -233,7 +233,12 @@ public class DefaultNodeService implements NodeService {
     @Override
     public WebViewEnt getWebView(final UUID rootWorkflowID, final String nodeID, final Integer index) throws NodeNotFoundException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
-        return EntityBuilderUtil.buildWebViewEnt(nc.getInteractiveWebViews(), index);
+        try {
+            return EntityBuilderUtil.buildWebViewEnt(nc.getInteractiveWebViews(), index);
+        } catch (IOException ex) {
+            //should not happen, that's why it's just a runtime exception
+            throw new IllegalStateException("Web views cannot be accessed.", ex);
+        }
     }
 
     private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(

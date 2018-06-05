@@ -19,13 +19,11 @@
 package com.knime.gateway.local.workflow;
 
 import java.io.IOException;
-import java.io.StringReader;
+import java.nio.charset.Charset;
 
+import org.apache.commons.io.IOUtils;
 import org.knime.core.node.AbstractNodeView.ViewableModel;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.WizardNode;
@@ -84,12 +82,16 @@ public class EntityProxySingleInteractiveWebViewResult extends AbstractEntityPro
 
         private final WebViewEnt m_webViewEnt;
 
-        private WizardNode m_wizardNode = null;
+        private WizardNode<WebViewContent, WebViewContent> m_wizardNode = null;
 
-        private JavaScriptViewCreator m_viewCreator = null;
+        private JavaScriptViewCreator<WebViewContent, WebViewContent> m_viewCreator = null;
 
         private final String m_viewName;
 
+        /**
+         * @param webViewEnt the proxy web view entity to get the info from
+         * @param viewName the view's name
+         */
         public MyWebViewResultModel(final WebViewEnt webViewEnt, final String viewName) {
             m_webViewEnt = webViewEnt;
             m_viewName = viewName;
@@ -199,23 +201,11 @@ public class EntityProxySingleInteractiveWebViewResult extends AbstractEntityPro
             throw new UnsupportedOperationException();
         }
 
-        private final WebViewContent fromJsonString(final String s, final WebViewContent webViewContent) {
-            try {
-                NodeSettings settings = new NodeSettings("settings");
-                JSONConfig.readJSON(settings, new StringReader(s));
-                webViewContent.loadFromNodeSettings(settings);
-            } catch (InvalidSettingsException | IOException ex) {
-                //TODO
-                throw new RuntimeException(ex);
-            }
-            return webViewContent;
-        }
-
-        private WizardNode getWizardNode() {
+        @SuppressWarnings("unchecked")
+        private WizardNode<WebViewContent, WebViewContent> getWizardNode() {
             if (m_wizardNode == null) {
-                m_wizardNode =
-                    (WizardNode)EntityProxyNativeNodeContainer.createNodeFactoryInstance(getEntity().getSecond())
-                        .createNodeModel();
+                m_wizardNode = (WizardNode<WebViewContent, WebViewContent>)EntityProxyNativeNodeContainer
+                    .createNodeFactoryInstance(getEntity().getSecond()).createNodeModel();
             }
             return m_wizardNode;
         }
@@ -223,14 +213,10 @@ public class EntityProxySingleInteractiveWebViewResult extends AbstractEntityPro
 
     private static final WebViewContent fromJsonString(final String s, final WebViewContent webViewContent) {
         try {
-            NodeSettings settings = new NodeSettings("settings");
-            JSONConfig.readJSON(settings, new StringReader(s));
-            webViewContent.loadFromNodeSettings(settings);
-        } catch (InvalidSettingsException | IOException ex) {
-            //TODO
-            throw new RuntimeException(ex);
+            webViewContent.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
+        } catch (IOException ex) {
+            throw new IllegalStateException("Problem serializing web view.", ex);
         }
         return webViewContent;
     }
-
 }
