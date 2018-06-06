@@ -108,10 +108,10 @@ import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
+import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt.ViewContentEntBuilder;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
-import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt.ViewData_viewRepresentationEntBuilder;
-import com.knime.gateway.v0.entity.ViewData_viewValueEnt.ViewData_viewValueEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowEnt;
@@ -338,28 +338,24 @@ public class EntityBuilderUtil {
      */
     public static ViewDataEnt buildViewDataEnt(final WizardNode<?, ?> wnode)
         throws UnsupportedEncodingException, IOException {
-        String viewRepresentation = toJsonString(wnode.getViewRepresentation());
-        String viewValue = toJsonString(wnode.getViewValue());
         return builder(ViewDataEntBuilder.class)
                 .setJavascriptObjectID(wnode.getJavascriptObjectID())
-                .setViewRepresentation(
-                    builder(ViewData_viewRepresentationEntBuilder.class)
-                    .setClassname(wnode.getViewRepresentation().getClass().getCanonicalName())
-                    .setContent(viewRepresentation)
-                    .build())
-                 .setViewValue(
-                    builder(ViewData_viewValueEntBuilder.class)
-                    .setClassname(wnode.getViewValue().getClass().getCanonicalName())
-                    .setContent(viewValue)
-                    .build())
-                .setViewHTMLPath(wnode.getViewHTMLPath())
+                .setViewRepresentation(buildViewContentEnt(wnode.getViewRepresentation()))
+                .setViewValue(buildViewContentEnt(wnode.getViewValue()))
                 .setHideInWizard(wnode.isHideInWizard()).build();
+    }
+
+    private static ViewContentEnt buildViewContentEnt(final WebViewContent vc)
+        throws UnsupportedEncodingException, IOException {
+        return builder(ViewContentEntBuilder.class)
+                .setClassname(vc.getClass().getCanonicalName())
+                .setContent(viewContentToJsonString(vc)).build();
     }
 
     /**
      * Turns a webview content into a json string.
      */
-    private static String toJsonString(final WebViewContent webViewContent)
+    private static String viewContentToJsonString(final WebViewContent webViewContent)
         throws UnsupportedEncodingException, IOException {
         //very ugly, but it's done the same way at other places, too
         //TODO: WebViewContent should have a 'saveToStream(OutputStream)'-method

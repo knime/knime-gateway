@@ -18,8 +18,7 @@
  */
 package com.knime.gateway.v0.entity;
 
-import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
-import com.knime.gateway.v0.entity.ViewData_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -27,7 +26,7 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * The data for a node&#39;s views.
+ * The data for a node&#39;s views encompasing the view representation and value.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -42,22 +41,16 @@ public interface ViewDataEnt extends GatewayEntity {
   public String getJavascriptObjectID();
 
   /**
-   * Get viewRepresentation
+   * The views representation.
    * @return viewRepresentation 
    **/
-  public ViewData_viewRepresentationEnt getViewRepresentation();
+  public ViewContentEnt getViewRepresentation();
 
   /**
-   * Get viewValue
+   * The views value.
    * @return viewValue 
    **/
-  public ViewData_viewValueEnt getViewValue();
-
-  /**
-   * The path to the generated HTML containing the view or null if not applicable.
-   * @return viewHTMLPath 
-   **/
-  public String getViewHTMLPath();
+  public ViewContentEnt getViewValue();
 
   /**
    * Property set in the configuration dialog to the node to skip this node in the wizard execution.
@@ -80,26 +73,20 @@ public interface ViewDataEnt extends GatewayEntity {
         ViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID);
         
         /**
+         * The views representation.
          * 
          * @param viewRepresentation the property value,  
          * @return this entity builder for chaining
          */
-        ViewDataEntBuilder setViewRepresentation(ViewData_viewRepresentationEnt viewRepresentation);
+        ViewDataEntBuilder setViewRepresentation(ViewContentEnt viewRepresentation);
         
         /**
+         * The views value.
          * 
          * @param viewValue the property value,  
          * @return this entity builder for chaining
          */
-        ViewDataEntBuilder setViewValue(ViewData_viewValueEnt viewValue);
-        
-        /**
-         * The path to the generated HTML containing the view or null if not applicable.
-         * 
-         * @param viewHTMLPath the property value,  
-         * @return this entity builder for chaining
-         */
-        ViewDataEntBuilder setViewHTMLPath(String viewHTMLPath);
+        ViewDataEntBuilder setViewValue(ViewContentEnt viewValue);
         
         /**
          * Property set in the configuration dialog to the node to skip this node in the wizard execution.

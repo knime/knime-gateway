@@ -18,6 +18,9 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -31,6 +34,8 @@ import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
 
 import com.knime.gateway.v0.entity.NativeNodeEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt.ViewContentEntBuilder;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
@@ -49,7 +54,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
 
     private final String m_viewName;
 
-    private final ViewDataEnt m_viewData;
+    private ViewDataEnt m_viewData;
 
     /**
      * @param node the node to load the view data from
@@ -58,15 +63,19 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
     EntityProxyWebViewModel(final NativeNodeEnt node, final String viewName, final EntityProxyAccess access) {
         super(node, access);
         m_viewName = viewName;
-        m_viewData = getViewData(node, access);
     }
 
-    private static ViewDataEnt getViewData(final NativeNodeEnt node, final EntityProxyAccess access) {
-        try {
-            return access.nodeService().getViewData(node.getRootWorkflowID(), node.getNodeID());
-        } catch (NodeNotFoundException | NotSupportedException ex) {
-            throw new IllegalStateException(ex);
+    private ViewDataEnt getViewData() {
+        if (m_viewData == null) {
+            try {
+                m_viewData =
+                    getAccess().nodeService().getViewData(getEntity().getRootWorkflowID(), getEntity().getNodeID());
+
+            } catch (NodeNotFoundException | NotSupportedException ex) {
+                throw new IllegalStateException(ex);
+            }
         }
+        return m_viewData;
     }
 
     /**
@@ -82,7 +91,18 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      */
     @Override
     public void loadViewValue(final WebViewContent viewContent, final boolean useAsDefault) {
-
+        //push view content back to server
+        try {
+            ViewContentEnt viewContentEnt =
+                builder(ViewContentEntBuilder.class).setClassname(viewContent.getClass().getCanonicalName())
+                    .setContent(((ByteArrayOutputStream)viewContent.saveToStream()).toString("UTF-8")).build();
+            getAccess().nodeService().setViewsValue(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                useAsDefault, viewContentEnt);
+            //since the view value has been changed, delete the cached view data
+            m_viewData = null;
+        } catch (IOException | NodeNotFoundException | NotSupportedException ex) {
+            throw new IllegalStateException("Problem saving view value to server. ", ex);
+        }
     }
 
     /**
@@ -98,7 +118,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      */
     @Override
     public WebViewContent getViewRepresentation() {
-        return fromJsonString(m_viewData.getViewRepresentation().getContent(), createEmptyViewRepresentation());
+        return fromJsonString(getViewData().getViewRepresentation().getContent(), createEmptyViewRepresentation());
     }
 
     /**

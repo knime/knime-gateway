@@ -22,13 +22,12 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
 import java.util.Objects;
 
-import com.knime.gateway.v0.entity.ViewData_viewRepresentationEnt;
-import com.knime.gateway.v0.entity.ViewData_viewValueEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt;
 
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
 /**
- * The data for a node&#39;s views.
+ * The data for a node&#39;s views encompasing the view representation and value.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -36,9 +35,8 @@ import com.knime.gateway.v0.entity.ViewDataEnt;
 public class DefaultViewDataEnt  implements ViewDataEnt {
 
   protected String m_javascriptObjectID;
-  protected ViewData_viewRepresentationEnt m_viewRepresentation;
-  protected ViewData_viewValueEnt m_viewValue;
-  protected String m_viewHTMLPath;
+  protected ViewContentEnt m_viewRepresentation;
+  protected ViewContentEnt m_viewValue;
   protected Boolean m_hideInWizard;
   
   protected DefaultViewDataEnt() {
@@ -55,7 +53,6 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
     m_javascriptObjectID = immutable(builder.m_javascriptObjectID);
     m_viewRepresentation = immutable(builder.m_viewRepresentation);
     m_viewValue = immutable(builder.m_viewValue);
-    m_viewHTMLPath = immutable(builder.m_viewHTMLPath);
     m_hideInWizard = immutable(builder.m_hideInWizard);
   }
   
@@ -74,7 +71,7 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
             return false;
         }
         DefaultViewDataEnt ent = (DefaultViewDataEnt)o;
-        return Objects.equals(m_javascriptObjectID, ent.m_javascriptObjectID) && Objects.equals(m_viewRepresentation, ent.m_viewRepresentation) && Objects.equals(m_viewValue, ent.m_viewValue) && Objects.equals(m_viewHTMLPath, ent.m_viewHTMLPath) && Objects.equals(m_hideInWizard, ent.m_hideInWizard);
+        return Objects.equals(m_javascriptObjectID, ent.m_javascriptObjectID) && Objects.equals(m_viewRepresentation, ent.m_viewRepresentation) && Objects.equals(m_viewValue, ent.m_viewValue) && Objects.equals(m_hideInWizard, ent.m_hideInWizard);
     }
 
 
@@ -84,18 +81,13 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
     }
     
   @Override
-  public ViewData_viewRepresentationEnt getViewRepresentation() {
+  public ViewContentEnt getViewRepresentation() {
         return m_viewRepresentation;
     }
     
   @Override
-  public ViewData_viewValueEnt getViewValue() {
+  public ViewContentEnt getViewValue() {
         return m_viewValue;
-    }
-    
-  @Override
-  public String getViewHTMLPath() {
-        return m_viewHTMLPath;
     }
     
   @Override
@@ -111,9 +103,8 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         }
     
         private String m_javascriptObjectID = null;
-        private ViewData_viewRepresentationEnt m_viewRepresentation;
-        private ViewData_viewValueEnt m_viewValue;
-        private String m_viewHTMLPath = null;
+        private ViewContentEnt m_viewRepresentation;
+        private ViewContentEnt m_viewValue;
         private Boolean m_hideInWizard = null;
 
         @Override
@@ -123,20 +114,14 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         }
 
         @Override
-        public DefaultViewDataEntBuilder setViewRepresentation(ViewData_viewRepresentationEnt viewRepresentation) {
+        public DefaultViewDataEntBuilder setViewRepresentation(ViewContentEnt viewRepresentation) {
              m_viewRepresentation = viewRepresentation;
              return this;
         }
 
         @Override
-        public DefaultViewDataEntBuilder setViewValue(ViewData_viewValueEnt viewValue) {
+        public DefaultViewDataEntBuilder setViewValue(ViewContentEnt viewValue) {
              m_viewValue = viewValue;
-             return this;
-        }
-
-        @Override
-        public DefaultViewDataEntBuilder setViewHTMLPath(String viewHTMLPath) {
-             m_viewHTMLPath = viewHTMLPath;
              return this;
         }
 

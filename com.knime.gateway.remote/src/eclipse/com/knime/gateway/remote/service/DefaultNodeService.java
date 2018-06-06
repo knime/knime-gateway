@@ -23,6 +23,7 @@ import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -32,12 +33,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.interactive.DefaultReexecutionCallback;
+import org.knime.core.node.interactive.ViewContent;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowVariable;
@@ -58,6 +63,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
@@ -247,6 +253,34 @@ public class DefaultNodeService implements NodeService {
         } else {
             throw new NotSupportedException("Node doesn't provide view data.");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setViewsValue(final UUID rootWorkflowID, final String nodeID, final Boolean useAsDefault,
+        final ViewContentEnt viewValue) throws NodeNotFoundException, NotSupportedException {
+        Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
+        NodeContainer nc = rootWfmAndNc.getSecond();
+        if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
+            NativeNodeContainer nnc = (NativeNodeContainer)nc;
+            WizardNode<?, ?> wn = (WizardNode<?, ?>)nnc.getNodeModel();
+            ViewContent vc = readWebViewContentFromJsonString(viewValue.getContent(), wn.createEmptyViewValue());
+            nnc.getParent().reExecuteNode(nnc.getID(), vc, useAsDefault, new DefaultReexecutionCallback());
+        } else {
+            throw new NotSupportedException("Node doesn't provide a view.");
+        }
+    }
+
+    private static final WebViewContent readWebViewContentFromJsonString(final String s,
+        final WebViewContent webViewContent) {
+        try {
+            webViewContent.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
+        } catch (IOException ex) {
+            throw new IllegalStateException("Problem serializing web view.", ex);
+        }
+        return webViewContent;
     }
 
     private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(

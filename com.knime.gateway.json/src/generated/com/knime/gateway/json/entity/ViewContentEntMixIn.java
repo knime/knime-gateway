@@ -18,7 +18,6 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.ViewContentEnt;
 
 
 import com.knime.gateway.json.JsonUtil;
@@ -31,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.ViewDataEnt;
-import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt;
-import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt.DefaultViewDataEntBuilder;
+import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.impl.DefaultViewContentEnt;
+import com.knime.gateway.v0.entity.impl.DefaultViewContentEnt.DefaultViewContentEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -45,33 +44,25 @@ import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt.DefaultViewDataEntBui
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultViewDataEnt.class)
+    defaultImpl = DefaultViewContentEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultViewDataEnt.class, name="ViewData")
+    @Type(value = DefaultViewContentEnt.class, name="ViewContent")
 })
-@JsonDeserialize(builder=DefaultViewDataEntBuilder.class)
+@JsonDeserialize(builder=DefaultViewContentEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface ViewDataEntMixIn extends ViewDataEnt {
+public interface ViewContentEntMixIn extends ViewContentEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("javascriptObjectID")
-    public String getJavascriptObjectID();
+    @JsonProperty("classname")
+    public String getClassname();
     
     @Override
-    @JsonProperty("viewRepresentation")
-    public ViewContentEnt getViewRepresentation();
-    
-    @Override
-    @JsonProperty("viewValue")
-    public ViewContentEnt getViewValue();
-    
-    @Override
-    @JsonProperty("hideInWizard")
-    public Boolean isHideInWizard();
+    @JsonProperty("content")
+    public String getContent();
     
 
     /**
@@ -83,31 +74,23 @@ public interface ViewDataEntMixIn extends ViewDataEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultViewDataEntBuilder.class)
+        defaultImpl = DefaultViewContentEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultViewDataEnt.DefaultViewDataEntBuilder.class, name="ViewData")
+        @Type(value = DefaultViewContentEnt.DefaultViewContentEntBuilder.class, name="ViewContent")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ViewDataEntMixInBuilder extends ViewDataEntBuilder {
+    public static interface ViewContentEntMixInBuilder extends ViewContentEntBuilder {
     
         @Override
-        public ViewDataEntMixIn build();
+        public ViewContentEntMixIn build();
     
         @Override
-        @JsonProperty("javascriptObjectID")
-        public ViewDataEntMixInBuilder setJavascriptObjectID(final String javascriptObjectID);
+        @JsonProperty("classname")
+        public ViewContentEntMixInBuilder setClassname(final String classname);
         
         @Override
-        @JsonProperty("viewRepresentation")
-        public ViewDataEntMixInBuilder setViewRepresentation(final ViewContentEnt viewRepresentation);
-        
-        @Override
-        @JsonProperty("viewValue")
-        public ViewDataEntMixInBuilder setViewValue(final ViewContentEnt viewValue);
-        
-        @Override
-        @JsonProperty("hideInWizard")
-        public ViewDataEntMixInBuilder setHideInWizard(final Boolean hideInWizard);
+        @JsonProperty("content")
+        public ViewContentEntMixInBuilder setContent(final String content);
         
     }
 

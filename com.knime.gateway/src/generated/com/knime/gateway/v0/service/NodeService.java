@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
+import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
 /**
@@ -115,7 +116,7 @@ public interface NodeService extends GatewayService {
     NodeEnt getRootNode(java.util.UUID jobId) ;
         
     /**
-     * Provides the data for the node&#39;s views, iff the node supports views.
+     * Provides the data for the node&#39;s views, iff the node supports views. The data includes the views&#39; and the representation.
      *
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
@@ -139,5 +140,19 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.IllegalStateException If node is not in the right state to apply the settings.
      */
     void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
+        
+    /**
+     * Saves back the views value (e.g. title etc.) to the server.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
+     * @param useAsDefault True if node settings are to be updated by view content.
+     * @param viewValue The view value to set.
+     *
+     * 
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.NotSupportedException If the request is not supported for a reason. Please refer to the exception message for more details.
+     */
+    void setViewsValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
         
 }
