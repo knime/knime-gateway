@@ -63,6 +63,8 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
     EntityProxyWebViewModel(final NativeNodeEnt node, final String viewName, final EntityProxyAccess access) {
         super(node, access);
         m_viewName = viewName;
+        //try getting the view data
+        getViewData();
     }
 
     private ViewDataEnt getViewData() {
