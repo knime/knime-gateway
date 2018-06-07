@@ -75,6 +75,10 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
     public String getPortName();
     
     @Override
+    @JsonProperty("summary")
+    public String getSummary();
+    
+    @Override
     @JsonProperty("inactive")
     public Boolean isInactive();
     
@@ -113,6 +117,10 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
         @Override
         @JsonProperty("portName")
         public NodeOutPortEntMixInBuilder setPortName(final String portName);
+        
+        @Override
+        @JsonProperty("summary")
+        public NodeOutPortEntMixInBuilder setSummary(final String summary);
         
         @Override
         @JsonProperty("inactive")

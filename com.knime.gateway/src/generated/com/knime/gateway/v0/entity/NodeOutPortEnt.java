@@ -35,6 +35,12 @@ public interface NodeOutPortEnt extends NodePortEnt {
 
 
   /**
+   * The port summary, e.g. num of rows and cols in case of a table.
+   * @return summary 
+   **/
+  public String getSummary();
+
+  /**
    * Determines whether the output is inactive.
    * @return inactive 
    **/
@@ -77,6 +83,14 @@ public interface NodeOutPortEnt extends NodePortEnt {
          * @return this entity builder for chaining
          */
         NodeOutPortEntBuilder setPortName(String portName);
+        
+        /**
+         * The port summary, e.g. num of rows and cols in case of a table.
+         * 
+         * @param summary the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeOutPortEntBuilder setSummary(String summary);
         
         /**
          * Determines whether the output is inactive.

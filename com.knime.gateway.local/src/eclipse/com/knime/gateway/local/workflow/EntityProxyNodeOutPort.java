@@ -139,7 +139,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
      */
     @Override
     public String getPortSummary() {
-        return null;
+        return getEntity().getSummary();
     }
 
     /**

@@ -371,6 +371,7 @@ public class EntityBuilderUtil {
                 .setPortName(outPort.getPortName())
                 .setPortType(pType)
                 .setInactive(outPort.isInactive())
+                .setSummary(outPort.getPortSummary())
                 .setType("NodeOutPort").build();
     }
 

@@ -35,6 +35,7 @@ import com.knime.gateway.v0.entity.NodeOutPortEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOutPortEnt {
 
+  protected String m_summary;
   protected Boolean m_inactive;
   
   protected DefaultNodeOutPortEnt() {
@@ -61,6 +62,7 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
     }
     m_portType = immutable(builder.m_portType);
     m_portName = immutable(builder.m_portName);
+    m_summary = immutable(builder.m_summary);
     m_inactive = immutable(builder.m_inactive);
   }
   
@@ -79,10 +81,15 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
             return false;
         }
         DefaultNodeOutPortEnt ent = (DefaultNodeOutPortEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName) && Objects.equals(m_inactive, ent.m_inactive);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName) && Objects.equals(m_summary, ent.m_summary) && Objects.equals(m_inactive, ent.m_inactive);
     }
 
 
+  @Override
+  public String getSummary() {
+        return m_summary;
+    }
+    
   @Override
   public Boolean isInactive() {
         return m_inactive;
@@ -99,6 +106,7 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
         private Integer m_portIndex = null;
         private PortTypeEnt m_portType;
         private String m_portName = null;
+        private String m_summary = null;
         private Boolean m_inactive = null;
 
         @Override
@@ -131,6 +139,12 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
         @Override
         public DefaultNodeOutPortEntBuilder setPortName(String portName) {
              m_portName = portName;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeOutPortEntBuilder setSummary(String summary) {
+             m_summary = summary;
              return this;
         }
 
