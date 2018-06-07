@@ -163,8 +163,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
         try {
             return getViewCreator().createWebResources(m_viewName, getViewRepresentation(), getViewValue());
         } catch (IOException ex) {
-            //TODO
-            throw new RuntimeException(ex);
+            throw new IllegalStateException("Problem creating the view html path.", ex);
         }
     }
 

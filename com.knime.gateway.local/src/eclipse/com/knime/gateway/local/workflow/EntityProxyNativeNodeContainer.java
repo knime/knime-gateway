@@ -218,6 +218,12 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
         return m_nodeFactory;
     }
 
+    /**
+     * Creates a new node factory instance from a {@link NativeNodeEnt}.
+     *
+     * @param node contains the info to create the node factory
+     * @return a newly created node factory or a {@link MissingNodeFactory} if creation failed
+     */
     static NodeFactory<? extends NodeModel> createNodeFactoryInstance(final NativeNodeEnt node) {
         NodeFactoryKeyEnt nodeFactoryKey = node.getNodeFactoryKey();
         NodeFactory<? extends NodeModel> nodeFactory;

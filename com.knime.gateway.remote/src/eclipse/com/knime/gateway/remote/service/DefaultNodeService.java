@@ -248,7 +248,7 @@ public class DefaultNodeService implements NodeService {
                 return EntityBuilderUtil.buildViewDataEnt((WizardNode)nnc.getNodeModel());
             } catch (IOException ex) {
                 //should not happen, that's why it's just a runtime exception
-                throw new IllegalStateException("Web views cannot be accessed.", ex);
+                throw new IllegalStateException("Views data cannot be accessed.", ex);
             }
         } else {
             throw new NotSupportedException("Node doesn't provide view data.");
@@ -278,6 +278,7 @@ public class DefaultNodeService implements NodeService {
         try {
             webViewContent.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
         } catch (IOException ex) {
+            //should not happen
             throw new IllegalStateException("Problem serializing web view.", ex);
         }
         return webViewContent;
