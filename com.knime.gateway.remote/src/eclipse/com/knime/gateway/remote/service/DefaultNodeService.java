@@ -202,7 +202,16 @@ public class DefaultNodeService implements NodeService {
         return getPortObjectSpecsAsEntityList(IntStream.range(0, nc.getNrInPorts()).mapToObj(i -> {
             ConnectionContainer conn = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
             if (conn != null) {
-                NodeOutPort outPort = wfm.findNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
+                NodeOutPort outPort;
+                switch (conn.getType()) {
+                    case WFMIN:
+                        outPort = ((WorkflowManager)wfm.findNodeContainer(conn.getSource()))
+                            .getWorkflowIncomingPort(conn.getSourcePort());
+                        break;
+                    default:
+                        outPort = wfm.findNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
+                        break;
+                }
                 return Pair.create(outPort.getPortType(), outPort.getPortObjectSpec());
             } else {
                 return null;
