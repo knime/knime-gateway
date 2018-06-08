@@ -254,7 +254,7 @@ public class DefaultNodeService implements NodeService {
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
             NativeNodeContainer nnc = (NativeNodeContainer)nc;
             try {
-                return EntityBuilderUtil.buildViewDataEnt((WizardNode)nnc.getNodeModel());
+                return EntityBuilderUtil.buildViewDataEnt((WizardNode<?,?>)nnc.getNodeModel());
             } catch (IOException ex) {
                 //should not happen, that's why it's just a runtime exception
                 throw new IllegalStateException("Views data cannot be accessed.", ex);

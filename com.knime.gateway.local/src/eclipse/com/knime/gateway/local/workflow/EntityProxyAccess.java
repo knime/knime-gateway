@@ -515,9 +515,8 @@ public class EntityProxyAccess {
      */
     EntityProxyInteractiveWebViewsResult getInteractiveWebViewsResult(final NativeNodeEnt node) {
         //possibly return the same node in port instance for the same index
-        return getOrCreate(node, o -> {
-            return new EntityProxyInteractiveWebViewsResult(o, this);
-        }, EntityProxyInteractiveWebViewsResult.class);
+        return getOrCreate(node, o -> new EntityProxyInteractiveWebViewsResult(o, this),
+            EntityProxyInteractiveWebViewsResult.class);
     }
 
     /**
@@ -528,9 +527,7 @@ public class EntityProxyAccess {
      * @return the {@link EntityProxyWebViewModel} - either the cached one or newly created
      */
     EntityProxyWebViewModel getEntityProxyWebViewModel(final NativeNodeEnt node, final String viewName) {
-        return getOrCreate(node, o -> {
-            return new EntityProxyWebViewModel(o, viewName, this);
-        }, EntityProxyWebViewModel.class);
+        return getOrCreate(node, o -> new EntityProxyWebViewModel(o, viewName, this), EntityProxyWebViewModel.class);
     }
 
     /**

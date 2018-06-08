@@ -48,9 +48,9 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException
 public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNodeEnt>
     implements ViewableModel, WizardNode<WebViewContent, WebViewContent> {
 
-    private WizardNode<WebViewContent, WebViewContent> m_wizardNode = null;
+    private WizardNode<WebViewContent, WebViewContent> m_wizardNode;
 
-    private JavaScriptViewCreator<WebViewContent, WebViewContent> m_viewCreator = null;
+    private JavaScriptViewCreator<WebViewContent, WebViewContent> m_viewCreator;
 
     private final String m_viewName;
 
