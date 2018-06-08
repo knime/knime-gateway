@@ -42,6 +42,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.EditorUIInformation;
+import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
@@ -705,6 +706,14 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public NodeUIInformation getOutPortsBarUIInfo() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FlowVariable> getWorkflowVariables() {
+        return getAccess().getFlowVariableList(getEntity(), false);
     }
 
     /**

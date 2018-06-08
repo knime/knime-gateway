@@ -86,6 +86,13 @@ public interface JsonRpcNodeService extends NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "NodeService.getOutputFlowVariables")
+    java.util.List<FlowVariableEnt> getOutputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "NodeService.getOutputPortSpecs")
     java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 

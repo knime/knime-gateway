@@ -139,6 +139,19 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "getOutputFlowVariables")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public java.util.List<FlowVariableEnt> getOutputFlowVariables(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+        return m_service.getOutputFlowVariables(jobId, nodeId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getOutputPortSpecs")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,

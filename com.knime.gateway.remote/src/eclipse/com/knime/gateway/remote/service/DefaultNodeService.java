@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,13 +46,14 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable.Scope;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
@@ -260,8 +260,26 @@ public class DefaultNodeService implements NodeService {
     public List<FlowVariableEnt> getInputFlowVariables(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
-        Map<String, FlowVariable> flowObjectStack = nodeContainer.getFlowObjectStack().getAvailableFlowVariables();
-        return flowObjectStack.values().stream().filter(fv -> fv.getScope().equals(Scope.Flow))
+        return getFlowVariableEntListFromFlowObjectStack(nodeContainer.getFlowObjectStack());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FlowVariableEnt> getOutputFlowVariables(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException {
+        NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
+        if (nodeContainer instanceof SingleNodeContainer) {
+            return getFlowVariableEntListFromFlowObjectStack(
+                ((SingleNodeContainer)nodeContainer).createOutFlowObjectStack());
+        } else {
+            return getFlowVariableEntListFromFlowObjectStack(nodeContainer.getFlowObjectStack());
+        }
+    }
+
+    private static final List<FlowVariableEnt> getFlowVariableEntListFromFlowObjectStack(final FlowObjectStack stack) {
+        return stack.getAvailableFlowVariables().values().stream().filter(fv -> fv.getScope().equals(Scope.Flow))
             .map(fv -> EntityBuilderUtil.buildFlowVariableEnt(fv)).collect(Collectors.toList());
     }
 

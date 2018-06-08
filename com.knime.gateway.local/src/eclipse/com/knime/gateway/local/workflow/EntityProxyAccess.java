@@ -56,6 +56,7 @@ import org.knime.core.util.Pair;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
+import com.knime.gateway.local.util.EntityProxyUtil;
 import com.knime.gateway.local.util.missing.MissingPortObject;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
@@ -87,6 +88,14 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 public class EntityProxyAccess {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyAccess.class);
+
+    /**
+     * Map that keeps track of all root workflow ids and maps them to a unique node ids. It's the id the will be
+     * prepended to the node's id (see {@link #getID()}).
+     *
+     * TODO: remove worklfow id's from the list that aren't in memory anymore
+     */
+    private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
 
     /* Maps the identity hash code of a entity to the entity proxy object */
     @SuppressWarnings("rawtypes")
@@ -120,6 +129,7 @@ public class EntityProxyAccess {
      */
     public static EntityProxyWorkflowManager createWorkflowManager(final ServerServiceConfig serviceConfig,
         final UUID rootWorkflowID) {
+        ROOT_ID_MAP.computeIfAbsent(rootWorkflowID, s -> String.valueOf(ROOT_ID_MAP.size() + 1));
         return new EntityProxyAccess(serviceConfig).getWorkflowManager(rootWorkflowID, null);
     }
 
@@ -203,6 +213,16 @@ public class EntityProxyAccess {
             }
             throw new IllegalStateException("Node entity type " + nodeEnt.getClass().getName() + " not supported.");
         }, AbstractEntityProxyNodeContainer.class);
+    }
+
+    /**
+     * Gives the correct node id determined from a {@link NodeEnt}.
+     *
+     * @param ent the node entity to get the node id from
+     * @return the {@link NodeID}
+     */
+    NodeID getNodeID(final NodeEnt ent) {
+        return EntityProxyUtil.stringToNodeID(ROOT_ID_MAP.get(ent.getRootWorkflowID()), ent.getNodeID());
     }
 
     /**
@@ -495,13 +515,23 @@ public class EntityProxyAccess {
     }
 
     /**
-     * Retrieves the flow variables for a node.
+     * Retrieves the flow variables for a node and returns them as a list.
+     *
+     * @param node the node to retrieve the flow variables for
+     * @param input if <code>true</code>, the input variables will be returned, otherwise the output variables
+     * @return the variables as a list
      */
-    FlowObjectStack getFlowVariableStack(final NodeEnt node, final NodeID nodeId) {
+    List<FlowVariable> getFlowVariableList(final NodeEnt node, final boolean input) {
         try {
-            List<FlowVariableEnt> flowVariables = service(NodeService.class, m_serviceConfig)
-                .getInputFlowVariables(node.getRootWorkflowID(), node.getNodeID());
-            return FlowObjectStack.createFromFlowVariableList(flowVariables.stream().map(e -> {
+            List<FlowVariableEnt> flowVariables;
+            if (input) {
+                flowVariables = service(NodeService.class, m_serviceConfig)
+                    .getInputFlowVariables(node.getRootWorkflowID(), node.getNodeID());
+            } else {
+                flowVariables = service(NodeService.class, m_serviceConfig)
+                    .getOutputFlowVariables(node.getRootWorkflowID(), node.getNodeID());
+            }
+            return flowVariables.stream().map(e -> {
                 switch (e.getType()) {
                     case DOUBLE:
                         return new FlowVariable(e.getName(), Double.valueOf(e.getValue()));
@@ -512,10 +542,21 @@ public class EntityProxyAccess {
                     default:
                         throw new IllegalStateException();
                 }
-            }).collect(Collectors.toList()), nodeId);
+            }).collect(Collectors.toList());
         } catch (NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
+    }
+
+    /**
+     * Retrieves the flow variables for a node and returns them as a new {@link FlowObjectStack}.
+     *
+     * @param node see {@link #getFlowVariableList(NodeEnt, boolean)}
+     * @param input see {@link #getFlowVariableList(NodeEnt, boolean)}
+     * @return the variables as a stack
+     */
+    FlowObjectStack getFlowVariableStack(final NodeEnt node, final NodeID nodeId, final boolean input) {
+        return FlowObjectStack.createFromFlowVariableList(getFlowVariableList(node, input), nodeId);
     }
 
     /**

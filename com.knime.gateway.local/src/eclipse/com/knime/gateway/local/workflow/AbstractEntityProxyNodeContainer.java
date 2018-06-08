@@ -19,10 +19,7 @@
 package com.knime.gateway.local.workflow;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -56,7 +53,6 @@ import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
-import com.knime.gateway.local.util.EntityProxyUtil;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -80,14 +76,6 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * The old entity used prior the update.
      */
     private E m_oldEntity;
-
-    /**
-     * Map that keeps track of all root workflow ids and maps them to a unique node ids. It's the id the will be
-     * prepended to the node's id (see {@link #getID()}).
-     *
-     * TODO: remove worklfow id's from the list that aren't in memory anymore
-     */
-    private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
 
     private NodeAnnotation m_nodeAnnotation;
 
@@ -119,7 +107,6 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
-        ROOT_ID_MAP.computeIfAbsent(node.getRootWorkflowID(), s -> String.valueOf(ROOT_ID_MAP.size() + 1));
     }
 
     /**
@@ -573,8 +560,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public NodeID getID() {
-        return EntityProxyUtil.stringToNodeID(ROOT_ID_MAP.get(getEntity().getRootWorkflowID()),
-            getEntity().getNodeID());
+        return getAccess().getNodeID(getEntity());
     }
 
     /**

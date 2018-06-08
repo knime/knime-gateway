@@ -111,6 +111,17 @@ public interface NodeService extends GatewayService {
     DataTableEnt getOutputDataTable(java.util.UUID jobId, String nodeId, Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
+     * Provides the node&#39;s flow variables available for the node&#39;s output with the given node-id. For metanodes (not wrapped metanodes) the same variables are returned as with &#39;... For metanodes (not wrapped metanodes) the same variables are returned as with &#39;.../input/flowvariables&#39;.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
+     *
+     * @return the result
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     */
+    java.util.List<FlowVariableEnt> getOutputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+        
+    /**
      * Provides the node&#39;s output port specifications for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for

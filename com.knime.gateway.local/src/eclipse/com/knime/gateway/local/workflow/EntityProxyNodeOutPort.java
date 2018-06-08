@@ -28,6 +28,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
@@ -177,6 +178,11 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     @Override
     public NodeContainerState getNodeState() {
         return AbstractEntityProxyNodeContainer.getNodeContainerState(m_node);
+    }
+
+    @Override
+    public FlowObjectStack getFlowObjectStack() {
+        return getAccess().getFlowVariableStack(getNodeEnt(), getAccess().getNodeID(getNodeEnt()), false);
     }
 
     /**
