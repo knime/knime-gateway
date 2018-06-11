@@ -26,7 +26,7 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * The data for a node&#39;s views encompasing the view representation and value.
+ * The data for a node&#39;s view encompasing the view representation and value.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -41,13 +41,13 @@ public interface ViewDataEnt extends GatewayEntity {
   public String getJavascriptObjectID();
 
   /**
-   * The views representation.
+   * The view representation.
    * @return viewRepresentation 
    **/
   public ViewContentEnt getViewRepresentation();
 
   /**
-   * The views value.
+   * The view value.
    * @return viewValue 
    **/
   public ViewContentEnt getViewValue();
@@ -73,7 +73,7 @@ public interface ViewDataEnt extends GatewayEntity {
         ViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID);
         
         /**
-         * The views representation.
+         * The view representation.
          * 
          * @param viewRepresentation the property value,  
          * @return this entity builder for chaining
@@ -81,7 +81,7 @@ public interface ViewDataEnt extends GatewayEntity {
         ViewDataEntBuilder setViewRepresentation(ViewContentEnt viewRepresentation);
         
         /**
-         * The views value.
+         * The view value.
          * 
          * @param viewValue the property value,  
          * @return this entity builder for chaining

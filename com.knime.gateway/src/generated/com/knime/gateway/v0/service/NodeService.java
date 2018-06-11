@@ -116,7 +116,7 @@ public interface NodeService extends GatewayService {
     NodeEnt getRootNode(java.util.UUID jobId) ;
         
     /**
-     * Provides the data for the node&#39;s views, iff the node supports views. The data includes the views&#39; and the representation.
+     * Provides the data for the node&#39;s view, iff the node supports views. The data includes the view&#39;s and the representation.
      *
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4

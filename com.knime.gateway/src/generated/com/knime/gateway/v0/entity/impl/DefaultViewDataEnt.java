@@ -27,7 +27,7 @@ import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
 /**
- * The data for a node&#39;s views encompasing the view representation and value.
+ * The data for a node&#39;s view encompasing the view representation and value.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
