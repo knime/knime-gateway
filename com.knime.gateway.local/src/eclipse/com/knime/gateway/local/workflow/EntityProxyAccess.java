@@ -73,10 +73,10 @@ import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Collection of methods helping to access (create/store) the entity-proxy classes (e.g.
@@ -392,11 +392,11 @@ public class EntityProxyAccess {
      *
      * @param node node to retrieve the specs for
      * @return the specs for all ports (including the flow var port)
-     * @throws NotSupportedException if the requested spec is not supported by the gateway (because it cannot be
+     * @throws InvalidRequestException if the requested spec is not supported by the gateway (because it cannot be
      *             serialized)
      * @throws NodeNotFoundException if the node wasn't found
      */
-    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NotSupportedException, NodeNotFoundException {
+    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws InvalidRequestException, NodeNotFoundException {
         //TODO cache the port object specs
         if (!node.getOutPorts().isEmpty()) {
             List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
@@ -412,11 +412,12 @@ public class EntityProxyAccess {
      *
      * @param node node to retrieve the specs for
      * @return the specs for all ports (including the flow var port)
-     * @throws NotSupportedException if the requested spec is not supported by the gateway (because it cannot be
+     * @throws InvalidRequestException if the requested spec is not supported by the gateway (because it cannot be
      *             serialized)
      * @throws NodeNotFoundException if the node wasn't found
      */
-    PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node) throws NotSupportedException, NodeNotFoundException {
+    PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node)
+        throws InvalidRequestException, NodeNotFoundException {
         //TODO cache the port object specs
         if (!node.getOutPorts().isEmpty()) {
             List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
@@ -425,6 +426,20 @@ public class EntityProxyAccess {
         } else {
             return new PortObjectSpec[0];
         }
+    }
+
+    /**
+     * Gives access to the outport data table for a particular node and it's node port.
+     *
+     * @param port the port to get the table for
+     * @param node the node
+     * @param spec the data table spec
+     * @return either cached or a new entity proxy
+     */
+    EntityProxyDataTable getOutputDataTable(final NodeOutPortEnt port, final NodeEnt node, final DataTableSpec spec) {
+        return getOrCreate(port, o -> {
+            return new EntityProxyDataTable(port, node, spec, this);
+        }, EntityProxyDataTable.class);
     }
 
 
@@ -443,7 +458,7 @@ public class EntityProxyAccess {
     }
 
     private static PortObjectSpec[] createPortObjectSpecsFromEntity(final List<PortObjectSpecEnt> entList,
-        final List<? extends NodePortEnt> ports) throws NotSupportedException {
+        final List<? extends NodePortEnt> ports) throws InvalidRequestException {
         assert ports.size() == entList.size();
         PortObjectSpec[] res = new PortObjectSpec[entList.size()];
         for (int i = 0; i < res.length; i++) {
@@ -474,7 +489,7 @@ public class EntityProxyAccess {
                     throw new RuntimeException(ex);
                 }
             } else {
-                throw new NotSupportedException(
+                throw new InvalidRequestException(
                     "Port type '" + ptype.getName() + "' not supported, yet.");
             }
         }

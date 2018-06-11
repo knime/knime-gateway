@@ -34,7 +34,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.container.CloseableRowIterator;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.ModelContent;
 import org.knime.core.node.NodeFactory;
@@ -76,6 +79,12 @@ import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt.TypeEnum;
+import com.knime.gateway.v0.entity.DataCellEnt;
+import com.knime.gateway.v0.entity.DataCellEnt.DataCellEntBuilder;
+import com.knime.gateway.v0.entity.DataRowEnt;
+import com.knime.gateway.v0.entity.DataRowEnt.DataRowEntBuilder;
+import com.knime.gateway.v0.entity.DataTableEnt;
+import com.knime.gateway.v0.entity.DataTableEnt.DataTableEntBuilder;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.JobManagerEnt;
@@ -350,6 +359,51 @@ public class EntityBuilderUtil {
         return builder(ViewContentEntBuilder.class)
                 .setClassname(vc.getClass().getCanonicalName())
                 .setContent(viewContentToJsonString(vc)).build();
+    }
+
+    /**
+     * Builds a new {@link DataTableEnt}.
+     *
+     * @param table the table to create the entity from
+     * @param from row index to start from, if larger then the size of the table, it will return an empty table without
+     *            any rows
+     * @param size max number of rows to include (if less rows are available, resulting table will contain less)
+     * @return a newly created entity
+     */
+    public static DataTableEnt buildDataTableEnt(final BufferedDataTable table, final long from, final int size) {
+        List<String> colNames = Arrays.asList(table.getSpec().getColumnNames());
+        List<DataRowEnt> rows;
+        if (from >= table.size()) {
+            rows = Collections.emptyList();
+        } else {
+            rows = new ArrayList<DataRowEnt>(size);
+            CloseableRowIterator it = table.iteratorFailProve();
+            for (int i = 0; i < from; i++) {
+                it.next();
+            }
+            for (int i = 0; i < size && it.hasNext(); i++) {
+                rows.add(buildDataRowEnt(it.next()));
+            }
+            it.close();
+        }
+        return builder(DataTableEntBuilder.class)
+                .setNumTotalRows(table.size())
+                .setColumnNames(colNames)
+                .setRows(rows)
+                .build();
+    }
+
+    private static DataRowEnt buildDataRowEnt(final DataRow row) {
+        List<DataCellEnt> columns = new ArrayList<DataCellEnt>(row.getNumCells());
+        row.forEach(c -> {
+            DataCellEnt cellEnt = builder(DataCellEntBuilder.class)
+                    .setValueAsString(c.toString()).build();
+            columns.add(cellEnt);
+        });
+        return builder(DataRowEntBuilder.class)
+               .setRowID(row.getKey().getString())
+               .setColumns(columns)
+               .build();
     }
 
     /**

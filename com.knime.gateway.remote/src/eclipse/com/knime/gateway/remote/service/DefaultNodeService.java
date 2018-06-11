@@ -33,13 +33,17 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import javax.transaction.NotSupportedException;
+
 import org.apache.commons.io.IOUtils;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.interactive.DefaultReexecutionCallback;
 import org.knime.core.node.interactive.ViewContent;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.web.WebViewContent;
@@ -58,6 +62,7 @@ import org.knime.core.util.Pair;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.util.EntityBuilderUtil;
 import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
@@ -68,8 +73,8 @@ import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.
@@ -195,7 +200,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public List<PortObjectSpecEnt> getInputPortSpecs(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException, NotSupportedException {
+        throws NodeNotFoundException, InvalidRequestException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         WorkflowManager wfm = rootWfmAndNc.getFirst();
         NodeContainer nc = rootWfmAndNc.getSecond();
@@ -224,12 +229,30 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException, NotSupportedException {
+        throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         return getPortObjectSpecsAsEntityList(IntStream.range(0, nodeContainer.getNrOutPorts()).mapToObj(i -> {
             return Pair.create(nodeContainer.getOutPort(i).getPortType(),
                 nodeContainer.getOutPort(i).getPortObjectSpec());
         }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataTableEnt getOutputDataTable(final UUID rootWorkflowID, final String nodeID, final Integer portIdx,
+        final Long from, final Integer size) throws NodeNotFoundException, InvalidRequestException {
+        NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
+        if (portIdx >= nc.getNrOutPorts()) {
+            throw new InvalidRequestException("No port at index " + portIdx);
+        }
+        PortObject portObject = nc.getOutPort(portIdx).getPortObject();
+        if (portObject instanceof BufferedDataTable) {
+            return EntityBuilderUtil.buildDataTableEnt((BufferedDataTable)portObject, from, size);
+        } else {
+            throw new InvalidRequestException("Not a table at port index " + portIdx);
+        }
     }
 
     /**
@@ -294,8 +317,8 @@ public class DefaultNodeService implements NodeService {
     }
 
     private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(
-        final Stream<Pair<PortType, PortObjectSpec>> specs) throws NotSupportedException {
-        AtomicReference<NotSupportedException> exception = new AtomicReference<NotSupportedException>();
+        final Stream<Pair<PortType, PortObjectSpec>> specs) throws InvalidRequestException {
+        AtomicReference<InvalidRequestException> exception = new AtomicReference<InvalidRequestException>();
         List<PortObjectSpecEnt> res = specs.map(port -> {
             if (port == null) {
                 //can happen in case of an optional port
@@ -312,7 +335,7 @@ public class DefaultNodeService implements NodeService {
             }
             PortObjectSpecEnt ent = EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
             if (ent == null) {
-                exception.set(new ServiceExceptions.NotSupportedException(
+                exception.set(new ServiceExceptions.InvalidRequestException(
                     "Port object spec of type '" + type.getName() + "' not supported in remote view."));
                 return null;
             } else {

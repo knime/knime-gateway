@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
+import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
@@ -86,10 +87,10 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/),
-        @JsonRpcError(exception = ServiceExceptions.NotSupportedException.class, code = -32600,
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public java.util.List<PortObjectSpecEnt> getInputPortSpecs(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+    public java.util.List<PortObjectSpecEnt> getInputPortSpecs(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.getInputPortSpecs(jobId, nodeId);    
     }
 
@@ -123,14 +124,29 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "getOutputDataTable")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
+    })
+    public DataTableEnt getOutputDataTable(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.getOutputDataTable(jobId, nodeId, portIdx, from, size);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getOutputPortSpecs")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/),
-        @JsonRpcError(exception = ServiceExceptions.NotSupportedException.class, code = -32600,
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+    public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.getOutputPortSpecs(jobId, nodeId);    
     }
 

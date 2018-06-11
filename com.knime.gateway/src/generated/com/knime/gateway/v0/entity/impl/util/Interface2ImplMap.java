@@ -24,6 +24,12 @@ import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultBoundsEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultConnectionEnt;
+import com.knime.gateway.v0.entity.DataCellEnt.DataCellEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultDataCellEnt;
+import com.knime.gateway.v0.entity.DataRowEnt.DataRowEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultDataRowEnt;
+import com.knime.gateway.v0.entity.DataTableEnt.DataTableEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultDataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -105,6 +111,15 @@ public class Interface2ImplMap {
         }        
         if(clazz == ConnectionEntBuilder.class) {
             return new DefaultConnectionEnt.DefaultConnectionEntBuilder();
+        }        
+        if(clazz == DataCellEntBuilder.class) {
+            return new DefaultDataCellEnt.DefaultDataCellEntBuilder();
+        }        
+        if(clazz == DataRowEntBuilder.class) {
+            return new DefaultDataRowEnt.DefaultDataRowEntBuilder();
+        }        
+        if(clazz == DataTableEntBuilder.class) {
+            return new DefaultDataTableEnt.DefaultDataTableEntBuilder();
         }        
         if(clazz == FlowVariableEntBuilder.class) {
             return new DefaultFlowVariableEnt.DefaultFlowVariableEntBuilder();

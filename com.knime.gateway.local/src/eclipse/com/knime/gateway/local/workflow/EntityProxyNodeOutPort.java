@@ -21,6 +21,11 @@ package com.knime.gateway.local.workflow;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.swing.JComponent;
+
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NodeContainerState;
@@ -30,8 +35,8 @@ import org.knime.core.ui.node.workflow.NodeOutPortUI;
 
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link NodeOutPortUI}.
@@ -65,8 +70,24 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     public PortObjectSpec getPortObjectSpec() {
         try {
             return getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
-        } catch (NotSupportedException | NodeNotFoundException ex) {
-            throw new RuntimeException(ex);
+        } catch (InvalidRequestException | NodeNotFoundException ex) {
+            //should never happen
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PortObject getPortObject() {
+        if (!getNodeState().isExecuted()) {
+            return null;
+        }
+        if (getEntity().getPortType().getPortObjectClassName().equals(BufferedDataTable.class.getCanonicalName())) {
+            return getAccess().getOutputDataTable(getEntity(), getNodeEnt(), (DataTableSpec)getPortObjectSpec());
+        } else {
+            return new UnsupportedPortObject(getPortType());
         }
     }
 
@@ -175,6 +196,40 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
 
     void updateNodeEnt(final N newNodeEnt) {
         m_node = newNodeEnt;
+    }
+
+    private class UnsupportedPortObject implements PortObject {
+
+        private PortType m_type;
+
+        public UnsupportedPortObject(final PortType type) {
+            m_type = type;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getSummary() {
+            return "Port object of type " + m_type.getName() + " not yet supported by remote view.";
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public PortObjectSpec getSpec() {
+            return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public JComponent[] getViews() {
+            return null;
+        }
+
     }
 
 }

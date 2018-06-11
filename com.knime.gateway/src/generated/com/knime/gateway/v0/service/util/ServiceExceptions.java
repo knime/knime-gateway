@@ -79,14 +79,14 @@ public final class ServiceExceptions {
     }
     
     /**
-    * If the request is not supported for a reason. Please refer to the exception message for more details.
+    * If the request is invalid for a reason. Please refer to the exception message for more details.
     */
-    public static class NotSupportedException extends Exception {
-        public NotSupportedException(String message) {
+    public static class InvalidRequestException extends Exception {
+        public InvalidRequestException(String message) {
             super(message);
         }
         
-        public NotSupportedException(String message, Throwable cause) {
+        public InvalidRequestException(String message, Throwable cause) {
             super(message, cause);
         }
     }
