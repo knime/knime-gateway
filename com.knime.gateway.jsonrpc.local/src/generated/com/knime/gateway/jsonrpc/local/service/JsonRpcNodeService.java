@@ -106,7 +106,7 @@ public interface JsonRpcNodeService extends NodeService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "NodeService.setViewsValue")
-    void setViewsValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
+    @JsonRpcMethod(value = "NodeService.setViewValue")
+    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
 
 }

@@ -179,15 +179,15 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "setViewsValue")
+    @JsonRpcMethod(value = "setViewValue")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/),
         @JsonRpcError(exception = ServiceExceptions.NotSupportedException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public void setViewsValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="viewValue") ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
-        m_service.setViewsValue(jobId, nodeId, useAsDefault, viewValue);    
+    public void setViewValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="viewValue") ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+        m_service.setViewValue(jobId, nodeId, useAsDefault, viewValue);    
     }
 
 }

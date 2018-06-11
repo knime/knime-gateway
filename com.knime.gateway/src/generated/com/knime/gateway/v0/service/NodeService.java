@@ -142,7 +142,7 @@ public interface NodeService extends GatewayService {
     void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
         
     /**
-     * Saves back the views value (e.g. title etc.) to the server.
+     * Saves back the view&#39;s value (e.g. title etc.) to the server.
      *
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
@@ -153,6 +153,6 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.NotSupportedException If the request is not supported for a reason. Please refer to the exception message for more details.
      */
-    void setViewsValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
+    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
         
 }

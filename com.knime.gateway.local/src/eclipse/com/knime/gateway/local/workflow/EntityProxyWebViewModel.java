@@ -98,7 +98,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
             ViewContentEnt viewContentEnt =
                 builder(ViewContentEntBuilder.class).setClassname(viewContent.getClass().getCanonicalName())
                     .setContent(((ByteArrayOutputStream)viewContent.saveToStream()).toString("UTF-8")).build();
-            getAccess().nodeService().setViewsValue(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+            getAccess().nodeService().setViewValue(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
                 useAsDefault, viewContentEnt);
             //since the view value has been changed, delete the cached view data
             m_viewData = null;

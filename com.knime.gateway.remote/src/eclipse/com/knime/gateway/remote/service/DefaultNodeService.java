@@ -268,7 +268,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void setViewsValue(final UUID rootWorkflowID, final String nodeID, final Boolean useAsDefault,
+    public void setViewValue(final UUID rootWorkflowID, final String nodeID, final Boolean useAsDefault,
         final ViewContentEnt viewValue) throws NodeNotFoundException, NotSupportedException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         NodeContainer nc = rootWfmAndNc.getSecond();

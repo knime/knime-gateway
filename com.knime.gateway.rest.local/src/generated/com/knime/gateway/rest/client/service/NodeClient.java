@@ -278,11 +278,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public void setViewsValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+    public void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setViewsValue(jobId, nodeId, useAsDefault, toByteArray(viewValue));
+                    return c.setViewValue(jobId, nodeId, useAsDefault, toByteArray(viewValue));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     // TODO exception handling
