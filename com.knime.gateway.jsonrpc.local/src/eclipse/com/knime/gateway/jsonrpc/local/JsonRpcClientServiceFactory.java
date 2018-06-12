@@ -26,12 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
+import org.knime.core.util.KNIMEServerHostnameVerifier;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,26 +53,6 @@ import com.knime.gateway.service.GatewayService;
 public class JsonRpcClientServiceFactory implements ServiceFactory {
 
     private static final String GATEWAY_PATH = "/v4/jobs/{uuid}/gateway/jsonrpc";
-
-    /**
-     * COPIED from com.knime.enterprise.server.rest.api.Util!
-     */
-    private static final HostnameVerifier HOSTNAME_VERIFIER = new HostnameVerifier() {
-        private final HostnameVerifier m_defaultVerifier = new BrowserCompatHostnameVerifier();
-
-        @Override
-        public boolean verify(final String hostname, final SSLSession session) {
-            // we accept if the certificate hostname does not match the actual hostname but the certificate was
-            // signed by us; this is for default server installations that all use a common certificate
-            try {
-                return m_defaultVerifier.verify(hostname, session)
-                    || session.getPeerCertificateChain()[0].getSubjectDN().toString().equals(
-                        "CN=default-server-installation.knime.local, O=KNIME.com AG, L=Atlantis, ST=Utopia, C=AA");
-            } catch (SSLPeerUnverifiedException ex) {
-                return false;
-            }
-        }
-    };
 
     /**
      * {@inheritDoc}
@@ -133,7 +110,7 @@ public class JsonRpcClientServiceFactory implements ServiceFactory {
                     return super.invoke(methodName, argument, returnType, extraHeaders);
                 }
             };
-            httpClient.setHostNameVerifier(HOSTNAME_VERIFIER);
+            httpClient.setHostNameVerifier(KNIMEServerHostnameVerifier.getInstance());
             return ProxyUtil.createClientProxy(proxyInterface.getClassLoader(), proxyInterface, httpClient);
         } catch (MalformedURLException ex) {
             throw new RuntimeException(ex);
