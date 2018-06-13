@@ -198,11 +198,10 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         m_node = newNodeEnt;
     }
 
-    private class UnsupportedPortObject implements PortObject {
+    private static class UnsupportedPortObject implements PortObject {
+        private final PortType m_type;
 
-        private PortType m_type;
-
-        public UnsupportedPortObject(final PortType type) {
+        UnsupportedPortObject(final PortType type) {
             m_type = type;
         }
 
@@ -227,9 +226,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
          */
         @Override
         public JComponent[] getViews() {
-            return null;
+            return new JComponent[0];
         }
-
     }
-
 }

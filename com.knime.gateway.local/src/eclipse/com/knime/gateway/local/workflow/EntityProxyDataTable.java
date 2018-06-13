@@ -53,8 +53,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements PortObject, KnowsRowCountTable {
-
+class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements PortObject, KnowsRowCountTable {
     /**
      * The size of the chunks to be retrieved and cached.
      */
@@ -102,8 +101,7 @@ public class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> imple
             @Override
             public DataRow next() {
                 DataRow row = new DataRow() {
-
-                    private DataRowEnt m_row = getRow(m_index);
+                    private final DataRowEnt m_row = getRow(m_index);
 
                     @Override
                     public Iterator<DataCell> iterator() {
@@ -123,7 +121,6 @@ public class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> imple
                     @Override
                     public DataCell getCell(final int index) {
                         return new DataCell() {
-
                             private static final long serialVersionUID = 6064183116336622584L;
 
                             @Override
@@ -133,12 +130,13 @@ public class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> imple
 
                             @Override
                             public int hashCode() {
-                                throw new UnsupportedOperationException();
+                                return toString().hashCode();
                             }
 
                             @Override
                             protected boolean equalsDataCell(final DataCell dc) {
-                                throw new UnsupportedOperationException();
+                                return (dc.getClass() == this.getClass()) &&
+                                        dc.toString().equals(this.toString());
                             }
                         };
                     }
@@ -278,5 +276,4 @@ public class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> imple
         }
         return m_chunks.get(chunkIndex);
     }
-
 }

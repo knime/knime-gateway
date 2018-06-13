@@ -377,14 +377,14 @@ public class EntityBuilderUtil {
             rows = Collections.emptyList();
         } else {
             rows = new ArrayList<DataRowEnt>(size);
-            CloseableRowIterator it = table.iteratorFailProve();
-            for (int i = 0; i < from; i++) {
-                it.next();
+            try (CloseableRowIterator it = table.iteratorFailProve()) {
+                for (int i = 0; i < from; i++) {
+                    it.next();
+                }
+                for (int i = 0; i < size && it.hasNext(); i++) {
+                    rows.add(buildDataRowEnt(it.next()));
+                }
             }
-            for (int i = 0; i < size && it.hasNext(); i++) {
-                rows.add(buildDataRowEnt(it.next()));
-            }
-            it.close();
         }
         return builder(DataTableEntBuilder.class)
                 .setNumTotalRows(table.size())
@@ -394,12 +394,9 @@ public class EntityBuilderUtil {
     }
 
     private static DataRowEnt buildDataRowEnt(final DataRow row) {
-        List<DataCellEnt> columns = new ArrayList<DataCellEnt>(row.getNumCells());
-        row.forEach(c -> {
-            DataCellEnt cellEnt = builder(DataCellEntBuilder.class)
-                    .setValueAsString(c.toString()).build();
-            columns.add(cellEnt);
-        });
+        List<DataCellEnt> columns =
+            row.stream().map(cell -> builder(DataCellEntBuilder.class).setValueAsString(cell.toString()).build())
+                .collect(Collectors.toList());
         return builder(DataRowEntBuilder.class)
                .setRowID(row.getKey().getString())
                .setColumns(columns)
