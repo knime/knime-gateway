@@ -366,22 +366,25 @@ public class EntityBuilderUtil {
      *
      * @param table the table to create the entity from
      * @param from row index to start from, if larger then the size of the table, it will return an empty table without
-     *            any rows
-     * @param size max number of rows to include (if less rows are available, resulting table will contain less)
+     *            any rows, if <code>null</code> it will be set to 0
+     * @param size max number of rows to include (if less rows are available, resulting table will contain less), if
+     *            <code>null</code> size will the maximum (i.e. the table end)
      * @return a newly created entity
      */
-    public static DataTableEnt buildDataTableEnt(final BufferedDataTable table, final long from, final int size) {
+    public static DataTableEnt buildDataTableEnt(final BufferedDataTable table, final Long from, final Integer size) {
         List<String> colNames = Arrays.asList(table.getSpec().getColumnNames());
         List<DataRowEnt> rows;
-        if (from >= table.size()) {
+        long f = from == null ? 0 : from;
+        int s = size == null ? (int)table.size() : size;
+        if (f >= table.size()) {
             rows = Collections.emptyList();
         } else {
-            rows = new ArrayList<DataRowEnt>(size);
+            rows = new ArrayList<DataRowEnt>(s);
             try (CloseableRowIterator it = table.iteratorFailProve()) {
-                for (int i = 0; i < from; i++) {
+                for (int i = 0; i < f; i++) {
                     it.next();
                 }
-                for (int i = 0; i < size && it.hasNext(); i++) {
+                for (int i = 0; i < s && it.hasNext(); i++) {
                     rows.add(buildDataRowEnt(it.next()));
                 }
             }
