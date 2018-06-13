@@ -110,7 +110,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
 
                     @Override
                     public int getNumCells() {
-                        return getChunk(0).getColumnNames().size();
+                        return m_row.getColumns().size();
                     }
 
                     @Override
