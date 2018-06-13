@@ -182,7 +182,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
 
     @Override
     public FlowObjectStack getFlowObjectStack() {
-        return getAccess().getFlowVariableStack(getNodeEnt(), getAccess().getNodeID(getNodeEnt()), false);
+        return getAccess().getOutputFlowVariableStack(getNodeEnt(), getAccess().getNodeID(getNodeEnt()));
     }
 
     /**

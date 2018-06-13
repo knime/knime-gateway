@@ -161,7 +161,7 @@ class EntityProxyNativeNodeContainer extends EntityProxySingleNodeContainer<Nati
         try {
             Future<NodeSettings> f1 = exec.submit(() -> getAccess().getNodeSettings(getEntity()));
             Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
-            Future<FlowObjectStack> f3 = exec.submit(() -> getAccess().getFlowVariableStack(getEntity(), getID(), true));
+            Future<FlowObjectStack> f3 = exec.submit(() -> getAccess().getInputFlowVariableStack(getEntity(), getID()));
             exec.shutdown();
             //wait a bit longer than the timeouts of the individual requests
             exec.awaitTermination(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT + 1000, TimeUnit.MILLISECONDS);

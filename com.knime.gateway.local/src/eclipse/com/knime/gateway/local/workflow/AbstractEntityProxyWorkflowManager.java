@@ -713,7 +713,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public List<FlowVariable> getWorkflowVariables() {
-        return getAccess().getFlowVariableList(getEntity(), false);
+        return getAccess().getOutputFlowVariableList(getEntity());
     }
 
     /**

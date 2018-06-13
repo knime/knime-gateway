@@ -515,48 +515,68 @@ public class EntityProxyAccess {
     }
 
     /**
-     * Retrieves the flow variables for a node and returns them as a list.
+     * Retrieves the input flow variables for a node and returns them as a list.
      *
      * @param node the node to retrieve the flow variables for
-     * @param input if <code>true</code>, the input variables will be returned, otherwise the output variables
      * @return the variables as a list
      */
-    List<FlowVariable> getFlowVariableList(final NodeEnt node, final boolean input) {
+    List<FlowVariable> getInputFlowVariableList(final NodeEnt node) {
         try {
-            List<FlowVariableEnt> flowVariables;
-            if (input) {
-                flowVariables = service(NodeService.class, m_serviceConfig)
-                    .getInputFlowVariables(node.getRootWorkflowID(), node.getNodeID());
-            } else {
-                flowVariables = service(NodeService.class, m_serviceConfig)
-                    .getOutputFlowVariables(node.getRootWorkflowID(), node.getNodeID());
-            }
-            return flowVariables.stream().map(e -> {
-                switch (e.getType()) {
-                    case DOUBLE:
-                        return new FlowVariable(e.getName(), Double.valueOf(e.getValue()));
-                    case INTEGER:
-                        return new FlowVariable(e.getName(), Integer.valueOf(e.getValue()));
-                    case STRING:
-                        return new FlowVariable(e.getName(), e.getValue());
-                    default:
-                        throw new IllegalStateException();
-                }
-            }).collect(Collectors.toList());
+            return flowVarEntToList(service(NodeService.class, m_serviceConfig)
+                .getInputFlowVariables(node.getRootWorkflowID(), node.getNodeID()));
         } catch (NodeNotFoundException ex) {
             throw new IllegalStateException(ex);
         }
     }
 
     /**
-     * Retrieves the flow variables for a node and returns them as a new {@link FlowObjectStack}.
+     * Retrieves the output flow variables for a node and returns them as a list.
+     *
+     * @param node the node to retrieve the flow variables for
+     * @return the variables as a list
+     */
+    List<FlowVariable> getOutputFlowVariableList(final NodeEnt node) {
+        try {
+            return flowVarEntToList(service(NodeService.class, m_serviceConfig)
+                .getOutputFlowVariables(node.getRootWorkflowID(), node.getNodeID()));
+        } catch (NodeNotFoundException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private List<FlowVariable> flowVarEntToList(final List<FlowVariableEnt> ents) {
+        return ents.stream().map(e -> {
+            switch (e.getType()) {
+                case DOUBLE:
+                    return new FlowVariable(e.getName(), Double.valueOf(e.getValue()));
+                case INTEGER:
+                    return new FlowVariable(e.getName(), Integer.valueOf(e.getValue()));
+                case STRING:
+                    return new FlowVariable(e.getName(), e.getValue());
+                default:
+                    throw new IllegalStateException();
+            }
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves the input flow variables for a node and returns them as a new {@link FlowObjectStack}.
      *
      * @param node see {@link #getFlowVariableList(NodeEnt, boolean)}
-     * @param input see {@link #getFlowVariableList(NodeEnt, boolean)}
      * @return the variables as a stack
      */
-    FlowObjectStack getFlowVariableStack(final NodeEnt node, final NodeID nodeId, final boolean input) {
-        return FlowObjectStack.createFromFlowVariableList(getFlowVariableList(node, input), nodeId);
+    FlowObjectStack getInputFlowVariableStack(final NodeEnt node, final NodeID nodeId) {
+        return FlowObjectStack.createFromFlowVariableList(getInputFlowVariableList(node), nodeId);
+    }
+
+    /**
+     * Retrieves the output flow variables for a node and returns them as a new {@link FlowObjectStack}.
+     *
+     * @param node see {@link #getFlowVariableList(NodeEnt, boolean)}
+     * @return the variables as a stack
+     */
+    FlowObjectStack getOutputFlowVariableStack(final NodeEnt node, final NodeID nodeId) {
+        return FlowObjectStack.createFromFlowVariableList(getOutputFlowVariableList(node), nodeId);
     }
 
     /**
