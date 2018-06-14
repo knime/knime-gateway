@@ -37,8 +37,8 @@ import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewContentEnt.ViewContentEntBuilder;
 import com.knime.gateway.v0.entity.ViewDataEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotSupportedException;
 
 /**
  * A combination of a {@link ViewableModel} and {@link WizardNode} that is backed by a {@link NativeNodeEnt}.
@@ -73,7 +73,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
                 m_viewData =
                     getAccess().nodeService().getViewData(getEntity().getRootWorkflowID(), getEntity().getNodeID());
 
-            } catch (NodeNotFoundException | NotSupportedException ex) {
+            } catch (NodeNotFoundException | InvalidRequestException ex) {
                 throw new IllegalStateException(ex);
             }
         }
@@ -102,7 +102,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
                 useAsDefault, viewContentEnt);
             //since the view value has been changed, delete the cached view data
             m_viewData = null;
-        } catch (IOException | NodeNotFoundException | NotSupportedException ex) {
+        } catch (IOException | NodeNotFoundException | InvalidRequestException ex) {
             throw new IllegalStateException("Problem saving view value to server. ", ex);
         }
     }

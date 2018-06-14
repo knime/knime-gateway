@@ -251,7 +251,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+    public ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
@@ -268,7 +268,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                 throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
             }
             if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.NotSupportedException(readExceptionMessage(ex));
+                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
@@ -304,7 +304,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException {
+    public void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             doRequest(c -> {
                 try {
@@ -321,7 +321,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                 throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
             }
             if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.NotSupportedException(readExceptionMessage(ex));
+                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));

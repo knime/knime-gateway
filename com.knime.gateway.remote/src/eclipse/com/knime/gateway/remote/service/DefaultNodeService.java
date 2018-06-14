@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.transaction.NotSupportedException;
-
 import org.apache.commons.io.IOUtils;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
@@ -272,7 +270,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public ViewDataEnt getViewData(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException, NotSupportedException {
+        throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
             NativeNodeContainer nnc = (NativeNodeContainer)nc;
@@ -283,7 +281,7 @@ public class DefaultNodeService implements NodeService {
                 throw new IllegalStateException("Views data cannot be accessed.", ex);
             }
         } else {
-            throw new NotSupportedException("Node doesn't provide view data.");
+            throw new InvalidRequestException("Node doesn't provide view data.");
         }
     }
 
@@ -292,7 +290,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public void setViewValue(final UUID rootWorkflowID, final String nodeID, final Boolean useAsDefault,
-        final ViewContentEnt viewValue) throws NodeNotFoundException, NotSupportedException {
+        final ViewContentEnt viewValue) throws NodeNotFoundException, InvalidRequestException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         NodeContainer nc = rootWfmAndNc.getSecond();
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
@@ -301,7 +299,7 @@ public class DefaultNodeService implements NodeService {
             ViewContent vc = readWebViewContentFromJsonString(viewValue.getContent(), wn.createEmptyViewValue());
             nnc.getParent().reExecuteNode(nnc.getID(), vc, useAsDefault, new DefaultReexecutionCallback());
         } else {
-            throw new NotSupportedException("Node doesn't provide a view.");
+            throw new InvalidRequestException("Node doesn't provide a view.");
         }
     }
 

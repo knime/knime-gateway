@@ -101,8 +101,8 @@ public interface NodeService extends GatewayService {
      * @param jobId ID the job the workflow is requested for
      * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
      * @param portIdx The port index to get the table for.
-     * @param from row index to start returning the rows
-     * @param size number of rows to retrieve
+     * @param from Row index to start returning the rows. Rows from the beginning (i.e. index 0) will be returned.
+     * @param size Number of rows to retrieve. If not given, all rows to the end of the table are returned.
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -139,9 +139,9 @@ public interface NodeService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.NotSupportedException If the request is not supported for a reason. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
+    ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Sets the node&#39;s settings for the given node-id.
@@ -167,8 +167,8 @@ public interface NodeService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.NotSupportedException If the request is not supported for a reason. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotSupportedException;
+    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
 }
