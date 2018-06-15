@@ -32,6 +32,7 @@ import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
+import org.knime.js.core.node.CSSModifiable;
 
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.ViewContentEnt;
@@ -161,7 +162,13 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
     @Override
     public String getViewHTMLPath() {
         try {
-            return getViewCreator().createWebResources(m_viewName, getViewRepresentation(), getViewValue());
+            String customCSS = null;
+            WizardNode<WebViewContent,WebViewContent> node = getWizardNode();
+            if (node instanceof CSSModifiable) {
+                customCSS = ((CSSModifiable)node).getCssStyles();
+            }
+            return getViewCreator().createWebResources(m_viewName, getViewRepresentation(), getViewValue(),
+                customCSS);
         } catch (IOException ex) {
             throw new IllegalStateException("Problem creating the view html path.", ex);
         }
