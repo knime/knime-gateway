@@ -135,7 +135,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
             } else {
                 parentNodeID = getEntity().getParentNodeID();
             }
-            m_parent = getAccess().getWorkflowManager(getEntity().getRootWorkflowID(), parentNodeID);
+            m_parent = getAccess().getAbstractWorkflowManager(getEntity().getRootWorkflowID(), parentNodeID);
             return m_parent;
         } else {
             return null;

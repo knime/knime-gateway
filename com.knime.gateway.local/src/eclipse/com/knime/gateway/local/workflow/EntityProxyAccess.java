@@ -130,39 +130,41 @@ public class EntityProxyAccess {
     public static EntityProxyWorkflowManager createWorkflowManager(final ServerServiceConfig serviceConfig,
         final UUID rootWorkflowID) {
         ROOT_ID_MAP.computeIfAbsent(rootWorkflowID, s -> String.valueOf(ROOT_ID_MAP.size() + 1));
-        return new EntityProxyAccess(serviceConfig).getWorkflowManager(rootWorkflowID, null);
+        return new EntityProxyAccess(serviceConfig).getRootWorkflowManager(rootWorkflowID);
     }
 
     /**
-     * Retrieves for the given workflow ID the respective entities and returns a workflow manager to access it.
-     *
-     * The returned {@link EntityProxyWorkflowManager} is or will be cached.
+     * Retrieves the respective entities for the given root workflow id and returns a workflow manager to access it.
      *
      * @param rootWorkflowID the ID of the workflow manager to retrieve
-     * @param nodeID an optional node id to retrieve a sub workflow (i.e. metanode) - can be <code>null</code>
-     * @return a newly created {@link EntityProxyWorkflowManager} or retrieved from the cache
+     * @return an existing (i.e. cached) or newly created workflow manager instance
      */
-    EntityProxyWorkflowManager getWorkflowManager(final UUID rootWorkflowID, final String nodeID) {
-        Pair<UUID, String> keyPair = Pair.create(rootWorkflowID, nodeID);
+    public EntityProxyWorkflowManager getRootWorkflowManager(final UUID rootWorkflowID) {
+        Pair<UUID, String> keyPair = Pair.create(rootWorkflowID, null);
         if (m_wfmMap.containsKey(keyPair)) {
-            return (EntityProxyWorkflowManager) m_wfmMap.get(keyPair);
+            return (EntityProxyWorkflowManager)m_wfmMap.get(keyPair);
         } else {
-            NodeEnt node;
-            try {
-                if (nodeID == null) {
-                    node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
-                } else {
-                    node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, nodeID);
-                }
-            } catch (NodeNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
+            NodeEnt node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
             assert node instanceof WorkflowNodeEnt;
             EntityProxyWorkflowManager wfm = getOrCreate((WorkflowNodeEnt)node,
                 n -> new EntityProxyWorkflowManager(n, this), EntityProxyWorkflowManager.class);
             m_wfmMap.put(keyPair, wfm);
             return wfm;
         }
+    }
+
+    /**
+     * Retrieves for the given workflow ID the respective entities and returns a workflow manager to access it.
+     *
+     * The returned {@link AbstractEntityProxyWorkflowManager} is or will be cached.
+     *
+     * @param rootWorkflowID the ID of the workflow manager to retrieve
+     * @param nodeID an optional node id to retrieve a sub workflow (i.e. metanode) - can be <code>null</code>
+     * @return an existing workflow manager instance or <code>null</code>
+     */
+    AbstractEntityProxyWorkflowManager<? extends NodeEnt> getAbstractWorkflowManager(final UUID rootWorkflowID,
+        final String nodeID) {
+        return m_wfmMap.get(Pair.create(rootWorkflowID, nodeID));
     }
 
     /**
@@ -174,7 +176,8 @@ public class EntityProxyAccess {
      * @return the {@link EntityProxyWrappedWorkflowManager} - either the cached one or newly created
      */
     EntityProxyWrappedWorkflowManager getWrappedWorkflowManager(final WrappedWorkflowNodeEnt ent) {
-        Pair<UUID, String> keyPair = Pair.create(ent.getRootWorkflowID(), ent.getNodeID());
+        //workflow ids of wrapped metanodes have a trailing ":0" - see line 309 in SubNodeContainer
+        Pair<UUID, String> keyPair = Pair.create(ent.getRootWorkflowID(), ent.getNodeID() + ":0");
         if (m_wfmMap.get(keyPair) != null) {
             EntityProxyWrappedWorkflowManager wfm = (EntityProxyWrappedWorkflowManager)m_wfmMap.get(keyPair);
             //put the workflow manager also into the entity map (in case it's a varying node entity
@@ -209,7 +212,10 @@ public class EntityProxyAccess {
                 return new EntityProxySubNodeContainer((WrappedWorkflowNodeEnt)nodeEnt, this);
             }
             if (nodeEnt instanceof WorkflowNodeEnt) {
-                return new EntityProxyWorkflowManager((WorkflowNodeEnt)nodeEnt, this);
+                EntityProxyWorkflowManager wfm = new EntityProxyWorkflowManager((WorkflowNodeEnt)nodeEnt, this);
+                //also add this workflow manager to the global wfm map
+                m_wfmMap.put(Pair.create(nodeEnt.getRootWorkflowID(), nodeEnt.getNodeID()), wfm);
+                return wfm;
             }
             throw new IllegalStateException("Node entity type " + nodeEnt.getClass().getName() + " not supported.");
         }, AbstractEntityProxyNodeContainer.class);
