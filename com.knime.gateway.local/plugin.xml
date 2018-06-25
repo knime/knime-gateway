@@ -3,4 +3,13 @@
 <plugin>
 	<extension-point id="com.knime.gateway.local.service.ServiceFactory" name="ServiceFactory" schema="schema/com.knime.gateway.local.service.ServiceFactory.exsd"/>
  <extension-point id="com.knime.gateway.local.patch.EntityPatchApplier" name="EntityPatchApplier" schema="schema/com.knime.gateway.local.patch.EntityPatchApplier.exsd"/>
+ <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          category="org.knime.workbench.ui.preferences.gui.workfloweditor"
+          class="com.knime.gateway.local.workflow.prefs.JobViewPreferencePage"
+          id="org.knime.workbench.ui.preferences.gui.workfloweditor.jobview"
+          name="Job View">
+    </page>
+ </extension>
 </plugin>
