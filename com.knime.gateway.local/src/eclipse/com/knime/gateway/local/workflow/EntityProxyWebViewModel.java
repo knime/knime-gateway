@@ -214,7 +214,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
         try {
             webViewContent.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
         } catch (IOException ex) {
-            throw new IllegalStateException("Problem serializing web view.", ex);
+            throw new IllegalStateException("Problem deserializing web view.", ex);
         }
         return webViewContent;
     }
