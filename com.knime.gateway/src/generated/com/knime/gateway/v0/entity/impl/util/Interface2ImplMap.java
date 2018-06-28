@@ -34,6 +34,16 @@ import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultJobManagerEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt.MetaNodeDialogCompEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogCompEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt.MetaNodeDialogComp_configEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_configEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt.MetaNodeDialogComp_representationEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_representationEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt.MetaNodeDialogComp_valueEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_valueEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt.MetaNodeDialogEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt.MetaPortInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeEntBuilder;
@@ -126,6 +136,21 @@ public class Interface2ImplMap {
         }        
         if(clazz == JobManagerEntBuilder.class) {
             return new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
+        }        
+        if(clazz == MetaNodeDialogCompEntBuilder.class) {
+            return new DefaultMetaNodeDialogCompEnt.DefaultMetaNodeDialogCompEntBuilder();
+        }        
+        if(clazz == MetaNodeDialogComp_configEntBuilder.class) {
+            return new DefaultMetaNodeDialogComp_configEnt.DefaultMetaNodeDialogComp_configEntBuilder();
+        }        
+        if(clazz == MetaNodeDialogComp_representationEntBuilder.class) {
+            return new DefaultMetaNodeDialogComp_representationEnt.DefaultMetaNodeDialogComp_representationEntBuilder();
+        }        
+        if(clazz == MetaNodeDialogComp_valueEntBuilder.class) {
+            return new DefaultMetaNodeDialogComp_valueEnt.DefaultMetaNodeDialogComp_valueEntBuilder();
+        }        
+        if(clazz == MetaNodeDialogEntBuilder.class) {
+            return new DefaultMetaNodeDialogEnt.DefaultMetaNodeDialogEntBuilder();
         }        
         if(clazz == MetaPortInfoEntBuilder.class) {
             return new DefaultMetaPortInfoEnt.DefaultMetaPortInfoEntBuilder();

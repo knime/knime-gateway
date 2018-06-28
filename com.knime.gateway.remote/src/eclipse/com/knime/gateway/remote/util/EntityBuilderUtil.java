@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,6 +40,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -71,7 +73,10 @@ import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowManager.NodeModelFilter;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
+import org.knime.js.base.node.quickform.QuickFormNodeModel;
+import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.BoundsEnt;
@@ -89,6 +94,16 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
+import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt.MetaNodeDialogCompEntBuilder;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt.MetaNodeDialogComp_configEntBuilder;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt.MetaNodeDialogComp_representationEntBuilder;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt.MetaNodeDialogComp_valueEntBuilder;
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt.MetaNodeDialogEntBuilder;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt.MetaPortInfoEntBuilder;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
@@ -353,6 +368,54 @@ public class EntityBuilderUtil {
                 .setViewRepresentation(buildViewContentEnt(wnode.getViewRepresentation()))
                 .setViewValue(buildViewContentEnt(wnode.getViewValue()))
                 .setHideInWizard(wnode.isHideInWizard()).build();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static MetaNodeDialogEnt buildMetaNodeDialogEnt(final SubNodeContainer snc)
+        throws UnsupportedEncodingException, IOException, InvalidSettingsException {
+        Map<NodeID, QuickFormNodeModel> nodes =
+            snc.getWorkflowManager().findNodes(QuickFormNodeModel.class, new NodeModelFilter<QuickFormNodeModel>() {
+                @SuppressWarnings("cast")
+                @Override
+                public boolean include(final QuickFormNodeModel nodeModel) {
+                    return nodeModel instanceof QuickFormNodeModel && !nodeModel.isHideInDialog();
+                }
+            }, false);
+        List<MetaNodeDialogCompEnt> comps = new ArrayList<MetaNodeDialogCompEnt>();
+        for(Entry<NodeID, QuickFormNodeModel> e : nodes.entrySet()) {
+            QuickFormRepresentationImpl rep = e.getValue().getDialogRepresentation();
+            NodeSettings dialogValue = null;
+            if (e.getValue().getDialogValue() != null) {
+                dialogValue = new NodeSettings("dialog_value");
+                e.getValue().getDialogValue().saveToNodeSettings(dialogValue);
+            }
+            NodeSettings config = snc.getWorkflowManager().getNodeContainer(e.getKey()).getNodeSettings();
+            MetaNodeDialogComp_representationEnt representationEnt =
+                builder(MetaNodeDialogComp_representationEntBuilder.class)
+                .setClassname(rep.getClass().getCanonicalName())
+                .setContent(viewContentToJsonString(rep)).build();
+            MetaNodeDialogComp_valueEnt valueEnt = null;
+            if (dialogValue != null) {
+                valueEnt = builder(MetaNodeDialogComp_valueEntBuilder.class)
+                    .setClassname(e.getValue().getDialogValue().getClass().getCanonicalName())
+                    .setContent(JSONConfig.toJSONString(dialogValue, WriterConfig.PRETTY))
+                    .build();
+            }
+            MetaNodeDialogComp_configEnt configEnt = builder(MetaNodeDialogComp_configEntBuilder.class)
+                    .setClassname(e.getValue().createEmptyConfig().getClass().getCanonicalName())
+                    .setContent(JSONConfig.toJSONString(config, WriterConfig.PRETTY))
+                    .build();
+            comps.add(builder(MetaNodeDialogCompEntBuilder.class)
+                    .setNodeID(nodeIdAsString(e.getKey()))
+                    .setIsHideInDialog(e.getValue().isHideInDialog())
+                    .setRepresentation(representationEnt)
+                    .setConfig(configEnt)
+                    .setValue(valueEnt)
+                .build());
+        }
+        return builder(MetaNodeDialogEntBuilder.class)
+                .setComponents(comps)
+                .build();
     }
 
     private static ViewContentEnt buildViewContentEnt(final WebViewContent vc)

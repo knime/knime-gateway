@@ -20,6 +20,7 @@ package com.knime.gateway.jsonrpc.remote.service;
 
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
@@ -185,6 +186,21 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     })
     public ViewDataEnt getViewData(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.getViewData(jobId, nodeId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getWMetaNodeDialog")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
+    })
+    public MetaNodeDialogEnt getWMetaNodeDialog(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.getWMetaNodeDialog(jobId, nodeId);    
     }
 
 	/**

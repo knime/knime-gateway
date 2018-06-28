@@ -23,6 +23,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions;
 
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
@@ -153,6 +154,18 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
     ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+        
+    /**
+     * Gives access to the dialog representations, values and configs of a wrapped metanode.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeId The ID of the node the information is requested for. For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4
+     *
+     * @return the result
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
+     */
+    MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Sets the node&#39;s settings for the given node-id.

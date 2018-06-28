@@ -54,6 +54,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
@@ -62,6 +63,7 @@ import com.knime.gateway.remote.util.EntityBuilderUtil;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
@@ -364,6 +366,25 @@ public class DefaultNodeService implements NodeService {
         } else {
             //couldn't think of a better way to transfer a thrown exception from within a lambda-expression
             throw exception.get();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MetaNodeDialogEnt getWMetaNodeDialog(final UUID rootWorkflowID, final String nodeID)
+        throws NodeNotFoundException, InvalidRequestException {
+        NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
+        if (nc instanceof SubNodeContainer) {
+            SubNodeContainer snc = (SubNodeContainer) nc;
+            try {
+                return EntityBuilderUtil.buildMetaNodeDialogEnt(snc);
+            } catch (IOException | InvalidSettingsException ex) {
+                throw new IllegalStateException("Data for metanode dialog cannot be accessed.", ex);
+            }
+        } else {
+            throw new InvalidRequestException("The node the dialog is requested for is not a wrapped metanode!");
         }
     }
 
