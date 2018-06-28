@@ -51,7 +51,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  *
  * @param <E> the type of the node entity
  */
-abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends AbstractEntityProxyNodeContainer<E>
+abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends AbstractEntityProxyNodeContainer<E>
     implements SingleNodeContainerUI {
 
     private NodeDialogPane m_dialogPane;
@@ -64,7 +64,7 @@ abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends Abstrac
      * @param node
      * @param access
      */
-    EntityProxySingleNodeContainer(final E node, final EntityProxyAccess access) {
+    AbstractEntityProxySingleNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
     }
 
