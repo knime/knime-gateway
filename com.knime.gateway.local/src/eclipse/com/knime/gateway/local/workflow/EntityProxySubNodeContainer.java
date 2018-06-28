@@ -19,13 +19,30 @@
 package com.knime.gateway.local.workflow;
 
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.Node;
 import org.knime.core.node.NodeDescription27Proxy;
+import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.dialog.MetaNodeDialogNode;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.workflow.CredentialsProvider;
+import org.knime.core.node.workflow.FlowObjectStack;
+import org.knime.core.node.workflow.MetaNodeDialogPane;
+import org.knime.core.node.workflow.NodeContainer.NodeContainerSettings.SplitType;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
@@ -34,6 +51,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
 /**
@@ -92,6 +110,70 @@ class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<Wrapped
      * {@inheritDoc}
      */
     @Override
+    public boolean hasDialog() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected NodeDialogPane getDialogPaneWithSettings(final Future<NodeSettings> nodeSettings,
+        final Future<PortObjectSpec[]> portObjectSpecs, final Future<FlowObjectStack> flowObjectStack,
+        final NodeDialogPane dialogPane, final ExecutorService exec)
+        throws NotConfigurableException, InterruptedException, ExecutionException {
+
+        //get metanode dialog representation
+        Future<MetaNodeDialogEnt> dialogEnt = exec.submit(() -> getAccess().nodeService()
+            .getWMetaNodeDialog(getEntity().getRootWorkflowID(), getEntity().getNodeID()));
+
+        shutdownExecutorsAndWait(exec);
+
+        Map<NodeID, MetaNodeDialogNode> nodes = dialogEnt.get().getComponents().stream()
+            .collect(Collectors.toMap(c -> getAccess().getNodeID(getEntity().getRootWorkflowID(), c.getNodeID()), c -> {
+                return new EntityProxyDialogNode(c, getAccess());
+            }));
+
+        NodeDialogPane resDialogPane;
+        if (dialogPane == null) {
+            resDialogPane = createDialogPane();
+        } else {
+            resDialogPane = dialogPane;
+        }
+
+        ((MetaNodeDialogPane)resDialogPane).setQuickformNodes(nodes);
+
+        // remove the flow variable port from the specs and data
+        PortObjectSpec[] correctedInSpecs = ArrayUtils.remove(portObjectSpecs.get(), 0);
+        // the next call will call dialogPane.internalLoadSettingsFrom()
+        // dialogPane is a MetaNodeDialogPane and does not handle the flow variable port correctly
+        // this is why we remove it first
+        Node.invokeDialogInternalLoad(resDialogPane, nodeSettings.get(), correctedInSpecs, null, flowObjectStack.get(),
+            CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, getParent().isWriteProtected());
+        return resDialogPane;
+    }
+
+    private MetaNodeDialogPane createDialogPane() {
+        if (hasDialog()) {
+            // create sub node dialog with dialog nodes
+            MetaNodeDialogPane nodeDialogPane = new MetaNodeDialogPane(true);
+            // job managers tab
+            if (NodeExecutionJobManagerPool.getNumberOfJobManagersFactories() > 1) {
+                // TODO: set the SplitType depending on the nodemodel
+                SplitType splitType = SplitType.USER;
+                nodeDialogPane.addJobMgrTab(splitType);
+            }
+            Node.addMiscTab(nodeDialogPane);
+            return nodeDialogPane;
+        } else {
+            throw new IllegalStateException("Workflow has no dialog");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLayoutJSONString() {
         // TODO Auto-generated method stub
         return null;
@@ -103,7 +185,6 @@ class EntityProxySubNodeContainer extends EntityProxySingleNodeContainer<Wrapped
     @Override
     public void setLayoutJSONString(final String layoutJSONString) {
         // TODO Auto-generated method stub
-
     }
 
     /**

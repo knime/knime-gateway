@@ -232,6 +232,16 @@ public class EntityProxyAccess {
     }
 
     /**
+     * Gives the correct node id determined from a root workflow id and a string node id
+     * @param rootWorkflowID
+     * @param nodeID
+     * @return the {@link NodeID}
+     */
+    NodeID getNodeID(final UUID rootWorkflowID, final String nodeID) {
+        return EntityProxyUtil.stringToNodeID(ROOT_ID_MAP.get(rootWorkflowID), nodeID);
+    }
+
+    /**
      * Returns the entity proxy for the given connection entity.
      *
      * With every call the same entity proxy instance will be returned for the same entity.

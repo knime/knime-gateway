@@ -18,9 +18,31 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 
+import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link SingleNodeContainerUI}.
@@ -31,6 +53,10 @@ import com.knime.gateway.v0.entity.NodeEnt;
  */
 abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends AbstractEntityProxyNodeContainer<E>
     implements SingleNodeContainerUI {
+
+    private NodeDialogPane m_dialogPane;
+
+    private NodeSettings m_nodeSettings;
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -65,6 +91,149 @@ abstract class EntityProxySingleNodeContainer<E extends NodeEnt> extends Abstrac
         //e.g. node annotation, node connections, etc.
 
         super.update((E)entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
+        ExecutorService exec = Executors.newCachedThreadPool();
+        try {
+            Future<NodeSettings> f1 = exec.submit(() -> getAccess().getNodeSettings(getEntity()));
+            Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
+            Future<FlowObjectStack> f3 = exec.submit(() -> getAccess().getInputFlowVariableStack(getEntity(), getID()));
+
+            NodeDialogPane p = getDialogPaneWithSettings(f1, f2, f3, m_dialogPane, exec);
+            if (p != null) {
+                assert exec.isShutdown();
+            } else {
+                shutdownExecutorsAndWait(exec);
+            }
+
+            NodeSettings nodeSettings = f1.get();
+            PortObjectSpec[] portObjectSpecs = f2.get();
+            FlowObjectStack flowObjectStack = f3.get();
+
+            //cache the node settings
+            m_nodeSettings = nodeSettings;
+
+            //get (if not already) and cache the node dialog
+            if (p == null) {
+                m_dialogPane = getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
+            } else {
+                m_dialogPane = p;
+            }
+            return m_dialogPane;
+        } catch (InterruptedException e) {
+            throw new NotConfigurableException(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            throw new NotConfigurableException(e.getCause().getMessage(), e);
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Override
+    public void applySettingsFromDialog() throws InvalidSettingsException {
+        CheckUtils.checkState(hasDialog(), "Node \"%s\" has no dialog", getName());
+        // TODO do we need to reset the node first??
+        NodeSettings sett = new NodeSettings("node settings");
+        m_dialogPane.finishEditingAndSaveSettingsTo(sett);
+
+        //convert settings into a settings entity
+        NodeSettingsEnt settingsEnt = builder(NodeSettingsEntBuilder.class)
+            .setContent(JSONConfig.toJSONString(sett, WriterConfig.PRETTY)).build();
+
+        //transfer settings to server
+        try {
+            getAccess().nodeService().setNodeSettings(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                settingsEnt);
+        } catch (ServiceExceptions.InvalidSettingsException ex) {
+            throw new InvalidSettingsException(ex);
+        } catch (ServiceExceptions.IllegalStateException | NodeNotFoundException ex) {
+            throw new IllegalStateException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean areDialogSettingsValid() {
+        //always return true all the time and validate settings when applied to limit the number of requests
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean areDialogAndNodeSettingsEqual() {
+        if (m_nodeSettings == null) {
+            return false;
+        }
+        NodeSettings dlgSettings = new NodeSettings("settings");
+        try {
+            m_dialogPane.finishEditingAndSaveSettingsTo(dlgSettings);
+        } catch (InvalidSettingsException e) {
+            return false;
+        }
+        return dlgSettings.equals(m_nodeSettings);
+    }
+
+    /**
+     * Returns the dialog pane initialized with the node settings etc., just like
+     * {@link #getDialogPaneWithSettings(NodeSettings, PortObjectSpec[], FlowObjectStack, NodeDialogPane)}. Allows the
+     * parallel download of data required to initialize the dialog.
+     *
+     * When all tasks are submitted, call {@link #shutdownExecutorsAndWait(ExecutorService)} to wait for all objects to
+     * be download/loaded!
+     *
+     * @param nodeSettings the node settings
+     * @param portObjectSpecs the node input port specs
+     * @param flowObjectStack the node input flow variables
+     * @param dialogPane the cached dialog pane (if not called for the first time), otherwise <code>null</code>
+     * @param exec the execution service to submit other tasks to to be executed asynchronously
+     * @return the initialized node dialog pane
+     * @throws NotConfigurableException if there are problems with loading the settings into the dialog
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    protected NodeDialogPane getDialogPaneWithSettings(final Future<NodeSettings> nodeSettings,
+        final Future<PortObjectSpec[]> portObjectSpecs, final Future<FlowObjectStack> flowObjectStack,
+        final NodeDialogPane dialogPane, final ExecutorService exec)
+        throws NotConfigurableException, InterruptedException, ExecutionException {
+        //optionally to be overridden by subclasses
+        return null;
+    }
+
+    /**
+     * Shuts down the passed executor service and waits for all threads for termination.
+     *
+     * @param exec the execution service
+     * @throws InterruptedException in case of an interruption
+     */
+    protected void shutdownExecutorsAndWait(final ExecutorService exec) throws InterruptedException {
+        exec.shutdown();
+        //wait a bit longer than the timeouts of the individual requests
+        exec.awaitTermination(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT + 1000, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Returns the dialog pane initialized with the node settings etc.
+     *
+     * @param nodeSettings the node settings
+     * @param portObjectSpecs the node input port specs
+     * @param flowObjectStack the node input flow variables
+     * @param dialogPane the cached dialog pane (if not called for the first time), otherwise <code>null</code>
+     * @return the initialized node dialog pane
+     * @throws NotConfigurableException if there are problems with loading the settings into the dialog
+     */
+    protected NodeDialogPane getDialogPaneWithSettings(final NodeSettings nodeSettings,
+        final PortObjectSpec[] portObjectSpecs, final FlowObjectStack flowObjectStack, final NodeDialogPane dialogPane)
+        throws NotConfigurableException {
+        throw new IllegalStateException("Implementation error: Method needs to be overridden.");
     }
 
 }
