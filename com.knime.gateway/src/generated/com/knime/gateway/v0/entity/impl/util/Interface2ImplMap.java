@@ -32,16 +32,12 @@ import com.knime.gateway.v0.entity.DataTableEnt.DataTableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultDataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultJobManagerEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt.MetaNodeDialogCompEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogCompEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt.MetaNodeDialogComp_configEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_configEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt.MetaNodeDialogComp_representationEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_representationEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt.MetaNodeDialogComp_valueEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_valueEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt.MetaNodeDialogEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt.MetaPortInfoEntBuilder;
@@ -72,8 +68,6 @@ import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPortTypeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt.ViewContentEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
@@ -134,20 +128,14 @@ public class Interface2ImplMap {
         if(clazz == FlowVariableEntBuilder.class) {
             return new DefaultFlowVariableEnt.DefaultFlowVariableEntBuilder();
         }        
+        if(clazz == JavaObjectEntBuilder.class) {
+            return new DefaultJavaObjectEnt.DefaultJavaObjectEntBuilder();
+        }        
         if(clazz == JobManagerEntBuilder.class) {
             return new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
         }        
         if(clazz == MetaNodeDialogCompEntBuilder.class) {
             return new DefaultMetaNodeDialogCompEnt.DefaultMetaNodeDialogCompEntBuilder();
-        }        
-        if(clazz == MetaNodeDialogComp_configEntBuilder.class) {
-            return new DefaultMetaNodeDialogComp_configEnt.DefaultMetaNodeDialogComp_configEntBuilder();
-        }        
-        if(clazz == MetaNodeDialogComp_representationEntBuilder.class) {
-            return new DefaultMetaNodeDialogComp_representationEnt.DefaultMetaNodeDialogComp_representationEntBuilder();
-        }        
-        if(clazz == MetaNodeDialogComp_valueEntBuilder.class) {
-            return new DefaultMetaNodeDialogComp_valueEnt.DefaultMetaNodeDialogComp_valueEntBuilder();
         }        
         if(clazz == MetaNodeDialogEntBuilder.class) {
             return new DefaultMetaNodeDialogEnt.DefaultMetaNodeDialogEntBuilder();
@@ -193,9 +181,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
-        }        
-        if(clazz == ViewContentEntBuilder.class) {
-            return new DefaultViewContentEnt.DefaultViewContentEntBuilder();
         }        
         if(clazz == ViewDataEntBuilder.class) {
             return new DefaultViewDataEnt.DefaultViewDataEntBuilder();

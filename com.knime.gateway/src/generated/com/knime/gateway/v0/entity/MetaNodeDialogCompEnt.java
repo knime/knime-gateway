@@ -18,9 +18,7 @@
  */
 package com.knime.gateway.v0.entity;
 
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -37,6 +35,12 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
 
 
   /**
+   * Parameter name for external parametrization.
+   * @return paramName 
+   **/
+  public String getParamName();
+
+  /**
    * The id of the node contributing to this dialog.
    * @return nodeID 
    **/
@@ -49,22 +53,10 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
   public Boolean isIsHideInDialog();
 
   /**
-   * Get representation
+   * Dialog component representation.
    * @return representation 
    **/
-  public MetaNodeDialogComp_representationEnt getRepresentation();
-
-  /**
-   * Get value
-   * @return value 
-   **/
-  public MetaNodeDialogComp_valueEnt getValue();
-
-  /**
-   * Get config
-   * @return config 
-   **/
-  public MetaNodeDialogComp_configEnt getConfig();
+  public JavaObjectEnt getRepresentation();
 
 
     /**
@@ -72,6 +64,14 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
      */
     public interface MetaNodeDialogCompEntBuilder extends GatewayEntityBuilder<MetaNodeDialogCompEnt> {
 
+        /**
+         * Parameter name for external parametrization.
+         * 
+         * @param paramName the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeDialogCompEntBuilder setParamName(String paramName);
+        
         /**
          * The id of the node contributing to this dialog.
          * 
@@ -89,25 +89,12 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
         MetaNodeDialogCompEntBuilder setIsHideInDialog(Boolean isHideInDialog);
         
         /**
+         * Dialog component representation.
          * 
          * @param representation the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeDialogCompEntBuilder setRepresentation(MetaNodeDialogComp_representationEnt representation);
-        
-        /**
-         * 
-         * @param value the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodeDialogCompEntBuilder setValue(MetaNodeDialogComp_valueEnt value);
-        
-        /**
-         * 
-         * @param config the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodeDialogCompEntBuilder setConfig(MetaNodeDialogComp_configEnt config);
+        MetaNodeDialogCompEntBuilder setRepresentation(JavaObjectEnt representation);
         
         
         /**

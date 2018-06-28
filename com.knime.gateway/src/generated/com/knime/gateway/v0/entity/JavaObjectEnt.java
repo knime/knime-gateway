@@ -25,22 +25,22 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * Dialog component&#39;s value.
+ * A java object/class that can be deserialized from a string.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface MetaNodeDialogComp_valueEnt extends GatewayEntity {
+public interface JavaObjectEnt extends GatewayEntity {
 
 
   /**
-   * The java type of the dialog value.
+   * The fully qualified class name of the java object.
    * @return classname 
    **/
   public String getClassname();
 
   /**
-   * The actual value content as json-string.
+   * The actual content as a (json) string.
    * @return content 
    **/
   public String getContent();
@@ -49,23 +49,23 @@ public interface MetaNodeDialogComp_valueEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface MetaNodeDialogComp_valueEntBuilder extends GatewayEntityBuilder<MetaNodeDialogComp_valueEnt> {
+    public interface JavaObjectEntBuilder extends GatewayEntityBuilder<JavaObjectEnt> {
 
         /**
-         * The java type of the dialog value.
+         * The fully qualified class name of the java object.
          * 
          * @param classname the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeDialogComp_valueEntBuilder setClassname(String classname);
+        JavaObjectEntBuilder setClassname(String classname);
         
         /**
-         * The actual value content as json-string.
+         * The actual content as a (json) string.
          * 
          * @param content the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeDialogComp_valueEntBuilder setContent(String content);
+        JavaObjectEntBuilder setContent(String content);
         
         
         /**
@@ -75,7 +75,7 @@ public interface MetaNodeDialogComp_valueEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        MetaNodeDialogComp_valueEnt build();
+        JavaObjectEnt build();
     
     }
 

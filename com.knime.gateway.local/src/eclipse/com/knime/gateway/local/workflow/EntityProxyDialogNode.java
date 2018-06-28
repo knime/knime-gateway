@@ -19,21 +19,20 @@
 package com.knime.gateway.local.workflow;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.dialog.DialogNodeRepresentation;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.base.node.quickform.QuickFormConfig;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
 
 /**
@@ -43,6 +42,8 @@ import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
  */
 public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCompEnt>
     implements DialogNode<DialogNodeRepresentation<DialogNodeValue>, DialogNodeValue> {
+
+    private QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>> m_qfRepresentation = null;
 
     /**
      * @param entity
@@ -63,23 +64,22 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public DialogNodeRepresentation<DialogNodeValue> getDialogRepresentation() {
-        DialogNodeValue value = getDialogValue();
-        if (value == null) {
-            value = getDefaultValue();
-        }
-        QuickFormConfig<DialogNodeValue> config = getConfig();
+        return getQFRepresentation();
+    }
 
-        //assumption here for every implementation of QuickFormRepresentation:
-        //- it has exactly one constructor
-        //- the constructor takes the respective QuickFormValue as first, and QuickFormConfig as second argument
-        @SuppressWarnings("rawtypes")
-        QuickFormRepresentationImpl rep = instanceForName(getEntity().getRepresentation().getClassname(),
-            QuickFormRepresentationImpl.class, value, config);
-        rep = fromJsonString(getEntity().getRepresentation().getContent(), rep);
-        return rep;
+    private QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>> getQFRepresentation() {
+        if (m_qfRepresentation == null) {
+            try {
+                m_qfRepresentation = fromJsonString(getEntity().getRepresentation().getClassname(),
+                    getEntity().getRepresentation().getContent());
+            } catch (IOException | ClassNotFoundException ex) {
+                //should not happen
+                throw new IllegalStateException("Problem deserializing quickform representation.", ex);
+            }
+        }
+        return m_qfRepresentation;
     }
 
     /**
@@ -88,7 +88,7 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
     @Override
     public DialogNodeValue createEmptyDialogValue() {
         try {
-            return getConfig().getDefaultValue().getClass().newInstance();
+            return getDefaultValue().getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {
             //should never happen otherwise it's an implementation error
             throw new IllegalStateException(ex);
@@ -108,7 +108,7 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
      */
     @Override
     public DialogNodeValue getDefaultValue() {
-        return getConfig().getDefaultValue();
+        return getQFRepresentation().getDefaultValue();
     }
 
     /**
@@ -116,19 +116,7 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
      */
     @Override
     public DialogNodeValue getDialogValue() {
-        if (getEntity().getValue() != null) {
-            DialogNodeValue value = createEmptyDialogValue();
-            try {
-                value.loadFromNodeSettings(JSONConfig.readJSON(new NodeSettings("settings"),
-                    new StringReader(getEntity().getValue().getContent())));
-            } catch (InvalidSettingsException | IOException ex) {
-                //should not happen
-                throw new IllegalStateException("Problem reading dialog value.");
-            }
-            return value;
-        } else {
-            return null;
-        }
+        return getQFRepresentation().getCurrentValue();
     }
 
     /**
@@ -144,7 +132,7 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
      */
     @Override
     public String getParameterName() {
-        return getConfig().getParameterName();
+        return getEntity().getParamName();
     }
 
     /**
@@ -163,44 +151,18 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
         // TODO
     }
 
-    private QuickFormConfig<DialogNodeValue> getConfig() {
-        QuickFormConfig<DialogNodeValue> config =
-            instanceForName(getEntity().getConfig().getClassname(), QuickFormConfig.class);
-        try {
-            config.loadSettings(
-                JSONConfig
-                    .readJSON(new NodeSettings("settings"), new StringReader(getEntity().getConfig().getContent()))
-                    .getNodeSettings("model"));
-        } catch (InvalidSettingsException | IOException ex) {
-            //should never happen
-            throw new IllegalStateException(ex);
-        }
-        return config;
+    @SuppressWarnings("unchecked")
+    private static final QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>>
+        fromJsonString(final String className, final String content)
+            throws JsonParseException, JsonMappingException, IOException, ClassNotFoundException {
+        return (QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>>)createObjectMapper().readValue(content, Class.forName(className));
     }
 
-    private static <T> T instanceForName(final String className, final Class<T> superClass, final Object... params) {
-        try {
-            if (params.length == 0) {
-                return (T)Class.forName(className).newInstance();
-            } else {
-                return (T)Class.forName(className).getConstructors()[0].newInstance(params);
-            }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException
-                | InvocationTargetException | SecurityException ex) {
-            //should never happen
-            throw new IllegalStateException(
-                "Can't create instance for class " + className + ". Most likely an implementation error.", ex);
-        }
-    }
-
-    private static final QuickFormRepresentationImpl fromJsonString(final String s,
-        final QuickFormRepresentationImpl rep) {
-        try {
-            rep.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
-        } catch (IOException ex) {
-            throw new IllegalStateException("Problem serializing dialog representation.", ex);
-        }
-        return rep;
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new Jdk8Module());
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
     }
 
 }

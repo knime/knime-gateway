@@ -30,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_valueEnt;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_valueEnt.DefaultMetaNodeDialogComp_valueEntBuilder;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
+import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt;
+import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt.DefaultJavaObjectEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -44,13 +44,13 @@ import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogComp_valueEnt.Defau
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultMetaNodeDialogComp_valueEnt.class)
+    defaultImpl = DefaultJavaObjectEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultMetaNodeDialogComp_valueEnt.class, name="MetaNodeDialogComp_value")
+    @Type(value = DefaultJavaObjectEnt.class, name="JavaObject")
 })
-@JsonDeserialize(builder=DefaultMetaNodeDialogComp_valueEntBuilder.class)
+@JsonDeserialize(builder=DefaultJavaObjectEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface MetaNodeDialogComp_valueEntMixIn extends MetaNodeDialogComp_valueEnt {
+public interface JavaObjectEntMixIn extends JavaObjectEnt {
 
     @Override
     @JsonIgnore
@@ -74,23 +74,23 @@ public interface MetaNodeDialogComp_valueEntMixIn extends MetaNodeDialogComp_val
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultMetaNodeDialogComp_valueEntBuilder.class)
+        defaultImpl = DefaultJavaObjectEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultMetaNodeDialogComp_valueEnt.DefaultMetaNodeDialogComp_valueEntBuilder.class, name="MetaNodeDialogComp_value")
+        @Type(value = DefaultJavaObjectEnt.DefaultJavaObjectEntBuilder.class, name="JavaObject")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface MetaNodeDialogComp_valueEntMixInBuilder extends MetaNodeDialogComp_valueEntBuilder {
+    public static interface JavaObjectEntMixInBuilder extends JavaObjectEntBuilder {
     
         @Override
-        public MetaNodeDialogComp_valueEntMixIn build();
+        public JavaObjectEntMixIn build();
     
         @Override
         @JsonProperty("classname")
-        public MetaNodeDialogComp_valueEntMixInBuilder setClassname(final String classname);
+        public JavaObjectEntMixInBuilder setClassname(final String classname);
         
         @Override
         @JsonProperty("content")
-        public MetaNodeDialogComp_valueEntMixInBuilder setContent(final String content);
+        public JavaObjectEntMixInBuilder setContent(final String content);
         
     }
 

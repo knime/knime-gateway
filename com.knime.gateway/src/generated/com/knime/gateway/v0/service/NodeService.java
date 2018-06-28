@@ -23,11 +23,11 @@ import com.knime.gateway.v0.service.util.ServiceExceptions;
 
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
 /**
@@ -193,6 +193,6 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, JavaObjectEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
 }

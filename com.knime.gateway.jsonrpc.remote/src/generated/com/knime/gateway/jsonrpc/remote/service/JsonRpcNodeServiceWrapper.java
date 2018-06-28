@@ -20,11 +20,11 @@ package com.knime.gateway.jsonrpc.remote.service;
 
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -231,7 +231,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public void setViewValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="viewValue") ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public void setViewValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="viewValue") JavaObjectEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         m_service.setViewValue(jobId, nodeId, useAsDefault, viewValue);    
     }
 

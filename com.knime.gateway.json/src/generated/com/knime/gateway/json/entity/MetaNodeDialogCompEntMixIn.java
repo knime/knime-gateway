@@ -18,9 +18,7 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 
 import com.knime.gateway.json.JsonUtil;
@@ -60,6 +58,10 @@ public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("paramName")
+    public String getParamName();
+    
+    @Override
     @JsonProperty("nodeID")
     public String getNodeID();
     
@@ -69,15 +71,7 @@ public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
     
     @Override
     @JsonProperty("representation")
-    public MetaNodeDialogComp_representationEnt getRepresentation();
-    
-    @Override
-    @JsonProperty("value")
-    public MetaNodeDialogComp_valueEnt getValue();
-    
-    @Override
-    @JsonProperty("config")
-    public MetaNodeDialogComp_configEnt getConfig();
+    public JavaObjectEnt getRepresentation();
     
 
     /**
@@ -100,6 +94,10 @@ public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
         public MetaNodeDialogCompEntMixIn build();
     
         @Override
+        @JsonProperty("paramName")
+        public MetaNodeDialogCompEntMixInBuilder setParamName(final String paramName);
+        
+        @Override
         @JsonProperty("nodeID")
         public MetaNodeDialogCompEntMixInBuilder setNodeID(final String nodeID);
         
@@ -109,15 +107,7 @@ public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
         
         @Override
         @JsonProperty("representation")
-        public MetaNodeDialogCompEntMixInBuilder setRepresentation(final MetaNodeDialogComp_representationEnt representation);
-        
-        @Override
-        @JsonProperty("value")
-        public MetaNodeDialogCompEntMixInBuilder setValue(final MetaNodeDialogComp_valueEnt value);
-        
-        @Override
-        @JsonProperty("config")
-        public MetaNodeDialogCompEntMixInBuilder setConfig(final MetaNodeDialogComp_configEnt config);
+        public MetaNodeDialogCompEntMixInBuilder setRepresentation(final JavaObjectEnt representation);
         
     }
 

@@ -22,9 +22,7 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
 import java.util.Objects;
 
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
 
@@ -36,11 +34,10 @@ import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
 
+  protected String m_paramName;
   protected String m_nodeID;
   protected Boolean m_isHideInDialog;
-  protected MetaNodeDialogComp_representationEnt m_representation;
-  protected MetaNodeDialogComp_valueEnt m_value;
-  protected MetaNodeDialogComp_configEnt m_config;
+  protected JavaObjectEnt m_representation;
   
   protected DefaultMetaNodeDialogCompEnt() {
     //for sub-classes
@@ -53,11 +50,10 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
   
   private DefaultMetaNodeDialogCompEnt(DefaultMetaNodeDialogCompEntBuilder builder) {
     
+    m_paramName = immutable(builder.m_paramName);
     m_nodeID = immutable(builder.m_nodeID);
     m_isHideInDialog = immutable(builder.m_isHideInDialog);
     m_representation = immutable(builder.m_representation);
-    m_value = immutable(builder.m_value);
-    m_config = immutable(builder.m_config);
   }
   
    /**
@@ -75,10 +71,15 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
             return false;
         }
         DefaultMetaNodeDialogCompEnt ent = (DefaultMetaNodeDialogCompEnt)o;
-        return Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_isHideInDialog, ent.m_isHideInDialog) && Objects.equals(m_representation, ent.m_representation) && Objects.equals(m_value, ent.m_value) && Objects.equals(m_config, ent.m_config);
+        return Objects.equals(m_paramName, ent.m_paramName) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_isHideInDialog, ent.m_isHideInDialog) && Objects.equals(m_representation, ent.m_representation);
     }
 
 
+  @Override
+  public String getParamName() {
+        return m_paramName;
+    }
+    
   @Override
   public String getNodeID() {
         return m_nodeID;
@@ -90,18 +91,8 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
     }
     
   @Override
-  public MetaNodeDialogComp_representationEnt getRepresentation() {
+  public JavaObjectEnt getRepresentation() {
         return m_representation;
-    }
-    
-  @Override
-  public MetaNodeDialogComp_valueEnt getValue() {
-        return m_value;
-    }
-    
-  @Override
-  public MetaNodeDialogComp_configEnt getConfig() {
-        return m_config;
     }
     
   
@@ -111,11 +102,16 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
             
         }
     
+        private String m_paramName = null;
         private String m_nodeID = null;
         private Boolean m_isHideInDialog = null;
-        private MetaNodeDialogComp_representationEnt m_representation;
-        private MetaNodeDialogComp_valueEnt m_value;
-        private MetaNodeDialogComp_configEnt m_config;
+        private JavaObjectEnt m_representation;
+
+        @Override
+        public DefaultMetaNodeDialogCompEntBuilder setParamName(String paramName) {
+             m_paramName = paramName;
+             return this;
+        }
 
         @Override
         public DefaultMetaNodeDialogCompEntBuilder setNodeID(String nodeID) {
@@ -130,20 +126,8 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
         }
 
         @Override
-        public DefaultMetaNodeDialogCompEntBuilder setRepresentation(MetaNodeDialogComp_representationEnt representation) {
+        public DefaultMetaNodeDialogCompEntBuilder setRepresentation(JavaObjectEnt representation) {
              m_representation = representation;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodeDialogCompEntBuilder setValue(MetaNodeDialogComp_valueEnt value) {
-             m_value = value;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodeDialogCompEntBuilder setConfig(MetaNodeDialogComp_configEnt config) {
-             m_config = config;
              return this;
         }
 

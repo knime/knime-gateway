@@ -20,11 +20,11 @@ package com.knime.gateway.jsonrpc.local.service;
 
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
 import com.knime.gateway.v0.service.util.ServiceExceptions;
@@ -130,6 +130,6 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.setViewValue")
-    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, ViewContentEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, JavaObjectEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 }

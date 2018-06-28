@@ -23,29 +23,29 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 import java.util.Objects;
 
 
-import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 /**
- * A view content object.
+ * A java object/class that can be deserialized from a string.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultViewContentEnt  implements ViewContentEnt {
+public class DefaultJavaObjectEnt  implements JavaObjectEnt {
 
   protected String m_classname;
   protected String m_content;
   
-  protected DefaultViewContentEnt() {
+  protected DefaultJavaObjectEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "ViewContent";
+    return "JavaObject";
   }
   
-  private DefaultViewContentEnt(DefaultViewContentEntBuilder builder) {
+  private DefaultJavaObjectEnt(DefaultJavaObjectEntBuilder builder) {
     
     m_classname = immutable(builder.m_classname);
     m_content = immutable(builder.m_content);
@@ -65,7 +65,7 @@ public class DefaultViewContentEnt  implements ViewContentEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultViewContentEnt ent = (DefaultViewContentEnt)o;
+        DefaultJavaObjectEnt ent = (DefaultJavaObjectEnt)o;
         return Objects.equals(m_classname, ent.m_classname) && Objects.equals(m_content, ent.m_content);
     }
 
@@ -81,9 +81,9 @@ public class DefaultViewContentEnt  implements ViewContentEnt {
     }
     
   
-    public static class DefaultViewContentEntBuilder implements ViewContentEntBuilder {
+    public static class DefaultJavaObjectEntBuilder implements JavaObjectEntBuilder {
     
-        public DefaultViewContentEntBuilder(){
+        public DefaultJavaObjectEntBuilder(){
             
         }
     
@@ -91,21 +91,21 @@ public class DefaultViewContentEnt  implements ViewContentEnt {
         private String m_content = null;
 
         @Override
-        public DefaultViewContentEntBuilder setClassname(String classname) {
+        public DefaultJavaObjectEntBuilder setClassname(String classname) {
              m_classname = classname;
              return this;
         }
 
         @Override
-        public DefaultViewContentEntBuilder setContent(String content) {
+        public DefaultJavaObjectEntBuilder setContent(String content) {
              m_content = content;
              return this;
         }
 
         
         @Override
-        public DefaultViewContentEnt build() {
-            return new DefaultViewContentEnt(this);
+        public DefaultJavaObjectEnt build() {
+            return new DefaultJavaObjectEnt(this);
         }
     
     }

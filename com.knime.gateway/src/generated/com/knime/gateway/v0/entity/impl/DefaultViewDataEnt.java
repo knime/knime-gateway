@@ -22,7 +22,7 @@ import static com.knime.gateway.util.DefaultEntUtil.immutable;
 
 import java.util.Objects;
 
-import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -35,8 +35,8 @@ import com.knime.gateway.v0.entity.ViewDataEnt;
 public class DefaultViewDataEnt  implements ViewDataEnt {
 
   protected String m_javascriptObjectID;
-  protected ViewContentEnt m_viewRepresentation;
-  protected ViewContentEnt m_viewValue;
+  protected JavaObjectEnt m_viewRepresentation;
+  protected JavaObjectEnt m_viewValue;
   protected Boolean m_hideInWizard;
   
   protected DefaultViewDataEnt() {
@@ -81,12 +81,12 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
     }
     
   @Override
-  public ViewContentEnt getViewRepresentation() {
+  public JavaObjectEnt getViewRepresentation() {
         return m_viewRepresentation;
     }
     
   @Override
-  public ViewContentEnt getViewValue() {
+  public JavaObjectEnt getViewValue() {
         return m_viewValue;
     }
     
@@ -103,8 +103,8 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         }
     
         private String m_javascriptObjectID = null;
-        private ViewContentEnt m_viewRepresentation;
-        private ViewContentEnt m_viewValue;
+        private JavaObjectEnt m_viewRepresentation;
+        private JavaObjectEnt m_viewValue;
         private Boolean m_hideInWizard = null;
 
         @Override
@@ -114,13 +114,13 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         }
 
         @Override
-        public DefaultViewDataEntBuilder setViewRepresentation(ViewContentEnt viewRepresentation) {
+        public DefaultViewDataEntBuilder setViewRepresentation(JavaObjectEnt viewRepresentation) {
              m_viewRepresentation = viewRepresentation;
              return this;
         }
 
         @Override
-        public DefaultViewDataEntBuilder setViewValue(ViewContentEnt viewValue) {
+        public DefaultViewDataEntBuilder setViewValue(JavaObjectEnt viewValue) {
              m_viewValue = viewValue;
              return this;
         }

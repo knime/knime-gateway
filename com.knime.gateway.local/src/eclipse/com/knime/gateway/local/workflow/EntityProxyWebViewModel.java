@@ -34,9 +34,9 @@ import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
 import org.knime.js.core.node.CSSModifiable;
 
+import com.knime.gateway.v0.entity.JavaObjectEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt.ViewContentEntBuilder;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
@@ -96,8 +96,8 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
     public void loadViewValue(final WebViewContent viewContent, final boolean useAsDefault) {
         //push view content back to server
         try {
-            ViewContentEnt viewContentEnt =
-                builder(ViewContentEntBuilder.class).setClassname(viewContent.getClass().getCanonicalName())
+            JavaObjectEnt viewContentEnt =
+                builder(JavaObjectEntBuilder.class).setClassname(viewContent.getClass().getCanonicalName())
                     .setContent(((ByteArrayOutputStream)viewContent.saveToStream()).toString("UTF-8")).build();
             getAccess().nodeService().setViewValue(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
                 useAsDefault, viewContentEnt);

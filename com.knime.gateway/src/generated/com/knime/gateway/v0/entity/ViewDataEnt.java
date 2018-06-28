@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.v0.entity;
 
-import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -44,13 +44,13 @@ public interface ViewDataEnt extends GatewayEntity {
    * The view representation.
    * @return viewRepresentation 
    **/
-  public ViewContentEnt getViewRepresentation();
+  public JavaObjectEnt getViewRepresentation();
 
   /**
    * The view value.
    * @return viewValue 
    **/
-  public ViewContentEnt getViewValue();
+  public JavaObjectEnt getViewValue();
 
   /**
    * Property set in the configuration dialog to the node to skip this node in the wizard execution.
@@ -78,7 +78,7 @@ public interface ViewDataEnt extends GatewayEntity {
          * @param viewRepresentation the property value,  
          * @return this entity builder for chaining
          */
-        ViewDataEntBuilder setViewRepresentation(ViewContentEnt viewRepresentation);
+        ViewDataEntBuilder setViewRepresentation(JavaObjectEnt viewRepresentation);
         
         /**
          * The view value.
@@ -86,7 +86,7 @@ public interface ViewDataEnt extends GatewayEntity {
          * @param viewValue the property value,  
          * @return this entity builder for chaining
          */
-        ViewDataEntBuilder setViewValue(ViewContentEnt viewValue);
+        ViewDataEntBuilder setViewValue(JavaObjectEnt viewValue);
         
         /**
          * Property set in the configuration dialog to the node to skip this node in the wizard execution.

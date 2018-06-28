@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.ViewContentEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 
 
 import com.knime.gateway.json.JsonUtil;
@@ -63,11 +63,11 @@ public interface ViewDataEntMixIn extends ViewDataEnt {
     
     @Override
     @JsonProperty("viewRepresentation")
-    public ViewContentEnt getViewRepresentation();
+    public JavaObjectEnt getViewRepresentation();
     
     @Override
     @JsonProperty("viewValue")
-    public ViewContentEnt getViewValue();
+    public JavaObjectEnt getViewValue();
     
     @Override
     @JsonProperty("hideInWizard")
@@ -99,11 +99,11 @@ public interface ViewDataEntMixIn extends ViewDataEnt {
         
         @Override
         @JsonProperty("viewRepresentation")
-        public ViewDataEntMixInBuilder setViewRepresentation(final ViewContentEnt viewRepresentation);
+        public ViewDataEntMixInBuilder setViewRepresentation(final JavaObjectEnt viewRepresentation);
         
         @Override
         @JsonProperty("viewValue")
-        public ViewDataEntMixInBuilder setViewValue(final ViewContentEnt viewValue);
+        public ViewDataEntMixInBuilder setViewValue(final JavaObjectEnt viewValue);
         
         @Override
         @JsonProperty("hideInWizard")

@@ -92,16 +92,12 @@ import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.DataTableEnt.DataTableEntBuilder;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt.MetaNodeDialogCompEntBuilder;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_configEnt.MetaNodeDialogComp_configEntBuilder;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_representationEnt.MetaNodeDialogComp_representationEntBuilder;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogComp_valueEnt.MetaNodeDialogComp_valueEntBuilder;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt.MetaNodeDialogEntBuilder;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
@@ -132,8 +128,6 @@ import com.knime.gateway.v0.entity.PortTypeEnt.PortTypeEntBuilder;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
-import com.knime.gateway.v0.entity.ViewContentEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt.ViewContentEntBuilder;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
@@ -365,8 +359,8 @@ public class EntityBuilderUtil {
         throws UnsupportedEncodingException, IOException {
         return builder(ViewDataEntBuilder.class)
                 .setJavascriptObjectID(wnode.getJavascriptObjectID())
-                .setViewRepresentation(buildViewContentEnt(wnode.getViewRepresentation()))
-                .setViewValue(buildViewContentEnt(wnode.getViewValue()))
+                .setViewRepresentation(buildJavaObjectEntFromViewContent(wnode.getViewRepresentation()))
+                .setViewValue(buildJavaObjectEntFromViewContent(wnode.getViewValue()))
                 .setHideInWizard(wnode.isHideInWizard()).build();
     }
 
@@ -384,33 +378,12 @@ public class EntityBuilderUtil {
         List<MetaNodeDialogCompEnt> comps = new ArrayList<MetaNodeDialogCompEnt>();
         for(Entry<NodeID, QuickFormNodeModel> e : nodes.entrySet()) {
             QuickFormRepresentationImpl rep = e.getValue().getDialogRepresentation();
-            NodeSettings dialogValue = null;
-            if (e.getValue().getDialogValue() != null) {
-                dialogValue = new NodeSettings("dialog_value");
-                e.getValue().getDialogValue().saveToNodeSettings(dialogValue);
-            }
-            NodeSettings config = snc.getWorkflowManager().getNodeContainer(e.getKey()).getNodeSettings();
-            MetaNodeDialogComp_representationEnt representationEnt =
-                builder(MetaNodeDialogComp_representationEntBuilder.class)
-                .setClassname(rep.getClass().getCanonicalName())
-                .setContent(viewContentToJsonString(rep)).build();
-            MetaNodeDialogComp_valueEnt valueEnt = null;
-            if (dialogValue != null) {
-                valueEnt = builder(MetaNodeDialogComp_valueEntBuilder.class)
-                    .setClassname(e.getValue().getDialogValue().getClass().getCanonicalName())
-                    .setContent(JSONConfig.toJSONString(dialogValue, WriterConfig.PRETTY))
-                    .build();
-            }
-            MetaNodeDialogComp_configEnt configEnt = builder(MetaNodeDialogComp_configEntBuilder.class)
-                    .setClassname(e.getValue().createEmptyConfig().getClass().getCanonicalName())
-                    .setContent(JSONConfig.toJSONString(config, WriterConfig.PRETTY))
-                    .build();
+            JavaObjectEnt representationEnt = buildJavaObjectEntFromViewContent(rep);
             comps.add(builder(MetaNodeDialogCompEntBuilder.class)
                     .setNodeID(nodeIdAsString(e.getKey()))
                     .setIsHideInDialog(e.getValue().isHideInDialog())
                     .setRepresentation(representationEnt)
-                    .setConfig(configEnt)
-                    .setValue(valueEnt)
+                    .setParamName(e.getValue().getParameterName())
                 .build());
         }
         return builder(MetaNodeDialogEntBuilder.class)
@@ -418,9 +391,9 @@ public class EntityBuilderUtil {
                 .build();
     }
 
-    private static ViewContentEnt buildViewContentEnt(final WebViewContent vc)
+    private static JavaObjectEnt buildJavaObjectEntFromViewContent(final WebViewContent vc)
         throws UnsupportedEncodingException, IOException {
-        return builder(ViewContentEntBuilder.class)
+        return builder(JavaObjectEntBuilder.class)
                 .setClassname(vc.getClass().getCanonicalName())
                 .setContent(viewContentToJsonString(vc)).build();
     }

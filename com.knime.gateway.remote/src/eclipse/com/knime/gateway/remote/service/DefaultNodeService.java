@@ -63,12 +63,12 @@ import com.knime.gateway.remote.util.EntityBuilderUtil;
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewContentEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
@@ -310,7 +310,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public void setViewValue(final UUID rootWorkflowID, final String nodeID, final Boolean useAsDefault,
-        final ViewContentEnt viewValue) throws NodeNotFoundException, InvalidRequestException {
+        final JavaObjectEnt viewValue) throws NodeNotFoundException, InvalidRequestException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         NodeContainer nc = rootWfmAndNc.getSecond();
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
