@@ -27,12 +27,10 @@ import org.knime.core.node.dialog.DialogNodeRepresentation;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.js.base.node.quickform.QuickFormConfig;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
+import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
 
 /**
@@ -155,14 +153,14 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
     private static final QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>>
         fromJsonString(final String className, final String content)
             throws JsonParseException, JsonMappingException, IOException, ClassNotFoundException {
-        return (QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>>)createObjectMapper().readValue(content, Class.forName(className));
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        Class<?> clazz = Class.forName(className);
+        Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
+        try {
+            return (QuickFormRepresentationImpl<DialogNodeValue, QuickFormConfig<DialogNodeValue>>)JSONViewContent
+                .createObjectMapper().readValue(content, clazz);
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
+        }
     }
-
-    private static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Jdk8Module());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper;
-    }
-
 }
