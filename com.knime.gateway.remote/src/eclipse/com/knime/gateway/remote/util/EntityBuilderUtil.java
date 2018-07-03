@@ -170,6 +170,7 @@ public class EntityBuilderUtil {
                 .map(wa -> buildWorkflowAnnotationEnt(wa)).collect(Collectors.toList()))
             .setWorkflowUIInfo(buildWorkflowUIInfoEnt(wfm.getEditorUIInformation()))
             .setHasCredentials(!wfm.getCredentialsStore().listNames().isEmpty())
+            .setInWizardExecution(wfm.isInWizardExecution())
             .build();
     }
 
@@ -696,5 +697,4 @@ public class EntityBuilderUtil {
                 .setConnectionLineWidth(editorUIInfo.getConnectionLineWidth())
                 .build();
     }
-
 }

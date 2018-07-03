@@ -80,6 +80,12 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public Boolean hasCredentials();
 
+  /**
+   * If the workflow is executed step-wise, i.e. in wizard execution mode.
+   * @return inWizardExecution 
+   **/
+  public Boolean isInWizardExecution();
+
 
     /**
      * The builder for the entity.
@@ -141,6 +147,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setHasCredentials(Boolean hasCredentials);
+        
+        /**
+         * If the workflow is executed step-wise, i.e. in wizard execution mode.
+         * 
+         * @param inWizardExecution the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setInWizardExecution(Boolean inWizardExecution);
         
         
         /**

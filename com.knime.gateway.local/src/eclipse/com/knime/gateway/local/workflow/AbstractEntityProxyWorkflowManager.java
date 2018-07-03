@@ -543,7 +543,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean isWriteProtected() {
-        return m_isDisconnected;
+        return m_isDisconnected || isInWizardExecution();
     }
 
     /**
@@ -954,6 +954,14 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public boolean isEncrypted() {
         return getEntity().isEncrypted();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isInWizardExecution() {
+        return getWorkflow().isInWizardExecution();
     }
 
     /**

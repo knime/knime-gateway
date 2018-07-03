@@ -45,6 +45,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
   protected WorkflowUIInfoEnt m_workflowUIInfo;
   protected Boolean m_hasCredentials;
+  protected Boolean m_inWizardExecution;
   
   protected DefaultWorkflowEnt() {
     //for sub-classes
@@ -64,6 +65,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
     m_workflowUIInfo = immutable(builder.m_workflowUIInfo);
     m_hasCredentials = immutable(builder.m_hasCredentials);
+    m_inWizardExecution = immutable(builder.m_inWizardExecution);
   }
   
    /**
@@ -81,7 +83,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_metaInPortInfos, ent.m_metaInPortInfos) && Objects.equals(m_metaOutPortInfos, ent.m_metaOutPortInfos) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_workflowUIInfo, ent.m_workflowUIInfo) && Objects.equals(m_hasCredentials, ent.m_hasCredentials);
+        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_metaInPortInfos, ent.m_metaInPortInfos) && Objects.equals(m_metaOutPortInfos, ent.m_metaOutPortInfos) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_workflowUIInfo, ent.m_workflowUIInfo) && Objects.equals(m_hasCredentials, ent.m_hasCredentials) && Objects.equals(m_inWizardExecution, ent.m_inWizardExecution);
     }
 
 
@@ -120,6 +122,11 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         return m_hasCredentials;
     }
     
+  @Override
+  public Boolean isInWizardExecution() {
+        return m_inWizardExecution;
+    }
+    
   
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
     
@@ -134,6 +141,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
         private WorkflowUIInfoEnt m_workflowUIInfo;
         private Boolean m_hasCredentials = null;
+        private Boolean m_inWizardExecution = null;
 
         @Override
         public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
@@ -174,6 +182,12 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setHasCredentials(Boolean hasCredentials) {
              m_hasCredentials = hasCredentials;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setInWizardExecution(Boolean inWizardExecution) {
+             m_inWizardExecution = inWizardExecution;
              return this;
         }
 

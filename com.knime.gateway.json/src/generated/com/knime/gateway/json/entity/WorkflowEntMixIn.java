@@ -89,6 +89,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonProperty("hasCredentials")
     public Boolean hasCredentials();
     
+    @Override
+    @JsonProperty("inWizardExecution")
+    public Boolean isInWizardExecution();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -136,6 +140,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("hasCredentials")
         public WorkflowEntMixInBuilder setHasCredentials(final Boolean hasCredentials);
+        
+        @Override
+        @JsonProperty("inWizardExecution")
+        public WorkflowEntMixInBuilder setInWizardExecution(final Boolean inWizardExecution);
         
     }
 
