@@ -395,7 +395,7 @@ public class EntityBuilderUtil {
         throws UnsupportedEncodingException, IOException {
         return builder(JavaObjectEntBuilder.class)
                 .setClassname(vc.getClass().getCanonicalName())
-                .setContent(viewContentToJsonString(vc)).build();
+                .setJsonContent(viewContentToJsonString(vc)).build();
     }
 
     /**

@@ -41,9 +41,9 @@ public interface JavaObjectEnt extends GatewayEntity {
 
   /**
    * The actual content as a (json) string.
-   * @return content 
+   * @return jsonContent 
    **/
-  public String getContent();
+  public String getJsonContent();
 
 
     /**
@@ -62,10 +62,10 @@ public interface JavaObjectEnt extends GatewayEntity {
         /**
          * The actual content as a (json) string.
          * 
-         * @param content the property value,  
+         * @param jsonContent the property value,  
          * @return this entity builder for chaining
          */
-        JavaObjectEntBuilder setContent(String content);
+        JavaObjectEntBuilder setJsonContent(String jsonContent);
         
         
         /**

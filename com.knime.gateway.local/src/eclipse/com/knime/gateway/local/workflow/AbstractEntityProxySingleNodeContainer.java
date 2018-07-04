@@ -143,7 +143,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
 
         //convert settings into a settings entity
         NodeSettingsEnt settingsEnt = builder(NodeSettingsEntBuilder.class)
-            .setContent(JSONConfig.toJSONString(sett, WriterConfig.PRETTY)).build();
+            .setJsonContent(JSONConfig.toJSONString(sett, WriterConfig.PRETTY)).build();
 
         //transfer settings to server
         try {

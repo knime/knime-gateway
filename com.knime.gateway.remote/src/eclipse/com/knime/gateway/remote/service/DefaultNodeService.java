@@ -105,7 +105,7 @@ public class DefaultNodeService implements NodeService {
     public NodeSettingsEnt getNodeSettings(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         NodeSettings settings = getNodeContainer(rootWorkflowID, nodeID).getNodeSettings();
-        return builder(NodeSettingsEntBuilder.class).setContent(JSONConfig.toJSONString(settings, WriterConfig.PRETTY))
+        return builder(NodeSettingsEntBuilder.class).setJsonContent(JSONConfig.toJSONString(settings, WriterConfig.PRETTY))
             .build();
     }
 
@@ -120,7 +120,7 @@ public class DefaultNodeService implements NodeService {
         WorkflowManager parent = nc.getParent();
         NodeSettings settings = new NodeSettings("settings");
         try {
-            JSONConfig.readJSON(settings, new StringReader(nodeSettings.getContent()));
+            JSONConfig.readJSON(settings, new StringReader(nodeSettings.getJsonContent()));
             parent.loadNodeSettings(nc.getID(), settings);
         } catch (InvalidSettingsException | IOException ex) {
             throw new ServiceExceptions.InvalidSettingsException(ex.getMessage());
@@ -316,7 +316,7 @@ public class DefaultNodeService implements NodeService {
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
             NativeNodeContainer nnc = (NativeNodeContainer)nc;
             WizardNode<?, ?> wn = (WizardNode<?, ?>)nnc.getNodeModel();
-            ViewContent vc = readWebViewContentFromJsonString(viewValue.getContent(), wn.createEmptyViewValue());
+            ViewContent vc = readWebViewContentFromJsonString(viewValue.getJsonContent(), wn.createEmptyViewValue());
             nnc.getParent().reExecuteNode(nnc.getID(), vc, useAsDefault, new DefaultReexecutionCallback());
         } else {
             throw new InvalidRequestException("Node doesn't provide a view.");

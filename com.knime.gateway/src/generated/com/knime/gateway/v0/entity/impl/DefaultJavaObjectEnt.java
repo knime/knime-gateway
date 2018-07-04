@@ -34,7 +34,7 @@ import com.knime.gateway.v0.entity.JavaObjectEnt;
 public class DefaultJavaObjectEnt  implements JavaObjectEnt {
 
   protected String m_classname;
-  protected String m_content;
+  protected String m_jsonContent;
   
   protected DefaultJavaObjectEnt() {
     //for sub-classes
@@ -48,7 +48,7 @@ public class DefaultJavaObjectEnt  implements JavaObjectEnt {
   private DefaultJavaObjectEnt(DefaultJavaObjectEntBuilder builder) {
     
     m_classname = immutable(builder.m_classname);
-    m_content = immutable(builder.m_content);
+    m_jsonContent = immutable(builder.m_jsonContent);
   }
   
    /**
@@ -66,7 +66,7 @@ public class DefaultJavaObjectEnt  implements JavaObjectEnt {
             return false;
         }
         DefaultJavaObjectEnt ent = (DefaultJavaObjectEnt)o;
-        return Objects.equals(m_classname, ent.m_classname) && Objects.equals(m_content, ent.m_content);
+        return Objects.equals(m_classname, ent.m_classname) && Objects.equals(m_jsonContent, ent.m_jsonContent);
     }
 
 
@@ -76,8 +76,8 @@ public class DefaultJavaObjectEnt  implements JavaObjectEnt {
     }
     
   @Override
-  public String getContent() {
-        return m_content;
+  public String getJsonContent() {
+        return m_jsonContent;
     }
     
   
@@ -88,7 +88,7 @@ public class DefaultJavaObjectEnt  implements JavaObjectEnt {
         }
     
         private String m_classname = null;
-        private String m_content = null;
+        private String m_jsonContent = null;
 
         @Override
         public DefaultJavaObjectEntBuilder setClassname(String classname) {
@@ -97,8 +97,8 @@ public class DefaultJavaObjectEnt  implements JavaObjectEnt {
         }
 
         @Override
-        public DefaultJavaObjectEntBuilder setContent(String content) {
-             m_content = content;
+        public DefaultJavaObjectEntBuilder setJsonContent(String jsonContent) {
+             m_jsonContent = jsonContent;
              return this;
         }
 

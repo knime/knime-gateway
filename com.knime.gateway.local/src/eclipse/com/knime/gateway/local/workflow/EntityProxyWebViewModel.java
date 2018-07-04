@@ -98,7 +98,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
         try {
             JavaObjectEnt viewContentEnt =
                 builder(JavaObjectEntBuilder.class).setClassname(viewContent.getClass().getCanonicalName())
-                    .setContent(((ByteArrayOutputStream)viewContent.saveToStream()).toString("UTF-8")).build();
+                    .setJsonContent(((ByteArrayOutputStream)viewContent.saveToStream()).toString("UTF-8")).build();
             getAccess().nodeService().setViewValue(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
                 useAsDefault, viewContentEnt);
             //since the view value has been changed, delete the cached view data
@@ -121,7 +121,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      */
     @Override
     public WebViewContent getViewRepresentation() {
-        return fromJsonString(getViewData().getViewRepresentation().getContent(), createEmptyViewRepresentation());
+        return fromJsonString(getViewData().getViewRepresentation().getJsonContent(), createEmptyViewRepresentation());
     }
 
     /**
@@ -129,7 +129,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      */
     @Override
     public WebViewContent getViewValue() {
-        return fromJsonString(m_viewData.getViewValue().getContent(), createEmptyViewValue());
+        return fromJsonString(m_viewData.getViewValue().getJsonContent(), createEmptyViewValue());
     }
 
     /**

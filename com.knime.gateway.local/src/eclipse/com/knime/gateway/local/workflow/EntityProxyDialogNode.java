@@ -71,7 +71,7 @@ public class EntityProxyDialogNode extends AbstractEntityProxy<MetaNodeDialogCom
         if (m_qfRepresentation == null) {
             try {
                 m_qfRepresentation = fromJsonString(getEntity().getRepresentation().getClassname(),
-                    getEntity().getRepresentation().getContent());
+                    getEntity().getRepresentation().getJsonContent());
             } catch (IOException | ClassNotFoundException ex) {
                 //should not happen
                 throw new IllegalStateException("Problem deserializing quickform representation.", ex);

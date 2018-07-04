@@ -61,8 +61,8 @@ public interface JavaObjectEntMixIn extends JavaObjectEnt {
     public String getClassname();
     
     @Override
-    @JsonProperty("content")
-    public String getContent();
+    @JsonProperty("jsonContent")
+    public String getJsonContent();
     
 
     /**
@@ -89,8 +89,8 @@ public interface JavaObjectEntMixIn extends JavaObjectEnt {
         public JavaObjectEntMixInBuilder setClassname(final String classname);
         
         @Override
-        @JsonProperty("content")
-        public JavaObjectEntMixInBuilder setContent(final String content);
+        @JsonProperty("jsonContent")
+        public JavaObjectEntMixInBuilder setJsonContent(final String jsonContent);
         
     }
 

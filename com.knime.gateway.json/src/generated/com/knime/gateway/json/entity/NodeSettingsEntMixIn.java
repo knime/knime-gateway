@@ -57,8 +57,8 @@ public interface NodeSettingsEntMixIn extends NodeSettingsEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("content")
-    public String getContent();
+    @JsonProperty("jsonContent")
+    public String getJsonContent();
     
 
     /**
@@ -81,8 +81,8 @@ public interface NodeSettingsEntMixIn extends NodeSettingsEnt {
         public NodeSettingsEntMixIn build();
     
         @Override
-        @JsonProperty("content")
-        public NodeSettingsEntMixInBuilder setContent(final String content);
+        @JsonProperty("jsonContent")
+        public NodeSettingsEntMixInBuilder setJsonContent(final String jsonContent);
         
     }
 

@@ -33,7 +33,7 @@ import com.knime.gateway.v0.entity.NodeSettingsEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultNodeSettingsEnt  implements NodeSettingsEnt {
 
-  protected String m_content;
+  protected String m_jsonContent;
   
   protected DefaultNodeSettingsEnt() {
     //for sub-classes
@@ -46,7 +46,7 @@ public class DefaultNodeSettingsEnt  implements NodeSettingsEnt {
   
   private DefaultNodeSettingsEnt(DefaultNodeSettingsEntBuilder builder) {
     
-    m_content = immutable(builder.m_content);
+    m_jsonContent = immutable(builder.m_jsonContent);
   }
   
    /**
@@ -64,13 +64,13 @@ public class DefaultNodeSettingsEnt  implements NodeSettingsEnt {
             return false;
         }
         DefaultNodeSettingsEnt ent = (DefaultNodeSettingsEnt)o;
-        return Objects.equals(m_content, ent.m_content);
+        return Objects.equals(m_jsonContent, ent.m_jsonContent);
     }
 
 
   @Override
-  public String getContent() {
-        return m_content;
+  public String getJsonContent() {
+        return m_jsonContent;
     }
     
   
@@ -80,11 +80,11 @@ public class DefaultNodeSettingsEnt  implements NodeSettingsEnt {
             
         }
     
-        private String m_content = null;
+        private String m_jsonContent = null;
 
         @Override
-        public DefaultNodeSettingsEntBuilder setContent(String content) {
-             m_content = content;
+        public DefaultNodeSettingsEntBuilder setJsonContent(String jsonContent) {
+             m_jsonContent = jsonContent;
              return this;
         }
 

@@ -35,9 +35,9 @@ public interface NodeSettingsEnt extends GatewayEntity {
 
   /**
    * The actual settings as a json-string.
-   * @return content 
+   * @return jsonContent 
    **/
-  public String getContent();
+  public String getJsonContent();
 
 
     /**
@@ -48,10 +48,10 @@ public interface NodeSettingsEnt extends GatewayEntity {
         /**
          * The actual settings as a json-string.
          * 
-         * @param content the property value,  
+         * @param jsonContent the property value,  
          * @return this entity builder for chaining
          */
-        NodeSettingsEntBuilder setContent(String content);
+        NodeSettingsEntBuilder setJsonContent(String jsonContent);
         
         
         /**
