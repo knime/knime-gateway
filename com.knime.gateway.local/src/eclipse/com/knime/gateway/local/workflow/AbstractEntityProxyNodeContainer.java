@@ -98,6 +98,8 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     private final CopyOnWriteArraySet<NodePropertyChangedListener> m_nodePropertyChangedListeners =
         new CopyOnWriteArraySet<NodePropertyChangedListener>();
 
+    private NodeUIInformation m_uiInfo;
+
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
@@ -302,14 +304,16 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public NodeUIInformation getUIInformation() {
-        NodeUIInfoEnt uiInfo = getEntity().getUIInfo();
-        return NodeUIInformation.builder()
-            .setNodeLocation(uiInfo.getBounds().getX(), uiInfo.getBounds().getY(), uiInfo.getBounds().getWidth(),
-                uiInfo.getBounds().getHeight())
-            .setIsSymbolRelative(uiInfo.isSymbolRelative())
-            .setHasAbsoluteCoordinates(uiInfo.hasAbsoluteCoordinates())
-            .setIsDropLocation(uiInfo.isDropLocation())
-            .setSnapToGrid(uiInfo.isSnapToGrid()).build();
+        if (m_uiInfo == null) {
+            NodeUIInfoEnt uiInfo = getEntity().getUIInfo();
+            m_uiInfo = NodeUIInformation.builder()
+                .setNodeLocation(uiInfo.getBounds().getX(), uiInfo.getBounds().getY(), uiInfo.getBounds().getWidth(),
+                    uiInfo.getBounds().getHeight())
+                .setIsSymbolRelative(uiInfo.isSymbolRelative())
+                .setHasAbsoluteCoordinates(uiInfo.hasAbsoluteCoordinates()).setIsDropLocation(uiInfo.isDropLocation())
+                .setSnapToGrid(uiInfo.isSnapToGrid()).build();
+        }
+        return m_uiInfo;
     }
 
     /**
@@ -317,7 +321,13 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public void setUIInformation(final NodeUIInformation uiInformation) {
-        //        service(NodeService.class).updateNode(null);
+        //some calls (see, e.g., line 605 in NodeContainerEditPart) use this method
+        //to correct the node positions - those updates don't need to be propagated to the server
+        m_uiInfo = uiInformation;
+
+        //TODO as soon as we support to move nodes from within the job view,
+        //we somehow need to distinguish between calls that need to be propagated to the server and
+        //those that don't
     }
 
     /**
