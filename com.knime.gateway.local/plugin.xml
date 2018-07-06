@@ -9,7 +9,7 @@
           category="org.knime.workbench.ui.preferences.gui.workfloweditor"
           class="com.knime.gateway.local.workflow.prefs.JobViewPreferencePage"
           id="org.knime.workbench.ui.preferences.gui.workfloweditor.jobview"
-          name="Job View">
+          name="Job View (preview)">
     </page>
  </extension>
 </plugin>
