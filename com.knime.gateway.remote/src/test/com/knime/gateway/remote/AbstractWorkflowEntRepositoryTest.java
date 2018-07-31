@@ -35,8 +35,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.knime.gateway.entity.EntityBuilderManager;
-import com.knime.gateway.remote.util.JaversRepository;
-import com.knime.gateway.remote.util.WorkflowEntRepository;
+import com.knime.gateway.remote.service.util.JaversRepository;
+import com.knime.gateway.remote.service.util.WorkflowEntRepository;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeEntBuilder;
 import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;

@@ -22,9 +22,7 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -150,16 +148,16 @@ public class EntityTest {
         ConnectionEnt con2 = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
             .setSourcePort(3).build();
 
-        List<ConnectionEnt> connections = new ArrayList<ConnectionEnt>();
-        connections.add(con);
+        Map<String, ConnectionEnt> connections = new HashMap<String, ConnectionEnt>();
+        connections.put("con1", con);
         wf = builder(WorkflowEntBuilder.class).setConnections(connections).build();
 
-        connections.add(con2);
+        connections.put("con2", con2);
 
         assertEquals(wf.getConnections().size(), 1);
 
         try {
-            wf.getConnections().add(con2);
+            wf.getConnections().put("con2", con2);
             fail("Exception expected to be thrown");
         } catch (UnsupportedOperationException e) {
             //exception has been thrown

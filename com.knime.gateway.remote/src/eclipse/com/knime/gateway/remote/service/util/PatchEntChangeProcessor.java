@@ -16,10 +16,12 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.remote.util;
+package com.knime.gateway.remote.service.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.javers.core.changelog.ChangeProcessor;
@@ -34,16 +36,22 @@ import org.javers.core.diff.changetype.container.ArrayChange;
 import org.javers.core.diff.changetype.container.ContainerChange;
 import org.javers.core.diff.changetype.container.ListChange;
 import org.javers.core.diff.changetype.container.SetChange;
+import org.javers.core.diff.changetype.map.EntryAdded;
+import org.javers.core.diff.changetype.map.EntryRemoved;
 import org.javers.core.diff.changetype.map.MapChange;
 import org.javers.core.metamodel.object.GlobalId;
 import org.javers.core.metamodel.object.UnboundedValueObjectId;
 import org.javers.core.metamodel.object.ValueObjectId;
 
 import com.knime.gateway.entity.EntityBuilderManager;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.v0.entity.ConnectionEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
 import com.knime.gateway.v0.entity.PatchOpEnt;
 import com.knime.gateway.v0.entity.PatchOpEnt.OpEnum;
+import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.impl.DefaultPatchEnt.DefaultPatchEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
 
@@ -56,6 +64,8 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
     static final PatchEnt EMPTY_PATCH = EntityBuilderManager.builder(PatchEntBuilder.class).build();
 
     private final List<PatchOpEnt> m_ops = new ArrayList<PatchOpEnt>();
+
+    private final Map<String, GatewayEntity> m_newObjects = new HashMap<String, GatewayEntity>();
 
     private final UUID m_newSnapshotID;
 
@@ -115,6 +125,12 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
 
     @Override
     public void onNewObject(final NewObject newObject) {
+        Object newObj = newObject.getAffectedObject().get();
+        if (newObj instanceof NodeEnt || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt) {
+            ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
+            String path = "/" + globalId.getFragment().replaceAll("m_", "");
+            m_newObjects.put(path, (GatewayEntity)newObject.getAffectedObject().get());
+        }
     }
 
     @Override
@@ -139,6 +155,19 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
 
     @Override
     public void onMapChange(final MapChange mapChange) {
+        for(EntryRemoved er : mapChange.getEntryRemovedChanges()) {
+            ValueObjectId val = (ValueObjectId)er.getValue();
+            String path = "/" + val.getFragment().replaceAll("m_", "");
+            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REMOVE).setPath(path).build());
+        }
+        for(EntryAdded ea : mapChange.getEntryAddedChanges()) {
+            ValueObjectId val = (ValueObjectId)ea.getValue();
+            String path = "/" + val.getFragment().replaceAll("m_", "");
+            //NOTE: setValue relies on the fact the #onNewObject has been called before, with the right object
+            m_ops.add(
+                new DefaultPatchOpEntBuilder().setOp(OpEnum.ADD).setPath(path).setValue(m_newObjects.get(path))
+                    .build());
+        }
     }
 
     @Override

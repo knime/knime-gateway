@@ -39,10 +39,10 @@ import com.knime.gateway.v0.entity.WorkflowEnt;
 public class DefaultWorkflowEnt  implements WorkflowEnt {
 
   protected java.util.Map<String, NodeEnt> m_nodes;
-  protected java.util.List<ConnectionEnt> m_connections;
+  protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<MetaPortInfoEnt> m_metaInPortInfos;
   protected java.util.List<MetaPortInfoEnt> m_metaOutPortInfos;
-  protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
+  protected java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations;
   protected WorkflowUIInfoEnt m_workflowUIInfo;
   protected Boolean m_hasCredentials;
   protected Boolean m_inWizardExecution;
@@ -93,7 +93,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     }
     
   @Override
-  public java.util.List<ConnectionEnt> getConnections() {
+  public java.util.Map<String, ConnectionEnt> getConnections() {
         return m_connections;
     }
     
@@ -108,7 +108,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     }
     
   @Override
-  public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
+  public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations() {
         return m_workflowAnnotations;
     }
     
@@ -135,10 +135,10 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
     
         private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
-        private java.util.List<ConnectionEnt> m_connections = new java.util.ArrayList<>();
+        private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<MetaPortInfoEnt> m_metaInPortInfos = new java.util.ArrayList<>();
         private java.util.List<MetaPortInfoEnt> m_metaOutPortInfos = new java.util.ArrayList<>();
-        private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
+        private java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.HashMap<>();
         private WorkflowUIInfoEnt m_workflowUIInfo;
         private Boolean m_hasCredentials = null;
         private Boolean m_inWizardExecution = null;
@@ -150,7 +150,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setConnections(java.util.List<ConnectionEnt> connections) {
+        public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
              m_connections = connections;
              return this;
         }
@@ -168,7 +168,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations) {
+        public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations) {
              m_workflowAnnotations = workflowAnnotations;
              return this;
         }

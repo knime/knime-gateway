@@ -73,6 +73,9 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     m_deletable = immutable(builder.m_deletable);
     m_flowVariablePortConnection = immutable(builder.m_flowVariablePortConnection);
     m_bendPoints = immutable(builder.m_bendPoints);
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = immutable(builder.m_type);
   }
   
@@ -207,6 +210,9 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
 
         @Override
         public DefaultConnectionEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }

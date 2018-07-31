@@ -16,7 +16,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.remote.util;
+package com.knime.gateway.remote.service.util;
 
 import java.util.HashMap;
 import java.util.List;

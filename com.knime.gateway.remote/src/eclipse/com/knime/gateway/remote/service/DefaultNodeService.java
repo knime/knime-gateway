@@ -19,7 +19,10 @@
 package com.knime.gateway.remote.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
-import static com.knime.gateway.remote.util.EntityBuilderUtil.buildNodeEnt;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeContainer;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWfmAndNc;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWorkflowManager;
+import static com.knime.gateway.util.EntityBuilderUtil.buildNodeEnt;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -59,8 +62,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.remote.util.EntityBuilderUtil;
 import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
@@ -386,29 +389,5 @@ public class DefaultNodeService implements NodeService {
         } else {
             throw new InvalidRequestException("The node the dialog is requested for is not a wrapped metanode!");
         }
-    }
-
-    private static NodeContainer getNodeContainer(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException {
-        WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
-        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
-            return wfm;
-        } else {
-            try {
-                return wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
-            } catch (IllegalArgumentException e) {
-                throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
-            }
-        }
-    }
-
-    private static WorkflowManager getRootWorkflowManager(final UUID rootWorkflowID) {
-        return WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-    }
-
-    private static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException {
-        return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
     }
 }

@@ -18,7 +18,9 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
+import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -44,6 +46,43 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     
     public JsonRpcWorkflowServiceWrapper(WorkflowService service) {
         m_service = service;
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "createConnection")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
+    })
+    public String createConnection(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="connection") ConnectionEnt connection)  throws ServiceExceptions.ActionNotAllowedException {
+        return m_service.createConnection(jobId, connection);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "createWorkflowCopy")
+    public java.util.UUID createWorkflowCopy(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts)  {
+        return m_service.createWorkflowCopy(jobId, parts);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "deleteWorkflowParts")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "400" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public java.util.UUID deleteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+        return m_service.deleteWorkflowParts(jobId, parts, copy);    
     }
 
 	/**
@@ -96,6 +135,21 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     })
     public PatchEnt getWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException {
         return m_service.getWorkflowDiff(jobId, snapshotId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "pasteWorkflowParts")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "400" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public WorkflowPartsEnt pasteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="partsId") java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        return m_service.pasteWorkflowParts(jobId, partsId, x, y, nodeId);    
     }
 
 }

@@ -48,7 +48,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * The list of connections.
    * @return connections 
    **/
-  public java.util.List<ConnectionEnt> getConnections();
+  public java.util.Map<String, ConnectionEnt> getConnections();
 
   /**
    * The inputs of a metanode (if this workflow is one).
@@ -66,7 +66,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * List of all workflow annotations. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
    * @return workflowAnnotations 
    **/
-  public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
+  public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
 
   /**
    * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
@@ -81,7 +81,7 @@ public interface WorkflowEnt extends GatewayEntity {
   public Boolean hasCredentials();
 
   /**
-   * If the workflow is executed step-wise, i.e. in wizard execution mode.
+   * If the workflow is executed step by step, i.e. in wizard execution mode.
    * @return inWizardExecution 
    **/
   public Boolean isInWizardExecution();
@@ -106,7 +106,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param connections the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setConnections(java.util.List<ConnectionEnt> connections);
+        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
         
         /**
          * The inputs of a metanode (if this workflow is one).
@@ -130,7 +130,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param workflowAnnotations the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        WorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
         
         /**
          * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
@@ -149,7 +149,7 @@ public interface WorkflowEnt extends GatewayEntity {
         WorkflowEntBuilder setHasCredentials(Boolean hasCredentials);
         
         /**
-         * If the workflow is executed step-wise, i.e. in wizard execution mode.
+         * If the workflow is executed step by step, i.e. in wizard execution mode.
          * 
          * @param inWizardExecution the property value,  
          * @return this entity builder for chaining

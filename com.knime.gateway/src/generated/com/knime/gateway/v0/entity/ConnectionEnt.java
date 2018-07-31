@@ -60,7 +60,7 @@ public interface ConnectionEnt extends GatewayEntity {
 
 
   /**
-   * The destination node.
+   * The destination node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
    * @return dest , never <code>null</code>
    **/
   public String getDest();
@@ -72,7 +72,7 @@ public interface ConnectionEnt extends GatewayEntity {
   public Integer getDestPort();
 
   /**
-   * The source node.
+   * The source node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
    * @return source , never <code>null</code>
    **/
   public String getSource();
@@ -103,7 +103,7 @@ public interface ConnectionEnt extends GatewayEntity {
 
   /**
    * The type of the connection (standard, workflow input / output /through).
-   * @return type 
+   * @return type , never <code>null</code>
    **/
   public TypeEnum getType();
 
@@ -114,7 +114,7 @@ public interface ConnectionEnt extends GatewayEntity {
     public interface ConnectionEntBuilder extends GatewayEntityBuilder<ConnectionEnt> {
 
         /**
-         * The destination node.
+         * The destination node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
          * 
          * @param dest the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -130,7 +130,7 @@ public interface ConnectionEnt extends GatewayEntity {
         ConnectionEntBuilder setDestPort(Integer destPort);
         
         /**
-         * The source node.
+         * The source node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
          * 
          * @param source the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -171,7 +171,7 @@ public interface ConnectionEnt extends GatewayEntity {
         /**
          * The type of the connection (standard, workflow input / output /through).
          * 
-         * @param type the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ConnectionEntBuilder setType(TypeEnum type);

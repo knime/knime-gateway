@@ -72,6 +72,8 @@ import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultWorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
@@ -187,6 +189,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowEntBuilder.class) {
             return new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();
+        }        
+        if(clazz == WorkflowPartsEntBuilder.class) {
+            return new DefaultWorkflowPartsEnt.DefaultWorkflowPartsEntBuilder();
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();

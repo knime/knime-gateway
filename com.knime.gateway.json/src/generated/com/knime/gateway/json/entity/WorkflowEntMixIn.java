@@ -67,7 +67,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("connections")
-    public java.util.List<ConnectionEnt> getConnections();
+    public java.util.Map<String, ConnectionEnt> getConnections();
     
     @Override
     @JsonProperty("metaInPortInfos")
@@ -79,7 +79,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("workflowAnnotations")
-    public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
+    public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
     
     @Override
     @JsonProperty("workflowUIInfo")
@@ -119,7 +119,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.List<ConnectionEnt> connections);
+        public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
         
         @Override
         @JsonProperty("metaInPortInfos")
@@ -131,7 +131,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("workflowAnnotations")
-        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
         
         @Override
         @JsonProperty("workflowUIInfo")

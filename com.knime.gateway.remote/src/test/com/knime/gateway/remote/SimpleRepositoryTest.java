@@ -18,8 +18,8 @@
  */
 package com.knime.gateway.remote;
 
-import com.knime.gateway.remote.util.SimpleRepository;
-import com.knime.gateway.remote.util.WorkflowEntRepository;
+import com.knime.gateway.remote.service.util.SimpleRepository;
+import com.knime.gateway.remote.service.util.WorkflowEntRepository;
 
 /**
  * Tests for {@link WorkflowEntRepository} and it's {@link SimpleRepository}-implementation.

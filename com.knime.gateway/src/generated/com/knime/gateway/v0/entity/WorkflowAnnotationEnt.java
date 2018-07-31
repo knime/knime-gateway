@@ -35,6 +35,12 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 public interface WorkflowAnnotationEnt extends AnnotationEnt {
 
 
+  /**
+   * Identifier for the workflow annotations.
+   * @return annotationID , never <code>null</code>
+   **/
+  public String getAnnotationID();
+
 
     /**
      * The builder for the entity.
@@ -112,6 +118,14 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
+        
+        /**
+         * Identifier for the workflow annotations.
+         * 
+         * @param annotationID the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setAnnotationID(String annotationID);
         
         
         /**

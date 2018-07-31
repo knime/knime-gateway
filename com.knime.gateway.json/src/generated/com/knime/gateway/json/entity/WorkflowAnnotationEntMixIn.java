@@ -99,6 +99,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     @JsonProperty("styleRanges")
     public java.util.List<StyleRangeEnt> getStyleRanges();
     
+    @Override
+    @JsonProperty("annotationID")
+    public String getAnnotationID();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -158,6 +162,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         @Override
         @JsonProperty("styleRanges")
         public WorkflowAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
+        
+        @Override
+        @JsonProperty("annotationID")
+        public WorkflowAnnotationEntMixInBuilder setAnnotationID(final String annotationID);
         
     }
 

@@ -18,7 +18,9 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
+import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 import com.knime.gateway.v0.service.util.ServiceExceptions;
@@ -34,6 +36,27 @@ import com.knime.gateway.v0.service.WorkflowService;
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public interface JsonRpcWorkflowService extends WorkflowService {
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.createConnection")
+    String createConnection(java.util.UUID jobId, ConnectionEnt connection)  throws ServiceExceptions.ActionNotAllowedException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.createWorkflowCopy")
+    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts) ;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.deleteWorkflowParts")
+    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
@@ -62,5 +85,12 @@ public interface JsonRpcWorkflowService extends WorkflowService {
     @Override
     @JsonRpcMethod(value = "WorkflowService.getWorkflowDiff")
     PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.pasteWorkflowParts")
+    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 }

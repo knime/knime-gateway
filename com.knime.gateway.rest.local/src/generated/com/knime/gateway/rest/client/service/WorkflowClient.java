@@ -18,7 +18,9 @@
  */
 package com.knime.gateway.rest.client.service;
 
+import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 
@@ -58,6 +60,72 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     public WorkflowClient(final URI restAddress, final String jwt)
         throws InstantiationException, IllegalAccessException, IOException {
         super(restAddress, jwt);
+    }
+    
+    @Override
+    public String createConnection(java.util.UUID jobId, ConnectionEnt connection)  throws ServiceExceptions.ActionNotAllowedException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.createConnection(jobId, toByteArray(connection));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, String.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 405) {
+                throw new ServiceExceptions.ActionNotAllowedException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts)  {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.createWorkflowCopy(jobId, toByteArray(parts));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, java.util.UUID.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.deleteWorkflowParts(jobId, toByteArray(parts), copy);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, java.util.UUID.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 400) {
+                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
     }
     
     @Override
@@ -143,6 +211,31 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.pasteWorkflowParts(jobId, partsId, x, y, nodeId);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, WorkflowPartsEnt.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 400) {
+                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            }
             if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
             }

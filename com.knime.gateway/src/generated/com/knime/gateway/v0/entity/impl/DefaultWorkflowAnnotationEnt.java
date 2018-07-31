@@ -36,6 +36,7 @@ import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implements WorkflowAnnotationEnt {
 
+  protected String m_annotationID;
   
   protected DefaultWorkflowAnnotationEnt() {
     //for sub-classes
@@ -61,6 +62,10 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
     m_defaultFontSize = immutable(builder.m_defaultFontSize);
     m_version = immutable(builder.m_version);
     m_styleRanges = immutable(builder.m_styleRanges);
+    if(builder.m_annotationID == null) {
+        throw new IllegalArgumentException("annotationID must not be null.");
+    }
+    m_annotationID = immutable(builder.m_annotationID);
   }
   
    /**
@@ -78,10 +83,15 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
             return false;
         }
         DefaultWorkflowAnnotationEnt ent = (DefaultWorkflowAnnotationEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_textAlignment, ent.m_textAlignment) && Objects.equals(m_borderSize, ent.m_borderSize) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_version, ent.m_version) && Objects.equals(m_styleRanges, ent.m_styleRanges);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_textAlignment, ent.m_textAlignment) && Objects.equals(m_borderSize, ent.m_borderSize) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_version, ent.m_version) && Objects.equals(m_styleRanges, ent.m_styleRanges) && Objects.equals(m_annotationID, ent.m_annotationID);
     }
 
 
+  @Override
+  public String getAnnotationID() {
+        return m_annotationID;
+    }
+    
   
     public static class DefaultWorkflowAnnotationEntBuilder implements WorkflowAnnotationEntBuilder {
     
@@ -99,6 +109,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         private Integer m_defaultFontSize = null;
         private Integer m_version = null;
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
+        private String m_annotationID = null;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setType(String type) {
@@ -160,6 +171,15 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         @Override
         public DefaultWorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
              m_styleRanges = styleRanges;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowAnnotationEntBuilder setAnnotationID(String annotationID) {
+             if(annotationID == null) {
+                 throw new IllegalArgumentException("annotationID must not be null.");
+             }
+             m_annotationID = annotationID;
              return this;
         }
 
