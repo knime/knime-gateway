@@ -20,6 +20,8 @@ package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,6 +38,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
+import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 
 import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -97,41 +100,40 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
      * {@inheritDoc}
      */
     @Override
-    public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
+    public CompletableFuture<NodeDialogPane> getDialogPaneWithSettingsAsync() throws NotConfigurableException {
         ExecutorService exec = Executors.newCachedThreadPool();
-        try {
-            Future<NodeSettings> f1 = exec.submit(() -> getAccess().getNodeSettings(getEntity()));
-            Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
-            Future<FlowObjectStack> f3 = exec.submit(() -> getAccess().getInputFlowVariableStack(getEntity(), getID()));
-
-            NodeDialogPane p = getDialogPaneWithSettings(f1, f2, f3, m_dialogPane, exec);
-            if (p != null) {
-                assert exec.isShutdown();
-            } else {
+        final Future<NodeSettings> f1 = exec.submit(() -> getAccess().getNodeSettings(getEntity()));
+        final Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
+        final Future<FlowObjectStack> f3 =
+            exec.submit(() -> getAccess().getInputFlowVariableStack(getEntity(), getID()));
+        return AsyncNodeContainerUI.future(() -> {
+            try {
+                Future<NodeDialogPane> p = getDialogPaneWithSettings(f1, f2, f3, m_dialogPane, exec);
+                if (p != null) {
+                    //wait for p to finish
+                    m_dialogPane = p.get();
+                }
                 shutdownExecutorsAndWait(exec);
+
+                NodeSettings nodeSettings = f1.get();
+                PortObjectSpec[] portObjectSpecs = f2.get();
+                FlowObjectStack flowObjectStack = f3.get();
+
+                //cache the node settings
+                m_nodeSettings = nodeSettings;
+
+                //get (if not already) and cache the node dialog
+                if (m_dialogPane == null) {
+                    m_dialogPane =
+                        getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
+                }
+                return m_dialogPane;
+            } catch (NotConfigurableException | InterruptedException | ExecutionException e) {
+                throw new CompletionException(e);
+            } finally {
+                exec.shutdown();
             }
-
-            NodeSettings nodeSettings = f1.get();
-            PortObjectSpec[] portObjectSpecs = f2.get();
-            FlowObjectStack flowObjectStack = f3.get();
-
-            //cache the node settings
-            m_nodeSettings = nodeSettings;
-
-            //get (if not already) and cache the node dialog
-            if (p == null) {
-                m_dialogPane = getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
-            } else {
-                m_dialogPane = p;
-            }
-            return m_dialogPane;
-        } catch (InterruptedException e) {
-            throw new NotConfigurableException(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            throw new NotConfigurableException(e.getCause().getMessage(), e);
-        } finally {
-            exec.shutdown();
-        }
+        });
     }
 
     @Override
@@ -187,20 +189,17 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
      * {@link #getDialogPaneWithSettings(NodeSettings, PortObjectSpec[], FlowObjectStack, NodeDialogPane)}. Allows the
      * parallel download of data required to initialize the dialog.
      *
-     * When all tasks are submitted, call {@link #shutdownExecutorsAndWait(ExecutorService)} to wait for all objects to
-     * be download/loaded!
-     *
      * @param nodeSettings the node settings
      * @param portObjectSpecs the node input port specs
      * @param flowObjectStack the node input flow variables
      * @param dialogPane the cached dialog pane (if not called for the first time), otherwise <code>null</code>
      * @param exec the execution service to submit other tasks to to be executed asynchronously
-     * @return the initialized node dialog pane
+     * @return the initialized node dialog pane (as future!)
      * @throws NotConfigurableException if there are problems with loading the settings into the dialog
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    protected NodeDialogPane getDialogPaneWithSettings(final Future<NodeSettings> nodeSettings,
+    protected Future<NodeDialogPane> getDialogPaneWithSettings(final Future<NodeSettings> nodeSettings,
         final Future<PortObjectSpec[]> portObjectSpecs, final Future<FlowObjectStack> flowObjectStack,
         final NodeDialogPane dialogPane, final ExecutorService exec)
         throws NotConfigurableException, InterruptedException, ExecutionException {
@@ -214,7 +213,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
      * @param exec the execution service
      * @throws InterruptedException in case of an interruption
      */
-    protected void shutdownExecutorsAndWait(final ExecutorService exec) throws InterruptedException {
+    private static void shutdownExecutorsAndWait(final ExecutorService exec) throws InterruptedException {
         exec.shutdown();
         //wait a bit longer than the timeouts of the individual requests
         exec.awaitTermination(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT + 1000, TimeUnit.MILLISECONDS);

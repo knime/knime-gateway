@@ -20,6 +20,7 @@ package com.knime.gateway.local.workflow;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -47,6 +48,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
+import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -118,39 +120,43 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
      * {@inheritDoc}
      */
     @Override
-    protected NodeDialogPane getDialogPaneWithSettings(final Future<NodeSettings> nodeSettings,
+    protected Future<NodeDialogPane> getDialogPaneWithSettings(final Future<NodeSettings> nodeSettings,
         final Future<PortObjectSpec[]> portObjectSpecs, final Future<FlowObjectStack> flowObjectStack,
         final NodeDialogPane dialogPane, final ExecutorService exec)
         throws NotConfigurableException, InterruptedException, ExecutionException {
+        return AsyncNodeContainerUI.future(() -> {
+            try {
+                //get metanode dialog representation
+                Future<MetaNodeDialogEnt> dialogEnt = exec.submit(() -> getAccess().nodeService()
+                    .getWMetaNodeDialog(getEntity().getRootWorkflowID(), getEntity().getNodeID()));
 
-        //get metanode dialog representation
-        Future<MetaNodeDialogEnt> dialogEnt = exec.submit(() -> getAccess().nodeService()
-            .getWMetaNodeDialog(getEntity().getRootWorkflowID(), getEntity().getNodeID()));
+                Map<NodeID, MetaNodeDialogNode> nodes = dialogEnt.get().getComponents().stream().collect(
+                    Collectors.toMap(c -> getAccess().getNodeID(getEntity().getRootWorkflowID(), c.getNodeID()), c -> {
+                        return new EntityProxyDialogNode(c, getAccess());
+                    }));
 
-        shutdownExecutorsAndWait(exec);
+                NodeDialogPane resDialogPane;
+                if (dialogPane == null) {
+                    resDialogPane = createDialogPane();
+                } else {
+                    resDialogPane = dialogPane;
+                }
 
-        Map<NodeID, MetaNodeDialogNode> nodes = dialogEnt.get().getComponents().stream()
-            .collect(Collectors.toMap(c -> getAccess().getNodeID(getEntity().getRootWorkflowID(), c.getNodeID()), c -> {
-                return new EntityProxyDialogNode(c, getAccess());
-            }));
+                ((MetaNodeDialogPane)resDialogPane).setQuickformNodes(nodes);
 
-        NodeDialogPane resDialogPane;
-        if (dialogPane == null) {
-            resDialogPane = createDialogPane();
-        } else {
-            resDialogPane = dialogPane;
-        }
-
-        ((MetaNodeDialogPane)resDialogPane).setQuickformNodes(nodes);
-
-        // remove the flow variable port from the specs and data
-        PortObjectSpec[] correctedInSpecs = ArrayUtils.remove(portObjectSpecs.get(), 0);
-        // the next call will call dialogPane.internalLoadSettingsFrom()
-        // dialogPane is a MetaNodeDialogPane and does not handle the flow variable port correctly
-        // this is why we remove it first
-        Node.invokeDialogInternalLoad(resDialogPane, nodeSettings.get(), correctedInSpecs, null, flowObjectStack.get(),
-            CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, getParent().isWriteProtected());
-        return resDialogPane;
+                // remove the flow variable port from the specs and data
+                PortObjectSpec[] correctedInSpecs = ArrayUtils.remove(portObjectSpecs.get(), 0);
+                // the next call will call dialogPane.internalLoadSettingsFrom()
+                // dialogPane is a MetaNodeDialogPane and does not handle the flow variable port correctly
+                // this is why we remove it first
+                Node.invokeDialogInternalLoad(resDialogPane, nodeSettings.get(), correctedInSpecs, null,
+                    flowObjectStack.get(), CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER,
+                    getParent().isWriteProtected());
+                return resDialogPane;
+            } catch (NotConfigurableException | InterruptedException | ExecutionException ex) {
+                throw new CompletionException(ex);
+            }
+        });
     }
 
     private MetaNodeDialogPane createDialogPane() {

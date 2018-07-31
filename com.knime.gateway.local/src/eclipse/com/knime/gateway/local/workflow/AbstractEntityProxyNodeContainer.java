@@ -20,6 +20,7 @@ package com.knime.gateway.local.workflow;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -52,6 +53,7 @@ import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
+import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 
 import com.knime.gateway.util.DefaultEntUtil;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
@@ -70,7 +72,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @param <E>
  */
 public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extends AbstractEntityProxy<E>
-    implements NodeContainerUI {
+    implements AsyncNodeContainerUI {
 
     /**
      * The old entity used prior the update.
@@ -449,8 +451,11 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public NodeDialogPane getDialogPaneWithSettings() throws NotConfigurableException {
+    public CompletableFuture<NodeDialogPane> getDialogPaneWithSettingsAsync() throws NotConfigurableException {
         //by default there is no dialog
         throw new UnsupportedOperationException();
     }
@@ -676,7 +681,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public void setDirty() {
-        throw new UnsupportedOperationException();
+        //do nothing here
     }
 
     /**

@@ -19,7 +19,7 @@
 package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.local.service.ServiceManager.service;
-import static com.knime.gateway.local.service.ServiceManager.workflowService;
+import static com.knime.gateway.util.DefaultEntUtil.stringToNodeID;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -51,12 +51,12 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
-import com.knime.gateway.local.util.EntityProxyUtil;
 import com.knime.gateway.local.util.missing.MissingPortObject;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
@@ -74,6 +74,7 @@ import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -228,17 +229,29 @@ public class EntityProxyAccess {
      * @return the {@link NodeID}
      */
     NodeID getNodeID(final NodeEnt ent) {
-        return EntityProxyUtil.stringToNodeID(ROOT_ID_MAP.get(ent.getRootWorkflowID()), ent.getNodeID());
+        return stringToNodeID(ROOT_ID_MAP.get(ent.getRootWorkflowID()), ent.getNodeID());
     }
 
     /**
      * Gives the correct node id determined from a root workflow id and a string node id
-     * @param rootWorkflowID
-     * @param nodeID
+     * @param rootWorkflowID the id of the root workflow
+     * @param nodeID the id string to parse
      * @return the {@link NodeID}
      */
     NodeID getNodeID(final UUID rootWorkflowID, final String nodeID) {
-        return EntityProxyUtil.stringToNodeID(ROOT_ID_MAP.get(rootWorkflowID), nodeID);
+        return stringToNodeID(ROOT_ID_MAP.get(rootWorkflowID), nodeID);
+    }
+
+    /**
+     * Turns a string into the respective {@link WorkflowAnnotationID}.
+     * @param rootWorkflowID the id of the root workflow
+     * @param annotationID the id-string to parse
+     * @return the {@link WorkflowAnnotationID}
+     */
+    WorkflowAnnotationID getAnnotationID(final UUID rootWorkflowID, final String annotationID) {
+        String[] id = annotationID.split("_");
+        NodeID nodeID = getNodeID(rootWorkflowID, id[0]);
+        return new WorkflowAnnotationID(nodeID, Integer.valueOf(id[1]));
     }
 
     /**
@@ -250,8 +263,8 @@ public class EntityProxyAccess {
      * @param objCache the cache that allows one to re-use class instances
      * @return the {@link EntityProxyConnectionContainer} - either the cached one or newly created
      */
-    EntityProxyConnectionContainer getConnectionContainer(final ConnectionEnt c) {
-        return getOrCreate(c, o -> new EntityProxyConnectionContainer(c, this), EntityProxyConnectionContainer.class);
+    EntityProxyConnectionContainer getConnectionContainer(final ConnectionEnt c, final UUID rootWorkflowID) {
+        return getOrCreate(c, o -> new EntityProxyConnectionContainer(c, rootWorkflowID, this), EntityProxyConnectionContainer.class);
     }
 
     /**
@@ -330,9 +343,9 @@ public class EntityProxyAccess {
      * @param wa the entity to get the workflow annotation for
      * @return the {@link WorkflowAnnotation}
      */
-    EntityProxyWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa) {
+    EntityProxyWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa, final UUID rootWorkflowID) {
         return getOrCreate(wa, o -> {
-            return new EntityProxyWorkflowAnnotation(wa, this);
+            return new EntityProxyWorkflowAnnotation(wa, rootWorkflowID, this);
         }, EntityProxyWorkflowAnnotation.class);
     }
 
@@ -346,14 +359,14 @@ public class EntityProxyAccess {
         if (workflowNodeEnt.getParentNodeID() != null) {
             //in case it's a sub-workflow
             try {
-                return workflowService(m_serviceConfig)
+                return workflowService()
                     .getSubWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
             } catch (NotASubWorkflowException | NodeNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
         } else {
             //in case it's the root workflow
-            return workflowService(m_serviceConfig).getWorkflow(workflowNodeEnt.getRootWorkflowID());
+            return workflowService().getWorkflow(workflowNodeEnt.getRootWorkflowID());
         }
     }
 
@@ -373,7 +386,7 @@ public class EntityProxyAccess {
         if (workflowNodeEnt.getParentNodeID() == null) {
             //in case it's the root workflow
             try {
-                patch = workflowService(m_serviceConfig).getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
+                patch = workflowService().getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
                     snapshotID);
             } catch (NotFoundException ex) {
                 //no snapshot for the given id -> download entire workflow again
@@ -382,7 +395,7 @@ public class EntityProxyAccess {
         } else {
             // in case it's a sub-workflow
             try {
-                patch = workflowService(m_serviceConfig).getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
+                patch = workflowService().getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
                     workflowNodeEnt.getNodeID(), snapshotID);
             } catch (NotASubWorkflowException ex) {
                 throw new RuntimeException(ex);
@@ -625,6 +638,13 @@ public class EntityProxyAccess {
      */
     NodeService nodeService() {
         return service(NodeService.class, m_serviceConfig);
+    }
+
+    /**
+     * @return the current workflow service in use
+     */
+    WorkflowService workflowService() {
+        return service(WorkflowService.class, m_serviceConfig);
     }
 
     /**

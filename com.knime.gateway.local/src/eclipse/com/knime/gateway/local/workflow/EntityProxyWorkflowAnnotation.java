@@ -18,10 +18,13 @@
  */
 package com.knime.gateway.local.workflow;
 
+import java.util.UUID;
+
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 
 import com.knime.gateway.v0.entity.AnnotationEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
@@ -38,15 +41,20 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements Entity
 
     private WorkflowAnnotationEnt m_entity;
 
+    private UUID m_rootWorkflowID;
+
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
      * @param entity
+     * @param rootWorkflowID the id of the root workflow
      * @param clientProxyAccess
      */
-    EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final EntityProxyAccess clientProxyAccess) {
+    EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final UUID rootWorkflowID,
+        final EntityProxyAccess clientProxyAccess) {
         super(getAnnotationData(entity));
         m_entity = entity;
+        m_rootWorkflowID = rootWorkflowID;
         m_clientProxyAccess = clientProxyAccess;
     }
 
@@ -58,6 +66,16 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements Entity
     @Override
     public EntityProxyAccess getAccess() {
         return m_clientProxyAccess;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkflowAnnotationID getID() {
+        //parse id from property in entity
+        //TODO cache
+        return getAccess().getAnnotationID(m_rootWorkflowID, getEntity().getAnnotationID());
     }
 
     @Override

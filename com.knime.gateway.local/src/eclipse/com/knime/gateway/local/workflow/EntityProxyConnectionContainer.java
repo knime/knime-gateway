@@ -19,7 +19,9 @@
 package com.knime.gateway.local.workflow;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionProgressEvent;
@@ -28,6 +30,7 @@ import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.ConnectionUIInformationListener;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
+import org.knime.workbench.editor2.commands.DeleteCommand;
 
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.XYEnt;
@@ -40,14 +43,17 @@ import com.knime.gateway.v0.entity.XYEnt;
 class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
     implements ConnectionContainerUI {
 
+    private UUID m_rootWorkflowID;
+
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
      * @param conn
      * @param access
      */
-    EntityProxyConnectionContainer(final ConnectionEnt conn, final EntityProxyAccess access) {
+    EntityProxyConnectionContainer(final ConnectionEnt conn, final UUID rootWorkflowID, final EntityProxyAccess access) {
         super(conn, access);
+        m_rootWorkflowID = rootWorkflowID;
     }
 
     /**
@@ -77,7 +83,7 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
      */
     @Override
     public NodeID getDest() {
-        return NodeID.fromString(getEntity().getDest());
+        return getAccess().getNodeID(m_rootWorkflowID, getEntity().getDest());
     }
 
     /**
@@ -93,7 +99,7 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
      */
     @Override
     public NodeID getSource() {
-        return NodeID.fromString(getEntity().getSource());
+        return getAccess().getNodeID(m_rootWorkflowID, getEntity().getSource());
     }
 
     /**
@@ -141,7 +147,7 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
      */
     @Override
     public void setUIInfo(final ConnectionUIInformation uiInfo) {
-        throw new UnsupportedOperationException();
+
     }
 
     /**
@@ -187,6 +193,36 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
     public void cleanup() {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Needs to be implemented since, e.g., used in line 155 of {@link DeleteCommand}.
+     *
+     * Implementation take from {@link ConnectionContainer#equals(Object)}.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof EntityProxyConnectionContainer)) {
+            return false;
+        }
+        EntityProxyConnectionContainer cc = (EntityProxyConnectionContainer)obj;
+        return getDest().equals(cc.getDest()) && (getDestPort() == cc.getDestPort())
+        && getSource().equals(cc.getSource()) && (getSourcePort() == cc.getSourcePort())
+                && getType().equals(cc.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Needs to be implemented since, e.g., used in line 155 of {@link DeleteCommand}.
+     *
+     * Implementation take from {@link ConnectionContainer#hashCode()}.
+     */
+    @Override
+    public int hashCode() {
+        return getDest().hashCode() + getSource().hashCode() + getDestPort() + getSourcePort() + getType().hashCode();
     }
 
 }

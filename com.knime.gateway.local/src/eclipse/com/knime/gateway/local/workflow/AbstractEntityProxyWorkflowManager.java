@@ -18,10 +18,14 @@
  */
 package com.knime.gateway.local.workflow;
 
-import static com.knime.gateway.local.util.EntityProxyUtil.nodeIDToString;
+import static com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.processChanges;
+import static com.knime.gateway.util.DefaultEntUtil.connectionIDToString;
+import static com.knime.gateway.util.DefaultEntUtil.nodeIDToString;
+import static com.knime.gateway.util.EntityBuilderUtil.buildConnectionEnt;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,7 +35,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -40,6 +50,7 @@ import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.EditorUIInformation;
 import org.knime.core.node.workflow.FlowVariable;
@@ -51,31 +62,44 @@ import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
 import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowContext;
+import org.knime.core.node.workflow.WorkflowCopyContent;
+import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
+import org.knime.core.ui.node.workflow.WorkflowCopyWithOffsetUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
+import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
+import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.util.Pair;
 
+import com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.WorkflowEntChangeListener;
 import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.util.EntityBuilderUtil;
+import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
+import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Abstract {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
@@ -85,7 +109,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @param <E> the type of the workflow node entity (e.g. wrapped)
  */
 abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends AbstractEntityProxyNodeContainer<E>
-    implements WorkflowManagerUI {
+    implements AsyncWorkflowManagerUI {
 
     /**
      * The name of the property of a node entity holding it's state as defined by the gateway API.
@@ -99,6 +123,14 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     private boolean m_isDisconnected = false;
 
     private final List<Runnable> m_writeProtectionChangedListeners = new ArrayList<Runnable>();
+
+    private CopyOnWriteArrayList<WorkflowListener> m_wfmListeners = new CopyOnWriteArrayList<WorkflowListener>();
+
+    /* Lock to ensure that only one refresh happens at a time and refreshes are not getting queued up */
+    private final ReentrantLock m_refreshLock = new ReentrantLock();
+
+    /* Listener to apply workflow patches for update/refresh */
+    private final WorkflowEntChangeListener m_workflowEntChangeListener = new MyWorkflowEntChangeListener();
 
     /**
      * @param workflowNodeEnt
@@ -137,7 +169,27 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canRemoveNode(final NodeID nodeID) {
-        return false;
+        //TODO
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> removeAsync(final NodeID[] nodeIDs, final ConnectionID[] connectionIDs,
+        final WorkflowAnnotationID[] annotationIDs) {
+        return futureRefresh(() -> {
+            WorkflowPartsEnt parts =
+                EntityBuilderUtil.buildWorkflowPartsEnt(getID(), nodeIDs, connectionIDs, annotationIDs);
+            try {
+                getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(), parts, false);
+            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
+            return null;
+        });
     }
 
     /**
@@ -170,13 +222,53 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
+    public boolean canRemoveConnection(final ConnectionID connectionID) {
+        //TODO
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<ConnectionContainerUI> addConnectionAsync(final NodeID source, final int sourcePort,
+        final NodeID dest, final int destPort, final int[][] bendpoints) {
+        return futureRefresh(() -> {
+            // determine connection type
+            NodeEnt sourceNode = getWorkflow().getNodes().get(nodeIDToString(source));
+            NodeEnt destNode = getWorkflow().getNodes().get(nodeIDToString(dest));
+            ConnectionType type;
+            if ((sourceNode == null) && (destNode == null)) {
+                type = ConnectionType.WFMTHROUGH;
+            } else if (sourceNode == null) {
+                type = ConnectionType.WFMIN;
+            } else if (destNode == null) {
+                type = ConnectionType.WFMOUT;
+            } else {
+                type = ConnectionType.STD;
+            }
+            ConnectionEnt connectionEnt = buildConnectionEnt(source, sourcePort, dest, destPort, type, bendpoints);
+            try {
+                getAccess().workflowService().createConnection(getEntity().getRootWorkflowID(), connectionEnt);
+            } catch (ActionNotAllowedException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
+            return getAccess().getConnectionContainer(connectionEnt, getEntity().getRootWorkflowID());
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id, final int portIdx) {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
         String nodeID = nodeIDToString(id);
-        for (ConnectionEnt c : getWorkflow().getConnections()) {
+        for (ConnectionEnt c : getWorkflow().getConnections().values()) {
             if (c.getSource().equals(nodeID) && c.getSourcePort() == portIdx) {
-                res.add(getAccess().getConnectionContainer(c));
+                res.add(getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()));
             }
         }
         return res;
@@ -190,9 +282,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
         String nodeID = nodeIDToString(id);
-        for (ConnectionEnt c : getWorkflow().getConnections()) {
+        for (ConnectionEnt c : getWorkflow().getConnections().values()) {
             if (c.getSource().equals(nodeID)) {
-                res.add(getAccess().getConnectionContainer(c));
+                res.add(getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()));
             }
         }
         return res;
@@ -203,14 +295,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public ConnectionContainerUI getIncomingConnectionFor(final NodeID id, final int portIdx) {
-        //TODO introduce a more efficient data structure to access the right connection
-        String nodeID = nodeIDToString(id);
-        for (ConnectionEnt c : getWorkflow().getConnections()) {
-            if (c.getDest().equals(nodeID) && c.getDestPort() == portIdx) {
-                return getAccess().getConnectionContainer(c);
-            }
-        }
-        return null;
+        String connID = connectionIDToString(nodeIDToString(id), portIdx);
+        return getAccess().getConnectionContainer(getWorkflow().getConnections().get(connID),
+            getEntity().getRootWorkflowID());
     }
 
     /**
@@ -221,9 +308,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
         String nodeID = nodeIDToString(id);
-        for (ConnectionEnt c : getWorkflow().getConnections()) {
+        for (ConnectionEnt c : getWorkflow().getConnections().values()) {
             if (c.getDest().equals(nodeID)) {
-                res.add(getAccess().getConnectionContainer(c));
+                res.add(getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()));
             }
         }
         return res;
@@ -234,14 +321,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public ConnectionContainerUI getConnection(final ConnectionID id) {
-        //TODO introduce a more efficient data structure to access the right connection
-        for (ConnectionEnt c : getWorkflow().getConnections()) {
-            if (getWorkflow().getNodes().get(c.getDest()).getNodeID().equals(nodeIDToString(id.getDestinationNode()))
-                && id.getDestinationPort() == c.getDestPort()) {
-                return getAccess().getConnectionContainer(c);
-            }
-        }
-        return null;
+        ConnectionEnt connectionEnt = getWorkflow().getConnections().get(connectionIDToString(id));
+        return getAccess().getConnectionContainer(connectionEnt, getEntity().getRootWorkflowID());
     }
 
     /**
@@ -341,6 +422,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         //TODO ask server whether the node can be reset (i.e. whether there are executing successors etc.)
         //very simple (but not complete!) logic to check whether a node can be reset
         NodeContainerUI nc = getNodeContainer(nodeID);
+        if(nc == null) {
+            return false;
+        }
         assert nc instanceof AbstractEntityProxyNodeContainer;
         return ((AbstractEntityProxyNodeContainer) nc).canReset();
     }
@@ -366,6 +450,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             return false;
         }
         NodeContainerUI nc = getNodeContainer(nodeID);
+        if (nc == null) {
+            return false;
+        }
         assert nc instanceof AbstractEntityProxyNodeContainer;
         return ((AbstractEntityProxyNodeContainer)nc).canExecute();
     }
@@ -378,7 +465,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         if (isWriteProtected()) {
             return false;
         }
-        return getNodeContainer(nodeID).getNodeContainerState().isExecutionInProgress();
+        NodeContainerUI nc = getNodeContainer(nodeID);
+        if (nc == null) {
+            return false;
+        }
+        return nc.getNodeContainerState().isExecutionInProgress();
     }
 
     /**
@@ -496,9 +587,10 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public Collection<ConnectionContainerUI> getConnectionContainers() {
-        List<? extends ConnectionEnt> connections = getWorkflow().getConnections();
+        Collection<? extends ConnectionEnt> connections = getWorkflow().getConnections().values();
         //return exactly the same connection container instance for the same connection entity
-        return connections.stream().map(c -> getAccess().getConnectionContainer(c)).collect(Collectors.toList());
+        return connections.stream().map(c -> getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -509,6 +601,14 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         final NodeEnt nodeEnt = getWorkflow().getNodes().get(nodeIDToString(id));
         //return exactly the same node container instance for the same node entity
         return getAccess().getNodeContainer(nodeEnt);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean containsNodeContainer(final NodeID id) {
+        return getWorkflow().getNodes().get(nodeIDToString(id)) != null;
     }
 
     /**
@@ -593,7 +693,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public void addListener(final WorkflowListener listener) {
-        //TODO
+        if (!m_wfmListeners.contains(listener)) {
+            m_wfmListeners.add(listener);
+        }
     }
 
     /**
@@ -601,7 +703,78 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public void removeListener(final WorkflowListener listener) {
-        //TODO
+        m_wfmListeners.remove(listener);
+    }
+
+    private final void notifyWorkflowListeners(final WorkflowEvent evt) {
+        if (m_wfmListeners.isEmpty()) {
+            return;
+        }
+        m_wfmListeners.forEach(l -> l.workflowChanged(evt));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<WorkflowCopyWithOffsetUI> copyAsync(final WorkflowCopyContent content) {
+        return AsyncNodeContainerUI.future(() -> {
+            WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(getID(), content);
+            UUID partsID = getAccess().workflowService().createWorkflowCopy(getEntity().getRootWorkflowID(),
+                workflowPartsEnt);
+            int[] offset = EntityProxyWorkflowCopy.calcOffset(content, this);
+            return new EntityProxyWorkflowCopy(partsID, offset[0], offset[1]);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<WorkflowCopyWithOffsetUI> cutAsync(final WorkflowCopyContent content) {
+        return AsyncNodeContainerUI.future(() -> {
+            WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(getID(), content);
+            UUID partsID;
+            try {
+                partsID = getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(),
+                    workflowPartsEnt, true);
+            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
+            int[] offset = EntityProxyWorkflowCopy.calcOffset(content, this);
+            return new EntityProxyWorkflowCopy(partsID, offset[0], offset[1]);
+        });
+
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if the workflow copy is not of type {@link EntityProxyWorkflowCopy}
+     */
+    @Override
+    public CompletableFuture<WorkflowCopyContent> pasteAsync(final WorkflowCopyWithOffsetUI workflowCopy) {
+        if (workflowCopy instanceof EntityProxyWorkflowCopy) {
+            return futureRefresh(() -> {
+                EntityProxyWorkflowCopy epwc = (EntityProxyWorkflowCopy)workflowCopy;
+                WorkflowPartsEnt workflowPartsEnt;
+                try {
+                    workflowPartsEnt = getAccess().workflowService()
+                        .pasteWorkflowParts(getEntity().getRootWorkflowID(), epwc.getPartsID(),
+                            epwc.getX() + epwc.getXShift(), epwc.getY() + epwc.getYShift(), getEntity().getNodeID());
+                } catch (NotASubWorkflowException | NotFoundException ex) {
+                    //should never happen
+                    throw new CompletionException(ex);
+                }
+                return EntityTranslateUtil.translateWorkflowPartsEnt(workflowPartsEnt,
+                    s -> getAccess().getNodeID(getEntity().getRootWorkflowID(), s),
+                    s -> getAccess().getAnnotationID(getEntity().getRootWorkflowID(), s));
+            });
+        } else {
+            throw new IllegalArgumentException(
+                "Only worklfow copies of type '" + EntityProxyWorkflowCopy.class.getSimpleName() + "' allowed.");
+        }
     }
 
     /**
@@ -721,7 +894,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public Collection<WorkflowAnnotation> getWorkflowAnnotations() {
-        return getWorkflow().getWorkflowAnnotations().stream().map(wa -> getAccess().getWorkflowAnnotation(wa))
+        return getWorkflow().getWorkflowAnnotations().values().stream()
+            .map(wa -> getAccess().getWorkflowAnnotation(wa, getEntity().getRootWorkflowID()))
             .collect(Collectors.toList());
     }
 
@@ -729,7 +903,22 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public void addWorkflowAnnotation(final WorkflowAnnotation annotation) {
+    public WorkflowAnnotation[] getWorkflowAnnotations(final WorkflowAnnotationID... ids) {
+        if (ids.length == 0) {
+            return new WorkflowAnnotation[0];
+        }
+        return Arrays.stream(ids).map(waID -> {
+            WorkflowAnnotationEnt ent =
+                getWorkflow().getWorkflowAnnotations().get(DefaultEntUtil.annotationIDToString(waID));
+            return getAccess().getWorkflowAnnotation(ent, getEntity().getRootWorkflowID());
+        }).toArray(size -> new WorkflowAnnotation[size]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkflowAnnotationID addWorkflowAnnotation(final WorkflowAnnotation annotation) {
         throw new UnsupportedOperationException();
     }
 
@@ -851,68 +1040,82 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean isRefreshable() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
-    public void refresh(final boolean deepRefresh) {
-        //only refresh if the workflow was retrieved already
-        if (m_workflowEnt != null) {
-            WorkflowEnt oldWorkflow = m_workflowEnt;
-            // update workflow
-            Triple<WorkflowEnt, UUID, PatchEnt> res =
-                getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
-            m_workflowEnt = res.getLeft();
+    public CompletableFuture<Void> refresh(final boolean deepRefresh) {
+        return AsyncNodeContainerUI.future(() -> {
+            refreshInternal(deepRefresh);
+            return null;
+        });
+    }
 
-            if (oldWorkflow != m_workflowEnt) {
-                // refresh the workflow manager only if there is a new (updated) workflow entity
+    private void refreshInternal(final boolean deepRefresh) {
+        //return immediately if there is currently a refresh already going on
+        if (!m_refreshLock.tryLock()) {
+            return;
+        }
 
-                m_snapshotID = res.getMiddle();
-                assert (m_snapshotID != null);
-                for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
-                    getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
+        try {
+            //only refresh if the workflow was retrieved already
+            if (m_workflowEnt != null) {
+                WorkflowEnt oldWorkflow = m_workflowEnt;
+                // update workflow
+                Triple<WorkflowEnt, UUID, PatchEnt> res =
+                    getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
+                m_workflowEnt = res.getLeft();
+
+                if (oldWorkflow != m_workflowEnt) {
+                    // refresh the workflow manager only if there is a new (updated) workflow entity
+
+                    m_snapshotID = res.getMiddle();
+                    assert (m_snapshotID != null);
+                    for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
+                        getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
+                    }
+
+                    //refresh the workflow node entity, too, if it is the root workflow
+                    //(e.g. that contains the state of this metanode)
+                    if (getEntity().getNodeID().equals(DefaultEntUtil.ROOT_NODE_ID)) {
+                        //only try updating the root workflow node entity
+                        //if there is at least one state change of the contained nodes
+                        //(saves http-requests)
+                        if (res.getRight() != null && res.getRight().getOps().stream().anyMatch(o -> {
+                            return o.getPath().contains(NODESTATE_PROPERTY);
+                        })) {
+                            try {
+                                super.update((E)getAccess().nodeService().getNode(getEntity().getRootWorkflowID(),
+                                    getEntity().getNodeID()));
+                            } catch (NodeNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }
                 }
 
-                //refresh the workflow node entity, too, if it is the root workflow
-                //(e.g. that contains the state of this metanode)
-                if (getEntity().getNodeID().equals(DefaultEntUtil.ROOT_NODE_ID)) {
-                    //only try updating the root workflow node entity
-                    //if there is at least one state change of the contained nodes
-                    //(saves http-requests)
-                    if (res.getRight() != null && res.getRight().getOps().stream().anyMatch(o -> {
-                        return o.getPath().contains(NODESTATE_PROPERTY);
-                    })) {
-                        try {
-                            super.update((E)getAccess().nodeService().getNode(getEntity().getRootWorkflowID(),
-                                getEntity().getNodeID()));
-                        } catch (NodeNotFoundException ex) {
-                            throw new RuntimeException(ex);
+                //apply patch changes
+                processChanges(res.getRight(), oldWorkflow, m_workflowEnt, m_workflowEntChangeListener);
+
+                if (deepRefresh) {
+                    //refresh all contained workflows (i.e. metanodes)
+                    for (NodeEnt node : m_workflowEnt.getNodes().values()) {
+                        AsyncWorkflowManagerUI wfm = null;
+                        //order of checking very important here since WrappedWorkflowNodeEnt is a subclass of WorkflowNodeEnt
+                        if (node instanceof WrappedWorkflowNodeEnt) {
+                            wfm = (AsyncWorkflowManagerUI)((SubNodeContainerUI)getAccess().getNodeContainer(node))
+                                .getWorkflowManager();
+                        } else if (node instanceof WorkflowNodeEnt) {
+                            wfm = (AsyncWorkflowManagerUI)getAccess().getNodeContainer(node);
+                        }
+                        if (wfm != null) {
+                            wfm.refresh(true).get();
                         }
                     }
                 }
             }
-
-            if (deepRefresh) {
-                //refresh all contained workflows (i.e. metanodes)
-                for (NodeEnt node : m_workflowEnt.getNodes().values()) {
-                    WorkflowManagerUI wfm = null;
-                    //order of checking very important here since WrappedWorkflowNodeEnt is a subclass of WorkflowNodeEnt
-                    if (node instanceof WrappedWorkflowNodeEnt) {
-                        wfm = ((SubNodeContainerUI)getAccess().getNodeContainer(node)).getWorkflowManager();
-                    } else if (node instanceof WorkflowNodeEnt) {
-                        wfm = (WorkflowManagerUI)getAccess().getNodeContainer(node);
-                    }
-                    if (wfm != null && wfm.isRefreshable()) {
-                        wfm.refresh(true);
-                    }
-                }
-            }
+        } catch (InterruptedException | ExecutionException ex) {
+            throw new CompletionException(ex);
+        } finally {
+            m_refreshLock.unlock();
         }
     }
 
@@ -1029,5 +1232,78 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public void removeWriteProtectionChangedListener(final Runnable listener) {
         m_writeProtectionChangedListeners.remove(listener);
+    }
+
+    /**
+     * Creates a new {@link CompletableFuture} that also triggers a workflow refresh when completed.
+     *
+     * @param sup the actual stuff to run
+     * @return a new future
+     */
+    private <U> CompletableFuture<U> futureRefresh(final Supplier<U> sup) {
+        return CompletableFuture.supplyAsync(sup).thenApply(u -> {
+            this.refreshInternal(false);
+            return u;
+        });
+    }
+
+    private class MyWorkflowEntChangeListener implements WorkflowEntChangeListener {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void nodeEntAdded(final NodeEnt newNode) {
+            NodeContainerUI nc = getAccess().getNodeContainer(newNode);
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.NODE_ADDED, nc.getID(), null, nc));
+
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void nodeEntRemoved(final NodeEnt removedNode) {
+            NodeContainerUI nc = getAccess().getNodeContainer(removedNode);
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.NODE_REMOVED, nc.getID(), nc, null));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void connectionEntAdded(final ConnectionEnt newConnection) {
+            EntityProxyConnectionContainer cc =
+                getAccess().getConnectionContainer(newConnection, getEntity().getRootWorkflowID());
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_ADDED, null, null, cc));
+
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void connectionEntRemoved(final ConnectionEnt removedConnection) {
+            ConnectionContainerUI cc =
+                getAccess().getConnectionContainer(removedConnection, getEntity().getRootWorkflowID());
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_REMOVED, null, cc, null));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void annotationEntAdded(final WorkflowAnnotationEnt newAnno) {
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.ANNOTATION_ADDED, null, null, null));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void annotationEntRemoved(final WorkflowAnnotationEnt removedAnno) {
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.ANNOTATION_REMOVED, null, null, null));
+        }
+
     }
 }
