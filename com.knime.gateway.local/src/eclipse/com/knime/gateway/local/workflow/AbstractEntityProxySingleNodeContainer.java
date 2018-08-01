@@ -20,7 +20,6 @@ package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +38,7 @@ import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
+import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
 import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -100,13 +100,13 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
      * {@inheritDoc}
      */
     @Override
-    public CompletableFuture<NodeDialogPane> getDialogPaneWithSettingsAsync() throws NotConfigurableException {
+    public CompletableFutureEx<NodeDialogPane, NotConfigurableException> getDialogPaneWithSettingsAsync() {
         ExecutorService exec = Executors.newCachedThreadPool();
         final Future<NodeSettings> f1 = exec.submit(() -> getAccess().getNodeSettings(getEntity()));
         final Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
         final Future<FlowObjectStack> f3 =
             exec.submit(() -> getAccess().getInputFlowVariableStack(getEntity(), getID()));
-        return AsyncNodeContainerUI.future(() -> {
+        return AsyncNodeContainerUI.futureEx(() -> {
             try {
                 Future<NodeDialogPane> p = getDialogPaneWithSettings(f1, f2, f3, m_dialogPane, exec);
                 if (p != null) {
@@ -133,7 +133,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
             } finally {
                 exec.shutdown();
             }
-        });
+        }, NotConfigurableException.class);
     }
 
     @Override

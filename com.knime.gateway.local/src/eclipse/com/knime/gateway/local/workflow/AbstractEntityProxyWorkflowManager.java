@@ -19,9 +19,9 @@
 package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.processChanges;
+import static com.knime.gateway.util.EntityBuilderUtil.buildConnectionEnt;
 import static com.knime.gateway.util.EntityUtil.connectionIDToString;
 import static com.knime.gateway.util.EntityUtil.nodeIDToString;
-import static com.knime.gateway.util.EntityBuilderUtil.buildConnectionEnt;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -78,12 +78,14 @@ import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.WorkflowOutPortUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
+import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
+import org.knime.core.ui.node.workflow.async.OperationNotAllowedException;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.WorkflowEntChangeListener;
-import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.util.EntityTranslateUtil;
+import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -169,7 +171,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canRemoveNode(final NodeID nodeID) {
-        //TODO
+        //TODO in order to save requests #removeAsync fails with an exception
+        //when cannot be removed -> hence returns always true for now
         return true;
     }
 
@@ -177,9 +180,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public CompletableFuture<Void> removeAsync(final NodeID[] nodeIDs, final ConnectionID[] connectionIDs,
+    public CompletableFutureEx<Void, OperationNotAllowedException> removeAsync(final NodeID[] nodeIDs, final ConnectionID[] connectionIDs,
         final WorkflowAnnotationID[] annotationIDs) {
-        return futureRefresh(() -> {
+        return futureExRefresh(() -> {
             WorkflowPartsEnt parts =
                 EntityBuilderUtil.buildWorkflowPartsEnt(getID(), nodeIDs, connectionIDs, annotationIDs);
             try {
@@ -187,9 +190,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             } catch (NotASubWorkflowException | NodeNotFoundException ex) {
                 //should never happen
                 throw new CompletionException(ex);
+            } catch (ActionNotAllowedException ex) {
+                throw new CompletionException(new OperationNotAllowedException(ex.getMessage(), ex));
             }
             return null;
-        });
+        }, OperationNotAllowedException.class);
     }
 
     /**
@@ -223,7 +228,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canRemoveConnection(final ConnectionID connectionID) {
-        //TODO
+        //TODO in order to save requests #removeAsync fails with an exception
+        //when cannot be removed -> hence returns always true for now
         return true;
     }
 
@@ -251,7 +257,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             try {
                 getAccess().workflowService().createConnection(getEntity().getRootWorkflowID(), connectionEnt);
             } catch (ActionNotAllowedException ex) {
-                //should never happen
+                //TODO should never happen currently
+                //needs to be handled as soon as adding connections by
+                //by the user is supported
                 throw new CompletionException(ex);
             }
             return getAccess().getConnectionContainer(connectionEnt, getEntity().getRootWorkflowID());
@@ -731,20 +739,23 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public CompletableFuture<WorkflowCopyWithOffsetUI> cutAsync(final WorkflowCopyContent content) {
-        return AsyncNodeContainerUI.future(() -> {
+    public CompletableFutureEx<WorkflowCopyWithOffsetUI, OperationNotAllowedException>
+        cutAsync(final WorkflowCopyContent content) {
+        return futureExRefresh(() -> {
             WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(getID(), content);
-            UUID partsID;
+            UUID partsId;
             try {
-                partsID = getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(),
+                partsId = getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(),
                     workflowPartsEnt, true);
             } catch (NotASubWorkflowException | NodeNotFoundException ex) {
                 //should never happen
                 throw new CompletionException(ex);
+            } catch (ActionNotAllowedException ex) {
+                throw new CompletionException(new OperationNotAllowedException(ex.getMessage(), ex));
             }
             int[] offset = EntityProxyWorkflowCopy.calcOffset(content, this);
-            return new EntityProxyWorkflowCopy(partsID, offset[0], offset[1]);
-        });
+            return new EntityProxyWorkflowCopy(partsId, offset[0], offset[1]);
+        }, OperationNotAllowedException.class);
 
     }
 
@@ -767,7 +778,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                     //should never happen
                     throw new CompletionException(ex);
                 } catch (NotFoundException ex) {
-                    //TODO
+                    //should almost never happen
                     throw new CompletionException("Workflow copy not available anymore", ex);
                 }
                 return EntityTranslateUtil.translateWorkflowPartsEnt(workflowPartsEnt,
@@ -1248,6 +1259,21 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             this.refreshInternal(false);
             return u;
         });
+    }
+
+    /**
+     * Creates a new {@link CompletableFutureEx} that also triggers a workflow refresh when completed.
+     *
+     * @param sup the actual stuff to run
+     * @param exceptionClass the possibly thrown exception when run with {@link CompletableFutureEx#getOrThrow()}
+     * @return a new future
+     */
+    private <U, E extends Exception> CompletableFutureEx<U, E> futureExRefresh(final Supplier<U> sup,
+        final Class<E> exceptionClass) {
+        return new CompletableFutureEx<U, E>(CompletableFuture.supplyAsync(sup).thenApply(u -> {
+            this.refreshInternal(false);
+            return u;
+        }), exceptionClass);
     }
 
     private class MyWorkflowEntChangeListener implements WorkflowEntChangeListener {

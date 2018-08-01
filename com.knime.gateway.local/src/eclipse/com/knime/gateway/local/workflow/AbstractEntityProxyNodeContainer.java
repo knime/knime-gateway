@@ -20,7 +20,6 @@ package com.knime.gateway.local.workflow;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -54,6 +53,7 @@ import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
+import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
 import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
@@ -455,7 +455,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * {@inheritDoc}
      */
     @Override
-    public CompletableFuture<NodeDialogPane> getDialogPaneWithSettingsAsync() throws NotConfigurableException {
+    public CompletableFutureEx<NodeDialogPane, NotConfigurableException> getDialogPaneWithSettingsAsync() {
         //by default there is no dialog
         throw new UnsupportedOperationException();
     }
