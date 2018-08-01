@@ -60,7 +60,7 @@ public interface WorkflowService extends GatewayService {
      *
      * @param jobId ID the job the workflow is requested for
      * @param parts The parts to be deleted.
-     * @param copy If a copy should be created before removal. False by default. Please note that the copy will _only include the connections that are entirely enclosed by the parts to be removed (i.e. connections that are connecting a two removed nodes - all others won&#39;t be recorded)
+     * @param copy If a copy should be created before removal. False by default. Please note that the copy will _only_ include the connections that are entirely enclosed by the parts to be removed (i.e. connections that are connecting two removed nodes - all others won&#39;t be kept)
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.

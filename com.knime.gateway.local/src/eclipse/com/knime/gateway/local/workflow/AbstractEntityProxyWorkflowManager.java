@@ -19,8 +19,8 @@
 package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.processChanges;
-import static com.knime.gateway.util.DefaultEntUtil.connectionIDToString;
-import static com.knime.gateway.util.DefaultEntUtil.nodeIDToString;
+import static com.knime.gateway.util.EntityUtil.connectionIDToString;
+import static com.knime.gateway.util.EntityUtil.nodeIDToString;
 import static com.knime.gateway.util.EntityBuilderUtil.buildConnectionEnt;
 
 import java.net.URL;
@@ -81,7 +81,7 @@ import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.WorkflowEntChangeListener;
-import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
@@ -763,9 +763,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                     workflowPartsEnt = getAccess().workflowService()
                         .pasteWorkflowParts(getEntity().getRootWorkflowID(), epwc.getPartsID(),
                             epwc.getX() + epwc.getXShift(), epwc.getY() + epwc.getYShift(), getEntity().getNodeID());
-                } catch (NotASubWorkflowException | NotFoundException ex) {
+                } catch (NotASubWorkflowException ex) {
                     //should never happen
                     throw new CompletionException(ex);
+                } catch (NotFoundException ex) {
+                    //TODO
+                    throw new CompletionException("Workflow copy not available anymore", ex);
                 }
                 return EntityTranslateUtil.translateWorkflowPartsEnt(workflowPartsEnt,
                     s -> getAccess().getNodeID(getEntity().getRootWorkflowID(), s),
@@ -909,7 +912,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         }
         return Arrays.stream(ids).map(waID -> {
             WorkflowAnnotationEnt ent =
-                getWorkflow().getWorkflowAnnotations().get(DefaultEntUtil.annotationIDToString(waID));
+                getWorkflow().getWorkflowAnnotations().get(EntityUtil.annotationIDToString(waID));
             return getAccess().getWorkflowAnnotation(ent, getEntity().getRootWorkflowID());
         }).toArray(size -> new WorkflowAnnotation[size]);
     }
@@ -1075,7 +1078,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
                     //refresh the workflow node entity, too, if it is the root workflow
                     //(e.g. that contains the state of this metanode)
-                    if (getEntity().getNodeID().equals(DefaultEntUtil.ROOT_NODE_ID)) {
+                    if (getEntity().getNodeID().equals(EntityUtil.ROOT_NODE_ID)) {
                         //only try updating the root workflow node entity
                         //if there is at least one state change of the contained nodes
                         //(saves http-requests)

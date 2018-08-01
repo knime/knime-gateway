@@ -19,7 +19,7 @@
 package com.knime.gateway.util;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
-import static com.knime.gateway.util.DefaultEntUtil.nodeIDToString;
+import static com.knime.gateway.util.EntityUtil.nodeIDToString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -140,6 +140,10 @@ import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
+import com.knime.gateway.v0.entity.WorkflowPartsDeletionStatusEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsDeletionStatusEnt.WorkflowPartsDeletionStatusEntBuilder;
+import com.knime.gateway.v0.entity.WorkflowPartsDeletionStatus_failsEnt;
+import com.knime.gateway.v0.entity.WorkflowPartsDeletionStatus_failsEnt.WorkflowPartsDeletionStatus_failsEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
@@ -174,7 +178,7 @@ public class EntityBuilderUtil {
                 .collect(Collectors.toMap(n -> n.getNodeID(), n -> n));
         Map<String, ConnectionEnt> connections =
             wfm.getConnectionContainers().stream().map(cc -> buildConnectionEnt(cc)).collect(
-                Collectors.toMap(c -> DefaultEntUtil.connectionIDToString(c.getDest(), c.getDestPort()), c -> c));
+                Collectors.toMap(c -> EntityUtil.connectionIDToString(c.getDest(), c.getDestPort()), c -> c));
         Map<String, WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
             .map(wa -> buildWorkflowAnnotationEnt(wa)).collect(Collectors.toMap(wa -> wa.getAnnotationID(), wa -> wa));
         return builder(WorkflowEntBuilder.class)
@@ -370,6 +374,15 @@ public class EntityBuilderUtil {
                 .setHideInWizard(wnode.isHideInWizard()).build();
     }
 
+    /**
+     * Builds a new {@link MetaNodeDialogEnt}-object from a {@link SubNodeContainer}.
+     *
+     * @param snc the instance to build from
+     * @return a new {@link MetaNodeDialogEnt}-object
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     * @throws InvalidSettingsException
+     */
     @SuppressWarnings("rawtypes")
     public static MetaNodeDialogEnt buildMetaNodeDialogEnt(final SubNodeContainer snc)
         throws UnsupportedEncodingException, IOException, InvalidSettingsException {
@@ -397,18 +410,34 @@ public class EntityBuilderUtil {
                 .build();
     }
 
+    /**
+     * Helper to build a {@link WorkflowPartsEnt}-object from a {@link WorkflowCopyContent}-object.
+     *
+     * @param parentNodeID node id of the parent workflow
+     * @param cc the object to build from
+     * @return a new {@link WorkflowPartsEnt}-object
+     */
     public static WorkflowPartsEnt buildWorkflowPartsEnt(final NodeID parentNodeID, final WorkflowCopyContent cc) {
         return buildWorkflowPartsEnt(parentNodeID, cc.getNodeIDs(), new ConnectionID[0], cc.getAnnotationIDs());
     }
 
+    /**
+     * Helper to build a {@link WorkflowPartsEnt}-object from individual id-arrays.
+     *
+     * @param parentNodeID node id of the parent workflow
+     * @param nodeIDs the node ids to be included
+     * @param connectionIDs the connection ids to be included
+     * @param annotationIDs the annotation ids to be included
+     * @return a new {@link WorkflowPartsEnt}-object
+     */
     public static WorkflowPartsEnt buildWorkflowPartsEnt(final NodeID parentNodeID, final NodeID[] nodeIDs,
         final ConnectionID[] connectionIDs, final WorkflowAnnotationID[] annotationIDs) {
         return builder(WorkflowPartsEntBuilder.class)
             .setParentNodeID(nodeIDToString(parentNodeID))
             .setNodeIDs(Arrays.stream(nodeIDs).map(id -> nodeIDToString(id)).collect(Collectors.toList()))
-            .setConnectionIDs(Arrays.stream(connectionIDs).map(id -> DefaultEntUtil.connectionIDToString(id))
+            .setConnectionIDs(Arrays.stream(connectionIDs).map(id -> EntityUtil.connectionIDToString(id))
                 .collect(Collectors.toList()))
-            .setAnnotationIDs(Arrays.stream(annotationIDs).map(id -> DefaultEntUtil.annotationIDToString(id))
+            .setAnnotationIDs(Arrays.stream(annotationIDs).map(id -> EntityUtil.annotationIDToString(id))
                 .collect(Collectors.toList()))
             .build();
     }
@@ -721,7 +750,7 @@ public class EntityBuilderUtil {
         List<StyleRangeEnt> styleRanges =
             Arrays.stream(wa.getStyleRanges()).map(sr -> buildStyleRangeEnt(sr)).collect(Collectors.toList());
         return builder(WorkflowAnnotationEntBuilder.class)
-                .setAnnotationID(DefaultEntUtil.annotationIDToString(wa.getID()))
+                .setAnnotationID(EntityUtil.annotationIDToString(wa.getID()))
                 .setTextAlignment(wa.getAlignment().toString())
                 .setBackgroundColor(wa.getBgColor())
                 .setBorderColor(wa.getBorderColor())

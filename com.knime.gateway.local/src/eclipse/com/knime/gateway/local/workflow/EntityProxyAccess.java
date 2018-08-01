@@ -19,7 +19,7 @@
 package com.knime.gateway.local.workflow;
 
 import static com.knime.gateway.local.service.ServiceManager.service;
-import static com.knime.gateway.util.DefaultEntUtil.stringToNodeID;
+import static com.knime.gateway.util.EntityUtil.stringToNodeID;
 
 import java.io.IOException;
 import java.io.StringReader;

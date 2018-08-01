@@ -25,7 +25,7 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.LRUCache;
 
 /**
- * Keeps track of copies of parts of workflow represented by {@link WorkflowPersistor}-instances.
+ * Keeps track of copies of parts of workflows, represented by {@link WorkflowPersistor}-instances.
  *
  * The number of copies kept in the repository is limited and least recently used ones will be removed if exceeded.
  *
@@ -66,7 +66,7 @@ public class WorkflowCopyRepository {
     }
 
     /**
-     * Let one retrieve a copy from the repo if still available.
+     * Let one retrieve a copy from the repo (if available).
      *
      * @param copyId the identifier
      * @return the copy represented by a {@link WorkflowPersistor}-instance or <code>null</code> if there is none (e.g.

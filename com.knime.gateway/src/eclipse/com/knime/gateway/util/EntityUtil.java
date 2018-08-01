@@ -30,19 +30,19 @@ import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 
 /**
- * Utility methods used by the default entity implementations.
+ * Utility methods used by the default entity implementations and to deal with other entity related stuff.
  *
  * @author Martin Horn, University of Konstanz
  * @noreference This class is not intended to be referenced by clients.
  */
-public final class DefaultEntUtil {
+public final class EntityUtil {
 
     /**
      * Node id of the root node.
      */
     public static final String ROOT_NODE_ID = "root";
 
-    private DefaultEntUtil() {
+    private EntityUtil() {
         // utility class
     }
 
@@ -75,7 +75,7 @@ public final class DefaultEntUtil {
     public static String nodeIDToString(final NodeID nodeID) {
         String s = nodeID.toString();
         int index = s.indexOf(":");
-        return (index >= 0) ? s.substring(index + 1) : DefaultEntUtil.ROOT_NODE_ID;
+        return (index >= 0) ? s.substring(index + 1) : EntityUtil.ROOT_NODE_ID;
     }
 
 
@@ -88,7 +88,7 @@ public final class DefaultEntUtil {
      * @return the node id as {@link NodeID} object with the root node id prepended
      */
     public static NodeID stringToNodeID(final String rootID, final String nodeID) {
-        if (DefaultEntUtil.ROOT_NODE_ID.equals(nodeID)) {
+        if (EntityUtil.ROOT_NODE_ID.equals(nodeID)) {
             return NodeID.fromString(rootID);
         } else {
             return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(rootID));

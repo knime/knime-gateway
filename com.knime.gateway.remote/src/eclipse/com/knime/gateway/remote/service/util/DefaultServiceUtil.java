@@ -28,7 +28,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -48,7 +48,7 @@ public class DefaultServiceUtil {
      * Gets the node container (including (sub-)workflows) for the id-pair of root workflow- and node ID.
      *
      * @param rootWorkflowID id of the root workflow
-     * @param nodeID the node id to get the node/workflow for - if {@link DefaultEntUtil#ROOT_NODE_ID} the root workflow
+     * @param nodeID the node id to get the node/workflow for - if {@link EntityUtil#ROOT_NODE_ID} the root workflow
      *            itself will be returned
      * @return the {@link NodeContainer} instance
      * @throws NodeNotFoundException if there is no node for the given node id
@@ -57,7 +57,7 @@ public class DefaultServiceUtil {
     public static NodeContainer getNodeContainer(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
-        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+        if (nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
             return wfm;
         } else {
             try {

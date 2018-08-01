@@ -200,7 +200,7 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
      *
      * Needs to be implemented since, e.g., used in line 155 of {@link DeleteCommand}.
      *
-     * Implementation take from {@link ConnectionContainer#equals(Object)}.
+     * Implementation taken from {@link ConnectionContainer#equals(Object)}.
      */
     @Override
     public boolean equals(final Object obj) {
@@ -209,8 +209,8 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
         }
         EntityProxyConnectionContainer cc = (EntityProxyConnectionContainer)obj;
         return getDest().equals(cc.getDest()) && (getDestPort() == cc.getDestPort())
-        && getSource().equals(cc.getSource()) && (getSourcePort() == cc.getSourcePort())
-                && getType().equals(cc.getType());
+            && getSource().equals(cc.getSource()) && (getSourcePort() == cc.getSourcePort())
+            && getType().equals(cc.getType());
     }
 
     /**
@@ -218,7 +218,7 @@ class EntityProxyConnectionContainer extends AbstractEntityProxy<ConnectionEnt>
      *
      * Needs to be implemented since, e.g., used in line 155 of {@link DeleteCommand}.
      *
-     * Implementation take from {@link ConnectionContainer#hashCode()}.
+     * Implementation taken from {@link ConnectionContainer#hashCode()}.
      */
     @Override
     public int hashCode() {

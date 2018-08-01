@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.v0.entity.impl;
 
-import static com.knime.gateway.util.DefaultEntUtil.immutable;
+import static com.knime.gateway.util.EntityUtil.immutable;
 
 import java.util.Objects;
 

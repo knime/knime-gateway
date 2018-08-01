@@ -62,7 +62,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
@@ -159,7 +159,7 @@ public class DefaultNodeService implements NodeService {
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
         NodeID nodeID;
         WorkflowManager wfm;
-        if (nodeId.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+        if (nodeId.equals(EntityUtil.ROOT_NODE_ID)) {
             nodeID = rootWfm.getID();
             wfm = rootWfm.getParent();
         } else {

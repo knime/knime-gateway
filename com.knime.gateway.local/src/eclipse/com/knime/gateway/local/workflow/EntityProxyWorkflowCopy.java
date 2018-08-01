@@ -32,7 +32,8 @@ import org.knime.core.ui.node.workflow.WorkflowCopyWithOffsetUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
 /**
- * {@link WorkflowCopyUI} implementation that just wraps a parts-id representing that copy on the server.
+ * {@link WorkflowCopyUI} implementation that just wraps a parts-id representing that copy on the server and they
+ * offset (including an optional shift).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -91,6 +92,14 @@ final class EntityProxyWorkflowCopy implements WorkflowCopyWithOffsetUI {
         return m_yShift;
     }
 
+    /**
+     * Determines the offset (i.e. minimal x,y-position) of the workflow parts referenced by the
+     * {@link WorkflowCopyContent}-object.
+     *
+     * @param wcc objects to calculate the offset for
+     * @param wfm workflow manager to get the actual positions of the workflow parts
+     * @return 2-dim array (x,y) containing the offset
+     */
     static int[] calcOffset(final WorkflowCopyContent wcc, final WorkflowManagerUI wfm) {
         NodeID[] nodes = wcc.getNodeIDs();
         List<int[]> insertedElementBounds = new ArrayList<int[]>();

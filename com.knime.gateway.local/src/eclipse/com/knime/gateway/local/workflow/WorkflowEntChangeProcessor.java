@@ -26,7 +26,9 @@ import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 
 /**
- * Helper class to help apply changes represented by a {@link PatchEnt} to a {@link WorkflowEnt}.
+ * Helper class to help apply changes made to a {@link WorkflowEnt} represented by a {@link PatchEnt}.
+ *
+ * For each type of change the respective method in {@link WorkflowEntChangeListener} is called.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -55,7 +57,7 @@ class WorkflowEntChangeProcessor {
      * Process the changes given by the patch and calls the respective methods of the provided
      * {@link WorkflowEntChangeListener}.
      *
-     * @param patch changes to process if there are not changes or patch is <code>null</code> - immediate return
+     * @param patch changes to process if there are no changes or patch is <code>null</code> - immediate return
      * @param oldEnt the old workflow before the given patch has been applied
      * @param newEnt the new workflow of the application of the given patch
      * @param l callbacks for the respective changes
@@ -120,7 +122,11 @@ class WorkflowEntChangeProcessor {
 
     }
 
+    /**
+     * Callsbacks for changes made to a {@link WorkflowEnt}.
+     */
     interface WorkflowEntChangeListener {
+
         public void nodeEntAdded(NodeEnt newNode);
 
         public void nodeEntRemoved(NodeEnt removedNode);

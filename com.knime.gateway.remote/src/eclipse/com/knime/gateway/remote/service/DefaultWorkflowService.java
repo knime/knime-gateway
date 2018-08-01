@@ -20,7 +20,7 @@ package com.knime.gateway.remote.service;
 
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWorkflowManager;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getSubWorkflowManager;
-import static com.knime.gateway.util.DefaultEntUtil.connectionIDToString;
+import static com.knime.gateway.util.EntityUtil.connectionIDToString;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowEnt;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowPartsEnt;
 import static com.knime.gateway.util.EntityTranslateUtil.translateWorkflowPartsEnt;
@@ -50,7 +50,7 @@ import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.service.util.SimpleRepository;
 import com.knime.gateway.remote.service.util.WorkflowCopyRepository;
 import com.knime.gateway.remote.service.util.WorkflowEntRepository;
-import com.knime.gateway.util.DefaultEntUtil;
+import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
@@ -115,7 +115,7 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public WorkflowSnapshotEnt getSubWorkflow(final UUID rootWorkflowID, final String nodeID)
         throws NotASubWorkflowException, NodeNotFoundException {
-        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+        if (nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
             return getWorkflow(rootWorkflowID);
         }
         WorkflowEnt ent = createSubWorkflowEnt(rootWorkflowID, nodeID);
@@ -128,7 +128,7 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public PatchEnt getSubWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID)
         throws NotASubWorkflowException, NotFoundException {
-        if (nodeID.equals(DefaultEntUtil.ROOT_NODE_ID)) {
+        if (nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
             return getWorkflowDiff(rootWorkflowID, snapshotID);
         }
         try {
@@ -309,7 +309,7 @@ public class DefaultWorkflowService implements WorkflowService {
 
         WorkflowManager wfm;
         try {
-            wfm = getSubWorkflowManager(rootWorkflowID, DefaultEntUtil.nodeIDToString(prefix));
+            wfm = getSubWorkflowManager(rootWorkflowID, EntityUtil.nodeIDToString(prefix));
         } catch (NotASubWorkflowException | NodeNotFoundException ex) {
             throw new ServiceExceptions.ActionNotAllowedException(
                 "Parent id of dest/source node-id doesn't reference a (sub-)workflow.");
@@ -384,7 +384,7 @@ public class DefaultWorkflowService implements WorkflowService {
      * @return the {@link NodeID} instance
      */
     private static NodeID stringToNodeID(final UUID rootWorkflowID, final String nodeID) {
-        return DefaultEntUtil.stringToNodeID(getRootWorkflowManager(rootWorkflowID).getID().toString(), nodeID);
+        return EntityUtil.stringToNodeID(getRootWorkflowManager(rootWorkflowID).getID().toString(), nodeID);
     }
 
     /**
