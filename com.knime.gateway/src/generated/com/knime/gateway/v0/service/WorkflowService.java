@@ -65,8 +65,9 @@ public interface WorkflowService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ActionNotAllowedException If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.
      */
-    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
         
     /**
      * Retrieves the complete structure (nodes, connections, annotations) of sub-workflows.

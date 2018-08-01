@@ -56,7 +56,7 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.deleteWorkflowParts")
-    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
 
 	/**
      * {@inheritDoc}

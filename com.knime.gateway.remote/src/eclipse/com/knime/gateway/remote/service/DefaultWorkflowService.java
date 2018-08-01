@@ -20,10 +20,10 @@ package com.knime.gateway.remote.service;
 
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWorkflowManager;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getSubWorkflowManager;
-import static com.knime.gateway.util.EntityUtil.connectionIDToString;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowEnt;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowPartsEnt;
 import static com.knime.gateway.util.EntityTranslateUtil.translateWorkflowPartsEnt;
+import static com.knime.gateway.util.EntityUtil.connectionIDToString;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -163,7 +163,7 @@ public class DefaultWorkflowService implements WorkflowService {
      */
     @Override
     public UUID deleteWorkflowParts(final UUID rootWorkflowID, final WorkflowPartsEnt parts, final Boolean copy)
-        throws NotASubWorkflowException, NodeNotFoundException {
+        throws NotASubWorkflowException, NodeNotFoundException, ActionNotAllowedException {
         WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parts.getParentNodeID());
         if (parts.getAnnotationIDs().isEmpty() && parts.getNodeIDs().isEmpty() && parts.getConnectionIDs().isEmpty()) {
             return null;
@@ -180,31 +180,50 @@ public class DefaultWorkflowService implements WorkflowService {
 
         for (String nodeID : parts.getNodeIDs()) {
             NodeID id = stringToNodeID(rootWorkflowID, nodeID);
+            if (!wfm.containsNodeContainer(id)) {
+                continue;
+            }
+            if (wfm.getIncomingConnectionsFor(id).stream().anyMatch(cc -> !wfm.canRemoveConnection(cc))) {
+                throw new ActionNotAllowedException(
+                    "There is an incoming connection that cannot be removed for node with id '" + nodeID + "'");
+            }
+            if (wfm.getOutgoingConnectionsFor(id).stream().anyMatch(cc -> !wfm.canRemoveConnection(cc))) {
+                throw new ActionNotAllowedException(
+                    "There is an outgoing connection that cannot be removed for node with id '" + nodeID + "'");
+            }
             if (wfm.canRemoveNode(id)) {
                 wfm.removeNode(id);
+            } else {
+                throw new ActionNotAllowedException("Node with id '" + nodeID + "' cannot be removed");
             }
         }
+
         for (String connectionID : parts.getConnectionIDs()) {
             ConnectionID id = stringToConnectionID(rootWorkflowID, connectionID);
             try {
                 ConnectionContainer cc;
                 if ((cc = wfm.getConnection(id)) != null) {
-                    wfm.removeConnection(cc);
+                    if (wfm.canRemoveConnection(cc)) {
+                        wfm.removeConnection(cc);
+                    } else {
+                        throw new ActionNotAllowedException(
+                            "Connection with id '" + connectionID + "' cannot be removed");
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 //fail silently
                 //TODO better add a respective method to workflow manager to be able to check for existence
             }
         }
+
         for (String annotationID : parts.getAnnotationIDs()) {
             WorkflowAnnotationID id = stringToAnnotationID(rootWorkflowID, annotationID);
-            WorkflowAnnotation[] workflowAnnotations = wfm.getWorkflowAnnotations(id);
-            if (workflowAnnotations[0] != null) {
-                wfm.removeAnnotation(wfm.getWorkflowAnnotations(id)[0]);
+            WorkflowAnnotation workflowAnnotation = wfm.getWorkflowAnnotations(id)[0];
+            if (workflowAnnotation != null) {
+                wfm.removeAnnotation(workflowAnnotation);
             }
         }
         return partsID;
-        //TODO return info what has been removed and what couldn't?
     }
 
     /**

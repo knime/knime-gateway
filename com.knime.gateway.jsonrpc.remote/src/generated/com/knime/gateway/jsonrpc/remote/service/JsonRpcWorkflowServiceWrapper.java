@@ -79,9 +79,11 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
             data = "400" /*per convention the data property contains the status code*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
     })
-    public java.util.UUID deleteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public java.util.UUID deleteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         return m_service.deleteWorkflowParts(jobId, parts, copy);    
     }
 
