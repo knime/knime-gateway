@@ -59,6 +59,7 @@ import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
@@ -142,18 +143,24 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public UUID createWorkflowCopy(final UUID rootWorkflowID, final WorkflowPartsEnt parts) {
-        WorkflowManager wfm;
-        try {
-            wfm = getSubWorkflowManager(rootWorkflowID, parts.getParentNodeID());
-        } catch (NotASubWorkflowException | NodeNotFoundException ex) {
-            // TODO Auto-generated catch block
-            throw new RuntimeException(ex);
-        }
+    public UUID createWorkflowCopy(final UUID rootWorkflowID, final WorkflowPartsEnt parts)
+        throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
+        WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parts.getParentNodeID());
         UUID partID = UUID.randomUUID();
         WorkflowPersistor copy;
-        copy = wfm.copy(translateWorkflowPartsEnt(parts, s -> stringToNodeID(rootWorkflowID, s),
-            s -> stringToAnnotationID(rootWorkflowID, s)));
+        WorkflowCopyContent content = translateWorkflowPartsEnt(parts, s -> stringToNodeID(rootWorkflowID, s),
+            s -> stringToAnnotationID(rootWorkflowID, s));
+        for (WorkflowAnnotationID id : content.getAnnotationIDs()) {
+            if (wfm.getWorkflowAnnotations(id)[0] == null) {
+                throw new InvalidRequestException("Failed to copy parts: No annotation with ID " + id);
+            }
+        }
+        try {
+            copy = wfm.copy(content);
+        } catch (IllegalArgumentException e) {
+            //thrown when a part to copy doesn't exist
+            throw new InvalidRequestException("Failed to copy parts: " + e.getMessage(), e);
+        }
         m_copyRepo.put(partID, copy);
         return partID;
     }

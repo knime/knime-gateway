@@ -49,7 +49,7 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.createWorkflowCopy")
-    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts) ;
+    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}

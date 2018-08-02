@@ -99,6 +99,7 @@ import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
@@ -728,8 +729,14 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public CompletableFuture<WorkflowCopyWithOffsetUI> copyAsync(final WorkflowCopyContent content) {
         return AsyncNodeContainerUI.future(() -> {
             WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(getID(), content);
-            UUID partsID = getAccess().workflowService().createWorkflowCopy(getEntity().getRootWorkflowID(),
-                workflowPartsEnt);
+            UUID partsID;
+            try {
+                partsID = getAccess().workflowService().createWorkflowCopy(getEntity().getRootWorkflowID(),
+                    workflowPartsEnt);
+            } catch (NotASubWorkflowException | NodeNotFoundException | InvalidRequestException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
             int[] offset = EntityProxyWorkflowCopy.calcOffset(content, this);
             return new EntityProxyWorkflowCopy(partsID, offset[0], offset[1]);
         });

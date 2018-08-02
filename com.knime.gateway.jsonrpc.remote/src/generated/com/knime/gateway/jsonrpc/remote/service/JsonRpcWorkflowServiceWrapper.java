@@ -66,7 +66,15 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "createWorkflowCopy")
-    public java.util.UUID createWorkflowCopy(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts)  {
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "400" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
+    })
+    public java.util.UUID createWorkflowCopy(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.createWorkflowCopy(jobId, parts);    
     }
 

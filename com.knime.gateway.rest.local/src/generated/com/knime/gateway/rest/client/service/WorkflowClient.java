@@ -85,7 +85,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts)  {
+    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
@@ -98,6 +98,15 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
             //executor errors
+            if (ex.getResponse().getStatus() == 400) {
+                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 405) {
+                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }

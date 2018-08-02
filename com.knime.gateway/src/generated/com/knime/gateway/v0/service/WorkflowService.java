@@ -46,14 +46,17 @@ public interface WorkflowService extends GatewayService {
     String createConnection(java.util.UUID jobId, ConnectionEnt connection)  throws ServiceExceptions.ActionNotAllowedException;
         
     /**
-     * Selects and essentially copies the specified part of the workflow. It will still be available even if (sub)parts are deleted. The part can then be referenced by a part-id. Note: connections will be ignored and _not_ copied!
+     * Selects and essentially copies the specified part of the workflow. It will still be available even if (sub)parts are deleted. The parts are referenced by a part-id. Note: connections will be ignored and _not_ copied!
      *
      * @param jobId ID the job the workflow is requested for
      * @param parts The actual part selection.
      *
      * @return the result
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts) ;
+    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Deletes the given workflow parts. Cannot be undone unless a copy has been made before.
