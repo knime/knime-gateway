@@ -212,7 +212,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean canAddConnection(final NodeID source, final int sourcePort, final NodeID dest, final int destPort) {
-        return false;
+        //always allow the connection to be added and fail later on when trying
+        //TODO add some basic logic for checking
+        return true;
     }
 
     /**
@@ -221,7 +223,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public boolean canAddNewConnection(final NodeID source, final int sourcePort, final NodeID dest,
         final int destPort) {
-        return false;
+        //always allow the connection to be added and fail later on when trying
+        //TODO add some basic logic for checking
+        return true;
     }
 
     /**
@@ -238,9 +242,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public CompletableFuture<ConnectionContainerUI> addConnectionAsync(final NodeID source, final int sourcePort,
-        final NodeID dest, final int destPort, final int[][] bendpoints) {
-        return futureRefresh(() -> {
+    public CompletableFutureEx<ConnectionContainerUI, OperationNotAllowedException> addConnectionAsync(
+        final NodeID source, final int sourcePort, final NodeID dest, final int destPort, final int[][] bendpoints) {
+        return futureExRefresh(() -> {
             // determine connection type
             NodeEnt sourceNode = getWorkflow().getNodes().get(nodeIDToString(source));
             NodeEnt destNode = getWorkflow().getNodes().get(nodeIDToString(dest));
@@ -258,13 +262,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             try {
                 getAccess().workflowService().createConnection(getEntity().getRootWorkflowID(), connectionEnt);
             } catch (ActionNotAllowedException ex) {
-                //TODO should never happen currently
-                //needs to be handled as soon as adding connections by
-                //by the user is supported
-                throw new CompletionException(ex);
+                throw new CompletionException(
+                    new OperationNotAllowedException("Adding a connection is not allowed here", ex));
             }
             return getAccess().getConnectionContainer(connectionEnt, getEntity().getRootWorkflowID());
-        });
+        }, OperationNotAllowedException.class);
     }
 
     /**
@@ -1323,6 +1325,17 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             ConnectionContainerUI cc =
                 getAccess().getConnectionContainer(removedConnection, getEntity().getRootWorkflowID());
             notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_REMOVED, null, cc, null));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void connectionReplaced(final ConnectionEnt oldConnection, final ConnectionEnt newConnection) {
+            ConnectionContainerUI oldCC = getAccess().getConnectionContainer(oldConnection, getEntity().getRootWorkflowID());
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_REMOVED, null, oldCC, null));
+            ConnectionContainerUI newCC = getAccess().getConnectionContainer(newConnection, getEntity().getRootWorkflowID());
+            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_ADDED, null, null, newCC));
         }
 
         /**

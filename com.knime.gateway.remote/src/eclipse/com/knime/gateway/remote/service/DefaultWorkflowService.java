@@ -340,6 +340,9 @@ public class DefaultWorkflowService implements WorkflowService {
             throw new ServiceExceptions.ActionNotAllowedException(
                 "Parent id of dest/source node-id doesn't reference a (sub-)workflow.");
         }
+        if (!wfm.canAddConnection(source, connection.getSourcePort(), dest, connection.getDestPort())) {
+            throw new ActionNotAllowedException("Not allowed");
+        }
         ConnectionContainer cc;
         try {
             cc = wfm.addConnection(source, connection.getSourcePort(), dest, connection.getDestPort());

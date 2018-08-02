@@ -85,6 +85,16 @@ class WorkflowEntChangeProcessor {
                 l.connectionEntAdded(ent);
             });
 
+        //update replaced connection container
+        patch.getOps().stream()
+            .filter(o -> o.getOp() == OpEnum.REPLACE && o.getPath().startsWith("/" + CONNECTIONS_PROPERTY))
+            .forEach(o -> {
+                String[] path = o.getPath().split("/");
+                ConnectionEnt newConn = newEnt.getConnections().get(path[path.length - 2]);
+                ConnectionEnt oldConn = oldEnt.getConnections().get(path[path.length - 2]);
+                l.connectionReplaced(oldConn, newConn);
+            });
+
         //update removed node container
         patch.getOps().stream().filter(o -> o.getOp() == OpEnum.REMOVE && o.getPath().startsWith("/" + NODES_PROPERTY))
             .forEach(o -> {
@@ -119,7 +129,6 @@ class WorkflowEntChangeProcessor {
                 l.annotationEntAdded(ent);
             });
 
-
     }
 
     /**
@@ -134,6 +143,8 @@ class WorkflowEntChangeProcessor {
         public void connectionEntAdded(ConnectionEnt newConnection);
 
         public void connectionEntRemoved(ConnectionEnt removedConnection);
+
+        public void connectionReplaced(ConnectionEnt oldConnection, ConnectionEnt newConnection);
 
         public void annotationEntAdded(WorkflowAnnotationEnt newAnno);
 

@@ -430,11 +430,13 @@ public class EntityBuilderUtil {
         final ConnectionID[] connectionIDs, final WorkflowAnnotationID[] annotationIDs) {
         return builder(WorkflowPartsEntBuilder.class)
             .setParentNodeID(nodeIDToString(parentNodeID))
-            .setNodeIDs(Arrays.stream(nodeIDs).map(id -> nodeIDToString(id)).collect(Collectors.toList()))
-            .setConnectionIDs(Arrays.stream(connectionIDs).map(id -> EntityUtil.connectionIDToString(id))
-                .collect(Collectors.toList()))
-            .setAnnotationIDs(Arrays.stream(annotationIDs).map(id -> EntityUtil.annotationIDToString(id))
-                .collect(Collectors.toList()))
+            .setNodeIDs(
+                nodeIDs != null ? Arrays.stream(nodeIDs).map(id -> nodeIDToString(id)).collect(Collectors.toList())
+                    : Collections.emptyList())
+            .setConnectionIDs(connectionIDs != null ? Arrays.stream(connectionIDs)
+                .map(id -> EntityUtil.connectionIDToString(id)).collect(Collectors.toList()) : Collections.emptyList())
+            .setAnnotationIDs(annotationIDs != null ? Arrays.stream(annotationIDs)
+                .map(id -> EntityUtil.annotationIDToString(id)).collect(Collectors.toList()) : Collections.emptyList())
             .build();
     }
 

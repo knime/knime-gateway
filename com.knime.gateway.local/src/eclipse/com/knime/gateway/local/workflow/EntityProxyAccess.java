@@ -99,6 +99,7 @@ public class EntityProxyAccess {
     private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
 
     /* Maps the identity hash code of a entity to the entity proxy object */
+    //TODO free map from removed entity proxies!
     @SuppressWarnings("rawtypes")
     private final Map<Pair<Integer, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
