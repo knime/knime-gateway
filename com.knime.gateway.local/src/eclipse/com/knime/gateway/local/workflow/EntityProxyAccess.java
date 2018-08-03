@@ -54,6 +54,7 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.util.Pair;
 
+import com.google.common.collect.MapMaker;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
@@ -99,7 +100,6 @@ public class EntityProxyAccess {
     private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
 
     /* Maps the identity hash code of a entity to the entity proxy object */
-    //TODO free map from removed entity proxies!
     @SuppressWarnings("rawtypes")
     private final Map<Pair<Integer, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
@@ -115,10 +115,9 @@ public class EntityProxyAccess {
      *
      * @param serviceConfig information how to connect to the server to retrieve entities
      */
-    @SuppressWarnings("rawtypes")
     private EntityProxyAccess(final ServerServiceConfig serviceConfig) {
-        m_entityProxyMap = new HashMap<Pair<Integer, Class<EntityProxy>>, EntityProxy>();
-        m_wfmMap = new HashMap<Pair<UUID,String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>>();
+        m_entityProxyMap = new MapMaker().weakValues().makeMap();
+        m_wfmMap = new MapMaker().weakValues().makeMap();
         m_serviceConfig = serviceConfig;
     }
 
