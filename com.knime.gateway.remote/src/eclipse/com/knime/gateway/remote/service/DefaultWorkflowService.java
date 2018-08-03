@@ -328,6 +328,7 @@ public class DefaultWorkflowService implements WorkflowService {
                 break;
             case WFMTHROUGH:
                 prefix = source;
+                break;
             default:
                 prefix = source.getPrefix();
                 break;
