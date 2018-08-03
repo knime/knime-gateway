@@ -18,10 +18,13 @@
  */
 package com.knime.gateway.local.workflow;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.PatchOpEnt.OpEnum;
+import com.knime.gateway.v0.entity.PatchOpEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 
@@ -62,77 +65,92 @@ class WorkflowEntChangeProcessor {
      * @param newEnt the new workflow of the application of the given patch
      * @param l callbacks for the respective changes
      */
-    static void processChanges(final PatchEnt patch, final WorkflowEnt oldEnt, final WorkflowEnt newEnt,
+    static synchronized void processChanges(final PatchEnt patch, final WorkflowEnt oldEnt, final WorkflowEnt newEnt,
         final WorkflowEntChangeListener l) {
-        if(patch == null || patch.getOps().size() == 0) {
+        if (patch == null || patch.getOps().size() == 0) {
             return;
         }
 
-        //update removed connection container
-        patch.getOps().stream()
-            .filter(o -> o.getOp() == OpEnum.REMOVE && o.getPath().startsWith("/" + CONNECTIONS_PROPERTY))
-            .forEach(o -> {
-                String[] path = o.getPath().split("/");
-                ConnectionEnt ent = oldEnt.getConnections().get(path[path.length - 1]);
-                l.connectionEntRemoved(ent);
-            });
+        patch.getOps().forEach(o -> {
+            switch (o.getOp()) {
+                case ADD:
+                    ADD_PROCESSORS.forEach(p -> p.process(o.getPath(), oldEnt, newEnt, l));
+                    break;
+                case REMOVE:
+                    REMOVE_PROCESSORS.forEach(p -> p.process(o.getPath(), oldEnt, newEnt, l));
+                    break;
+                case REPLACE:
+                    REPLACE_PROCESSORS.forEach(p -> p.process(o.getPath(), oldEnt, newEnt, l));
+                default:
+                    break;
+            }
+        });
+    }
 
-        //update added connection container
-        patch.getOps().stream()
-            .filter(o -> o.getOp() == OpEnum.ADD && o.getPath().startsWith("/" + CONNECTIONS_PROPERTY)).forEach(o -> {
-                String[] path = o.getPath().split("/");
-                ConnectionEnt ent = newEnt.getConnections().get(path[path.length - 1]);
-                l.connectionEntAdded(ent);
-            });
+    private static List<PatchOpProcessor> ADD_PROCESSORS = Arrays.asList((p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + CONNECTIONS_PROPERTY)) {
+            String[] path = p.split("/");
+            ConnectionEnt ent = newEnt.getConnections().get(path[path.length - 1]);
+            l.connectionEntAdded(ent);
+        }
+    }, (p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + NODES_PROPERTY)) {
+            String[] path = p.split("/");
+            NodeEnt ent = newEnt.getNodes().get(path[path.length - 1]);
+            l.nodeEntAdded(ent);
+        }
+    }, (p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + ANNOTATIONS_PROPERTY)) {
+            String[] path = p.split("/");
+            WorkflowAnnotationEnt ent = newEnt.getWorkflowAnnotations().get(path[path.length - 1]);
+            l.annotationEntAdded(ent);
+        }
+    });
 
-        //update replaced connection container
-        patch.getOps().stream()
-            .filter(o -> o.getOp() == OpEnum.REPLACE && o.getPath().startsWith("/" + CONNECTIONS_PROPERTY))
-            .forEach(o -> {
-                String[] path = o.getPath().split("/");
-                ConnectionEnt newConn = newEnt.getConnections().get(path[path.length - 2]);
-                ConnectionEnt oldConn = oldEnt.getConnections().get(path[path.length - 2]);
-                l.connectionReplaced(oldConn, newConn);
-            });
+    private static List<PatchOpProcessor> REMOVE_PROCESSORS = Arrays.asList((p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + CONNECTIONS_PROPERTY)) {
+            String[] path = p.split("/");
+            ConnectionEnt ent = oldEnt.getConnections().get(path[path.length - 1]);
+            l.connectionEntRemoved(ent);
+        }
+    }, (p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + NODES_PROPERTY)) {
+            String[] path = p.split("/");
+            NodeEnt ent = oldEnt.getNodes().get(path[path.length - 1]);
+            l.nodeEntRemoved(ent);
+        }
+    }, (p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + ANNOTATIONS_PROPERTY)) {
+            String[] path = p.split("/");
+            WorkflowAnnotationEnt ent = oldEnt.getWorkflowAnnotations().get(path[path.length - 1]);
+            l.annotationEntRemoved(ent);
+        }
+    });
 
-        //update removed node container
-        patch.getOps().stream().filter(o -> o.getOp() == OpEnum.REMOVE && o.getPath().startsWith("/" + NODES_PROPERTY))
-            .forEach(o -> {
-                String[] path = o.getPath().split("/");
-                NodeEnt ent = oldEnt.getNodes().get(path[path.length - 1]);
-                l.nodeEntRemoved(ent);
-            });
+    private static List<PatchOpProcessor> REPLACE_PROCESSORS = Arrays.asList((p, oldEnt, newEnt, l) -> {
+        if (p.startsWith("/" + CONNECTIONS_PROPERTY)) {
+            String[] path = p.split("/");
+            ConnectionEnt newConn = newEnt.getConnections().get(path[path.length - 2]);
+            ConnectionEnt oldConn = oldEnt.getConnections().get(path[path.length - 2]);
+            l.connectionReplaced(oldConn, newConn);
+        }
+    });
 
-        //update added node container
-        patch.getOps().stream().filter(o -> o.getOp() == OpEnum.ADD && o.getPath().startsWith("/" + NODES_PROPERTY))
-            .forEach(o -> {
-                String[] path = o.getPath().split("/");
-                NodeEnt ent = newEnt.getNodes().get(path[path.length - 1]);
-                l.nodeEntAdded(ent);
-            });
-
-        //update removed workflow annotations
-        patch.getOps().stream()
-            .filter(o -> o.getOp() == OpEnum.REMOVE && o.getPath().startsWith("/" + ANNOTATIONS_PROPERTY))
-            .forEach(o -> {
-                String[] path = o.getPath().split("/");
-                WorkflowAnnotationEnt ent = oldEnt.getWorkflowAnnotations().get(path[path.length - 1]);
-                l.annotationEntRemoved(ent);
-            });
-
-        //update added workflow annotations
-        patch.getOps().stream()
-            .filter(o -> o.getOp() == OpEnum.ADD && o.getPath().startsWith("/" + ANNOTATIONS_PROPERTY))
-            .forEach(o -> {
-                String[] path = o.getPath().split("/");
-                WorkflowAnnotationEnt ent = newEnt.getWorkflowAnnotations().get(path[path.length - 1]);
-                l.annotationEntAdded(ent);
-            });
-
+    @FunctionalInterface
+    interface PatchOpProcessor {
+        /**
+         * Processes one {@link PatchOpEnt}
+         *
+         * @param path the patch-op path
+         * @param oldEnt the old workflow entity before applying the patch
+         * @param newEnt the new workflow entity after the patch has been applied
+         * @param l the callbacks
+         */
+        void process(String path, WorkflowEnt oldEnt, WorkflowEnt newEnt, WorkflowEntChangeListener l);
     }
 
     /**
-     * Callsbacks for changes made to a {@link WorkflowEnt}.
+     * Callbacks for changes made to a {@link WorkflowEnt}.
      */
     interface WorkflowEntChangeListener {
 
