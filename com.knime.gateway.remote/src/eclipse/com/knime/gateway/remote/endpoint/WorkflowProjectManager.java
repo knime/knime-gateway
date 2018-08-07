@@ -67,11 +67,11 @@ public final class WorkflowProjectManager {
      * Adds the workflow project with the id to the manager. If a workflow project with the given id already exists, it
      * will be replaced.
      *
-     * @param worklfowProjectID id of the project to be added
+     * @param workflowProjectID id of the project to be added
      * @param project the actual workflow project to be added
      */
-    public static void addWorkflowProject(final UUID worklfowProjectID, final WorkflowProject project) {
-        WORKFLOW_PROJECT_MAP.put(worklfowProjectID, project);
+    public static void addWorkflowProject(final UUID workflowProjectID, final WorkflowProject project) {
+        WORKFLOW_PROJECT_MAP.put(workflowProjectID, project);
     }
 
     /**

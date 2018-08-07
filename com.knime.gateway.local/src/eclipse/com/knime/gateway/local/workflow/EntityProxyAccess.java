@@ -94,7 +94,7 @@ public class EntityProxyAccess {
      * Map that keeps track of all root workflow ids and maps them to a unique node ids. It's the id the will be
      * prepended to the node's id (see {@link #getID()}).
      *
-     * TODO: remove worklfow id's from the list that aren't in memory anymore
+     * TODO: remove workflow id's from the list that aren't in memory anymore
      */
     private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
 
@@ -170,7 +170,7 @@ public class EntityProxyAccess {
 
     /**
      * Returns the workflow manager for the respective node ent. With every call the same entity proxy instance will be
-     * returned for the same rootWorkflowID- and nodeID-combination (taken from the wrapped worklfow node entity).
+     * returned for the same rootWorkflowID- and nodeID-combination (taken from the wrapped workfow node entity).
      *
      * @param ent the workflow node referencing the workflow
      *

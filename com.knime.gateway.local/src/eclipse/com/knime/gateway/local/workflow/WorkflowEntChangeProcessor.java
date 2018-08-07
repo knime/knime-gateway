@@ -101,7 +101,7 @@ class WorkflowEntChangeProcessor {
                 l.nodeEntAdded(ent);
             });
 
-        //update removed worklfow annotations
+        //update removed workflow annotations
         patch.getOps().stream()
             .filter(o -> o.getOp() == OpEnum.REMOVE && o.getPath().startsWith("/" + ANNOTATIONS_PROPERTY))
             .forEach(o -> {

@@ -794,7 +794,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             });
         } else {
             throw new IllegalArgumentException(
-                "Only worklfow copies of type '" + EntityProxyWorkflowCopy.class.getSimpleName() + "' allowed.");
+                "Only workflow copies of type '" + EntityProxyWorkflowCopy.class.getSimpleName() + "' allowed.");
         }
     }
 
