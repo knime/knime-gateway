@@ -23,6 +23,8 @@ import com.knime.gateway.jsonrpc.local.service.JsonRpcNodeService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcWorkflowService;
 import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.jsonrpc.local.service.JsonRpcAnnotationService;
+import com.knime.gateway.v0.service.AnnotationService;
 
 import com.knime.gateway.service.GatewayService;
 
@@ -44,6 +46,9 @@ public class ServiceInterface2JsonRpcMap {
         }        
         if(clazz == WorkflowService.class) {
             return JsonRpcWorkflowService.class;
+        }        
+        if(clazz == AnnotationService.class) {
+            return JsonRpcAnnotationService.class;
         }        
         else {
             throw new IllegalArgumentException("No service mapping.");

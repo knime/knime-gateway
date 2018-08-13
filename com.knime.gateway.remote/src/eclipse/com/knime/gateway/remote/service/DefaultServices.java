@@ -21,6 +21,7 @@ package com.knime.gateway.remote.service;
 import java.util.NoSuchElementException;
 
 import com.knime.gateway.service.GatewayService;
+import com.knime.gateway.v0.service.AnnotationService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.WorkflowService;
 
@@ -49,6 +50,8 @@ public class DefaultServices {
             return (S)DefaultWorkflowService.getInstance();
         } else if(serviceInterface.equals(NodeService.class)) {
             return (S)DefaultNodeService.getInstance();
+        } else if (serviceInterface.equals(AnnotationService.class)) {
+            return (S)DefaultAnnotationService.getInstance();
         } else {
             throw new NoSuchElementException(
                 "No default service implementation found for " + serviceInterface.getSimpleName());

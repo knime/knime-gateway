@@ -18,8 +18,10 @@
  */
 package com.knime.gateway.remote.service;
 
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWorkflowManager;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getSubWorkflowManager;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.stringToAnnotationID;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.stringToConnectionID;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.stringToNodeID;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowEnt;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowPartsEnt;
 import static com.knime.gateway.util.EntityTranslateUtil.translateWorkflowPartsEnt;
@@ -250,7 +252,7 @@ public class DefaultWorkflowService implements WorkflowService {
             throw new NotFoundException("No workflow-part copy available for the given id");
         }
         WorkflowCopyContent copyContent = wfm.paste(persistor);
-        int[] offset = calcOffset(copyContent, wfm);
+        int[] offset = calcOffset(copyContent.getNodeIDs(), copyContent.getAnnotationIDs(), wfm);
         int[] shift = new int[]{x - offset[0], y - offset[1]};
         NodeID[] pastedNodes = copyContent.getNodeIDs();
         Set<NodeID> newIDs = new HashSet<NodeID>(); // fast lookup below
@@ -281,8 +283,8 @@ public class DefaultWorkflowService implements WorkflowService {
         return buildWorkflowPartsEnt(wfm.getID(), copyContent);
     }
 
-    private static int[] calcOffset(final WorkflowCopyContent wcc, final WorkflowManager wfm) {
-        NodeID[] nodes = wcc.getNodeIDs();
+    private static int[] calcOffset(final NodeID[] nodes, final WorkflowAnnotationID[] annotations,
+        final WorkflowManager wfm) {
         List<int[]> insertedElementBounds = new ArrayList<int[]>();
         for (NodeID i : nodes) {
             NodeContainer nc = wfm.getNodeContainer(i);
@@ -291,7 +293,7 @@ public class DefaultWorkflowService implements WorkflowService {
             insertedElementBounds.add(bounds);
         }
 
-        WorkflowAnnotation[] annos = wfm.getWorkflowAnnotations(wcc.getAnnotationIDs());
+        WorkflowAnnotation[] annos = wfm.getWorkflowAnnotations(annotations);
         for (WorkflowAnnotation a : annos) {
             int[] bounds = new int[]{a.getX(), a.getY(), a.getWidth(), a.getHeight()};
             insertedElementBounds.add(bounds);

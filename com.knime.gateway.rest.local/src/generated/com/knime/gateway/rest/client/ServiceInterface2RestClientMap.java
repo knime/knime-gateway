@@ -22,6 +22,8 @@ import com.knime.gateway.rest.client.service.NodeClient;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.rest.client.service.AnnotationClient;
+import com.knime.gateway.v0.service.AnnotationService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -58,6 +60,9 @@ public class ServiceInterface2RestClientMap {
         }        
         if(clazz == WorkflowService.class) {
             return new WorkflowClient(restAddress, jwt);
+        }        
+        if(clazz == AnnotationService.class) {
+            return new AnnotationClient(restAddress, jwt);
         }        
         else {
             throw new IllegalArgumentException("No service mapping.");

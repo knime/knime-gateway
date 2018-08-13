@@ -918,7 +918,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public Collection<WorkflowAnnotation> getWorkflowAnnotations() {
         return getWorkflow().getWorkflowAnnotations().values().stream()
-            .map(wa -> getAccess().getWorkflowAnnotation(wa, getEntity().getRootWorkflowID()))
+            .map(wa -> getAccess().getWorkflowAnnotation(wa, getEntity().getRootWorkflowID(),
+                getEntity().getNodeID()))
             .collect(Collectors.toList());
     }
 
@@ -933,7 +934,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         return Arrays.stream(ids).map(waID -> {
             WorkflowAnnotationEnt ent =
                 getWorkflow().getWorkflowAnnotations().get(EntityUtil.annotationIDToString(waID));
-            return getAccess().getWorkflowAnnotation(ent, getEntity().getRootWorkflowID());
+            return getAccess().getWorkflowAnnotation(ent, getEntity().getRootWorkflowID(),
+                getEntity().getNodeID());
         }).toArray(size -> new WorkflowAnnotation[size]);
     }
 
@@ -1092,8 +1094,16 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
                     m_snapshotID = res.getMiddle();
                     assert (m_snapshotID != null);
+                    //update contained nodes
                     for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
                         getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
+                    }
+
+                    //update contained workflow annotations
+                    for (Entry<String, WorkflowAnnotationEnt> entry : m_workflowEnt.getWorkflowAnnotations()
+                        .entrySet()) {
+                        getAccess().updateWorkflowAnnotation(oldWorkflow.getWorkflowAnnotations().get(entry.getKey()),
+                            entry.getValue());
                     }
 
                     //refresh the workflow node entity, too, if it is the root workflow
@@ -1113,10 +1123,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                             }
                         }
                     }
+                    //apply patch changes on workflow-level
+                    processChanges(res.getRight(), oldWorkflow, m_workflowEnt, m_workflowEntChangeListener);
                 }
-
-                //apply patch changes
-                processChanges(res.getRight(), oldWorkflow, m_workflowEnt, m_workflowEntChangeListener);
 
                 if (deepRefresh) {
                     //refresh all contained workflows (i.e. metanodes)

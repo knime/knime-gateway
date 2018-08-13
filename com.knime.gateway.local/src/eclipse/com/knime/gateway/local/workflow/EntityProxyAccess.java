@@ -74,6 +74,7 @@ import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.v0.service.AnnotationService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
@@ -338,14 +339,15 @@ public class EntityProxyAccess {
     }
 
     /**
-     *
-     *
      * @param wa the entity to get the workflow annotation for
+     * @param rootWorkflowID
+     * @param parentNodeID
      * @return the {@link WorkflowAnnotation}
      */
-    EntityProxyWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa, final UUID rootWorkflowID) {
+    EntityProxyWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa, final UUID rootWorkflowID,
+        final String parentNodeID) {
         return getOrCreate(wa, o -> {
-            return new EntityProxyWorkflowAnnotation(wa, rootWorkflowID, this);
+            return new EntityProxyWorkflowAnnotation(wa, rootWorkflowID, parentNodeID, this);
         }, EntityProxyWorkflowAnnotation.class);
     }
 
@@ -648,6 +650,13 @@ public class EntityProxyAccess {
     }
 
     /**
+     * @return the current annotation service in use
+     */
+    AnnotationService annotationService() {
+        return service(AnnotationService.class, m_serviceConfig);
+    }
+
+    /**
      * If an {@link AbstractEntityProxyNodeContainer} already exists for the 'oldNode', the entity will be replaced with
      * 'newNode'. Otherwise nothing happens.
      *
@@ -660,6 +669,20 @@ public class EntityProxyAccess {
     void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
         if (update(oldNode, newNode, AbstractEntityProxyNodeContainer.class)) {
             postUpdate(newNode, AbstractEntityProxyNodeContainer.class);
+        }
+    }
+    /**
+     * If an {@link EntityProxyWorkflowAnnotation} already exists for the 'oldAnno', the entity will be replaced with
+     * 'newAnno'. Otherwise nothing happens.
+     *
+     * After the update is done, {@link EntityProxy#postUpdate()} will be called, too.
+     *
+     * @param oldAnno the entity to be replaced in an {@link EntityProxyWorkflowAnnotation}
+     * @param newAnno the entity to replace with
+     */
+    void updateWorkflowAnnotation(final WorkflowAnnotationEnt oldAnno, final WorkflowAnnotationEnt newAnno) {
+        if (update(oldAnno, newAnno, EntityProxyWorkflowAnnotation.class)) {
+            postUpdate(newAnno, EntityProxyWorkflowAnnotation.class);
         }
     }
 

@@ -18,30 +18,47 @@
  */
 package com.knime.gateway.local.workflow;
 
-import java.util.UUID;
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
+import org.eclipse.swt.widgets.Display;
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
+import org.knime.core.ui.node.workflow.async.AsyncWorkflowAnnotationUI;
 
 import com.knime.gateway.v0.entity.AnnotationEnt;
+import com.knime.gateway.v0.entity.BoundsEnt;
+import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link WorkflowAnnotationEnt} and extends {@link WorkflowAnnotation}.
  *
  * @author Martin Horn, University of Konstanz
  */
-class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements EntityProxy<WorkflowAnnotationEnt> {
+class EntityProxyWorkflowAnnotation extends WorkflowAnnotation
+    implements EntityProxy<WorkflowAnnotationEnt>, AsyncWorkflowAnnotationUI {
 
     private final EntityProxyAccess m_clientProxyAccess;
 
     private WorkflowAnnotationEnt m_entity;
 
     private UUID m_rootWorkflowID;
+
+    private String m_parentNodeID;
+
+    private WorkflowAnnotationEnt m_oldEntity;
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -50,11 +67,12 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements Entity
      * @param rootWorkflowID the id of the root workflow
      * @param clientProxyAccess
      */
-    EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final UUID rootWorkflowID,
+    EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final UUID rootWorkflowID, final String parentNodeID,
         final EntityProxyAccess clientProxyAccess) {
         super(getAnnotationData(entity));
         m_entity = entity;
         m_rootWorkflowID = rootWorkflowID;
+        m_parentNodeID = parentNodeID;
         m_clientProxyAccess = clientProxyAccess;
     }
 
@@ -80,12 +98,18 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements Entity
 
     @Override
     public void update(final WorkflowAnnotationEnt entity) {
+        m_oldEntity = m_entity;
         m_entity = entity;
     }
 
     @Override
     public void postUpdate() {
-        //nothing to be done here
+        if(!Objects.equals(m_entity.getBounds(), m_oldEntity.getBounds())) {
+            BoundsEnt b = m_entity.getBounds();
+            Display.getDefault().syncExec(() -> {
+                setDimension(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+            });
+        }
     }
 
     static AnnotationData getAnnotationData(final AnnotationEnt annoEnt) {
@@ -129,4 +153,18 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation implements Entity
         }
     }
 
+    @Override
+    public CompletableFuture<Void> setDimensionAsync(final int x, final int y, final int width, final int height) {
+        BoundsEnt bounds = builder(BoundsEntBuilder.class).setX(x).setY(y).setWidth(width).setHeight(height).build();
+        return AsyncNodeContainerUI.future(() -> {
+            try {
+                getAccess().annotationService().setAnnotationBoundsInSubWorkflow(m_rootWorkflowID, m_parentNodeID,
+                    m_entity.getAnnotationID(), bounds);
+                return null;
+            } catch (NotFoundException | NotASubWorkflowException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
+        });
+    }
 }

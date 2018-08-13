@@ -23,6 +23,8 @@ import com.knime.gateway.jsonrpc.remote.service.JsonRpcNodeServiceWrapper;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.jsonrpc.remote.service.JsonRpcWorkflowServiceWrapper;
 import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.jsonrpc.remote.service.JsonRpcAnnotationServiceWrapper;
+import com.knime.gateway.v0.service.AnnotationService;
 
 import com.knime.gateway.service.GatewayService;
 
@@ -56,6 +58,9 @@ public class WrapWithJsonRpcService {
             }
             if(serviceInterface == WorkflowService.class) {
                 return JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
+            if(serviceInterface == AnnotationService.class) {
+                return JsonRpcAnnotationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException ex) {

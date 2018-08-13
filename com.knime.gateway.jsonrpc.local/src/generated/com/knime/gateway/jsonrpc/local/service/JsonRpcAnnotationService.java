@@ -16,37 +16,36 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.v0.service.util;
+package com.knime.gateway.jsonrpc.local.service;
 
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.v0.entity.BoundsEnt;
+
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+
 import com.knime.gateway.v0.service.AnnotationService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
- * Lists all gateway services of package <code>com.knime.gateway.v0.service</code>.
+ * Interface that adds json rpc annotations. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class ListServices {
+public interface JsonRpcAnnotationService extends AnnotationService {
 
-    private ListServices() {
-        //utility class
-    }
-
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.v0.service</code>.
-     * @return the class list
+	/**
+     * {@inheritDoc}
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(NodeService.class);
-        res.add(WorkflowService.class);
-        res.add(AnnotationService.class);
-        return res;
-    }
+    @Override
+    @JsonRpcMethod(value = "AnnotationService.setAnnotationBounds")
+    void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt bounds)  throws ServiceExceptions.NotFoundException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "AnnotationService.setAnnotationBoundsInSubWorkflow")
+    void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt bounds)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+
 }
