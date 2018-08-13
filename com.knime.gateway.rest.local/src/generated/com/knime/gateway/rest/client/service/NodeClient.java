@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.rest.client.service;
 
+import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
@@ -317,6 +318,28 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }
             if (ex.getResponse().getStatus() == 405) {
                 throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public void setNodeBounds(java.util.UUID jobId, String nodeId, BoundsEnt bounds)  throws ServiceExceptions.NodeNotFoundException {
+        try{
+            doRequest(c -> {
+                try {
+                    return c.setNodeBounds(jobId, nodeId, toByteArray(bounds));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            });
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));

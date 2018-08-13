@@ -56,14 +56,16 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
-import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.util.EntityBuilderUtil;
+import com.knime.gateway.util.EntityUtil;
+import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
@@ -99,6 +101,18 @@ public class DefaultNodeService implements NodeService {
      */
     public static DefaultNodeService getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setNodeBounds(final UUID rootWorkflowID, final String nodeID, final BoundsEnt bounds)
+        throws NodeNotFoundException {
+        NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
+        NodeUIInformation information = NodeUIInformation.builder()
+            .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getHeight(), bounds.getWidth()).build();
+        nc.setUIInformation(information);
     }
 
     /**

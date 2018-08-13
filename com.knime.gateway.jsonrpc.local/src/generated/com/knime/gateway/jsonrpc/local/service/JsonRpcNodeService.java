@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
+import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
@@ -117,6 +118,13 @@ public interface JsonRpcNodeService extends NodeService {
     @Override
     @JsonRpcMethod(value = "NodeService.getWMetaNodeDialog")
     MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "NodeService.setNodeBounds")
+    void setNodeBounds(java.util.UUID jobId, String nodeId, BoundsEnt bounds)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}

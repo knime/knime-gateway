@@ -608,7 +608,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public NodeContainerUI getNodeContainer(final NodeID id) {
+    public AsyncNodeContainerUI getNodeContainer(final NodeID id) {
         final NodeEnt nodeEnt = getWorkflow().getNodes().get(nodeIDToString(id));
         //return exactly the same node container instance for the same node entity
         return getAccess().getNodeContainer(nodeEnt);

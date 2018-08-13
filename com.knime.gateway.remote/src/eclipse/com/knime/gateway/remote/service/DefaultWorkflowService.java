@@ -404,47 +404,4 @@ public class DefaultWorkflowService implements WorkflowService {
             throw new NotFoundException(e.getMessage(), e);
         }
     }
-
-    /**
-     * Converts a string representation of a node id (as provided by gateway entities) to a {@link NodeID} instance.
-     *
-     * @param rootWorkflowID id of the workflow the node belongs to
-     * @param nodeID the node id (without the root workflow node id)
-     *
-     * @return the {@link NodeID} instance
-     */
-    private static NodeID stringToNodeID(final UUID rootWorkflowID, final String nodeID) {
-        return EntityUtil.stringToNodeID(getRootWorkflowManager(rootWorkflowID).getID().toString(), nodeID);
-    }
-
-    /**
-     * Converts/parses a string representation of a annotation id (as provided by gateway entities) to a
-     * {@link WorkflowAnnotationID}-instance.
-     *
-     * @param rootWorkflowID id of the root(!) workflow the annotations belongs to
-     * @param annotationID the annotation id to parse (without the root workflow node id)
-     * @return the {@link WorkflowAnnotationID} instance
-     */
-    private static WorkflowAnnotationID stringToAnnotationID(final UUID rootWorkflowID, final String annotationID) {
-        String[] split = annotationID.split("_");
-        NodeID nodeID = stringToNodeID(rootWorkflowID, split[0]);
-        return new WorkflowAnnotationID(nodeID, Integer.valueOf(split[1]));
-    }
-
-    /**
-     * Converts a string representation of a connection id (as provided by gateway entities) to a {@link ConnectionID}
-     * instance.
-     *
-     * @param rootWorkflowID id of the workflow the connection belongs to
-     *
-     * @param s the string representation to convert
-     * @return the {@link ConnectionID} instance
-     */
-    private static ConnectionID stringToConnectionID(final UUID rootWorkflowID, final String s) {
-        if (!s.contains("_")) {
-            throw new IllegalArgumentException("Unable to parse connection id from string.");
-        }
-        String[] split = s.split("_");
-        return new ConnectionID(stringToNodeID(rootWorkflowID, split[0]), Integer.valueOf(split[1]));
-    }
 }

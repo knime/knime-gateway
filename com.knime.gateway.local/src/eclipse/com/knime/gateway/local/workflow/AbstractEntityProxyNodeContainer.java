@@ -18,8 +18,12 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
+
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -51,11 +55,13 @@ import org.knime.core.ui.node.workflow.InteractiveWebViewsResultUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
-import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
+import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
 import com.knime.gateway.util.EntityUtil;
+import com.knime.gateway.v0.entity.BoundsEnt;
+import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
@@ -81,7 +87,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
 
     private NodeAnnotation m_nodeAnnotation;
 
-    private WorkflowManagerUI m_parent;
+    private AsyncWorkflowManagerUI m_parent;
 
     /*--------- listener administration------------*/
 
@@ -125,7 +131,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * {@inheritDoc}
      */
     @Override
-    public WorkflowManagerUI getParent() {
+    public AsyncWorkflowManagerUI getParent() {
         if (m_parent != null) {
             return m_parent;
         }
@@ -322,14 +328,32 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * {@inheritDoc}
      */
     @Override
-    public void setUIInformation(final NodeUIInformation uiInformation) {
-        //some calls (see, e.g., line 605 in NodeContainerEditPart) use this method
-        //to correct the node positions - those updates don't need to be propagated to the server
-        m_uiInfo = uiInformation;
+    public CompletableFuture<Void> setUIInformationAsync(final NodeUIInformation uiInformation) {
+        //propagate to server
+        return AsyncNodeContainerUI.future(() -> {
+            int[] b = uiInformation.getBounds();
+            BoundsEnt bounds = builder(BoundsEntBuilder.class)
+                    .setX(b[0])
+                    .setY(b[1])
+                    .setWidth(b[2])
+                    .setHeight(b[3]).build();
+            try {
+                getAccess().nodeService().setNodeBounds(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                    bounds);
+            } catch (NodeNotFoundException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
+            return null;
+        });
+    }
 
-        //TODO as soon as we support to move nodes from within the job view,
-        //we somehow need to distinguish between calls that need to be propagated to the server and
-        //those that don't
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setUIInformationForCorrection(final NodeUIInformation uiInfo) {
+        m_uiInfo = uiInfo;
     }
 
     /**
@@ -728,6 +752,10 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
                     progress != null ? progress.doubleValue() : null, getEntity().getProgress().getMessage())));
             }
         }
+        if(!Objects.equals(m_oldEntity.getUIInfo().getBounds(), getEntity().getUIInfo().getBounds())) {
+            m_uiInfo = null;
+            notifyUIListeners(new NodeUIInformationEvent(getID(), getUIInformation(), getCustomDescription()));
+        }
         //no post update for nested entities necessary, yet
     }
 
@@ -812,5 +840,4 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
             throw new IllegalStateException(ex);
         }
     }
-
 }
