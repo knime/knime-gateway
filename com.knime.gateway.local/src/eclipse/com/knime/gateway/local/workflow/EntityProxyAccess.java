@@ -667,6 +667,9 @@ public class EntityProxyAccess {
      */
     @SuppressWarnings("unchecked")
     void updateNodeContainer(final NodeEnt oldNode, final NodeEnt newNode) {
+        if(newNode == null || oldNode == null) {
+            return;
+        }
         if (update(oldNode, newNode, AbstractEntityProxyNodeContainer.class)) {
             postUpdate(newNode, AbstractEntityProxyNodeContainer.class);
         }
@@ -675,15 +678,27 @@ public class EntityProxyAccess {
      * If an {@link EntityProxyWorkflowAnnotation} already exists for the 'oldAnno', the entity will be replaced with
      * 'newAnno'. Otherwise nothing happens.
      *
-     * After the update is done, {@link EntityProxy#postUpdate()} will be called, too.
-     *
      * @param oldAnno the entity to be replaced in an {@link EntityProxyWorkflowAnnotation}
      * @param newAnno the entity to replace with
+     * @return whether the entity has been updated
+     *
      */
-    void updateWorkflowAnnotation(final WorkflowAnnotationEnt oldAnno, final WorkflowAnnotationEnt newAnno) {
-        if (update(oldAnno, newAnno, EntityProxyWorkflowAnnotation.class)) {
-            postUpdate(newAnno, EntityProxyWorkflowAnnotation.class);
+    boolean updateWorkflowAnnotation(final WorkflowAnnotationEnt oldAnno, final WorkflowAnnotationEnt newAnno) {
+        if (oldAnno == null || newAnno == null) {
+            return false;
         }
+        return update(oldAnno, newAnno, EntityProxyWorkflowAnnotation.class);
+    }
+
+    /**
+     * Usually called after all entites have been updated (via
+     * {@link #updateWorkflowAnnotation(WorkflowAnnotationEnt, WorkflowAnnotationEnt)}). The post-update then, e.g.,
+     * refreshes the visuals etc.
+     *
+     * @param newAnno the anno to do the post-update for
+     */
+    void postUpdateWorkflowAnnotation(final WorkflowAnnotationEnt newAnno) {
+        postUpdate(newAnno, EntityProxyWorkflowAnnotation.class);
     }
 
     /**

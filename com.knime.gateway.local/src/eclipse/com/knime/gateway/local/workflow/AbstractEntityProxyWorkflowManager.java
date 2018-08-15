@@ -1105,6 +1105,10 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                         getAccess().updateWorkflowAnnotation(oldWorkflow.getWorkflowAnnotations().get(entry.getKey()),
                             entry.getValue());
                     }
+                    //post-update contained workflow annotations
+                    for (WorkflowAnnotationEnt anno : m_workflowEnt.getWorkflowAnnotations().values()) {
+                        getAccess().postUpdateWorkflowAnnotation(anno);
+                    }
 
                     //refresh the workflow node entity, too, if it is the root workflow
                     //(e.g. that contains the state of this metanode)
