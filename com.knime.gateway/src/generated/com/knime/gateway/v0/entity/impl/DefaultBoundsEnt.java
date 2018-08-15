@@ -49,9 +49,21 @@ public class DefaultBoundsEnt  implements BoundsEnt {
   
   private DefaultBoundsEnt(DefaultBoundsEntBuilder builder) {
     
+    if(builder.m_x == null) {
+        throw new IllegalArgumentException("x must not be null.");
+    }
     m_x = immutable(builder.m_x);
+    if(builder.m_y == null) {
+        throw new IllegalArgumentException("y must not be null.");
+    }
     m_y = immutable(builder.m_y);
+    if(builder.m_width == null) {
+        throw new IllegalArgumentException("width must not be null.");
+    }
     m_width = immutable(builder.m_width);
+    if(builder.m_height == null) {
+        throw new IllegalArgumentException("height must not be null.");
+    }
     m_height = immutable(builder.m_height);
   }
   
@@ -108,24 +120,36 @@ public class DefaultBoundsEnt  implements BoundsEnt {
 
         @Override
         public DefaultBoundsEntBuilder setX(Integer x) {
+             if(x == null) {
+                 throw new IllegalArgumentException("x must not be null.");
+             }
              m_x = x;
              return this;
         }
 
         @Override
         public DefaultBoundsEntBuilder setY(Integer y) {
+             if(y == null) {
+                 throw new IllegalArgumentException("y must not be null.");
+             }
              m_y = y;
              return this;
         }
 
         @Override
         public DefaultBoundsEntBuilder setWidth(Integer width) {
+             if(width == null) {
+                 throw new IllegalArgumentException("width must not be null.");
+             }
              m_width = width;
              return this;
         }
 
         @Override
         public DefaultBoundsEntBuilder setHeight(Integer height) {
+             if(height == null) {
+                 throw new IllegalArgumentException("height must not be null.");
+             }
              m_height = height;
              return this;
         }

@@ -35,25 +35,25 @@ public interface BoundsEnt extends GatewayEntity {
 
   /**
    * Get x
-   * @return x 
+   * @return x , never <code>null</code>
    **/
   public Integer getX();
 
   /**
    * Get y
-   * @return y 
+   * @return y , never <code>null</code>
    **/
   public Integer getY();
 
   /**
    * Get width
-   * @return width 
+   * @return width , never <code>null</code>
    **/
   public Integer getWidth();
 
   /**
    * Get height
-   * @return height 
+   * @return height , never <code>null</code>
    **/
   public Integer getHeight();
 
@@ -65,28 +65,28 @@ public interface BoundsEnt extends GatewayEntity {
 
         /**
          * 
-         * @param x the property value,  
+         * @param x the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         BoundsEntBuilder setX(Integer x);
         
         /**
          * 
-         * @param y the property value,  
+         * @param y the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         BoundsEntBuilder setY(Integer y);
         
         /**
          * 
-         * @param width the property value,  
+         * @param width the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         BoundsEntBuilder setWidth(Integer width);
         
         /**
          * 
-         * @param height the property value,  
+         * @param height the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         BoundsEntBuilder setHeight(Integer height);

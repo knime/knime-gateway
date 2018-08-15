@@ -111,7 +111,7 @@ public class DefaultNodeService implements NodeService {
         throws NodeNotFoundException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         NodeUIInformation information = NodeUIInformation.builder()
-            .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getHeight(), bounds.getWidth()).build();
+            .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()).build();
         nc.setUIInformation(information);
     }
 
