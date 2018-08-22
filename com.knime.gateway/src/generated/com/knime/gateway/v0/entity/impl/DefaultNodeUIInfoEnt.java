@@ -50,6 +50,9 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
   
   private DefaultNodeUIInfoEnt(DefaultNodeUIInfoEntBuilder builder) {
     
+    if(builder.m_bounds == null) {
+        throw new IllegalArgumentException("bounds must not be null.");
+    }
     m_bounds = immutable(builder.m_bounds);
     m_symbolRelative = immutable(builder.m_symbolRelative);
     m_dropLocation = immutable(builder.m_dropLocation);
@@ -103,12 +106,15 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
         }
     
         private BoundsEnt m_bounds;
-        private Boolean m_symbolRelative = null;
-        private Boolean m_dropLocation = null;
-        private Boolean m_snapToGrid = null;
+        private Boolean m_symbolRelative = false;
+        private Boolean m_dropLocation = false;
+        private Boolean m_snapToGrid = false;
 
         @Override
         public DefaultNodeUIInfoEntBuilder setBounds(BoundsEnt bounds) {
+             if(bounds == null) {
+                 throw new IllegalArgumentException("bounds must not be null.");
+             }
              m_bounds = bounds;
              return this;
         }

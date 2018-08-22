@@ -36,7 +36,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
 
   /**
    * The absolute node coordinates.
-   * @return bounds 
+   * @return bounds , never <code>null</code>
    **/
   public BoundsEnt getBounds();
 
@@ -67,7 +67,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
         /**
          * The absolute node coordinates.
          * 
-         * @param bounds the property value,  
+         * @param bounds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeUIInfoEntBuilder setBounds(BoundsEnt bounds);

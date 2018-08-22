@@ -163,15 +163,14 @@ public class DefaultNodeService implements NodeService {
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey);
-            NodeID nodeID = wfm.createAndAddNode(nodeFactory);
-            NodeUIInformation info = EntityTranslateUtil.translateNodeUIInfoEnt(uiInfo);
-            wfm.getNodeContainer(nodeID).setUIInformation(info);
-            return EntityUtil.nodeIDToString(nodeID);
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
                 | InvalidSettingsException ex) {
-            // TODO Auto-generated catch block
-            throw new RuntimeException(ex);
+            throw new NodeNotFoundException("No node found for factory key " + nodeFactoryKey);
         }
+        NodeID nodeID = wfm.createAndAddNode(nodeFactory);
+        NodeUIInformation info = EntityTranslateUtil.translateNodeUIInfoEnt(uiInfo);
+        wfm.getNodeContainer(nodeID).setUIInformation(info);
+        return EntityUtil.nodeIDToString(nodeID);
     }
 
     /**

@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.NodeUIInformation.Builder;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 
@@ -63,13 +64,21 @@ public class EntityTranslateUtil {
      * @return the newly created translation result
      */
     public static NodeUIInformation translateNodeUIInfoEnt(final NodeUIInfoEnt ent) {
-        return NodeUIInformation.builder()
+        Builder builder = NodeUIInformation.builder()
                 .setNodeLocation(ent.getBounds().getX(), ent.getBounds().getY(), ent.getBounds().getWidth(),
                     ent.getBounds().getHeight())
-                .setIsSymbolRelative(ent.isSymbolRelative())
                 //NodeUIInfoEnt always has absolute coordinates
-                .setHasAbsoluteCoordinates(true)
-                .setIsDropLocation(ent.isDropLocation())
-                .setSnapToGrid(ent.isSnapToGrid()).build();
+                .setHasAbsoluteCoordinates(true);
+
+        if (ent.isSymbolRelative() != null) {
+            builder.setIsSymbolRelative(ent.isSymbolRelative());
+        }
+        if (ent.isDropLocation() != null) {
+            builder.setIsDropLocation(ent.isDropLocation());
+        }
+        if (ent.isSnapToGrid() != null) {
+            builder.setSnapToGrid(ent.isSnapToGrid());
+        }
+        return builder.build();
     }
 }
