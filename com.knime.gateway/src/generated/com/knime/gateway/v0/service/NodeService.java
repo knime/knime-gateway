@@ -59,10 +59,13 @@ public interface NodeService extends GatewayService {
      * @param jobId ID the job the workflow is requested for
      * @param nodeFactoryKey The key representing the native node to be added to the workflow.
      * @param uiInfo Represents essentially the position of the new node. TODO: Relatively specific endpoint for the eclipse-client. Future variation of that endpoint will be necessary that is happy with the x,y-coordinates only.
+     * @param parentNodeId Optional id of the parent node if the new node should be added to a sub-workflow. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo) ;
+    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Provides the node&#39;s flow variables available for the node with the given node-id.

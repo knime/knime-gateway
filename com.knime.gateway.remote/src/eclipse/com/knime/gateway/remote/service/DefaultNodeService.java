@@ -22,6 +22,7 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeContainer;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWfmAndNc;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWorkflowManager;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getSubWorkflowManager;
 import static com.knime.gateway.util.EntityBuilderUtil.buildNodeEnt;
 
 import java.io.IOException;
@@ -85,6 +86,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.
@@ -155,8 +157,9 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String createNode(final UUID rootWorkflowID, final String nodeFactoryKey, final NodeUIInfoEnt uiInfo) {
-        WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
+    public String createNode(final UUID rootWorkflowID, final String nodeFactoryKey, final NodeUIInfoEnt uiInfo,
+        final String parentNodeID) throws NotASubWorkflowException, NodeNotFoundException {
+        WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parentNodeID);
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey);

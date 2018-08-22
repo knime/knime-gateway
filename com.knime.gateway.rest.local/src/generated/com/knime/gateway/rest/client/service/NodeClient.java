@@ -94,11 +94,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo)  {
+    public String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createNode(jobId, nodeFactoryKey, toByteArray(uiInfo));
+                    return c.createNode(jobId, nodeFactoryKey, toByteArray(uiInfo), parentNodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     // TODO exception handling
@@ -107,6 +107,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
+            if (ex.getResponse().getStatus() == 400) {
+                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }

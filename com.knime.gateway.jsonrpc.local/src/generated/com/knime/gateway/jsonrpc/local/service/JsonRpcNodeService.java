@@ -55,7 +55,7 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.createNode")
-    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo) ;
+    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}

@@ -74,8 +74,14 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      */
     @Override
     @JsonRpcMethod(value = "createNode")
-    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, String nodeFactoryKey, @JsonRpcParam(value="uiInfo") NodeUIInfoEnt uiInfo)  {
-        return m_service.createNode(jobId, nodeFactoryKey, uiInfo);    
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "400" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "404" /*per convention the data property contains the status code*/)
+    })
+    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, String nodeFactoryKey, @JsonRpcParam(value="uiInfo") NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+        return m_service.createNode(jobId, nodeFactoryKey, uiInfo, parentNodeId);    
     }
 
 	/**

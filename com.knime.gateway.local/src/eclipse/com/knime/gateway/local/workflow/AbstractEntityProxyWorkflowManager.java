@@ -239,8 +239,15 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             throw new IllegalArgumentException("Relative node coordinates are not supported");
         }
         return futureRefresh(() -> {
-            String id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(),
-                factory.getClass().getCanonicalName(), EntityBuilderUtil.buildNodeUIInfoEnt(uiInfo));
+            String id;
+            try {
+                id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(),
+                    factory.getClass().getCanonicalName(), EntityBuilderUtil.buildNodeUIInfoEnt(uiInfo),
+                    getEntity().getNodeID());
+            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                //should never happen
+                throw new CompletionException(ex);
+            }
             return getAccess().getNodeID(getEntity().getRootWorkflowID(), id.substring(1, id.length() - 1));
         });
     }
