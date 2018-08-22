@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -87,6 +88,25 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             if (ex.getResponse().getStatus() == 405) {
                 throw new ServiceExceptions.ActionNotAllowedException(readExceptionMessage(ex));
             }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
+    public String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo)  {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.createNode(jobId, nodeFactoryKey, toByteArray(uiInfo));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    // TODO exception handling
+                    throw new RuntimeException(ex);
+                }
+            }, String.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
         }

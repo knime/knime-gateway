@@ -26,7 +26,7 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * NodeUIInfoEnt
+ * Essentially the position of a node including some flags indicating a necessary correction of that given position.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -35,7 +35,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
 
 
   /**
-   * Get bounds
+   * The absolute node coordinates.
    * @return bounds 
    **/
   public BoundsEnt getBounds();
@@ -45,12 +45,6 @@ public interface NodeUIInfoEnt extends GatewayEntity {
    * @return symbolRelative 
    **/
   public Boolean isSymbolRelative();
-
-  /**
-   * Get hasAbsoluteCoordinates
-   * @return hasAbsoluteCoordinates 
-   **/
-  public Boolean hasAbsoluteCoordinates();
 
   /**
    * Get dropLocation
@@ -71,6 +65,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
     public interface NodeUIInfoEntBuilder extends GatewayEntityBuilder<NodeUIInfoEnt> {
 
         /**
+         * The absolute node coordinates.
          * 
          * @param bounds the property value,  
          * @return this entity builder for chaining
@@ -83,13 +78,6 @@ public interface NodeUIInfoEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeUIInfoEntBuilder setSymbolRelative(Boolean symbolRelative);
-        
-        /**
-         * 
-         * @param hasAbsoluteCoordinates the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeUIInfoEntBuilder setHasAbsoluteCoordinates(Boolean hasAbsoluteCoordinates);
         
         /**
          * 

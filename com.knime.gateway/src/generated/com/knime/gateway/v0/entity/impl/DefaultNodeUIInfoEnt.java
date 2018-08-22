@@ -27,7 +27,7 @@ import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 /**
- * DefaultNodeUIInfoEnt
+ * Essentially the position of a node including some flags indicating a necessary correction of that given position.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -36,7 +36,6 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
 
   protected BoundsEnt m_bounds;
   protected Boolean m_symbolRelative;
-  protected Boolean m_hasAbsoluteCoordinates;
   protected Boolean m_dropLocation;
   protected Boolean m_snapToGrid;
   
@@ -53,7 +52,6 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
     
     m_bounds = immutable(builder.m_bounds);
     m_symbolRelative = immutable(builder.m_symbolRelative);
-    m_hasAbsoluteCoordinates = immutable(builder.m_hasAbsoluteCoordinates);
     m_dropLocation = immutable(builder.m_dropLocation);
     m_snapToGrid = immutable(builder.m_snapToGrid);
   }
@@ -73,7 +71,7 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
             return false;
         }
         DefaultNodeUIInfoEnt ent = (DefaultNodeUIInfoEnt)o;
-        return Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_symbolRelative, ent.m_symbolRelative) && Objects.equals(m_hasAbsoluteCoordinates, ent.m_hasAbsoluteCoordinates) && Objects.equals(m_dropLocation, ent.m_dropLocation) && Objects.equals(m_snapToGrid, ent.m_snapToGrid);
+        return Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_symbolRelative, ent.m_symbolRelative) && Objects.equals(m_dropLocation, ent.m_dropLocation) && Objects.equals(m_snapToGrid, ent.m_snapToGrid);
     }
 
 
@@ -85,11 +83,6 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
   @Override
   public Boolean isSymbolRelative() {
         return m_symbolRelative;
-    }
-    
-  @Override
-  public Boolean hasAbsoluteCoordinates() {
-        return m_hasAbsoluteCoordinates;
     }
     
   @Override
@@ -111,7 +104,6 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
     
         private BoundsEnt m_bounds;
         private Boolean m_symbolRelative = null;
-        private Boolean m_hasAbsoluteCoordinates = null;
         private Boolean m_dropLocation = null;
         private Boolean m_snapToGrid = null;
 
@@ -124,12 +116,6 @@ public class DefaultNodeUIInfoEnt  implements NodeUIInfoEnt {
         @Override
         public DefaultNodeUIInfoEntBuilder setSymbolRelative(Boolean symbolRelative) {
              m_symbolRelative = symbolRelative;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeUIInfoEntBuilder setHasAbsoluteCoordinates(Boolean hasAbsoluteCoordinates) {
-             m_hasAbsoluteCoordinates = hasAbsoluteCoordinates;
              return this;
         }
 

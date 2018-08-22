@@ -59,6 +59,7 @@ import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
+import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
@@ -67,7 +68,6 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
@@ -313,13 +313,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     @Override
     public NodeUIInformation getUIInformation() {
         if (m_uiInfo == null) {
-            NodeUIInfoEnt uiInfo = getEntity().getUIInfo();
-            m_uiInfo = NodeUIInformation.builder()
-                .setNodeLocation(uiInfo.getBounds().getX(), uiInfo.getBounds().getY(), uiInfo.getBounds().getWidth(),
-                    uiInfo.getBounds().getHeight())
-                .setIsSymbolRelative(uiInfo.isSymbolRelative())
-                .setHasAbsoluteCoordinates(uiInfo.hasAbsoluteCoordinates()).setIsDropLocation(uiInfo.isDropLocation())
-                .setSnapToGrid(uiInfo.isSnapToGrid()).build();
+            m_uiInfo = EntityTranslateUtil.translateNodeUIInfoEnt(getEntity().getUIInfo());
         }
         return m_uiInfo;
     }

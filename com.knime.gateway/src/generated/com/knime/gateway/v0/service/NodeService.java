@@ -28,6 +28,7 @@ import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -51,6 +52,17 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.ActionNotAllowedException If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.
      */
     String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+        
+    /**
+     * Creates and adds a new native node to the workflow.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeFactoryKey The key representing the native node to be added to the workflow.
+     * @param uiInfo Represents essentially the position of the new node. TODO: Relatively specific endpoint for the eclipse-client. Future variation of that endpoint will be necessary that is happy with the x,y-coordinates only.
+     *
+     * @return the result
+     */
+    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo) ;
         
     /**
      * Provides the node&#39;s flow variables available for the node with the given node-id.

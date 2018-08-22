@@ -21,9 +21,11 @@ package com.knime.gateway.util;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.WorkflowPartsEnt;
 
 /**
@@ -53,5 +55,21 @@ public class EntityTranslateUtil {
             .setAnnotationIDs(ent.getAnnotationIDs().stream().map(s -> string2AnnotationID.apply(s))
                 .toArray(size -> new WorkflowAnnotationID[size]))
             .build();
+    }
+
+    /**
+     * Translates {@link NodeUIInfoEnt} into {@link NodeUIInformation}.
+     * @param ent the entity
+     * @return the newly created translation result
+     */
+    public static NodeUIInformation translateNodeUIInfoEnt(final NodeUIInfoEnt ent) {
+        return NodeUIInformation.builder()
+                .setNodeLocation(ent.getBounds().getX(), ent.getBounds().getY(), ent.getBounds().getWidth(),
+                    ent.getBounds().getHeight())
+                .setIsSymbolRelative(ent.isSymbolRelative())
+                //NodeUIInfoEnt always has absolute coordinates
+                .setHasAbsoluteCoordinates(true)
+                .setIsDropLocation(ent.isDropLocation())
+                .setSnapToGrid(ent.isSnapToGrid()).build();
     }
 }

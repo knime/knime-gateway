@@ -211,6 +211,31 @@ public class EntityBuilderUtil {
     }
 
     /**
+     * Builds a new {@link NodeUIInfoEnt}.
+     *
+     * @param uiInfo the ui-infor to build the entity from
+     * @return the newly created entity
+     */
+    public static NodeUIInfoEnt buildNodeUIInfoEnt(final NodeUIInformation uiInfo) {
+        if(uiInfo == null) {
+            return null;
+        } else {
+            int[] b = uiInfo.getBounds();
+            BoundsEnt bounds = builder(BoundsEntBuilder.class)
+                    .setX(b[0])
+                    .setY(b[1])
+                    .setWidth(b[2])
+                    .setHeight(b[3]).build();
+            assert uiInfo.hasAbsoluteCoordinates();
+            return builder(NodeUIInfoEntBuilder.class)
+                    .setBounds(bounds)
+                    .setDropLocation(uiInfo.isDropLocation())
+                    .setSnapToGrid(uiInfo.getSnapToGrid())
+                    .setSymbolRelative(uiInfo.isSymbolRelative()).build();
+        }
+    }
+
+    /**
      * Builds a new {@link WorkflowNodeEnt}.
      *
      * @param wm the workflow manager to build the node entity from
@@ -669,25 +694,6 @@ public class EntityBuilderUtil {
                 .setProgress(progress == null ? null : BigDecimal.valueOf(progress)).setMessage(message).build();
         } else {
             return builder(NodeProgressEntBuilder.class).setProgress(null).setMessage(null).build();
-        }
-    }
-
-    private static NodeUIInfoEnt buildNodeUIInfoEnt(final NodeUIInformation uiInfo) {
-        if(uiInfo == null) {
-            return null;
-        } else {
-            int[] b = uiInfo.getBounds();
-            BoundsEnt bounds = builder(BoundsEntBuilder.class)
-                    .setX(b[0])
-                    .setY(b[1])
-                    .setWidth(b[2])
-                    .setHeight(b[3]).build();
-            return builder(NodeUIInfoEntBuilder.class)
-                    .setBounds(bounds)
-                    .setHasAbsoluteCoordinates(uiInfo.hasAbsoluteCoordinates())
-                    .setDropLocation(uiInfo.isDropLocation())
-                    .setSnapToGrid(uiInfo.getSnapToGrid())
-                    .setSymbolRelative(uiInfo.isSymbolRelative()).build();
         }
     }
 

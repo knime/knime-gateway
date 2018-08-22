@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -48,6 +49,13 @@ public interface JsonRpcNodeService extends NodeService {
     @Override
     @JsonRpcMethod(value = "NodeService.changeAndGetNodeState")
     String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "NodeService.createNode")
+    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo) ;
 
 	/**
      * {@inheritDoc}

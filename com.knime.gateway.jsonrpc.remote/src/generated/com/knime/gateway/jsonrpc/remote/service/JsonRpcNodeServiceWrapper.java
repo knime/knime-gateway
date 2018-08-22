@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -66,6 +67,15 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     })
     public String changeAndGetNodeState(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         return m_service.changeAndGetNodeState(jobId, nodeId, action);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "createNode")
+    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, String nodeFactoryKey, @JsonRpcParam(value="uiInfo") NodeUIInfoEnt uiInfo)  {
+        return m_service.createNode(jobId, nodeFactoryKey, uiInfo);    
     }
 
 	/**

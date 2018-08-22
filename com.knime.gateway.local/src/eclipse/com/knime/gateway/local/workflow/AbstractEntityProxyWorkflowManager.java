@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
@@ -227,6 +228,21 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public boolean isProject() {
         //if the workflow has no parent it is very likely a workflow project and not a metanode
         return getParent() == null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<NodeID> createAndAddNodeAsync(final NodeFactory<?> factory, final NodeUIInformation uiInfo) {
+        if (!uiInfo.hasAbsoluteCoordinates()) {
+            throw new IllegalArgumentException("Relative node coordinates are not supported");
+        }
+        return futureRefresh(() -> {
+            String id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(),
+                factory.getClass().getCanonicalName(), EntityBuilderUtil.buildNodeUIInfoEnt(uiInfo));
+            return getAccess().getNodeID(getEntity().getRootWorkflowID(), id.substring(1, id.length() - 1));
+        });
     }
 
     /**

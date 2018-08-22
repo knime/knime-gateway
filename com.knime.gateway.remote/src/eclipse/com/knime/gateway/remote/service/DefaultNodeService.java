@@ -38,6 +38,8 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
@@ -61,9 +63,11 @@ import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.workbench.repository.RepositoryManager;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.util.EntityBuilderUtil;
+import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
@@ -73,6 +77,7 @@ import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
+import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.NodeService;
@@ -143,6 +148,26 @@ public class DefaultNodeService implements NodeService {
             throw new ServiceExceptions.InvalidSettingsException(ex.getMessage());
         } catch (IllegalStateException ex) {
             throw new ServiceExceptions.IllegalStateException(ex.getMessage());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String createNode(final UUID rootWorkflowID, final String nodeFactoryKey, final NodeUIInfoEnt uiInfo) {
+        WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
+        NodeFactory<NodeModel> nodeFactory;
+        try {
+            nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey);
+            NodeID nodeID = wfm.createAndAddNode(nodeFactory);
+            NodeUIInformation info = EntityTranslateUtil.translateNodeUIInfoEnt(uiInfo);
+            wfm.getNodeContainer(nodeID).setUIInformation(info);
+            return EntityUtil.nodeIDToString(nodeID);
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
+                | InvalidSettingsException ex) {
+            // TODO Auto-generated catch block
+            throw new RuntimeException(ex);
         }
     }
 

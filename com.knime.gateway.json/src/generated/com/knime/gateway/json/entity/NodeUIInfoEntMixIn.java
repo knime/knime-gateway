@@ -66,10 +66,6 @@ public interface NodeUIInfoEntMixIn extends NodeUIInfoEnt {
     public Boolean isSymbolRelative();
     
     @Override
-    @JsonProperty("hasAbsoluteCoordinates")
-    public Boolean hasAbsoluteCoordinates();
-    
-    @Override
     @JsonProperty("dropLocation")
     public Boolean isDropLocation();
     
@@ -104,10 +100,6 @@ public interface NodeUIInfoEntMixIn extends NodeUIInfoEnt {
         @Override
         @JsonProperty("symbolRelative")
         public NodeUIInfoEntMixInBuilder setSymbolRelative(final Boolean symbolRelative);
-        
-        @Override
-        @JsonProperty("hasAbsoluteCoordinates")
-        public NodeUIInfoEntMixInBuilder setHasAbsoluteCoordinates(final Boolean hasAbsoluteCoordinates);
         
         @Override
         @JsonProperty("dropLocation")
