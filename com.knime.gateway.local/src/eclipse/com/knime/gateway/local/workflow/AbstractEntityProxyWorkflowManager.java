@@ -55,6 +55,7 @@ import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.EditorUIInformation;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeAnnotation;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
@@ -67,6 +68,7 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
@@ -169,11 +171,31 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * Logic mainly copied from {@link WorkflowManager#canRemoveNode(NodeID)}
      */
     @Override
     public boolean canRemoveNode(final NodeID nodeID) {
-        //TODO in order to save requests #removeAsync fails with an exception
-        //when cannot be removed -> hence returns always true for now
+        NodeContainerUI nc = getNodeContainer(nodeID);
+        if (getNodeContainer(nodeID) == null) {
+            return false;
+        }
+        if (nc.getNodeContainerState().isExecutionInProgress()) {
+            return false;
+        }
+        if (!nc.isDeletable()) {
+            return false;
+        }
+        for (ConnectionContainerUI c : getOutgoingConnectionsFor(nodeID)) {
+            if (!c.isDeletable()) {
+                return false;
+            }
+        }
+        for (ConnectionContainerUI c : getIncomingConnectionsFor(nodeID)) {
+            if (!c.isDeletable()) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -230,11 +252,45 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * Most logic copied from
+     * {@link WorkflowManager#canRemoveConnection(org.knime.core.node.workflow.ConnectionContainer)}
      */
     @Override
     public boolean canRemoveConnection(final ConnectionID connectionID) {
-        //TODO in order to save requests #removeAsync fails with an exception
-        //when cannot be removed -> hence returns always true for now
+        ConnectionContainerUI cc = getConnection(connectionID);
+        if (cc == null || !cc.isDeletable()) {
+            return false;
+        }
+        NodeID destID = cc.getDest();
+        NodeID sourceID = cc.getSource();
+        // make sure both nodes (well, their connection lists) exist
+        if (getIncomingConnectionsFor(destID).isEmpty()) {
+            return false;
+        }
+        if (getOutgoingConnectionsFor(sourceID).isEmpty()) {
+            return false;
+        }
+        // make sure connection between those two nodes exists
+        if (!getIncomingConnectionsFor(destID).contains(cc)) {
+            return false;
+        }
+        if (!getOutgoingConnectionsFor(sourceID).contains(cc)) {
+            return false;
+        }
+        //TODO: following logic cannot be duplicated and a server request would
+        //be required here - i.e. removal would be allowed but will fail, when carried out
+        //        if (destID.equals(getID())) { // wfm out connection
+        //            // note it is ok if the WFM itself is executing...
+        //            if (getParent().hasSuccessorInProgress(getID())) {
+        //                return false;
+        //            }
+        //        } else {
+        final NodeContainerState state = getNodeContainer(destID).getNodeContainerState();
+        if (state.isExecutionInProgress() || (state.isExecuted() && !canResetNode(destID))) {
+            return false;
+        }
+        //        }
         return true;
     }
 
