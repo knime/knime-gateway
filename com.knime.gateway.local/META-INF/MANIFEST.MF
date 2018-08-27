@@ -31,6 +31,7 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-annotations;bundle-version="[
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.8.9,3.0.0)",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.7.1,3.0.0)",
  org.knime.ext.js;bundle-version="[3.6.0,4.0.0)",
- com.google.guava;bundle-version="[19.0.0,20.0.0)"
+ com.google.guava;bundle-version="[19.0.0,20.0.0)",
+ org.apache.commons.codec;bundle-version="[1.10.0,1.11.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

@@ -34,6 +34,9 @@ import com.knime.gateway.v0.entity.DataCellEnt;
 public class DefaultDataCellEnt  implements DataCellEnt {
 
   protected String m_valueAsString;
+  protected Boolean m_missing;
+  protected Boolean m_binary;
+  protected Boolean m_problem;
   
   protected DefaultDataCellEnt() {
     //for sub-classes
@@ -47,6 +50,9 @@ public class DefaultDataCellEnt  implements DataCellEnt {
   private DefaultDataCellEnt(DefaultDataCellEntBuilder builder) {
     
     m_valueAsString = immutable(builder.m_valueAsString);
+    m_missing = immutable(builder.m_missing);
+    m_binary = immutable(builder.m_binary);
+    m_problem = immutable(builder.m_problem);
   }
   
    /**
@@ -64,13 +70,28 @@ public class DefaultDataCellEnt  implements DataCellEnt {
             return false;
         }
         DefaultDataCellEnt ent = (DefaultDataCellEnt)o;
-        return Objects.equals(m_valueAsString, ent.m_valueAsString);
+        return Objects.equals(m_valueAsString, ent.m_valueAsString) && Objects.equals(m_missing, ent.m_missing) && Objects.equals(m_binary, ent.m_binary) && Objects.equals(m_problem, ent.m_problem);
     }
 
 
   @Override
   public String getValueAsString() {
         return m_valueAsString;
+    }
+    
+  @Override
+  public Boolean isMissing() {
+        return m_missing;
+    }
+    
+  @Override
+  public Boolean isBinary() {
+        return m_binary;
+    }
+    
+  @Override
+  public Boolean isProblem() {
+        return m_problem;
     }
     
   
@@ -81,10 +102,31 @@ public class DefaultDataCellEnt  implements DataCellEnt {
         }
     
         private String m_valueAsString = null;
+        private Boolean m_missing = null;
+        private Boolean m_binary = null;
+        private Boolean m_problem = null;
 
         @Override
         public DefaultDataCellEntBuilder setValueAsString(String valueAsString) {
              m_valueAsString = valueAsString;
+             return this;
+        }
+
+        @Override
+        public DefaultDataCellEntBuilder setMissing(Boolean missing) {
+             m_missing = missing;
+             return this;
+        }
+
+        @Override
+        public DefaultDataCellEntBuilder setBinary(Boolean binary) {
+             m_binary = binary;
+             return this;
+        }
+
+        @Override
+        public DefaultDataCellEntBuilder setProblem(Boolean problem) {
+             m_problem = problem;
              return this;
         }
 

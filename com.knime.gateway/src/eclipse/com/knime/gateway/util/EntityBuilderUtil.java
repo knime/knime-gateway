@@ -23,22 +23,39 @@ import static com.knime.gateway.util.EntityUtil.nodeIDToString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.codec.binary.Base64;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataCellDataOutput;
+import org.knime.core.data.DataCellSerializer;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.DataTypeRegistry;
+import org.knime.core.data.MissingValue;
 import org.knime.core.data.container.CloseableRowIterator;
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.filestore.FileStoreCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -48,6 +65,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
 import org.knime.core.node.port.MetaPortInfo;
@@ -509,12 +527,85 @@ public class EntityBuilderUtil {
 
     private static DataRowEnt buildDataRowEnt(final DataRow row) {
         List<DataCellEnt> columns =
-            row.stream().map(cell -> builder(DataCellEntBuilder.class).setValueAsString(cell.toString()).build())
-                .collect(Collectors.toList());
+            row.stream().map(cell -> buildDataCellEnt(cell))
+            .collect(Collectors.toList());
         return builder(DataRowEntBuilder.class)
                .setRowID(row.getKey().getString())
                .setColumns(columns)
                .build();
+    }
+
+    private static final Set<DataType> basicTypes =
+        new HashSet<DataType>(
+            Arrays.asList(new DataType[]{
+                DoubleCell.TYPE,
+                IntCell.TYPE,
+                StringCell.TYPE,
+                BooleanCell.TYPE}));
+
+    private static DataCellEnt buildDataCellEnt(final DataCell cell) {
+        if(cell.isMissing()) {
+            return builder(DataCellEntBuilder.class)
+                    .setMissing(true)
+                    .setValueAsString(((MissingValue) cell).getError())
+                    .build();
+        } else if (basicTypes.contains(cell.getType())) {
+            return builder(DataCellEntBuilder.class).setValueAsString(cell.toString()).build();
+        } else if (cell instanceof FileStoreCell) {
+            return buildProblemDataCell("FileStoreCells are not supported, yet");
+        } else {
+            Optional<DataCellSerializer<DataCell>> serializer =
+                DataTypeRegistry.getInstance().getSerializer(cell.getClass());
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            try (DataCellObjectOutputStream out = new DataCellObjectOutputStream(bytes)) {
+                if(!serializer.isPresent()) {
+                    return buildProblemDataCell(
+                        "No serializer available for cell of type '" + cell.getType().getName() + "'");
+                }
+                serializer.get().serialize(cell, out);
+                out.flush();
+                out.close();
+                byte[] encodeBase64 = Base64.encodeBase64(bytes.toByteArray());
+                return builder(DataCellEntBuilder.class).setValueAsString(new String(encodeBase64)).setBinary(true)
+                    .build();
+            } catch (IOException ex) {
+                return buildProblemDataCell("Problem occured while serializing the cell: " + ex.getMessage());
+            }
+        }
+    }
+
+    private static DataCellEnt buildProblemDataCell(final String problem) {
+        return builder(DataCellEntBuilder.class).setProblem(true).setValueAsString(problem).build();
+    }
+
+    /**
+     * Output stream used for serializing a data cell. Mainly copied from {@link PortObjectRepository}.
+     */
+    private static final class DataCellObjectOutputStream
+        extends ObjectOutputStream implements DataCellDataOutput {
+
+        /** Call super.
+         * @param out To delegate
+         * @throws IOException If super throws it.
+         *
+         */
+        DataCellObjectOutputStream(
+                final OutputStream out) throws IOException {
+            super(out);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void writeDataCell(final DataCell cell) throws IOException {
+            writeUTF(cell.getClass().getName());
+            Optional<DataCellSerializer<DataCell>> cellSerializer =
+                    DataTypeRegistry.getInstance().getSerializer(cell.getClass());
+            if (cellSerializer.isPresent()) {
+                cellSerializer.get().serialize(cell, this);
+            } else {
+                writeObject(cell);
+            }
+        }
     }
 
     /**

@@ -60,6 +60,18 @@ public interface DataCellEntMixIn extends DataCellEnt {
     @JsonProperty("valueAsString")
     public String getValueAsString();
     
+    @Override
+    @JsonProperty("missing")
+    public Boolean isMissing();
+    
+    @Override
+    @JsonProperty("binary")
+    public Boolean isBinary();
+    
+    @Override
+    @JsonProperty("problem")
+    public Boolean isProblem();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -83,6 +95,18 @@ public interface DataCellEntMixIn extends DataCellEnt {
         @Override
         @JsonProperty("valueAsString")
         public DataCellEntMixInBuilder setValueAsString(final String valueAsString);
+        
+        @Override
+        @JsonProperty("missing")
+        public DataCellEntMixInBuilder setMissing(final Boolean missing);
+        
+        @Override
+        @JsonProperty("binary")
+        public DataCellEntMixInBuilder setBinary(final Boolean binary);
+        
+        @Override
+        @JsonProperty("problem")
+        public DataCellEntMixInBuilder setProblem(final Boolean problem);
         
     }
 

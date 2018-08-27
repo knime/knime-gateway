@@ -39,6 +39,24 @@ public interface DataCellEnt extends GatewayEntity {
    **/
   public String getValueAsString();
 
+  /**
+   * If it&#39;s a missing cell - The error message is passed via the &#39;valueAsString&#39;-prop.
+   * @return missing 
+   **/
+  public Boolean isMissing();
+
+  /**
+   * Whether the &#39;valueAsString&#39;-prop contains a serialized binary string, that is base64-encoded.
+   * @return binary 
+   **/
+  public Boolean isBinary();
+
+  /**
+   * Indicates whether there was a problem creating this cell. The details are given via the &#39;valueAsString&#39;-prop.
+   * @return problem 
+   **/
+  public Boolean isProblem();
+
 
     /**
      * The builder for the entity.
@@ -52,6 +70,30 @@ public interface DataCellEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         DataCellEntBuilder setValueAsString(String valueAsString);
+        
+        /**
+         * If it&#39;s a missing cell - The error message is passed via the &#39;valueAsString&#39;-prop.
+         * 
+         * @param missing the property value,  
+         * @return this entity builder for chaining
+         */
+        DataCellEntBuilder setMissing(Boolean missing);
+        
+        /**
+         * Whether the &#39;valueAsString&#39;-prop contains a serialized binary string, that is base64-encoded.
+         * 
+         * @param binary the property value,  
+         * @return this entity builder for chaining
+         */
+        DataCellEntBuilder setBinary(Boolean binary);
+        
+        /**
+         * Indicates whether there was a problem creating this cell. The details are given via the &#39;valueAsString&#39;-prop.
+         * 
+         * @param problem the property value,  
+         * @return this entity builder for chaining
+         */
+        DataCellEntBuilder setProblem(Boolean problem);
         
         
         /**
