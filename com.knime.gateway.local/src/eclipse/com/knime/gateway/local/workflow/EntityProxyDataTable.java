@@ -40,6 +40,7 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.BufferedDataTableView;
 
 import com.knime.gateway.v0.entity.DataRowEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
@@ -178,7 +179,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
      */
     @Override
     public JComponent[] getViews() {
-        throw new UnsupportedOperationException();
+        return new JComponent[] {new BufferedDataTableView(this)};
     }
 
     /**

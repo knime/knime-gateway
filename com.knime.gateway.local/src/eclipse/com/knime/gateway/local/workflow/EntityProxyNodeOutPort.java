@@ -18,20 +18,25 @@
  */
 package com.knime.gateway.local.workflow;
 
+import java.awt.Rectangle;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.ViewUtils;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
+import org.knime.core.node.workflow.OutPortView;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -50,6 +55,8 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     private N m_node;
 
     private final Set<NodeStateChangeListener> m_listener;
+
+    private OutPortView m_portView;
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -184,6 +191,29 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     public FlowObjectStack getFlowObjectStack() {
         return getAccess().getOutputFlowVariableStack(getNodeEnt(), getAccess().getNodeID(getNodeEnt()));
     }
+
+    @Override
+    public void openPortView(final String name, final Rectangle knimeWindowBounds) {
+        ViewUtils.invokeLaterInEDT(new Runnable() {
+            @Override
+            public void run() {
+                openPortViewInEDT(name, knimeWindowBounds);
+            }
+        });
+    }
+
+    private void openPortViewInEDT(final String name, final Rectangle knimeWindowBounds) {
+        assert SwingUtilities.isEventDispatchThread();
+        if (m_portView == null) {
+            m_portView = new OutPortView("TODO: node name with id", getPortName());
+            m_portView.update(getPortObject(), getPortObjectSpec(), getFlowObjectStack(),
+                CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
+        }
+        // the custom name might have changed meanwhile
+        m_portView.setTitle(getPortName() + " - " + "TODO: node name with id");
+        m_portView.openView(knimeWindowBounds);
+    }
+
 
     /**
      * {@inheritDoc}
