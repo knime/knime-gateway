@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -136,7 +137,17 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
      */
     @Override
     public void stateChanged(final NodeStateEvent state) {
-        notifyNodeStateChangeListener(state);
+        if (!getNodeContainerState().isExecutionInProgress()) {
+            notifyNodeStateChangeListener(state);
+            if (m_portView != null) {
+                try {
+                    m_portView.update(getPortObject(), getPortObjectSpec(), getFlowObjectStack(),
+                        CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
+                } catch (Exception e) {
+                    NodeLogger.getLogger(getClass()).error("Failed to update port view.", e);
+                }
+            }
+        }
     }
 
     /**

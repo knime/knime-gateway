@@ -499,7 +499,10 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     @Override
     public NodeOutPortUI getOutPort(final int index) {
-        return getAccess().getNodeOutPort(getEntity().getOutPorts().get(index), getEntity());
+        EntityProxyNodeOutPort nodeOutPort =
+            getAccess().getNodeOutPort(getEntity().getOutPorts().get(index), getEntity());
+        addNodeStateChangeListener(nodeOutPort);
+        return nodeOutPort;
     }
 
     /**
