@@ -205,12 +205,11 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     private void openPortViewInEDT(final String name, final Rectangle knimeWindowBounds) {
         assert SwingUtilities.isEventDispatchThread();
         if (m_portView == null) {
-            m_portView = new OutPortView("TODO: node name with id", getPortName());
+            String label = getAccess().getNodeID(getNodeEnt()).toString() + " - " + getNodeEnt().getName() + " (job)";
+            m_portView = new OutPortView(label, name);
             m_portView.update(getPortObject(), getPortObjectSpec(), getFlowObjectStack(),
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
         }
-        // the custom name might have changed meanwhile
-        m_portView.setTitle(getPortName() + " - " + "TODO: node name with id");
         m_portView.openView(knimeWindowBounds);
     }
 
