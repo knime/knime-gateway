@@ -674,6 +674,25 @@ public class EntityProxyAccess {
             postUpdate(newNode, AbstractEntityProxyNodeContainer.class);
         }
     }
+
+    /**
+     * If an {@link EntityProxyConnectionContainer} already exists for the 'oldConn', the entity will be replaced with
+     * 'newConn'. Otherwise nothing happens.
+     *
+     * After the update is done, {@link EntityProxy#postUpdate()} will be called, too.
+     *
+     * @param oldNode the entity to be replaced in an {@link EntityProxyConnectionContainer}
+     * @param newNode the entity to replace with
+     */
+    void updateConnectionContainer(final ConnectionEnt oldConn, final ConnectionEnt newConn) {
+        if (newConn == null || oldConn == null) {
+            return;
+        }
+        if (update(oldConn, newConn, EntityProxyConnectionContainer.class)) {
+            postUpdate(newConn, EntityProxyConnectionContainer.class);
+        }
+    }
+
     /**
      * If an {@link EntityProxyWorkflowAnnotation} already exists for the 'oldAnno', the entity will be replaced with
      * 'newAnno'. Otherwise nothing happens.

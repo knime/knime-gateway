@@ -1178,6 +1178,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                         getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
                     }
 
+                    //update contained connections
+                    for(Entry<String, ConnectionEnt> entry : m_workflowEnt.getConnections().entrySet()) {
+                        getAccess().updateConnectionContainer(oldWorkflow.getConnections().get(entry.getKey()),
+                            entry.getValue());
+                    }
+
                     //update contained workflow annotations
                     for (Entry<String, WorkflowAnnotationEnt> entry : m_workflowEnt.getWorkflowAnnotations()
                         .entrySet()) {
