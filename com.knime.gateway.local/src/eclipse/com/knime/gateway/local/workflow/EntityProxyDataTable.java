@@ -128,6 +128,8 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
         m_nodeEnt = nodeEnt;
         m_spec = spec;
         m_chunks = new ArrayList<DataTableEnt>();
+        //load the first chunk
+        getChunk(0);
     }
 
     /**

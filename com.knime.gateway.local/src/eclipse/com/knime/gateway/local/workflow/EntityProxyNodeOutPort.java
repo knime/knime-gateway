@@ -18,13 +18,17 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+
 import java.awt.Rectangle;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import org.eclipse.swt.widgets.Display;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
@@ -39,6 +43,8 @@ import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.OutPortView;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
+import org.knime.core.ui.node.workflow.async.AsyncNodeOutPortUI;
+import org.knime.workbench.ui.async.AsyncUtil;
 
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
@@ -51,7 +57,8 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  * @author Martin Horn, University of Konstanz
  * @param <N> type of the node the port belongs to
  */
-class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<NodeOutPortEnt> implements NodeOutPortUI {
+class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<NodeOutPortEnt>
+    implements AsyncNodeOutPortUI {
 
     private N m_node;
 
@@ -76,12 +83,18 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
      * {@inheritDoc}
      */
     @Override
-    public PortObjectSpec getPortObjectSpec() {
+    public CompletableFuture<PortObjectSpec> getPortObjectSpecAsync() {
+        return supplyAsync(() -> {
+            return getPortObjectSpecInternal();
+        });
+    }
+
+    private PortObjectSpec getPortObjectSpecInternal() {
         try {
             return getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
         } catch (InvalidRequestException | NodeNotFoundException ex) {
             //should never happen
-            throw new IllegalStateException(ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -89,14 +102,17 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
      * {@inheritDoc}
      */
     @Override
-    public PortObject getPortObject() {
+    public CompletableFuture<PortObject> getPortObjectAsync() {
         if (!getNodeState().isExecuted()) {
             return null;
         }
         if (getEntity().getPortType().getPortObjectClassName().equals(BufferedDataTable.class.getCanonicalName())) {
-            return getAccess().getOutputDataTable(getEntity(), getNodeEnt(), (DataTableSpec)getPortObjectSpec());
+            return supplyAsync(() -> {
+                return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
+                    (DataTableSpec)getPortObjectSpecInternal());
+            });
         } else {
-            return new UnsupportedPortObject(getPortType());
+            return CompletableFuture.completedFuture(new UnsupportedPortObject(getPortType()));
         }
     }
 
@@ -141,7 +157,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
             notifyNodeStateChangeListener(state);
             if (m_portView != null) {
                 try {
-                    m_portView.update(getPortObject(), getPortObjectSpec(), getFlowObjectStack(),
+                    m_portView.update(getPortObjectAsync().get(), getPortObjectSpecAsync().get(), getFlowObjectStack(),
                         CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
                 } catch (Exception e) {
                     NodeLogger.getLogger(getClass()).error("Failed to update port view.", e);
@@ -218,8 +234,14 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         if (m_portView == null) {
             String label = getAccess().getNodeID(getNodeEnt()).toString() + " - " + getNodeEnt().getName() + " (job)";
             m_portView = new OutPortView(label, name);
-            //TODO try loading the first chunk? Async?
-            m_portView.update(getPortObject(), getPortObjectSpec(), getFlowObjectStack(),
+
+            CompletableFuture<PortObjectSpec> futurePortObjectSpec = getPortObjectSpecAsync();
+            CompletableFuture<PortObject> futurePortObject = getPortObjectAsync();
+            Display.getDefault().syncExec(() -> {
+                AsyncUtil.waitForTermination(CompletableFuture.allOf(futurePortObject, futurePortObjectSpec),
+                    "Loading port object ...");
+            });
+            m_portView.update(futurePortObject.getNow(null), futurePortObjectSpec.getNow(null), getFlowObjectStack(),
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
         }
         m_portView.openView(knimeWindowBounds);
