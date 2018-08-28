@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 import java.awt.Rectangle;
@@ -104,7 +105,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     @Override
     public CompletableFuture<PortObject> getPortObjectAsync() {
         if (!getNodeState().isExecuted()) {
-            return null;
+            return completedFuture(null);
         }
         if (getEntity().getPortType().getPortObjectClassName().equals(BufferedDataTable.class.getCanonicalName())) {
             return supplyAsync(() -> {
@@ -112,7 +113,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
                     (DataTableSpec)getPortObjectSpecInternal());
             });
         } else {
-            return CompletableFuture.completedFuture(new UnsupportedPortObject(getPortType()));
+            return completedFuture(new UnsupportedPortObject(getPortType()));
         }
     }
 
