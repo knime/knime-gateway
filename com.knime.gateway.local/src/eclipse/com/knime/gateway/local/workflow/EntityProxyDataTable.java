@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -158,8 +159,13 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
                 } else {
                     //chunk not loaded, yet, or still loading
                     final long idx = m_index;
-                    CompletableFuture<DataRow> futureRow = futureChunk.thenApply(c -> {
-                        return new EntityProxyDataRow(getRow(c, idx), getAccess());
+                    CompletableFuture<DataRow> futureRow = futureChunk.handleAsync((c, e) -> {
+                        if (c != null) {
+                            return new EntityProxyDataRow(getRow(c, idx), getAccess());
+                        } else {
+                            assert e != null;
+                            throw new CompletionException(e);
+                        }
                     });
                     row = new AsyncDataRow(idx, getDataTableSpec().getNumColumns(), futureRow);
                 }
