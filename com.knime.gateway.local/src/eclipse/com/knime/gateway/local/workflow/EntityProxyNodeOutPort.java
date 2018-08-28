@@ -218,6 +218,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         if (m_portView == null) {
             String label = getAccess().getNodeID(getNodeEnt()).toString() + " - " + getNodeEnt().getName() + " (job)";
             m_portView = new OutPortView(label, name);
+            //TODO try loading the first chunk? Async?
             m_portView.update(getPortObject(), getPortObjectSpec(), getFlowObjectStack(),
                 CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
         }

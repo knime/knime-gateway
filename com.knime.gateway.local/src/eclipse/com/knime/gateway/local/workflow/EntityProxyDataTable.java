@@ -27,7 +27,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import javax.swing.JComponent;
 
@@ -46,6 +53,7 @@ import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
+import org.knime.core.data.def.DefaultCellIterator;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
@@ -58,6 +66,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.tableview.AsyncDataRow;
+import org.knime.core.node.tableview.AsyncDataTable;
 import org.knime.core.node.workflow.BufferedDataTableView;
 
 import com.knime.gateway.v0.entity.DataCellEnt;
@@ -73,11 +83,12 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements PortObject, KnowsRowCountTable {
+class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
+    implements PortObject, KnowsRowCountTable, AsyncDataTable {
     /**
      * The size of the chunks to be retrieved and cached.
      */
-    private static final int CHUNK_SIZE = 50;
+    private static final int CHUNK_SIZE = 100;
 
     private final DataTableSpec m_spec;
 
@@ -85,6 +96,23 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
 
     /* cached chunks */
     private final List<DataTableEnt> m_chunks;
+
+    /* future chunks queued for loading */
+    private final Map<Integer, CompletableFuture<DataTableEnt>> m_loadingChunks =
+        new HashMap<Integer, CompletableFuture<DataTableEnt>>();
+
+    private static final ExecutorService REMOTE_TABLE_CHUNK_LOADER_EXECUTORS =
+        Executors.newFixedThreadPool(1, new ThreadFactory() {
+            private final AtomicInteger m_counter = new AtomicInteger();
+
+            @Override
+            public Thread newThread(final Runnable r) {
+                Thread t = new Thread(r, "Remote Table Chunk Loader-" + m_counter.incrementAndGet());
+                return t;
+            }
+        });
+
+    private Consumer<long[]> m_rowsAvailableCallback;
 
     /**
      * Creates a new entity proxy.
@@ -120,30 +148,19 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
 
             @Override
             public DataRow next() {
-                DataRow row = new DataRow() {
-                    private final DataRowEnt m_row = getRow(m_index);
-
-                    @Override
-                    public Iterator<DataCell> iterator() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public int getNumCells() {
-                        return m_row.getColumns().size();
-                    }
-
-                    @Override
-                    public RowKey getKey() {
-                        return new RowKey(m_row.getRowID());
-                    }
-
-                    @Override
-                    public DataCell getCell(final int index) {
-                        return createDataCell(m_row.getColumns().get(index),
-                            getDataTableSpec().getColumnSpec(index).getType());
-                    }
-                };
+                CompletableFuture<DataTableEnt> futureChunk = getChunkAsync(chunkIndex(m_index));
+                DataRow row;
+                if(futureChunk.isDone()) {
+                    //chunk already loaded
+                    row = new EntityProxyDataRow(getRow(futureChunk.getNow(null), m_index), getAccess());
+                } else {
+                    //chunk not loaded, yet, or still loading
+                    final long idx = m_index;
+                    CompletableFuture<DataRow> futureRow = futureChunk.thenApply(c -> {
+                        return new EntityProxyDataRow(getRow(c, idx), getAccess());
+                    });
+                    row = new AsyncDataRow(idx, getDataTableSpec().getNumColumns(), futureRow);
+                }
                 m_index++;
                 return row;
             }
@@ -158,6 +175,15 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
                 //nothing to do here
             }
         };
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRowsAvailableCallback(final Consumer<long[]> rowsAvailableCallback) {
+        m_rowsAvailableCallback = rowsAvailableCallback;
     }
 
     /**
@@ -215,7 +241,8 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
      */
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
+        m_loadingChunks.values().forEach(c -> c.cancel(false));
+        m_loadingChunks.clear();
     }
 
     /**
@@ -250,8 +277,8 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
         throw new UnsupportedOperationException();
     }
 
-    private DataRowEnt getRow(final long index) {
-        return getChunk(chunkIndex(index)).getRows().get(indexInChunk(index));
+    private static DataRowEnt getRow(final DataTableEnt chunk, final long index) {
+        return chunk.getRows().get(indexInChunk(index));
     }
 
     private static int chunkIndex(final long index) {
@@ -262,6 +289,9 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
         return (int)index % CHUNK_SIZE;
     }
 
+    /**
+     * Synchronous access to a chunk. A http-request will be made and the methods blocks till response is received.
+     */
     private DataTableEnt getChunk(final int chunkIndex) {
         if (chunkIndex >= m_chunks.size() || m_chunks.get(chunkIndex) == null) {
             try {
@@ -280,7 +310,34 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
         return m_chunks.get(chunkIndex);
     }
 
-    private DataCell createDataCell(final DataCellEnt cellEnt, final DataType type) {
+    /**
+     * Retrieves a chunk for a given index asynchronously.
+     *
+     * @param chunkIndex the index of the chunk
+     * @return the chunk as a future
+     */
+    private CompletableFuture<DataTableEnt> getChunkAsync(final int chunkIndex) {
+        if (chunkIndex < m_chunks.size() && m_chunks.get(chunkIndex) != null) {
+            //chunk already loaded
+            return CompletableFuture.completedFuture(m_chunks.get(chunkIndex));
+        } else if (m_loadingChunks.containsKey(chunkIndex)) {
+            //chunk is currently loading
+            return m_loadingChunks.get(chunkIndex);
+        } else {
+            //add chunk to queue to be loaded
+            CompletableFuture<DataTableEnt> futureChunk = CompletableFuture.supplyAsync(() -> {
+                DataTableEnt chunk = getChunk(chunkIndex);
+                long from = chunkIndex * CHUNK_SIZE;
+                long to = from + CHUNK_SIZE;
+                m_rowsAvailableCallback.accept(new long[]{from, to});
+                return chunk;
+            }, REMOTE_TABLE_CHUNK_LOADER_EXECUTORS);
+            m_loadingChunks.put(chunkIndex, futureChunk);
+            return futureChunk;
+        }
+    }
+
+    private static DataCell createDataCell(final DataCellEnt cellEnt, final DataType type) {
         String s = cellEnt.getValueAsString();
 
         //if a problem occurred on the server side
@@ -305,7 +362,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
             ByteArrayInputStream bytes =
                 new ByteArrayInputStream(Base64.decodeBase64(cellEnt.getValueAsString().getBytes()));
             try (DataCellObjectInputStream in =
-                new DataCellObjectInputStream(bytes, this.getClass().getClassLoader())) {
+                new DataCellObjectInputStream(bytes, DataTypeRegistry.class.getClassLoader())) {
                 return serializer.get().deserialize(in);
             } catch (IOException ex) {
                 //TODO also pass the exception message etc.
@@ -325,6 +382,39 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt> implements P
         } else {
             return UnmaterializedCell.getInstance();
         }
+    }
+
+    private class EntityProxyDataRow extends AbstractEntityProxy<DataRowEnt> implements DataRow {
+
+        /**
+         * @param entity
+         * @param clientProxyAccess
+         */
+        EntityProxyDataRow(final DataRowEnt entity, final EntityProxyAccess clientProxyAccess) {
+            super(entity, clientProxyAccess);
+        }
+
+        @Override
+        public Iterator<DataCell> iterator() {
+            return new DefaultCellIterator(this);
+        }
+
+        @Override
+        public int getNumCells() {
+            return getEntity().getColumns().size();
+        }
+
+        @Override
+        public RowKey getKey() {
+            return new RowKey(getEntity().getRowID());
+        }
+
+        @Override
+        public DataCell getCell(final int index) {
+            return createDataCell(getEntity().getColumns().get(index),
+                getDataTableSpec().getColumnSpec(index).getType());
+        }
+
     }
 
     /**
