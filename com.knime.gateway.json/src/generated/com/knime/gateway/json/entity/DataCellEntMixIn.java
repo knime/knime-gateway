@@ -57,6 +57,10 @@ public interface DataCellEntMixIn extends DataCellEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("type")
+    public String getType();
+    
+    @Override
     @JsonProperty("valueAsString")
     public String getValueAsString();
     
@@ -92,6 +96,10 @@ public interface DataCellEntMixIn extends DataCellEnt {
         @Override
         public DataCellEntMixIn build();
     
+        @Override
+        @JsonProperty("type")
+        public DataCellEntMixInBuilder setType(final String type);
+        
         @Override
         @JsonProperty("valueAsString")
         public DataCellEntMixInBuilder setValueAsString(final String valueAsString);

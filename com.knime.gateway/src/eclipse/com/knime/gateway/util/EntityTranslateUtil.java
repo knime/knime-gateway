@@ -112,10 +112,10 @@ public class EntityTranslateUtil {
      * Translates, i.e. deserializes a {@link DataCell} from a {@link DataCellEnt}.
      *
      * @param cellEnt the entity
-     * @param type the cell's data type
+     * @param typeFromSpec the cell's data type as given by the table spec
      * @return a new data cell
      */
-    public static DataCell translateDataCellEnt(final DataCellEnt cellEnt, final DataType type) {
+    public static DataCell translateDataCellEnt(final DataCellEnt cellEnt, final DataType typeFromSpec) {
         String s = cellEnt.getValueAsString();
 
         //if a problem occurred on the server side
@@ -128,12 +128,32 @@ public class EntityTranslateUtil {
             return new MissingCell(cellEnt.getValueAsString());
         }
 
+
+        Class<? extends DataCell> cellClass;
+        if(cellEnt.getType() != null) {
+            //use type provided with the entity for deserialization
+            try {
+                cellClass =
+                    (Class<? extends DataCell>)DataTypeRegistry.class.getClassLoader().loadClass(cellEnt.getType());
+            } catch (ClassNotFoundException ex) {
+                return new ErrorCell("Cannot deserialize cell of type '" + cellEnt.getType() + "' - class not found");
+            }
+        } else {
+            //use the type from the data table spec
+            cellClass = typeFromSpec.getCellClass();
+            if (cellClass == null) {
+                //should never happen
+                return new ErrorCell("No type given for cell for deserialization. The cell's value is '"
+                    + cellEnt.getValueAsString() + "'");
+            }
+        }
+
         //serialized binary value
         if (cellEnt.isBinary() != null && cellEnt.isBinary()) {
             Optional<DataCellSerializer<DataCell>> serializer =
-                DataTypeRegistry.getInstance().getSerializer(type.getCellClass());
+                DataTypeRegistry.getInstance().getSerializer(cellClass);
             if (!serializer.isPresent()) {
-                return new ErrorCell("No serializer available for cell of type '" + type.toPrettyString() + "'");
+                return new ErrorCell("No serializer available for cell of type '" + typeFromSpec.toPrettyString() + "'");
             }
             ByteArrayInputStream bytes =
                 new ByteArrayInputStream(Base64.decodeBase64(cellEnt.getValueAsString().getBytes()));
@@ -147,6 +167,7 @@ public class EntityTranslateUtil {
         }
 
         //create the basic types
+        DataType type = DataType.getType(cellClass);
         if (type.equals(DoubleCell.TYPE)) {
             return new DoubleCell(Double.valueOf(s));
         } else if (type.equals(IntCell.TYPE)) {

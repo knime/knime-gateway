@@ -34,6 +34,12 @@ public interface DataCellEnt extends GatewayEntity {
 
 
   /**
+   * The type of the data cell represented by the implementing java-class name. If not given, it is assumed that the type can be infered from the data table spec.
+   * @return type 
+   **/
+  public String getType();
+
+  /**
    * The cell value as a string.
    * @return valueAsString 
    **/
@@ -63,6 +69,14 @@ public interface DataCellEnt extends GatewayEntity {
      */
     public interface DataCellEntBuilder extends GatewayEntityBuilder<DataCellEnt> {
 
+        /**
+         * The type of the data cell represented by the implementing java-class name. If not given, it is assumed that the type can be infered from the data table spec.
+         * 
+         * @param type the property value,  
+         * @return this entity builder for chaining
+         */
+        DataCellEntBuilder setType(String type);
+        
         /**
          * The cell value as a string.
          * 

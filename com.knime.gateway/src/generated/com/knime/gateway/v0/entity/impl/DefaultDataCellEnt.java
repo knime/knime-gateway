@@ -33,6 +33,7 @@ import com.knime.gateway.v0.entity.DataCellEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultDataCellEnt  implements DataCellEnt {
 
+  protected String m_type;
   protected String m_valueAsString;
   protected Boolean m_missing;
   protected Boolean m_binary;
@@ -49,6 +50,7 @@ public class DefaultDataCellEnt  implements DataCellEnt {
   
   private DefaultDataCellEnt(DefaultDataCellEntBuilder builder) {
     
+    m_type = immutable(builder.m_type);
     m_valueAsString = immutable(builder.m_valueAsString);
     m_missing = immutable(builder.m_missing);
     m_binary = immutable(builder.m_binary);
@@ -70,10 +72,15 @@ public class DefaultDataCellEnt  implements DataCellEnt {
             return false;
         }
         DefaultDataCellEnt ent = (DefaultDataCellEnt)o;
-        return Objects.equals(m_valueAsString, ent.m_valueAsString) && Objects.equals(m_missing, ent.m_missing) && Objects.equals(m_binary, ent.m_binary) && Objects.equals(m_problem, ent.m_problem);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_valueAsString, ent.m_valueAsString) && Objects.equals(m_missing, ent.m_missing) && Objects.equals(m_binary, ent.m_binary) && Objects.equals(m_problem, ent.m_problem);
     }
 
 
+  @Override
+  public String getType() {
+        return m_type;
+    }
+    
   @Override
   public String getValueAsString() {
         return m_valueAsString;
@@ -101,10 +108,17 @@ public class DefaultDataCellEnt  implements DataCellEnt {
             
         }
     
+        private String m_type = null;
         private String m_valueAsString = null;
         private Boolean m_missing = null;
         private Boolean m_binary = null;
         private Boolean m_problem = null;
+
+        @Override
+        public DefaultDataCellEntBuilder setType(String type) {
+             m_type = type;
+             return this;
+        }
 
         @Override
         public DefaultDataCellEntBuilder setValueAsString(String valueAsString) {

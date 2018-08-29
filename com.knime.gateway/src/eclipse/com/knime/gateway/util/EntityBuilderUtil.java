@@ -515,7 +515,7 @@ public class EntityBuilderUtil {
                     it.next();
                 }
                 for (int i = 0; i < s && it.hasNext(); i++) {
-                    rows.add(buildDataRowEnt(it.next()));
+                    rows.add(buildDataRowEnt(it.next(), table.getDataTableSpec()));
                 }
             }
         }
@@ -526,10 +526,11 @@ public class EntityBuilderUtil {
                 .build();
     }
 
-    private static DataRowEnt buildDataRowEnt(final DataRow row) {
-        List<DataCellEnt> columns =
-            row.stream().map(cell -> buildDataCellEnt(cell))
-            .collect(Collectors.toList());
+    private static DataRowEnt buildDataRowEnt(final DataRow row, final DataTableSpec spec) {
+        List<DataCellEnt> columns = new ArrayList<DataCellEnt>(row.getNumCells());
+        for (int i = 0; i < row.getNumCells(); i++) {
+            columns.add(buildDataCellEnt(row.getCell(i), spec.getColumnSpec(i).getType()));
+        }
         return builder(DataRowEntBuilder.class)
                .setRowID(row.getKey().getString())
                .setColumns(columns)
@@ -545,14 +546,22 @@ public class EntityBuilderUtil {
                 StringCell.TYPE,
                 BooleanCell.TYPE}));
 
-    private static DataCellEnt buildDataCellEnt(final DataCell cell) {
+    /**
+     * @param cell the cell to build the entity from
+     * @param dataType the datatype as given by the data table spec
+     * @return the data cell entity
+     */
+    private static DataCellEnt buildDataCellEnt(final DataCell cell, final DataType dataTypeFromSpec) {
         if(cell.isMissing()) {
             return builder(DataCellEntBuilder.class)
                     .setMissing(true)
                     .setValueAsString(((MissingValue) cell).getError())
                     .build();
-        } else if (basicTypes.contains(cell.getType())) {
-            return builder(DataCellEntBuilder.class).setValueAsString(cell.toString()).build();
+        }
+        //cell type is only transfered if it's not the same as the type as given by the data table spec
+        String cellType = cell.getType().equals(dataTypeFromSpec) ? null : cell.getClass().getCanonicalName();
+        if (basicTypes.contains(cell.getType())) {
+            return builder(DataCellEntBuilder.class).setValueAsString(cell.toString()).setType(cellType).build();
         } else if (cell instanceof FileStoreCell) {
             return buildProblemDataCell("FileStoreCells are not supported, yet");
         } else {
@@ -569,7 +578,7 @@ public class EntityBuilderUtil {
                 out.close();
                 byte[] encodeBase64 = Base64.encodeBase64(bytes.toByteArray());
                 return builder(DataCellEntBuilder.class).setValueAsString(new String(encodeBase64)).setBinary(true)
-                    .build();
+                    .setType(cellType).build();
             } catch (IOException ex) {
                 return buildProblemDataCell("Problem occured while serializing the cell: " + ex.getClass().getName()
                     + " (" + ex.getMessage() + ")");
