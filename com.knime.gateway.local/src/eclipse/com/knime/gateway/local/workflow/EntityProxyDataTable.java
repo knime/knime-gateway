@@ -18,17 +18,13 @@
  */
 package com.knime.gateway.local.workflow;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectStreamClass;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
@@ -39,41 +35,25 @@ import java.util.function.Consumer;
 
 import javax.swing.JComponent;
 
-import org.apache.commons.codec.binary.Base64;
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataCellDataInput;
-import org.knime.core.data.DataCellSerializer;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.DataTypeRegistry;
-import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.container.ContainerTable;
-import org.knime.core.data.def.BooleanCell;
-import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.data.def.DefaultCellIterator;
-import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.LongCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.eclipseUtil.GlobalObjectInputStream;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTable.KnowsRowCountTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.tableview.AsyncDataRow;
 import org.knime.core.node.tableview.AsyncDataTable;
-import org.knime.core.node.tableview.CellLoadingError;
 import org.knime.core.node.workflow.BufferedDataTableView;
 
-import com.knime.gateway.v0.entity.DataCellEnt;
+import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.v0.entity.DataRowEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -88,8 +68,6 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  */
 class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
     implements PortObject, KnowsRowCountTable, AsyncDataTable {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyDataTable.class);
 
     /**
      * The size of the chunks to be retrieved and cached.
@@ -350,55 +328,6 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
         }
     }
 
-    private static DataCell createDataCell(final DataCellEnt cellEnt, final DataType type) {
-        String s = cellEnt.getValueAsString();
-
-        //if a problem occurred on the server side
-        if (cellEnt.isProblem() != null && cellEnt.isProblem()) {
-            return new ErrorCell(cellEnt.getValueAsString());
-        }
-
-        //missing cell
-        if(cellEnt.isMissing() != null && cellEnt.isMissing()) {
-           return new MissingCell(cellEnt.getValueAsString());
-        }
-
-        //serialized binary value
-        if (cellEnt.isBinary() != null && cellEnt.isBinary()) {
-            Optional<DataCellSerializer<DataCell>> serializer =
-                DataTypeRegistry.getInstance().getSerializer(type.getCellClass());
-            if (!serializer.isPresent()) {
-                return new ErrorCell("No serializer available for cell of type '" + type.toPrettyString() + "'");
-            }
-            ByteArrayInputStream bytes =
-                new ByteArrayInputStream(Base64.decodeBase64(cellEnt.getValueAsString().getBytes()));
-            try (DataCellObjectInputStream in =
-                new DataCellObjectInputStream(bytes, DataTypeRegistry.class.getClassLoader())) {
-                return serializer.get().deserialize(in);
-            } catch (IOException ex) {
-                LOGGER.error("Problem deserializing cell", ex);
-                return new ErrorCell("Problem derserializing cell: " + ex.getMessage() + " (see log for more details)");
-            }
-        }
-
-        //create the basic types
-        if (type.equals(DoubleCell.TYPE)) {
-            return new DoubleCell(Double.valueOf(s));
-        } else if (type.equals(IntCell.TYPE)) {
-            return new IntCell(Integer.valueOf(s));
-        } else if (type.equals(StringCell.TYPE)) {
-            return new StringCell(s);
-        } else if (type.equals(LongCell.TYPE)) {
-            return new LongCell(Long.valueOf(s));
-        } else if (type.equals(BooleanCell.TYPE)) {
-            return BooleanCellFactory.create(s);
-        } else {
-            //we should actually never end up here
-            return new ErrorCell("Cell of type '" + type.toPrettyString()
-                + " couldn't be deserialized. Most likely an implementation problem.");
-        }
-    }
-
     private class EntityProxyDataRow extends AbstractEntityProxy<DataRowEnt> implements DataRow {
 
         /**
@@ -426,116 +355,10 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
 
         @Override
         public DataCell getCell(final int index) {
-            return createDataCell(getEntity().getColumns().get(index),
+            return EntityTranslateUtil.translateDataCellEnt(getEntity().getColumns().get(index),
                 getDataTableSpec().getColumnSpec(index).getType());
         }
 
     }
-
-    /**
-     * Input stream used for deserializing a data cell. Mainly copied from {@link PortObjectRepository}
-     */
-    private static final class DataCellObjectInputStream
-        extends GlobalObjectInputStream implements DataCellDataInput {
-
-        private final ClassLoader m_loader;
-
-        /** Create new stream.
-         * @param in to read from
-         * @param loader class loader for restoring cell.
-         * @throws IOException if super constructor throws it.
-         */
-        DataCellObjectInputStream(final InputStream in,
-                final ClassLoader loader) throws IOException {
-            super(in);
-            m_loader = loader;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public DataCell readDataCell() throws IOException {
-            try {
-                return readDataCellImpl();
-            } catch (IOException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new IOException("Can't read nested cell: "
-                        + e.getMessage(), e);
-            }
-        }
-
-        private DataCell readDataCellImpl() throws Exception {
-            String clName = readUTF();
-            Class<? extends DataCell> cellClass = DataTypeRegistry.getInstance().getCellClass(clName)
-                    .orElseThrow(() -> new IOException("No implementation for cell class '" + clName + "' found."));
-            Optional<DataCellSerializer<DataCell>> cellSerializer =
-                DataTypeRegistry.getInstance().getSerializer(cellClass);
-            if (cellSerializer.isPresent()) {
-                return cellSerializer.get().deserialize(this);
-            } else {
-                return (DataCell)readObject();
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected Class<?> resolveClass(final ObjectStreamClass desc)
-                throws IOException, ClassNotFoundException {
-            if (m_loader != null) {
-                try {
-                    return Class.forName(desc.getName(), true, m_loader);
-                } catch (ClassNotFoundException cnfe) {
-                    // ignore and let super do it.
-                }
-            }
-            return super.resolveClass(desc);
-        }
-
-    }
-
-    /**
-     * Cell representing a loading error.
-     */
-    private static final class ErrorCell extends DataCell implements CellLoadingError {
-
-        private String m_errorMessage;
-
-        private ErrorCell(final String errorMessage) {
-            m_errorMessage = errorMessage;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getErrorMessage() {
-            return m_errorMessage;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            return m_errorMessage;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected boolean equalsDataCell(final DataCell dc) {
-            return false;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-    }
-
 
 }
