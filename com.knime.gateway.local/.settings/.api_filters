@@ -66,7 +66,35 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyDataTable.java" type="com.knime.gateway.local.workflow.EntityProxyDataTable">
+        <filter id="572522506">
+            <message_arguments>
+                <message_argument value="AsyncDataRow"/>
+                <message_argument value="EntityProxyDataTable"/>
+            </message_arguments>
+        </filter>
+        <filter id="640708718">
+            <message_arguments>
+                <message_argument value="AsyncDataRow(int, CompletableFuture&lt;DataRow&gt;)"/>
+                <message_argument value="EntityProxyDataTable"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNativeNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxyNativeNodeContainer">
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeDialogPane"/>
+                <message_argument value="EntityProxyNativeNodeContainer"/>
+                <message_argument value="createDialogPane(NodeFactory&lt;NodeModel&gt;, int, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="NodeDialogPane"/>
+                <message_argument value="EntityProxyNativeNodeContainer"/>
+                <message_argument value="initDialogPaneWithSettings(NodeDialogPane, PortObjectSpec[], PortType[], PortObject[], NodeSettingsRO, boolean, NodeModel, FlowObjectStack, CredentialsProvider)"/>
+            </message_arguments>
+        </filter>
         <filter id="640712815">
             <message_arguments>
                 <message_argument value="NodeFactory&lt;T&gt;"/>
@@ -91,14 +119,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxySingleNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxySingleNodeContainer">
-        <filter id="574619656">
-            <message_arguments>
-                <message_argument value="SingleNodeContainerUI"/>
-                <message_argument value="EntityProxySingleNodeContainer&lt;E&gt;"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxySubNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxySubNodeContainer">
         <filter id="574619656">
             <message_arguments>
@@ -120,29 +140,6 @@
             <message_arguments>
                 <message_argument value="WorkflowOutPortUI"/>
                 <message_argument value="EntityProxyWorkflowOutPort"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/eclipse/com/knime/gateway/local/workflow/EntityProxyNativeNodeContainer.java" type="com.knime.gateway.local.workflow.EntityProxyNativeNodeContainer">
-        <filter id="640712815">
-            <message_arguments>
-                <message_argument value="NodeDialogPane"/>
-                <message_argument value="EntityProxyNativeNodeContainer"/>
-                <message_argument value="createDialogPane(NodeFactory&lt;NodeModel&gt;, int, boolean)"/>
-            </message_arguments>
-        </filter>
-        <filter id="640712815">
-            <message_arguments>
-                <message_argument value="NodeDialogPane"/>
-                <message_argument value="EntityProxyNativeNodeContainer"/>
-                <message_argument value="initDialogPaneWithSettings(NodeDialogPane, PortObjectSpec[], PortType[], PortObject[], NodeSettingsRO, boolean, NodeModel, FlowObjectStack, CredentialsProvider)"/>
-            </message_arguments>
-        </filter>
-        <filter id="640712815">
-            <message_arguments>
-                <message_argument value="NodeFactory&lt;T&gt;"/>
-                <message_argument value="EntityProxyNativeNodeContainer"/>
-                <message_argument value="loadAdditionalFactorySettings(ConfigRO)"/>
             </message_arguments>
         </filter>
     </resource>
