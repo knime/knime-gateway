@@ -57,6 +57,7 @@ import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.data.def.DefaultCellIterator;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.eclipseUtil.GlobalObjectInputStream;
 import org.knime.core.node.BufferedDataTable;
@@ -385,6 +386,8 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
             return new IntCell(Integer.valueOf(s));
         } else if (type.equals(StringCell.TYPE)) {
             return new StringCell(s);
+        } else if (type.equals(LongCell.TYPE)) {
+            return new LongCell(Long.valueOf(s));
         } else if (type.equals(BooleanCell.TYPE)) {
             return BooleanCellFactory.create(s);
         } else {

@@ -54,6 +54,7 @@ import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.filestore.FileStoreCell;
 import org.knime.core.node.BufferedDataTable;
@@ -540,6 +541,7 @@ public class EntityBuilderUtil {
             Arrays.asList(new DataType[]{
                 DoubleCell.TYPE,
                 IntCell.TYPE,
+                LongCell.TYPE,
                 StringCell.TYPE,
                 BooleanCell.TYPE}));
 
