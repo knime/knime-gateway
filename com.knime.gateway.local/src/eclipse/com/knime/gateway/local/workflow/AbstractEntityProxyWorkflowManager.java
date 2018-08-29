@@ -309,9 +309,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         //                return false;
         //            }
         //        } else {
-        final NodeContainerState state = getNodeContainer(destID).getNodeContainerState();
-        if (state.isExecutionInProgress() || (state.isExecuted() && !canResetNode(destID))) {
-            return false;
+        final NodeContainerUI nc = getNodeContainer(destID);
+        if (nc != null) {
+            NodeContainerState state = nc.getNodeContainerState();
+            if (state.isExecutionInProgress() || (state.isExecuted() && !canResetNode(destID))) {
+                return false;
+            }
         }
         //        }
         return true;
