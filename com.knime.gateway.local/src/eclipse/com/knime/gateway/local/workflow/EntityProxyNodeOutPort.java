@@ -67,6 +67,8 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
 
     private OutPortView m_portView;
 
+    private boolean m_portViewUpdateRequired = false;
+
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
@@ -157,11 +159,16 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         if (!getNodeContainerState().isExecutionInProgress()) {
             notifyNodeStateChangeListener(state);
             if (m_portView != null) {
-                try {
-                    m_portView.update(getPortObjectAsync().get(), getPortObjectSpecAsync().get(), getFlowObjectStack(),
-                        CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
-                } catch (Exception e) {
-                    NodeLogger.getLogger(getClass()).error("Failed to update port view.", e);
+                if (m_portView.isVisible()) {
+                    try {
+                        updatePortView();
+                    } catch (Exception e) {
+                        NodeLogger.getLogger(getClass()).error("Failed to update port view.", e);
+                    }
+                } else {
+                    //port view not visible
+                    //don't update port view but remember to update later
+                    m_portViewUpdateRequired = true;
                 }
             }
         }
@@ -235,17 +242,25 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         if (m_portView == null) {
             String label = getAccess().getNodeID(getNodeEnt()).toString() + " - " + getNodeEnt().getName() + " (job)";
             m_portView = new OutPortView(label, name);
-
-            CompletableFuture<PortObjectSpec> futurePortObjectSpec = getPortObjectSpecAsync();
-            CompletableFuture<PortObject> futurePortObject = getPortObjectAsync();
-            Display.getDefault().syncExec(() -> {
-                AsyncUtil.waitForTermination(CompletableFuture.allOf(futurePortObject, futurePortObjectSpec),
-                    "Loading port object ...");
-            });
-            m_portView.update(futurePortObject.getNow(null), futurePortObjectSpec.getNow(null), getFlowObjectStack(),
-                CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
+            updatePortView();
+        } else {
+            if (m_portViewUpdateRequired) {
+                m_portViewUpdateRequired = false;
+                updatePortView();
+            }
         }
         m_portView.openView(knimeWindowBounds);
+    }
+
+    private void updatePortView() {
+        CompletableFuture<PortObjectSpec> futurePortObjectSpec = getPortObjectSpecAsync();
+        CompletableFuture<PortObject> futurePortObject = getPortObjectAsync();
+        Display.getDefault().syncExec(() -> {
+            AsyncUtil.waitForTermination(CompletableFuture.allOf(futurePortObject, futurePortObjectSpec),
+                "Loading port object ...");
+        });
+        m_portView.update(futurePortObject.getNow(null), futurePortObjectSpec.getNow(null), getFlowObjectStack(),
+            CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, null);
     }
 
 
