@@ -571,7 +571,8 @@ public class EntityBuilderUtil {
                 return builder(DataCellEntBuilder.class).setValueAsString(new String(encodeBase64)).setBinary(true)
                     .build();
             } catch (IOException ex) {
-                return buildProblemDataCell("Problem occured while serializing the cell: " + ex.getMessage());
+                return buildProblemDataCell("Problem occured while serializing the cell: " + ex.getClass().getName()
+                    + " (" + ex.getMessage() + ")");
             }
         }
     }

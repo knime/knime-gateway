@@ -49,7 +49,6 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
 import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
-import org.knime.core.data.UnmaterializedCell;
 import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.def.BooleanCell;
@@ -64,12 +63,14 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTable.KnowsRowCountTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.tableview.AsyncDataRow;
 import org.knime.core.node.tableview.AsyncDataTable;
+import org.knime.core.node.tableview.CellLoadingError;
 import org.knime.core.node.workflow.BufferedDataTableView;
 
 import com.knime.gateway.v0.entity.DataCellEnt;
@@ -87,6 +88,9 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  */
 class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
     implements PortObject, KnowsRowCountTable, AsyncDataTable {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyDataTable.class);
+
     /**
      * The size of the chunks to be retrieved and cached.
      */
@@ -351,8 +355,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
 
         //if a problem occurred on the server side
         if (cellEnt.isProblem() != null && cellEnt.isProblem()) {
-            //TODO pass problem message, too
-            return UnmaterializedCell.getInstance();
+            return new ErrorCell(cellEnt.getValueAsString());
         }
 
         //missing cell
@@ -365,8 +368,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
             Optional<DataCellSerializer<DataCell>> serializer =
                 DataTypeRegistry.getInstance().getSerializer(type.getCellClass());
             if (!serializer.isPresent()) {
-                //TODO also pass a problem message
-                return UnmaterializedCell.getInstance();
+                return new ErrorCell("No serializer available for cell of type '" + type.toPrettyString() + "'");
             }
             ByteArrayInputStream bytes =
                 new ByteArrayInputStream(Base64.decodeBase64(cellEnt.getValueAsString().getBytes()));
@@ -374,8 +376,8 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
                 new DataCellObjectInputStream(bytes, DataTypeRegistry.class.getClassLoader())) {
                 return serializer.get().deserialize(in);
             } catch (IOException ex) {
-                //TODO also pass the exception message etc.
-                return UnmaterializedCell.getInstance();
+                LOGGER.error("Problem deserializing cell", ex);
+                return new ErrorCell("Problem derserializing cell: " + ex.getMessage() + " (see log for more details)");
             }
         }
 
@@ -391,7 +393,9 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
         } else if (type.equals(BooleanCell.TYPE)) {
             return BooleanCellFactory.create(s);
         } else {
-            return UnmaterializedCell.getInstance();
+            //we should actually never end up here
+            return new ErrorCell("Cell of type '" + type.toPrettyString()
+                + " couldn't be deserialized. Most likely an implementation problem.");
         }
     }
 
@@ -487,6 +491,50 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
             return super.resolveClass(desc);
         }
 
+    }
+
+    /**
+     * Cell representing a loading error.
+     */
+    private static final class ErrorCell extends DataCell implements CellLoadingError {
+
+        private String m_errorMessage;
+
+        private ErrorCell(final String errorMessage) {
+            m_errorMessage = errorMessage;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getErrorMessage() {
+            return m_errorMessage;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            return m_errorMessage;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected boolean equalsDataCell(final DataCell dc) {
+            return false;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            return 0;
+        }
     }
 
 
