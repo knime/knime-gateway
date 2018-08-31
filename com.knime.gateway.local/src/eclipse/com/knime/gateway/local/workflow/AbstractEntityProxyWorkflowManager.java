@@ -945,6 +945,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public EditorUIInformation getEditorUIInformation() {
         WorkflowUIInfoEnt uiEnt = getWorkflow().getWorkflowUIInfo();
+        if(uiEnt == null) {
+            return null;
+        }
         return EditorUIInformation.builder().setGridX(uiEnt.getGridX()).setGridY(uiEnt.getGridY())
             .setShowGrid(uiEnt.isShowGrid()).setSnapToGrid(uiEnt.isSnapToGrid())
             .setZoomLevel(uiEnt.getZoomLevel().doubleValue())

@@ -901,6 +901,9 @@ public class EntityBuilderUtil {
     }
 
     private static WorkflowUIInfoEnt buildWorkflowUIInfoEnt(final EditorUIInformation editorUIInfo) {
+        if(editorUIInfo == null) {
+            return null;
+        }
         return builder(WorkflowUIInfoEntBuilder.class)
                 .setGridX(editorUIInfo.getGridX())
                 .setGridY(editorUIInfo.getGridY())
