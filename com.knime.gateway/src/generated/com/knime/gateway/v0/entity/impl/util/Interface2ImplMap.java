@@ -42,6 +42,8 @@ import com.knime.gateway.v0.entity.MetaNodeDialogEnt.MetaNodeDialogEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt.MetaPortInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaPortInfoEnt;
+import com.knime.gateway.v0.entity.NodeCategoryEnt.NodeCategoryEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
@@ -144,6 +146,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == MetaPortInfoEntBuilder.class) {
             return new DefaultMetaPortInfoEnt.DefaultMetaPortInfoEntBuilder();
+        }        
+        if(clazz == NodeCategoryEntBuilder.class) {
+            return new DefaultNodeCategoryEnt.DefaultNodeCategoryEntBuilder();
         }        
         if(clazz == NodeEntBuilder.class) {
             return new DefaultNodeEnt.DefaultNodeEntBuilder();

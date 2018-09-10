@@ -30,6 +30,7 @@ import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
+import com.knime.gateway.v0.entity.NodeCategoryEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
@@ -91,6 +92,7 @@ public class ListEntities {
         res.add(MetaNodeDialogCompEnt.class);
         res.add(MetaNodeDialogEnt.class);
         res.add(MetaPortInfoEnt.class);
+        res.add(NodeCategoryEnt.class);
         res.add(NodeEnt.class);
         res.add(NodeFactoryKeyEnt.class);
         res.add(NodeMessageEnt.class);
@@ -138,6 +140,7 @@ public class ListEntities {
         res.add(MetaNodeDialogCompEnt.MetaNodeDialogCompEntBuilder.class);
         res.add(MetaNodeDialogEnt.MetaNodeDialogEntBuilder.class);
         res.add(MetaPortInfoEnt.MetaPortInfoEntBuilder.class);
+        res.add(NodeCategoryEnt.NodeCategoryEntBuilder.class);
         res.add(NodeEnt.NodeEntBuilder.class);
         res.add(NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder.class);
         res.add(NodeMessageEnt.NodeMessageEntBuilder.class);

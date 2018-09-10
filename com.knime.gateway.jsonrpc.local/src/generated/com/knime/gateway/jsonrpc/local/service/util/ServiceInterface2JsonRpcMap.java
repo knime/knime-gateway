@@ -23,6 +23,8 @@ import com.knime.gateway.jsonrpc.local.service.JsonRpcNodeService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcWorkflowService;
 import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.jsonrpc.local.service.JsonRpcStaticNodeService;
+import com.knime.gateway.v0.service.StaticNodeService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcAnnotationService;
 import com.knime.gateway.v0.service.AnnotationService;
 
@@ -46,6 +48,9 @@ public class ServiceInterface2JsonRpcMap {
         }        
         if(clazz == WorkflowService.class) {
             return JsonRpcWorkflowService.class;
+        }        
+        if(clazz == StaticNodeService.class) {
+            return JsonRpcStaticNodeService.class;
         }        
         if(clazz == AnnotationService.class) {
             return JsonRpcAnnotationService.class;

@@ -16,39 +16,29 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.v0.service.util;
+package com.knime.gateway.v0.service;
 
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WorkflowService;
-import com.knime.gateway.v0.service.StaticNodeService;
-import com.knime.gateway.v0.service.AnnotationService;
+import com.knime.gateway.service.GatewayService;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.knime.gateway.v0.entity.NodeCategoryEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.v0.service</code>.
+ * 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+public interface StaticNodeService extends GatewayService {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.v0.service</code>.
-     * @return the class list
+     * All nodes available in the node repository.
+     *
+     * @param jobId ID the job the workflow is requested for
+     * @param nodeType The node type to filter for - returns all nodes if none given
+     *
+     * @return the result
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(NodeService.class);
-        res.add(WorkflowService.class);
-        res.add(StaticNodeService.class);
-        res.add(AnnotationService.class);
-        return res;
-    }
+    NodeCategoryEnt getAllNodes(java.util.UUID jobId, String nodeType) ;
+        
 }

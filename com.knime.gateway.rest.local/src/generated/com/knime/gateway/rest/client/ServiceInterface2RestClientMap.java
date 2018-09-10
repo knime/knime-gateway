@@ -22,6 +22,8 @@ import com.knime.gateway.rest.client.service.NodeClient;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.rest.client.service.StaticNodeClient;
+import com.knime.gateway.v0.service.StaticNodeService;
 import com.knime.gateway.rest.client.service.AnnotationClient;
 import com.knime.gateway.v0.service.AnnotationService;
 
@@ -60,6 +62,9 @@ public class ServiceInterface2RestClientMap {
         }        
         if(clazz == WorkflowService.class) {
             return new WorkflowClient(restAddress, jwt);
+        }        
+        if(clazz == StaticNodeService.class) {
+            return new StaticNodeClient(restAddress, jwt);
         }        
         if(clazz == AnnotationService.class) {
             return new AnnotationClient(restAddress, jwt);

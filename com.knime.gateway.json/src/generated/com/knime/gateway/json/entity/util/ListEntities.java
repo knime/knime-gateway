@@ -30,6 +30,7 @@ import com.knime.gateway.json.entity.JobManagerEntMixIn;
 import com.knime.gateway.json.entity.MetaNodeDialogCompEntMixIn;
 import com.knime.gateway.json.entity.MetaNodeDialogEntMixIn;
 import com.knime.gateway.json.entity.MetaPortInfoEntMixIn;
+import com.knime.gateway.json.entity.NodeCategoryEntMixIn;
 import com.knime.gateway.json.entity.NodeEntMixIn;
 import com.knime.gateway.json.entity.NodeFactoryKeyEntMixIn;
 import com.knime.gateway.json.entity.NodeMessageEntMixIn;
@@ -91,6 +92,7 @@ public class ListEntities {
         res.add(MetaNodeDialogCompEntMixIn.class);
         res.add(MetaNodeDialogEntMixIn.class);
         res.add(MetaPortInfoEntMixIn.class);
+        res.add(NodeCategoryEntMixIn.class);
         res.add(NodeEntMixIn.class);
         res.add(NodeFactoryKeyEntMixIn.class);
         res.add(NodeMessageEntMixIn.class);
@@ -138,6 +140,7 @@ public class ListEntities {
         res.add(MetaNodeDialogCompEntMixIn.MetaNodeDialogCompEntMixInBuilder.class);
         res.add(MetaNodeDialogEntMixIn.MetaNodeDialogEntMixInBuilder.class);
         res.add(MetaPortInfoEntMixIn.MetaPortInfoEntMixInBuilder.class);
+        res.add(NodeCategoryEntMixIn.NodeCategoryEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
         res.add(NodeFactoryKeyEntMixIn.NodeFactoryKeyEntMixInBuilder.class);
         res.add(NodeMessageEntMixIn.NodeMessageEntMixInBuilder.class);
