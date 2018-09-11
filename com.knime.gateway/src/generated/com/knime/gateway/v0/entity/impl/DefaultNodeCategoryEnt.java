@@ -23,7 +23,7 @@ import static com.knime.gateway.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import com.knime.gateway.v0.entity.NodeCategoryEnt;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.v0.entity.NodeTemplateEnt;
 
 import com.knime.gateway.v0.entity.NodeCategoryEnt;
 
@@ -37,7 +37,7 @@ public class DefaultNodeCategoryEnt  implements NodeCategoryEnt {
 
   protected String m_name;
   protected java.util.List<NodeCategoryEnt> m_categoryChildren;
-  protected java.util.List<NodeFactoryKeyEnt> m_nodeFactoryChildren;
+  protected java.util.List<NodeTemplateEnt> m_nodeTemplateChildren;
   
   protected DefaultNodeCategoryEnt() {
     //for sub-classes
@@ -52,7 +52,7 @@ public class DefaultNodeCategoryEnt  implements NodeCategoryEnt {
     
     m_name = immutable(builder.m_name);
     m_categoryChildren = immutable(builder.m_categoryChildren);
-    m_nodeFactoryChildren = immutable(builder.m_nodeFactoryChildren);
+    m_nodeTemplateChildren = immutable(builder.m_nodeTemplateChildren);
   }
   
    /**
@@ -70,7 +70,7 @@ public class DefaultNodeCategoryEnt  implements NodeCategoryEnt {
             return false;
         }
         DefaultNodeCategoryEnt ent = (DefaultNodeCategoryEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_categoryChildren, ent.m_categoryChildren) && Objects.equals(m_nodeFactoryChildren, ent.m_nodeFactoryChildren);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_categoryChildren, ent.m_categoryChildren) && Objects.equals(m_nodeTemplateChildren, ent.m_nodeTemplateChildren);
     }
 
 
@@ -85,8 +85,8 @@ public class DefaultNodeCategoryEnt  implements NodeCategoryEnt {
     }
     
   @Override
-  public java.util.List<NodeFactoryKeyEnt> getNodeFactoryChildren() {
-        return m_nodeFactoryChildren;
+  public java.util.List<NodeTemplateEnt> getNodeTemplateChildren() {
+        return m_nodeTemplateChildren;
     }
     
   
@@ -98,7 +98,7 @@ public class DefaultNodeCategoryEnt  implements NodeCategoryEnt {
     
         private String m_name = null;
         private java.util.List<NodeCategoryEnt> m_categoryChildren = new java.util.ArrayList<>();
-        private java.util.List<NodeFactoryKeyEnt> m_nodeFactoryChildren = new java.util.ArrayList<>();
+        private java.util.List<NodeTemplateEnt> m_nodeTemplateChildren = new java.util.ArrayList<>();
 
         @Override
         public DefaultNodeCategoryEntBuilder setName(String name) {
@@ -113,8 +113,8 @@ public class DefaultNodeCategoryEnt  implements NodeCategoryEnt {
         }
 
         @Override
-        public DefaultNodeCategoryEntBuilder setNodeFactoryChildren(java.util.List<NodeFactoryKeyEnt> nodeFactoryChildren) {
-             m_nodeFactoryChildren = nodeFactoryChildren;
+        public DefaultNodeCategoryEntBuilder setNodeTemplateChildren(java.util.List<NodeTemplateEnt> nodeTemplateChildren) {
+             m_nodeTemplateChildren = nodeTemplateChildren;
              return this;
         }
 

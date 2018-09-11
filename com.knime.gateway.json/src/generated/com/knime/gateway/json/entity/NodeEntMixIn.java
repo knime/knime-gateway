@@ -42,6 +42,7 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt.DefaultNodeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultConverterNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
 
@@ -60,6 +61,8 @@ import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
     @Type(value = DefaultNodeEnt.class, name="Node")
 ,
   @Type(value = DefaultWorkflowNodeEnt.class, name = "WorkflowNode")
+,
+  @Type(value = DefaultConverterNodeEnt.class, name = "ConverterNode")
 ,
   @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
 ,
@@ -145,6 +148,10 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonProperty("uIInfo")
     public NodeUIInfoEnt getUIInfo();
     
+    @Override
+    @JsonProperty("execEnvInstanceID")
+    public String getExecEnvInstanceID();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -160,6 +167,8 @@ public interface NodeEntMixIn extends NodeEnt {
         @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
         ,
       @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name = "WorkflowNode")
+        ,
+      @Type(value = DefaultConverterNodeEnt.DefaultConverterNodeEntBuilder.class, name = "ConverterNode")
         ,
       @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
         ,
@@ -242,6 +251,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("uIInfo")
         public NodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
+        
+        @Override
+        @JsonProperty("execEnvInstanceID")
+        public NodeEntMixInBuilder setExecEnvInstanceID(final String execEnvInstanceID);
         
     }
 

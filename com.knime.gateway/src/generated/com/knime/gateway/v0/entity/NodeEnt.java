@@ -202,6 +202,12 @@ public interface NodeEnt extends GatewayEntity {
    **/
   public NodeUIInfoEnt getUIInfo();
 
+  /**
+   * Get execEnvInstanceID
+   * @return execEnvInstanceID 
+   **/
+  public String getExecEnvInstanceID();
+
 
     /**
      * The builder for the entity.
@@ -350,6 +356,13 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo);
+        
+        /**
+         * 
+         * @param execEnvInstanceID the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID);
         
         
         /**

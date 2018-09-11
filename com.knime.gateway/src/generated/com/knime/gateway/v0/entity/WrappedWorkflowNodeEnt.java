@@ -209,6 +209,13 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo);
         
         /**
+         * 
+         * @param execEnvInstanceID the property value,  
+         * @return this entity builder for chaining
+         */
+        WrappedWorkflowNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID);
+        
+        /**
          * List of all incoming workflow ports.
          * 
          * @param workflowIncomingPorts the property value,  

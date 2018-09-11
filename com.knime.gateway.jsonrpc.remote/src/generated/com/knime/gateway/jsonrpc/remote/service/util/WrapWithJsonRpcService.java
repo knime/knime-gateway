@@ -25,6 +25,8 @@ import com.knime.gateway.jsonrpc.remote.service.JsonRpcWorkflowServiceWrapper;
 import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.jsonrpc.remote.service.JsonRpcStaticNodeServiceWrapper;
 import com.knime.gateway.v0.service.StaticNodeService;
+import com.knime.gateway.jsonrpc.remote.service.JsonRpcExecEnvServiceWrapper;
+import com.knime.gateway.v0.service.ExecEnvService;
 import com.knime.gateway.jsonrpc.remote.service.JsonRpcAnnotationServiceWrapper;
 import com.knime.gateway.v0.service.AnnotationService;
 
@@ -63,6 +65,9 @@ public class WrapWithJsonRpcService {
             }
             if(serviceInterface == StaticNodeService.class) {
                 return JsonRpcStaticNodeServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
+            if(serviceInterface == ExecEnvService.class) {
+                return JsonRpcExecEnvServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }
             if(serviceInterface == AnnotationService.class) {
                 return JsonRpcAnnotationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);

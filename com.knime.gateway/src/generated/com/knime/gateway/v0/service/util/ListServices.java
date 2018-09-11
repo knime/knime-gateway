@@ -21,6 +21,7 @@ package com.knime.gateway.v0.service.util;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.v0.service.StaticNodeService;
+import com.knime.gateway.v0.service.ExecEnvService;
 import com.knime.gateway.v0.service.AnnotationService;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class ListServices {
         res.add(NodeService.class);
         res.add(WorkflowService.class);
         res.add(StaticNodeService.class);
+        res.add(ExecEnvService.class);
         res.add(AnnotationService.class);
         return res;
     }

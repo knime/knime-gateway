@@ -24,6 +24,7 @@ import com.knime.gateway.json.entity.ConnectionEntMixIn;
 import com.knime.gateway.json.entity.DataCellEntMixIn;
 import com.knime.gateway.json.entity.DataRowEntMixIn;
 import com.knime.gateway.json.entity.DataTableEntMixIn;
+import com.knime.gateway.json.entity.ExecEnvEntMixIn;
 import com.knime.gateway.json.entity.FlowVariableEntMixIn;
 import com.knime.gateway.json.entity.JavaObjectEntMixIn;
 import com.knime.gateway.json.entity.JobManagerEntMixIn;
@@ -38,6 +39,7 @@ import com.knime.gateway.json.entity.NodePortEntMixIn;
 import com.knime.gateway.json.entity.NodeProgressEntMixIn;
 import com.knime.gateway.json.entity.NodeSettingsEntMixIn;
 import com.knime.gateway.json.entity.NodeStateEntMixIn;
+import com.knime.gateway.json.entity.NodeTemplateEntMixIn;
 import com.knime.gateway.json.entity.NodeUIInfoEntMixIn;
 import com.knime.gateway.json.entity.PatchEntMixIn;
 import com.knime.gateway.json.entity.PatchOpEntMixIn;
@@ -56,6 +58,7 @@ import com.knime.gateway.json.entity.NodeInPortEntMixIn;
 import com.knime.gateway.json.entity.NodeOutPortEntMixIn;
 import com.knime.gateway.json.entity.WorkflowAnnotationEntMixIn;
 import com.knime.gateway.json.entity.WorkflowNodeEntMixIn;
+import com.knime.gateway.json.entity.ConverterNodeEntMixIn;
 import com.knime.gateway.json.entity.WrappedWorkflowNodeEntMixIn;
 
 import java.util.ArrayList;
@@ -86,6 +89,7 @@ public class ListEntities {
         res.add(DataCellEntMixIn.class);
         res.add(DataRowEntMixIn.class);
         res.add(DataTableEntMixIn.class);
+        res.add(ExecEnvEntMixIn.class);
         res.add(FlowVariableEntMixIn.class);
         res.add(JavaObjectEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
@@ -100,6 +104,7 @@ public class ListEntities {
         res.add(NodeProgressEntMixIn.class);
         res.add(NodeSettingsEntMixIn.class);
         res.add(NodeStateEntMixIn.class);
+        res.add(NodeTemplateEntMixIn.class);
         res.add(NodeUIInfoEntMixIn.class);
         res.add(PatchEntMixIn.class);
         res.add(PatchOpEntMixIn.class);
@@ -118,6 +123,7 @@ public class ListEntities {
         res.add(NodeOutPortEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowNodeEntMixIn.class);
+        res.add(ConverterNodeEntMixIn.class);
         res.add(WrappedWorkflowNodeEntMixIn.class);
         return res;
     }
@@ -134,6 +140,7 @@ public class ListEntities {
         res.add(DataCellEntMixIn.DataCellEntMixInBuilder.class);
         res.add(DataRowEntMixIn.DataRowEntMixInBuilder.class);
         res.add(DataTableEntMixIn.DataTableEntMixInBuilder.class);
+        res.add(ExecEnvEntMixIn.ExecEnvEntMixInBuilder.class);
         res.add(FlowVariableEntMixIn.FlowVariableEntMixInBuilder.class);
         res.add(JavaObjectEntMixIn.JavaObjectEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
@@ -148,6 +155,7 @@ public class ListEntities {
         res.add(NodeProgressEntMixIn.NodeProgressEntMixInBuilder.class);
         res.add(NodeSettingsEntMixIn.NodeSettingsEntMixInBuilder.class);
         res.add(NodeStateEntMixIn.NodeStateEntMixInBuilder.class);
+        res.add(NodeTemplateEntMixIn.NodeTemplateEntMixInBuilder.class);
         res.add(NodeUIInfoEntMixIn.NodeUIInfoEntMixInBuilder.class);
         res.add(PatchEntMixIn.PatchEntMixInBuilder.class);
         res.add(PatchOpEntMixIn.PatchOpEntMixInBuilder.class);
@@ -166,6 +174,7 @@ public class ListEntities {
         res.add(NodeOutPortEntMixIn.NodeOutPortEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowNodeEntMixIn.WorkflowNodeEntMixInBuilder.class);
+        res.add(ConverterNodeEntMixIn.ConverterNodeEntMixInBuilder.class);
         res.add(WrappedWorkflowNodeEntMixIn.WrappedWorkflowNodeEntMixInBuilder.class);
         return res;
     }

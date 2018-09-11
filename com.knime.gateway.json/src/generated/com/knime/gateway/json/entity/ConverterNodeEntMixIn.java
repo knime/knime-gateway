@@ -18,9 +18,10 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.json.entity.WorkflowNodeEntMixIn;
+import com.knime.gateway.json.entity.NativeNodeEntMixIn;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
@@ -39,9 +40,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder;
+import com.knime.gateway.v0.entity.ConverterNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultConverterNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultConverterNodeEnt.DefaultConverterNodeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -53,13 +54,13 @@ import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt.DefaultWra
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWrappedWorkflowNodeEnt.class)
+    defaultImpl = DefaultConverterNodeEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWrappedWorkflowNodeEnt.class, name="WrappedWorkflowNode")
+    @Type(value = DefaultConverterNodeEnt.class, name="ConverterNode")
 })
-@JsonDeserialize(builder=DefaultWrappedWorkflowNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultConverterNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
+public interface ConverterNodeEntMixIn extends ConverterNodeEnt {
 
     @Override
     @JsonIgnore
@@ -142,32 +143,16 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     public String getExecEnvInstanceID();
     
     @Override
-    @JsonProperty("workflowIncomingPorts")
-    public java.util.List<NodeOutPortEnt> getWorkflowIncomingPorts();
-    
-    @Override
-    @JsonProperty("workflowOutgoingPorts")
-    public java.util.List<NodeInPortEnt> getWorkflowOutgoingPorts();
-    
-    @Override
-    @JsonProperty("encrypted")
-    public Boolean isEncrypted();
-    
-    @Override
-    @JsonProperty("workflowOutgoingPortNodeStates")
-    public java.util.List<NodeStateEnt> getWorkflowOutgoingPortNodeStates();
-    
-    @Override
-    @JsonProperty("virtualInNodeID")
-    public String getVirtualInNodeID();
-    
-    @Override
-    @JsonProperty("virtualOutNodeID")
-    public String getVirtualOutNodeID();
+    @JsonProperty("nodeFactoryKey")
+    public NodeFactoryKeyEnt getNodeFactoryKey();
     
     @Override
     @JsonProperty("inactive")
     public Boolean isInactive();
+    
+    @Override
+    @JsonProperty("outExecEnvInstanceID")
+    public String getOutExecEnvInstanceID();
     
 
     /**
@@ -179,119 +164,103 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWrappedWorkflowNodeEntBuilder.class)
+        defaultImpl = DefaultConverterNodeEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder.class, name="WrappedWorkflowNode")
+        @Type(value = DefaultConverterNodeEnt.DefaultConverterNodeEntBuilder.class, name="ConverterNode")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WrappedWorkflowNodeEntMixInBuilder extends WrappedWorkflowNodeEntBuilder {
+    public static interface ConverterNodeEntMixInBuilder extends ConverterNodeEntBuilder {
     
         @Override
-        public WrappedWorkflowNodeEntMixIn build();
+        public ConverterNodeEntMixIn build();
     
         @Override
         @JsonProperty("type")
-        public WrappedWorkflowNodeEntMixInBuilder setType(final String type);
+        public ConverterNodeEntMixInBuilder setType(final String type);
         
         @Override
         @JsonProperty("name")
-        public WrappedWorkflowNodeEntMixInBuilder setName(final String name);
+        public ConverterNodeEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("nodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeID(final String nodeID);
+        public ConverterNodeEntMixInBuilder setNodeID(final String nodeID);
         
         @Override
         @JsonProperty("nodeType")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeType(final NodeTypeEnum nodeType);
+        public ConverterNodeEntMixInBuilder setNodeType(final NodeTypeEnum nodeType);
         
         @Override
         @JsonProperty("parentNodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setParentNodeID(final String parentNodeID);
+        public ConverterNodeEntMixInBuilder setParentNodeID(final String parentNodeID);
         
         @Override
         @JsonProperty("rootWorkflowID")
-        public WrappedWorkflowNodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
+        public ConverterNodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
         
         @Override
         @JsonProperty("nodeMessage")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeMessage(final NodeMessageEnt nodeMessage);
+        public ConverterNodeEntMixInBuilder setNodeMessage(final NodeMessageEnt nodeMessage);
         
         @Override
         @JsonProperty("nodeState")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
+        public ConverterNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
         
         @Override
         @JsonProperty("progress")
-        public WrappedWorkflowNodeEntMixInBuilder setProgress(final NodeProgressEnt progress);
+        public ConverterNodeEntMixInBuilder setProgress(final NodeProgressEnt progress);
         
         @Override
         @JsonProperty("inPorts")
-        public WrappedWorkflowNodeEntMixInBuilder setInPorts(final java.util.List<NodeInPortEnt> inPorts);
+        public ConverterNodeEntMixInBuilder setInPorts(final java.util.List<NodeInPortEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public WrappedWorkflowNodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
+        public ConverterNodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
         
         @Override
         @JsonProperty("deletable")
-        public WrappedWorkflowNodeEntMixInBuilder setDeletable(final Boolean deletable);
+        public ConverterNodeEntMixInBuilder setDeletable(final Boolean deletable);
         
         @Override
         @JsonProperty("resetable")
-        public WrappedWorkflowNodeEntMixInBuilder setResetable(final Boolean resetable);
+        public ConverterNodeEntMixInBuilder setResetable(final Boolean resetable);
         
         @Override
         @JsonProperty("hasDialog")
-        public WrappedWorkflowNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        public ConverterNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
         
         @Override
         @JsonProperty("nodeAnnotation")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
+        public ConverterNodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
         
         @Override
         @JsonProperty("webViewNames")
-        public WrappedWorkflowNodeEntMixInBuilder setWebViewNames(final java.util.List<String> webViewNames);
+        public ConverterNodeEntMixInBuilder setWebViewNames(final java.util.List<String> webViewNames);
         
         @Override
         @JsonProperty("jobManager")
-        public WrappedWorkflowNodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
+        public ConverterNodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
         
         @Override
         @JsonProperty("uIInfo")
-        public WrappedWorkflowNodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
+        public ConverterNodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
         
         @Override
         @JsonProperty("execEnvInstanceID")
-        public WrappedWorkflowNodeEntMixInBuilder setExecEnvInstanceID(final String execEnvInstanceID);
+        public ConverterNodeEntMixInBuilder setExecEnvInstanceID(final String execEnvInstanceID);
         
         @Override
-        @JsonProperty("workflowIncomingPorts")
-        public WrappedWorkflowNodeEntMixInBuilder setWorkflowIncomingPorts(final java.util.List<NodeOutPortEnt> workflowIncomingPorts);
-        
-        @Override
-        @JsonProperty("workflowOutgoingPorts")
-        public WrappedWorkflowNodeEntMixInBuilder setWorkflowOutgoingPorts(final java.util.List<NodeInPortEnt> workflowOutgoingPorts);
-        
-        @Override
-        @JsonProperty("encrypted")
-        public WrappedWorkflowNodeEntMixInBuilder setEncrypted(final Boolean encrypted);
-        
-        @Override
-        @JsonProperty("workflowOutgoingPortNodeStates")
-        public WrappedWorkflowNodeEntMixInBuilder setWorkflowOutgoingPortNodeStates(final java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
-        
-        @Override
-        @JsonProperty("virtualInNodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setVirtualInNodeID(final String virtualInNodeID);
-        
-        @Override
-        @JsonProperty("virtualOutNodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setVirtualOutNodeID(final String virtualOutNodeID);
+        @JsonProperty("nodeFactoryKey")
+        public ConverterNodeEntMixInBuilder setNodeFactoryKey(final NodeFactoryKeyEnt nodeFactoryKey);
         
         @Override
         @JsonProperty("inactive")
-        public WrappedWorkflowNodeEntMixInBuilder setInactive(final Boolean inactive);
+        public ConverterNodeEntMixInBuilder setInactive(final Boolean inactive);
+        
+        @Override
+        @JsonProperty("outExecEnvInstanceID")
+        public ConverterNodeEntMixInBuilder setOutExecEnvInstanceID(final String outExecEnvInstanceID);
         
     }
 

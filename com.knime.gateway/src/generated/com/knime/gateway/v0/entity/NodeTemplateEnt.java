@@ -18,8 +18,7 @@
  */
 package com.knime.gateway.v0.entity;
 
-import com.knime.gateway.v0.entity.NodeCategoryEnt;
-import com.knime.gateway.v0.entity.NodeTemplateEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -27,12 +26,12 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * a category in the node repository
+ * NodeTemplateEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeCategoryEnt extends GatewayEntity {
+public interface NodeTemplateEnt extends GatewayEntity {
 
 
   /**
@@ -42,43 +41,43 @@ public interface NodeCategoryEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * Get categoryChildren
-   * @return categoryChildren 
+   * Get execEnvNodeType
+   * @return execEnvNodeType 
    **/
-  public java.util.List<NodeCategoryEnt> getCategoryChildren();
+  public String getExecEnvNodeType();
 
   /**
-   * Get nodeTemplateChildren
-   * @return nodeTemplateChildren 
+   * Get nodeFactory
+   * @return nodeFactory 
    **/
-  public java.util.List<NodeTemplateEnt> getNodeTemplateChildren();
+  public NodeFactoryKeyEnt getNodeFactory();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodeCategoryEntBuilder extends GatewayEntityBuilder<NodeCategoryEnt> {
+    public interface NodeTemplateEntBuilder extends GatewayEntityBuilder<NodeTemplateEnt> {
 
         /**
          * 
          * @param name the property value,  
          * @return this entity builder for chaining
          */
-        NodeCategoryEntBuilder setName(String name);
+        NodeTemplateEntBuilder setName(String name);
         
         /**
          * 
-         * @param categoryChildren the property value,  
+         * @param execEnvNodeType the property value,  
          * @return this entity builder for chaining
          */
-        NodeCategoryEntBuilder setCategoryChildren(java.util.List<NodeCategoryEnt> categoryChildren);
+        NodeTemplateEntBuilder setExecEnvNodeType(String execEnvNodeType);
         
         /**
          * 
-         * @param nodeTemplateChildren the property value,  
+         * @param nodeFactory the property value,  
          * @return this entity builder for chaining
          */
-        NodeCategoryEntBuilder setNodeTemplateChildren(java.util.List<NodeTemplateEnt> nodeTemplateChildren);
+        NodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
         
         
         /**
@@ -88,7 +87,7 @@ public interface NodeCategoryEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeCategoryEnt build();
+        NodeTemplateEnt build();
     
     }
 

@@ -24,6 +24,7 @@ import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.DataCellEnt;
 import com.knime.gateway.v0.entity.DataRowEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
+import com.knime.gateway.v0.entity.ExecEnvEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt;
@@ -38,6 +39,7 @@ import com.knime.gateway.v0.entity.NodePortEnt;
 import com.knime.gateway.v0.entity.NodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
+import com.knime.gateway.v0.entity.NodeTemplateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PatchOpEnt;
@@ -56,6 +58,7 @@ import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.v0.entity.ConverterNodeEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 
 import java.util.ArrayList;
@@ -86,6 +89,7 @@ public class ListEntities {
         res.add(DataCellEnt.class);
         res.add(DataRowEnt.class);
         res.add(DataTableEnt.class);
+        res.add(ExecEnvEnt.class);
         res.add(FlowVariableEnt.class);
         res.add(JavaObjectEnt.class);
         res.add(JobManagerEnt.class);
@@ -100,6 +104,7 @@ public class ListEntities {
         res.add(NodeProgressEnt.class);
         res.add(NodeSettingsEnt.class);
         res.add(NodeStateEnt.class);
+        res.add(NodeTemplateEnt.class);
         res.add(NodeUIInfoEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
@@ -118,6 +123,7 @@ public class ListEntities {
         res.add(NodeOutPortEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowNodeEnt.class);
+        res.add(ConverterNodeEnt.class);
         res.add(WrappedWorkflowNodeEnt.class);
         return res;
     }
@@ -134,6 +140,7 @@ public class ListEntities {
         res.add(DataCellEnt.DataCellEntBuilder.class);
         res.add(DataRowEnt.DataRowEntBuilder.class);
         res.add(DataTableEnt.DataTableEntBuilder.class);
+        res.add(ExecEnvEnt.ExecEnvEntBuilder.class);
         res.add(FlowVariableEnt.FlowVariableEntBuilder.class);
         res.add(JavaObjectEnt.JavaObjectEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
@@ -148,6 +155,7 @@ public class ListEntities {
         res.add(NodeProgressEnt.NodeProgressEntBuilder.class);
         res.add(NodeSettingsEnt.NodeSettingsEntBuilder.class);
         res.add(NodeStateEnt.NodeStateEntBuilder.class);
+        res.add(NodeTemplateEnt.NodeTemplateEntBuilder.class);
         res.add(NodeUIInfoEnt.NodeUIInfoEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
@@ -166,6 +174,7 @@ public class ListEntities {
         res.add(NodeOutPortEnt.NodeOutPortEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowNodeEnt.WorkflowNodeEntBuilder.class);
+        res.add(ConverterNodeEnt.ConverterNodeEntBuilder.class);
         res.add(WrappedWorkflowNodeEnt.WrappedWorkflowNodeEntBuilder.class);
         return res;
     }

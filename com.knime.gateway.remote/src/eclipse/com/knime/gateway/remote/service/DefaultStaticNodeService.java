@@ -34,16 +34,16 @@ import org.knime.workbench.repository.model.Root;
 
 import com.knime.gateway.v0.entity.NodeCategoryEnt;
 import com.knime.gateway.v0.entity.NodeCategoryEnt.NodeCategoryEntBuilder;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.v0.entity.NodeTemplateEnt;
+import com.knime.gateway.v0.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import com.knime.gateway.v0.service.StaticNodeService;
-import com.knime.gateway.v0.service.WorkflowService;
 
 /**
- * Default implementation of {@link WorkflowService} that delegates the operations to knime.core (e.g.
+ * Default implementation of {@link StaticNodeService} that delegates the operations to knime.core (e.g.
  * {@link WorkflowManager} etc.).
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class DefaultStaticNodeService implements StaticNodeService {
     private static final DefaultStaticNodeService INSTANCE = new DefaultStaticNodeService();
@@ -69,26 +69,34 @@ public class DefaultStaticNodeService implements StaticNodeService {
         return catBuilder.build();
     }
 
-    private void addChildren(final AbstractContainerObject cat, final NodeCategoryEntBuilder catBuilder,
+    private boolean addChildren(final AbstractContainerObject cat, final NodeCategoryEntBuilder catBuilder,
         final String nodeType) {
         List<NodeCategoryEnt> cats = new ArrayList<NodeCategoryEnt>();
-        List<NodeFactoryKeyEnt> facts = new ArrayList<NodeFactoryKeyEnt>();
+        List<NodeTemplateEnt> facts = new ArrayList<NodeTemplateEnt>();
         for (IRepositoryObject child : cat.getChildren()) {
             if (child instanceof Category) {
                 NodeCategoryEntBuilder childCatBuilder = builder(NodeCategoryEntBuilder.class);
                 childCatBuilder.setName(child.getName());
-                addChildren((Category)child, childCatBuilder, nodeType);
-                cats.add(childCatBuilder.build());
+                boolean hasChildren = addChildren((Category)child, childCatBuilder, nodeType);
+                if (hasChildren) {
+                    cats.add(childCatBuilder.build());
+                }
             } else if (child instanceof NodeTemplate) {
                 NodeTemplate t = (NodeTemplate)child;
-                if (nodeType != null && nodeType.equals(t.getExecEnvNodeType())) {
-                    NodeFactoryKeyEntBuilder nodeBuilder = builder(NodeFactoryKeyEntBuilder.class);
-                    nodeBuilder.setClassName(t.getFactory().getCanonicalName());
+                if (nodeType == null || nodeType.length() == 0 || nodeType.equals(t.getExecEnvNodeType())) {
+                    NodeTemplateEntBuilder nodeBuilder = builder(NodeTemplateEntBuilder.class);
+                    NodeFactoryKeyEntBuilder nodeFacBilder = builder(NodeFactoryKeyEntBuilder.class);
+                    nodeFacBilder.setClassName(t.getFactory().getCanonicalName());
+
+                    nodeBuilder.setName(t.getName()).setExecEnvNodeType(t.getExecEnvNodeType())
+                        .setNodeFactory(nodeFacBilder.build());
+
                     facts.add(nodeBuilder.build());
                 }
             }
         }
         catBuilder.setCategoryChildren(cats);
-        catBuilder.setNodeFactoryChildren(facts);
+        catBuilder.setNodeTemplateChildren(facts);
+        return cats.size() + facts.size() > 0;
     }
 }

@@ -94,6 +94,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
     m_webViewNames = immutable(builder.m_webViewNames);
     m_jobManager = immutable(builder.m_jobManager);
     m_uIInfo = immutable(builder.m_uIInfo);
+    m_execEnvInstanceID = immutable(builder.m_execEnvInstanceID);
     m_workflowIncomingPorts = immutable(builder.m_workflowIncomingPorts);
     m_workflowOutgoingPorts = immutable(builder.m_workflowOutgoingPorts);
     m_encrypted = immutable(builder.m_encrypted);
@@ -115,7 +116,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
             return false;
         }
         DefaultWorkflowNodeEnt ent = (DefaultWorkflowNodeEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_workflowIncomingPorts, ent.m_workflowIncomingPorts) && Objects.equals(m_workflowOutgoingPorts, ent.m_workflowOutgoingPorts) && Objects.equals(m_encrypted, ent.m_encrypted) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_execEnvInstanceID, ent.m_execEnvInstanceID) && Objects.equals(m_workflowIncomingPorts, ent.m_workflowIncomingPorts) && Objects.equals(m_workflowOutgoingPorts, ent.m_workflowOutgoingPorts) && Objects.equals(m_encrypted, ent.m_encrypted) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates);
     }
 
 
@@ -164,6 +165,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private java.util.List<String> m_webViewNames = new java.util.ArrayList<>();
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
+        private String m_execEnvInstanceID = null;
         private java.util.List<NodeOutPortEnt> m_workflowIncomingPorts = new java.util.ArrayList<>();
         private java.util.List<NodeInPortEnt> m_workflowOutgoingPorts = new java.util.ArrayList<>();
         private Boolean m_encrypted = null;
@@ -292,6 +294,12 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         @Override
         public DefaultWorkflowNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo) {
              m_uIInfo = uIInfo;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID) {
+             m_execEnvInstanceID = execEnvInstanceID;
              return this;
         }
 

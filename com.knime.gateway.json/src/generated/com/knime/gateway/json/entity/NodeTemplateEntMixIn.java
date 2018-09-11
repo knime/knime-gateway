@@ -18,8 +18,7 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.NodeCategoryEnt;
-import com.knime.gateway.v0.entity.NodeTemplateEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 
 
 import com.knime.gateway.json.JsonUtil;
@@ -32,9 +31,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.NodeCategoryEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt.DefaultNodeCategoryEntBuilder;
+import com.knime.gateway.v0.entity.NodeTemplateEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNodeTemplateEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -46,13 +45,13 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt.DefaultNodeCatego
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeCategoryEnt.class)
+    defaultImpl = DefaultNodeTemplateEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeCategoryEnt.class, name="NodeCategory")
+    @Type(value = DefaultNodeTemplateEnt.class, name="NodeTemplate")
 })
-@JsonDeserialize(builder=DefaultNodeCategoryEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeTemplateEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
+public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
 
     @Override
     @JsonIgnore
@@ -63,12 +62,12 @@ public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
     public String getName();
     
     @Override
-    @JsonProperty("categoryChildren")
-    public java.util.List<NodeCategoryEnt> getCategoryChildren();
+    @JsonProperty("execEnvNodeType")
+    public String getExecEnvNodeType();
     
     @Override
-    @JsonProperty("nodeTemplateChildren")
-    public java.util.List<NodeTemplateEnt> getNodeTemplateChildren();
+    @JsonProperty("nodeFactory")
+    public NodeFactoryKeyEnt getNodeFactory();
     
 
     /**
@@ -80,27 +79,27 @@ public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeCategoryEntBuilder.class)
+        defaultImpl = DefaultNodeTemplateEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeCategoryEnt.DefaultNodeCategoryEntBuilder.class, name="NodeCategory")
+        @Type(value = DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder.class, name="NodeTemplate")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeCategoryEntMixInBuilder extends NodeCategoryEntBuilder {
+    public static interface NodeTemplateEntMixInBuilder extends NodeTemplateEntBuilder {
     
         @Override
-        public NodeCategoryEntMixIn build();
+        public NodeTemplateEntMixIn build();
     
         @Override
         @JsonProperty("name")
-        public NodeCategoryEntMixInBuilder setName(final String name);
+        public NodeTemplateEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("categoryChildren")
-        public NodeCategoryEntMixInBuilder setCategoryChildren(final java.util.List<NodeCategoryEnt> categoryChildren);
+        @JsonProperty("execEnvNodeType")
+        public NodeTemplateEntMixInBuilder setExecEnvNodeType(final String execEnvNodeType);
         
         @Override
-        @JsonProperty("nodeTemplateChildren")
-        public NodeCategoryEntMixInBuilder setNodeTemplateChildren(final java.util.List<NodeTemplateEnt> nodeTemplateChildren);
+        @JsonProperty("nodeFactory")
+        public NodeTemplateEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
         
     }
 

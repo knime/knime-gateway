@@ -30,6 +30,8 @@ import com.knime.gateway.v0.entity.DataRowEnt.DataRowEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultDataRowEnt;
 import com.knime.gateway.v0.entity.DataTableEnt.DataTableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultDataTableEnt;
+import com.knime.gateway.v0.entity.ExecEnvEnt.ExecEnvEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultExecEnvEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
@@ -58,6 +60,8 @@ import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeStateEnt;
+import com.knime.gateway.v0.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNodeTemplateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt.NodeUIInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
@@ -94,6 +98,8 @@ import com.knime.gateway.v0.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBu
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
+import com.knime.gateway.v0.entity.ConverterNodeEnt.ConverterNodeEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultConverterNodeEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt.WrappedWorkflowNodeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
 
@@ -128,6 +134,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == DataTableEntBuilder.class) {
             return new DefaultDataTableEnt.DefaultDataTableEntBuilder();
+        }        
+        if(clazz == ExecEnvEntBuilder.class) {
+            return new DefaultExecEnvEnt.DefaultExecEnvEntBuilder();
         }        
         if(clazz == FlowVariableEntBuilder.class) {
             return new DefaultFlowVariableEnt.DefaultFlowVariableEntBuilder();
@@ -170,6 +179,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeStateEntBuilder.class) {
             return new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();
+        }        
+        if(clazz == NodeTemplateEntBuilder.class) {
+            return new DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder();
         }        
         if(clazz == NodeUIInfoEntBuilder.class) {
             return new DefaultNodeUIInfoEnt.DefaultNodeUIInfoEntBuilder();
@@ -224,6 +236,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowNodeEntBuilder.class) {
             return new DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder();
+        }        
+        if(clazz == ConverterNodeEntBuilder.class) {
+            return new DefaultConverterNodeEnt.DefaultConverterNodeEntBuilder();
         }        
         if(clazz == WrappedWorkflowNodeEntBuilder.class) {
             return new DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder();

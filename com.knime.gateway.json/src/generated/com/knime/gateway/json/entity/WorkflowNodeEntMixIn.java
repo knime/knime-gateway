@@ -141,6 +141,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public NodeUIInfoEnt getUIInfo();
     
     @Override
+    @JsonProperty("execEnvInstanceID")
+    public String getExecEnvInstanceID();
+    
+    @Override
     @JsonProperty("workflowIncomingPorts")
     public java.util.List<NodeOutPortEnt> getWorkflowIncomingPorts();
     
@@ -249,6 +253,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         @Override
         @JsonProperty("uIInfo")
         public WorkflowNodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
+        
+        @Override
+        @JsonProperty("execEnvInstanceID")
+        public WorkflowNodeEntMixInBuilder setExecEnvInstanceID(final String execEnvInstanceID);
         
         @Override
         @JsonProperty("workflowIncomingPorts")

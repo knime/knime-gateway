@@ -24,38 +24,37 @@ import java.util.Objects;
 
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
 import com.knime.gateway.v0.entity.NodeProgressEnt;
 import com.knime.gateway.v0.entity.NodeStateEnt;
 import com.knime.gateway.v0.entity.NodeUIInfoEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
 
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.v0.entity.ConverterNodeEnt;
 
 /**
- * A node wrapping (referencing) a workflow (also referred to it as wrapped metanode or subnode) that almost behaves as a ordinary node.
+ * Converter node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implements WrappedWorkflowNodeEnt {
+public class DefaultConverterNodeEnt extends DefaultNativeNodeEnt implements ConverterNodeEnt {
 
-  protected String m_virtualInNodeID;
-  protected String m_virtualOutNodeID;
-  protected Boolean m_inactive;
+  protected String m_outExecEnvInstanceID;
   
-  protected DefaultWrappedWorkflowNodeEnt() {
+  protected DefaultConverterNodeEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WrappedWorkflowNode";
+    return "ConverterNode";
   }
   
-  private DefaultWrappedWorkflowNodeEnt(DefaultWrappedWorkflowNodeEntBuilder builder) {
+  private DefaultConverterNodeEnt(DefaultConverterNodeEntBuilder builder) {
     super();
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
@@ -94,13 +93,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     m_jobManager = immutable(builder.m_jobManager);
     m_uIInfo = immutable(builder.m_uIInfo);
     m_execEnvInstanceID = immutable(builder.m_execEnvInstanceID);
-    m_workflowIncomingPorts = immutable(builder.m_workflowIncomingPorts);
-    m_workflowOutgoingPorts = immutable(builder.m_workflowOutgoingPorts);
-    m_encrypted = immutable(builder.m_encrypted);
-    m_workflowOutgoingPortNodeStates = immutable(builder.m_workflowOutgoingPortNodeStates);
-    m_virtualInNodeID = immutable(builder.m_virtualInNodeID);
-    m_virtualOutNodeID = immutable(builder.m_virtualOutNodeID);
+    if(builder.m_nodeFactoryKey == null) {
+        throw new IllegalArgumentException("nodeFactoryKey must not be null.");
+    }
+    m_nodeFactoryKey = immutable(builder.m_nodeFactoryKey);
     m_inactive = immutable(builder.m_inactive);
+    m_outExecEnvInstanceID = immutable(builder.m_outExecEnvInstanceID);
   }
   
    /**
@@ -117,30 +115,20 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWrappedWorkflowNodeEnt ent = (DefaultWrappedWorkflowNodeEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_execEnvInstanceID, ent.m_execEnvInstanceID) && Objects.equals(m_workflowIncomingPorts, ent.m_workflowIncomingPorts) && Objects.equals(m_workflowOutgoingPorts, ent.m_workflowOutgoingPorts) && Objects.equals(m_encrypted, ent.m_encrypted) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates) && Objects.equals(m_virtualInNodeID, ent.m_virtualInNodeID) && Objects.equals(m_virtualOutNodeID, ent.m_virtualOutNodeID) && Objects.equals(m_inactive, ent.m_inactive);
+        DefaultConverterNodeEnt ent = (DefaultConverterNodeEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_execEnvInstanceID, ent.m_execEnvInstanceID) && Objects.equals(m_nodeFactoryKey, ent.m_nodeFactoryKey) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_outExecEnvInstanceID, ent.m_outExecEnvInstanceID);
     }
 
 
   @Override
-  public String getVirtualInNodeID() {
-        return m_virtualInNodeID;
-    }
-    
-  @Override
-  public String getVirtualOutNodeID() {
-        return m_virtualOutNodeID;
-    }
-    
-  @Override
-  public Boolean isInactive() {
-        return m_inactive;
+  public String getOutExecEnvInstanceID() {
+        return m_outExecEnvInstanceID;
     }
     
   
-    public static class DefaultWrappedWorkflowNodeEntBuilder implements WrappedWorkflowNodeEntBuilder {
+    public static class DefaultConverterNodeEntBuilder implements ConverterNodeEntBuilder {
     
-        public DefaultWrappedWorkflowNodeEntBuilder(){
+        public DefaultConverterNodeEntBuilder(){
             super();
         }
     
@@ -163,16 +151,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
         private String m_execEnvInstanceID = null;
-        private java.util.List<NodeOutPortEnt> m_workflowIncomingPorts = new java.util.ArrayList<>();
-        private java.util.List<NodeInPortEnt> m_workflowOutgoingPorts = new java.util.ArrayList<>();
-        private Boolean m_encrypted = null;
-        private java.util.List<NodeStateEnt> m_workflowOutgoingPortNodeStates = new java.util.ArrayList<>();
-        private String m_virtualInNodeID = null;
-        private String m_virtualOutNodeID = null;
+        private NodeFactoryKeyEnt m_nodeFactoryKey;
         private Boolean m_inactive = null;
+        private String m_outExecEnvInstanceID = null;
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setType(String type) {
+        public DefaultConverterNodeEntBuilder setType(String type) {
              if(type == null) {
                  throw new IllegalArgumentException("type must not be null.");
              }
@@ -181,7 +165,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setName(String name) {
+        public DefaultConverterNodeEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("name must not be null.");
              }
@@ -190,7 +174,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setNodeID(String nodeID) {
+        public DefaultConverterNodeEntBuilder setNodeID(String nodeID) {
              if(nodeID == null) {
                  throw new IllegalArgumentException("nodeID must not be null.");
              }
@@ -199,7 +183,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setNodeType(NodeTypeEnum nodeType) {
+        public DefaultConverterNodeEntBuilder setNodeType(NodeTypeEnum nodeType) {
              if(nodeType == null) {
                  throw new IllegalArgumentException("nodeType must not be null.");
              }
@@ -208,13 +192,13 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setParentNodeID(String parentNodeID) {
+        public DefaultConverterNodeEntBuilder setParentNodeID(String parentNodeID) {
              m_parentNodeID = parentNodeID;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID) {
+        public DefaultConverterNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID) {
              if(rootWorkflowID == null) {
                  throw new IllegalArgumentException("rootWorkflowID must not be null.");
              }
@@ -223,13 +207,13 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage) {
+        public DefaultConverterNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage) {
              m_nodeMessage = nodeMessage;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setNodeState(NodeStateEnt nodeState) {
+        public DefaultConverterNodeEntBuilder setNodeState(NodeStateEnt nodeState) {
              if(nodeState == null) {
                  throw new IllegalArgumentException("nodeState must not be null.");
              }
@@ -238,117 +222,96 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setProgress(NodeProgressEnt progress) {
+        public DefaultConverterNodeEntBuilder setProgress(NodeProgressEnt progress) {
              m_progress = progress;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts) {
+        public DefaultConverterNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts) {
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts) {
+        public DefaultConverterNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts) {
              m_outPorts = outPorts;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setDeletable(Boolean deletable) {
+        public DefaultConverterNodeEntBuilder setDeletable(Boolean deletable) {
              m_deletable = deletable;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setResetable(Boolean resetable) {
+        public DefaultConverterNodeEntBuilder setResetable(Boolean resetable) {
              m_resetable = resetable;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setHasDialog(Boolean hasDialog) {
+        public DefaultConverterNodeEntBuilder setHasDialog(Boolean hasDialog) {
              m_hasDialog = hasDialog;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation) {
+        public DefaultConverterNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation) {
              m_nodeAnnotation = nodeAnnotation;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames) {
+        public DefaultConverterNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames) {
              m_webViewNames = webViewNames;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setJobManager(JobManagerEnt jobManager) {
+        public DefaultConverterNodeEntBuilder setJobManager(JobManagerEnt jobManager) {
              m_jobManager = jobManager;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo) {
+        public DefaultConverterNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo) {
              m_uIInfo = uIInfo;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID) {
+        public DefaultConverterNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID) {
              m_execEnvInstanceID = execEnvInstanceID;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setWorkflowIncomingPorts(java.util.List<NodeOutPortEnt> workflowIncomingPorts) {
-             m_workflowIncomingPorts = workflowIncomingPorts;
+        public DefaultConverterNodeEntBuilder setNodeFactoryKey(NodeFactoryKeyEnt nodeFactoryKey) {
+             if(nodeFactoryKey == null) {
+                 throw new IllegalArgumentException("nodeFactoryKey must not be null.");
+             }
+             m_nodeFactoryKey = nodeFactoryKey;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setWorkflowOutgoingPorts(java.util.List<NodeInPortEnt> workflowOutgoingPorts) {
-             m_workflowOutgoingPorts = workflowOutgoingPorts;
-             return this;
-        }
-
-        @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setEncrypted(Boolean encrypted) {
-             m_encrypted = encrypted;
-             return this;
-        }
-
-        @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates) {
-             m_workflowOutgoingPortNodeStates = workflowOutgoingPortNodeStates;
-             return this;
-        }
-
-        @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setVirtualInNodeID(String virtualInNodeID) {
-             m_virtualInNodeID = virtualInNodeID;
-             return this;
-        }
-
-        @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setVirtualOutNodeID(String virtualOutNodeID) {
-             m_virtualOutNodeID = virtualOutNodeID;
-             return this;
-        }
-
-        @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setInactive(Boolean inactive) {
+        public DefaultConverterNodeEntBuilder setInactive(Boolean inactive) {
              m_inactive = inactive;
+             return this;
+        }
+
+        @Override
+        public DefaultConverterNodeEntBuilder setOutExecEnvInstanceID(String outExecEnvInstanceID) {
+             m_outExecEnvInstanceID = outExecEnvInstanceID;
              return this;
         }
 
         
         @Override
-        public DefaultWrappedWorkflowNodeEnt build() {
-            return new DefaultWrappedWorkflowNodeEnt(this);
+        public DefaultConverterNodeEnt build() {
+            return new DefaultConverterNodeEnt(this);
         }
     
     }

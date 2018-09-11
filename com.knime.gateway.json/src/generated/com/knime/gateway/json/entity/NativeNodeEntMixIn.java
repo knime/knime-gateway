@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultConverterNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -57,6 +58,8 @@ import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEn
     defaultImpl = DefaultNativeNodeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNativeNodeEnt.class, name="NativeNode")
+,
+  @Type(value = DefaultConverterNodeEnt.class, name = "ConverterNode")
 })
 @JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
@@ -139,6 +142,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public NodeUIInfoEnt getUIInfo();
     
     @Override
+    @JsonProperty("execEnvInstanceID")
+    public String getExecEnvInstanceID();
+    
+    @Override
     @JsonProperty("nodeFactoryKey")
     public NodeFactoryKeyEnt getNodeFactoryKey();
     
@@ -159,6 +166,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         defaultImpl = DefaultNativeNodeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name="NativeNode")
+        ,
+      @Type(value = DefaultConverterNodeEnt.DefaultConverterNodeEntBuilder.class, name = "ConverterNode")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NativeNodeEntMixInBuilder extends NativeNodeEntBuilder {
@@ -237,6 +246,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("uIInfo")
         public NativeNodeEntMixInBuilder setUIInfo(final NodeUIInfoEnt uIInfo);
+        
+        @Override
+        @JsonProperty("execEnvInstanceID")
+        public NativeNodeEntMixInBuilder setExecEnvInstanceID(final String execEnvInstanceID);
         
         @Override
         @JsonProperty("nodeFactoryKey")

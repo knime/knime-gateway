@@ -18,8 +18,6 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.NodeCategoryEnt;
-import com.knime.gateway.v0.entity.NodeTemplateEnt;
 
 
 import com.knime.gateway.json.JsonUtil;
@@ -32,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.NodeCategoryEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt.DefaultNodeCategoryEntBuilder;
+import com.knime.gateway.v0.entity.ExecEnvEnt;
+import com.knime.gateway.v0.entity.impl.DefaultExecEnvEnt;
+import com.knime.gateway.v0.entity.impl.DefaultExecEnvEnt.DefaultExecEnvEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -46,29 +44,33 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeCategoryEnt.DefaultNodeCatego
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeCategoryEnt.class)
+    defaultImpl = DefaultExecEnvEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeCategoryEnt.class, name="NodeCategory")
+    @Type(value = DefaultExecEnvEnt.class, name="ExecEnv")
 })
-@JsonDeserialize(builder=DefaultNodeCategoryEntBuilder.class)
+@JsonDeserialize(builder=DefaultExecEnvEntBuilder.class)
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
+public interface ExecEnvEntMixIn extends ExecEnvEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("execEnvID")
+    public String getExecEnvID();
     
     @Override
-    @JsonProperty("categoryChildren")
-    public java.util.List<NodeCategoryEnt> getCategoryChildren();
+    @JsonProperty("instanceID")
+    public String getInstanceID();
     
     @Override
-    @JsonProperty("nodeTemplateChildren")
-    public java.util.List<NodeTemplateEnt> getNodeTemplateChildren();
+    @JsonProperty("typeName")
+    public String getTypeName();
+    
+    @Override
+    @JsonProperty("allowedNodeTypes")
+    public java.util.List<String> getAllowedNodeTypes();
     
 
     /**
@@ -80,27 +82,31 @@ public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeCategoryEntBuilder.class)
+        defaultImpl = DefaultExecEnvEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeCategoryEnt.DefaultNodeCategoryEntBuilder.class, name="NodeCategory")
+        @Type(value = DefaultExecEnvEnt.DefaultExecEnvEntBuilder.class, name="ExecEnv")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeCategoryEntMixInBuilder extends NodeCategoryEntBuilder {
+    public static interface ExecEnvEntMixInBuilder extends ExecEnvEntBuilder {
     
         @Override
-        public NodeCategoryEntMixIn build();
+        public ExecEnvEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public NodeCategoryEntMixInBuilder setName(final String name);
+        @JsonProperty("execEnvID")
+        public ExecEnvEntMixInBuilder setExecEnvID(final String execEnvID);
         
         @Override
-        @JsonProperty("categoryChildren")
-        public NodeCategoryEntMixInBuilder setCategoryChildren(final java.util.List<NodeCategoryEnt> categoryChildren);
+        @JsonProperty("instanceID")
+        public ExecEnvEntMixInBuilder setInstanceID(final String instanceID);
         
         @Override
-        @JsonProperty("nodeTemplateChildren")
-        public NodeCategoryEntMixInBuilder setNodeTemplateChildren(final java.util.List<NodeTemplateEnt> nodeTemplateChildren);
+        @JsonProperty("typeName")
+        public ExecEnvEntMixInBuilder setTypeName(final String typeName);
+        
+        @Override
+        @JsonProperty("allowedNodeTypes")
+        public ExecEnvEntMixInBuilder setAllowedNodeTypes(final java.util.List<String> allowedNodeTypes);
         
     }
 

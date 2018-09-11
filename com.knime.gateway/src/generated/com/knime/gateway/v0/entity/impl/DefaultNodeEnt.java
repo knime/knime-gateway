@@ -59,6 +59,7 @@ public class DefaultNodeEnt  implements NodeEnt {
   protected java.util.List<String> m_webViewNames;
   protected JobManagerEnt m_jobManager;
   protected NodeUIInfoEnt m_uIInfo;
+  protected String m_execEnvInstanceID;
   
   protected DefaultNodeEnt() {
     //for sub-classes
@@ -107,6 +108,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     m_webViewNames = immutable(builder.m_webViewNames);
     m_jobManager = immutable(builder.m_jobManager);
     m_uIInfo = immutable(builder.m_uIInfo);
+    m_execEnvInstanceID = immutable(builder.m_execEnvInstanceID);
   }
   
    /**
@@ -124,7 +126,7 @@ public class DefaultNodeEnt  implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_execEnvInstanceID, ent.m_execEnvInstanceID);
     }
 
 
@@ -218,6 +220,11 @@ public class DefaultNodeEnt  implements NodeEnt {
         return m_uIInfo;
     }
     
+  @Override
+  public String getExecEnvInstanceID() {
+        return m_execEnvInstanceID;
+    }
+    
   
     public static class DefaultNodeEntBuilder implements NodeEntBuilder {
     
@@ -243,6 +250,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         private java.util.List<String> m_webViewNames = new java.util.ArrayList<>();
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
+        private String m_execEnvInstanceID = null;
 
         @Override
         public DefaultNodeEntBuilder setType(String type) {
@@ -367,6 +375,12 @@ public class DefaultNodeEnt  implements NodeEnt {
         @Override
         public DefaultNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo) {
              m_uIInfo = uIInfo;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID) {
+             m_execEnvInstanceID = execEnvInstanceID;
              return this;
         }
 

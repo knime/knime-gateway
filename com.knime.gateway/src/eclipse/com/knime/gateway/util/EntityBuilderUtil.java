@@ -67,6 +67,8 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.exec.dataexchange.PortObjectRepository;
+import org.knime.core.node.execenv.converter.ConverterNodeFactory;
+import org.knime.core.node.execenv.converter.ConverterNodeModel;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
 import org.knime.core.node.port.MetaPortInfo;
@@ -107,6 +109,8 @@ import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.v0.entity.ConnectionEnt.TypeEnum;
+import com.knime.gateway.v0.entity.ConverterNodeEnt;
+import com.knime.gateway.v0.entity.ConverterNodeEnt.ConverterNodeEntBuilder;
 import com.knime.gateway.v0.entity.DataCellEnt;
 import com.knime.gateway.v0.entity.DataCellEnt.DataCellEntBuilder;
 import com.knime.gateway.v0.entity.DataRowEnt;
@@ -218,6 +222,10 @@ public class EntityBuilderUtil {
      */
     public static NodeEnt buildNodeEnt(final NodeContainer nc, final UUID rootWorkflowID) {
         if (nc instanceof NativeNodeContainer) {
+            NodeFactory<NodeModel> factory = ((NativeNodeContainer) nc).getNode().getFactory();
+            if(factory instanceof ConverterNodeFactory) {
+                return buildConverterNodeEnt((NativeNodeContainer)nc, rootWorkflowID);
+            }
             return buildNativeNodeEnt((NativeNodeContainer) nc, rootWorkflowID);
         } else if (nc instanceof WorkflowManager) {
             return buildWorkflowNodeEnt((WorkflowManager) nc, rootWorkflowID);
@@ -343,7 +351,8 @@ public class EntityBuilderUtil {
                 .setVirtualInNodeID(nodeIDToString(subNode.getVirtualInNodeID()))
                 .setVirtualOutNodeID(nodeIDToString(subNode.getVirtualOutNodeID()))
                 .setInactive(subNode.isInactive())
-                .setType("WrappedWorkflowNode").build();
+                .setType("WrappedWorkflowNode")
+                .setExecEnvInstanceID(String.valueOf(System.identityHashCode(subNode.getExecEnv()))).build();
     }
 
     /**
@@ -787,7 +796,46 @@ public class EntityBuilderUtil {
             .setInactive(nc.isInactive())
             .setWebViewNames(IntStream.range(0, webViews.size())
                 .mapToObj(i -> webViews.get(i).getViewName()).collect(Collectors.toList()))
-            .setType("NativeNode").build();
+            .setType("NativeNode")
+            .setExecEnvInstanceID(String.valueOf(System.identityHashCode(nc.getExecEnv()))).build();
+    }
+
+    private static ConverterNodeEnt buildConverterNodeEnt(final NativeNodeContainer nc, final UUID rootWorkflowID) {
+        NodeFactory<NodeModel> factory = nc.getNode().getFactory();
+        NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)
+                .setClassName(factory.getClass().getCanonicalName());
+        //only set settings in case of a dynamic node factory
+        if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
+            NodeSettings settings = new NodeSettings("settings");
+            nc.getNode().getFactory().saveAdditionalFactorySettings(settings);
+            nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.PRETTY));
+        }
+        InteractiveWebViewsResult webViews = nc.getInteractiveWebViews();
+        return builder(ConverterNodeEntBuilder.class).setName(nc.getName()).setNodeID(nodeIDToString(nc.getID()))
+            .setNodeMessage(buildNodeMessageEnt(nc))
+            .setNodeType(NodeTypeEnum.valueOf(nc.getType().toString().toUpperCase()))
+            .setUIInfo(buildNodeUIInfoEnt(nc.getUIInformation()))
+            .setDeletable(nc.isDeletable())
+            .setResetable(nc.isResetable())
+            .setNodeState(buildNodeStateEnt(nc.getNodeContainerState().toString()))
+            .setProgress(
+                buildNodeProgressEnt(nc.getProgressMonitor().getProgress(),
+                    nc.getProgressMonitor().getMessage(),
+                    nc.getNodeContainerState()))
+            .setOutPorts(buildNodeOutPortEnts(nc))
+            .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? null : nodeIDToString(nc.getParent().getID()))
+            .setRootWorkflowID(rootWorkflowID)
+            .setJobManager(buildJobManagerEnt(nc.getJobManager()))
+            .setNodeAnnotation(buildNodeAnnotationEnt(nc))
+            .setInPorts(buildNodeInPortEnts(nc))
+            .setHasDialog(nc.hasDialog())
+            .setNodeFactoryKey(nodeFactoryKeyBuilder.build())
+            .setInactive(nc.isInactive())
+            .setWebViewNames(IntStream.range(0, webViews.size())
+                .mapToObj(i -> webViews.get(i).getViewName()).collect(Collectors.toList()))
+            .setType("ConverterNode")
+            .setExecEnvInstanceID(String.valueOf(System.identityHashCode(nc.getExecEnv())))
+            .setOutExecEnvInstanceID(String.valueOf(System.identityHashCode(((ConverterNodeModel)nc.getNode().getNodeModel()).getOutExecEnv()))).build();
     }
 
     private static NodeProgressEnt buildNodeProgressEnt(final Double progress, final String message,

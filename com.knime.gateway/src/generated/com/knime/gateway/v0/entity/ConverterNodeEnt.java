@@ -19,8 +19,8 @@
 package com.knime.gateway.v0.entity;
 
 import com.knime.gateway.v0.entity.JobManagerEnt;
+import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeAnnotationEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt;
@@ -34,31 +34,25 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 
 
 /**
- * Native node extension of a node.
+ * Converter node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
-public interface NativeNodeEnt extends NodeEnt {
+public interface ConverterNodeEnt extends NativeNodeEnt {
 
 
   /**
-   * The key/ID of the node factory defining all details.
-   * @return nodeFactoryKey , never <code>null</code>
+   * Get outExecEnvInstanceID
+   * @return outExecEnvInstanceID 
    **/
-  public NodeFactoryKeyEnt getNodeFactoryKey();
-
-  /**
-   * Whether this node is inactive, e.g. due to inactive connections
-   * @return inactive 
-   **/
-  public Boolean isInactive();
+  public String getOutExecEnvInstanceID();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
+    public interface ConverterNodeEntBuilder extends GatewayEntityBuilder<ConverterNodeEnt> {
 
         /**
          * Discriminator for inheritance. Must be the base name of this type/schema.
@@ -66,7 +60,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setType(String type);
+        ConverterNodeEntBuilder setType(String type);
         
         /**
          * The node&#39;s name.
@@ -74,7 +68,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setName(String name);
+        ConverterNodeEntBuilder setName(String name);
         
         /**
          * The ID of the node.
@@ -82,7 +76,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeID(String nodeID);
+        ConverterNodeEntBuilder setNodeID(String nodeID);
         
         /**
          * The type of the node.
@@ -90,7 +84,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeType(NodeTypeEnum nodeType);
+        ConverterNodeEntBuilder setNodeType(NodeTypeEnum nodeType);
         
         /**
          * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
@@ -98,7 +92,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param parentNodeID the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setParentNodeID(String parentNodeID);
+        ConverterNodeEntBuilder setParentNodeID(String parentNodeID);
         
         /**
          * The id of the root workflow this node is contained in or represents.
@@ -106,7 +100,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param rootWorkflowID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
+        ConverterNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
         
         /**
          * The current node message (warning, error, none).
@@ -114,7 +108,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeMessage the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
+        ConverterNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
         
         /**
          * The state of the node.
@@ -122,7 +116,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeState(NodeStateEnt nodeState);
+        ConverterNodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
          * The node&#39;s progress.
@@ -130,7 +124,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param progress the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setProgress(NodeProgressEnt progress);
+        ConverterNodeEntBuilder setProgress(NodeProgressEnt progress);
         
         /**
          * The list of inputs.
@@ -138,7 +132,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param inPorts the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts);
+        ConverterNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -146,7 +140,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param outPorts the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
+        ConverterNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
         
         /**
          * Whether the node is deletable.
@@ -154,7 +148,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param deletable the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setDeletable(Boolean deletable);
+        ConverterNodeEntBuilder setDeletable(Boolean deletable);
         
         /**
          * Whether the node is resetable. Please note that it only represents the &#39;local&#39; reset-state but doesn&#39;t take the whole workflow into account (e.g. executing successors).
@@ -162,7 +156,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param resetable the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setResetable(Boolean resetable);
+        ConverterNodeEntBuilder setResetable(Boolean resetable);
         
         /**
          * Whether the node has a configuration dialog / user settings.
@@ -170,7 +164,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param hasDialog the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setHasDialog(Boolean hasDialog);
+        ConverterNodeEntBuilder setHasDialog(Boolean hasDialog);
         
         /**
          * The annotation below the node.
@@ -178,7 +172,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeAnnotation the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
+        ConverterNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
         
         /**
          * The names of the available web views. Can be an empty list.
@@ -186,7 +180,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param webViewNames the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
+        ConverterNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
         
         /**
          * The job manager (e.g. cluster or streaming).
@@ -194,21 +188,21 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param jobManager the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setJobManager(JobManagerEnt jobManager);
+        ConverterNodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
          * 
          * @param uIInfo the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo);
+        ConverterNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo);
         
         /**
          * 
          * @param execEnvInstanceID the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID);
+        ConverterNodeEntBuilder setExecEnvInstanceID(String execEnvInstanceID);
         
         /**
          * The key/ID of the node factory defining all details.
@@ -216,7 +210,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param nodeFactoryKey the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeFactoryKey(NodeFactoryKeyEnt nodeFactoryKey);
+        ConverterNodeEntBuilder setNodeFactoryKey(NodeFactoryKeyEnt nodeFactoryKey);
         
         /**
          * Whether this node is inactive, e.g. due to inactive connections
@@ -224,7 +218,14 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param inactive the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInactive(Boolean inactive);
+        ConverterNodeEntBuilder setInactive(Boolean inactive);
+        
+        /**
+         * 
+         * @param outExecEnvInstanceID the property value,  
+         * @return this entity builder for chaining
+         */
+        ConverterNodeEntBuilder setOutExecEnvInstanceID(String outExecEnvInstanceID);
         
         
         /**
@@ -234,7 +235,7 @@ public interface NativeNodeEnt extends NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NativeNodeEnt build();
+        ConverterNodeEnt build();
     
     }
 
