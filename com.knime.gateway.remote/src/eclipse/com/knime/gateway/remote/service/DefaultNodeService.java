@@ -116,10 +116,11 @@ public class DefaultNodeService implements NodeService {
     @Override
     public void setNodeBounds(final UUID rootWorkflowID, final String nodeID, final BoundsEnt bounds)
         throws NodeNotFoundException {
-        NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
+        Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         NodeUIInformation information = NodeUIInformation.builder()
             .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()).build();
-        nc.setUIInformation(information);
+        rootWfmAndNc.getSecond().setUIInformation(information);
+        rootWfmAndNc.getFirst().setDirty();
     }
 
     /**
