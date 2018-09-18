@@ -31,7 +31,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -259,7 +258,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public List<PortObjectSpecEnt> getInputPortSpecs(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         WorkflowManager wfm = rootWfmAndNc.getFirst();
         NodeContainer nc = rootWfmAndNc.getSecond();
@@ -288,7 +287,7 @@ public class DefaultNodeService implements NodeService {
      */
     @Override
     public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         return getPortObjectSpecsAsEntityList(IntStream.range(0, nodeContainer.getNrOutPorts()).mapToObj(i -> {
             return Pair.create(nodeContainer.getOutPort(i).getPortType(),
@@ -393,15 +392,11 @@ public class DefaultNodeService implements NodeService {
         return webViewContent;
     }
 
-    private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(
-        final Stream<Pair<PortType, PortObjectSpec>> specs) throws InvalidRequestException {
-        AtomicReference<InvalidRequestException> exception = new AtomicReference<InvalidRequestException>();
-        List<PortObjectSpecEnt> res = specs.map(port -> {
+    private static List<PortObjectSpecEnt>
+        getPortObjectSpecsAsEntityList(final Stream<Pair<PortType, PortObjectSpec>> specs) {
+        return specs.map(port -> {
             if (port == null) {
                 //can happen in case of an optional port
-                return null;
-            }
-            if (exception.get() != null) {
                 return null;
             }
             PortType type = port.getFirst();
@@ -410,22 +405,8 @@ public class DefaultNodeService implements NodeService {
                 //can happen when spec is not known, yet
                 return null;
             }
-            PortObjectSpecEnt ent = EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
-            if (ent == null) {
-                exception.set(new ServiceExceptions.InvalidRequestException(
-                    "Port object spec of type '" + type.getName() + "' not supported in remote view."));
-                return null;
-            } else {
-                return ent;
-
-            }
+            return EntityBuilderUtil.buildPortObjectSpecEnt(type, spec);
         }).collect(Collectors.toList());
-        if (exception.get() == null) {
-            return res;
-        } else {
-            //couldn't think of a better way to transfer a thrown exception from within a lambda-expression
-            throw exception.get();
-        }
     }
 
     /**

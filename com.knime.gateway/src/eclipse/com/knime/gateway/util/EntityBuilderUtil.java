@@ -373,7 +373,7 @@ public class EntityBuilderUtil {
             builder.setInactive(true);
         } else {
             //port type/spec not supported, yet
-            return null;
+            builder.setRepresentation("not supported");
         }
 
         builder.setType(buildPortTypeEnt(type));

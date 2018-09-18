@@ -25,6 +25,7 @@ import java.awt.Rectangle;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -49,7 +50,6 @@ import org.knime.workbench.ui.async.AsyncUtil;
 
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeOutPortEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
@@ -94,10 +94,15 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
 
     private PortObjectSpec getPortObjectSpecInternal() {
         try {
-            return getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
-        } catch (InvalidRequestException | NodeNotFoundException ex) {
-            //should never happen
-            throw new RuntimeException(ex);
+            PortObjectSpec portObjectSpec = getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
+            if (portObjectSpec instanceof UnsupportedPortObjectSpec) {
+                IllegalStateException ex = new IllegalStateException("Port type '"
+                    + ((UnsupportedPortObjectSpec)portObjectSpec).getType().getName() + "' not supported, yet.");
+                throw new CompletionException(ex);
+            }
+            return portObjectSpec;
+        } catch (NodeNotFoundException ex) {
+            throw new CompletionException(ex);
         }
     }
 
@@ -281,6 +286,28 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
 
     void updateNodeEnt(final N newNodeEnt) {
         m_node = newNodeEnt;
+    }
+
+    static class UnsupportedPortObjectSpec implements PortObjectSpec {
+
+        private PortType m_type;
+
+        public UnsupportedPortObjectSpec(final PortType type) {
+            m_type = type;
+        }
+
+        PortType getType() {
+            return m_type;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public JComponent[] getViews() {
+            return null;
+        }
+
     }
 
     private static class UnsupportedPortObject implements PortObject {

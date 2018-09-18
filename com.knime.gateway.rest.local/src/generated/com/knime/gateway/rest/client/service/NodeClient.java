@@ -144,7 +144,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<PortObjectSpecEnt> getInputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public java.util.List<PortObjectSpecEnt> getInputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
@@ -159,9 +159,6 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             //executor errors
             if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
-            }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
@@ -260,7 +257,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
@@ -275,9 +272,6 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             //executor errors
             if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
-            }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));

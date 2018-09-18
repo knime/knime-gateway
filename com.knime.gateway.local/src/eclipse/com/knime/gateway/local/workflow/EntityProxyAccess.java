@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
 import org.knime.core.node.NodeLogger;
@@ -59,6 +58,7 @@ import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.local.util.missing.MissingPortObject;
+import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.UnsupportedPortObjectSpec;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
@@ -77,7 +77,6 @@ import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.v0.service.AnnotationService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.WorkflowService;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
@@ -439,15 +438,15 @@ public class EntityProxyAccess {
     }
 
     /**
-     * Retrieves the input port object specs.
+     * Retrieves the input port object specs. Entries can be <code>null</code>, if port object spec is not available. If
+     * a requested spec is not supported by the gateway (because it cannot be serialized), a
+     * {@link UnsupportedPortObjectSpec} instance will be returned instead.
      *
      * @param node node to retrieve the specs for
      * @return the specs for all ports (including the flow var port)
-     * @throws InvalidRequestException if the requested spec is not supported by the gateway (because it cannot be
-     *             serialized)
      * @throws NodeNotFoundException if the node wasn't found
      */
-    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws InvalidRequestException, NodeNotFoundException {
+    PortObjectSpec[] getInputPortObjectSpecs(final NodeEnt node) throws NodeNotFoundException {
         //TODO cache the port object specs
         if (!node.getOutPorts().isEmpty()) {
             List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
@@ -459,16 +458,16 @@ public class EntityProxyAccess {
     }
 
     /**
-     * Retrieves the output port object specs.
+     * Retrieves the output port object specs. Entries can be <code>null</code>, if port object spec is not available.
+     * If a requested spec is not supported by the gateway (because it cannot be serialized), a
+     * {@link UnsupportedPortObjectSpec} instance will be returned instead.
      *
      * @param node node to retrieve the specs for
      * @return the specs for all ports (including the flow var port)
-     * @throws InvalidRequestException if the requested spec is not supported by the gateway (because it cannot be
-     *             serialized)
      * @throws NodeNotFoundException if the node wasn't found
      */
     PortObjectSpec[] getOutputPortObjectSpecs(final NodeEnt node)
-        throws InvalidRequestException, NodeNotFoundException {
+        throws NodeNotFoundException {
         //TODO cache the port object specs
         if (!node.getOutPorts().isEmpty()) {
             List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
@@ -507,7 +506,7 @@ public class EntityProxyAccess {
     }
 
     private static PortObjectSpec[] createPortObjectSpecsFromEntity(final List<PortObjectSpecEnt> entList,
-        final List<? extends NodePortEnt> ports) throws InvalidRequestException {
+        final List<? extends NodePortEnt> ports) {
         assert ports.size() == entList.size();
         PortObjectSpec[] res = new PortObjectSpec[entList.size()];
         for (int i = 0; i < res.length; i++) {
@@ -520,7 +519,7 @@ public class EntityProxyAccess {
                 continue;
             }
             PortType ptype = getPortType(ent.getType());
-            if (ptype.equals(BufferedDataTable.TYPE)) {
+            if (DataTableSpec.class.isAssignableFrom(ptype.getPortObjectSpecClass())) {
                 try {
                     res[i] = DataTableSpec.load(
                         JSONConfig.readJSON(new ModelContent("model"), new StringReader(ent.getRepresentation())));
@@ -538,8 +537,7 @@ public class EntityProxyAccess {
                     throw new RuntimeException(ex);
                 }
             } else {
-                throw new InvalidRequestException(
-                    "Port type '" + ptype.getName() + "' not supported, yet.");
+                res[i] = new UnsupportedPortObjectSpec(ptype);
             }
         }
         return res;

@@ -41,7 +41,7 @@ public interface PortObjectSpecEnt extends GatewayEntity {
   public PortTypeEnt getType();
 
   /**
-   * The actual port object spec representation.
+   * The actual port object spec representation or \&quot;not supported\&quot; if not supported.
    * @return representation 
    **/
   public String getRepresentation();
@@ -67,7 +67,7 @@ public interface PortObjectSpecEnt extends GatewayEntity {
         PortObjectSpecEntBuilder setType(PortTypeEnt type);
         
         /**
-         * The actual port object spec representation.
+         * The actual port object spec representation or \&quot;not supported\&quot; if not supported.
          * 
          * @param representation the property value,  
          * @return this entity builder for chaining
