@@ -27,8 +27,8 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -57,15 +57,17 @@ public interface NodeService extends GatewayService {
      * Creates and adds a new native node to the workflow.
      *
      * @param jobId ID the job the workflow is requested for
+     * @param x the x coordinate to place the new node
+     * @param y the y coordinate to place the new node
      * @param nodeFactoryKey The key representing the native node to be added to the workflow.
-     * @param uiInfo Represents essentially the position of the new node. TODO: Relatively specific endpoint for the eclipse-client. Future variation of that endpoint will be necessary that is happy with the x,y-coordinates only.
      * @param parentNodeId Optional id of the parent node if the new node should be added to a sub-workflow. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    String createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKey, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Provides the node&#39;s flow variables available for the node with the given node-id.

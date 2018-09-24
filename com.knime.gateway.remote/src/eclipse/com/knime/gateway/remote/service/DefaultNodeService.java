@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -68,7 +69,6 @@ import org.knime.workbench.repository.RepositoryManager;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.util.EntityBuilderUtil;
-import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
@@ -76,9 +76,9 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.NodeService;
@@ -158,18 +158,32 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String createNode(final UUID rootWorkflowID, final String nodeFactoryKey, final NodeUIInfoEnt uiInfo,
-        final String parentNodeID) throws NotASubWorkflowException, NodeNotFoundException {
+    public String createNode(final UUID rootWorkflowID, final Integer x, final Integer y, final NodeFactoryKeyEnt nodeFactoryKey,
+        final String parentNodeID) throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parentNodeID);
         NodeFactory<NodeModel> nodeFactory;
         try {
-            nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey);
+            nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
                 | InvalidSettingsException ex) {
             throw new NodeNotFoundException("No node found for factory key " + nodeFactoryKey);
         }
+        if (nodeFactoryKey.getSettings() != null && !nodeFactoryKey.getSettings().isEmpty()) {
+            try {
+                NodeSettings settings =
+                    JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(nodeFactoryKey.getSettings()));
+                nodeFactory.loadAdditionalFactorySettings(settings);
+            } catch (IOException | InvalidSettingsException ex) {
+                throw new InvalidRequestException("Problem reading factory settings while trying to create node from '"
+                    + nodeFactoryKey.getClassName() + "'", ex);
+            }
+        } else if (nodeFactory instanceof DynamicNodeFactory) {
+            throw new InvalidRequestException(
+                "Settings are expected for dynamic node '" + nodeFactoryKey.getClassName() + "'");
+        }
         NodeID nodeID = wfm.createAndAddNode(nodeFactory);
-        NodeUIInformation info = EntityTranslateUtil.translateNodeUIInfoEnt(uiInfo);
+        NodeUIInformation info =
+            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(true).build();
         wfm.getNodeContainer(nodeID).setUIInformation(info);
         return EntityUtil.nodeIDToString(nodeID);
     }

@@ -24,8 +24,8 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -78,10 +78,12 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
             data = "400" /*per convention the data property contains the status code*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "404" /*per convention the data property contains the status code*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "405" /*per convention the data property contains the status code*/)
     })
-    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, String nodeFactoryKey, @JsonRpcParam(value="uiInfo") NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
-        return m_service.createNode(jobId, nodeFactoryKey, uiInfo, parentNodeId);    
+    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, Integer x, Integer y, @JsonRpcParam(value="nodeFactoryKey") NodeFactoryKeyEnt nodeFactoryKey, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.createNode(jobId, x, y, nodeFactoryKey, parentNodeId);    
     }
 
 	/**

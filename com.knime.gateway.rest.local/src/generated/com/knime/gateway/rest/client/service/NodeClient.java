@@ -24,8 +24,8 @@ import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 
@@ -94,11 +94,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public String createNode(java.util.UUID jobId, String nodeFactoryKey, NodeUIInfoEnt uiInfo, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public String createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKey, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createNode(jobId, nodeFactoryKey, toByteArray(uiInfo), parentNodeId);
+                    return c.createNode(jobId, x, y, toByteArray(nodeFactoryKey), parentNodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     // TODO exception handling
@@ -112,6 +112,9 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }
             if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 405) {
+                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
             }
             throw new ServiceException(
                 "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));

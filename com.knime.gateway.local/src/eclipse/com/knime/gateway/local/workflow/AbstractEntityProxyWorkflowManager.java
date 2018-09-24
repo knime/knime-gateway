@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.processChanges;
 import static com.knime.gateway.util.EntityBuilderUtil.buildConnectionEnt;
 import static com.knime.gateway.util.EntityUtil.connectionIDToString;
@@ -47,6 +48,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
@@ -92,6 +96,7 @@ import com.knime.gateway.util.EntityUtil;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
+import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.v0.entity.PatchEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
@@ -241,10 +246,16 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         return futureRefresh(() -> {
             String id;
             try {
-                id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(),
-                    factory.getClass().getCanonicalName(), EntityBuilderUtil.buildNodeUIInfoEnt(uiInfo),
-                    getEntity().getNodeID());
-            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                NodeFactoryKeyEntBuilder factoryKeyBuilder =
+                    builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getClass().getCanonicalName());
+                NodeSettings settings = new NodeSettings("settings");
+                factory.saveAdditionalFactorySettings(settings);
+                if (settings.getChildCount() > 0) {
+                    factoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
+                }
+                id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(), uiInfo.getBounds()[0],
+                    uiInfo.getBounds()[1], factoryKeyBuilder.build(), getEntity().getNodeID());
+            } catch (NotASubWorkflowException | NodeNotFoundException | InvalidRequestException ex) {
                 //should never happen
                 throw new CompletionException(ex);
             }
