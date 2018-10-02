@@ -777,7 +777,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     }
 
     /**
-     * Determines whether the node can be reseted without considering its context (e.g. the node's successors)
+     * Determines whether the node can be reset without considering its context (e.g. the node's successors)
      *
      * @return <code>true</code> if the node is resetable
      */
@@ -791,11 +791,11 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     /**
      * Requests to reset the node via the respective service.
      *
-     * @throws IllegalStateException when the node cannot be reseted
+     * @throws IllegalStateException when the node cannot be reset
      */
     void reset() {
         if(!canReset()) {
-            throw new IllegalStateException("Node is not in the right state to be reseted.");
+            throw new IllegalStateException("Node is not in the right state to be reset.");
         }
         try {
             getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
