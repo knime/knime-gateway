@@ -40,7 +40,6 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.container.CloseableRowIterator;
-import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.def.DefaultCellIterator;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTable.KnowsRowCountTable;
@@ -52,6 +51,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.tableview.AsyncDataRow;
 import org.knime.core.node.tableview.AsyncDataTable;
 import org.knime.core.node.workflow.BufferedDataTableView;
+import org.knime.core.node.workflow.WorkflowDataRepository;
 
 import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.v0.entity.DataRowEnt;
@@ -256,7 +256,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
      * {@inheritDoc}
      */
     @Override
-    public void putIntoTableRepository(final HashMap<Integer, ContainerTable> rep) {
+    public void putIntoTableRepository(final WorkflowDataRepository dataRepository) {
         throw new UnsupportedOperationException();
     }
 
@@ -264,7 +264,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
      * {@inheritDoc}
      */
     @Override
-    public boolean removeFromTableRepository(final HashMap<Integer, ContainerTable> rep) {
+    public boolean removeFromTableRepository(final WorkflowDataRepository dataRepository) {
         throw new UnsupportedOperationException();
     }
 
