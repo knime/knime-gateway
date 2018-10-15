@@ -29,10 +29,10 @@ import org.knime.core.node.AbstractNodeView.ViewableModel;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.web.WebViewContent;
+import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
-import org.knime.js.core.node.CSSModifiable;
 
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
