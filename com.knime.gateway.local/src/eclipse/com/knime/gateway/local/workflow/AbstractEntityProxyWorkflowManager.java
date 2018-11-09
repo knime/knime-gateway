@@ -87,6 +87,8 @@ import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 import org.knime.core.ui.node.workflow.async.OperationNotAllowedException;
+import org.knime.core.ui.node.workflow.lazy.LazyWorkflowManagerUI;
+import org.knime.core.ui.node.workflow.lazy.NotLoadedException;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.WorkflowEntChangeListener;
@@ -120,7 +122,7 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
  * @param <E> the type of the workflow node entity (e.g. wrapped)
  */
 abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> extends AbstractEntityProxyNodeContainer<E>
-    implements AsyncWorkflowManagerUI {
+    implements AsyncWorkflowManagerUI, LazyWorkflowManagerUI {
 
     /**
      * The name of the property of a node entity holding it's state as defined by the gateway API.
@@ -150,13 +152,31 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         super(workflowNodeEnt, access);
     }
 
-    private WorkflowEnt getWorkflow() {
+    private WorkflowEnt getWorkflow() throws NotLoadedException {
         if (m_workflowEnt == null) {
+            throw new NotLoadedException();
+        }
+        return m_workflowEnt;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLoaded() {
+        return m_workflowEnt != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> load() {
+        return CompletableFuture.runAsync(() -> {
             WorkflowSnapshotEnt wfs = getAccess().getWorkflowSnapshotEnt(getEntity());
             m_workflowEnt = wfs.getWorkflow();
             m_snapshotID = wfs.getSnapshotID();
-        }
-        return m_workflowEnt;
+        });
     }
 
     /**
@@ -364,9 +384,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id, final int portIdx) {
+    public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id, final int portIdx)
+        throws NotLoadedException {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
         String nodeID = nodeIDToString(id);
@@ -380,9 +403,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id) {
+    public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id) throws NotLoadedException {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
         String nodeID = nodeIDToString(id);
@@ -396,9 +421,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public ConnectionContainerUI getIncomingConnectionFor(final NodeID id, final int portIdx) {
+    public ConnectionContainerUI getIncomingConnectionFor(final NodeID id, final int portIdx)
+        throws NotLoadedException {
         String connID = connectionIDToString(nodeIDToString(id), portIdx);
         return getAccess().getConnectionContainer(getWorkflow().getConnections().get(connID),
             getEntity().getRootWorkflowID());
@@ -406,9 +434,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public Set<ConnectionContainerUI> getIncomingConnectionsFor(final NodeID id) {
+    public Set<ConnectionContainerUI> getIncomingConnectionsFor(final NodeID id) throws NotLoadedException {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
         String nodeID = nodeIDToString(id);
@@ -422,18 +452,22 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public ConnectionContainerUI getConnection(final ConnectionID id) {
+    public ConnectionContainerUI getConnection(final ConnectionID id) throws NotLoadedException {
         ConnectionEnt connectionEnt = getWorkflow().getConnections().get(connectionIDToString(id));
         return getAccess().getConnectionContainer(connectionEnt, getEntity().getRootWorkflowID());
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public MetaPortInfo[] getMetanodeInputPortInfo(final NodeID metaNodeID) {
+    public MetaPortInfo[] getMetanodeInputPortInfo(final NodeID metaNodeID) throws NotLoadedException {
         //TODO metaNodeID necessary??
         List<? extends MetaPortInfoEnt> metaInPorts = getWorkflow().getMetaInPortInfos();
         MetaPortInfo[] res = new MetaPortInfo[metaInPorts.size()];
@@ -451,9 +485,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public MetaPortInfo[] getMetanodeOutputPortInfo(final NodeID metaNodeID) {
+    public MetaPortInfo[] getMetanodeOutputPortInfo(final NodeID metaNodeID) throws NotLoadedException {
         //TODO metaNodeID necessary
         List<? extends MetaPortInfoEnt> metaOutPorts = getWorkflow().getMetaOutPortInfos();
         MetaPortInfo[] res = new MetaPortInfo[metaOutPorts.size()];
@@ -678,9 +714,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public Collection<NodeContainerUI> getNodeContainers() {
+    public Collection<NodeContainerUI> getNodeContainers() throws NotLoadedException {
         Collection<NodeEnt> nodes = getWorkflow().getNodes().values();
         //return exactly the same node container instance for the same node entity
         return nodes.stream().map(n -> getAccess().getNodeContainer(n)).collect(Collectors.toList());
@@ -688,9 +726,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public Collection<ConnectionContainerUI> getConnectionContainers() {
+    public Collection<ConnectionContainerUI> getConnectionContainers() throws NotLoadedException {
         Collection<? extends ConnectionEnt> connections = getWorkflow().getConnections().values();
         //return exactly the same connection container instance for the same connection entity
         return connections.stream().map(c -> getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()))
@@ -699,9 +739,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public AsyncNodeContainerUI getNodeContainer(final NodeID id) {
+    public AsyncNodeContainerUI getNodeContainer(final NodeID id) throws NotLoadedException {
         final NodeEnt nodeEnt = getWorkflow().getNodes().get(nodeIDToString(id));
         //return exactly the same node container instance for the same node entity
         return getAccess().getNodeContainer(nodeEnt);
@@ -709,9 +751,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public boolean containsNodeContainer(final NodeID id) {
+    public boolean containsNodeContainer(final NodeID id) throws NotLoadedException {
         return getWorkflow().getNodes().get(nodeIDToString(id)) != null;
     }
 
@@ -952,9 +996,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public EditorUIInformation getEditorUIInformation() {
+    public EditorUIInformation getEditorUIInformation() throws NotLoadedException {
         WorkflowUIInfoEnt uiEnt = getWorkflow().getWorkflowUIInfo();
         if(uiEnt == null) {
             return null;
@@ -1010,9 +1056,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public Collection<WorkflowAnnotation> getWorkflowAnnotations() {
+    public Collection<WorkflowAnnotation> getWorkflowAnnotations() throws NotLoadedException {
         return getWorkflow().getWorkflowAnnotations().values().stream()
             .map(wa -> getAccess().getWorkflowAnnotation(wa, getEntity().getRootWorkflowID(),
                 getEntity().getNodeID()))
@@ -1021,9 +1069,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public WorkflowAnnotation[] getWorkflowAnnotations(final WorkflowAnnotationID... ids) {
+    public WorkflowAnnotation[] getWorkflowAnnotations(final WorkflowAnnotationID... ids) throws NotLoadedException {
         if (ids.length == 0) {
             return new WorkflowAnnotation[0];
         }
@@ -1299,9 +1349,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public boolean isInWizardExecution() {
+    public boolean isInWizardExecution() throws NotLoadedException {
         return getWorkflow().isInWizardExecution();
     }
 
@@ -1350,9 +1402,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NotLoadedException when {@link #isLoaded()} returns <code>false</code>
      */
     @Override
-    public boolean hasCredentials() {
+    public boolean hasCredentials() throws NotLoadedException {
         return getWorkflow().hasCredentials();
     }
 
