@@ -37,7 +37,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
-import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
 import com.knime.enterprise.utility.KnimeServerConstants;
@@ -107,7 +106,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
         final Future<PortObjectSpec[]> f2 = exec.submit(() -> getAccess().getInputPortObjectSpecs(getEntity()));
         final Future<FlowObjectStack> f3 =
             exec.submit(() -> getAccess().getInputFlowVariableStack(getEntity(), getID()));
-        return AsyncNodeContainerUI.futureEx(() -> {
+        return CompletableFutureEx.supplyAsync(() -> {
             try {
                 Future<NodeDialogPane> p = getDialogPaneWithSettings(f1, f2, f3, m_dialogPane, exec);
                 if (p != null) {

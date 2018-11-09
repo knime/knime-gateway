@@ -261,7 +261,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         CompletableFuture<PortObjectSpec> futurePortObjectSpec = getPortObjectSpecAsync();
         CompletableFuture<PortObject> futurePortObject = getPortObjectAsync();
         Display.getDefault().syncExec(() -> {
-            AsyncUtil.waitForTermination(CompletableFuture.allOf(futurePortObject, futurePortObjectSpec),
+            AsyncUtil.waitForTerminationAndOpenDialogWhenFailed(CompletableFuture.allOf(futurePortObject, futurePortObjectSpec),
                 "Loading port object ...");
         });
         m_portView.update(futurePortObject.getNow(null), futurePortObjectSpec.getNow(null), getFlowObjectStack(),
