@@ -311,8 +311,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@link WorkflowManager#canRemoveConnection(org.knime.core.node.workflow.ConnectionContainer)}
      */
     @Override
-    public boolean canRemoveConnection(final ConnectionID connectionID) {
-        ConnectionContainerUI cc = getConnection(connectionID);
+    public boolean canRemoveConnection(final ConnectionContainerUI cc) {
         if (cc == null || !cc.isDeletable()) {
             return false;
         }
