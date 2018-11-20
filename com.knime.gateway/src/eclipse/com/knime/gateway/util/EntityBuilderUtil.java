@@ -844,6 +844,7 @@ public class EntityBuilderUtil {
                 .setDest(nodeIDToString(dest))
                 .setDestPort(destPort)
                 .setType(TypeEnum.valueOf(type.toString()))
+                .setDeletable(true) //deletable by default
                 .setBendPoints(bendpointsEnts).build();
     }
 
