@@ -1497,10 +1497,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
          * {@inheritDoc}
          */
         @Override
-        public void connectionReplaced(final ConnectionEnt oldConnection, final ConnectionEnt newConnection) {
-            ConnectionContainerUI oldCC = getAccess().getConnectionContainer(oldConnection, getEntity().getRootWorkflowID());
+        public void connectionEntReplaced(final ConnectionEnt oldConnection, final ConnectionEnt newConnection) {
+            ConnectionContainerUI oldCC =
+                getAccess().getConnectionContainer(oldConnection, getEntity().getRootWorkflowID());
             notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_REMOVED, null, oldCC, null));
-            ConnectionContainerUI newCC = getAccess().getConnectionContainer(newConnection, getEntity().getRootWorkflowID());
+            ConnectionContainerUI newCC =
+                getAccess().getConnectionContainer(newConnection, getEntity().getRootWorkflowID());
             notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_ADDED, null, null, newCC));
         }
 

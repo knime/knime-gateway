@@ -132,7 +132,7 @@ class WorkflowEntChangeProcessor {
             String[] path = p.split("/");
             ConnectionEnt newConn = newEnt.getConnections().get(path[path.length - 2]);
             ConnectionEnt oldConn = oldEnt.getConnections().get(path[path.length - 2]);
-            l.connectionReplaced(oldConn, newConn);
+            l.connectionEntReplaced(oldConn, newConn);
         }
     });
 
@@ -162,7 +162,7 @@ class WorkflowEntChangeProcessor {
 
         public void connectionEntRemoved(ConnectionEnt removedConnection);
 
-        public void connectionReplaced(ConnectionEnt oldConnection, ConnectionEnt newConnection);
+        public void connectionEntReplaced(ConnectionEnt oldConnection, ConnectionEnt newConnection);
 
         public void annotationEntAdded(WorkflowAnnotationEnt newAnno);
 
