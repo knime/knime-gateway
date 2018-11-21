@@ -806,8 +806,9 @@ public class EntityProxyAccess {
                 //create proxy entry
                 proxy = fct.apply(obj);
                 m_entityProxyMap.put(key, proxy);
-                LOGGER.debug("New entity proxy of type '" + proxy.getClass().getSimpleName() + "' created (total number: "
-                    + ++m_numCreatedEntityProxies + ")");
+                LOGGER
+                    .debug("New entity proxy of type '" + proxy.getClass().getSimpleName() + "' created (total number: "
+                        + ++m_numCreatedEntityProxies + ", cached: " + m_entityProxyMap.size() + ")");
             }
             return proxy;
         }
