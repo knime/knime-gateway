@@ -1244,11 +1244,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                         getAccess().updateNodeContainer(oldWorkflow.getNodes().get(entry.getKey()), entry.getValue());
                     }
 
-                    //update contained connections
-                    for(Entry<String, ConnectionEnt> entry : m_workflowEnt.getConnections().entrySet()) {
-                        getAccess().updateConnectionContainer(oldWorkflow.getConnections().get(entry.getKey()),
-                            entry.getValue());
-                    }
+                    //TODO: connections only get updated when their bendpoints change (not supported, yet)
+                    //connections _don't_ get updated when they are replaced! Otherwise it will cause render problems.
+                    //connections are replaced by adding the new and removing the old one
 
                     //update contained workflow annotations
                     for (Entry<String, WorkflowAnnotationEnt> entry : m_workflowEnt.getWorkflowAnnotations()
