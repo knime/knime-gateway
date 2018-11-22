@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
@@ -76,8 +77,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.changeAndGetNodeState(jobId, nodeId, action);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, String.class);
         } catch (WebApplicationException ex) {
@@ -101,8 +105,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.createNode(jobId, x, y, toByteArray(nodeFactoryKey), parentNodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, String.class);
         } catch (WebApplicationException ex) {
@@ -129,8 +136,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getInputFlowVariables(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, new GenericType<java.util.List<FlowVariableEnt>>(){});
         } catch (WebApplicationException ex) {
@@ -151,8 +161,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getInputPortSpecs(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, new GenericType<java.util.List<PortObjectSpecEnt>>(){});
         } catch (WebApplicationException ex) {
@@ -173,8 +186,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getNode(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
@@ -195,8 +211,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getNodeSettings(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, NodeSettingsEnt.class);
         } catch (WebApplicationException ex) {
@@ -217,8 +236,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getOutputDataTable(jobId, nodeId, portIdx, from, size);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, DataTableEnt.class);
         } catch (WebApplicationException ex) {
@@ -242,8 +264,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getOutputFlowVariables(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, new GenericType<java.util.List<FlowVariableEnt>>(){});
         } catch (WebApplicationException ex) {
@@ -264,8 +289,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getOutputPortSpecs(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, new GenericType<java.util.List<PortObjectSpecEnt>>(){});
         } catch (WebApplicationException ex) {
@@ -286,8 +314,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getRootNode(jobId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
@@ -305,8 +336,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getViewData(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, ViewDataEnt.class);
         } catch (WebApplicationException ex) {
@@ -330,8 +364,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.getWMetaNodeDialog(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, MetaNodeDialogEnt.class);
         } catch (WebApplicationException ex) {
@@ -355,8 +392,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.setNodeBounds(jobId, nodeId, toByteArray(bounds));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             });
         } catch (WebApplicationException ex) {
@@ -377,8 +417,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.setNodeSettings(jobId, nodeId, toByteArray(nodeSettings));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             });
         } catch (WebApplicationException ex) {
@@ -405,8 +448,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     return c.setViewValue(jobId, nodeId, useAsDefault, toByteArray(viewValue));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             });
         } catch (WebApplicationException ex) {

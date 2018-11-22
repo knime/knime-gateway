@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
@@ -67,8 +68,11 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
                     return c.setAnnotationBounds(jobId, annoId, toByteArray(bounds));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             });
         } catch (WebApplicationException ex) {
@@ -89,8 +93,11 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
                     return c.setAnnotationBoundsInSubWorkflow(jobId, nodeId, annoId, toByteArray(bounds));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             });
         } catch (WebApplicationException ex) {

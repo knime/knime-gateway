@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
@@ -70,8 +71,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.createConnection(jobId, toByteArray(connection));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, String.class);
         } catch (WebApplicationException ex) {
@@ -92,8 +96,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.createWorkflowCopy(jobId, toByteArray(parts));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
@@ -120,8 +127,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.deleteWorkflowParts(jobId, toByteArray(parts), copy);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
@@ -148,8 +158,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.getSubWorkflow(jobId, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
@@ -173,8 +186,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.getSubWorkflowDiff(jobId, nodeId, snapshotId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
@@ -198,8 +214,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.getWorkflow(jobId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
@@ -217,8 +236,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.getWorkflowDiff(jobId, snapshotId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
@@ -239,8 +261,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     return c.pasteWorkflowParts(jobId, partsId, x, y, nodeId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
-                    // TODO exception handling
-                    throw new RuntimeException(ex);
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
                 }
             }, WorkflowPartsEnt.class);
         } catch (WebApplicationException ex) {

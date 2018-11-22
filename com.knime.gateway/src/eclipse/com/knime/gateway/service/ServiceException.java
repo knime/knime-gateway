@@ -25,8 +25,25 @@ package com.knime.gateway.service;
  */
 public class ServiceException extends RuntimeException {
 
+    private static final long serialVersionUID = 2608597105909156098L;
+
+    /**
+     * @see RuntimeException#RuntimeException(String)
+     *
+     * @param message
+     */
     public ServiceException(final String message) {
         super(message);
+    }
+
+    /**
+     * @see RuntimeException#RuntimeException(String, Throwable)
+     *
+     * @param message
+     * @param cause
+     */
+    public ServiceException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 
 }
