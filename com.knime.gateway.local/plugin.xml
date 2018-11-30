@@ -6,10 +6,10 @@
  <extension
        point="org.eclipse.ui.preferencePages">
     <page
-          category="org.knime.workbench.ui.preferences.gui.workfloweditor"
-          class="com.knime.gateway.local.workflow.prefs.JobViewPreferencePage"
-          id="org.knime.workbench.ui.preferences.gui.workfloweditor.jobview"
-          name="Job View (preview)">
+          category="org.knime.workbench.ui.preferences.gui"
+          class="com.knime.gateway.local.workflow.prefs.RemoteWorkflowEditorPreferencePage"
+          id="org.knime.workbench.ui.preferences.gui.remoteworkfloweditor"
+          name="Remote Workflow Editor (preview)">
     </page>
  </extension>
 </plugin>

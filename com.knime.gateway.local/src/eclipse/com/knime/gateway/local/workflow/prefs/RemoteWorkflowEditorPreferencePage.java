@@ -26,26 +26,27 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.knime.core.node.KNIMEConstants;
 import org.knime.workbench.ui.KNIMEUIPlugin;
+import org.knime.workbench.ui.preferences.HorizontalLineField;
 import org.knime.workbench.ui.preferences.LabelField;
 import org.knime.workbench.ui.preferences.PreferenceConstants;
 
 /**
- * Preference page for global job view settings such as refresh interval etc.
+ * Preference page for global remote workflow editor such as refresh interval etc.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class JobViewPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private IntegerFieldEditor m_refreshInterval;
 
     private BooleanFieldEditor m_autoRefresh;
 
-    private BooleanFieldEditor m_enableJobEdits;
+    private BooleanFieldEditor m_disableWorkflowEdits;
 
     /**
      * Constructor.
      */
-    public JobViewPreferencePage() {
+    public RemoteWorkflowEditorPreferencePage() {
         super(GRID);
     }
 
@@ -57,37 +58,38 @@ public class JobViewPreferencePage extends FieldEditorPreferencePage implements 
     public void createFieldEditors() {
         final Composite parent = getFieldEditorParent();
 
-        addField(new LabelField(parent, "Remote Job View auto-refresh and edit settings"));
-        m_autoRefresh = new BooleanFieldEditor(PreferenceConstants.P_AUTO_REFRESH_JOB,
-            "Auto-refresh Remote Job View", parent) {
+        addField(
+            new LabelField(parent, "The Remote Workflow Editor allows one to view and edit jobs on a KNIME Server.\n"));
+        m_autoRefresh = new BooleanFieldEditor(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_AUTO_REFRESH,
+            "Auto-refresh Remote Workflow Editor", parent) {
             @Override
             protected void valueChanged(final boolean oldValue, final boolean newValue) {
                 super.valueChanged(oldValue, newValue);
                 m_refreshInterval.setEnabled(newValue, parent);
-                m_enableJobEdits.setEnabled(newValue, parent);
+                m_disableWorkflowEdits.setEnabled(newValue, parent);
             }
         };
         addField(m_autoRefresh);
-        m_refreshInterval = new IntegerFieldEditor(PreferenceConstants.P_AUTO_REFRESH_JOB_INTERVAL_MS,
+        m_refreshInterval = new IntegerFieldEditor(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_AUTO_REFRESH_INTERVAL_MS,
             "Auto-refresh interval (in ms)", parent) {
-            @Override
-            public void setValidRange(final int min, final int max) {
+        @Override
+        public void setValidRange(final int min, final int max) {
                 super.setValidRange(min, max);
                 refreshValidState();
             }
         };
         m_refreshInterval.setValidRange(KNIMEConstants.MIN_GUI_REFRESH_INTERVAL, Integer.MAX_VALUE);
         addField(m_refreshInterval);
-        addField(new LabelField(parent, "If job edits are enabled the refresh interval must not be larger than "
-            + KNIMEConstants.WORKFLOW_EDITOR_CONNECTION_TIMEOUT + " ms."));
 
-        final JobViewPreferencePage thisRef = this;
-        m_enableJobEdits =
-            new BooleanFieldEditor(PreferenceConstants.P_JOB_EDITS_ENABLED, "Enable job edits", parent) {
+        addField(new HorizontalLineField(parent));
+
+        final RemoteWorkflowEditorPreferencePage thisRef = this;
+        m_disableWorkflowEdits =
+            new BooleanFieldEditor(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_EDITS_DISABLED, "Disable edits", parent) {
                 @Override
                 protected void valueChanged(final boolean oldValue, final boolean newValue) {
                     super.valueChanged(oldValue, newValue);
-                    if (newValue) {
+                    if (!newValue) {
                         m_refreshInterval.setValidRange(KNIMEConstants.MIN_GUI_REFRESH_INTERVAL,
                             KNIMEConstants.WORKFLOW_EDITOR_CONNECTION_TIMEOUT);
                     } else {
@@ -96,7 +98,10 @@ public class JobViewPreferencePage extends FieldEditorPreferencePage implements 
                     thisRef.checkState();
                 }
             };
-        addField(m_enableJobEdits);
+        addField(m_disableWorkflowEdits);
+        addField(new LabelField(parent, "If workflow edits are enabled the refresh interval must not be larger than "
+                + KNIMEConstants.WORKFLOW_EDITOR_CONNECTION_TIMEOUT + " ms."));
+
     }
 
     /** {@inheritDoc} */
@@ -111,6 +116,6 @@ public class JobViewPreferencePage extends FieldEditorPreferencePage implements 
     protected void initialize() {
         super.initialize();
         m_refreshInterval.setEnabled(m_autoRefresh.getBooleanValue(), getFieldEditorParent());
-        m_enableJobEdits.setEnabled(m_autoRefresh.getBooleanValue(), getFieldEditorParent());
+        m_disableWorkflowEdits.setEnabled(m_autoRefresh.getBooleanValue(), getFieldEditorParent());
     }
 }
