@@ -41,7 +41,7 @@ public interface WorkflowService extends GatewayService {
      * @param connectionEnt The connection.
      *
      * @return the result
-     * @throws ServiceExceptions.ActionNotAllowedException If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.ActionNotAllowedException If the an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
      */
     String createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException;
         
@@ -54,7 +54,7 @@ public interface WorkflowService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
     java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
@@ -68,7 +68,7 @@ public interface WorkflowService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.ActionNotAllowedException If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.ActionNotAllowedException If the an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
      */
     java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
         
@@ -93,7 +93,7 @@ public interface WorkflowService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
     PatchEnt getSubWorkflowDiff(java.util.UUID jobId, String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         
@@ -113,7 +113,7 @@ public interface WorkflowService extends GatewayService {
      * @param snapshotId The id of the workflow snapshot already retrieved.
      *
      * @return the result
-     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
     PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException;
         
@@ -128,7 +128,7 @@ public interface WorkflowService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
     WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         

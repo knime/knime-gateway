@@ -39,7 +39,7 @@ public interface AnnotationService extends GatewayService {
      * @param boundsEnt 
      *
      * 
-     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
     void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotFoundException;
         
@@ -53,7 +53,7 @@ public interface AnnotationService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found. Please refer to the exception message for more details.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
     void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         

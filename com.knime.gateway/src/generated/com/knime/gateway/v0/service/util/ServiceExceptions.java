@@ -26,7 +26,7 @@ package com.knime.gateway.v0.service.util;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public final class ServiceExceptions {
 
-    /**
+   /**
     * The requested node was not found.
     */
     public static class NodeNotFoundException extends Exception {
@@ -38,8 +38,21 @@ public final class ServiceExceptions {
             super(message, cause);
         }
     }
-    
-    /**
+
+   /**
+    * A resource couldn&#39;t be found.
+    */
+    public static class NotFoundException extends Exception {
+        public NotFoundException(String message) {
+            super(message);
+        }
+        
+        public NotFoundException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+   /**
     * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
     */
     public static class NotASubWorkflowException extends Exception {
@@ -51,22 +64,9 @@ public final class ServiceExceptions {
             super(message, cause);
         }
     }
-    
-    /**
-    * A resource couldn&#39;t be found. Please refer to the exception message for more details.
-    */
-    public static class NotFoundException extends Exception {
-        public NotFoundException(String message) {
-            super(message);
-        }
-        
-        public NotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-    
-    /**
-    * If an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist. Please refer to the exception message for more details.
+
+   /**
+    * If the an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
     */
     public static class ActionNotAllowedException extends Exception {
         public ActionNotAllowedException(String message) {
@@ -77,9 +77,9 @@ public final class ServiceExceptions {
             super(message, cause);
         }
     }
-    
-    /**
-    * If the request is invalid for a reason. Please refer to the exception message for more details.
+
+   /**
+    * If the request is invalid for a reason.
     */
     public static class InvalidRequestException extends Exception {
         public InvalidRequestException(String message) {
@@ -90,8 +90,8 @@ public final class ServiceExceptions {
             super(message, cause);
         }
     }
-    
-    /**
+
+   /**
     * If settings couldn&#39;t be applied.
     */
     public static class InvalidSettingsException extends Exception {
@@ -103,8 +103,8 @@ public final class ServiceExceptions {
             super(message, cause);
         }
     }
-    
-    /**
+
+   /**
     * If node is not in the right state to apply the settings.
     */
     public static class IllegalStateException extends Exception {
@@ -116,6 +116,6 @@ public final class ServiceExceptions {
             super(message, cause);
         }
     }
-    
+
     
 }
