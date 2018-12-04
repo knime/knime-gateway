@@ -64,11 +64,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public String createConnection(java.util.UUID jobId, ConnectionEnt connection)  throws ServiceExceptions.ActionNotAllowedException {
+    public String createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createConnection(jobId, toByteArray(connection));
+                    return c.createConnection(jobId, toByteArray(connectionEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -89,11 +89,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt parts)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createWorkflowCopy(jobId, toByteArray(parts));
+                    return c.createWorkflowCopy(jobId, toByteArray(workflowPartsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -120,11 +120,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+    public java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.deleteWorkflowParts(jobId, toByteArray(parts), copy);
+                    return c.deleteWorkflowParts(jobId, toByteArray(workflowPartsEnt), copy);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

@@ -41,13 +41,13 @@ public interface ViewDataEnt extends GatewayEntity {
   public String getJavascriptObjectID();
 
   /**
-   * The view representation.
+   * Get viewRepresentation
    * @return viewRepresentation 
    **/
   public JavaObjectEnt getViewRepresentation();
 
   /**
-   * The view value.
+   * Get viewValue
    * @return viewValue 
    **/
   public JavaObjectEnt getViewValue();
@@ -73,7 +73,7 @@ public interface ViewDataEnt extends GatewayEntity {
         ViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID);
         
         /**
-         * The view representation.
+   		 * Set viewRepresentation
          * 
          * @param viewRepresentation the property value,  
          * @return this entity builder for chaining
@@ -81,7 +81,7 @@ public interface ViewDataEnt extends GatewayEntity {
         ViewDataEntBuilder setViewRepresentation(JavaObjectEnt viewRepresentation);
         
         /**
-         * The view value.
+   		 * Set viewValue
          * 
          * @param viewValue the property value,  
          * @return this entity builder for chaining

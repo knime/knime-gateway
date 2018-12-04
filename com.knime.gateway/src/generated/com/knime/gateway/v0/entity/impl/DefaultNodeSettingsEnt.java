@@ -80,7 +80,7 @@ public class DefaultNodeSettingsEnt  implements NodeSettingsEnt {
             
         }
     
-        private String m_jsonContent = null;
+        private String m_jsonContent;
 
         @Override
         public DefaultNodeSettingsEntBuilder setJsonContent(String jsonContent) {

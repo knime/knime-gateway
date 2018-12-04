@@ -136,12 +136,12 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
             super();
         }
     
-        private String m_type = null;
-        private String m_name = null;
-        private String m_nodeID = null;
-        private NodeTypeEnum m_nodeType = null;
-        private String m_parentNodeID = null;
-        private java.util.UUID m_rootWorkflowID = null;
+        private String m_type;
+        private String m_name;
+        private String m_nodeID;
+        private NodeTypeEnum m_nodeType;
+        private String m_parentNodeID;
+        private java.util.UUID m_rootWorkflowID;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnt m_nodeState;
         private NodeProgressEnt m_progress;
@@ -149,13 +149,13 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
         private Boolean m_resetable = false;
-        private Boolean m_hasDialog = null;
+        private Boolean m_hasDialog;
         private NodeAnnotationEnt m_nodeAnnotation;
         private java.util.List<String> m_webViewNames = new java.util.ArrayList<>();
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
         private NodeFactoryKeyEnt m_nodeFactoryKey;
-        private Boolean m_inactive = null;
+        private Boolean m_inactive;
 
         @Override
         public DefaultNativeNodeEntBuilder setType(String type) {

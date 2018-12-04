@@ -87,8 +87,8 @@ public class DefaultJavaObjectEnt  implements JavaObjectEnt {
             
         }
     
-        private String m_classname = null;
-        private String m_jsonContent = null;
+        private String m_classname;
+        private String m_jsonContent;
 
         @Override
         public DefaultJavaObjectEntBuilder setClassname(String classname) {

@@ -102,9 +102,9 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
             
         }
     
-        private String m_paramName = null;
-        private String m_nodeID = null;
-        private Boolean m_isHideInDialog = null;
+        private String m_paramName;
+        private String m_nodeID;
+        private Boolean m_isHideInDialog;
         private JavaObjectEnt m_representation;
 
         @Override

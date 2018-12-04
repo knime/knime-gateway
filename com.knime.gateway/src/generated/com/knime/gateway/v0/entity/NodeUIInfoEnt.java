@@ -35,7 +35,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
 
 
   /**
-   * The absolute node coordinates.
+   * Get bounds
    * @return bounds , never <code>null</code>
    **/
   public BoundsEnt getBounds();
@@ -65,7 +65,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
     public interface NodeUIInfoEntBuilder extends GatewayEntityBuilder<NodeUIInfoEnt> {
 
         /**
-         * The absolute node coordinates.
+   		 * Set bounds
          * 
          * @param bounds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -73,6 +73,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
         NodeUIInfoEntBuilder setBounds(BoundsEnt bounds);
         
         /**
+   		 * Set symbolRelative
          * 
          * @param symbolRelative the property value,  
          * @return this entity builder for chaining
@@ -80,6 +81,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
         NodeUIInfoEntBuilder setSymbolRelative(Boolean symbolRelative);
         
         /**
+   		 * Set dropLocation
          * 
          * @param dropLocation the property value,  
          * @return this entity builder for chaining
@@ -87,6 +89,7 @@ public interface NodeUIInfoEnt extends GatewayEntity {
         NodeUIInfoEntBuilder setDropLocation(Boolean dropLocation);
         
         /**
+   		 * Set snapToGrid
          * 
          * @param snapToGrid the property value,  
          * @return this entity builder for chaining

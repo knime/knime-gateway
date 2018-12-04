@@ -93,8 +93,8 @@ public class DefaultPortTypeEnt  implements PortTypeEnt {
             
         }
     
-        private String m_portObjectClassName = null;
-        private Boolean m_optional = null;
+        private String m_portObjectClassName;
+        private Boolean m_optional;
 
         @Override
         public DefaultPortTypeEntBuilder setPortObjectClassName(String portObjectClassName) {

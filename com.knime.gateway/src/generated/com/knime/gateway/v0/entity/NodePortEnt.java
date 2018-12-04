@@ -47,7 +47,7 @@ public interface NodePortEnt extends GatewayEntity {
   public Integer getPortIndex();
 
   /**
-   * The type of the port.
+   * Get portType
    * @return portType , never <code>null</code>
    **/
   public PortTypeEnt getPortType();
@@ -81,7 +81,7 @@ public interface NodePortEnt extends GatewayEntity {
         NodePortEntBuilder setPortIndex(Integer portIndex);
         
         /**
-         * The type of the port.
+   		 * Set portType
          * 
          * @param portType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

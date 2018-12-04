@@ -90,8 +90,8 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
             
         }
     
-        private String m_className = null;
-        private String m_settings = null;
+        private String m_className;
+        private String m_settings;
 
         @Override
         public DefaultNodeFactoryKeyEntBuilder setClassName(String className) {

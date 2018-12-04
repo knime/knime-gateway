@@ -96,8 +96,8 @@ public class DefaultPatchEnt  implements PatchEnt {
         }
     
         private java.util.List<PatchOpEnt> m_ops = new java.util.ArrayList<>();
-        private java.util.UUID m_snapshotID = null;
-        private String m_targetTypeID = null;
+        private java.util.UUID m_snapshotID;
+        private String m_targetTypeID;
 
         @Override
         public DefaultPatchEntBuilder setOps(java.util.List<PatchOpEnt> ops) {

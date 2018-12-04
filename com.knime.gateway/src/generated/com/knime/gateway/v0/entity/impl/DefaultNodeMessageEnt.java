@@ -90,8 +90,8 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
             
         }
     
-        private String m_type = null;
-        private String m_message = null;
+        private String m_type;
+        private String m_message;
 
         @Override
         public DefaultNodeMessageEntBuilder setType(String type) {

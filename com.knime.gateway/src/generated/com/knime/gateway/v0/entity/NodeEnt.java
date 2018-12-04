@@ -131,19 +131,19 @@ public interface NodeEnt extends GatewayEntity {
   public java.util.UUID getRootWorkflowID();
 
   /**
-   * The current node message (warning, error, none).
+   * Get nodeMessage
    * @return nodeMessage 
    **/
   public NodeMessageEnt getNodeMessage();
 
   /**
-   * The state of the node.
+   * Get nodeState
    * @return nodeState , never <code>null</code>
    **/
   public NodeStateEnt getNodeState();
 
   /**
-   * The node&#39;s progress.
+   * Get progress
    * @return progress 
    **/
   public NodeProgressEnt getProgress();
@@ -179,7 +179,7 @@ public interface NodeEnt extends GatewayEntity {
   public Boolean hasDialog();
 
   /**
-   * The annotation below the node.
+   * Get nodeAnnotation
    * @return nodeAnnotation 
    **/
   public NodeAnnotationEnt getNodeAnnotation();
@@ -191,7 +191,7 @@ public interface NodeEnt extends GatewayEntity {
   public java.util.List<String> getWebViewNames();
 
   /**
-   * The job manager (e.g. cluster or streaming).
+   * Get jobManager
    * @return jobManager 
    **/
   public JobManagerEnt getJobManager();
@@ -257,7 +257,7 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
         
         /**
-         * The current node message (warning, error, none).
+   		 * Set nodeMessage
          * 
          * @param nodeMessage the property value,  
          * @return this entity builder for chaining
@@ -265,7 +265,7 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
         
         /**
-         * The state of the node.
+   		 * Set nodeState
          * 
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -273,7 +273,7 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
-         * The node&#39;s progress.
+   		 * Set progress
          * 
          * @param progress the property value,  
          * @return this entity builder for chaining
@@ -321,7 +321,7 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setHasDialog(Boolean hasDialog);
         
         /**
-         * The annotation below the node.
+   		 * Set nodeAnnotation
          * 
          * @param nodeAnnotation the property value,  
          * @return this entity builder for chaining
@@ -337,7 +337,7 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
         
         /**
-         * The job manager (e.g. cluster or streaming).
+   		 * Set jobManager
          * 
          * @param jobManager the property value,  
          * @return this entity builder for chaining
@@ -345,6 +345,7 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
+   		 * Set uIInfo
          * 
          * @param uIInfo the property value,  
          * @return this entity builder for chaining

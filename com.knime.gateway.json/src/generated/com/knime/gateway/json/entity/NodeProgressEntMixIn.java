@@ -20,9 +20,6 @@ package com.knime.gateway.json.entity;
 
 import java.math.BigDecimal;
 
-
-import com.knime.gateway.json.JsonUtil;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;

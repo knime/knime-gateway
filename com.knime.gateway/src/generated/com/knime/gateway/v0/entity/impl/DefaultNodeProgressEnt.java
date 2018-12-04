@@ -88,8 +88,8 @@ public class DefaultNodeProgressEnt  implements NodeProgressEnt {
             
         }
     
-        private BigDecimal m_progress = null;
-        private String m_message = null;
+        private BigDecimal m_progress;
+        private String m_message;
 
         @Override
         public DefaultNodeProgressEntBuilder setProgress(BigDecimal progress) {

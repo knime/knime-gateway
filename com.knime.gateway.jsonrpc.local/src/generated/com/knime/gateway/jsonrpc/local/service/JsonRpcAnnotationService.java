@@ -39,13 +39,13 @@ public interface JsonRpcAnnotationService extends AnnotationService {
      */
     @Override
     @JsonRpcMethod(value = "AnnotationService.setAnnotationBounds")
-    void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt bounds)  throws ServiceExceptions.NotFoundException;
+    void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "AnnotationService.setAnnotationBoundsInSubWorkflow")
-    void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt bounds)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+    void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 }

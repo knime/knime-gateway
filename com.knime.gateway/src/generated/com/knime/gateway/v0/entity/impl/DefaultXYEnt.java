@@ -87,8 +87,8 @@ public class DefaultXYEnt  implements XYEnt {
             
         }
     
-        private Integer m_x = null;
-        private Integer m_y = null;
+        private Integer m_x;
+        private Integer m_y;
 
         @Override
         public DefaultXYEntBuilder setX(Integer x) {

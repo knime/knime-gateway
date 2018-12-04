@@ -99,17 +99,17 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
             super();
         }
     
-        private String m_type = null;
-        private String m_text = null;
-        private Integer m_backgroundColor = null;
+        private String m_type;
+        private String m_text;
+        private Integer m_backgroundColor;
         private BoundsEnt m_bounds;
-        private String m_textAlignment = null;
-        private Integer m_borderSize = null;
-        private Integer m_borderColor = null;
-        private Integer m_defaultFontSize = null;
-        private Integer m_version = null;
+        private String m_textAlignment;
+        private Integer m_borderSize;
+        private Integer m_borderColor;
+        private Integer m_defaultFontSize;
+        private Integer m_version;
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
-        private String m_annotationID = null;
+        private String m_annotationID;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setType(String type) {

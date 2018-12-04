@@ -102,8 +102,8 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
         }
     
         private PortTypeEnt m_type;
-        private String m_representation = null;
-        private Boolean m_inactive = null;
+        private String m_representation;
+        private Boolean m_inactive;
 
         @Override
         public DefaultPortObjectSpecEntBuilder setType(PortTypeEnt type) {

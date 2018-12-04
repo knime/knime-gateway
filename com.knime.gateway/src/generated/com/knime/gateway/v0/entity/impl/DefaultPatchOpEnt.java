@@ -107,10 +107,10 @@ public class DefaultPatchOpEnt  implements PatchOpEnt {
             
         }
     
-        private OpEnum m_op = null;
-        private String m_path = null;
+        private OpEnum m_op;
+        private String m_path;
         private Object m_value = null;
-        private String m_from = null;
+        private String m_from;
 
         @Override
         public DefaultPatchOpEntBuilder setOp(OpEnum op) {

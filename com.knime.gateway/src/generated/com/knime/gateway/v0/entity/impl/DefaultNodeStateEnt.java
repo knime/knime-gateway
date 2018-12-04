@@ -83,7 +83,7 @@ public class DefaultNodeStateEnt  implements NodeStateEnt {
             
         }
     
-        private StateEnum m_state = null;
+        private StateEnum m_state;
 
         @Override
         public DefaultNodeStateEntBuilder setState(StateEnum state) {

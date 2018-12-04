@@ -104,7 +104,7 @@ public class DefaultWorkflowPartsEnt  implements WorkflowPartsEnt {
             
         }
     
-        private String m_parentNodeID = null;
+        private String m_parentNodeID;
         private java.util.List<String> m_nodeIDs = new java.util.ArrayList<>();
         private java.util.List<String> m_connectionIDs = new java.util.ArrayList<>();
         private java.util.List<String> m_annotationIDs = new java.util.ArrayList<>();

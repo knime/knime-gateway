@@ -123,13 +123,13 @@ public class DefaultWorkflowUIInfoEnt  implements WorkflowUIInfoEnt {
             
         }
     
-        private Integer m_gridX = null;
-        private Integer m_gridY = null;
-        private Boolean m_snapToGrid = null;
-        private Boolean m_showGrid = null;
-        private BigDecimal m_zoomLevel = null;
-        private Boolean m_hasCurvedConnection = null;
-        private Integer m_connectionLineWidth = null;
+        private Integer m_gridX;
+        private Integer m_gridY;
+        private Boolean m_snapToGrid;
+        private Boolean m_showGrid;
+        private BigDecimal m_zoomLevel;
+        private Boolean m_hasCurvedConnection;
+        private Integer m_connectionLineWidth;
 
         @Override
         public DefaultWorkflowUIInfoEntBuilder setGridX(Integer gridX) {

@@ -69,7 +69,7 @@ public interface WorkflowEnt extends GatewayEntity {
   public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
 
   /**
-   * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
+   * Get workflowUIInfo
    * @return workflowUIInfo 
    **/
   public WorkflowUIInfoEnt getWorkflowUIInfo();
@@ -133,7 +133,7 @@ public interface WorkflowEnt extends GatewayEntity {
         WorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
         
         /**
-         * Additional workflow UI information such as grid settings, connection appearance etc. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
+   		 * Set workflowUIInfo
          * 
          * @param workflowUIInfo the property value,  
          * @return this entity builder for chaining

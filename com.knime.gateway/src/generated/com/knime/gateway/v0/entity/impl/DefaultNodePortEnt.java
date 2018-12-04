@@ -111,10 +111,10 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             
         }
     
-        private String m_type = null;
-        private Integer m_portIndex = null;
+        private String m_type;
+        private Integer m_portIndex;
         private PortTypeEnt m_portType;
-        private String m_portName = null;
+        private String m_portName;
 
         @Override
         public DefaultNodePortEntBuilder setType(String type) {

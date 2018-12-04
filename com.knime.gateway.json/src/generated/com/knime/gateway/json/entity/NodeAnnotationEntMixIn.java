@@ -22,9 +22,6 @@ import com.knime.gateway.json.entity.AnnotationEntMixIn;
 import com.knime.gateway.v0.entity.BoundsEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 
-
-import com.knime.gateway.json.JsonUtil;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;

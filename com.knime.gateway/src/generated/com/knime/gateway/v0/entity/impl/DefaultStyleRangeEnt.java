@@ -115,12 +115,12 @@ public class DefaultStyleRangeEnt  implements StyleRangeEnt {
             
         }
     
-        private Integer m_start = null;
-        private Integer m_length = null;
-        private String m_fontName = null;
-        private FontStyleEnum m_fontStyle = null;
-        private Integer m_fontSize = null;
-        private Integer m_foregroundColor = null;
+        private Integer m_start;
+        private Integer m_length;
+        private String m_fontName;
+        private FontStyleEnum m_fontStyle;
+        private Integer m_fontSize;
+        private Integer m_foregroundColor;
 
         @Override
         public DefaultStyleRangeEntBuilder setStart(Integer start) {

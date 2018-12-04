@@ -96,7 +96,7 @@ public class DefaultDataTableEnt  implements DataTableEnt {
         }
     
         private java.util.List<String> m_columnNames = new java.util.ArrayList<>();
-        private Long m_numTotalRows = null;
+        private Long m_numTotalRows;
         private java.util.List<DataRowEnt> m_rows = new java.util.ArrayList<>();
 
         @Override

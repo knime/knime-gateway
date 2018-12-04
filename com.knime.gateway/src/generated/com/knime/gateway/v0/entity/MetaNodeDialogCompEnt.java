@@ -53,7 +53,7 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
   public Boolean isIsHideInDialog();
 
   /**
-   * Dialog component representation.
+   * Get representation
    * @return representation 
    **/
   public JavaObjectEnt getRepresentation();
@@ -89,7 +89,7 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
         MetaNodeDialogCompEntBuilder setIsHideInDialog(Boolean isHideInDialog);
         
         /**
-         * Dialog component representation.
+   		 * Set representation
          * 
          * @param representation the property value,  
          * @return this entity builder for chaining

@@ -95,7 +95,7 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
         }
     
         private WorkflowEnt m_workflow;
-        private java.util.UUID m_snapshotID = null;
+        private java.util.UUID m_snapshotID;
 
         @Override
         public DefaultWorkflowSnapshotEntBuilder setWorkflow(WorkflowEnt workflow) {

@@ -61,11 +61,11 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
     }
     
     @Override
-    public void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt bounds)  throws ServiceExceptions.NotFoundException {
+    public void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotFoundException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setAnnotationBounds(jobId, annoId, toByteArray(bounds));
+                    return c.setAnnotationBounds(jobId, annoId, toByteArray(boundsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -86,11 +86,11 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
     }
     
     @Override
-    public void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt bounds)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    public void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setAnnotationBoundsInSubWorkflow(jobId, nodeId, annoId, toByteArray(bounds));
+                    return c.setAnnotationBoundsInSubWorkflow(jobId, nodeId, annoId, toByteArray(boundsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

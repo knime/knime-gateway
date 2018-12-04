@@ -43,7 +43,7 @@ public interface NativeNodeEnt extends NodeEnt {
 
 
   /**
-   * The key/ID of the node factory defining all details.
+   * Get nodeFactoryKey
    * @return nodeFactoryKey , never <code>null</code>
    **/
   public NodeFactoryKeyEnt getNodeFactoryKey();
@@ -109,7 +109,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
         
         /**
-         * The current node message (warning, error, none).
+   		 * Set nodeMessage
          * 
          * @param nodeMessage the property value,  
          * @return this entity builder for chaining
@@ -117,7 +117,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
         
         /**
-         * The state of the node.
+   		 * Set nodeState
          * 
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -125,7 +125,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
-         * The node&#39;s progress.
+   		 * Set progress
          * 
          * @param progress the property value,  
          * @return this entity builder for chaining
@@ -173,7 +173,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setHasDialog(Boolean hasDialog);
         
         /**
-         * The annotation below the node.
+   		 * Set nodeAnnotation
          * 
          * @param nodeAnnotation the property value,  
          * @return this entity builder for chaining
@@ -189,7 +189,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
         
         /**
-         * The job manager (e.g. cluster or streaming).
+   		 * Set jobManager
          * 
          * @param jobManager the property value,  
          * @return this entity builder for chaining
@@ -197,6 +197,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
+   		 * Set uIInfo
          * 
          * @param uIInfo the property value,  
          * @return this entity builder for chaining
@@ -204,7 +205,7 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setUIInfo(NodeUIInfoEnt uIInfo);
         
         /**
-         * The key/ID of the node factory defining all details.
+   		 * Set nodeFactoryKey
          * 
          * @param nodeFactoryKey the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

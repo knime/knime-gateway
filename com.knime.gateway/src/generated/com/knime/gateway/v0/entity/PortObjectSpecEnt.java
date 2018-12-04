@@ -35,7 +35,7 @@ public interface PortObjectSpecEnt extends GatewayEntity {
 
 
   /**
-   * The port type the specification refers to.
+   * Get type
    * @return type , never <code>null</code>
    **/
   public PortTypeEnt getType();
@@ -59,7 +59,7 @@ public interface PortObjectSpecEnt extends GatewayEntity {
     public interface PortObjectSpecEntBuilder extends GatewayEntityBuilder<PortObjectSpecEnt> {
 
         /**
-         * The port type the specification refers to.
+   		 * Set type
          * 
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

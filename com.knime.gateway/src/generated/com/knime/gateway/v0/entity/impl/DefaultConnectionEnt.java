@@ -145,14 +145,14 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
             
         }
     
-        private String m_dest = null;
-        private Integer m_destPort = null;
-        private String m_source = null;
-        private Integer m_sourcePort = null;
-        private Boolean m_deletable = null;
-        private Boolean m_flowVariablePortConnection = null;
+        private String m_dest;
+        private Integer m_destPort;
+        private String m_source;
+        private Integer m_sourcePort;
+        private Boolean m_deletable;
+        private Boolean m_flowVariablePortConnection;
         private java.util.List<XYEnt> m_bendPoints = new java.util.ArrayList<>();
-        private TypeEnum m_type = null;
+        private TypeEnum m_type;
 
         @Override
         public DefaultConnectionEntBuilder setDest(String dest) {

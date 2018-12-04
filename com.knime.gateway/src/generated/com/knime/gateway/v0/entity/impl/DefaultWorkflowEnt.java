@@ -140,8 +140,8 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         private java.util.List<MetaPortInfoEnt> m_metaOutPortInfos = new java.util.ArrayList<>();
         private java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.HashMap<>();
         private WorkflowUIInfoEnt m_workflowUIInfo;
-        private Boolean m_hasCredentials = null;
-        private Boolean m_inWizardExecution = null;
+        private Boolean m_hasCredentials;
+        private Boolean m_inWizardExecution;
 
         @Override
         public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {

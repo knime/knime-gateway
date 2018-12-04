@@ -42,12 +42,20 @@ import com.knime.gateway.v0.entity.MetaNodeDialogEnt.MetaNodeDialogEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogEnt;
 import com.knime.gateway.v0.entity.MetaPortInfoEnt.MetaPortInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultMetaPortInfoEnt;
+import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
+import com.knime.gateway.v0.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt;
 import com.knime.gateway.v0.entity.NodeEnt.NodeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeFactoryKeyEnt;
+import com.knime.gateway.v0.entity.NodeInPortEnt.NodeInPortEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
 import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
+import com.knime.gateway.v0.entity.NodeOutPortEnt.NodeOutPortEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
 import com.knime.gateway.v0.entity.NodePortEnt.NodePortEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultNodePortEnt;
 import com.knime.gateway.v0.entity.NodeProgressEnt.NodeProgressEntBuilder;
@@ -70,30 +78,22 @@ import com.knime.gateway.v0.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt.ViewDataEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt;
+import com.knime.gateway.v0.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
+import com.knime.gateway.v0.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowPartsEnt;
 import com.knime.gateway.v0.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowSnapshotEnt;
 import com.knime.gateway.v0.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt;
-import com.knime.gateway.v0.entity.XYEnt.XYEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultXYEnt;
-import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
-import com.knime.gateway.v0.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt;
-import com.knime.gateway.v0.entity.NodeInPortEnt.NodeInPortEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNodeInPortEnt;
-import com.knime.gateway.v0.entity.NodeOutPortEnt.NodeOutPortEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
-import com.knime.gateway.v0.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowAnnotationEnt;
-import com.knime.gateway.v0.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
 import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt.WrappedWorkflowNodeEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
+import com.knime.gateway.v0.entity.XYEnt.XYEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultXYEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -145,14 +145,26 @@ public class Interface2ImplMap {
         if(clazz == MetaPortInfoEntBuilder.class) {
             return new DefaultMetaPortInfoEnt.DefaultMetaPortInfoEntBuilder();
         }        
+        if(clazz == NativeNodeEntBuilder.class) {
+            return new DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder();
+        }        
+        if(clazz == NodeAnnotationEntBuilder.class) {
+            return new DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder();
+        }        
         if(clazz == NodeEntBuilder.class) {
             return new DefaultNodeEnt.DefaultNodeEntBuilder();
         }        
         if(clazz == NodeFactoryKeyEntBuilder.class) {
             return new DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder();
         }        
+        if(clazz == NodeInPortEntBuilder.class) {
+            return new DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder();
+        }        
         if(clazz == NodeMessageEntBuilder.class) {
             return new DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder();
+        }        
+        if(clazz == NodeOutPortEntBuilder.class) {
+            return new DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder();
         }        
         if(clazz == NodePortEntBuilder.class) {
             return new DefaultNodePortEnt.DefaultNodePortEntBuilder();
@@ -187,8 +199,14 @@ public class Interface2ImplMap {
         if(clazz == ViewDataEntBuilder.class) {
             return new DefaultViewDataEnt.DefaultViewDataEntBuilder();
         }        
+        if(clazz == WorkflowAnnotationEntBuilder.class) {
+            return new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();
+        }        
         if(clazz == WorkflowEntBuilder.class) {
             return new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();
+        }        
+        if(clazz == WorkflowNodeEntBuilder.class) {
+            return new DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder();
         }        
         if(clazz == WorkflowPartsEntBuilder.class) {
             return new DefaultWorkflowPartsEnt.DefaultWorkflowPartsEntBuilder();
@@ -199,29 +217,11 @@ public class Interface2ImplMap {
         if(clazz == WorkflowUIInfoEntBuilder.class) {
             return new DefaultWorkflowUIInfoEnt.DefaultWorkflowUIInfoEntBuilder();
         }        
-        if(clazz == XYEntBuilder.class) {
-            return new DefaultXYEnt.DefaultXYEntBuilder();
-        }        
-        if(clazz == NativeNodeEntBuilder.class) {
-            return new DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder();
-        }        
-        if(clazz == NodeAnnotationEntBuilder.class) {
-            return new DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder();
-        }        
-        if(clazz == NodeInPortEntBuilder.class) {
-            return new DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder();
-        }        
-        if(clazz == NodeOutPortEntBuilder.class) {
-            return new DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder();
-        }        
-        if(clazz == WorkflowAnnotationEntBuilder.class) {
-            return new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();
-        }        
-        if(clazz == WorkflowNodeEntBuilder.class) {
-            return new DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder();
-        }        
         if(clazz == WrappedWorkflowNodeEntBuilder.class) {
             return new DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder();
+        }        
+        if(clazz == XYEntBuilder.class) {
+            return new DefaultXYEnt.DefaultXYEntBuilder();
         }        
         else {
             throw new IllegalArgumentException("No entity mapping.");

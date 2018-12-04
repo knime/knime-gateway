@@ -114,7 +114,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
         
         /**
-         * The current node message (warning, error, none).
+   		 * Set nodeMessage
          * 
          * @param nodeMessage the property value,  
          * @return this entity builder for chaining
@@ -122,7 +122,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
         
         /**
-         * The state of the node.
+   		 * Set nodeState
          * 
          * @param nodeState the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -130,7 +130,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setNodeState(NodeStateEnt nodeState);
         
         /**
-         * The node&#39;s progress.
+   		 * Set progress
          * 
          * @param progress the property value,  
          * @return this entity builder for chaining
@@ -178,7 +178,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setHasDialog(Boolean hasDialog);
         
         /**
-         * The annotation below the node.
+   		 * Set nodeAnnotation
          * 
          * @param nodeAnnotation the property value,  
          * @return this entity builder for chaining
@@ -194,7 +194,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setWebViewNames(java.util.List<String> webViewNames);
         
         /**
-         * The job manager (e.g. cluster or streaming).
+   		 * Set jobManager
          * 
          * @param jobManager the property value,  
          * @return this entity builder for chaining
@@ -202,6 +202,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
+   		 * Set uIInfo
          * 
          * @param uIInfo the property value,  
          * @return this entity builder for chaining

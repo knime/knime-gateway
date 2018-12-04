@@ -83,7 +83,7 @@ public class DefaultJobManagerEnt  implements JobManagerEnt {
             
         }
     
-        private String m_id = null;
+        private String m_id;
 
         @Override
         public DefaultJobManagerEntBuilder setId(String id) {

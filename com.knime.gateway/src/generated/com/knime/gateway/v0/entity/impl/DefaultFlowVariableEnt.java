@@ -94,9 +94,9 @@ public class DefaultFlowVariableEnt  implements FlowVariableEnt {
             
         }
     
-        private String m_name = null;
-        private TypeEnum m_type = null;
-        private String m_value = null;
+        private String m_name;
+        private TypeEnum m_type;
+        private String m_value;
 
         @Override
         public DefaultFlowVariableEntBuilder setName(String name) {

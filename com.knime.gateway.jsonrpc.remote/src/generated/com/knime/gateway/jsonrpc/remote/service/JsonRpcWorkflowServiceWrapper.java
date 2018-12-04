@@ -57,8 +57,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public String createConnection(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="connection") ConnectionEnt connection)  throws ServiceExceptions.ActionNotAllowedException {
-        return m_service.createConnection(jobId, connection);    
+    public String createConnection(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="connectionEnt") ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException {
+        return m_service.createConnection(jobId, connectionEnt);    
     }
 
 	/**
@@ -74,8 +74,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public java.util.UUID createWorkflowCopy(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.createWorkflowCopy(jobId, parts);    
+    public java.util.UUID createWorkflowCopy(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowPartsEnt") WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.createWorkflowCopy(jobId, workflowPartsEnt);    
     }
 
 	/**
@@ -91,8 +91,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public java.util.UUID deleteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="parts") WorkflowPartsEnt parts, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
-        return m_service.deleteWorkflowParts(jobId, parts, copy);    
+    public java.util.UUID deleteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowPartsEnt") WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+        return m_service.deleteWorkflowParts(jobId, workflowPartsEnt, copy);    
     }
 
 	/**

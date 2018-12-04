@@ -56,6 +56,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setType(String type);
         
         /**
+   		 * Set text
          * 
          * @param text the property value,  
          * @return this entity builder for chaining
@@ -63,6 +64,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setText(String text);
         
         /**
+   		 * Set backgroundColor
          * 
          * @param backgroundColor the property value,  
          * @return this entity builder for chaining
@@ -70,6 +72,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setBackgroundColor(Integer backgroundColor);
         
         /**
+   		 * Set bounds
          * 
          * @param bounds the property value,  
          * @return this entity builder for chaining
@@ -77,6 +80,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds);
         
         /**
+   		 * Set textAlignment
          * 
          * @param textAlignment the property value,  
          * @return this entity builder for chaining
@@ -84,6 +88,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setTextAlignment(String textAlignment);
         
         /**
+   		 * Set borderSize
          * 
          * @param borderSize the property value,  
          * @return this entity builder for chaining
@@ -91,6 +96,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setBorderSize(Integer borderSize);
         
         /**
+   		 * Set borderColor
          * 
          * @param borderColor the property value,  
          * @return this entity builder for chaining
@@ -98,6 +104,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setBorderColor(Integer borderColor);
         
         /**
+   		 * Set defaultFontSize
          * 
          * @param defaultFontSize the property value,  
          * @return this entity builder for chaining
@@ -105,6 +112,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
         
         /**
+   		 * Set version
          * 
          * @param version the property value,  
          * @return this entity builder for chaining

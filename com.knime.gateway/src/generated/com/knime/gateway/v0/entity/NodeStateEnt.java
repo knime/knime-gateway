@@ -87,6 +87,7 @@ public interface NodeStateEnt extends GatewayEntity {
     public interface NodeStateEntBuilder extends GatewayEntityBuilder<NodeStateEnt> {
 
         /**
+   		 * Set state
          * 
          * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

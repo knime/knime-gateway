@@ -113,10 +113,10 @@ public class DefaultMetaPortInfoEnt  implements MetaPortInfoEnt {
         }
     
         private PortTypeEnt m_portType;
-        private Boolean m_connected = null;
-        private String m_message = null;
-        private Integer m_oldIndex = null;
-        private Integer m_newIndex = null;
+        private Boolean m_connected;
+        private String m_message;
+        private Integer m_oldIndex;
+        private Integer m_newIndex;
 
         @Override
         public DefaultMetaPortInfoEntBuilder setPortType(PortTypeEnt portType) {

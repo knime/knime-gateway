@@ -52,6 +52,7 @@ public interface NodeMessageEnt extends GatewayEntity {
     public interface NodeMessageEntBuilder extends GatewayEntityBuilder<NodeMessageEnt> {
 
         /**
+   		 * Set type
          * 
          * @param type the property value,  
          * @return this entity builder for chaining
@@ -59,6 +60,7 @@ public interface NodeMessageEnt extends GatewayEntity {
         NodeMessageEntBuilder setType(String type);
         
         /**
+   		 * Set message
          * 
          * @param message the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

@@ -108,11 +108,11 @@ public class DefaultDataCellEnt  implements DataCellEnt {
             
         }
     
-        private String m_type = null;
-        private String m_valueAsString = null;
-        private Boolean m_missing = null;
-        private Boolean m_binary = null;
-        private Boolean m_problem = null;
+        private String m_type;
+        private String m_valueAsString;
+        private Boolean m_missing;
+        private Boolean m_binary;
+        private Boolean m_problem;
 
         @Override
         public DefaultDataCellEntBuilder setType(String type) {

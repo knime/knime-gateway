@@ -102,10 +102,10 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
             
         }
     
-        private String m_javascriptObjectID = null;
+        private String m_javascriptObjectID;
         private JavaObjectEnt m_viewRepresentation;
         private JavaObjectEnt m_viewValue;
-        private Boolean m_hideInWizard = null;
+        private Boolean m_hideInWizard;
 
         @Override
         public DefaultViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID) {

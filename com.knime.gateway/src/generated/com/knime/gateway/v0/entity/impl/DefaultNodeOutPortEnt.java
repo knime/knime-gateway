@@ -102,12 +102,12 @@ public class DefaultNodeOutPortEnt extends DefaultNodePortEnt implements NodeOut
             super();
         }
     
-        private String m_type = null;
-        private Integer m_portIndex = null;
+        private String m_type;
+        private Integer m_portIndex;
         private PortTypeEnt m_portType;
-        private String m_portName = null;
-        private String m_summary = null;
-        private Boolean m_inactive = null;
+        private String m_portName;
+        private String m_summary;
+        private Boolean m_inactive;
 
         @Override
         public DefaultNodeOutPortEntBuilder setType(String type) {

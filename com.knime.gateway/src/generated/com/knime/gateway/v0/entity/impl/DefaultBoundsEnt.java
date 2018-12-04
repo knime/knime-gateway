@@ -113,10 +113,10 @@ public class DefaultBoundsEnt  implements BoundsEnt {
             
         }
     
-        private Integer m_x = null;
-        private Integer m_y = null;
-        private Integer m_width = null;
-        private Integer m_height = null;
+        private Integer m_x;
+        private Integer m_y;
+        private Integer m_width;
+        private Integer m_height;
 
         @Override
         public DefaultBoundsEntBuilder setX(Integer x) {

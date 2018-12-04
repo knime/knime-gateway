@@ -88,7 +88,7 @@ public class DefaultDataRowEnt  implements DataRowEnt {
             
         }
     
-        private String m_rowID = null;
+        private String m_rowID;
         private java.util.List<DataCellEnt> m_columns = new java.util.ArrayList<>();
 
         @Override

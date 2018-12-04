@@ -57,7 +57,7 @@ public interface NodeInPortEnt extends NodePortEnt {
         NodeInPortEntBuilder setPortIndex(Integer portIndex);
         
         /**
-         * The type of the port.
+   		 * Set portType
          * 
          * @param portType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

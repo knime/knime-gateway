@@ -110,6 +110,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setType(String type);
         
         /**
+   		 * Set text
          * 
          * @param text the property value,  
          * @return this entity builder for chaining
@@ -117,6 +118,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setText(String text);
         
         /**
+   		 * Set backgroundColor
          * 
          * @param backgroundColor the property value,  
          * @return this entity builder for chaining
@@ -124,6 +126,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setBackgroundColor(Integer backgroundColor);
         
         /**
+   		 * Set bounds
          * 
          * @param bounds the property value,  
          * @return this entity builder for chaining
@@ -131,6 +134,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setBounds(BoundsEnt bounds);
         
         /**
+   		 * Set textAlignment
          * 
          * @param textAlignment the property value,  
          * @return this entity builder for chaining
@@ -138,6 +142,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setTextAlignment(String textAlignment);
         
         /**
+   		 * Set borderSize
          * 
          * @param borderSize the property value,  
          * @return this entity builder for chaining
@@ -145,6 +150,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setBorderSize(Integer borderSize);
         
         /**
+   		 * Set borderColor
          * 
          * @param borderColor the property value,  
          * @return this entity builder for chaining
@@ -152,6 +158,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setBorderColor(Integer borderColor);
         
         /**
+   		 * Set defaultFontSize
          * 
          * @param defaultFontSize the property value,  
          * @return this entity builder for chaining
@@ -159,6 +166,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
         
         /**
+   		 * Set version
          * 
          * @param version the property value,  
          * @return this entity builder for chaining

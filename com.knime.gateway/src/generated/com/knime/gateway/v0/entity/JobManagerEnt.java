@@ -46,6 +46,7 @@ public interface JobManagerEnt extends GatewayEntity {
     public interface JobManagerEntBuilder extends GatewayEntityBuilder<JobManagerEnt> {
 
         /**
+   		 * Set id
          * 
          * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

@@ -56,6 +56,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setType(String type);
         
         /**
+   		 * Set text
          * 
          * @param text the property value,  
          * @return this entity builder for chaining
@@ -63,6 +64,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setText(String text);
         
         /**
+   		 * Set backgroundColor
          * 
          * @param backgroundColor the property value,  
          * @return this entity builder for chaining
@@ -70,6 +72,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setBackgroundColor(Integer backgroundColor);
         
         /**
+   		 * Set bounds
          * 
          * @param bounds the property value,  
          * @return this entity builder for chaining
@@ -77,6 +80,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setBounds(BoundsEnt bounds);
         
         /**
+   		 * Set textAlignment
          * 
          * @param textAlignment the property value,  
          * @return this entity builder for chaining
@@ -84,6 +88,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setTextAlignment(String textAlignment);
         
         /**
+   		 * Set borderSize
          * 
          * @param borderSize the property value,  
          * @return this entity builder for chaining
@@ -91,6 +96,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setBorderSize(Integer borderSize);
         
         /**
+   		 * Set borderColor
          * 
          * @param borderColor the property value,  
          * @return this entity builder for chaining
@@ -98,6 +104,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setBorderColor(Integer borderColor);
         
         /**
+   		 * Set defaultFontSize
          * 
          * @param defaultFontSize the property value,  
          * @return this entity builder for chaining
@@ -105,6 +112,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
         
         /**
+   		 * Set version
          * 
          * @param version the property value,  
          * @return this entity builder for chaining

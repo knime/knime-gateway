@@ -146,12 +146,12 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
             super();
         }
     
-        private String m_type = null;
-        private String m_name = null;
-        private String m_nodeID = null;
-        private NodeTypeEnum m_nodeType = null;
-        private String m_parentNodeID = null;
-        private java.util.UUID m_rootWorkflowID = null;
+        private String m_type;
+        private String m_name;
+        private String m_nodeID;
+        private NodeTypeEnum m_nodeType;
+        private String m_parentNodeID;
+        private java.util.UUID m_rootWorkflowID;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnt m_nodeState;
         private NodeProgressEnt m_progress;
@@ -159,14 +159,14 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
         private Boolean m_deletable = false;
         private Boolean m_resetable = false;
-        private Boolean m_hasDialog = null;
+        private Boolean m_hasDialog;
         private NodeAnnotationEnt m_nodeAnnotation;
         private java.util.List<String> m_webViewNames = new java.util.ArrayList<>();
         private JobManagerEnt m_jobManager;
         private NodeUIInfoEnt m_uIInfo;
         private java.util.List<NodeOutPortEnt> m_workflowIncomingPorts = new java.util.ArrayList<>();
         private java.util.List<NodeInPortEnt> m_workflowOutgoingPorts = new java.util.ArrayList<>();
-        private Boolean m_encrypted = null;
+        private Boolean m_encrypted;
         private java.util.List<NodeStateEnt> m_workflowOutgoingPortNodeStates = new java.util.ArrayList<>();
 
         @Override

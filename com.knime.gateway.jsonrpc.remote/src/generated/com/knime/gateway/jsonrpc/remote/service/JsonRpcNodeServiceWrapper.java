@@ -82,8 +82,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, Integer x, Integer y, @JsonRpcParam(value="nodeFactoryKey") NodeFactoryKeyEnt nodeFactoryKey, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.createNode(jobId, x, y, nodeFactoryKey, parentNodeId);    
+    public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, Integer x, Integer y, @JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.createNode(jobId, x, y, nodeFactoryKeyEnt, parentNodeId);    
     }
 
 	/**
@@ -227,8 +227,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/)
     })
-    public void setNodeBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="bounds") BoundsEnt bounds)  throws ServiceExceptions.NodeNotFoundException {
-        m_service.setNodeBounds(jobId, nodeId, bounds);    
+    public void setNodeBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException {
+        m_service.setNodeBounds(jobId, nodeId, boundsEnt);    
     }
 
 	/**
@@ -244,8 +244,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.IllegalStateException.class, code = -32600,
             data = "409" /*per convention the data property contains the status code*/)
     })
-    public void setNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="nodeSettings") NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
-        m_service.setNodeSettings(jobId, nodeId, nodeSettings);    
+    public void setNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="nodeSettingsEnt") NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
+        m_service.setNodeSettings(jobId, nodeId, nodeSettingsEnt);    
     }
 
 	/**
@@ -259,8 +259,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "405" /*per convention the data property contains the status code*/)
     })
-    public void setViewValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="viewValue") JavaObjectEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        m_service.setViewValue(jobId, nodeId, useAsDefault, viewValue);    
+    public void setViewValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="javaObjectEnt") JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        m_service.setViewValue(jobId, nodeId, useAsDefault, javaObjectEnt);    
     }
 
 }

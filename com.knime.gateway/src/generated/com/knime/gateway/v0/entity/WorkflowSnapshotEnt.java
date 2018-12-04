@@ -35,7 +35,7 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
 
 
   /**
-   * The actual workflow.
+   * Get workflow
    * @return workflow , never <code>null</code>
    **/
   public WorkflowEnt getWorkflow();
@@ -53,7 +53,7 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
     public interface WorkflowSnapshotEntBuilder extends GatewayEntityBuilder<WorkflowSnapshotEnt> {
 
         /**
-         * The actual workflow.
+   		 * Set workflow
          * 
          * @param workflow the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

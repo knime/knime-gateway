@@ -52,6 +52,7 @@ public interface XYEnt extends GatewayEntity {
     public interface XYEntBuilder extends GatewayEntityBuilder<XYEnt> {
 
         /**
+   		 * Set x
          * 
          * @param x the property value,  
          * @return this entity builder for chaining
@@ -59,6 +60,7 @@ public interface XYEnt extends GatewayEntity {
         XYEntBuilder setX(Integer x);
         
         /**
+   		 * Set y
          * 
          * @param y the property value,  
          * @return this entity builder for chaining

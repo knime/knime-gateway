@@ -162,6 +162,7 @@ public interface ConnectionEnt extends GatewayEntity {
         ConnectionEntBuilder setFlowVariablePortConnection(Boolean flowVariablePortConnection);
         
         /**
+   		 * Set bendPoints
          * 
          * @param bendPoints the property value,  
          * @return this entity builder for chaining

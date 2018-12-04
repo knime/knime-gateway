@@ -35,7 +35,7 @@ public interface MetaPortInfoEnt extends GatewayEntity {
 
 
   /**
-   * The type.
+   * Get portType
    * @return portType , never <code>null</code>
    **/
   public PortTypeEnt getPortType();
@@ -71,7 +71,7 @@ public interface MetaPortInfoEnt extends GatewayEntity {
     public interface MetaPortInfoEntBuilder extends GatewayEntityBuilder<MetaPortInfoEnt> {
 
         /**
-         * The type.
+   		 * Set portType
          * 
          * @param portType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

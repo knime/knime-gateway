@@ -44,7 +44,7 @@ public interface NodeService extends GatewayService {
      * Retrieves and manipulates the node&#39;s state for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
      * @return the result
@@ -59,7 +59,7 @@ public interface NodeService extends GatewayService {
      * @param jobId ID the job the workflow is requested for
      * @param x the x coordinate to place the new node
      * @param y the y coordinate to place the new node
-     * @param nodeFactoryKey The key representing the native node to be added to the workflow.
+     * @param nodeFactoryKeyEnt The key representing the native node to be added to the workflow.
      * @param parentNodeId Optional id of the parent node if the new node should be added to a sub-workflow. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -67,13 +67,13 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    String createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKey, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    String createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Provides the node&#39;s flow variables available for the node with the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -84,7 +84,7 @@ public interface NodeService extends GatewayService {
      * Provides the node&#39;s input port specifications for the given node-id. I.e. all output port specs of the output ports connected to the input ports of this node.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -95,7 +95,7 @@ public interface NodeService extends GatewayService {
      * Retrieves the node for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -106,7 +106,7 @@ public interface NodeService extends GatewayService {
      * Retrieves the node&#39;s settings for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -117,7 +117,7 @@ public interface NodeService extends GatewayService {
      * Gives access to the table at the a certain port index (if it&#39;s a table). Otherwise will return &#39;not supported&#39;.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param portIdx The port index to get the table for.
      * @param from Row index to start returning the rows. Rows from the beginning (i.e. index 0) will be returned.
      * @param size Number of rows to retrieve. If not given, all rows to the end of the table are returned.
@@ -132,7 +132,7 @@ public interface NodeService extends GatewayService {
      * Provides the node&#39;s flow variables available for the node&#39;s output with the given node-id. For metanodes (not wrapped metanodes) the same variables are returned as with &#39;... For metanodes (not wrapped metanodes) the same variables are returned as with &#39;.../input/flowvariables&#39;.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -143,7 +143,7 @@ public interface NodeService extends GatewayService {
      * Provides the node&#39;s output port specifications for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -163,7 +163,7 @@ public interface NodeService extends GatewayService {
      * Provides the data for the node&#39;s view, iff the node supports views. The data includes the view&#39;s and the representation.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -175,7 +175,7 @@ public interface NodeService extends GatewayService {
      * Gives access to the dialog representations, values and configs of a wrapped metanode.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
@@ -187,40 +187,40 @@ public interface NodeService extends GatewayService {
      * Sets the node&#39;s bounds for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
-     * @param bounds The node bounds to set.
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param boundsEnt The node bounds to set.
      *
      * 
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    void setNodeBounds(java.util.UUID jobId, String nodeId, BoundsEnt bounds)  throws ServiceExceptions.NodeNotFoundException;
+    void setNodeBounds(java.util.UUID jobId, String nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException;
         
     /**
      * Sets the node&#39;s settings for the given node-id.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
-     * @param nodeSettings The node settings to set.
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeSettingsEnt The node settings to set.
      *
      * 
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidSettingsException If settings couldn&#39;t be applied.
      * @throws ServiceExceptions.IllegalStateException If node is not in the right state to apply the settings.
      */
-    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettings)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
+    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
         
     /**
      * Saves back the view&#39;s value (e.g. title etc.) to the server.
      *
      * @param jobId ID the job the workflow is requested for
-     * @param nodeId The ID of the node the information is requested for. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param useAsDefault True if node settings are to be updated by view content.
-     * @param viewValue The view value to set.
+     * @param javaObjectEnt The view value to set.
      *
      * 
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason. Please refer to the exception message for more details.
      */
-    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, JavaObjectEnt viewValue)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
 }

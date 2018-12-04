@@ -64,6 +64,7 @@ public interface BoundsEnt extends GatewayEntity {
     public interface BoundsEntBuilder extends GatewayEntityBuilder<BoundsEnt> {
 
         /**
+   		 * Set x
          * 
          * @param x the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -71,6 +72,7 @@ public interface BoundsEnt extends GatewayEntity {
         BoundsEntBuilder setX(Integer x);
         
         /**
+   		 * Set y
          * 
          * @param y the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -78,6 +80,7 @@ public interface BoundsEnt extends GatewayEntity {
         BoundsEntBuilder setY(Integer y);
         
         /**
+   		 * Set width
          * 
          * @param width the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -85,6 +88,7 @@ public interface BoundsEnt extends GatewayEntity {
         BoundsEntBuilder setWidth(Integer width);
         
         /**
+   		 * Set height
          * 
          * @param height the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
