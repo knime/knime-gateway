@@ -19,7 +19,7 @@ For details, please refer to the license agreement.
    </description>
 
    <copyright>
-      The KNIME Job View for executor is a copyrighted work owned by
+      The KNIME Remote Workflow Editor for executor is a copyrighted work owned by
 KNIME AG, Zurich, Switzerland (&quot;KNIME&quot;), or a third party.
 All rights reserved.
    </copyright>
@@ -45,7 +45,7 @@ installation and backup purposes only.
 4.1 Licensee shall not and agrees not to transfer, rent, sublicense,
 copy, alter, modify, create derivative works of, reverse engineer,
 disassemble (except as permitted by law) or distribute the KNIME
-Job View for executor or any part thereof. 
+Remote Workflow Editor for executor or any part thereof. 
 4.2 KNIME reserves any rights not expressly granted to the
 Licensee and retains all rights, title to and interest in the
 KNIME Remote Workflow Editor for executor.
