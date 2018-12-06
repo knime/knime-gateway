@@ -2,7 +2,7 @@
 <feature
       id="com.knime.features.gateway.remote"
       label="KNIME Remote Workflow Editor for Executor (preview)"
-      version="4.8.0.qualifier"
+      version="4.9.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
