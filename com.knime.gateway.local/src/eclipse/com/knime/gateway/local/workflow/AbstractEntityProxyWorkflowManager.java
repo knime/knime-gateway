@@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeSettings;
@@ -87,10 +86,12 @@ import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 import org.knime.core.ui.node.workflow.async.OperationNotAllowedException;
+import org.knime.core.ui.node.workflow.async.SnapshotNotFoundException;
 import org.knime.core.ui.node.workflow.lazy.LazyWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.lazy.NotLoadedException;
 import org.knime.core.util.Pair;
 
+import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.WorkflowEntChangeListener;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.util.EntityTranslateUtil;
@@ -173,9 +174,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public CompletableFuture<Void> load() {
         return CompletableFuture.runAsync(() -> {
-            WorkflowSnapshotEnt wfs = getAccess().getWorkflowSnapshotEnt(getEntity());
-            m_workflowEnt = wfs.getWorkflow();
-            m_snapshotID = wfs.getSnapshotID();
+            downloadWorkflowEnt();
         });
     }
 
@@ -1212,14 +1211,36 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @SuppressWarnings("unchecked")
     @Override
-    public CompletableFuture<Void> refresh(final boolean deepRefresh) {
+    public CompletableFuture<Void> refreshAsync(final boolean deepRefresh) {
         return AsyncNodeContainerUI.future(() -> {
-            refreshInternal(deepRefresh);
+            refreshInternalOrReDownload(deepRefresh);
             return null;
         });
     }
 
-    private void refreshInternal(final boolean deepRefresh) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void refreshOrFail(final boolean deepRefresh) throws SnapshotNotFoundException {
+        try {
+            refreshInternal(deepRefresh, false);
+        } catch (NotFoundException ex) {
+            throw new SnapshotNotFoundException(
+                "Workflow cannot be refresh. The snapshot is not available on the server (anymore).");
+        }
+    }
+
+    private void refreshInternalOrReDownload(final boolean deepRefresh) {
+        try {
+            refreshInternal(deepRefresh, true);
+        } catch (NotFoundException ex) {
+            //doesn't happen since attempt is made to download entire workflow again
+        }
+    }
+
+    private void refreshInternal(final boolean deepRefresh, final boolean reDownloadIfSnapshotNotFound)
+        throws NotFoundException {
         //return immediately if there is currently a refresh already going on
         if (!m_refreshLock.tryLock()) {
             return;
@@ -1229,15 +1250,21 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             //only refresh if the workflow was retrieved already
             if (m_workflowEnt != null) {
                 WorkflowEnt oldWorkflow = m_workflowEnt;
-                // update workflow
-                Triple<WorkflowEnt, UUID, PatchEnt> res =
-                    getAccess().updateWorkflowEnt(getEntity(), m_workflowEnt, m_snapshotID);
-                m_workflowEnt = res.getLeft();
+                PatchEnt patch;
+                try {
+                    patch = updateWorkflowEntWithPatch();
+                } catch (NotFoundException ex) {
+                    if (reDownloadIfSnapshotNotFound) {
+                        downloadWorkflowEnt();
+                        patch = null;
+                    } else {
+                        throw ex;
+                    }
+                }
 
                 if (oldWorkflow != m_workflowEnt) {
                     // refresh the workflow manager only if there is a new (updated) workflow entity
 
-                    m_snapshotID = res.getMiddle();
                     assert (m_snapshotID != null);
                     //update contained nodes
                     for (Entry<String, NodeEnt> entry : m_workflowEnt.getNodes().entrySet()) {
@@ -1265,7 +1292,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                         //only try updating the root workflow node entity
                         //if there is at least one state change of the contained nodes
                         //(saves http-requests)
-                        if (res.getRight() != null && res.getRight().getOps().stream().anyMatch(o -> {
+                        if (patch != null && patch.getOps().stream().anyMatch(o -> {
                             return o.getPath().contains(NODESTATE_PROPERTY);
                         })) {
                             try {
@@ -1277,7 +1304,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                         }
                     }
                     //apply patch changes on workflow-level
-                    processChanges(res.getRight(), oldWorkflow, m_workflowEnt, m_workflowEntChangeListener);
+                    processChanges(patch, oldWorkflow, m_workflowEnt, m_workflowEntChangeListener);
                 }
 
                 if (deepRefresh) {
@@ -1292,7 +1319,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                             wfm = (AsyncWorkflowManagerUI)getAccess().getNodeContainer(node);
                         }
                         if (wfm != null) {
-                            wfm.refresh(true).get();
+                            wfm.refreshAsync(true).get();
                         }
                     }
                 }
@@ -1302,6 +1329,21 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         } finally {
             m_refreshLock.unlock();
         }
+    }
+
+    private PatchEnt updateWorkflowEntWithPatch() throws NotFoundException {
+        PatchEnt patch = getAccess().getWorkflowPatch(getEntity(), m_snapshotID);
+        if (!patch.getOps().isEmpty()) {
+            m_workflowEnt = EntityPatchApplierManager.getPatchApplier().applyPatch(m_workflowEnt, patch);
+            m_snapshotID = patch.getSnapshotID();
+        }
+        return patch;
+    }
+
+    private void downloadWorkflowEnt() {
+        WorkflowSnapshotEnt wfs = getAccess().getWorkflowSnapshotEnt(getEntity());
+        m_workflowEnt = wfs.getWorkflow();
+        m_snapshotID = wfs.getSnapshotID();
     }
 
     /**
@@ -1431,7 +1473,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     private <U> CompletableFuture<U> futureRefresh(final Supplier<U> sup) {
         return CompletableFuture.supplyAsync(sup).thenApply(u -> {
-            this.refreshInternal(false);
+            this.refreshInternalOrReDownload(false);
             return u;
         });
     }
@@ -1446,7 +1488,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     private <U, E extends Exception> CompletableFutureEx<U, E> futureExRefresh(final Supplier<U> sup,
         final Class<E> exceptionClass) {
         return new CompletableFutureEx<U, E>(CompletableFuture.supplyAsync(sup).thenApply(u -> {
-            this.refreshInternal(false);
+            this.refreshInternalOrReDownload(false);
             return u;
         }), exceptionClass);
     }
