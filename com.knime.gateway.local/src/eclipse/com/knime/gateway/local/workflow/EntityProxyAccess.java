@@ -30,7 +30,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
@@ -55,7 +54,6 @@ import org.knime.core.util.Pair;
 
 import com.google.common.collect.MapMaker;
 import com.knime.gateway.entity.GatewayEntity;
-import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.local.util.missing.MissingPortObject;
 import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.UnsupportedPortObjectSpec;
@@ -372,50 +370,26 @@ public class EntityProxyAccess {
     }
 
     /**
-     * Updates the status of a workflow entity.
+     * Requests the diff (i.e. patch) for a workflow with a snapshot id.
      *
      * @param workflowNodeEnt the workflow node referencing the workflow to update
-     * @param workflowEntToUpdate the actual entity to be updated
      * @param snapshotID the id of the currently available snapshot
-     * @return the updated (new) entity or the very same entity if there are no changes (i.e. never <code>null</code>).
-     *         Accompanied by the (new) snapshot id (<code>null</code> if empty patch) and the used patch if any
-     *         (<code>null</code> if no patch is available or there are not changes).
+     * @return the patch
+     * @throws NotFoundException thrown is there is no snapshot for the given snapshot ID (because, e.g., job has been
+     *             job was swapped, deleted or snapshot has expired)
      */
-    Triple<WorkflowEnt, UUID, PatchEnt> updateWorkflowEnt(final WorkflowNodeEnt workflowNodeEnt,
-        final WorkflowEnt workflowEntToUpdate, final UUID snapshotID) {
-        PatchEnt patch = null;
+    PatchEnt getWorkflowPatch(final WorkflowNodeEnt workflowNodeEnt, final UUID snapshotID) throws NotFoundException {
         if (workflowNodeEnt.getParentNodeID() == null) {
             //in case it's the root workflow
-            try {
-                patch = workflowService().getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
-                    snapshotID);
-            } catch (NotFoundException ex) {
-                //no snapshot for the given id -> download entire workflow again
-                LOGGER.debug("No patch available. Entire workflow downloaded again.");
-            }
+            return workflowService().getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(), snapshotID);
         } else {
             // in case it's a sub-workflow
             try {
-                patch = workflowService().getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
+                return workflowService().getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
                     workflowNodeEnt.getNodeID(), snapshotID);
             } catch (NotASubWorkflowException ex) {
+                //should never happen
                 throw new RuntimeException(ex);
-            } catch (NotFoundException ex) {
-                //no snapshot for the given id -> downlaod entire workflow again
-                LOGGER.debug("No patch available. Entire workflow downloaded again.");
-            }
-        }
-        if (patch == null) {
-            //no patch available -> retrieve entire workflow again
-            WorkflowSnapshotEnt snapshot = getWorkflowSnapshotEnt(workflowNodeEnt);
-            return Triple.of(snapshot.getWorkflow(), snapshot.getSnapshotID(), null);
-        } else {
-            // apply patch and return new version
-            if (!patch.getOps().isEmpty()) {
-                return Triple.of(EntityPatchApplierManager.getPatchApplier().applyPatch(workflowEntToUpdate, patch),
-                    patch.getSnapshotID(), patch);
-            } else {
-                return Triple.of(workflowEntToUpdate, null, null);
             }
         }
     }
