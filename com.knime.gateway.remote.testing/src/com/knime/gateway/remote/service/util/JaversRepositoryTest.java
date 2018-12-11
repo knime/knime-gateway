@@ -16,7 +16,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.remote;
+package com.knime.gateway.remote.service.util;
 
 import com.knime.gateway.remote.service.util.JaversRepository;
 import com.knime.gateway.remote.service.util.WorkflowEntRepository;

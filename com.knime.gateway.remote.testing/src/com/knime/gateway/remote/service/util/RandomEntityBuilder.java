@@ -16,7 +16,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.remote;
+package com.knime.gateway.remote.service.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

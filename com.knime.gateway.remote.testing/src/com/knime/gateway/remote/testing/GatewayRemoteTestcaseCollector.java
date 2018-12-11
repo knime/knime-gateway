@@ -16,23 +16,10 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.remote;
+package com.knime.gateway.remote.testing;
 
-import com.knime.gateway.remote.service.util.SimpleRepository;
-import com.knime.gateway.remote.service.util.WorkflowEntRepository;
+import org.knime.testing.core.AbstractTestcaseCollector;
 
-/**
- * Tests for {@link WorkflowEntRepository} and it's {@link SimpleRepository}-implementation.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- */
-public class SimpleRepositoryTest extends AbstractWorkflowEntRepositoryTest {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected WorkflowEntRepository createRepo() {
-        return new SimpleRepository();
-    }
+public class GatewayRemoteTestcaseCollector extends AbstractTestcaseCollector {
+	//empty on purpose
 }

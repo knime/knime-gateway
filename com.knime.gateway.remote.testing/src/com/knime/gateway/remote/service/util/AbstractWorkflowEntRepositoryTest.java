@@ -16,9 +16,9 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.remote;
+package com.knime.gateway.remote.service.util;
 
-import static com.knime.gateway.remote.RandomEntityBuilder.buildRandomEntityBuilder;
+import static com.knime.gateway.remote.service.util.RandomEntityBuilder.buildRandomEntityBuilder;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -73,7 +73,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
     protected abstract WorkflowEntRepository createRepo();
 
     /**
-     * Tests the {@link JaversRepository#commit(UUID, String, WorkflowEnt)} method.
+     * Tests the {@link WorkflowEntRepository#commit(UUID, String, WorkflowEnt)} method.
      *
      * @throws Exception
      */
@@ -99,7 +99,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
     }
 
     /**
-     * Tests the {@link JaversRepository#getChangesAndCommit(UUID, WorkflowEnt)} method.
+     * Tests the {@link WorkflowEntRepository#getChangesAndCommit(UUID, WorkflowEnt)} method.
      *
      * @throws Exception
      */
@@ -141,7 +141,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
     }
 
     /**
-     * Tests the {@link JaversRepository#disposeHistory(UUID)} method.
+     * Tests the {@link WorkflowEntRepository#disposeHistory(UUID)} method.
      *
      * @throws Exception
      */
