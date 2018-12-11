@@ -16,7 +16,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.v0.entity.test;
+package com.knime.gateway.v0.entity;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.junit.Assert.assertEquals;
@@ -31,6 +31,7 @@ import org.junit.Test;
 import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.ConnectionEnt.ConnectionEntBuilder;
+import com.knime.gateway.v0.entity.ConnectionEnt.TypeEnum;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import com.knime.gateway.v0.entity.NodeEnt;
@@ -62,16 +63,16 @@ public class EntityTest {
         UUID wfId = UUID.randomUUID();
         NativeNodeEnt ent = createNativeNodeEnt(wfId);
 
-        assertEquals(ent.getName(), "name");
-        assertEquals(ent.hasDialog(), true);
-        assertEquals(ent.getNodeID(), "node_id");
-        assertEquals(ent.getNodeState(), NodeStateEnt.StateEnum.CONFIGURED);
-        assertEquals(ent.getNodeType(), NodeTypeEnum.LEARNER);
-        assertEquals(ent.getType(), "NativeNode");
-        assertEquals(ent.getRootWorkflowID(), wfId);
-        assertEquals(ent.getNodeFactoryKey().getClassName(), "node_factory_class_name");
-        assertEquals(ent.getNodeFactoryKey().getSettings(), "settings");
-        assertEquals(ent.getOutPorts(), null);
+		assertEquals(ent.getName(), "name");
+		assertEquals(ent.hasDialog(), true);
+		assertEquals(ent.getNodeID(), "node_id");
+		assertEquals(ent.getNodeState().getState(), NodeStateEnt.StateEnum.CONFIGURED);
+		assertEquals(ent.getNodeType(), NodeTypeEnum.LEARNER);
+		assertEquals(ent.getType(), "NativeNode");
+		assertEquals(ent.getRootWorkflowID(), wfId);
+		assertEquals(ent.getNodeFactoryKey().getClassName(), "node_factory_class_name");
+		assertEquals(ent.getNodeFactoryKey().getSettings(), "settings");
+		assertEquals(ent.getOutPorts(), null);
 
         //assumes isDeletable to have a default value
         assertEquals(ent.isDeletable(), false);
@@ -144,9 +145,9 @@ public class EntityTest {
 
         /* test immutability of lists */
         ConnectionEnt con = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
-            .setSourcePort(3).build();
+            .setSourcePort(3).setType(TypeEnum.STD).build();
         ConnectionEnt con2 = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
-            .setSourcePort(3).build();
+            .setSourcePort(3).setType(TypeEnum.STD).build();
 
         Map<String, ConnectionEnt> connections = new HashMap<String, ConnectionEnt>();
         connections.put("con1", con);
