@@ -548,10 +548,10 @@ public class EntityBuilderUtil {
 
     /**
      * @param cell the cell to build the entity from
-     * @param dataType the datatype as given by the data table spec
+     * @param dataTypeFromSpec the datatype as given by the data table spec
      * @return the data cell entity
      */
-    private static DataCellEnt buildDataCellEnt(final DataCell cell, final DataType dataTypeFromSpec) {
+    public static DataCellEnt buildDataCellEnt(final DataCell cell, final DataType dataTypeFromSpec) {
         if(cell.isMissing()) {
             return builder(DataCellEntBuilder.class)
                     .setMissing(true)

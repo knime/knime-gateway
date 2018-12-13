@@ -162,7 +162,7 @@ public class EntityTranslateUtil {
                 return serializer.get().deserialize(in);
             } catch (IOException ex) {
                 LOGGER.error("Problem deserializing cell", ex);
-                return new ErrorCell("Problem derserializing cell: " + ex.getMessage() + " (see log for more details)");
+                return new ErrorCell("Problem deserializing cell: " + ex.getMessage() + " (see log for more details)");
             }
         }
 
