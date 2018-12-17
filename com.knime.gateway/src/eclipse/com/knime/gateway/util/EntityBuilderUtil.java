@@ -910,7 +910,7 @@ public class EntityBuilderUtil {
                 .setGridY(editorUIInfo.getGridY())
                 .setSnapToGrid(editorUIInfo.getSnapToGrid())
                 .setShowGrid(editorUIInfo.getShowGrid())
-                .setZoomLevel(BigDecimal.valueOf(editorUIInfo.getZoomLevel()))
+                .setZoomLevel(new BigDecimal(editorUIInfo.getZoomLevel()))
                 .setHasCurvedConnection(editorUIInfo.getHasCurvedConnections())
                 .setConnectionLineWidth(editorUIInfo.getConnectionLineWidth())
                 .build();
