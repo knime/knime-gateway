@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Helper for testing gateway API implementation, i.e. services and entites
 Bundle-SymbolicName: com.knime.gateway.testing.helper
-Bundle-Version: 3.8.0.qualifier
+Bundle-Version: 4.9.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Automatic-Module-Name: com.knime.gateway.testing.helper
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
