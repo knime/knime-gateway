@@ -109,7 +109,7 @@ public class DefaultWorkflowService implements WorkflowService {
      */
     @Override
     public PatchEnt getWorkflowDiff(final UUID rootWorkflowID, final UUID snapshotID) throws NotFoundException {
-        return createWorkflowDiff(rootWorkflowID, null, snapshotID, createWorkflowEnt(rootWorkflowID));
+        return createWorkflowDiff(snapshotID, createWorkflowEnt(rootWorkflowID));
     }
 
     /**
@@ -135,7 +135,7 @@ public class DefaultWorkflowService implements WorkflowService {
             return getWorkflowDiff(rootWorkflowID, snapshotID);
         }
         try {
-            return createWorkflowDiff(rootWorkflowID, nodeID, snapshotID, createSubWorkflowEnt(rootWorkflowID, nodeID));
+            return createWorkflowDiff(snapshotID, createSubWorkflowEnt(rootWorkflowID, nodeID));
         } catch (NodeNotFoundException ex) {
             throw new NotFoundException(ex.getMessage(), ex);
         }
@@ -394,8 +394,7 @@ public class DefaultWorkflowService implements WorkflowService {
         }
     }
 
-    private PatchEnt createWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID,
-        final WorkflowEnt ent) throws NotFoundException {
+    private PatchEnt createWorkflowDiff(final UUID snapshotID, final WorkflowEnt ent) throws NotFoundException {
         if (snapshotID == null) {
             throw new NotFoundException("No snapshot id given!");
         }
