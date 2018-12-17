@@ -278,7 +278,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                 //should never happen
                 throw new CompletionException(ex);
             }
-            return getAccess().getNodeID(getEntity().getRootWorkflowID(), id.substring(1, id.length() - 1));
+            return getAccess().getNodeID(getEntity().getRootWorkflowID(), id);
         });
     }
 

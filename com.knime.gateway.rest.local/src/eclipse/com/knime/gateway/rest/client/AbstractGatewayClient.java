@@ -49,6 +49,7 @@ import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.rest.client.providers.json.CollectionJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
+import com.knime.gateway.rest.client.providers.json.StringJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 
 /**
@@ -81,6 +82,7 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
         List<Object> jaxRSProviders = Util.getJaxRSProviders();
         //is there a better way than adding the required provider manually?
         jaxRSProviders.add(new EntityJSONDeserializer());
+        jaxRSProviders.add(new StringJSONDeserializer());
         jaxRSProviders.add(0, new CollectionJSONDeserializer());
         m_client = createProxy(resourceClass, m_restAddress, null, null, jaxRSProviders, "Explorer01",
             Duration.ofMillis(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT));
