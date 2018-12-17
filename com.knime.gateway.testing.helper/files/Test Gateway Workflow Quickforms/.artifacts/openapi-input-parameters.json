@@ -1,0 +1,180 @@
+
+{
+    "type":"object",
+    "properties":{
+        "double-input-19:4":{
+            "type":"number",
+            "default":0.0,
+            "description":"Enter Description",
+            "example":0.0
+        },
+        "date-time-input-19:9":{
+            "type":"string",
+            "default":"2018-06-27T15:08:12+02:00[Europe/Berlin]",
+            "description":"Enter Description",
+            "example":"2018-06-27T15:08:12+02:00[Europe/Berlin]"
+        },
+        "boolean-input-19:7":{
+            "type":"boolean",
+            "default":"false",
+            "description":"Enter Description",
+            "example":false
+        },
+        "molecule-string-input-19:11":{
+            "type":"string",
+            "default":"",
+            "description":"Enter Description",
+            "example":""
+        },
+        "column-filter-19:30":{
+            "type":"object",
+            "properties":{
+                "columns":{
+                    "type":"array"
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "columns":[
+                ]
+            }
+        },
+        "value-selection-19:28":{
+            "type":"object",
+            "properties":{
+                "column":{
+                    "type":"string",
+                    "default":"Cluster Membership"
+                },
+                "value":{
+                    "type":"string",
+                    "default":"Cluster_0"
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "column":"Cluster Membership",
+                "value":"Cluster_0"
+            }
+        },
+        "column-selection-19:26":{
+            "type":"object",
+            "properties":{
+                "column":{
+                    "type":"string",
+                    "default":"Universe_0_0"
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "column":"Universe_0_0"
+            }
+        },
+        "slider-input-19:6":{
+            "type":"object",
+            "properties":{
+                "double":{
+                    "type":"number",
+                    "default":50.0
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "double":50.0
+            }
+        },
+        "json-input-19:2":{
+            "type":"object",
+            "properties":{
+            },
+            "description":"",
+            "example":{
+            }
+        },
+        "multiple-selection-19:27":{
+            "type":"object",
+            "properties":{
+                "variable_value":{
+                    "type":"array"
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "variable_value":[
+                ]
+            }
+        },
+        "string-input-19:3":{
+            "type":"string",
+            "default":"",
+            "description":"Enter Description",
+            "example":""
+        },
+        "single-selection-19:23":{
+            "type":"object",
+            "properties":{
+                "variable_value":{
+                    "type":"string",
+                    "default":""
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "variable_value":""
+            }
+        },
+        "credentials-input-19:10":{
+            "type":"object",
+            "properties":{
+                "username":{
+                    "type":"string",
+                    "default":""
+                },
+                "password":{
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "username":"",
+                "password":null
+            }
+        },
+        "int-input-19:5":{
+            "type":"integer",
+            "default":0,
+            "description":"Enter Description",
+            "example":0
+        },
+        "value-filter-19:29":{
+            "type":"object",
+            "properties":{
+                "column":{
+                    "type":"string",
+                    "default":"Cluster Membership"
+                },
+                "values":{
+                    "type":"array"
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "column":"Cluster Membership",
+                "values":[
+                ]
+            }
+        },
+        "list-box-input-19:8":{
+            "type":"object",
+            "properties":{
+                "string":{
+                    "type":"string",
+                    "default":"test1\ntest2\ntest3"
+                }
+            },
+            "description":"Enter Description",
+            "example":{
+                "string":"test1\ntest2\ntest3"
+            }
+        }
+    }
+}

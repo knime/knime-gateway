@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="spec.xml">
+<entry key="spec_name" type="xstring" value="default"/>
+<entry key="number_columns" type="xint" value="20"/>
+<config key="column_spec_0">
+<entry key="column_name" type="xstring" value="Row0"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_1">
+<entry key="column_name" type="xstring" value="Row1"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_2">
+<entry key="column_name" type="xstring" value="Row2"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_3">
+<entry key="column_name" type="xstring" value="Row3"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_4">
+<entry key="column_name" type="xstring" value="Row4"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_5">
+<entry key="column_name" type="xstring" value="Row5"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_6">
+<entry key="column_name" type="xstring" value="Row6"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_7">
+<entry key="column_name" type="xstring" value="Row7"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_8">
+<entry key="column_name" type="xstring" value="Row8"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_9">
+<entry key="column_name" type="xstring" value="Row9"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_10">
+<entry key="column_name" type="xstring" value="Row10"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_11">
+<entry key="column_name" type="xstring" value="Row11"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_12">
+<entry key="column_name" type="xstring" value="Row12"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_13">
+<entry key="column_name" type="xstring" value="Row13"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_14">
+<entry key="column_name" type="xstring" value="Row14"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_15">
+<entry key="column_name" type="xstring" value="Row15"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_16">
+<entry key="column_name" type="xstring" value="Row16"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_17">
+<entry key="column_name" type="xstring" value="Row17"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" isnull="true" value=""/>
+<entry key="has_pref_value_class" type="xboolean" value="true"/>
+<config key="value_classes">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="org.knime.core.data.DataValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_18">
+<entry key="column_name" type="xstring" value="Row18"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.json.JSONCell"/>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_19">
+<entry key="column_name" type="xstring" value="Row19"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.json.JSONCell"/>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+</config>
