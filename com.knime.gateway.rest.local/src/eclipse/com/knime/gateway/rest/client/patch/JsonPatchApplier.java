@@ -44,13 +44,13 @@ public class JsonPatchApplier implements EntityPatchApplier {
 
     @Override
     public <T extends GatewayEntity> T applyPatch(final T entity, final PatchEnt patch) {
+        if (!entity.getTypeID().equals(patch.getTargetTypeID())) {
+            throw new IllegalArgumentException("The patch's target type id doesn't match the entity type id.");
+        }
+
         //do nothing if patch doesn't contain any changes
         if (patch.getOps().size() == 0) {
             return entity;
-        }
-
-        if (!entity.getTypeID().equals(patch.getTargetTypeID())) {
-            throw new IllegalArgumentException("The patch's target type id doesn't match the entity type id.");
         }
 
         //TODO how to get rid of all the overhead of transforming the java objects into json nodes?

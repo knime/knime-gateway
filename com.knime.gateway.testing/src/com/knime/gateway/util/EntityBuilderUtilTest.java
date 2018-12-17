@@ -16,13 +16,18 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.local.testing;
-
-import org.knime.testing.core.AbstractTestcaseCollector;
+package com.knime.gateway.util;
 
 /**
+ * Tests for {@link EntityBuilderUtil} go here.
+ *
+ * Mainly indirectly covered by the tests for the default service implementations (gateway.remote.testing) where the
+ * built entities returned by the services are checked against a persisted copy.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class GatewayLocalTestcaseCollector extends AbstractTestcaseCollector {
-	//empty on purpose
+public class EntityBuilderUtilTest {
+
+    //currently empty placeholder, need to be filled in case of found bugs etc.
+
 }

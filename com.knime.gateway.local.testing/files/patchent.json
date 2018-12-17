@@ -1,0 +1,408 @@
+{
+    "ops": [
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Rows: 8, Cols: 4",
+            "path": "/nodes/6/workflowIncomingPorts/0/summary"
+        },
+        {
+            "op": "remove",
+            "from": null,
+            "value": null,
+            "path": "/nodes/10"
+        },
+        {
+            "op": "add",
+            "from": null,
+            "value": {
+                "nodeFactoryKey": {
+                    "settings": null,
+                    "className": "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory"
+                },
+                "inactive": false,
+                "rootWorkflowID": "f759c7a9-40d5-4142-a267-9a23463c58a1",
+                "parentNodeID": "root",
+                "inPorts": [
+                    {
+                        "portIndex": 0,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+                            "optional": true
+                        },
+                        "portName": "Variable Inport",
+                        "type": "NodeInPort"
+                    },
+                    {
+                        "portIndex": 1,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.BufferedDataTable",
+                            "optional": false
+                        },
+                        "portName": "To be filtered",
+                        "type": "NodeInPort"
+                    }
+                ],
+                "outPorts": [
+                    {
+                        "summary": null,
+                        "inactive": false,
+                        "portIndex": 0,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+                            "optional": true
+                        },
+                        "portName": "Variable Outport",
+                        "type": "NodeOutPort"
+                    },
+                    {
+                        "summary": null,
+                        "inactive": false,
+                        "portIndex": 1,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.BufferedDataTable",
+                            "optional": false
+                        },
+                        "portName": "Filtered",
+                        "type": "NodeOutPort"
+                    }
+                ],
+                "webViewNames": [],
+                "jobManager": null,
+                "nodeType": "Manipulator",
+                "progress": {
+                    "progress": null,
+                    "message": null
+                },
+                "nodeState": {
+                    "state": "IDLE"
+                },
+                "deletable": true,
+                "uIInfo": {
+                    "snapToGrid": false,
+                    "symbolRelative": true,
+                    "dropLocation": true,
+                    "bounds": {
+                        "height": -1,
+                        "width": -1,
+                        "x": 374,
+                        "y": 189
+                    }
+                },
+                "nodeMessage": {
+                    "message": "No row filter specified",
+                    "type": "WARNING"
+                },
+                "resetable": false,
+                "nodeAnnotation": {
+                    "_default": true,
+                    "textAlignment": "CENTER",
+                    "text": "",
+                    "styleRanges": [],
+                    "borderSize": 0,
+                    "borderColor": 0,
+                    "defaultFontSize": -1,
+                    "bounds": {
+                        "height": 0,
+                        "width": 0,
+                        "x": 0,
+                        "y": 0
+                    },
+                    "version": 20151123,
+                    "backgroundColor": 16777215,
+                    "type": "NodeAnnotation"
+                },
+                "hasDialog": true,
+                "nodeID": "13",
+                "name": "Row Filter",
+                "type": "NativeNode"
+            },
+            "path": "/nodes/13"
+        },
+        {
+            "op": "add",
+            "from": null,
+            "value": {
+                "nodeFactoryKey": {
+                    "settings": null,
+                    "className": "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
+                },
+                "inactive": false,
+                "rootWorkflowID": "f759c7a9-40d5-4142-a267-9a23463c58a1",
+                "parentNodeID": "root",
+                "inPorts": [
+                    {
+                        "portIndex": 0,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+                            "optional": true
+                        },
+                        "portName": "Variable Inport",
+                        "type": "NodeInPort"
+                    },
+                    {
+                        "portIndex": 1,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.BufferedDataTable",
+                            "optional": false
+                        },
+                        "portName": "Table to be filtered",
+                        "type": "NodeInPort"
+                    }
+                ],
+                "outPorts": [
+                    {
+                        "summary": null,
+                        "inactive": false,
+                        "portIndex": 0,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+                            "optional": true
+                        },
+                        "portName": "Variable Outport",
+                        "type": "NodeOutPort"
+                    },
+                    {
+                        "summary": null,
+                        "inactive": false,
+                        "portIndex": 1,
+                        "portType": {
+                            "portObjectClassName": "org.knime.core.node.BufferedDataTable",
+                            "optional": false
+                        },
+                        "portName": "Filtered table",
+                        "type": "NodeOutPort"
+                    }
+                ],
+                "webViewNames": [],
+                "jobManager": null,
+                "nodeType": "Manipulator",
+                "progress": {
+                    "progress": null,
+                    "message": null
+                },
+                "nodeState": {
+                    "state": "CONFIGURED"
+                },
+                "deletable": true,
+                "uIInfo": {
+                    "snapToGrid": false,
+                    "symbolRelative": true,
+                    "dropLocation": true,
+                    "bounds": {
+                        "height": -1,
+                        "width": -1,
+                        "x": 516,
+                        "y": 553
+                    }
+                },
+                "nodeMessage": {
+                    "message": "",
+                    "type": "RESET"
+                },
+                "resetable": true,
+                "nodeAnnotation": {
+                    "_default": true,
+                    "textAlignment": "CENTER",
+                    "text": "",
+                    "styleRanges": [],
+                    "borderSize": 0,
+                    "borderColor": 0,
+                    "defaultFontSize": -1,
+                    "bounds": {
+                        "height": 0,
+                        "width": 0,
+                        "x": 0,
+                        "y": 0
+                    },
+                    "version": 20151123,
+                    "backgroundColor": 16777215,
+                    "type": "NodeAnnotation"
+                },
+                "hasDialog": true,
+                "nodeID": "14",
+                "name": "Column Filter",
+                "type": "NativeNode"
+            },
+            "path": "/nodes/14"
+        },
+        {
+            "op": "remove",
+            "from": null,
+            "value": null,
+            "path": "/connections/4_0"
+        },
+        {
+            "op": "remove",
+            "from": null,
+            "value": null,
+            "path": "/connections/10_1"
+        },
+        {
+            "op": "add",
+            "from": null,
+            "value": {
+                "bendPoints": [],
+                "source": "1",
+                "deletable": true,
+                "dest": "14",
+                "sourcePort": 2,
+                "destPort": 1,
+                "flowVariablePortConnection": false,
+                "type": "STD"
+            },
+            "path": "/connections/14_1"
+        },
+        {
+            "op": "add",
+            "from": null,
+            "value": {
+                "bendPoints": [],
+                "source": "1",
+                "deletable": true,
+                "dest": "14",
+                "sourcePort": 0,
+                "destPort": 0,
+                "flowVariablePortConnection": true,
+                "type": "STD"
+            },
+            "path": "/connections/14_0"
+        },
+        {
+            "op": "add",
+            "from": null,
+            "value": {
+                "bendPoints": [],
+                "source": "1",
+                "deletable": true,
+                "dest": "13",
+                "sourcePort": 1,
+                "destPort": 1,
+                "flowVariablePortConnection": false,
+                "type": "STD"
+            },
+            "path": "/connections/13_1"
+        },
+        {
+            "op": "remove",
+            "from": null,
+            "value": null,
+            "path": "/workflowAnnotations/root_1"
+        },
+        {
+            "op": "add",
+            "from": null,
+            "value": {
+                "annotationID": "root_3",
+                "textAlignment": "LEFT",
+                "text": "this is a workflow annotation",
+                "styleRanges": [],
+                "borderSize": 10,
+                "borderColor": 16766976,
+                "defaultFontSize": 11,
+                "bounds": {
+                    "height": 140,
+                    "width": 250,
+                    "x": 720,
+                    "y": 400
+                },
+                "version": null,
+                "backgroundColor": 16777215,
+                "type": "WorkflowAnnotation"
+            },
+            "path": "/workflowAnnotations/root_3"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "EXECUTED",
+            "path": "/nodes/6/workflowOutgoingPortNodeStates/0/state"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "EXECUTED",
+            "path": "/nodes/6/workflowOutgoingPortNodeStates/1/state"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Rows: 5, Cols: 4",
+            "path": "/nodes/6/outPorts/0/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Rows: 3, Cols: 4",
+            "path": "/nodes/6/outPorts/1/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Variables connection",
+            "path": "/nodes/1/outPorts/0/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Rows: 8, Cols: 5",
+            "path": "/nodes/1/outPorts/1/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Variables connection",
+            "path": "/nodes/2/outPorts/0/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Rows: 4, Cols: 4",
+            "path": "/nodes/1/outPorts/2/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Rows: 8, Cols: 4",
+            "path": "/nodes/2/outPorts/1/summary"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "EXECUTED",
+            "path": "/nodes/6/nodeState/state"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "ERROR",
+            "path": "/nodes/11/nodeMessage/type"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "Execute failed: This node fails on each execution.",
+            "path": "/nodes/11/nodeMessage/message"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": true,
+            "path": "/nodes/12/resetable"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "EXECUTED",
+            "path": "/nodes/1/nodeState/state"
+        },
+        {
+            "op": "replace",
+            "from": null,
+            "value": "EXECUTED",
+            "path": "/nodes/2/nodeState/state"
+        }
+    ],
+    "snapshotID": "74124f8a-bec5-4471-821e-0258c8d63e81",
+    "targetTypeID": "Workflow"
+}
