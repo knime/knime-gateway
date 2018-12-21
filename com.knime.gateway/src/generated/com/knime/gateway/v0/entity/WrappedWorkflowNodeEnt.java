@@ -226,7 +226,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setWorkflowOutgoingPorts(java.util.List<NodeInPortEnt> workflowOutgoingPorts);
         
         /**
-         * Whether the referenced workflow is encrypted is required to be unlocked before it can be accessed.
+         * Whether the referenced workflow is encrypted and is required to be unlocked before it can be accessed.
          * 
          * @param encrypted the property value,  
          * @return this entity builder for chaining

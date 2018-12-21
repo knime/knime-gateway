@@ -54,7 +54,7 @@ public interface WorkflowNodeEnt extends NodeEnt {
   public java.util.List<NodeInPortEnt> getWorkflowOutgoingPorts();
 
   /**
-   * Whether the referenced workflow is encrypted is required to be unlocked before it can be accessed.
+   * Whether the referenced workflow is encrypted and is required to be unlocked before it can be accessed.
    * @return encrypted 
    **/
   public Boolean isEncrypted();
@@ -232,7 +232,7 @@ public interface WorkflowNodeEnt extends NodeEnt {
         WorkflowNodeEntBuilder setWorkflowOutgoingPorts(java.util.List<NodeInPortEnt> workflowOutgoingPorts);
         
         /**
-         * Whether the referenced workflow is encrypted is required to be unlocked before it can be accessed.
+         * Whether the referenced workflow is encrypted and is required to be unlocked before it can be accessed.
          * 
          * @param encrypted the property value,  
          * @return this entity builder for chaining

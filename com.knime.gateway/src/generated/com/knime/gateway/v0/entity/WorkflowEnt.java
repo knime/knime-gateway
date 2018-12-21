@@ -63,7 +63,7 @@ public interface WorkflowEnt extends GatewayEntity {
   public java.util.List<MetaPortInfoEnt> getMetaOutPortInfos();
 
   /**
-   * List of all workflow annotations. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
+   * List of all workflow annotations. TODO could be moved to an extra UI service in order to not pollute the WorkflowEnt too much and separate UI logics.
    * @return workflowAnnotations 
    **/
   public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
@@ -125,7 +125,7 @@ public interface WorkflowEnt extends GatewayEntity {
         WorkflowEntBuilder setMetaOutPortInfos(java.util.List<MetaPortInfoEnt> metaOutPortInfos);
         
         /**
-         * List of all workflow annotations. TODO could be moved to an extra UI service in order to not polute the WorkflowEnt too much and separate UI logics.
+         * List of all workflow annotations. TODO could be moved to an extra UI service in order to not pollute the WorkflowEnt too much and separate UI logics.
          * 
          * @param workflowAnnotations the property value,  
          * @return this entity builder for chaining

@@ -34,7 +34,7 @@ public interface AnnotationService extends GatewayService {
     /**
      * Changes the bounds (x,y,width,height) of a workflow annotation
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param annoId 
      * @param boundsEnt 
      *
@@ -46,7 +46,7 @@ public interface AnnotationService extends GatewayService {
     /**
      * Changes the bounds (x,y,width,height) of a workflow annotation in a sub-workflow.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param annoId 
      * @param boundsEnt 

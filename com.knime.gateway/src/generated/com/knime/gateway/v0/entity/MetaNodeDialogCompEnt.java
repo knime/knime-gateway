@@ -47,7 +47,7 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
   public String getNodeID();
 
   /**
-   * Whether the component should be hid in the subnode&#39;s dialog.
+   * Whether the component should be hidden in the subnode&#39;s dialog.
    * @return isHideInDialog 
    **/
   public Boolean isIsHideInDialog();
@@ -81,7 +81,7 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
         MetaNodeDialogCompEntBuilder setNodeID(String nodeID);
         
         /**
-         * Whether the component should be hid in the subnode&#39;s dialog.
+         * Whether the component should be hidden in the subnode&#39;s dialog.
          * 
          * @param isHideInDialog the property value,  
          * @return this entity builder for chaining
