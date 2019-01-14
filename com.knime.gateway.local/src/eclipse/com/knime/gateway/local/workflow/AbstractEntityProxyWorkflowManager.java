@@ -68,7 +68,6 @@ import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
@@ -77,7 +76,9 @@ import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
+import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.core.ui.node.workflow.WorkflowCopyWithOffsetUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
@@ -146,11 +147,16 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     /* Listener to apply workflow patches for update/refresh */
     private final WorkflowEntChangeListener m_workflowEntChangeListener = new MyWorkflowEntChangeListener();
 
-    /**
-     * @param workflowNodeEnt
-     */
+    private RemoteWorkflowContext m_workflowContext;
+
     AbstractEntityProxyWorkflowManager(final E workflowNodeEnt, final EntityProxyAccess access) {
+        this(workflowNodeEnt, access, null);
+    }
+
+    AbstractEntityProxyWorkflowManager(final E workflowNodeEnt, final EntityProxyAccess access,
+        final RemoteWorkflowContext workflowContext) {
         super(workflowNodeEnt, access);
+        m_workflowContext = workflowContext;
     }
 
     private WorkflowEnt getWorkflow() throws NotLoadedException {
@@ -1193,8 +1199,12 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public WorkflowContext getContext() {
-        throw new UnsupportedOperationException();
+    public WorkflowContextUI getContext() {
+        if (m_workflowContext == null) {
+            return getParent().getContext();
+        } else {
+            return m_workflowContext;
+        }
     }
 
     /**

@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.local.workflow;
 
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
 import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
@@ -39,6 +40,19 @@ final class EntityProxyWorkflowManager extends AbstractEntityProxyWorkflowManage
      */
     EntityProxyWorkflowManager(final WorkflowNodeEnt workflowNodeEnt, final EntityProxyAccess access) {
         super(workflowNodeEnt, access);
+    }
+
+    /**
+     * See
+     * {@link AbstractEntityProxyWorkflowManager#AbstractEntityProxyWorkflowManager(WorkflowNodeEnt, EntityProxyAccess, RemoteWorkflowContext)}.
+     *
+     * @param workflowNodeEnt
+     * @param access
+     * @param workflowContext
+     */
+    EntityProxyWorkflowManager(final WorkflowNodeEnt workflowNodeEnt, final EntityProxyAccess access,
+        final RemoteWorkflowContext workflowContext) {
+        super(workflowNodeEnt, access, workflowContext);
     }
 
     @Override

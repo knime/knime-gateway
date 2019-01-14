@@ -50,6 +50,7 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.util.Pair;
 
 import com.google.common.collect.MapMaker;
@@ -124,21 +125,26 @@ public class EntityProxyAccess {
      *
      * @param serviceConfig the server service config (e.g. uri etc.)
      * @param rootWorkflowID the id of the workflow to retrieve
+     * @param workflowContext the context of the workflow to be created
      * @return the workflow manager
      */
     public static EntityProxyWorkflowManager createWorkflowManager(final ServerServiceConfig serviceConfig,
-        final UUID rootWorkflowID) {
+        final UUID rootWorkflowID, final RemoteWorkflowContext workflowContext) {
         ROOT_ID_MAP.computeIfAbsent(rootWorkflowID, s -> String.valueOf(ROOT_ID_MAP.size() + 1));
-        return new EntityProxyAccess(serviceConfig).getRootWorkflowManager(rootWorkflowID);
+        return new EntityProxyAccess(serviceConfig).getOrCreateRootWorkflowManager(rootWorkflowID, workflowContext);
     }
 
     /**
-     * Retrieves the respective entities for the given root workflow id and returns a workflow manager to access it.
+     * Retrieves the respective entities for the given root workflow id and returns a workflow manager to access it. If
+     * the workflow manager for the given root workflow id has been loaded/created already, the existing instance will
+     * be returned.
      *
      * @param rootWorkflowID the ID of the workflow manager to retrieve
+     * @param workflowContext the context of the workflow a newly created workflow manager should be associated with
      * @return an existing (i.e. cached) or newly created workflow manager instance
      */
-    public EntityProxyWorkflowManager getRootWorkflowManager(final UUID rootWorkflowID) {
+    public EntityProxyWorkflowManager getOrCreateRootWorkflowManager(final UUID rootWorkflowID,
+        final RemoteWorkflowContext workflowContext) {
         Pair<UUID, String> keyPair = Pair.create(rootWorkflowID, null);
         if (m_wfmMap.containsKey(keyPair)) {
             return (EntityProxyWorkflowManager)m_wfmMap.get(keyPair);
@@ -146,10 +152,17 @@ public class EntityProxyAccess {
             NodeEnt node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
             assert node instanceof WorkflowNodeEnt;
             EntityProxyWorkflowManager wfm = getOrCreate((WorkflowNodeEnt)node,
-                n -> new EntityProxyWorkflowManager(n, this), EntityProxyWorkflowManager.class);
+                n -> new EntityProxyWorkflowManager(n, this, workflowContext), EntityProxyWorkflowManager.class);
             m_wfmMap.put(keyPair, wfm);
             return wfm;
         }
+    }
+
+    /**
+     * @return the server configurations
+     */
+    ServerServiceConfig getConfig() {
+        return m_serviceConfig;
     }
 
     /**
