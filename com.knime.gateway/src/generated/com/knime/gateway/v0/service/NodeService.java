@@ -43,7 +43,7 @@ public interface NodeService extends GatewayService {
     /**
      * Retrieves and manipulates the node&#39;s state for the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
@@ -72,7 +72,7 @@ public interface NodeService extends GatewayService {
     /**
      * Provides the node&#39;s flow variables available for the node with the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -83,7 +83,7 @@ public interface NodeService extends GatewayService {
     /**
      * Provides the node&#39;s input port specifications for the given node-id. I.e. all output port specs of the output ports connected to the input ports of this node.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -94,7 +94,7 @@ public interface NodeService extends GatewayService {
     /**
      * Retrieves the node for the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -105,7 +105,7 @@ public interface NodeService extends GatewayService {
     /**
      * Retrieves the node&#39;s settings for the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -116,7 +116,7 @@ public interface NodeService extends GatewayService {
     /**
      * Gives access to the table at the a certain port index (if it&#39;s a table). Otherwise will return &#39;not supported&#39;.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param portIdx The port index to get the table for.
      * @param from Row index to start returning the rows. Rows from the beginning (i.e. index 0) will be returned.
@@ -131,7 +131,7 @@ public interface NodeService extends GatewayService {
     /**
      * Provides the node&#39;s flow variables available for the node&#39;s output with the given node-id. For metanodes (not wrapped metanodes) the same variables are returned as with &#39;... For metanodes (not wrapped metanodes) the same variables are returned as with &#39;.../input/flowvariables&#39;.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -142,7 +142,7 @@ public interface NodeService extends GatewayService {
     /**
      * Provides the node&#39;s output port specifications for the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -162,7 +162,7 @@ public interface NodeService extends GatewayService {
     /**
      * Provides the data for the node&#39;s view, if the node supports views. The data includes the view&#39;s and the representation.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -174,7 +174,7 @@ public interface NodeService extends GatewayService {
     /**
      * Gives access to the dialog representations, values and configs of a wrapped metanode.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -186,7 +186,7 @@ public interface NodeService extends GatewayService {
     /**
      * Sets the node&#39;s bounds for the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param boundsEnt The node bounds to set.
      *
@@ -198,7 +198,7 @@ public interface NodeService extends GatewayService {
     /**
      * Sets the node&#39;s settings for the given node-id.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param nodeSettingsEnt The node settings to set.
      *
@@ -212,7 +212,7 @@ public interface NodeService extends GatewayService {
     /**
      * Saves back the view&#39;s value (e.g. title etc.) to the server.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param useAsDefault True if node settings are to be updated by view content.
      * @param javaObjectEnt The view value to set.

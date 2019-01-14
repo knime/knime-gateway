@@ -37,7 +37,7 @@ public interface WorkflowService extends GatewayService {
     /**
      * Creates a new connection between two nodes. Note: replaces/removes existing connections if destination port is already in use.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param connectionEnt The connection.
      *
      * @return the result
@@ -48,7 +48,7 @@ public interface WorkflowService extends GatewayService {
     /**
      * Selects and essentially copies the specified part of the workflow. It will still be available even if (sub)parts are deleted. The parts are referenced by a part-id.  Note: connections will be ignored and _not_ copied!
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param workflowPartsEnt The actual part selection.
      *
      * @return the result
@@ -61,7 +61,7 @@ public interface WorkflowService extends GatewayService {
     /**
      * Deletes the given workflow parts. Cannot be undone unless a copy has been made before.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param workflowPartsEnt The parts to be deleted.
      * @param copy If a copy should be created before removal. False by default. Please note that the copy will _only_ include the connections that are entirely enclosed by the parts to be removed (i.e. connections that are connecting two removed nodes - all others won&#39;t be kept)
      *
@@ -75,7 +75,7 @@ public interface WorkflowService extends GatewayService {
     /**
      * Retrieves the complete structure (nodes, connections, annotations) of sub-workflows.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      *
      * @return the result
@@ -87,7 +87,7 @@ public interface WorkflowService extends GatewayService {
     /**
      * Gives the changes of the sub-workflow as a patch.
      *
-     * @param jobId ID the job the workflow is requested for
+     * @param jobId ID of the job the workflow is requested for.
      * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
      * @param snapshotId The id of the workflow snapshot already retrieved.
      *
