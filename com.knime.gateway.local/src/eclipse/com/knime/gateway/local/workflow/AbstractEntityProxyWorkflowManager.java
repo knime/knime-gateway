@@ -1227,7 +1227,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             refreshInternal(deepRefresh, false);
         } catch (NotFoundException ex) {
             throw new SnapshotNotFoundException(
-                "Workflow cannot be refresh. The snapshot is not available on the server (anymore).");
+                "Workflow cannot be refreshed. The snapshot is not available on the server (anymore).");
         }
     }
 
