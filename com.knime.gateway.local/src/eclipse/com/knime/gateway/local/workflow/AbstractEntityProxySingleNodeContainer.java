@@ -36,6 +36,7 @@ import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
@@ -148,7 +149,12 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
         CheckUtils.checkState(hasDialog(), "Node \"%s\" has no dialog", getName());
         // TODO do we need to reset the node first??
         NodeSettings sett = new NodeSettings("node settings");
-        m_dialogPane.finishEditingAndSaveSettingsTo(sett);
+        NodeContext.pushContext(this);
+        try {
+            m_dialogPane.finishEditingAndSaveSettingsTo(sett);
+        } finally {
+            NodeContext.removeLastContext();
+        }
 
         //convert settings into a settings entity
         NodeSettingsEnt settingsEnt = builder(NodeSettingsEntBuilder.class)

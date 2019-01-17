@@ -37,6 +37,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
@@ -114,8 +115,13 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
         throws NotConfigurableException {
         NodeDialogPane resDialogPane;
         if (dialogPane == null) {
-            resDialogPane = Node.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
-                getEntity().getInPorts().size(), false);
+            NodeContext.pushContext(this);
+            try {
+                resDialogPane = Node.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
+                    getEntity().getInPorts().size(), false);
+            } finally {
+                NodeContext.removeLastContext();
+            }
         } else {
             resDialogPane = dialogPane;
         }
