@@ -102,7 +102,5 @@ public class UpdateWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         } catch (ServiceExceptions.NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No snapshot id given!"));
         }
-
-        // job will be deleted by @After method
     }
 }

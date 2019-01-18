@@ -148,8 +148,6 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("There is an outgoing connection that cannot be removed"));
         }
-
-        // job will be deleted by @After method
     }
 
     /**

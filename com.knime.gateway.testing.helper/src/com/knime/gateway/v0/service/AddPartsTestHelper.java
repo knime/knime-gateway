@@ -134,7 +134,5 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
         ws().createConnection(wfId, connection);
         workflow = ws().getSubWorkflow(wfId, "12").getWorkflow();
         cr(workflow, "workflowent_12_connectionadded");
-
-        // job will be deleted by @After method
     }
 }

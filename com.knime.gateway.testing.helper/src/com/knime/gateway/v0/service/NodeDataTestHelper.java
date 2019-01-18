@@ -103,8 +103,6 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
         compare(table, tableEnt, 0);
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
-
-        // job will be deleted by @After method
     }
 
     /**
