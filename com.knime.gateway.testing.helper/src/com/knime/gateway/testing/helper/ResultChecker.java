@@ -74,6 +74,11 @@ public class ResultChecker {
     private static final String MASSAGE_FIELDNAME = "message";
 
     /**
+     * Same as with MESSAGE_FIELDNAME, especially for the case when a patch contains a new value for a node message.
+     */
+    private static final String VALUE_FIELDNAME = "value";
+
+    /**
      * Name of the field that holds json-objects as string. Since json-objects are regarded as the same although the
      * order of the fields varies, those fields need to be treated a bit different for comparison.
      */
@@ -266,9 +271,9 @@ public class ResultChecker {
             name = name == null ? "" : name;
             if (name.equals(ROOTWORKFLOWID_FIELDNAME) || name.equals(SNAPSHOTID_FIELDNAME)) {
                 gen.writeString("PLACEHOLDER_FOR_ID");
-            } else if (name.equals(MASSAGE_FIELDNAME)) {
+            } else if ((value instanceof String) && (name.equals(MASSAGE_FIELDNAME) || name.equals(VALUE_FIELDNAME))) {
                 String s = (String)value;
-                //only take the first line of message fields
+                //only take the first line of message/value fields
                 if (s.contains("\n")) {
                     gen.writeString(s.split("\n")[0]);
                 } else {

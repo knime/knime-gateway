@@ -330,7 +330,7 @@
       "op" : "REPLACE",
       "path" : "/nodes/12/nodeMessage/message",
       "typeID" : "PatchOp",
-      "value" : "Not all contained nodes are executed:\nWrapped Metanode Failing 0:12:0: CONFIGURED (start)\n  Statistics 0:12:0:7 (EXECUTED)*\n  WrappedNode Input 0:12:0:8 (EXECUTED)*\n  WrappedNode Output 0:12:0:9 (EXECUTED)*\n  Fail in execution 0:12:0:10 (CONFIGURED)*\nWrapped Metanode Failing 0:12:0(end)\n"
+      "value" : "Not all contained nodes are executed:"
     }, {
       "op" : "REPLACE",
       "path" : "/nodes/1/outPorts/0/summary",
