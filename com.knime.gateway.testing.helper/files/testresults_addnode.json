@@ -504,7 +504,7 @@
         },
         "nodeID" : "23",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No Settings available.",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -821,7 +821,7 @@
         },
         "nodeID" : "14",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No variables selected",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -1649,7 +1649,7 @@
         },
         "nodeID" : "5",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "Class column \"Cluster Membership\" not found or incompatible",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -2970,7 +2970,7 @@
         },
         "nodeID" : "23",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No Settings available.",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -3287,7 +3287,7 @@
         },
         "nodeID" : "14",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No variables selected",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -4115,7 +4115,7 @@
         },
         "nodeID" : "5",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "Class column \"Cluster Membership\" not found or incompatible",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -5436,7 +5436,7 @@
         },
         "nodeID" : "23",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No Settings available.",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -5860,7 +5860,7 @@
         },
         "nodeID" : "14",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No variables selected",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -6688,7 +6688,7 @@
         },
         "nodeID" : "5",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "Class column \"Cluster Membership\" not found or incompatible",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },

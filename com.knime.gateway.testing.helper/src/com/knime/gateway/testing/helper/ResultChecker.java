@@ -272,7 +272,7 @@ public class ResultChecker {
                 if (s.contains("\n")) {
                     gen.writeString(s.split("\n")[0]);
                 } else {
-                    gen.writeString("");
+                    gen.writeString(s);
                 }
             } else if (name.equals(JSON_CONTENT_FIELDNAME)) {
                 //Json-content fields are ignored since they seem to vary.

@@ -38,7 +38,7 @@
     "inWizardExecution" : false,
     "metaInPortInfos" : [ {
       "connected" : true,
-      "message" : "",
+      "message" : "Connected to one upstream node and 1 downstream node(s)",
       "newIndex" : -1,
       "oldIndex" : -1,
       "portType" : {
@@ -50,7 +50,7 @@
     } ],
     "metaOutPortInfos" : [ {
       "connected" : true,
-      "message" : "",
+      "message" : "Connected to one upstream node and 1 downstream node(s)",
       "newIndex" : -1,
       "oldIndex" : -1,
       "portType" : {
@@ -61,7 +61,7 @@
       "typeID" : "MetaPortInfo"
     }, {
       "connected" : true,
-      "message" : "",
+      "message" : "Connected to one upstream node",
       "newIndex" : -1,
       "oldIndex" : -1,
       "portType" : {
@@ -975,7 +975,7 @@
         },
         "nodeID" : "14",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No variables selected",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -1803,7 +1803,7 @@
         },
         "nodeID" : "5",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "Class column \"Cluster Membership\" not found or incompatible",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -3356,7 +3356,7 @@
         },
         "nodeID" : "14",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No variables selected",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -5737,7 +5737,7 @@
         },
         "nodeID" : "14",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "No variables selected",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
@@ -7569,7 +7569,7 @@
         },
         "nodeID" : "12:0:8",
         "nodeMessage" : {
-          "message" : "",
+          "message" : "Outer workflow does not have input data, execute it first",
           "type" : "WARNING",
           "typeID" : "NodeMessage"
         },
