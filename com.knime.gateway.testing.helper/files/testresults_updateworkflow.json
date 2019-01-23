@@ -1,4 +1,439 @@
 {
-  "patchent_12" : "{\n  \"ops\" : [ {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:7/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:7/outPorts/3/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 0, Cols: 0\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:7/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 4, Cols: 16\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:7/outPorts/2/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 0, Cols: 3\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:7/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:8/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:7/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:9/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:9/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:8/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:9/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:10/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:8/nodeMessage/type\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"RESET\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:8/nodeMessage/message\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:8/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:8/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 4, Cols: 4\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:10/nodeMessage/type\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"ERROR\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:10/nodeMessage/message\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Execute failed: This node fails on each execution.\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12:0:10/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"CONFIGURED\"\n  } ],\n  \"snapshotID\" : \"PLACEHOLDER_FOR_ID\",\n  \"targetTypeID\" : \"Workflow\",\n  \"typeID\" : \"Patch\"\n}",
-  "patchent_root_executed" : "{\n  \"ops\" : [ {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/13/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/13/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Inactive Port Object\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/13/outPorts/1/inactive\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/4/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/19/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/22/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/6/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 5, Cols: 4\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/22/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 8, Cols: 6\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/6/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 3, Cols: 4\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/2/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/2/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 8, Cols: 4\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/16/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/6/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/16/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"CONFIGURED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/16/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/18/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/10/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/8/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/2/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/4/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/22/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/21/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/20/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/8/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/8/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 7, Cols: 14\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/6/workflowIncomingPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 8, Cols: 4\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/21/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 8, Cols: 5\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/20/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 8, Cols: 8\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/21/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/20/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/19/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/9/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/9/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 4, Cols: 16\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/nodeMessage/type\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"RESET\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/nodeMessage/message\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/9/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/8/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/6/workflowOutgoingPortNodeStates/0/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/19/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Distance Measure:'Standard Distance (Euclidean/ Manhattan)' of extension: 'org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory'\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/6/workflowOutgoingPortNodeStates/1/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/15/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 1, Cols: 3\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/15/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12/nodeMessage/type\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"ERROR\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12/nodeMessage/message\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Not all contained nodes are executed:\\nWrapped Metanode Failing 0:12:0: CONFIGURED (start)\\n  Statistics 0:12:0:7 (EXECUTED)*\\n  WrappedNode Input 0:12:0:8 (EXECUTED)*\\n  WrappedNode Output 0:12:0:9 (EXECUTED)*\\n  Fail in execution 0:12:0:10 (CONFIGURED)*\\nWrapped Metanode Failing 0:12:0(end)\\n\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/1/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/1/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 8, Cols: 5\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/1/outPorts/2/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Rows: 4, Cols: 4\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/13/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Inactive Port Object\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/outPorts/1/inactive\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Inactive Port Object\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/outPorts/0/inactive\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/15/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/9/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/10/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/10/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"J48\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/11/nodeMessage/type\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"ERROR\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/11/nodeMessage/message\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Execute failed: This node fails on each execution.\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/inactive\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/14/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/12/resetable\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : true\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/1/nodeState/state\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"EXECUTED\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/18/outPorts/0/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  }, {\n    \"op\" : \"REPLACE\",\n    \"path\" : \"/nodes/18/outPorts/1/summary\",\n    \"typeID\" : \"PatchOp\",\n    \"value\" : \"Variables connection\"\n  } ],\n  \"snapshotID\" : \"PLACEHOLDER_FOR_ID\",\n  \"targetTypeID\" : \"Workflow\",\n  \"typeID\" : \"Patch\"\n}"
+  "patchent_12" : {
+    "ops" : [ {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:7/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:7/outPorts/3/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 0, Cols: 0"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:7/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 4, Cols: 16"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:7/outPorts/2/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 0, Cols: 3"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:7/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:8/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:7/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:9/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:9/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:8/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:9/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:10/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:8/nodeMessage/type",
+      "typeID" : "PatchOp",
+      "value" : "RESET"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:8/nodeMessage/message",
+      "typeID" : "PatchOp",
+      "value" : ""
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:8/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:8/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 4, Cols: 4"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:10/nodeMessage/type",
+      "typeID" : "PatchOp",
+      "value" : "ERROR"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:10/nodeMessage/message",
+      "typeID" : "PatchOp",
+      "value" : "Execute failed: This node fails on each execution."
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12:0:10/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "CONFIGURED"
+    } ],
+    "snapshotID" : "PLACEHOLDER_FOR_ID",
+    "targetTypeID" : "Workflow",
+    "typeID" : "Patch"
+  },
+  "patchent_root_executed" : {
+    "ops" : [ {
+      "op" : "REPLACE",
+      "path" : "/nodes/13/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/13/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Inactive Port Object"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/13/outPorts/1/inactive",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/4/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/19/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/22/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/6/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 5, Cols: 4"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/22/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 8, Cols: 6"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/6/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 3, Cols: 4"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/2/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/2/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 8, Cols: 4"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/16/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/6/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/16/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/16/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/18/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/10/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/8/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/2/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/4/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/22/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/21/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/20/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/8/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/8/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 7, Cols: 14"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/6/workflowIncomingPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 8, Cols: 4"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/21/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 8, Cols: 5"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/20/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 8, Cols: 8"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/21/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/20/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/19/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/9/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/9/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 4, Cols: 16"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/nodeMessage/type",
+      "typeID" : "PatchOp",
+      "value" : "RESET"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/nodeMessage/message",
+      "typeID" : "PatchOp",
+      "value" : ""
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/9/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/8/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/6/workflowOutgoingPortNodeStates/0/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/19/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Distance Measure:'Standard Distance (Euclidean/ Manhattan)' of extension: 'org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory'"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/6/workflowOutgoingPortNodeStates/1/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/15/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 1, Cols: 3"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/15/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12/nodeMessage/type",
+      "typeID" : "PatchOp",
+      "value" : "ERROR"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12/nodeMessage/message",
+      "typeID" : "PatchOp",
+      "value" : "Not all contained nodes are executed:\nWrapped Metanode Failing 0:12:0: CONFIGURED (start)\n  Statistics 0:12:0:7 (EXECUTED)*\n  WrappedNode Input 0:12:0:8 (EXECUTED)*\n  WrappedNode Output 0:12:0:9 (EXECUTED)*\n  Fail in execution 0:12:0:10 (CONFIGURED)*\nWrapped Metanode Failing 0:12:0(end)\n"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/1/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/1/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 8, Cols: 5"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/1/outPorts/2/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 4, Cols: 4"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/13/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Inactive Port Object"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/outPorts/1/inactive",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Inactive Port Object"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/outPorts/0/inactive",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/15/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/9/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/10/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/10/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "J48"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/11/nodeMessage/type",
+      "typeID" : "PatchOp",
+      "value" : "ERROR"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/11/nodeMessage/message",
+      "typeID" : "PatchOp",
+      "value" : "Execute failed: This node fails on each execution."
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/inactive",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/14/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/12/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/1/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/18/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/18/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    } ],
+    "snapshotID" : "PLACEHOLDER_FOR_ID",
+    "targetTypeID" : "Workflow",
+    "typeID" : "Patch"
+  }
 }

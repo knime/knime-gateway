@@ -32,6 +32,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -83,7 +84,7 @@ public class ResultChecker {
      */
     private final ObjectMapper m_objectMapper;
 
-    private final Map<String, Map<String, String>> m_resultMaps;
+    private final Map<String, Map<String, JsonNode>> m_resultMaps;
 
     private final boolean m_rewriteTestResults;
 
@@ -104,7 +105,7 @@ public class ResultChecker {
      */
     public ResultChecker(final boolean rewriteTestResults) {
         m_rewriteTestResults = rewriteTestResults;
-        m_resultMaps = new HashMap<String, Map<String, String>>();
+        m_resultMaps = new HashMap<String, Map<String, JsonNode>>();
 
         // setup object mapper for entity-comparison
         m_objectMapper = new ObjectMapper();
@@ -145,27 +146,34 @@ public class ResultChecker {
      *             by the given key)
      */
     public void checkObject(final String testName, final Object obj, final String resultKey) {
-        String objAsString;
+        JsonNode objAsJson;
         try {
-            objAsString = objectToJson(obj);
+            objAsJson = objectToJson(obj);
         } catch (JsonProcessingException ex) {
             // should not happen
             Assert.fail("Problem turning an entity into a string for comparison");
             return;
         }
         if (m_rewriteTestResults) {
-            Map<String, String> resultMap = m_resultMaps.computeIfAbsent(testName, k -> new HashMap<String, String>());
-            resultMap.put(resultKey, objAsString);
+            Map<String, JsonNode> resultMap = m_resultMaps.computeIfAbsent(testName, k -> new HashMap<String, JsonNode>());
+            resultMap.put(resultKey, objAsJson);
             //result map will be written to file in the writeTestResultsToFiles()-method
         } else {
-            String expectedResult = getResultMap(testName).get(resultKey);
+            JsonNode expectedResult = getResultMap(testName).get(resultKey);
+            try {
+                String expectedResultAsString =
+                    m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expectedResult);
+                String objAsString = m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objAsJson);
 
-            // Still using assetEquals here since a nice result comparison can be opened
-            // with double-click on the test-error
-            // assertThat("Unexpected result returned", result, is(expectedResult));
-            // TODO alternatively https://github.com/skyscreamer/JSONassert could be used
-            // here eventually
-            Assert.assertEquals(expectedResult, objAsString);
+                // Still using assetEquals on strings(!) here since a nice result comparison can be opened
+                // with double-click on the test-error
+                // assertThat("Unexpected result returned", result, is(expectedResult));
+                // TODO alternatively https://github.com/skyscreamer/JSONassert could be used
+                // here eventually or the JsonNode-object itself for comparison
+                Assert.assertEquals(expectedResultAsString, objAsString);
+            } catch (JsonProcessingException ex) {
+                Assert.fail("Problem comparing objects");
+            }
         }
     }
 
@@ -175,18 +183,18 @@ public class ResultChecker {
      * @param testName the test to get the result map for
      * @return
      */
-    private Map<String, String> getResultMap(final String testName) {
+    private Map<String, JsonNode> getResultMap(final String testName) {
         return m_resultMaps.computeIfAbsent(testName, k -> readResultMap(k));
     }
 
     /**
      * Essentially reads the result map (string to compare to) from a file.
      */
-    private Map<String, String> readResultMap(final String testName) {
+    private Map<String, JsonNode> readResultMap(final String testName) {
         try {
             String json =
                 IOUtils.toString(TestUtil.resolveToURL(getResultFilePath(testName)), Charset.defaultCharset());
-            return m_objectMapper.readValue(json, new TypeReference<Map<String, String>>() {
+            return m_objectMapper.readValue(json, new TypeReference<Map<String, JsonNode>>() {
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -204,8 +212,8 @@ public class ResultChecker {
      * @return the json representation
      * @throws JsonProcessingException
      */
-    private final String objectToJson(final Object obj) throws JsonProcessingException {
-        return m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+    private final JsonNode objectToJson(final Object obj) throws JsonProcessingException {
+        return m_objectMapper.valueToTree(obj);
     }
 
     /**
