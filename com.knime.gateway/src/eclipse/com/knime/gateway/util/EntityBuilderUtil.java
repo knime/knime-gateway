@@ -70,6 +70,8 @@ import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
 import org.knime.core.node.port.MetaPortInfo;
+import org.knime.core.node.port.PageableDataTable;
+import org.knime.core.node.port.PageableDataTable.UnknownRowCountException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortObjectSpec.PortObjectSpecSerializer;
 import org.knime.core.node.port.PortObjectSpecZipOutputStream;
@@ -535,7 +537,7 @@ public class EntityBuilderUtil {
         } else {
             rows = new ArrayList<DataRowEnt>(s);
             try (CloseableRowIterator it = table.iteratorFailProve()) {
-                for (int i = 0; i < f; i++) {
+                for (int i = 0; i < f && it.hasNext(); i++) {
                     it.next();
                 }
                 for (int i = 0; i < s && it.hasNext(); i++) {
@@ -545,6 +547,45 @@ public class EntityBuilderUtil {
         }
         return builder(DataTableEntBuilder.class)
                 .setNumTotalRows(table.size())
+                .setColumnNames(colNames)
+                .setRows(rows)
+                .build();
+    }
+
+    /**
+     * Creates a new {@link DataTableEnt} from a {@link PageableDataTable}.
+     *
+     * @param table the table to create the entity from
+     * @param from row index to start from, if larger then the size of the table, it will return an empty table without
+     *            any rows, if <code>null</code> it will be set to 0
+     * @param size max number of rows to include (if less rows are available, resulting table will contain less), if
+     *            <code>null</code> size will the maximum (i.e. the table end)
+     * @return a newly created entity
+     */
+    public static DataTableEnt buildDataTableEnt(final PageableDataTable table, final Long from, final Integer size) {
+        DataTableSpec spec = table.getDataTableSpec();
+        List<String> colNames = Arrays.asList(spec.getColumnNames());
+        List<DataRowEnt> rows;
+        long tableSize;
+        try {
+            tableSize = table.calcTotalRowCount();
+        } catch (UnknownRowCountException ex) {
+            throw new IllegalStateException("Total size of the table couldn't not be determined.", ex);
+        }
+        long f = from == null ? 0 : from;
+        int s = size == null ? (int)tableSize : size;
+        if (f >= tableSize) {
+            rows = Collections.emptyList();
+        } else {
+            rows = new ArrayList<DataRowEnt>(s);
+            try (CloseableRowIterator it = table.iterator(f, s)) {
+                while (it.hasNext()) {
+                    rows.add(buildDataRowEnt(it.next(), spec));
+                }
+            }
+        }
+        return builder(DataTableEntBuilder.class)
+                .setNumTotalRows(tableSize)
                 .setColumnNames(colNames)
                 .setRows(rows)
                 .build();

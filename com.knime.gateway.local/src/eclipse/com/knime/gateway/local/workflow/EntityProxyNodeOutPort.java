@@ -34,6 +34,8 @@ import org.eclipse.swt.widgets.Display;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.port.HasDataTableSpec;
+import org.knime.core.node.port.PageableDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -119,6 +121,11 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
             return supplyAsync(() -> {
                 return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
                     (DataTableSpec)getPortObjectSpecInternal());
+            });
+        } else if (PageableDataTable.class.isAssignableFrom(getPortType().getPortObjectClass())) {
+            return supplyAsync(() -> {
+                return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
+                    ((HasDataTableSpec)getPortObjectSpecInternal()).getDataTableSpec());
             });
         } else {
             return completedFuture(new UnsupportedPortObject(getPortType()));
