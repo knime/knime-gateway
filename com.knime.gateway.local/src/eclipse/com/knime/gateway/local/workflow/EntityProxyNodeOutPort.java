@@ -95,9 +95,10 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
     private PortObjectSpec getPortObjectSpecInternal() {
         try {
             PortObjectSpec portObjectSpec = getAccess().getOutputPortObjectSpecs(m_node)[getEntity().getPortIndex()];
-            if (portObjectSpec instanceof UnsupportedPortObjectSpec) {
-                IllegalStateException ex = new IllegalStateException("Port type '"
-                    + ((UnsupportedPortObjectSpec)portObjectSpec).getType().getName() + "' not supported, yet.");
+            if (portObjectSpec instanceof ProblemPortObjectSpec) {
+                ProblemPortObjectSpec problemSpec = (ProblemPortObjectSpec)portObjectSpec;
+                IllegalStateException ex = new IllegalStateException("Problem retrieving port spec of type '"
+                    + problemSpec.getType().getName() + ". " + problemSpec.getProblemMessage());
                 throw new CompletionException(ex);
             }
             return portObjectSpec;
@@ -288,16 +289,22 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         m_node = newNodeEnt;
     }
 
-    static class UnsupportedPortObjectSpec implements PortObjectSpec {
+    static class ProblemPortObjectSpec implements PortObjectSpec {
 
         private PortType m_type;
+        private String m_message;
 
-        public UnsupportedPortObjectSpec(final PortType type) {
+        ProblemPortObjectSpec(final PortType type, final String message) {
             m_type = type;
+            m_message = message;
         }
 
         PortType getType() {
             return m_type;
+        }
+
+        String getProblemMessage() {
+            return m_message;
         }
 
         /**

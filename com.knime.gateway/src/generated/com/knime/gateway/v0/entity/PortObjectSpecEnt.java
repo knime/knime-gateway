@@ -52,6 +52,12 @@ public interface PortObjectSpecEnt extends GatewayEntity {
    **/
   public Boolean isInactive();
 
+  /**
+   * Flag that indicates that a problem occured while providing the port objects spec  (e.g. de-/serialization problem). The representation-field will contain more details.
+   * @return problem 
+   **/
+  public Boolean isProblem();
+
 
     /**
      * The builder for the entity.
@@ -81,6 +87,14 @@ public interface PortObjectSpecEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         PortObjectSpecEntBuilder setInactive(Boolean inactive);
+        
+        /**
+         * Flag that indicates that a problem occured while providing the port objects spec  (e.g. de-/serialization problem). The representation-field will contain more details.
+         * 
+         * @param problem the property value,  
+         * @return this entity builder for chaining
+         */
+        PortObjectSpecEntBuilder setProblem(Boolean problem);
         
         
         /**

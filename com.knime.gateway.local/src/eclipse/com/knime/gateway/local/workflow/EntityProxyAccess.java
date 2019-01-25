@@ -21,15 +21,18 @@ package com.knime.gateway.local.workflow;
 import static com.knime.gateway.local.service.ServiceManager.service;
 import static com.knime.gateway.util.EntityUtil.stringToNodeID;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.Base64;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
@@ -40,8 +43,11 @@ import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortObjectSpec.PortObjectSpecSerializer;
+import org.knime.core.node.port.PortObjectSpecZipInputStream;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.PortUtil;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
@@ -57,7 +63,7 @@ import com.google.common.collect.MapMaker;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.local.util.missing.MissingPortObject;
-import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.UnsupportedPortObjectSpec;
+import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.ProblemPortObjectSpec;
 import com.knime.gateway.v0.entity.ConnectionEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
 import com.knime.gateway.v0.entity.NativeNodeEnt;
@@ -427,7 +433,7 @@ public class EntityProxyAccess {
     /**
      * Retrieves the input port object specs. Entries can be <code>null</code>, if port object spec is not available. If
      * a requested spec is not supported by the gateway (because it cannot be serialized), a
-     * {@link UnsupportedPortObjectSpec} instance will be returned instead.
+     * {@link ProblemPortObjectSpec} instance will be returned instead.
      *
      * @param node node to retrieve the specs for
      * @return the specs for all ports (including the flow var port)
@@ -447,7 +453,7 @@ public class EntityProxyAccess {
     /**
      * Retrieves the output port object specs. Entries can be <code>null</code>, if port object spec is not available.
      * If a requested spec is not supported by the gateway (because it cannot be serialized), a
-     * {@link UnsupportedPortObjectSpec} instance will be returned instead.
+     * {@link ProblemPortObjectSpec} instance will be returned instead.
      *
      * @param node node to retrieve the specs for
      * @return the specs for all ports (including the flow var port)
@@ -501,11 +507,17 @@ public class EntityProxyAccess {
             if (ent == null) {
                 continue;
             }
+
             if (ent.isInactive()) {
                 res[i] = InactiveBranchPortObjectSpec.INSTANCE;
                 continue;
             }
+
             PortType ptype = getPortType(ent.getType());
+            if (ent.isProblem()) {
+                res[i] = new ProblemPortObjectSpec(ptype, ent.getRepresentation());
+                continue;
+            }
             if (DataTableSpec.class.isAssignableFrom(ptype.getPortObjectSpecClass())) {
                 try {
                     res[i] = DataTableSpec.load(
@@ -524,7 +536,22 @@ public class EntityProxyAccess {
                     throw new RuntimeException(ex);
                 }
             } else {
-                res[i] = new UnsupportedPortObjectSpec(ptype);
+                Optional<PortObjectSpecSerializer<PortObjectSpec>> specSerializer =
+                    PortTypeRegistry.getInstance().getSpecSerializer(ptype.getPortObjectSpecClass());
+                if (specSerializer.isPresent()) {
+                    ByteArrayInputStream bytes =
+                        new ByteArrayInputStream(Base64.decodeBase64(ent.getRepresentation().getBytes()));
+                    try (PortObjectSpecZipInputStream in = PortUtil.getPortObjectSpecZipInputStream(bytes)) {
+                        res[i] = specSerializer.get().loadPortObjectSpec(in);
+                    } catch (IOException ex) {
+                        LOGGER.error("Problem deserializing port object spec of type " + ptype, ex);
+                        res[i] = new ProblemPortObjectSpec(ptype,
+                            "Problem deserializing port object spec of type " + ptype + "(" + ex.getMessage() + ")");
+                    }
+                } else {
+                    LOGGER.error("No deserializer available for port of type " + ptype);
+                    res[i] = new ProblemPortObjectSpec(ptype, "No deserializer available for port of type " + ptype);
+                }
             }
         }
         return res;

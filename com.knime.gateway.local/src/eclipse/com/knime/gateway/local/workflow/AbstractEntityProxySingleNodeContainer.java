@@ -41,7 +41,7 @@ import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
 import com.knime.enterprise.utility.KnimeServerConstants;
-import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.UnsupportedPortObjectSpec;
+import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.ProblemPortObjectSpec;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt;
 import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
@@ -121,9 +121,10 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                 FlowObjectStack flowObjectStack = f3.get();
 
                 for (PortObjectSpec spec : portObjectSpecs) {
-                    if (spec instanceof UnsupportedPortObjectSpec) {
-                        throw new NotConfigurableException("Port object spec of type "
-                            + ((UnsupportedPortObjectSpec)spec).getType().getName() + " not supported in job view.");
+                    if (spec instanceof ProblemPortObjectSpec) {
+                        ProblemPortObjectSpec problemSpec = (ProblemPortObjectSpec)spec;
+                        throw new NotConfigurableException("Problem retrieving port object spec for port of type "
+                            + problemSpec.getType().getName() + ". " + problemSpec.getProblemMessage());
                     }
                 }
 

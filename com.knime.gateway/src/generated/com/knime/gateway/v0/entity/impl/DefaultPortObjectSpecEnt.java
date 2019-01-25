@@ -37,6 +37,7 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
   protected PortTypeEnt m_type;
   protected String m_representation;
   protected Boolean m_inactive;
+  protected Boolean m_problem;
   
   protected DefaultPortObjectSpecEnt() {
     //for sub-classes
@@ -58,6 +59,7 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
         throw new IllegalArgumentException("inactive must not be null.");
     }
     m_inactive = immutable(builder.m_inactive);
+    m_problem = immutable(builder.m_problem);
   }
   
    /**
@@ -75,7 +77,7 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
             return false;
         }
         DefaultPortObjectSpecEnt ent = (DefaultPortObjectSpecEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_representation, ent.m_representation) && Objects.equals(m_inactive, ent.m_inactive);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_representation, ent.m_representation) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_problem, ent.m_problem);
     }
 
 
@@ -94,6 +96,11 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
         return m_inactive;
     }
     
+  @Override
+  public Boolean isProblem() {
+        return m_problem;
+    }
+    
   
     public static class DefaultPortObjectSpecEntBuilder implements PortObjectSpecEntBuilder {
     
@@ -104,6 +111,7 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
         private PortTypeEnt m_type;
         private String m_representation;
         private Boolean m_inactive;
+        private Boolean m_problem;
 
         @Override
         public DefaultPortObjectSpecEntBuilder setType(PortTypeEnt type) {
@@ -126,6 +134,12 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
                  throw new IllegalArgumentException("inactive must not be null.");
              }
              m_inactive = inactive;
+             return this;
+        }
+
+        @Override
+        public DefaultPortObjectSpecEntBuilder setProblem(Boolean problem) {
+             m_problem = problem;
              return this;
         }
 

@@ -71,7 +71,11 @@ import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortObjectSpec.PortObjectSpecSerializer;
+import org.knime.core.node.port.PortObjectSpecZipOutputStream;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.PortUtil;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
@@ -363,7 +367,7 @@ public class EntityBuilderUtil {
             throw new IllegalArgumentException("The port type and port object spec are not compatible.");
         }
         ModelContent model = null;
-        PortObjectSpecEntBuilder builder = builder(PortObjectSpecEntBuilder.class).setInactive(false);
+        PortObjectSpecEntBuilder builder = builder(PortObjectSpecEntBuilder.class).setInactive(false).setProblem(false);
         if (spec instanceof DataTableSpec) {
             model = new ModelContent("model");
             ((DataTableSpec)spec).save(model);
@@ -376,8 +380,24 @@ public class EntityBuilderUtil {
         } else if (spec instanceof InactiveBranchPortObjectSpec) {
             builder.setInactive(true);
         } else {
-            //port type/spec not supported, yet
-            builder.setRepresentation("not supported");
+            Optional<PortObjectSpecSerializer<PortObjectSpec>> specSerializer =
+                PortTypeRegistry.getInstance().getSpecSerializer(spec.getClass());
+            if (specSerializer.isPresent()) {
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                try (PortObjectSpecZipOutputStream out = PortUtil.getPortObjectSpecZipOutputStream(bytes)) {
+                    specSerializer.get().savePortObjectSpec(spec, out);
+                    out.flush();
+                    out.close();
+                    byte[] encodeBase64 = Base64.encodeBase64(bytes.toByteArray());
+                    builder.setRepresentation(new String(encodeBase64));
+                } catch (IOException ex) {
+                    builder.setProblem(true);
+                    builder.setRepresentation("Problem serializing spec: " + ex.getMessage());
+                }
+            } else {
+                builder.setProblem(true);
+                builder.setRepresentation("not supported");
+            }
         }
 
         builder.setType(buildPortTypeEnt(type));
