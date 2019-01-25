@@ -31,6 +31,11 @@
 <entry key="EnabledStatus" type="xboolean" value="true"/>
 </config>
 <entry key="noOfAllMissingRows" type="xint" value="2"/>
+<config key="version_Internals">
+<entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+<entry key="EnabledStatus" type="xboolean" value="true"/>
+</config>
+<entry key="version" type="xstring" value="legacy"/>
 </config>
 <entry key="customDescription" type="xstring" isnull="true" value=""/>
 <entry key="state" type="xstring" value="EXECUTED"/>
@@ -59,6 +64,6 @@
 </config>
 <config key="filestores">
 <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-<entry key="file_store_id" type="xstring" value="3fbadef7-b3aa-46c9-bf28-13cddbd48e30"/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
 </config>
 </config>

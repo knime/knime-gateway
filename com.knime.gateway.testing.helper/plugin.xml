@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/testing"
+            deprecated="false"
+            factory-class="com.knime.gateway.testing.helper.node.pageabletable.PageableTableNodeFactory">
+      </node>
+   </extension>
+   <extension
+         point="org.knime.core.PortType">
+      <portType
+            hidden="false"
+            name="com.knime.gateway.testing.helper.PageableTablePortObject"
+            objectClass="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObject"
+            objectSerializer="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObject$PageableTablePortObjectSerializer"
+            specClass="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObjectSpec"
+            specSerializer="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObjectSpec$PageableTablePortObjectSpecSerializer">
+      </portType>
+   </extension>
+
+</plugin>
