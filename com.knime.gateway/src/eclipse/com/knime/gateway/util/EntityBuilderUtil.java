@@ -570,7 +570,7 @@ public class EntityBuilderUtil {
         try {
             tableSize = table.calcTotalRowCount();
         } catch (UnknownRowCountException ex) {
-            throw new IllegalStateException("Total size of the table couldn't not be determined.", ex);
+            throw new IllegalStateException("Total size of the table could not be determined.", ex);
         }
         long f = from == null ? 0 : from;
         int s = size == null ? (int)tableSize : size;
