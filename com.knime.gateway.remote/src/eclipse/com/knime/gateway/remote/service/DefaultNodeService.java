@@ -28,6 +28,7 @@ import static com.knime.gateway.util.EntityBuilderUtil.buildNodeEnt;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -343,6 +344,9 @@ public class DefaultNodeService implements NodeService {
     }
 
     private static final List<FlowVariableEnt> getFlowVariableEntListFromFlowObjectStack(final FlowObjectStack stack) {
+        if (stack == null) {
+            return Collections.emptyList();
+        }
         return stack.getAvailableFlowVariables().values().stream().filter(fv -> fv.getScope().equals(Scope.Flow))
             .map(fv -> EntityBuilderUtil.buildFlowVariableEnt(fv)).collect(Collectors.toList());
     }
