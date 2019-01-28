@@ -46,6 +46,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
 import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
@@ -110,6 +111,12 @@ public class ResultChecker {
          * order of the fields varies, those fields are essentially ignored for comparison.
          */
         pe.addException(DefaultJavaObjectEnt.class, "jsonContent", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_JSON_CONTENT"));
+
+        /**
+         * The representation-field of some entities varies with every test run (e.g. the serialized and base64-encoded port
+         * object specs). Hence, representations-strings are ignored for comparison.
+         */
+        pe.addException(PortObjectSpecEnt.class, "representation", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_REPRESENTATION"));
 
         PROPERTY_EXCEPTIONS = pe;
     }
