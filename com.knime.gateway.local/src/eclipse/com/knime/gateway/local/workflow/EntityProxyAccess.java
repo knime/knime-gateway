@@ -513,7 +513,7 @@ public class EntityProxyAccess {
                 continue;
             }
 
-            PortType ptype = getPortType(ent.getType());
+            PortType ptype = getPortType(ent.getPortType());
             if (ent.isProblem()) {
                 res[i] = new ProblemPortObjectSpec(ptype, ent.getRepresentation());
                 continue;
@@ -536,8 +536,9 @@ public class EntityProxyAccess {
                     throw new RuntimeException(ex);
                 }
             } else {
+                PortTypeRegistry ptr = PortTypeRegistry.getInstance();
                 Optional<PortObjectSpecSerializer<PortObjectSpec>> specSerializer =
-                    PortTypeRegistry.getInstance().getSpecSerializer(ptype.getPortObjectSpecClass());
+                    ptr.getSpecClass(ent.getClassName()).map(cl -> ptr.getSpecSerializer(cl).orElse(null));
                 if (specSerializer.isPresent()) {
                     ByteArrayInputStream bytes =
                         new ByteArrayInputStream(Base64.decodeBase64(ent.getRepresentation().getBytes()));

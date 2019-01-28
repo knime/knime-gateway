@@ -402,7 +402,8 @@ public class EntityBuilderUtil {
             }
         }
 
-        builder.setType(buildPortTypeEnt(type));
+        builder.setPortType(buildPortTypeEnt(type));
+        builder.setClassName(spec.getClass().getCanonicalName());
         if (model != null) {
             builder.setRepresentation(JSONConfig.toJSONString(model, WriterConfig.PRETTY));
         }

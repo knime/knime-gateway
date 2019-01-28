@@ -34,7 +34,8 @@ import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 @javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
 public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
 
-  protected PortTypeEnt m_type;
+  protected String m_className;
+  protected PortTypeEnt m_portType;
   protected String m_representation;
   protected Boolean m_inactive;
   protected Boolean m_problem;
@@ -50,10 +51,14 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
   
   private DefaultPortObjectSpecEnt(DefaultPortObjectSpecEntBuilder builder) {
     
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_className == null) {
+        throw new IllegalArgumentException("className must not be null.");
     }
-    m_type = immutable(builder.m_type);
+    m_className = immutable(builder.m_className);
+    if(builder.m_portType == null) {
+        throw new IllegalArgumentException("portType must not be null.");
+    }
+    m_portType = immutable(builder.m_portType);
     m_representation = immutable(builder.m_representation);
     if(builder.m_inactive == null) {
         throw new IllegalArgumentException("inactive must not be null.");
@@ -77,13 +82,18 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
             return false;
         }
         DefaultPortObjectSpecEnt ent = (DefaultPortObjectSpecEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_representation, ent.m_representation) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_problem, ent.m_problem);
+        return Objects.equals(m_className, ent.m_className) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_representation, ent.m_representation) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_problem, ent.m_problem);
     }
 
 
   @Override
-  public PortTypeEnt getType() {
-        return m_type;
+  public String getClassName() {
+        return m_className;
+    }
+    
+  @Override
+  public PortTypeEnt getPortType() {
+        return m_portType;
     }
     
   @Override
@@ -108,17 +118,27 @@ public class DefaultPortObjectSpecEnt  implements PortObjectSpecEnt {
             
         }
     
-        private PortTypeEnt m_type;
+        private String m_className;
+        private PortTypeEnt m_portType;
         private String m_representation;
         private Boolean m_inactive;
         private Boolean m_problem;
 
         @Override
-        public DefaultPortObjectSpecEntBuilder setType(PortTypeEnt type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultPortObjectSpecEntBuilder setClassName(String className) {
+             if(className == null) {
+                 throw new IllegalArgumentException("className must not be null.");
              }
-             m_type = type;
+             m_className = className;
+             return this;
+        }
+
+        @Override
+        public DefaultPortObjectSpecEntBuilder setPortType(PortTypeEnt portType) {
+             if(portType == null) {
+                 throw new IllegalArgumentException("portType must not be null.");
+             }
+             m_portType = portType;
              return this;
         }
 

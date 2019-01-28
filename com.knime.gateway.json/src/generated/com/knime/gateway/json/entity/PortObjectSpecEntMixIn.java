@@ -55,8 +55,12 @@ public interface PortObjectSpecEntMixIn extends PortObjectSpecEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public PortTypeEnt getType();
+    @JsonProperty("className")
+    public String getClassName();
+    
+    @Override
+    @JsonProperty("portType")
+    public PortTypeEnt getPortType();
     
     @Override
     @JsonProperty("representation")
@@ -91,8 +95,12 @@ public interface PortObjectSpecEntMixIn extends PortObjectSpecEnt {
         public PortObjectSpecEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public PortObjectSpecEntMixInBuilder setType(final PortTypeEnt type);
+        @JsonProperty("className")
+        public PortObjectSpecEntMixInBuilder setClassName(final String className);
+        
+        @Override
+        @JsonProperty("portType")
+        public PortObjectSpecEntMixInBuilder setPortType(final PortTypeEnt portType);
         
         @Override
         @JsonProperty("representation")

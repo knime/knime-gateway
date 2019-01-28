@@ -35,13 +35,19 @@ public interface PortObjectSpecEnt extends GatewayEntity {
 
 
   /**
-   * Get type
-   * @return type , never <code>null</code>
+   * The fully-qualified class name of the port object spec. 
+   * @return className , never <code>null</code>
    **/
-  public PortTypeEnt getType();
+  public String getClassName();
 
   /**
-   * The actual port object spec representation or \&quot;not supported\&quot; if not supported.
+   * Get portType
+   * @return portType , never <code>null</code>
+   **/
+  public PortTypeEnt getPortType();
+
+  /**
+   * The actual port object spec representation or a description of the problem if &#39;problem&#39; is true.
    * @return representation 
    **/
   public String getRepresentation();
@@ -65,15 +71,23 @@ public interface PortObjectSpecEnt extends GatewayEntity {
     public interface PortObjectSpecEntBuilder extends GatewayEntityBuilder<PortObjectSpecEnt> {
 
         /**
-   		 * Set type
+         * The fully-qualified class name of the port object spec. 
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param className the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        PortObjectSpecEntBuilder setType(PortTypeEnt type);
+        PortObjectSpecEntBuilder setClassName(String className);
         
         /**
-         * The actual port object spec representation or \&quot;not supported\&quot; if not supported.
+   		 * Set portType
+         * 
+         * @param portType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PortObjectSpecEntBuilder setPortType(PortTypeEnt portType);
+        
+        /**
+         * The actual port object spec representation or a description of the problem if &#39;problem&#39; is true.
          * 
          * @param representation the property value,  
          * @return this entity builder for chaining
