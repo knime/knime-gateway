@@ -186,9 +186,13 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         entity = ns().getInputPortSpecs(wfId, "21");
         cr(entity, "inportspecsent_21");
 
-        //test a unsupported port object spec
+        //test a 'generic' (i.e. not a simple) port object spec
         entity = ns().getInputPortSpecs(wfId, "22");
         cr(entity, "inportspecsent_22");
+
+        //test another 'generic' (i.e. not a simple) port object spec
+        entity = ns().getInputPortSpecs(wfId, "26");
+        cr(entity, "inportspecsent_26");
 
 
         /* Test output port object spec endpoint */
