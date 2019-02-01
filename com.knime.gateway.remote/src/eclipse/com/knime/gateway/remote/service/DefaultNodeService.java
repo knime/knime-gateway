@@ -64,6 +64,7 @@ import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.core.wizard.SubnodeViewableModel;
 import org.knime.workbench.repository.RepositoryManager;
 
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
@@ -354,6 +355,13 @@ public class DefaultNodeService implements NodeService {
             NativeNodeContainer nnc = (NativeNodeContainer)nc;
             try {
                 return EntityBuilderUtil.buildViewDataEnt((WizardNode<?,?>)nnc.getNodeModel());
+            } catch (IOException ex) {
+                //should not happen, that's why it's just a runtime exception
+                throw new IllegalStateException("Views data cannot be accessed.", ex);
+            }
+        } else if (nc instanceof SubNodeContainer) {
+            try {
+                return EntityBuilderUtil.buildViewDataEnt(new SubnodeViewableModel((SubNodeContainer)nc, nc.getName()));
             } catch (IOException ex) {
                 //should not happen, that's why it's just a runtime exception
                 throw new IllegalStateException("Views data cannot be accessed.", ex);
