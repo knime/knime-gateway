@@ -343,6 +343,7 @@ public class EntityBuilderUtil {
                 .setVirtualInNodeID(nodeIDToString(subNode.getVirtualInNodeID()))
                 .setVirtualOutNodeID(nodeIDToString(subNode.getVirtualOutNodeID()))
                 .setInactive(subNode.isInactive())
+                .setWebViewNames(Arrays.asList(subNode.getName()))
                 .setType("WrappedWorkflowNode").build();
     }
 
