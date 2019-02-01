@@ -248,4 +248,12 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
         throw new IllegalStateException("Implementation error: Method needs to be overridden.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("rawtypes")
+    @Override
+    public EntityProxyInteractiveWebViewsResult getInteractiveWebViews() {
+        return getAccess().getInteractiveWebViewsResult(getEntity());
+    }
 }

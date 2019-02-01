@@ -22,36 +22,35 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
 import org.knime.core.node.AbstractNodeView.ViewableModel;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.wizard.WizardNode;
-import org.knime.core.node.wizard.WizardViewCreator;
-import org.knime.js.core.JavaScriptViewCreator;
 
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
-import com.knime.gateway.v0.entity.NativeNodeEnt;
+import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
- * A combination of a {@link ViewableModel} and {@link WizardNode} that is backed by a {@link NativeNodeEnt}.
+ * A combination of a {@link ViewableModel} and {@link WizardNode} that is backed by a {@link NodeEnt}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNodeEnt>
+public abstract class AbstractEntityProxyWebView<E extends NodeEnt> extends AbstractEntityProxy<E>
     implements ViewableModel, WizardNode<WebViewContent, WebViewContent> {
 
     private WizardNode<WebViewContent, WebViewContent> m_wizardNode;
-
-    private JavaScriptViewCreator<WebViewContent, WebViewContent> m_viewCreator;
 
     private final String m_viewName;
 
@@ -61,7 +60,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      * @param node the node to load the view data from
      * @param access the entity access to get access to entites etc.
      */
-    EntityProxyWebViewModel(final NativeNodeEnt node, final String viewName, final EntityProxyAccess access) {
+    AbstractEntityProxyWebView(final E node, final String viewName, final EntityProxyAccess access) {
         super(node, access);
         m_viewName = viewName;
         //try getting the view data
@@ -121,7 +120,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      */
     @Override
     public WebViewContent getViewRepresentation() {
-        return fromJsonString(getViewData().getViewRepresentation().getJsonContent(), createEmptyViewRepresentation());
+        return fromJsonString(getViewData().getViewRepresentation().getJsonContent());
     }
 
     /**
@@ -129,7 +128,7 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      */
     @Override
     public WebViewContent getViewValue() {
-        return fromJsonString(m_viewData.getViewValue().getJsonContent(), createEmptyViewValue());
+        return fromJsonString(m_viewData.getViewValue().getJsonContent());
     }
 
     /**
@@ -178,17 +177,6 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
      * {@inheritDoc}
      */
     @Override
-    public WizardViewCreator<WebViewContent, WebViewContent> getViewCreator() {
-        if (m_viewCreator == null) {
-            m_viewCreator = new JavaScriptViewCreator<WebViewContent, WebViewContent>(getJavascriptObjectID());
-        }
-        return m_viewCreator;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isHideInWizard() {
         return m_viewData.isHideInWizard();
     }
@@ -201,21 +189,59 @@ public final class EntityProxyWebViewModel extends AbstractEntityProxy<NativeNod
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
     private WizardNode<WebViewContent, WebViewContent> getWizardNode() {
         if (m_wizardNode == null) {
-            m_wizardNode = (WizardNode<WebViewContent, WebViewContent>)EntityProxyNativeNodeContainer
-                .createNodeFactoryInstance(getEntity()).createNodeModel();
+            m_wizardNode = createWizardNode();
         }
         return m_wizardNode;
     }
 
-    private static final WebViewContent fromJsonString(final String s, final WebViewContent webViewContent) {
-        try {
-            webViewContent.loadFromStream(IOUtils.toInputStream(s, Charset.forName("UTF-8")));
-        } catch (IOException ex) {
-            throw new IllegalStateException("Problem deserializing web view.", ex);
+    protected abstract WizardNode<WebViewContent, WebViewContent> createWizardNode();
+
+    private static final WebViewContent fromJsonString(final String s) {
+        return new StringWebViewContent(s);
+    }
+
+    /**
+     * WebViewContent that just wraps the content as a string.
+     */
+    protected static class StringWebViewContent implements WebViewContent {
+
+        private String m_content;
+
+        private StringWebViewContent(final String content) {
+            m_content = content;
         }
-        return webViewContent;
+
+        @Override
+        public OutputStream saveToStream() throws IOException {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            out.write(m_content.getBytes(Charset.forName("UTF-8")));
+            out.flush();
+            return out;
+        }
+
+        @Override
+        public void saveToNodeSettings(final NodeSettingsWO settings) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void loadFromStream(final InputStream viewContentStream) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void loadFromNodeSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * @return the content as json string
+         */
+        protected String getContent() {
+            return m_content;
+        }
+
     }
 }

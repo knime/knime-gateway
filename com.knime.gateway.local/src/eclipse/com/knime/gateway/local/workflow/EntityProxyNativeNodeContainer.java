@@ -178,12 +178,4 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
         }
         return nodeFactory;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public EntityProxyInteractiveWebViewsResult getInteractiveWebViews() {
-        return getAccess().getInteractiveWebViewsResult(getEntity());
-    }
 }

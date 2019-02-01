@@ -603,7 +603,8 @@ public class EntityProxyAccess {
      * @param node the entity to get the client-proxy wrapper for
      * @return the {@link EntityProxyInteractiveWebViewsResult} - either the cached one or newly created
      */
-    EntityProxyInteractiveWebViewsResult getInteractiveWebViewsResult(final NativeNodeEnt node) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    EntityProxyInteractiveWebViewsResult getInteractiveWebViewsResult(final NodeEnt node) {
         //possibly return the same node in port instance for the same index
         return getOrCreate(node, o -> new EntityProxyInteractiveWebViewsResult(o, this),
             EntityProxyInteractiveWebViewsResult.class);
@@ -614,10 +615,43 @@ public class EntityProxyAccess {
      *
      * @param node the node to get the web view model for
      * @param viewName the view name
-     * @return the {@link EntityProxyWebViewModel} - either the cached one or newly created
+     * @return the {@link NativeNodeEntityProxyWebView} - either the cached one or newly created
      */
-    EntityProxyWebViewModel getEntityProxyWebViewModel(final NativeNodeEnt node, final String viewName) {
-        return getOrCreate(node, o -> new EntityProxyWebViewModel(o, viewName, this), EntityProxyWebViewModel.class);
+    @SuppressWarnings("unchecked")
+    <E extends NodeEnt> AbstractEntityProxyWebView<E> getEntityProxyWebViewModel(final E node, final String viewName) {
+        if (node instanceof NativeNodeEnt) {
+            return (AbstractEntityProxyWebView<E>)getEntityProxyWebViewModel((NativeNodeEnt)node, viewName);
+        } else if (node instanceof WrappedWorkflowNodeEnt) {
+            return (AbstractEntityProxyWebView<E>)getEntityProxyWebViewModel((WrappedWorkflowNodeEnt)node,
+                viewName);
+        } else {
+            throw new IllegalArgumentException(
+                "No web view model available for node of type " + node.getTypeID());
+        }
+    }
+
+    /**
+     * Returns a web view model entity proxy for the given node.
+     *
+     * @param node the node to get the web view model for
+     * @param viewName the view name
+     * @return the {@link NativeNodeEntityProxyWebView} - either the cached one or newly created
+     */
+    private NativeNodeEntityProxyWebView getEntityProxyWebViewModel(final NativeNodeEnt node, final String viewName) {
+        return getOrCreate(node, o -> new NativeNodeEntityProxyWebView(o, viewName, this), NativeNodeEntityProxyWebView.class);
+    }
+
+    /**
+     * Returns a web view model entity proxy for the given node.
+     *
+     * @param node the node to get the web view model for
+     * @param viewName the view name
+     * @return the {@link WorkflowNodeEntityProxyWebView} - either the cached one or newly created
+     */
+    private WorkflowNodeEntityProxyWebView getEntityProxyWebViewModel(final WrappedWorkflowNodeEnt node,
+        final String viewName) {
+        return getOrCreate(node, o -> new WorkflowNodeEntityProxyWebView(o, viewName, this),
+            WorkflowNodeEntityProxyWebView.class);
     }
 
     /**

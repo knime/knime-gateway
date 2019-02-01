@@ -21,16 +21,16 @@ package com.knime.gateway.local.workflow;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.ui.node.workflow.InteractiveWebViewsResultUI;
 
-import com.knime.gateway.v0.entity.NativeNodeEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link InteractiveWebViewsResultUI}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @param <E> the node entity type
  */
-public class EntityProxyInteractiveWebViewsResult extends AbstractEntityProxy<NativeNodeEnt>
-    implements InteractiveWebViewsResultUI<EntityProxyWebViewModel, WebViewContent, WebViewContent> {
+public class EntityProxyInteractiveWebViewsResult<E extends NodeEnt> extends AbstractEntityProxy<E>
+    implements InteractiveWebViewsResultUI<AbstractEntityProxyWebView<E>, WebViewContent, WebViewContent> {
 
     /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
@@ -38,7 +38,7 @@ public class EntityProxyInteractiveWebViewsResult extends AbstractEntityProxy<Na
      * @param conn
      * @param access
      */
-    EntityProxyInteractiveWebViewsResult(final NativeNodeEnt entity, final EntityProxyAccess clientProxyAccess) {
+    EntityProxyInteractiveWebViewsResult(final E entity, final EntityProxyAccess clientProxyAccess) {
         super(entity, clientProxyAccess);
     }
 
@@ -48,12 +48,12 @@ public class EntityProxyInteractiveWebViewsResult extends AbstractEntityProxy<Na
     }
 
     @Override
-    public SingleInteractiveWebViewResultUI<EntityProxyWebViewModel, WebViewContent, WebViewContent>
+    public SingleInteractiveWebViewResultUI<AbstractEntityProxyWebView<E>, WebViewContent, WebViewContent>
         get(final int index) {
-        return new SingleInteractiveWebViewResultUI<EntityProxyWebViewModel, WebViewContent, WebViewContent>() {
+        return new SingleInteractiveWebViewResultUI<AbstractEntityProxyWebView<E>, WebViewContent, WebViewContent>() {
 
             @Override
-            public EntityProxyWebViewModel getModel() {
+            public AbstractEntityProxyWebView<E> getModel() {
                 return getAccess().getEntityProxyWebViewModel(getEntity(), getEntity().getWebViewNames().get(index));
             }
 
