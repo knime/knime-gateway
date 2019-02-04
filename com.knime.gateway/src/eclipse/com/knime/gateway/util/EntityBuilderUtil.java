@@ -99,6 +99,7 @@ import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowManager.NodeModelFilter;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
+import org.knime.core.wizard.SinglePageManager;
 import org.knime.js.base.node.quickform.QuickFormNodeModel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
@@ -344,6 +345,7 @@ public class EntityBuilderUtil {
                 .setVirtualOutNodeID(nodeIDToString(subNode.getVirtualOutNodeID()))
                 .setInactive(subNode.isInactive())
                 .setWebViewNames(Arrays.asList(subNode.getName()))
+                .setHasWizardPage(SinglePageManager.of(subNode.getParent()).hasWizardPage(subNode.getID()))
                 .setType("WrappedWorkflowNode").build();
     }
 

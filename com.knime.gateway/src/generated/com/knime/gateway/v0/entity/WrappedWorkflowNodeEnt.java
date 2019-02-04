@@ -59,6 +59,12 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
    **/
   public Boolean isInactive();
 
+  /**
+   * Whether the node has a wizard page (i.e. a composite web view)
+   * @return hasWizardPage 
+   **/
+  public Boolean hasWizardPage();
+
 
     /**
      * The builder for the entity.
@@ -264,6 +270,14 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         WrappedWorkflowNodeEntBuilder setInactive(Boolean inactive);
+        
+        /**
+         * Whether the node has a wizard page (i.e. a composite web view)
+         * 
+         * @param hasWizardPage the property value,  
+         * @return this entity builder for chaining
+         */
+        WrappedWorkflowNodeEntBuilder setHasWizardPage(Boolean hasWizardPage);
         
         
         /**

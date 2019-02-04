@@ -72,7 +72,6 @@ public abstract class AbstractEntityProxyWebView<E extends NodeEnt> extends Abst
             try {
                 m_viewData =
                     getAccess().nodeService().getViewData(getEntity().getRootWorkflowID(), getEntity().getNodeID());
-
             } catch (NodeNotFoundException | InvalidRequestException ex) {
                 throw new IllegalStateException(ex);
             }

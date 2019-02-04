@@ -54,7 +54,7 @@ public class EntityProxyInteractiveWebViewsResult<E extends NodeEnt> extends Abs
 
             @Override
             public AbstractEntityProxyWebView<E> getModel() {
-                return getAccess().getEntityProxyWebViewModel(getEntity(), getEntity().getWebViewNames().get(index));
+                return getAccess().getEntityProxyWebView(getEntity(), getEntity().getWebViewNames().get(index));
             }
 
             @Override

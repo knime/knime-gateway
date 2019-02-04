@@ -45,6 +45,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
   protected String m_virtualInNodeID;
   protected String m_virtualOutNodeID;
   protected Boolean m_inactive;
+  protected Boolean m_hasWizardPage;
   
   protected DefaultWrappedWorkflowNodeEnt() {
     //for sub-classes
@@ -100,6 +101,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     m_virtualInNodeID = immutable(builder.m_virtualInNodeID);
     m_virtualOutNodeID = immutable(builder.m_virtualOutNodeID);
     m_inactive = immutable(builder.m_inactive);
+    m_hasWizardPage = immutable(builder.m_hasWizardPage);
   }
   
    /**
@@ -117,7 +119,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
             return false;
         }
         DefaultWrappedWorkflowNodeEnt ent = (DefaultWrappedWorkflowNodeEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_workflowIncomingPorts, ent.m_workflowIncomingPorts) && Objects.equals(m_workflowOutgoingPorts, ent.m_workflowOutgoingPorts) && Objects.equals(m_encrypted, ent.m_encrypted) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates) && Objects.equals(m_virtualInNodeID, ent.m_virtualInNodeID) && Objects.equals(m_virtualOutNodeID, ent.m_virtualOutNodeID) && Objects.equals(m_inactive, ent.m_inactive);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_deletable, ent.m_deletable) && Objects.equals(m_resetable, ent.m_resetable) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_webViewNames, ent.m_webViewNames) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_uIInfo, ent.m_uIInfo) && Objects.equals(m_workflowIncomingPorts, ent.m_workflowIncomingPorts) && Objects.equals(m_workflowOutgoingPorts, ent.m_workflowOutgoingPorts) && Objects.equals(m_encrypted, ent.m_encrypted) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates) && Objects.equals(m_virtualInNodeID, ent.m_virtualInNodeID) && Objects.equals(m_virtualOutNodeID, ent.m_virtualOutNodeID) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_hasWizardPage, ent.m_hasWizardPage);
     }
 
 
@@ -134,6 +136,11 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
   @Override
   public Boolean isInactive() {
         return m_inactive;
+    }
+    
+  @Override
+  public Boolean hasWizardPage() {
+        return m_hasWizardPage;
     }
     
   
@@ -168,6 +175,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         private String m_virtualInNodeID;
         private String m_virtualOutNodeID;
         private Boolean m_inactive;
+        private Boolean m_hasWizardPage;
 
         @Override
         public DefaultWrappedWorkflowNodeEntBuilder setType(String type) {
@@ -334,6 +342,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         @Override
         public DefaultWrappedWorkflowNodeEntBuilder setInactive(Boolean inactive) {
              m_inactive = inactive;
+             return this;
+        }
+
+        @Override
+        public DefaultWrappedWorkflowNodeEntBuilder setHasWizardPage(Boolean hasWizardPage) {
+             m_hasWizardPage = hasWizardPage;
              return this;
         }
 

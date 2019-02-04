@@ -277,4 +277,12 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
     public boolean isInactive() {
         return getEntity().isInactive();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasWizardPage() {
+        return getEntity().hasWizardPage();
+    }
 }

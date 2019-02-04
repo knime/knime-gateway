@@ -162,6 +162,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     @JsonProperty("inactive")
     public Boolean isInactive();
     
+    @Override
+    @JsonProperty("hasWizardPage")
+    public Boolean hasWizardPage();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -281,6 +285,10 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         @Override
         @JsonProperty("inactive")
         public WrappedWorkflowNodeEntMixInBuilder setInactive(final Boolean inactive);
+        
+        @Override
+        @JsonProperty("hasWizardPage")
+        public WrappedWorkflowNodeEntMixInBuilder setHasWizardPage(final Boolean hasWizardPage);
         
     }
 
