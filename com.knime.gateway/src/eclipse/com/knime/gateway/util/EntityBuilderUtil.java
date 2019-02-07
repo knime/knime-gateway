@@ -322,6 +322,7 @@ public class EntityBuilderUtil {
         } else {
             jobManager = subNode.getJobManager();
         }
+        boolean hasWizardPage = SinglePageManager.of(subNode.getParent()).hasWizardPage(subNode.getID());
         return builder(WrappedWorkflowNodeEntBuilder.class).setName(subNode.getName())
                 .setNodeID(nodeIDToString(subNode.getID()))
                 .setNodeMessage(buildNodeMessageEnt(subNode))
@@ -344,8 +345,8 @@ public class EntityBuilderUtil {
                 .setVirtualInNodeID(nodeIDToString(subNode.getVirtualInNodeID()))
                 .setVirtualOutNodeID(nodeIDToString(subNode.getVirtualOutNodeID()))
                 .setInactive(subNode.isInactive())
-                .setWebViewNames(Arrays.asList(subNode.getName()))
-                .setHasWizardPage(SinglePageManager.of(subNode.getParent()).hasWizardPage(subNode.getID()))
+                .setWebViewNames(hasWizardPage ? Arrays.asList(subNode.getName()) : Collections.emptyList())
+                .setHasWizardPage(hasWizardPage)
                 .setType("WrappedWorkflowNode").build();
     }
 
