@@ -69,7 +69,7 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)
             .setClassName("org.knime.base.node.io.filereader.FileReaderNodeFactory");
         String newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), null);
-        Assert.assertThat(newNodeID, Is.is("23"));
+        Assert.assertThat(newNodeID, Is.is("24"));
         cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root_new_node");
 
         //create and add a new node in sub workflow

@@ -133,6 +133,16 @@
       "value" : "Variables connection"
     }, {
       "op" : "REPLACE",
+      "path" : "/nodes/23/outPorts/1/summary",
+      "typeID" : "PatchOp",
+      "value" : "Rows: 4, Cols: 5"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/23/outPorts/0/summary",
+      "typeID" : "PatchOp",
+      "value" : "Variables connection"
+    }, {
+      "op" : "REPLACE",
       "path" : "/nodes/6/outPorts/0/summary",
       "typeID" : "PatchOp",
       "value" : "Rows: 5, Cols: 4"
@@ -209,6 +219,16 @@
     }, {
       "op" : "REPLACE",
       "path" : "/nodes/4/nodeState/state",
+      "typeID" : "PatchOp",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/23/resetable",
+      "typeID" : "PatchOp",
+      "value" : true
+    }, {
+      "op" : "REPLACE",
+      "path" : "/nodes/23/nodeState/state",
       "typeID" : "PatchOp",
       "value" : "EXECUTED"
     }, {

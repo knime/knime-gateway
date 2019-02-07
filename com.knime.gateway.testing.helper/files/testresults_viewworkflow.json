@@ -1,4 +1,629 @@
 {
+  "nodesettings_10" : "{\n  \"name\" : \"configuration\",\n  \"value\" : {\n    \"model\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"weka-optionhandler-settings\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"options_list_with_placeholders\" : {\n              \"type\" : \"string\",\n              \"value\" : \"-C #0 -M #1\"\n            },\n            \"-C_(#0)\" : {\n              \"type\" : \"string\",\n              \"value\" : \"0.25\"\n            },\n            \"-M_(#1)\" : {\n              \"type\" : \"string\",\n              \"value\" : \"2\"\n            },\n            \"additional_options\" : {\n              \"type\" : \"string\",\n              \"value\" : \"\"\n            }\n          }\n        },\n        \"keep_training_instances\" : {\n          \"type\" : \"boolean\",\n          \"value\" : false\n        },\n        \"ClassColumn\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"VectorColumn\" : {\n          \"type\" : \"string\",\n          \"value\" : null\n        }\n      }\n    },\n    \"internal_node_subsettings\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"memory_policy\" : {\n          \"type\" : \"string\",\n          \"value\" : \"CacheSmallInMemory\"\n        }\n      }\n    }\n  }\n}",
+  "inputflowvariablesent_18" : [ {
+    "name" : "column1",
+    "type" : "DOUBLE",
+    "typeID" : "FlowVariable",
+    "value" : "1.03"
+  }, {
+    "name" : "column2",
+    "type" : "INTEGER",
+    "typeID" : "FlowVariable",
+    "value" : "39874324"
+  }, {
+    "name" : "column3",
+    "type" : "STRING",
+    "typeID" : "FlowVariable",
+    "value" : "akjdsfasd"
+  }, {
+    "name" : "RowID",
+    "type" : "STRING",
+    "typeID" : "FlowVariable",
+    "value" : "Row0"
+  } ],
+  "nodeent_2" : {
+    "deletable" : true,
+    "inPorts" : [ {
+      "portIndex" : 0,
+      "portName" : "Variable Inport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    }, {
+      "portIndex" : 1,
+      "portName" : "Table to be filtered",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    } ],
+    "inactive" : false,
+    "name" : "Column Filter",
+    "nodeAnnotation" : {
+      "backgroundColor" : 16777215,
+      "borderColor" : 16777215,
+      "borderSize" : 0,
+      "bounds" : {
+        "height" : 19,
+        "typeID" : "Bounds",
+        "width" : 134,
+        "x" : 293,
+        "y" : 399
+      },
+      "default" : false,
+      "defaultFontSize" : 11,
+      "styleRanges" : [ ],
+      "text" : "node annotation",
+      "textAlignment" : "CENTER",
+      "type" : "NodeAnnotation",
+      "typeID" : "NodeAnnotation",
+      "version" : 20151123
+    },
+    "nodeFactoryKey" : {
+      "className" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory",
+      "typeID" : "NodeFactoryKey"
+    },
+    "nodeID" : "2",
+    "nodeMessage" : {
+      "message" : "",
+      "type" : "RESET",
+      "typeID" : "NodeMessage"
+    },
+    "nodeState" : {
+      "state" : "EXECUTED",
+      "typeID" : "NodeState"
+    },
+    "nodeType" : "MANIPULATOR",
+    "outPorts" : [ {
+      "inactive" : false,
+      "portIndex" : 0,
+      "portName" : "Variable Outport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "summary" : "Variables connection",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    }, {
+      "inactive" : false,
+      "portIndex" : 1,
+      "portName" : "Filtered table",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "summary" : "Rows: 8, Cols: 4",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    } ],
+    "parentNodeID" : "root",
+    "progress" : {
+      "typeID" : "NodeProgress"
+    },
+    "resetable" : true,
+    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+    "type" : "NativeNode",
+    "typeID" : "NativeNode",
+    "uiinfo" : {
+      "bounds" : {
+        "height" : 83,
+        "typeID" : "Bounds",
+        "width" : 104,
+        "x" : 344,
+        "y" : 337
+      },
+      "dropLocation" : false,
+      "snapToGrid" : false,
+      "symbolRelative" : true,
+      "typeID" : "NodeUIInfo"
+    },
+    "webViewNames" : [ ]
+  },
+  "outputflowvariablesent_18" : [ {
+    "name" : "test_var",
+    "type" : "STRING",
+    "typeID" : "FlowVariable",
+    "value" : "akjdsfasdtest"
+  }, {
+    "name" : "column1",
+    "type" : "DOUBLE",
+    "typeID" : "FlowVariable",
+    "value" : "1.03"
+  }, {
+    "name" : "column2",
+    "type" : "INTEGER",
+    "typeID" : "FlowVariable",
+    "value" : "39874324"
+  }, {
+    "name" : "column3",
+    "type" : "STRING",
+    "typeID" : "FlowVariable",
+    "value" : "akjdsfasd"
+  }, {
+    "name" : "RowID",
+    "type" : "STRING",
+    "typeID" : "FlowVariable",
+    "value" : "Row0"
+  } ],
+  "wrappedworkflownodeent_9" : {
+    "deletable" : true,
+    "encrypted" : false,
+    "inPorts" : [ {
+      "portIndex" : 0,
+      "portName" : "Variable Inport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    }, {
+      "portIndex" : 1,
+      "portName" : "Port 1",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    } ],
+    "inactive" : false,
+    "name" : "Wrapped Metanode",
+    "nodeAnnotation" : {
+      "backgroundColor" : 16777215,
+      "borderColor" : 0,
+      "borderSize" : 0,
+      "bounds" : {
+        "height" : 19,
+        "typeID" : "Bounds",
+        "width" : 134,
+        "x" : 293,
+        "y" : 559
+      },
+      "default" : false,
+      "defaultFontSize" : -1,
+      "styleRanges" : [ ],
+      "text" : "",
+      "textAlignment" : "CENTER",
+      "type" : "NodeAnnotation",
+      "typeID" : "NodeAnnotation",
+      "version" : 20151123
+    },
+    "nodeID" : "9",
+    "nodeMessage" : {
+      "message" : "",
+      "type" : "RESET",
+      "typeID" : "NodeMessage"
+    },
+    "nodeState" : {
+      "state" : "EXECUTED",
+      "typeID" : "NodeState"
+    },
+    "nodeType" : "SUBNODE",
+    "outPorts" : [ {
+      "inactive" : false,
+      "portIndex" : 0,
+      "portName" : "Variable Outport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "summary" : "Variables connection",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    }, {
+      "inactive" : false,
+      "portIndex" : 1,
+      "portName" : "Port 1",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "summary" : "Rows: 4, Cols: 16",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    } ],
+    "parentNodeID" : "root",
+    "resetable" : true,
+    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+    "type" : "WrappedWorkflowNode",
+    "typeID" : "WrappedWorkflowNode",
+    "uiinfo" : {
+      "bounds" : {
+        "height" : 83,
+        "typeID" : "Bounds",
+        "width" : 148,
+        "x" : 344,
+        "y" : 497
+      },
+      "dropLocation" : false,
+      "snapToGrid" : false,
+      "symbolRelative" : true,
+      "typeID" : "NodeUIInfo"
+    },
+    "virtualInNodeID" : "9:0:8",
+    "virtualOutNodeID" : "9:0:9",
+    "webViewNames" : [ ],
+    "workflowIncomingPorts" : [ ],
+    "workflowOutgoingPortNodeStates" : [ ],
+    "workflowOutgoingPorts" : [ ]
+  },
+  "inportspecsent_22" : [ null, {
+    "inactive" : false,
+    "representation" : "not supported",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  }, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  } ],
+  "inportspecsent_20" : [ null, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  }, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  }, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"model\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"columns\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_0\"\n            },\n            \"1\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_1\"\n            },\n            \"2\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_0\"\n            },\n            \"3\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_1\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 4\n            }\n          }\n        },\n        \"distance-spec-version\" : {\n          \"type\" : \"string\",\n          \"value\" : \"1\"\n        },\n        \"distance-characteristics\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"METRIC\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 1\n            }\n          }\n        },\n        \"distance-measure-type\" : {\n          \"type\" : \"string\",\n          \"value\" : \"org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory\"\n        }\n      }\n    },\n    \"class_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"org.knime.distance.DistanceMeasurePortSpec\"\n    },\n    \"version\" : {\n      \"type\" : \"int\",\n      \"value\" : 1\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  } ],
+  "inportspecsent_6_3" : [ null, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 4\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  } ],
+  "inportspecsent_21" : [ null, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  }, null, null, null ],
+  "nodeent_6_3" : {
+    "deletable" : true,
+    "inPorts" : [ {
+      "portIndex" : 0,
+      "portName" : "Variable Inport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    }, {
+      "portIndex" : 1,
+      "portName" : "To be filtered",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    } ],
+    "inactive" : false,
+    "name" : "Row Splitter",
+    "nodeAnnotation" : {
+      "backgroundColor" : 16777215,
+      "borderColor" : 0,
+      "borderSize" : 0,
+      "bounds" : {
+        "height" : 0,
+        "typeID" : "Bounds",
+        "width" : 0,
+        "x" : 0,
+        "y" : 0
+      },
+      "default" : true,
+      "defaultFontSize" : -1,
+      "styleRanges" : [ ],
+      "text" : "",
+      "textAlignment" : "CENTER",
+      "type" : "NodeAnnotation",
+      "typeID" : "NodeAnnotation",
+      "version" : 20151123
+    },
+    "nodeFactoryKey" : {
+      "className" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory",
+      "typeID" : "NodeFactoryKey"
+    },
+    "nodeID" : "6:3",
+    "nodeMessage" : {
+      "message" : "",
+      "type" : "RESET",
+      "typeID" : "NodeMessage"
+    },
+    "nodeState" : {
+      "state" : "EXECUTED",
+      "typeID" : "NodeState"
+    },
+    "nodeType" : "MANIPULATOR",
+    "outPorts" : [ {
+      "inactive" : false,
+      "portIndex" : 0,
+      "portName" : "Variable Outport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "summary" : "Variables connection",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    }, {
+      "inactive" : false,
+      "portIndex" : 1,
+      "portName" : "Filtered",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "summary" : "Rows: 5, Cols: 4",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    }, {
+      "inactive" : false,
+      "portIndex" : 2,
+      "portName" : "Filtered Out",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "summary" : "Rows: 3, Cols: 4",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    } ],
+    "parentNodeID" : "6",
+    "progress" : {
+      "typeID" : "NodeProgress"
+    },
+    "resetable" : true,
+    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+    "type" : "NativeNode",
+    "typeID" : "NativeNode",
+    "uiinfo" : {
+      "bounds" : {
+        "height" : 83,
+        "typeID" : "Bounds",
+        "width" : 94,
+        "x" : 150,
+        "y" : 120
+      },
+      "dropLocation" : false,
+      "snapToGrid" : false,
+      "symbolRelative" : true,
+      "typeID" : "NodeUIInfo"
+    },
+    "webViewNames" : [ ]
+  },
+  "outportspecsent_19" : [ {
+    "inactive" : false,
+    "type" : {
+      "optional" : true,
+      "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  }, {
+    "inactive" : false,
+    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"model\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"columns\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_0\"\n            },\n            \"1\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_1\"\n            },\n            \"2\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_0\"\n            },\n            \"3\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_1\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 4\n            }\n          }\n        },\n        \"distance-spec-version\" : {\n          \"type\" : \"string\",\n          \"value\" : \"1\"\n        },\n        \"distance-characteristics\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"METRIC\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 1\n            }\n          }\n        },\n        \"distance-measure-type\" : {\n          \"type\" : \"string\",\n          \"value\" : \"org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory\"\n        }\n      }\n    },\n    \"class_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"org.knime.distance.DistanceMeasurePortSpec\"\n    },\n    \"version\" : {\n      \"type\" : \"int\",\n      \"value\" : 1\n    }\n  }\n}",
+    "type" : {
+      "optional" : false,
+      "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject",
+      "typeID" : "PortType"
+    },
+    "typeID" : "PortObjectSpec"
+  } ],
+  "wrappedworkflownodeent_23" : {
+    "deletable" : true,
+    "encrypted" : false,
+    "inPorts" : [ {
+      "portIndex" : 0,
+      "portName" : "Variable Inport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    }, {
+      "portIndex" : 1,
+      "portName" : "Port 1",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "type" : "NodeInPort",
+      "typeID" : "NodeInPort"
+    } ],
+    "inactive" : false,
+    "name" : "Wrapped Metanode",
+    "nodeAnnotation" : {
+      "backgroundColor" : 16777215,
+      "borderColor" : 16777215,
+      "borderSize" : 0,
+      "bounds" : {
+        "height" : 40,
+        "typeID" : "Bounds",
+        "width" : 166,
+        "x" : 97,
+        "y" : 679
+      },
+      "default" : false,
+      "defaultFontSize" : 11,
+      "styleRanges" : [ ],
+      "text" : "with JS view inside\n(i.e. with composite view)",
+      "textAlignment" : "CENTER",
+      "type" : "NodeAnnotation",
+      "typeID" : "NodeAnnotation",
+      "version" : 20151123
+    },
+    "nodeID" : "23",
+    "nodeMessage" : {
+      "message" : "",
+      "type" : "RESET",
+      "typeID" : "NodeMessage"
+    },
+    "nodeState" : {
+      "state" : "EXECUTED",
+      "typeID" : "NodeState"
+    },
+    "nodeType" : "SUBNODE",
+    "outPorts" : [ {
+      "inactive" : false,
+      "portIndex" : 0,
+      "portName" : "Variable Outport",
+      "portType" : {
+        "optional" : true,
+        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+        "typeID" : "PortType"
+      },
+      "summary" : "Variables connection",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    }, {
+      "inactive" : false,
+      "portIndex" : 1,
+      "portName" : "Port 1",
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+        "typeID" : "PortType"
+      },
+      "summary" : "Rows: 4, Cols: 5",
+      "type" : "NodeOutPort",
+      "typeID" : "NodeOutPort"
+    } ],
+    "parentNodeID" : "root",
+    "resetable" : true,
+    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+    "type" : "WrappedWorkflowNode",
+    "typeID" : "WrappedWorkflowNode",
+    "uiinfo" : {
+      "bounds" : {
+        "height" : 83,
+        "typeID" : "Bounds",
+        "width" : 148,
+        "x" : 164,
+        "y" : 617
+      },
+      "dropLocation" : false,
+      "snapToGrid" : false,
+      "symbolRelative" : true,
+      "typeID" : "NodeUIInfo"
+    },
+    "virtualInNodeID" : "23:0:8",
+    "virtualOutNodeID" : "23:0:9",
+    "webViewNames" : [ "Wrapped Metanode" ],
+    "workflowIncomingPorts" : [ ],
+    "workflowOutgoingPortNodeStates" : [ ],
+    "workflowOutgoingPorts" : [ ]
+  },
+  "workflownodeent_root" : {
+    "deletable" : true,
+    "encrypted" : false,
+    "inPorts" : [ ],
+    "jobManager" : {
+      "id" : "org.knime.core.node.exec.ThreadNodeExecutionJobManagerFactory",
+      "typeID" : "JobManager"
+    },
+    "name" : "workflow",
+    "nodeAnnotation" : {
+      "backgroundColor" : 16777215,
+      "borderColor" : 0,
+      "borderSize" : 0,
+      "bounds" : {
+        "height" : 0,
+        "typeID" : "Bounds",
+        "width" : 0,
+        "x" : 0,
+        "y" : 0
+      },
+      "default" : true,
+      "defaultFontSize" : -1,
+      "styleRanges" : [ ],
+      "text" : "",
+      "textAlignment" : "CENTER",
+      "type" : "NodeAnnotation",
+      "typeID" : "NodeAnnotation",
+      "version" : 20151123
+    },
+    "nodeID" : "root",
+    "nodeMessage" : {
+      "message" : "",
+      "type" : "RESET",
+      "typeID" : "NodeMessage"
+    },
+    "nodeState" : {
+      "state" : "IDLE",
+      "typeID" : "NodeState"
+    },
+    "nodeType" : "META",
+    "outPorts" : [ ],
+    "resetable" : true,
+    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+    "type" : "WorkflowNode",
+    "typeID" : "WorkflowNode",
+    "webViewNames" : [ ],
+    "workflowIncomingPorts" : [ ],
+    "workflowOutgoingPortNodeStates" : [ ],
+    "workflowOutgoingPorts" : [ ]
+  },
   "workflowent_6" : {
     "connections" : {
       "6_1" : {
@@ -241,7 +866,6 @@
       "zoomLevel" : 1
     }
   },
-  "nodesettings_10" : "{\n  \"name\" : \"configuration\",\n  \"value\" : {\n    \"model\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"weka-optionhandler-settings\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"options_list_with_placeholders\" : {\n              \"type\" : \"string\",\n              \"value\" : \"-C #0 -M #1\"\n            },\n            \"-C_(#0)\" : {\n              \"type\" : \"string\",\n              \"value\" : \"0.25\"\n            },\n            \"-M_(#1)\" : {\n              \"type\" : \"string\",\n              \"value\" : \"2\"\n            },\n            \"additional_options\" : {\n              \"type\" : \"string\",\n              \"value\" : \"\"\n            }\n          }\n        },\n        \"keep_training_instances\" : {\n          \"type\" : \"boolean\",\n          \"value\" : false\n        },\n        \"ClassColumn\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"VectorColumn\" : {\n          \"type\" : \"string\",\n          \"value\" : null\n        }\n      }\n    },\n    \"internal_node_subsettings\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"memory_policy\" : {\n          \"type\" : \"string\",\n          \"value\" : \"CacheSmallInMemory\"\n        }\n      }\n    }\n  }\n}",
   "outportdataent_1_2" : {
     "columnNames" : [ "Universe_0_0", "Universe_0_1", "Universe_1_0", "Universe_1_1" ],
     "numTotalRows" : 4,
@@ -750,228 +1374,6 @@
     } ],
     "typeID" : "DataTable"
   },
-  "inputflowvariablesent_18" : [ {
-    "name" : "column1",
-    "type" : "DOUBLE",
-    "typeID" : "FlowVariable",
-    "value" : "1.03"
-  }, {
-    "name" : "column2",
-    "type" : "INTEGER",
-    "typeID" : "FlowVariable",
-    "value" : "39874324"
-  }, {
-    "name" : "column3",
-    "type" : "STRING",
-    "typeID" : "FlowVariable",
-    "value" : "akjdsfasd"
-  }, {
-    "name" : "RowID",
-    "type" : "STRING",
-    "typeID" : "FlowVariable",
-    "value" : "Row0"
-  } ],
-  "nodeent_2" : {
-    "deletable" : true,
-    "inPorts" : [ {
-      "portIndex" : 0,
-      "portName" : "Variable Inport",
-      "portType" : {
-        "optional" : true,
-        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
-        "typeID" : "PortType"
-      },
-      "type" : "NodeInPort",
-      "typeID" : "NodeInPort"
-    }, {
-      "portIndex" : 1,
-      "portName" : "Table to be filtered",
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-        "typeID" : "PortType"
-      },
-      "type" : "NodeInPort",
-      "typeID" : "NodeInPort"
-    } ],
-    "inactive" : false,
-    "name" : "Column Filter",
-    "nodeAnnotation" : {
-      "backgroundColor" : 16777215,
-      "borderColor" : 16777215,
-      "borderSize" : 0,
-      "bounds" : {
-        "height" : 19,
-        "typeID" : "Bounds",
-        "width" : 134,
-        "x" : 293,
-        "y" : 399
-      },
-      "default" : false,
-      "defaultFontSize" : 11,
-      "styleRanges" : [ ],
-      "text" : "node annotation",
-      "textAlignment" : "CENTER",
-      "type" : "NodeAnnotation",
-      "typeID" : "NodeAnnotation",
-      "version" : 20151123
-    },
-    "nodeFactoryKey" : {
-      "className" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory",
-      "typeID" : "NodeFactoryKey"
-    },
-    "nodeID" : "2",
-    "nodeMessage" : {
-      "message" : "",
-      "type" : "RESET",
-      "typeID" : "NodeMessage"
-    },
-    "nodeState" : {
-      "state" : "EXECUTED",
-      "typeID" : "NodeState"
-    },
-    "nodeType" : "MANIPULATOR",
-    "outPorts" : [ {
-      "inactive" : false,
-      "portIndex" : 0,
-      "portName" : "Variable Outport",
-      "portType" : {
-        "optional" : true,
-        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
-        "typeID" : "PortType"
-      },
-      "summary" : "Variables connection",
-      "type" : "NodeOutPort",
-      "typeID" : "NodeOutPort"
-    }, {
-      "inactive" : false,
-      "portIndex" : 1,
-      "portName" : "Filtered table",
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-        "typeID" : "PortType"
-      },
-      "summary" : "Rows: 8, Cols: 4",
-      "type" : "NodeOutPort",
-      "typeID" : "NodeOutPort"
-    } ],
-    "parentNodeID" : "root",
-    "progress" : {
-      "typeID" : "NodeProgress"
-    },
-    "resetable" : true,
-    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
-    "type" : "NativeNode",
-    "typeID" : "NativeNode",
-    "uiinfo" : {
-      "bounds" : {
-        "height" : 83,
-        "typeID" : "Bounds",
-        "width" : 137,
-        "x" : 344,
-        "y" : 337
-      },
-      "dropLocation" : false,
-      "snapToGrid" : false,
-      "symbolRelative" : true,
-      "typeID" : "NodeUIInfo"
-    },
-    "webViewNames" : [ ]
-  },
-  "outputflowvariablesent_18" : [ {
-    "name" : "test_var",
-    "type" : "STRING",
-    "typeID" : "FlowVariable",
-    "value" : "akjdsfasdtest"
-  }, {
-    "name" : "column1",
-    "type" : "DOUBLE",
-    "typeID" : "FlowVariable",
-    "value" : "1.03"
-  }, {
-    "name" : "column2",
-    "type" : "INTEGER",
-    "typeID" : "FlowVariable",
-    "value" : "39874324"
-  }, {
-    "name" : "column3",
-    "type" : "STRING",
-    "typeID" : "FlowVariable",
-    "value" : "akjdsfasd"
-  }, {
-    "name" : "RowID",
-    "type" : "STRING",
-    "typeID" : "FlowVariable",
-    "value" : "Row0"
-  } ],
-  "inportspecsent_22" : [ null, {
-    "inactive" : false,
-    "representation" : "not supported",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  }, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  } ],
-  "inportspecsent_20" : [ null, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  }, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  }, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"model\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"columns\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_0\"\n            },\n            \"1\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_1\"\n            },\n            \"2\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_0\"\n            },\n            \"3\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_1\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 4\n            }\n          }\n        },\n        \"distance-spec-version\" : {\n          \"type\" : \"string\",\n          \"value\" : \"1\"\n        },\n        \"distance-characteristics\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"METRIC\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 1\n            }\n          }\n        },\n        \"distance-measure-type\" : {\n          \"type\" : \"string\",\n          \"value\" : \"org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory\"\n        }\n      }\n    },\n    \"class_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"org.knime.distance.DistanceMeasurePortSpec\"\n    },\n    \"version\" : {\n      \"type\" : \"int\",\n      \"value\" : 1\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  } ],
-  "inportspecsent_6_3" : [ null, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 4\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  } ],
-  "inportspecsent_21" : [ null, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"column_spec_4\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : { }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Cluster Membership\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"possible_values\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"0\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_0\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"1\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_1\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"2\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_2\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"3\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"datacell\" : {\n                      \"type\" : \"string\",\n                      \"value\" : \"org.knime.core.data.def.StringCell\"\n                    },\n                    \"org.knime.core.data.def.StringCell\" : {\n                      \"type\" : \"tree\",\n                      \"value\" : {\n                        \"StringCell\" : {\n                          \"type\" : \"string\",\n                          \"value\" : \"Cluster_3\"\n                        }\n                      }\n                    }\n                  }\n                },\n                \"array-size\" : {\n                  \"type\" : \"int\",\n                  \"value\" : 4\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.StringCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_3\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.22052383899473682\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7963311803942016\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"number_columns\" : {\n      \"type\" : \"int\",\n      \"value\" : 5\n    },\n    \"spec_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"default\"\n    },\n    \"column_spec_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.143857188807609\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.723126747686526\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_2\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_1_0\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.2548329966402305\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.8623790894861859\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    },\n    \"column_spec_1\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"column_properties\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"universe_name\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0\"\n            }\n          }\n        },\n        \"column_name\" : {\n          \"type\" : \"string\",\n          \"value\" : \"Universe_0_1\"\n        },\n        \"element_names\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 0\n            }\n          }\n        },\n        \"column_domain\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"lower_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.014213188182596426\n                    }\n                  }\n                }\n              }\n            },\n            \"upper_bound\" : {\n              \"type\" : \"tree\",\n              \"value\" : {\n                \"datacell\" : {\n                  \"type\" : \"string\",\n                  \"value\" : \"org.knime.core.data.def.DoubleCell\"\n                },\n                \"org.knime.core.data.def.DoubleCell\" : {\n                  \"type\" : \"tree\",\n                  \"value\" : {\n                    \"DoubleCell\" : {\n                      \"type\" : \"double\",\n                      \"value\" : 0.7560475816680708\n                    }\n                  }\n                }\n              }\n            }\n          }\n        },\n        \"column_type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"cell_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.data.def.DoubleCell\"\n            }\n          }\n        }\n      }\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  }, null, null, null ],
   "outportspecsent_1" : [ {
     "inactive" : false,
     "type" : {
@@ -1042,6 +1444,17 @@
         "flowVariablePortConnection" : false,
         "source" : "1",
         "sourcePort" : 1,
+        "type" : "STD",
+        "typeID" : "Connection"
+      },
+      "23_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "23",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
         "type" : "STD",
         "typeID" : "Connection"
       },
@@ -1452,9 +1865,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 116,
+            "width" : 125,
             "x" : 484,
             "y" : 377
           },
@@ -1464,6 +1877,113 @@
           "typeID" : "NodeUIInfo"
         },
         "webViewNames" : [ ]
+      },
+      "23" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "typeID" : "Bounds",
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "default" : false,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "typeID" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET",
+          "typeID" : "NodeMessage"
+        },
+        "nodeState" : {
+          "state" : "EXECUTED",
+          "typeID" : "NodeState"
+        },
+        "nodeType" : "SUBNODE",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "summary" : "Variables connection",
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "summary" : "Rows: 4, Cols: 5",
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+        "type" : "WrappedWorkflowNode",
+        "typeID" : "WrappedWorkflowNode",
+        "uiinfo" : {
+          "bounds" : {
+            "height" : 83,
+            "typeID" : "Bounds",
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true,
+          "typeID" : "NodeUIInfo"
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
       },
       "12" : {
         "deletable" : true,
@@ -1775,7 +2295,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 784,
             "y" : 557
           },
@@ -1873,7 +2393,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 146,
+            "width" : 104,
             "x" : 224,
             "y" : 757
           },
@@ -1981,7 +2501,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 104,
+            "width" : 82,
             "x" : 344,
             "y" : 757
           },
@@ -2195,9 +2715,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 117,
+            "width" : 145,
             "x" : 684,
             "y" : 757
           },
@@ -2307,7 +2827,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 204,
             "y" : 337
           },
@@ -2415,7 +2935,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 137,
+            "width" : 104,
             "x" : 344,
             "y" : 337
           },
@@ -2509,9 +3029,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 80,
+            "width" : 126,
             "x" : 704,
             "y" : 197
           },
@@ -2617,7 +3137,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 97,
             "x" : 704,
             "y" : 357
           },
@@ -2708,7 +3228,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 484,
             "y" : 257
           },
@@ -2857,7 +3377,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 99,
+            "width" : 66,
             "x" : 484,
             "y" : 497
           },
@@ -2957,9 +3477,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 344,
             "y" : 497
           },
@@ -3090,9 +3610,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 864,
             "y" : 757
           },
@@ -3230,7 +3750,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 136,
+            "width" : 96,
             "x" : 384,
             "y" : 17
           },
@@ -3339,7 +3859,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 63,
             "x" : 344,
             "y" : 157
           },
@@ -3899,194 +4419,6 @@
     },
     "typeID" : "PortObjectSpec"
   } ],
-  "nodeent_6_3" : {
-    "deletable" : true,
-    "inPorts" : [ {
-      "portIndex" : 0,
-      "portName" : "Variable Inport",
-      "portType" : {
-        "optional" : true,
-        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
-        "typeID" : "PortType"
-      },
-      "type" : "NodeInPort",
-      "typeID" : "NodeInPort"
-    }, {
-      "portIndex" : 1,
-      "portName" : "To be filtered",
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-        "typeID" : "PortType"
-      },
-      "type" : "NodeInPort",
-      "typeID" : "NodeInPort"
-    } ],
-    "inactive" : false,
-    "name" : "Row Splitter",
-    "nodeAnnotation" : {
-      "backgroundColor" : 16777215,
-      "borderColor" : 0,
-      "borderSize" : 0,
-      "bounds" : {
-        "height" : 0,
-        "typeID" : "Bounds",
-        "width" : 0,
-        "x" : 0,
-        "y" : 0
-      },
-      "default" : true,
-      "defaultFontSize" : -1,
-      "styleRanges" : [ ],
-      "text" : "",
-      "textAlignment" : "CENTER",
-      "type" : "NodeAnnotation",
-      "typeID" : "NodeAnnotation",
-      "version" : 20151123
-    },
-    "nodeFactoryKey" : {
-      "className" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory",
-      "typeID" : "NodeFactoryKey"
-    },
-    "nodeID" : "6:3",
-    "nodeMessage" : {
-      "message" : "",
-      "type" : "RESET",
-      "typeID" : "NodeMessage"
-    },
-    "nodeState" : {
-      "state" : "EXECUTED",
-      "typeID" : "NodeState"
-    },
-    "nodeType" : "MANIPULATOR",
-    "outPorts" : [ {
-      "inactive" : false,
-      "portIndex" : 0,
-      "portName" : "Variable Outport",
-      "portType" : {
-        "optional" : true,
-        "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
-        "typeID" : "PortType"
-      },
-      "summary" : "Variables connection",
-      "type" : "NodeOutPort",
-      "typeID" : "NodeOutPort"
-    }, {
-      "inactive" : false,
-      "portIndex" : 1,
-      "portName" : "Filtered",
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-        "typeID" : "PortType"
-      },
-      "summary" : "Rows: 5, Cols: 4",
-      "type" : "NodeOutPort",
-      "typeID" : "NodeOutPort"
-    }, {
-      "inactive" : false,
-      "portIndex" : 2,
-      "portName" : "Filtered Out",
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
-        "typeID" : "PortType"
-      },
-      "summary" : "Rows: 3, Cols: 4",
-      "type" : "NodeOutPort",
-      "typeID" : "NodeOutPort"
-    } ],
-    "parentNodeID" : "6",
-    "progress" : {
-      "typeID" : "NodeProgress"
-    },
-    "resetable" : true,
-    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
-    "type" : "NativeNode",
-    "typeID" : "NativeNode",
-    "uiinfo" : {
-      "bounds" : {
-        "height" : 83,
-        "typeID" : "Bounds",
-        "width" : 94,
-        "x" : 150,
-        "y" : 120
-      },
-      "dropLocation" : false,
-      "snapToGrid" : false,
-      "symbolRelative" : true,
-      "typeID" : "NodeUIInfo"
-    },
-    "webViewNames" : [ ]
-  },
-  "outportspecsent_19" : [ {
-    "inactive" : false,
-    "type" : {
-      "optional" : true,
-      "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  }, {
-    "inactive" : false,
-    "representation" : "{\n  \"name\" : \"model\",\n  \"value\" : {\n    \"model\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"columns\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_0\"\n            },\n            \"1\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_0_1\"\n            },\n            \"2\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_0\"\n            },\n            \"3\" : {\n              \"type\" : \"string\",\n              \"value\" : \"Universe_1_1\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 4\n            }\n          }\n        },\n        \"distance-spec-version\" : {\n          \"type\" : \"string\",\n          \"value\" : \"1\"\n        },\n        \"distance-characteristics\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"0\" : {\n              \"type\" : \"string\",\n              \"value\" : \"METRIC\"\n            },\n            \"array-size\" : {\n              \"type\" : \"int\",\n              \"value\" : 1\n            }\n          }\n        },\n        \"distance-measure-type\" : {\n          \"type\" : \"string\",\n          \"value\" : \"org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory\"\n        }\n      }\n    },\n    \"class_name\" : {\n      \"type\" : \"string\",\n      \"value\" : \"org.knime.distance.DistanceMeasurePortSpec\"\n    },\n    \"version\" : {\n      \"type\" : \"int\",\n      \"value\" : 1\n    }\n  }\n}",
-    "type" : {
-      "optional" : false,
-      "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject",
-      "typeID" : "PortType"
-    },
-    "typeID" : "PortObjectSpec"
-  } ],
-  "workflownodeent_root" : {
-    "deletable" : true,
-    "encrypted" : false,
-    "inPorts" : [ ],
-    "jobManager" : {
-      "id" : "org.knime.core.node.exec.ThreadNodeExecutionJobManagerFactory",
-      "typeID" : "JobManager"
-    },
-    "name" : "workflow",
-    "nodeAnnotation" : {
-      "backgroundColor" : 16777215,
-      "borderColor" : 0,
-      "borderSize" : 0,
-      "bounds" : {
-        "height" : 0,
-        "typeID" : "Bounds",
-        "width" : 0,
-        "x" : 0,
-        "y" : 0
-      },
-      "default" : true,
-      "defaultFontSize" : -1,
-      "styleRanges" : [ ],
-      "text" : "",
-      "textAlignment" : "CENTER",
-      "type" : "NodeAnnotation",
-      "typeID" : "NodeAnnotation",
-      "version" : 20151123
-    },
-    "nodeID" : "root",
-    "nodeMessage" : {
-      "message" : "",
-      "type" : "RESET",
-      "typeID" : "NodeMessage"
-    },
-    "nodeState" : {
-      "state" : "IDLE",
-      "typeID" : "NodeState"
-    },
-    "nodeType" : "META",
-    "outPorts" : [ ],
-    "resetable" : true,
-    "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
-    "type" : "WorkflowNode",
-    "typeID" : "WorkflowNode",
-    "webViewNames" : [ ],
-    "workflowIncomingPorts" : [ ],
-    "workflowOutgoingPortNodeStates" : [ ],
-    "workflowOutgoingPorts" : [ ]
-  },
   "workflowent_root" : {
     "connections" : {
       "16_1" : {
@@ -4130,6 +4462,17 @@
         "flowVariablePortConnection" : false,
         "source" : "1",
         "sourcePort" : 1,
+        "type" : "STD",
+        "typeID" : "Connection"
+      },
+      "23_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "23",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
         "type" : "STD",
         "typeID" : "Connection"
       },
@@ -4538,9 +4881,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 116,
+            "width" : 125,
             "x" : 484,
             "y" : 377
           },
@@ -4550,6 +4893,111 @@
           "typeID" : "NodeUIInfo"
         },
         "webViewNames" : [ ]
+      },
+      "23" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "typeID" : "Bounds",
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "default" : false,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "typeID" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET",
+          "typeID" : "NodeMessage"
+        },
+        "nodeState" : {
+          "state" : "IDLE",
+          "typeID" : "NodeState"
+        },
+        "nodeType" : "SUBNODE",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+        "type" : "WrappedWorkflowNode",
+        "typeID" : "WrappedWorkflowNode",
+        "uiinfo" : {
+          "bounds" : {
+            "height" : 83,
+            "typeID" : "Bounds",
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true,
+          "typeID" : "NodeUIInfo"
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
       },
       "12" : {
         "deletable" : true,
@@ -4857,7 +5305,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 784,
             "y" : 557
           },
@@ -4953,7 +5401,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 146,
+            "width" : 104,
             "x" : 224,
             "y" : 757
           },
@@ -5059,7 +5507,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 104,
+            "width" : 82,
             "x" : 344,
             "y" : 757
           },
@@ -5269,9 +5717,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 117,
+            "width" : 145,
             "x" : 684,
             "y" : 757
           },
@@ -5378,7 +5826,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 204,
             "y" : 337
           },
@@ -5484,7 +5932,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 137,
+            "width" : 104,
             "x" : 344,
             "y" : 337
           },
@@ -5577,9 +6025,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 80,
+            "width" : 126,
             "x" : 704,
             "y" : 197
           },
@@ -5685,7 +6133,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 97,
             "x" : 704,
             "y" : 357
           },
@@ -5774,7 +6222,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 484,
             "y" : 257
           },
@@ -5920,7 +6368,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 99,
+            "width" : 66,
             "x" : 484,
             "y" : 497
           },
@@ -6018,9 +6466,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 344,
             "y" : 497
           },
@@ -6149,9 +6597,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 864,
             "y" : 757
           },
@@ -6287,7 +6735,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 136,
+            "width" : 96,
             "x" : 384,
             "y" : 17
           },
@@ -6394,7 +6842,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 63,
             "x" : 344,
             "y" : 157
           },

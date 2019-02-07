@@ -248,9 +248,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 116,
+            "width" : 125,
             "x" : 484,
             "y" : 377
           },
@@ -260,6 +260,111 @@
           "typeID" : "NodeUIInfo"
         },
         "webViewNames" : [ ]
+      },
+      "23" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "typeID" : "Bounds",
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "default" : false,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "typeID" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET",
+          "typeID" : "NodeMessage"
+        },
+        "nodeState" : {
+          "state" : "IDLE",
+          "typeID" : "NodeState"
+        },
+        "nodeType" : "SUBNODE",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+        "type" : "WrappedWorkflowNode",
+        "typeID" : "WrappedWorkflowNode",
+        "uiinfo" : {
+          "bounds" : {
+            "height" : 83,
+            "typeID" : "Bounds",
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true,
+          "typeID" : "NodeUIInfo"
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
       },
       "12" : {
         "deletable" : true,
@@ -557,7 +662,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 146,
+            "width" : 104,
             "x" : 224,
             "y" : 757
           },
@@ -663,7 +768,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 104,
+            "width" : 82,
             "x" : 344,
             "y" : 757
           },
@@ -873,9 +978,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 117,
+            "width" : 145,
             "x" : 684,
             "y" : 757
           },
@@ -981,7 +1086,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 137,
+            "width" : 104,
             "x" : 344,
             "y" : 337
           },
@@ -1074,9 +1179,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 80,
+            "width" : 126,
             "x" : 704,
             "y" : 197
           },
@@ -1182,7 +1287,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 97,
             "x" : 704,
             "y" : 357
           },
@@ -1288,7 +1393,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 99,
+            "width" : 66,
             "x" : 484,
             "y" : 497
           },
@@ -1424,7 +1529,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 136,
+            "width" : 96,
             "x" : 384,
             "y" : 17
           },
@@ -1531,7 +1636,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 63,
             "x" : 344,
             "y" : 157
           },
@@ -1861,9 +1966,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 116,
+            "width" : 125,
             "x" : 484,
             "y" : 377
           },
@@ -1873,6 +1978,111 @@
           "typeID" : "NodeUIInfo"
         },
         "webViewNames" : [ ]
+      },
+      "23" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "typeID" : "Bounds",
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "default" : false,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "typeID" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET",
+          "typeID" : "NodeMessage"
+        },
+        "nodeState" : {
+          "state" : "IDLE",
+          "typeID" : "NodeState"
+        },
+        "nodeType" : "SUBNODE",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+        "type" : "WrappedWorkflowNode",
+        "typeID" : "WrappedWorkflowNode",
+        "uiinfo" : {
+          "bounds" : {
+            "height" : 83,
+            "typeID" : "Bounds",
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true,
+          "typeID" : "NodeUIInfo"
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
       },
       "12" : {
         "deletable" : true,
@@ -2180,7 +2390,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 784,
             "y" : 557
           },
@@ -2276,7 +2486,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 146,
+            "width" : 104,
             "x" : 224,
             "y" : 757
           },
@@ -2382,7 +2592,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 104,
+            "width" : 82,
             "x" : 344,
             "y" : 757
           },
@@ -2592,9 +2802,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 117,
+            "width" : 145,
             "x" : 684,
             "y" : 757
           },
@@ -2701,7 +2911,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 204,
             "y" : 337
           },
@@ -2807,7 +3017,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 137,
+            "width" : 104,
             "x" : 344,
             "y" : 337
           },
@@ -2900,9 +3110,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 80,
+            "width" : 126,
             "x" : 704,
             "y" : 197
           },
@@ -3008,7 +3218,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 97,
             "x" : 704,
             "y" : 357
           },
@@ -3097,7 +3307,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 484,
             "y" : 257
           },
@@ -3243,7 +3453,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 99,
+            "width" : 66,
             "x" : 484,
             "y" : 497
           },
@@ -3341,9 +3551,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 344,
             "y" : 497
           },
@@ -3472,9 +3682,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 864,
             "y" : 757
           },
@@ -3610,7 +3820,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 136,
+            "width" : 96,
             "x" : 384,
             "y" : 17
           },
@@ -3717,7 +3927,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 63,
             "x" : 344,
             "y" : 157
           },
@@ -3870,39 +4080,39 @@
         "type" : "STD",
         "typeID" : "Connection"
       },
-      "26_1" : {
+      "27_1" : {
         "bendPoints" : [ {
           "typeID" : "XY",
           "x" : 38,
           "y" : 498
         } ],
         "deletable" : true,
-        "dest" : "26",
+        "dest" : "27",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
-        "source" : "24",
+        "source" : "25",
         "sourcePort" : 2,
         "type" : "STD",
         "typeID" : "Connection"
       },
-      "23_2" : {
+      "24_2" : {
         "bendPoints" : [ ],
         "deletable" : true,
-        "dest" : "23",
+        "dest" : "24",
         "destPort" : 2,
         "flowVariablePortConnection" : false,
-        "source" : "24",
+        "source" : "25",
         "sourcePort" : 1,
         "type" : "STD",
         "typeID" : "Connection"
       },
-      "23_1" : {
+      "24_1" : {
         "bendPoints" : [ ],
         "deletable" : true,
-        "dest" : "23",
+        "dest" : "24",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
-        "source" : "24",
+        "source" : "25",
         "sourcePort" : 1,
         "type" : "STD",
         "typeID" : "Connection"
@@ -3915,6 +4125,17 @@
         "flowVariablePortConnection" : false,
         "source" : "1",
         "sourcePort" : 1,
+        "type" : "STD",
+        "typeID" : "Connection"
+      },
+      "23_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "23",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
         "type" : "STD",
         "typeID" : "Connection"
       },
@@ -4177,6 +4398,111 @@
       },
       "23" : {
         "deletable" : true,
+        "encrypted" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "typeID" : "Bounds",
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "default" : false,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "typeID" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET",
+          "typeID" : "NodeMessage"
+        },
+        "nodeState" : {
+          "state" : "IDLE",
+          "typeID" : "NodeState"
+        },
+        "nodeType" : "SUBNODE",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+        "type" : "WrappedWorkflowNode",
+        "typeID" : "WrappedWorkflowNode",
+        "uiinfo" : {
+          "bounds" : {
+            "height" : 83,
+            "typeID" : "Bounds",
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true,
+          "typeID" : "NodeUIInfo"
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
+      },
+      "24" : {
+        "deletable" : true,
         "inPorts" : [ {
           "portIndex" : 0,
           "portName" : "Variable Inport",
@@ -4244,7 +4570,7 @@
           "className" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory",
           "typeID" : "NodeFactoryKey"
         },
-        "nodeID" : "23",
+        "nodeID" : "24",
         "nodeMessage" : {
           "message" : "Distance not set.",
           "type" : "WARNING",
@@ -4288,9 +4614,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 660,
             "y" : 737
           },
@@ -4301,7 +4627,7 @@
         },
         "webViewNames" : [ ]
       },
-      "24" : {
+      "25" : {
         "deletable" : true,
         "inPorts" : [ {
           "portIndex" : 0,
@@ -4340,7 +4666,7 @@
           "className" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory",
           "typeID" : "NodeFactoryKey"
         },
-        "nodeID" : "24",
+        "nodeID" : "25",
         "nodeMessage" : {
           "message" : "",
           "type" : "RESET",
@@ -4397,7 +4723,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 0,
             "y" : 317
           },
@@ -4408,7 +4734,7 @@
         },
         "webViewNames" : [ ]
       },
-      "25" : {
+      "26" : {
         "deletable" : true,
         "encrypted" : false,
         "inPorts" : [ {
@@ -4443,7 +4769,7 @@
           "typeID" : "NodeAnnotation",
           "version" : 20151123
         },
-        "nodeID" : "25",
+        "nodeID" : "26",
         "nodeMessage" : {
           "message" : "",
           "type" : "RESET",
@@ -4486,7 +4812,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 280,
             "y" : 237
           },
@@ -4537,7 +4863,7 @@
           "typeID" : "NodeInPort"
         } ]
       },
-      "26" : {
+      "27" : {
         "deletable" : true,
         "encrypted" : false,
         "inPorts" : [ {
@@ -4583,7 +4909,7 @@
           "typeID" : "NodeAnnotation",
           "version" : 20151123
         },
-        "nodeID" : "26",
+        "nodeID" : "27",
         "nodeMessage" : {
           "message" : "",
           "type" : "RESET",
@@ -4624,9 +4950,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 140,
             "y" : 477
           },
@@ -4635,14 +4961,14 @@
           "symbolRelative" : true,
           "typeID" : "NodeUIInfo"
         },
-        "virtualInNodeID" : "26:0:8",
-        "virtualOutNodeID" : "26:0:9",
+        "virtualInNodeID" : "27:0:8",
+        "virtualOutNodeID" : "27:0:9",
         "webViewNames" : [ ],
         "workflowIncomingPorts" : [ ],
         "workflowOutgoingPortNodeStates" : [ ],
         "workflowOutgoingPorts" : [ ]
       },
-      "27" : {
+      "28" : {
         "deletable" : true,
         "inPorts" : [ {
           "portIndex" : 0,
@@ -4691,7 +5017,7 @@
           "className" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory",
           "typeID" : "NodeFactoryKey"
         },
-        "nodeID" : "27",
+        "nodeID" : "28",
         "nodeMessage" : {
           "message" : "No variables selected",
           "type" : "WARNING",
@@ -4737,7 +5063,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 580,
             "y" : 537
           },
@@ -4844,7 +5170,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 63,
             "x" : 344,
             "y" : 157
           },
@@ -4948,9 +5274,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 116,
+            "width" : 125,
             "x" : 484,
             "y" : 377
           },
@@ -5267,7 +5593,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 784,
             "y" : 557
           },
@@ -5363,7 +5689,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 146,
+            "width" : 104,
             "x" : 224,
             "y" : 757
           },
@@ -5469,7 +5795,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 104,
+            "width" : 82,
             "x" : 344,
             "y" : 757
           },
@@ -5679,9 +6005,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 117,
+            "width" : 145,
             "x" : 684,
             "y" : 757
           },
@@ -5788,7 +6114,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 204,
             "y" : 337
           },
@@ -5894,7 +6220,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 137,
+            "width" : 104,
             "x" : 344,
             "y" : 337
           },
@@ -5987,9 +6313,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 80,
+            "width" : 126,
             "x" : 704,
             "y" : 197
           },
@@ -6095,7 +6421,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 97,
             "x" : 704,
             "y" : 357
           },
@@ -6184,7 +6510,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 484,
             "y" : 257
           },
@@ -6330,7 +6656,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 99,
+            "width" : 66,
             "x" : 484,
             "y" : 497
           },
@@ -6428,9 +6754,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 344,
             "y" : 497
           },
@@ -6559,9 +6885,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 864,
             "y" : 757
           },
@@ -6697,7 +7023,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 136,
+            "width" : 96,
             "x" : 384,
             "y" : 17
           },
@@ -6967,7 +7293,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 280,
             "y" : 237
           },
@@ -7105,9 +7431,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 140,
             "y" : 477
           },
@@ -7236,9 +7562,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 660,
             "y" : 737
           },
@@ -7345,7 +7671,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 0,
             "y" : 317
           },
@@ -7451,7 +7777,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 580,
             "y" : 537
           },
@@ -7981,9 +8307,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 116,
+            "width" : 125,
             "x" : 484,
             "y" : 377
           },
@@ -7993,6 +8319,111 @@
           "typeID" : "NodeUIInfo"
         },
         "webViewNames" : [ ]
+      },
+      "23" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeInPort",
+          "typeID" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "typeID" : "Bounds",
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "default" : false,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "typeID" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET",
+          "typeID" : "NodeMessage"
+        },
+        "nodeState" : {
+          "state" : "IDLE",
+          "typeID" : "NodeState"
+        },
+        "nodeType" : "SUBNODE",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable",
+            "typeID" : "PortType"
+          },
+          "type" : "NodeOutPort",
+          "typeID" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_ID",
+        "type" : "WrappedWorkflowNode",
+        "typeID" : "WrappedWorkflowNode",
+        "uiinfo" : {
+          "bounds" : {
+            "height" : 83,
+            "typeID" : "Bounds",
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true,
+          "typeID" : "NodeUIInfo"
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
       },
       "12" : {
         "deletable" : true,
@@ -8300,7 +8731,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 122,
+            "width" : 82,
             "x" : 784,
             "y" : 557
           },
@@ -8396,7 +8827,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 146,
+            "width" : 104,
             "x" : 224,
             "y" : 757
           },
@@ -8502,7 +8933,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 104,
+            "width" : 82,
             "x" : 344,
             "y" : 757
           },
@@ -8712,9 +9143,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 117,
+            "width" : 145,
             "x" : 684,
             "y" : 757
           },
@@ -8821,7 +9252,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 149,
+            "width" : 116,
             "x" : 204,
             "y" : 337
           },
@@ -8927,7 +9358,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 137,
+            "width" : 104,
             "x" : 344,
             "y" : 337
           },
@@ -9020,9 +9451,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 80,
+            "width" : 126,
             "x" : 704,
             "y" : 197
           },
@@ -9128,7 +9559,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 97,
             "x" : 704,
             "y" : 357
           },
@@ -9217,7 +9648,7 @@
           "bounds" : {
             "height" : 70,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 74,
             "x" : 484,
             "y" : 257
           },
@@ -9363,7 +9794,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 99,
+            "width" : 66,
             "x" : 484,
             "y" : 497
           },
@@ -9461,9 +9892,9 @@
         "typeID" : "WrappedWorkflowNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 107,
+            "width" : 148,
             "x" : 344,
             "y" : 497
           },
@@ -9592,9 +10023,9 @@
         "typeID" : "NativeNode",
         "uiinfo" : {
           "bounds" : {
-            "height" : 103,
+            "height" : 83,
             "typeID" : "Bounds",
-            "width" : 95,
+            "width" : 130,
             "x" : 864,
             "y" : 757
           },
@@ -9730,7 +10161,7 @@
           "bounds" : {
             "height" : 103,
             "typeID" : "Bounds",
-            "width" : 136,
+            "width" : 96,
             "x" : 384,
             "y" : 17
           },
@@ -9837,7 +10268,7 @@
           "bounds" : {
             "height" : 83,
             "typeID" : "Bounds",
-            "width" : 105,
+            "width" : 63,
             "x" : 344,
             "y" : 157
           },

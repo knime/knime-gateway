@@ -107,6 +107,14 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         entity = ns().getNode(wfId, "6:3");
         cr(entity, "nodeent_6_3");
 
+        //download and check wrapped metanode '9'
+        entity = ns().getNode(wfId, "9");
+        cr(entity, "wrappedworkflownodeent_9");
+
+        //wrapped metanode 23
+        entity = ns().getNode(wfId, "23");
+        cr(entity, "wrappedworkflownodeent_23");
+
         //try to download a workflow for an existing node that doesn't represent a workflow (i.e. an ordinary node)
         try {
             ws().getSubWorkflow(wfId, "1");
