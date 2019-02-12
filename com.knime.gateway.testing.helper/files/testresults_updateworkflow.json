@@ -19,7 +19,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:7/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:8/nodeState/state",
@@ -35,11 +35,11 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:9/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:8/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:9/outPorts/0/summary",
@@ -47,7 +47,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:10/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/12:0:8/nodeMessage/type",
@@ -77,7 +77,7 @@
       "path" : "/nodes/12:0:10/nodeState/state",
       "value" : "CONFIGURED"
     } ],
-    "snapshotID" : "PLACEHOLDER_FOR_ID",
+    "snapshotID" : "PLACEHOLDER_FOR_SNAPSHOT_ID",
     "targetTypeID" : "Workflow"
   },
   "patchent_root_executed" : {
@@ -92,7 +92,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/13/outPorts/1/inactive",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/4/outPorts/0/summary",
@@ -180,7 +180,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/23/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/23/nodeState/state",
@@ -248,11 +248,11 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/9/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/8/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/6/workflowOutgoingPortNodeStates/0/state",
@@ -304,7 +304,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/14/outPorts/1/inactive",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/14/outPorts/0/summary",
@@ -312,7 +312,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/14/outPorts/0/inactive",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/15/nodeState/state",
@@ -340,15 +340,15 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/14/inactive",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/14/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/12/resetable",
-      "value" : true
+      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/1/nodeState/state",
@@ -362,7 +362,7 @@
       "path" : "/nodes/18/outPorts/1/summary",
       "value" : "Variables connection"
     } ],
-    "snapshotID" : "PLACEHOLDER_FOR_ID",
+    "snapshotID" : "PLACEHOLDER_FOR_SNAPSHOT_ID",
     "targetTypeID" : "Workflow"
   }
 }

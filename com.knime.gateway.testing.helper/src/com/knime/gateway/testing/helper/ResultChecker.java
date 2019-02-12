@@ -20,6 +20,7 @@ package com.knime.gateway.testing.helper;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,16 +33,25 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.knime.gateway.json.util.ObjectMapperUtil;
+import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
+import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
+import com.knime.gateway.v0.entity.impl.DefaultPatchEnt;
+import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt;
+import com.knime.gateway.v0.entity.impl.DefaultWorkflowSnapshotEnt;
 
 /**
  * Compares objects to a representation stored to files.
@@ -57,34 +67,52 @@ import com.knime.gateway.json.util.ObjectMapperUtil;
 public class ResultChecker {
 
     /**
-     * Name of the field that holds the root workflow id (e.g. in NodeEnt). Since the id changes with every run it
-     * cannot be compared.
+     * Collected exceptions for alternative property serialization.
      */
-    private static final String ROOTWORKFLOWID_FIELDNAME = "rootWorkflowID";
+    private static final PropertyExceptions PROPERTY_EXCEPTIONS;
 
-    /**
-     * Same as above but for the snapshot id.
-     */
-    private static final String SNAPSHOTID_FIELDNAME = "snapshotID";
+    static {
+        PropertyExceptions pe = new PropertyExceptions();
 
-    /**
-     * Name of the field the holds the (node) message. It is treated a bit differently for comparison since wrapped
-     * metanodes don't return deterministic node messages in case of an error (the node messages contain the workflow
-     * root node id that varies depending on how many other workflows are loaded). Thus, only the first line is used for
-     * comparison.
-     */
-    private static final String MASSAGE_FIELDNAME = "message";
+        /**
+         * Name of the field that holds the root workflow id (e.g. in NodeEnt). Since the id changes with every run it
+         * cannot be compared.
+         */
+        pe.addException(DefaultNodeEnt.class, "rootWorkflowID", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_WORKFLOW_ID"));
 
-    /**
-     * Same as with MESSAGE_FIELDNAME, especially for the case when a patch contains a new value for a node message.
-     */
-    private static final String VALUE_FIELDNAME = "value";
+        /** Same as above but for the snapshot id. */
+        pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotID", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
+        pe.addException(DefaultPatchEnt.class, "snapshotID", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
 
-    /**
-     * Name of the field that holds json-objects as string. Since json-objects are regarded as the same although the
-     * order of the fields varies, those fields need to be treated a bit different for comparison.
-     */
-    private static final String JSON_CONTENT_FIELDNAME = "jsonContent";
+        /**
+         * Name of the field the holds the (node) message. It is treated a bit differently for comparison since wrapped
+         * metanodes don't return deterministic node messages in case of an error (the node messages contain the
+         * workflow root node id that varies depending on how many other workflows are loaded). Thus, only the first
+         * line is used for comparison.
+         */
+        PropertyException firstLineOnly = (v, gen) -> {
+            String s = v.toString();
+            if (s.contains("\n")) {
+                gen.writeString(s.split("\n")[0]);
+            } else {
+                gen.writeString(s);
+            }
+        };
+        pe.addException(DefaultNodeMessageEnt.class, "message", firstLineOnly);
+
+        /**
+         * Same as with 'message' above, especially for the case when a patch contains a new value for a node message.
+         */
+        pe.addException(DefaultPatchOpEnt.class, "value", firstLineOnly);
+
+        /**
+         * Name of the field that holds json-objects as string. Since json-objects are regarded as the same although the
+         * order of the fields varies, those fields are essentially ignored for comparison.
+         */
+        pe.addException(DefaultJavaObjectEnt.class, "jsonContent", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_JSON_CONTENT"));
+
+        PROPERTY_EXCEPTIONS = pe;
+    }
 
     /**
      * The for the serialization of entities to json-strings for comparison.
@@ -115,7 +143,10 @@ public class ResultChecker {
         m_resultMaps = new HashMap<String, Map<String, JsonNode>>();
 
         // setup object mapper for entity-comparison
-        m_objectMapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        m_objectMapper = new ObjectMapper();
+        JsonUtil.addMixIns(m_objectMapper);
+        m_objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        m_objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         SimpleModule module = new SimpleModule();
         module.setSerializerModifier(new PropertyExceptionSerializerModifier());
         m_objectMapper.registerModule(module);
@@ -232,6 +263,7 @@ public class ResultChecker {
         /**
          * {@inheritDoc}
          */
+        @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
         public JsonSerializer<?> modifySerializer(final SerializationConfig config, final BeanDescription beanDesc,
             final JsonSerializer<?> serializer) {
@@ -270,23 +302,7 @@ public class ResultChecker {
         public void serialize(final T value, final JsonGenerator gen, final SerializerProvider serializers)
             throws IOException, JsonProcessingException {
             String name = gen.getOutputContext().getCurrentName();
-            name = name == null ? "" : name;
-            if (name.equals(ROOTWORKFLOWID_FIELDNAME) || name.equals(SNAPSHOTID_FIELDNAME)) {
-                gen.writeString("PLACEHOLDER_FOR_ID");
-            } else if ((value instanceof String) && (name.equals(MASSAGE_FIELDNAME) || name.equals(VALUE_FIELDNAME))) {
-                String s = (String)value;
-                //only take the first line of message/value fields
-                if (s.contains("\n")) {
-                    gen.writeString(s.split("\n")[0]);
-                } else {
-                    gen.writeString(s);
-                }
-            } else if (name.equals(JSON_CONTENT_FIELDNAME)) {
-                //Json-content fields are ignored since they seem to vary.
-                //The content of those json-objects should be tested somewhere else, anyway
-                //(e.g. via the js-tests).
-                gen.writeString("PLACEHOLDER_FOR_JSON_CONTENT");
-            } else {
+            if (name == null || !PROPERTY_EXCEPTIONS.alternativeSerialization(name, gen, value)) {
                 m_defaultSerializer.serialize(value, gen, serializers);
             }
         }
@@ -299,5 +315,58 @@ public class ResultChecker {
             final TypeSerializer typeSer) throws IOException {
             serialize(value, gen, serializers);
         }
+    }
+
+    /**
+     * Represents a alternative way of serializing a property specified by a gateway entity and the property name.
+     */
+    private static class PropertyExceptions {
+
+        private final List<Class<?>> m_classes = new ArrayList<>();
+
+        private final List<String> m_propNames = new ArrayList<>();
+
+        private final List<PropertyException> m_altFuncs = new ArrayList<>();
+
+        /**
+         * Adds a new exception.
+         *
+         * @param entityClass the entity to add the exception for
+         * @param propName the actual property name to apply the exception to
+         * @param altFunc how the property should be serialized alternatively
+         */
+        <E extends GatewayEntity> void addException(final Class<E> entityClass, final String propName,
+            final PropertyException altFunc) {
+            m_classes.add(entityClass);
+            m_propNames.add(propName);
+            m_altFuncs.add(altFunc);
+        }
+
+        /**
+         * @param propName
+         * @param gen
+         * @param value
+         * @return <code>true</code> if property has been serialized, <code>false</code> if no serialization has been
+         *         carried out
+         * @throws IOException
+         */
+        public boolean alternativeSerialization(final String propName, final JsonGenerator gen, final Object value)
+            throws IOException {
+            Class<?> parentEntity = gen.getCurrentValue().getClass();
+            if (GatewayEntity.class.isAssignableFrom(parentEntity)) {
+                for (int i = 0; i < m_classes.size(); i++) {
+                    if (m_classes.get(i).isAssignableFrom(parentEntity) && propName.equals(m_propNames.get(i))) {
+                        m_altFuncs.get(i).alternativeSerialization(value, gen);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    @FunctionalInterface
+    private static interface PropertyException {
+        void alternativeSerialization(Object value, JsonGenerator gen) throws IOException;
     }
 }
