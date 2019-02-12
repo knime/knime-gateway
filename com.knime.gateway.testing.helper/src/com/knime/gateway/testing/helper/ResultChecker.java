@@ -37,9 +37,11 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+import com.knime.gateway.json.util.ObjectMapperUtil;
 
 /**
  * Compares objects to a representation stored to files.
@@ -113,7 +115,7 @@ public class ResultChecker {
         m_resultMaps = new HashMap<String, Map<String, JsonNode>>();
 
         // setup object mapper for entity-comparison
-        m_objectMapper = new ObjectMapper();
+        m_objectMapper = ObjectMapperUtil.getInstance().getObjectMapper();
         SimpleModule module = new SimpleModule();
         module.setSerializerModifier(new PropertyExceptionSerializerModifier());
         m_objectMapper.registerModule(module);
@@ -287,6 +289,15 @@ public class ResultChecker {
             } else {
                 m_defaultSerializer.serialize(value, gen, serializers);
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void serializeWithType(final T value, final JsonGenerator gen, final SerializerProvider serializers,
+            final TypeSerializer typeSer) throws IOException {
+            serialize(value, gen, serializers);
         }
     }
 }
