@@ -32,10 +32,10 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.widgets.Display;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.chunk.DataRowChunks;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.HasDataTableSpec;
-import org.knime.core.node.port.PageableDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -117,18 +117,20 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
         if (!getNodeState().isExecuted()) {
             return completedFuture(null);
         }
-        if (getEntity().getPortType().getPortObjectClassName().equals(BufferedDataTable.class.getCanonicalName())) {
+        PortType portType = getPortType();
+        if (portType.getPortObjectClass().equals(BufferedDataTable.class)) {
             return supplyAsync(() -> {
                 return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
                     (DataTableSpec)getPortObjectSpecInternal());
             });
-        } else if (PageableDataTable.class.isAssignableFrom(getPortType().getPortObjectClass())) {
+        } else if (DataRowChunks.class.isAssignableFrom(portType.getPortObjectClass())
+            && HasDataTableSpec.class.isAssignableFrom(portType.getPortObjectSpecClass())) {
             return supplyAsync(() -> {
                 return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
                     ((HasDataTableSpec)getPortObjectSpecInternal()).getDataTableSpec());
             });
         } else {
-            return completedFuture(new UnsupportedPortObject(getPortType()));
+            return completedFuture(new UnsupportedPortObject(portType));
         }
     }
 

@@ -34,9 +34,9 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.knime.core.data.chunk.DataRowChunks;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -47,7 +47,6 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.interactive.DefaultReexecutionCallback;
 import org.knime.core.node.interactive.ViewContent;
-import org.knime.core.node.port.PageableDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -265,7 +264,7 @@ public class DefaultNodeService implements NodeService {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         WorkflowManager wfm = rootWfmAndNc.getFirst();
         NodeContainer nc = rootWfmAndNc.getSecond();
-        return getPortObjectSpecsAsEntityList(IntStream.range(0, nc.getNrInPorts()).mapToObj(i -> {
+        List<NodeOutPort> outPorts = IntStream.range(0, nc.getNrInPorts()).mapToObj(i -> {
             ConnectionContainer conn = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
             if (conn != null) {
                 NodeOutPort outPort;
@@ -278,11 +277,12 @@ public class DefaultNodeService implements NodeService {
                         outPort = wfm.findNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
                         break;
                 }
-                return Pair.create(outPort.getPortType(), outPort.getPortObjectSpec());
+                return outPort;
             } else {
                 return null;
             }
-        }));
+        }).collect(Collectors.toList());
+        return getPortObjectSpecsAsEntityList(outPorts);
     }
 
     /**
@@ -292,10 +292,9 @@ public class DefaultNodeService implements NodeService {
     public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final String nodeID)
         throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
-        return getPortObjectSpecsAsEntityList(IntStream.range(0, nodeContainer.getNrOutPorts()).mapToObj(i -> {
-            return Pair.create(nodeContainer.getOutPort(i).getPortType(),
-                nodeContainer.getOutPort(i).getPortObjectSpec());
-        }));
+        List<NodeOutPort> outPorts = IntStream.range(0, nodeContainer.getNrOutPorts())
+            .mapToObj(i -> nodeContainer.getOutPort(i)).collect(Collectors.toList());
+        return getPortObjectSpecsAsEntityList(outPorts);
     }
 
     /**
@@ -311,8 +310,8 @@ public class DefaultNodeService implements NodeService {
         PortObject portObject = nc.getOutPort(portIdx).getPortObject();
         if (portObject instanceof BufferedDataTable) {
             return EntityBuilderUtil.buildDataTableEnt((BufferedDataTable)portObject, from, size);
-        } else if (portObject instanceof PageableDataTable) {
-            return EntityBuilderUtil.buildDataTableEnt((PageableDataTable)portObject, from, size);
+        } else if (portObject instanceof DataRowChunks) {
+            return EntityBuilderUtil.buildDataTableEnt((DataRowChunks)portObject, from, size);
         } else {
             throw new InvalidRequestException("Not a table at port index " + portIdx);
         }
@@ -407,15 +406,14 @@ public class DefaultNodeService implements NodeService {
         return webViewContent;
     }
 
-    private static List<PortObjectSpecEnt>
-        getPortObjectSpecsAsEntityList(final Stream<Pair<PortType, PortObjectSpec>> specs) {
-        return specs.map(port -> {
+    private static List<PortObjectSpecEnt> getPortObjectSpecsAsEntityList(final List<NodeOutPort> outPorts) {
+        return outPorts.stream().map(port -> {
             if (port == null) {
                 //can happen in case of an optional port
                 return null;
             }
-            PortType type = port.getFirst();
-            PortObjectSpec spec = port.getSecond();
+            PortType type = port.getPortType();
+            PortObjectSpec spec = port.getPortObjectSpec();
             if (spec == null) {
                 //can happen when spec is not known, yet
                 return null;

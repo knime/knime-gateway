@@ -41,7 +41,7 @@ public interface DataTableEnt extends GatewayEntity {
   public java.util.List<String> getColumnNames();
 
   /**
-   * The total number of rows. Might be larger than the number of rows contained here.
+   * The total number of rows. Might be larger than the number of rows contained here. If a value &lt; 0 indicates that the row count is not know.
    * @return numTotalRows 
    **/
   public Long getNumTotalRows();
@@ -67,7 +67,7 @@ public interface DataTableEnt extends GatewayEntity {
         DataTableEntBuilder setColumnNames(java.util.List<String> columnNames);
         
         /**
-         * The total number of rows. Might be larger than the number of rows contained here.
+         * The total number of rows. Might be larger than the number of rows contained here. If a value &lt; 0 indicates that the row count is not know.
          * 
          * @param numTotalRows the property value,  
          * @return this entity builder for chaining
