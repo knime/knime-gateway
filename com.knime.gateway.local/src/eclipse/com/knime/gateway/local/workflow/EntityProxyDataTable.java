@@ -100,6 +100,8 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
     /* list of loading chunks to be remembered for cancellation on cancel() */
     private List<CompletableFuture<DataTableEnt>> m_loadingChunks = new ArrayList<>();
 
+    private boolean m_cancelled = false;
+
     /**
      * Creates a new entity proxy.
      *
@@ -132,6 +134,10 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
     }
 
     private DataRowChunks createDataRowChunks() {
+        if (m_cancelled) {
+            m_totalRowCount = null;
+            m_cancelled = false;
+        }
         return new DataRowChunks() {
 
             @Override
@@ -197,6 +203,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
     public void cancel() {
         m_loadingChunks.forEach(f -> f.cancel(true));
         m_loadingChunks.clear();
+        m_cancelled = true;
     }
 
     /**
