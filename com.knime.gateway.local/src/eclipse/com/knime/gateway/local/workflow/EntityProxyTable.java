@@ -68,7 +68,7 @@ import com.knime.gateway.v0.entity.NodePortEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
+class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
     implements PortObject, AsyncDataTable, DirectAccessTable, DataTable {
 
     /**
@@ -118,7 +118,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
      * @param spec the spec of the data table that is proxied
      * @param access see {@link AbstractEntityProxy}
      */
-    public EntityProxyDataTable(final NodePortEnt portEnt, final NodeEnt nodeEnt, final DataTableSpec spec,
+    public EntityProxyTable(final NodePortEnt portEnt, final NodeEnt nodeEnt, final DataTableSpec spec,
         final EntityProxyAccess access) {
         super(portEnt, access);
         m_nodeEnt = nodeEnt;

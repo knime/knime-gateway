@@ -479,8 +479,8 @@ public class EntityProxyAccess {
      * @param spec the data table spec
      * @return either cached or a new entity proxy
      */
-    EntityProxyDataTable getOutputDataTable(final NodeOutPortEnt port, final NodeEnt node, final DataTableSpec spec) {
-        return getOrCreate(port, o -> new EntityProxyDataTable(port, node, spec, this), EntityProxyDataTable.class);
+    EntityProxyTable getOutputDataTable(final NodeOutPortEnt port, final NodeEnt node, final DataTableSpec spec) {
+        return getOrCreate(port, o -> new EntityProxyTable(port, node, spec, this), EntityProxyTable.class);
     }
 
 
