@@ -19,30 +19,32 @@
 package com.knime.gateway.v0.service;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import org.junit.Assert;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTable;
-import org.knime.core.data.RowIterator;
+import org.knime.core.data.DirectAccessTable;
+import org.knime.core.data.DirectAccessTable.UnknownRowCountException;
 import org.knime.core.data.filestore.FileStoreCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.port.PageableDataTable;
-import org.knime.core.node.port.PageableDataTable.UnknownRowCountException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.tableview.CellLoadingError;
 import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LockFailedException;
+import org.knime.core.util.Pair;
 
 import com.knime.gateway.testing.helper.ResultChecker;
 import com.knime.gateway.testing.helper.ServiceProvider;
@@ -99,63 +101,78 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
 
         //compare first port of node #3
         DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "3", 1, 0l, 100);
-        DataTable table = getDataTable("3", 1);
-        compare(table, tableEnt, 0);
+        compare(tableEnt, "3", 1, 0, 100);
 
         //compare the first port of node #5 (transposed table)
         tableEnt = ns().getOutputDataTable(wfId, "5", 1, 0l, 100);
-        table = getDataTable("5", 1);
-        compare(table, tableEnt, 0);
+        compare(tableEnt, "5", 1, 0, 100);
+
+        TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
 
     /**
-     * Retrieves table data provided by {@link PageableDataTable}-port object and compares.
+     * Retrieves table data provided by {@link DirectAccessTable}-port object and compares.
      *
      * @throws Exception if an error occurs
      */
-    public void testCompareNodeDataForPageableDataTable() throws Exception {
+    public void testCompareNodeDataForDirectAccessTable() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
 
-        //compare first port of node #6
-        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "6", 1, 23l, 100);
-        DataTable table = getDataTable("6", 1);
-        compare(table, tableEnt, 23);
+        //compare first port of node #8
+        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "8", 1, 23l, 100);
+        compare(tableEnt, "8", 1, 23, 100);
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
 
     /**
-     * Tests the behavior when a {@link PageableDataTable} throws a {@link UnknownRowCountException}.
+     * Tests the behavior when a {@link DirectAccessTable} throws a {@link UnknownRowCountException}.
      *
      * @throws Exception
      */
-    public void testPageableTableUnknownRowCount() throws Exception {
+    public void testDirectAccessTableUnknownRowCount() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
 
-        try {
-            //get first port of node #7
-            ns().getOutputDataTable(wfId, "7", 1, 23l, 100);
-            fail("Expected a IllegalStateException to be thrown");
-        } catch (IllegalStateException e) {
-            assertThat("Unexpected exception message", e.getMessage(),
-                containsString("Total size of the table could not be determined"));
-        }
+        //get first port of node #9
+        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "9", 1, 23l, 100);
+        compare(tableEnt, "9", 1, 23l, 100);
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
 
     /**
-     * Compares a {@link DataTable} to a {@link DataTableEnt} cell-wise by deserializing the cells from the
-     * respective entities.
+     * Test the behaviour when rows are tried to accessed that are out of the table range.
      *
-     * @param table the actual table
-     * @param tableEnt the entity table that should resemble the actual table
-     * @param startIdx the index to start comparing from
+     * @throws Exception
      */
-    private static void compare(final DataTable table, final DataTableEnt tableEnt, final int startIdx) {
-        assertThat("Total row count doesn't match", tableEnt.getNumTotalRows(), is(getTableSize(table)));
+    public void testDirectAccessTableExceedingTotalRowCount() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
+        Assert.assertThat("Empty list of rows expected",
+            ns().getOutputDataTable(wfId, "8", 1, 1001l, 10).getRows().isEmpty(), is(true));
 
-        RowIterator rowIt = table.iterator();
+        TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
+    }
+
+    /**
+     * Compares the actual table ({@link BufferedDataTable} or {@link DirectAccessTable}) to a {@link DataTableEnt}
+     * cell-wise by deserializing the cells from the respective entities.
+     *
+     * @param tableEnt the entity table that should resemble the actual table
+     * @param nodeID the id of the node to compare the table to
+     * @param the port index to compare to
+     * @param startIdx the index to start comparing from
+     * @param count the number of rows to compare
+     * @throws UnknownRowCountException
+     * @throws CanceledExecutionException
+     * @throws IndexOutOfBoundsException
+     */
+    private void compare(final DataTableEnt tableEnt, final String nodeID, final int portIdx, final long startIdx,
+        final int count) throws IndexOutOfBoundsException, CanceledExecutionException, UnknownRowCountException {
+        Pair<List<DataRow>, Long> dataRowsAndTotalCount = getDataRowsAndTotalCount(nodeID, portIdx, startIdx, count);
+
+        assertThat("Total row count doesn't match", tableEnt.getNumTotalRows(), is(dataRowsAndTotalCount.getSecond()));
+
+        Iterator<DataRow> rowIt = dataRowsAndTotalCount.getFirst().iterator();
         for (int i = 0; i < startIdx; i++) {
             rowIt.next();
         }
@@ -182,38 +199,37 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
         }
     }
 
-    private static long getTableSize(final DataTable table) {
-        if (table instanceof BufferedDataTable) {
-            return ((BufferedDataTable)table).size();
-        } else if (table instanceof PageableDataTable) {
-            try {
-                return ((PageableDataTable)table).calcTotalRowCount();
-            } catch (UnknownRowCountException ex) {
-                throw new RuntimeException("Unknown row count", ex);
-            }
-        } else {
-            throw new RuntimeException("Unknown table instance");
-        }
-    }
-
     /**
-     * Gets the data table of node with given id at port with given index.
+     * Gets the data rows and total row count of node with given id at port with given index.
      *
      * @param nodeID
      * @param portIdx
      * @return
+     * @throws CanceledExecutionException
+     * @throws IndexOutOfBoundsException
+     * @throws UnknownRowCountException
      */
-    private DataTable getDataTable(final String nodeID, final int portIdx) {
+    private Pair<List<DataRow>, Long> getDataRowsAndTotalCount(final String nodeID, final int portIdx, final long from,
+        final int count) throws IndexOutOfBoundsException, CanceledExecutionException {
         PortObject portObject =
             m_workflowManager.getNodeContainer(EntityUtil.stringToNodeID(m_workflowManager.getID().toString(), nodeID))
                 .getOutPort(portIdx).getPortObject();
         if (portObject instanceof BufferedDataTable) {
-            return (BufferedDataTable)portObject;
-        } else if (portObject instanceof PageableDataTable) {
-            return (PageableDataTable)portObject;
+            BufferedDataTable bdt = (BufferedDataTable)portObject;
+            return Pair.create(
+                StreamSupport.stream((bdt).spliterator(), false).skip(from).limit(count).collect(Collectors.toList()),
+                bdt.size());
+        } else if (portObject instanceof DirectAccessTable) {
+            DirectAccessTable dat = (DirectAccessTable)portObject;
+            long rowCount = -1;
+            try {
+                rowCount = dat.getRowCount();
+            } catch (UnknownRowCountException ex) {
+                //
+            }
+            return Pair.create(dat.getRows(from, count, null), rowCount);
         } else {
             throw new RuntimeException("Not a table");
         }
     }
-
 }

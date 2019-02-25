@@ -6,18 +6,18 @@
       <node
             category-path="/testing"
             deprecated="false"
-            factory-class="com.knime.gateway.testing.helper.node.pageabletable.PageableTableNodeFactory">
+            factory-class="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTableNodeFactory">
       </node>
    </extension>
    <extension
          point="org.knime.core.PortType">
       <portType
             hidden="false"
-            name="com.knime.gateway.testing.helper.PageableTablePortObject"
-            objectClass="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObject"
-            objectSerializer="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObject$PageableTablePortObjectSerializer"
-            specClass="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObjectSpec"
-            specSerializer="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObjectSpec$PageableTablePortObjectSpecSerializer">
+            name="com.knime.gateway.testing.helper.DirectAccessTablePortObject"
+            objectClass="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObject"
+            objectSerializer="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObject$PageableTablePortObjectSerializer"
+            specClass="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObjectSpec"
+            specSerializer="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObjectSpec$PageableTablePortObjectSpecSerializer">
       </portType>
    </extension>
 

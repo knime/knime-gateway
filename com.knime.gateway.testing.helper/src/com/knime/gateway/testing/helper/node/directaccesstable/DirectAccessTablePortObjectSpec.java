@@ -16,30 +16,30 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.testing.helper.node.pageabletable;
+package com.knime.gateway.testing.helper.node.directaccesstable;
 
 import javax.swing.JComponent;
 
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DirectAccessTable;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.HasDataTableSpec;
-import org.knime.core.node.port.PageableDataTable;
 
 /**
- * To test {@link PageableDataTable} in the remote workflow editor.
+ * To test {@link DirectAccessTable} in the remote workflow editor.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class PageableTablePortObjectSpec extends AbstractSimplePortObjectSpec implements HasDataTableSpec {
+public class DirectAccessTablePortObjectSpec extends AbstractSimplePortObjectSpec implements HasDataTableSpec {
 
     @SuppressWarnings("javadoc")
     public static class PageableTablePortObjectSpecSerializer
-        extends AbstractSimplePortObjectSpecSerializer<PageableTablePortObjectSpec> {
+        extends AbstractSimplePortObjectSpecSerializer<DirectAccessTablePortObjectSpec> {
     }
 
     @Override

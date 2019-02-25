@@ -16,13 +16,18 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.testing.helper.node.pageabletable;
+package com.knime.gateway.testing.helper.node.directaccesstable;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import javax.swing.JComponent;
 
 import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DirectAccessTable;
 import org.knime.core.data.RowKey;
-import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
@@ -30,27 +35,26 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
 import org.knime.core.node.port.AbstractSimplePortObject;
-import org.knime.core.node.port.PageableDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 
 /**
- * To test {@link PageableDataTable} in the remote workflow editor.
+ * To test {@link DirectAccessTable} in the remote workflow editor.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class PageableTablePortObject extends AbstractSimplePortObject implements PageableDataTable {
+public class DirectAccessTablePortObject extends AbstractSimplePortObject implements DirectAccessTable {
 
     /**
      * The port type.
      */
     @SuppressWarnings("hiding")
-    public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(PageableTablePortObject.class);
+    public static final PortType TYPE = PortTypeRegistry.getInstance().getPortType(DirectAccessTablePortObject.class);
 
     @SuppressWarnings("javadoc")
     public static class PageableTablePortObjectSerializer
-        extends AbstractSimplePortObjectSerializer<PageableTablePortObject> {
+        extends AbstractSimplePortObjectSerializer<DirectAccessTablePortObject> {
     }
 
     private int m_rowCount;
@@ -58,14 +62,14 @@ public class PageableTablePortObject extends AbstractSimplePortObject implements
     /**
      * @param rowCount if < 0 -> unkown row count
      */
-    public PageableTablePortObject(final int rowCount) {
+    public DirectAccessTablePortObject(final int rowCount) {
         m_rowCount = rowCount;
     }
 
     /**
      * No-arg for de-/serialization
      */
-    public PageableTablePortObject() {
+    public DirectAccessTablePortObject() {
         //
     }
 
@@ -89,35 +93,26 @@ public class PageableTablePortObject extends AbstractSimplePortObject implements
      * {@inheritDoc}
      */
     @Override
-    public CloseableRowIterator iterator(final long from, final long count) {
-        return new CloseableRowIterator() {
-
-            private long m_rowIdx = 0;
-
-            @Override
-            public DataRow next() {
-                DataRow row = new DefaultRow(RowKey.createRowKey(from + m_rowIdx), from + m_rowIdx);
-                m_rowIdx++;
-                return row;
-            }
-
-            @Override
-            public boolean hasNext() {
-                return m_rowIdx < count;
-            }
-
-            @Override
-            public void close() {
-                //
-            }
-        };
+    public DataTableSpec getDataTableSpec() {
+        return getSpec().getDataTableSpec();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public long calcTotalRowCount() throws UnknownRowCountException {
+    public List<DataRow> getRows(final long start, final int length, final ExecutionMonitor exec)
+        throws IndexOutOfBoundsException, CanceledExecutionException {
+        return LongStream.range(start, start + length).mapToObj(i -> {
+            return new DefaultRow(RowKey.createRowKey(start + i), start + i);
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getRowCount() throws UnknownRowCountException {
         if (m_rowCount < 0) {
             throw new UnknownRowCountException("negative row count");
         }
@@ -128,8 +123,8 @@ public class PageableTablePortObject extends AbstractSimplePortObject implements
      * {@inheritDoc}
      */
     @Override
-    public PageableTablePortObjectSpec getSpec() {
-        return new PageableTablePortObjectSpec();
+    public DirectAccessTablePortObjectSpec getSpec() {
+        return new DirectAccessTablePortObjectSpec();
     }
 
     /**

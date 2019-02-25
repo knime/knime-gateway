@@ -16,11 +16,12 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.testing.helper.node.pageabletable;
+package com.knime.gateway.testing.helper.node.directaccesstable;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.knime.core.data.DirectAccessTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -34,17 +35,16 @@ import org.knime.core.node.NodeView;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
-import org.knime.core.node.port.PageableDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 /**
- * To test {@link PageableDataTable} in the remote workflow editor.
+ * To test {@link DirectAccessTable} in the remote workflow editor.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class PageableTableNodeFactory extends NodeFactory<NodeModel> {
+public class DirectAccessTableNodeFactory extends NodeFactory<NodeModel> {
 
     private static SettingsModelInteger createRowCountModel() {
         return new SettingsModelInteger("row_count", 1000);
@@ -55,18 +55,18 @@ public class PageableTableNodeFactory extends NodeFactory<NodeModel> {
      */
     @Override
     public NodeModel createNodeModel() {
-        return new NodeModel(new PortType[0], new PortType[]{PageableTablePortObject.TYPE}) {
+        return new NodeModel(new PortType[0], new PortType[]{DirectAccessTablePortObject.TYPE}) {
 
             private SettingsModelInteger m_rowCount = createRowCountModel();
 
             @Override
             protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-                return new PortObjectSpec[]{new PageableTablePortObject(0).getSpec().getDataTableSpec()};
+                return new PortObjectSpec[]{new DirectAccessTablePortObject(0).getSpec().getDataTableSpec()};
             }
 
             @Override
             protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-                return new PortObject[]{new PageableTablePortObject(m_rowCount.getIntValue())};
+                return new PortObject[]{new DirectAccessTablePortObject(m_rowCount.getIntValue())};
             }
 
             @Override

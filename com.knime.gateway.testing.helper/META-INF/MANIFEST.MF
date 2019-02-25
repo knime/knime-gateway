@@ -17,5 +17,5 @@ Require-Bundle: org.knime.core;bundle-version="[3.8.0,4.0.0)",
  com.knime.gateway.json;bundle-version="[4.7.0,5.0.0)",
  org.knime.workbench.repository;bundle-version="[3.8.0,4.0.0)"
 Export-Package: com.knime.gateway.testing.helper,
- com.knime.gateway.testing.helper.node.pageabletable,
+ com.knime.gateway.testing.helper.node.directaccesstable,
  com.knime.gateway.v0.service

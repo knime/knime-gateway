@@ -2,14 +2,14 @@
 <knimeNode xmlns="http://knime.org/node/v2.10" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10" type="Manipulator"
     icon="">
-    <name>Pageable Data Table</name>
-    <shortDescription>Procues a pageable data table port object. For tests only!</shortDescription>
+    <name>Direct Access Table</name>
+    <shortDescription>Produces a direct access table port object. For tests only!</shortDescription>
     <fullDescription>
         <intro>See short description</intro>
         <option name="row count">Number of rows to generate</option>
     </fullDescription>
 
     <ports>
-        <outPort index="0" name="Pageable Data Table">...</outPort>
+        <outPort index="0" name="Direct Access Table">...</outPort>
     </ports>
 </knimeNode>

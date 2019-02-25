@@ -14,8 +14,8 @@
 </config>
 <entry key="customDescription" type="xstring" isnull="true" value=""/>
 <entry key="state" type="xstring" value="EXECUTED"/>
-<entry key="factory" type="xstring" value="com.knime.gateway.testing.helper.node.pageabletable.PageableTableNodeFactory"/>
-<entry key="node-name" type="xstring" value="Pageable Data Table"/>
+<entry key="factory" type="xstring" value="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTableNodeFactory"/>
+<entry key="node-name" type="xstring" value="Direct Access Table"/>
 <entry key="node-bundle-name" type="xstring" value="Helper for testing gateway API implementation, i.e. services and entites"/>
 <entry key="node-bundle-symbolic-name" type="xstring" value="com.knime.gateway.testing.helper"/>
 <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
@@ -25,14 +25,14 @@
 <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
 <entry key="node-feature-version" type="xstring" value="0.0.0"/>
 <config key="factory_settings"/>
-<entry key="name" type="xstring" value="Pageable Data Table"/>
+<entry key="name" type="xstring" value="Direct Access Table"/>
 <entry key="hasContent" type="xboolean" value="true"/>
 <entry key="isInactive" type="xboolean" value="false"/>
 <config key="ports">
 <config key="port_1">
 <entry key="index" type="xint" value="1"/>
-<entry key="port_spec_class" type="xstring" value="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObjectSpec"/>
-<entry key="port_object_class" type="xstring" value="com.knime.gateway.testing.helper.node.pageabletable.PageableTablePortObject"/>
+<entry key="port_spec_class" type="xstring" value="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObjectSpec"/>
+<entry key="port_object_class" type="xstring" value="com.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObject"/>
 <entry key="port_object_summary" type="xstring" isnull="true" value=""/>
 <entry key="port_spec_location" type="xstring" value="spec/spec.zip"/>
 <entry key="port_object_location" type="xstring" value="object/portobject.zip"/>
@@ -41,6 +41,6 @@
 </config>
 <config key="filestores">
 <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-<entry key="file_store_id" type="xstring" value="da4c9e68-38e0-44c6-919a-728829eeb971"/>
+<entry key="file_store_id" type="xstring" value="e7e828ba-31f9-428a-b805-ef28d4e84561"/>
 </config>
 </config>

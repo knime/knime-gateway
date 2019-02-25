@@ -78,12 +78,14 @@ public class GatewayTestCollection {
         res.put("testGetAndSetNodeViewsData",
             (sp, rc, wl, we) -> new JSViewTestHelper(sp, rc, wl, we).testGetAndSetNodeViewsData());
 
-        res.put("testCompareNodeDataForPageableDataTable",
-            (sp, rc, wl, we) -> new NodeDataTestHelper(sp, rc, wl).testCompareNodeDataForPageableDataTable());
+        res.put("testCompareNodeDataForDirectAccessTable",
+            (sp, rc, wl, we) -> new NodeDataTestHelper(sp, rc, wl).testCompareNodeDataForDirectAccessTable());
         res.put("testCompareNodeDataForBufferedDataTable",
             (sp, rc, wl, we) -> new NodeDataTestHelper(sp, rc, wl).testCompareNodeDataForBufferedDataTable());
-        res.put("testPageableTableUnknownRowCount",
-            (sp, rc, wl, we) -> new NodeDataTestHelper(sp, rc, wl).testPageableTableUnknownRowCount());
+        res.put("testDirectAccessTableUnknownRowCount",
+            (sp, rc, wl, we) -> new NodeDataTestHelper(sp, rc, wl).testDirectAccessTableUnknownRowCount());
+        res.put("testDirectAccessTableExceedingTotalRowCount",
+            (sp, rc, wl, we) -> new NodeDataTestHelper(sp, rc, wl).testDirectAccessTableExceedingTotalRowCount());
 
         res.put("testUpdateWorkflow",
             (sp, rc, wl, we) -> new UpdateWorkflowTestHelper(sp, rc, wl, we).testUpdatebWorkflow());
