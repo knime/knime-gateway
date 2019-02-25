@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.IOUtils;
-import org.knime.core.data.chunk.DataRowChunks;
+import org.knime.core.data.DirectAccessTable;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -310,8 +310,8 @@ public class DefaultNodeService implements NodeService {
         PortObject portObject = nc.getOutPort(portIdx).getPortObject();
         if (portObject instanceof BufferedDataTable) {
             return EntityBuilderUtil.buildDataTableEnt((BufferedDataTable)portObject, from, size);
-        } else if (portObject instanceof DataRowChunks) {
-            return EntityBuilderUtil.buildDataTableEnt((DataRowChunks)portObject, from, size);
+        } else if (portObject instanceof DirectAccessTable) {
+            return EntityBuilderUtil.buildDataTableEnt((DirectAccessTable)portObject, from, size);
         } else {
             throw new InvalidRequestException("Not a table at port index " + portIdx);
         }

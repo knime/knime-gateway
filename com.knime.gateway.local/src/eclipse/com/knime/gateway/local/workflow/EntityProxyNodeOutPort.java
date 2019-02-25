@@ -32,7 +32,7 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.widgets.Display;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.chunk.DataRowChunks;
+import org.knime.core.data.DirectAccessTable;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.HasDataTableSpec;
@@ -123,7 +123,7 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
                 return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
                     (DataTableSpec)getPortObjectSpecInternal());
             });
-        } else if (DataRowChunks.class.isAssignableFrom(portType.getPortObjectClass())
+        } else if (DirectAccessTable.class.isAssignableFrom(portType.getPortObjectClass())
             && HasDataTableSpec.class.isAssignableFrom(portType.getPortObjectSpecClass())) {
             return supplyAsync(() -> {
                 return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),

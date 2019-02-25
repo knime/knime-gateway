@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -37,12 +39,14 @@ import javax.swing.JComponent;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DirectAccessTable;
 import org.knime.core.data.RowIterator;
 import org.knime.core.data.RowKey;
-import org.knime.core.data.chunk.ChunkedDataTable;
-import org.knime.core.data.chunk.DataRowChunks;
 import org.knime.core.data.def.DefaultCellIterator;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.tableview.AsyncDataRow;
@@ -50,21 +54,22 @@ import org.knime.core.node.tableview.AsyncDataTable;
 import org.knime.core.node.tableview.TableContentModel;
 import org.knime.core.node.workflow.BufferedDataTableView;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.v0.entity.DataRowEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodePortEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodePortEnt} and implements {@link PortObject} and {@link AsyncDataTable}.
  *
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
-    implements PortObject, AsyncDataTable {
+    implements PortObject, AsyncDataTable, DirectAccessTable, DataTable {
 
     /**
      * The size of the chunks to be retrieved and cached.
@@ -102,6 +107,9 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
 
     private boolean m_cancelled = false;
 
+    /* LRU cache for retrieved chunks */
+    private Cache<String, DataTableEnt> m_chunkCache = CacheBuilder.newBuilder().weakValues().build();
+
     /**
      * Creates a new entity proxy.
      *
@@ -130,38 +138,45 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
      */
     @Override
     public RowIterator iterator() {
-        return new ChunkedDataTable(CHUNK_SIZE, createDataRowChunks()).iterator();
+        return new DirectAcessDataTable(CHUNK_SIZE, this).iterator();
     }
 
-    private DataRowChunks createDataRowChunks() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DataRow> getRows(final long from, final int count, final ExecutionMonitor exec)
+        throws IndexOutOfBoundsException, CanceledExecutionException {
         if (m_cancelled) {
             m_totalRowCount = null;
             m_cancelled = false;
         }
-        return new DataRowChunks() {
 
-            @Override
-            public DataTableSpec getDataTableSpec() {
-                return getDataTableSpec();
+        int newCount = count;
+        if (m_totalRowCount != null) {
+            if (from >= m_totalRowCount) {
+                return Collections.emptyList();
+            } else if (from + count > m_totalRowCount) {
+                newCount = (int)(m_totalRowCount - from);
             }
+        }
+        CompletableFuture<DataTableEnt> futureChunk = getChunkAsync(from, newCount);
+        registerFutureChunkForCancellation(futureChunk);
+        return IntStream.range(0, newCount).mapToObj(idx -> {
+            return createAsyncDataRow(from, idx, futureChunk);
+        }).collect(Collectors.toList());
+    }
 
-            @Override
-            public List<DataRow> getChunk(final long from, final long count) {
-                int newCount = (int)count;
-                if (m_totalRowCount != null) {
-                    if (from >= m_totalRowCount) {
-                        return Collections.emptyList();
-                    } else if (from + count > m_totalRowCount) {
-                        newCount = (int)(m_totalRowCount - from);
-                    }
-                }
-                CompletableFuture<DataTableEnt> futureChunk = getChunkAsync(from, newCount);
-                registerFutureChunkForCancellation(futureChunk);
-                return IntStream.range(0, newCount).mapToObj(idx -> {
-                    return createAsyncDataRow(from, idx, futureChunk);
-                }).collect(Collectors.toList());
-            }
-        };
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getRowCount() throws UnknownRowCountException {
+        if(m_totalRowCount == null) {
+            throw new UnknownRowCountException();
+        } else {
+            return m_totalRowCount;
+        }
     }
 
     private AsyncDataRow createAsyncDataRow(final long from, final int idx, final CompletableFuture<DataTableEnt> futureChunk) {
@@ -233,11 +248,13 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
     /**
      * Synchronous access to a chunk. A http-request will be made and the methods blocks till response is received.
      */
-    private DataTableEnt getChunk(final long from, final int count) {
+    private DataTableEnt getAndCacheChunk(final long from, final int count) {
         try {
-            return getAccess().nodeService().getOutputDataTable(m_nodeEnt.getRootWorkflowID(), m_nodeEnt.getNodeID(),
-                getEntity().getPortIndex(), from, count);
-        } catch (NodeNotFoundException | InvalidRequestException ex) {
+            Callable<DataTableEnt> loadChunk =
+                () -> getAccess().nodeService().getOutputDataTable(m_nodeEnt.getRootWorkflowID(), m_nodeEnt.getNodeID(),
+                    getEntity().getPortIndex(), from, count);
+            return m_chunkCache.get(from + "_" + count, loadChunk);
+        } catch (ExecutionException ex) {
             //should never happen
             throw new IllegalStateException(ex);
         }
@@ -248,7 +265,7 @@ class EntityProxyDataTable extends AbstractEntityProxy<NodePortEnt>
      */
     private CompletableFuture<DataTableEnt> getChunkAsync(final long from, final int count) {
         return CompletableFuture.supplyAsync(() -> {
-            DataTableEnt chunk = getChunk(from, count);
+            DataTableEnt chunk = getAndCacheChunk(from, count);
             if (m_totalRowCount == null) {
                 if (chunk.getNumTotalRows() >= 0) {
                     //set row count, if known

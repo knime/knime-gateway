@@ -49,8 +49,9 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
+import org.knime.core.data.DirectAccessTable;
+import org.knime.core.data.DirectAccessTable.UnknownRowCountException;
 import org.knime.core.data.MissingValue;
-import org.knime.core.data.chunk.DataRowChunks;
 import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DoubleCell;
@@ -59,6 +60,7 @@ import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.filestore.FileStoreCell;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
@@ -553,23 +555,37 @@ public class EntityBuilderUtil {
     }
 
     /**
-     * Creates a new {@link DataTableEnt} from a {@link DataRowChunks}-object.
+     * Creates a new {@link DataTableEnt} from a {@link DirectAccessTable}-object.
      *
-     * @param chunks the chunks to create the entity from
+     * @param daTable the direct access table to create the entity from
      * @param from row index to start from, if larger then the size of the table, it will return an empty table without
      *            any rows, if <code>null</code> it will be set to 0
      * @param size max number of rows to include (if less rows are available, resulting table will contain less), if
      *            <code>null</code> size will the maximum (i.e. the table end)
      * @return a newly created entity
      */
-    public static DataTableEnt buildDataTableEnt(final DataRowChunks chunks, final Long from, final Integer size) {
-        DataTableSpec spec = chunks.getDataTableSpec();
+    public static DataTableEnt buildDataTableEnt(final DirectAccessTable daTable, final Long from, final Integer size) {
+        DataTableSpec spec = daTable.getDataTableSpec();
         List<String> colNames = Arrays.asList(spec.getColumnNames());
-        long f = from == null ? 0 : from;
+        long f = from == null || from < 0 ? 0 : from;
         int s = size == null ? Integer.MAX_VALUE : size;
-        List<DataRowEnt> rows =
-            chunks.getChunk(f, s).stream().map(row -> buildDataRowEnt(row, spec)).collect(Collectors.toList());
-        return builder(DataTableEntBuilder.class).setNumTotalRows(-1l).setColumnNames(colNames).setRows(rows).build();
+        long totalRowCount = -1;
+        try {
+            daTable.getRowCount();
+        } catch (UnknownRowCountException ex1) {
+            //
+        }
+
+        List<DataRowEnt> rows;
+        try {
+            rows = daTable.getRows(f, s, null).stream().map(row -> buildDataRowEnt(row, spec))
+                .collect(Collectors.toList());
+        } catch (IndexOutOfBoundsException | CanceledExecutionException ex) {
+            //return an empty table
+            rows = Collections.emptyList();
+        }
+        return builder(DataTableEntBuilder.class).setNumTotalRows(totalRowCount).setColumnNames(colNames).setRows(rows)
+            .build();
     }
 
     private static DataRowEnt buildDataRowEnt(final DataRow row, final DataTableSpec spec) {
