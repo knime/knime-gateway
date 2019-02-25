@@ -571,7 +571,7 @@ public class EntityBuilderUtil {
         int s = size == null ? Integer.MAX_VALUE : size;
         long totalRowCount = -1;
         try {
-            daTable.getRowCount();
+            totalRowCount = daTable.getRowCount();
         } catch (UnknownRowCountException ex1) {
             //
         }

@@ -87,6 +87,9 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
 
     private Long m_totalRowCount = null;
 
+    /* keeps track of the row count if not known in advance */
+    private long m_currentRowCount = 0;
+
     private static final ExecutorService REMOTE_TABLE_CHUNK_LOADER_EXECUTORS =
         Executors.newFixedThreadPool(NUM_CHUNK_LOADER_THREADS, new ThreadFactory() {
             private final AtomicInteger m_counter = new AtomicInteger();
@@ -270,9 +273,22 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
                 if (chunk.getNumTotalRows() >= 0) {
                     //set row count, if known
                     m_totalRowCount = chunk.getNumTotalRows();
-                } else if (chunk.getRows().size() < CHUNK_SIZE) {
-                    //total row count found "empirically"
-                    m_totalRowCount = from + chunk.getRows().size();
+                } else {
+                    if (chunk.getRows() != null) {
+                        long size = chunk.getRows().size();
+                        m_currentRowCount = Math.max(m_currentRowCount, from + size);
+                        if (size > 0 && size < CHUNK_SIZE) {
+                            //definitely end of table -> row count found empirically
+                            m_totalRowCount = m_currentRowCount;
+                        }
+                    }
+
+                    if (chunk.getRows() == null || chunk.getRows().size() == 0) {
+                        //maybe the end of table (or beyond) -> total row count maybe found "empirically"
+                        if (from == m_currentRowCount) {
+                            m_totalRowCount = m_currentRowCount;
+                        }
+                    }
                 }
                 if (m_totalRowCount != null) {
                     m_rowCountKnownCallback.accept(m_totalRowCount);
