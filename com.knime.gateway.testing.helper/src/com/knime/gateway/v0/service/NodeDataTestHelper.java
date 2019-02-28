@@ -173,9 +173,6 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
         assertThat("Total row count doesn't match", tableEnt.getNumTotalRows(), is(dataRowsAndTotalCount.getSecond()));
 
         Iterator<DataRow> rowIt = dataRowsAndTotalCount.getFirst().iterator();
-        for (int i = 0; i < startIdx; i++) {
-            rowIt.next();
-        }
         for (int i = 0; i < tableEnt.getRows().size(); i++) {
             DataRow row = rowIt.next();
             DataRowEnt rowEnt = tableEnt.getRows().get(i);

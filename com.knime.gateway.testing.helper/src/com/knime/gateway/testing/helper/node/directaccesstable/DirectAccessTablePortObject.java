@@ -103,8 +103,17 @@ public class DirectAccessTablePortObject extends AbstractSimplePortObject implem
     @Override
     public List<DataRow> getRows(final long start, final int length, final ExecutionMonitor exec)
         throws IndexOutOfBoundsException, CanceledExecutionException {
-        return LongStream.range(start, start + length).mapToObj(i -> {
-            return new DefaultRow(RowKey.createRowKey(start + i), start + i);
+        if (m_rowCount >= 0 && start >= m_rowCount) {
+            throw new IndexOutOfBoundsException();
+        }
+        int actualLength;
+        if (m_rowCount >= 0) {
+            actualLength = (int)Math.min(length, m_rowCount - start);
+        } else {
+            actualLength = length;
+        }
+        return LongStream.range(start, start + actualLength).mapToObj(i -> {
+            return new DefaultRow(RowKey.createRowKey(i), i);
         }).collect(Collectors.toList());
     }
 
