@@ -95,12 +95,20 @@
       "value" : "true"
     }, {
       "op" : "replace",
-      "path" : "/nodes/4/outPorts/0/summary",
+      "path" : "/nodes/25/outPorts/0/summary",
       "value" : "Variables connection"
     }, {
       "op" : "replace",
-      "path" : "/nodes/19/outPorts/0/summary",
-      "value" : "Variables connection"
+      "path" : "/nodes/25/outPorts/1/summary",
+      "value" : "Rows: 4, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/25/outPorts/2/summary",
+      "value" : "Rows: 4, Cols: 5"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/25/outPorts/3/summary",
+      "value" : "4 principal components"
     }, {
       "op" : "replace",
       "path" : "/nodes/22/outPorts/0/summary",
@@ -115,32 +123,12 @@
       "value" : "Variables connection"
     }, {
       "op" : "replace",
-      "path" : "/nodes/6/outPorts/0/summary",
-      "value" : "Rows: 5, Cols: 4"
-    }, {
-      "op" : "replace",
       "path" : "/nodes/22/outPorts/1/summary",
       "value" : "Rows: 8, Cols: 6"
     }, {
       "op" : "replace",
-      "path" : "/nodes/6/outPorts/1/summary",
-      "value" : "Rows: 3, Cols: 4"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/2/outPorts/0/summary",
-      "value" : "Variables connection"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/2/outPorts/1/summary",
-      "value" : "Rows: 8, Cols: 4"
-    }, {
-      "op" : "replace",
       "path" : "/nodes/16/outPorts/1/summary",
       "value" : "Variables connection"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/6/nodeState/state",
-      "value" : "EXECUTED"
     }, {
       "op" : "replace",
       "path" : "/nodes/16/outPorts/0/summary",
@@ -167,6 +155,114 @@
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
+      "path" : "/nodes/26/outPorts/1/summary",
+      "value" : "Rows: 8, Cols: 9"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/26/outPorts/0/summary",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/23/nodeState/state",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/20/nodeState/state",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/6/workflowIncomingPorts/0/summary",
+      "value" : "Rows: 8, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/14/nodeMessage/type",
+      "value" : "RESET"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/14/nodeMessage/message",
+      "value" : ""
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/9/resetable",
+      "value" : "true"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/8/resetable",
+      "value" : "true"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/15/outPorts/1/summary",
+      "value" : "Rows: 1, Cols: 3"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/15/outPorts/0/summary",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/12/nodeMessage/type",
+      "value" : "ERROR"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/12/nodeMessage/message",
+      "value" : "Not all contained nodes are executed:"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/13/nodeState/state",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/14/outPorts/1/summary",
+      "value" : "Inactive Port Object"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/14/outPorts/1/inactive",
+      "value" : "true"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/14/outPorts/0/summary",
+      "value" : "Inactive Port Object"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/14/outPorts/0/inactive",
+      "value" : "true"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/11/nodeMessage/type",
+      "value" : "ERROR"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/11/nodeMessage/message",
+      "value" : "Execute failed: This node fails on each execution."
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/4/outPorts/0/summary",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/19/outPorts/0/summary",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/6/outPorts/0/summary",
+      "value" : "Rows: 5, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/6/outPorts/1/summary",
+      "value" : "Rows: 3, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/2/outPorts/0/summary",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/2/outPorts/1/summary",
+      "value" : "Rows: 8, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/6/nodeState/state",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
       "path" : "/nodes/8/nodeState/state",
       "value" : "EXECUTED"
     }, {
@@ -183,7 +279,7 @@
       "value" : "true"
     }, {
       "op" : "replace",
-      "path" : "/nodes/23/nodeState/state",
+      "path" : "/nodes/25/nodeState/state",
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
@@ -191,11 +287,11 @@
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
-      "path" : "/nodes/21/nodeState/state",
+      "path" : "/nodes/26/nodeState/state",
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
-      "path" : "/nodes/20/nodeState/state",
+      "path" : "/nodes/21/nodeState/state",
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
@@ -205,10 +301,6 @@
       "op" : "replace",
       "path" : "/nodes/8/outPorts/1/summary",
       "value" : "Rows: 7, Cols: 14"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/6/workflowIncomingPorts/0/summary",
-      "value" : "Rows: 8, Cols: 4"
     }, {
       "op" : "replace",
       "path" : "/nodes/21/outPorts/1/summary",
@@ -239,22 +331,6 @@
       "value" : "Rows: 4, Cols: 16"
     }, {
       "op" : "replace",
-      "path" : "/nodes/14/nodeMessage/type",
-      "value" : "RESET"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/14/nodeMessage/message",
-      "value" : ""
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/9/resetable",
-      "value" : "true"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/8/resetable",
-      "value" : "true"
-    }, {
-      "op" : "replace",
       "path" : "/nodes/6/workflowOutgoingPortNodeStates/0/state",
       "value" : "EXECUTED"
     }, {
@@ -267,22 +343,6 @@
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
-      "path" : "/nodes/15/outPorts/1/summary",
-      "value" : "Rows: 1, Cols: 3"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/15/outPorts/0/summary",
-      "value" : "Variables connection"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/12/nodeMessage/type",
-      "value" : "ERROR"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/12/nodeMessage/message",
-      "value" : "Not all contained nodes are executed:"
-    }, {
-      "op" : "replace",
       "path" : "/nodes/1/outPorts/0/summary",
       "value" : "Variables connection"
     }, {
@@ -293,26 +353,6 @@
       "op" : "replace",
       "path" : "/nodes/1/outPorts/2/summary",
       "value" : "Rows: 4, Cols: 4"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/13/nodeState/state",
-      "value" : "EXECUTED"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/14/outPorts/1/summary",
-      "value" : "Inactive Port Object"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/14/outPorts/1/inactive",
-      "value" : "true"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/14/outPorts/0/summary",
-      "value" : "Inactive Port Object"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/14/outPorts/0/inactive",
-      "value" : "true"
     }, {
       "op" : "replace",
       "path" : "/nodes/15/nodeState/state",
@@ -329,14 +369,6 @@
       "op" : "replace",
       "path" : "/nodes/10/outPorts/1/summary",
       "value" : "J48"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/11/nodeMessage/type",
-      "value" : "ERROR"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/11/nodeMessage/message",
-      "value" : "Execute failed: This node fails on each execution."
     }, {
       "op" : "replace",
       "path" : "/nodes/14/inactive",

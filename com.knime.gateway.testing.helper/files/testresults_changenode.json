@@ -450,6 +450,86 @@
         "sourcePort" : 0,
         "type" : "STD"
       },
+      "12_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "12",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "11_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "11",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "10_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "10",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "19_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "19",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "18_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "18",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "16",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "25",
+        "sourcePort" : 3,
+        "type" : "STD"
+      },
+      "25_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "25",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "22_2" : {
         "bendPoints" : [ ],
         "deletable" : true,
@@ -464,16 +544,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "23",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
-      },
-      "12_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "12",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -507,16 +577,6 @@
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "10",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "11_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "11",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "2",
         "sourcePort" : 1,
         "type" : "STD"
       },
@@ -554,16 +614,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "21",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "10_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "10",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -622,26 +672,6 @@
         "source" : "1",
         "sourcePort" : 2,
         "type" : "STD"
-      },
-      "19_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "19",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "18_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "18",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "16",
-        "sourcePort" : 1,
-        "type" : "STD"
       }
     },
     "hasCredentials" : false,
@@ -685,14 +715,14 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 57,
+            "height" : 60,
             "width" : 134,
             "x" : 493,
             "y" : 139
           },
           "defaultFontSize" : 11,
           "styleRanges" : [ ],
-          "text" : "Check a \nunsupported\nport type spec",
+          "text" : "Check a \n'generic'\nport type spec",
           "textAlignment" : "CENTER",
           "type" : "NodeAnnotation",
           "version" : 20151123
@@ -1108,6 +1138,113 @@
         },
         "webViewNames" : [ ]
       },
+      "25" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Compute",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
+        },
+        "nodeID" : "25",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 110,
+            "x" : 904,
+            "y" : 397
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "14" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -1190,6 +1327,103 @@
             "width" : 82,
             "x" : 784,
             "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "26" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "PCA model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Apply",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 1013,
+            "y" : 539
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "test of another\nport object spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
+        },
+        "nodeID" : "26",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 84,
+            "x" : 1064,
+            "y" : 477
           },
           "dropLocation" : false,
           "snapToGrid" : false,
@@ -2788,6 +3022,86 @@
         "sourcePort" : 0,
         "type" : "STD"
       },
+      "12_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "12",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "11_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "11",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "10_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "10",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "19_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "19",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "18_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "18",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "16",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "25",
+        "sourcePort" : 3,
+        "type" : "STD"
+      },
+      "25_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "25",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "22_2" : {
         "bendPoints" : [ ],
         "deletable" : true,
@@ -2802,16 +3116,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "23",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
-      },
-      "12_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "12",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -2845,16 +3149,6 @@
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "10",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "11_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "11",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "2",
         "sourcePort" : 1,
         "type" : "STD"
       },
@@ -2892,16 +3186,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "21",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "10_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "10",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -2960,26 +3244,6 @@
         "source" : "1",
         "sourcePort" : 2,
         "type" : "STD"
-      },
-      "19_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "19",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "18_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "18",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "16",
-        "sourcePort" : 1,
-        "type" : "STD"
       }
     },
     "hasCredentials" : false,
@@ -3023,14 +3287,14 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 57,
+            "height" : 60,
             "width" : 134,
             "x" : 493,
             "y" : 139
           },
           "defaultFontSize" : 11,
           "styleRanges" : [ ],
-          "text" : "Check a \nunsupported\nport type spec",
+          "text" : "Check a \n'generic'\nport type spec",
           "textAlignment" : "CENTER",
           "type" : "NodeAnnotation",
           "version" : 20151123
@@ -3446,6 +3710,113 @@
         },
         "webViewNames" : [ ]
       },
+      "25" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Compute",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
+        },
+        "nodeID" : "25",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 110,
+            "x" : 904,
+            "y" : 397
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "14" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -3528,6 +3899,103 @@
             "width" : 82,
             "x" : 784,
             "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "26" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "PCA model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Apply",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 1013,
+            "y" : 539
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "test of another\nport object spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
+        },
+        "nodeID" : "26",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 84,
+            "x" : 1064,
+            "y" : 477
           },
           "dropLocation" : false,
           "snapToGrid" : false,
@@ -4908,6 +5376,86 @@
         "sourcePort" : 0,
         "type" : "STD"
       },
+      "12_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "12",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "11_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "11",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "10_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "10",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "19_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "19",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "18_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "18",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "16",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "25",
+        "sourcePort" : 3,
+        "type" : "STD"
+      },
+      "25_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "25",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "22_2" : {
         "bendPoints" : [ ],
         "deletable" : true,
@@ -4922,16 +5470,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "23",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
-      },
-      "12_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "12",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -4965,16 +5503,6 @@
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "10",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "11_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "11",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "2",
         "sourcePort" : 1,
         "type" : "STD"
       },
@@ -5012,16 +5540,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "21",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "10_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "10",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -5080,26 +5598,6 @@
         "source" : "1",
         "sourcePort" : 2,
         "type" : "STD"
-      },
-      "19_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "19",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "18_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "18",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "16",
-        "sourcePort" : 1,
-        "type" : "STD"
       }
     },
     "hasCredentials" : false,
@@ -5143,14 +5641,14 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 57,
+            "height" : 60,
             "width" : 134,
             "x" : 493,
             "y" : 139
           },
           "defaultFontSize" : 11,
           "styleRanges" : [ ],
-          "text" : "Check a \nunsupported\nport type spec",
+          "text" : "Check a \n'generic'\nport type spec",
           "textAlignment" : "CENTER",
           "type" : "NodeAnnotation",
           "version" : 20151123
@@ -5566,6 +6064,113 @@
         },
         "webViewNames" : [ ]
       },
+      "25" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Compute",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
+        },
+        "nodeID" : "25",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 110,
+            "x" : 904,
+            "y" : 397
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "14" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -5648,6 +6253,103 @@
             "width" : 82,
             "x" : 784,
             "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "26" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "PCA model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Apply",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 1013,
+            "y" : 539
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "test of another\nport object spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
+        },
+        "nodeID" : "26",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 84,
+            "x" : 1064,
+            "y" : 477
           },
           "dropLocation" : false,
           "snapToGrid" : false,
@@ -7036,6 +7738,86 @@
         "sourcePort" : 0,
         "type" : "STD"
       },
+      "12_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "12",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "11_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "11",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "10_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "10",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "19_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "19",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "18_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "18",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "16",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "25",
+        "sourcePort" : 3,
+        "type" : "STD"
+      },
+      "25_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "25",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "22_2" : {
         "bendPoints" : [ ],
         "deletable" : true,
@@ -7050,16 +7832,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "23",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
-      },
-      "12_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "12",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -7093,16 +7865,6 @@
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "10",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "11_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "11",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "2",
         "sourcePort" : 1,
         "type" : "STD"
       },
@@ -7140,16 +7902,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "21",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "10_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "10",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -7208,26 +7960,6 @@
         "source" : "1",
         "sourcePort" : 2,
         "type" : "STD"
-      },
-      "19_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "19",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "18_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "18",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "16",
-        "sourcePort" : 1,
-        "type" : "STD"
       }
     },
     "hasCredentials" : false,
@@ -7271,14 +8003,14 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 57,
+            "height" : 60,
             "width" : 134,
             "x" : 493,
             "y" : 139
           },
           "defaultFontSize" : 11,
           "styleRanges" : [ ],
-          "text" : "Check a \nunsupported\nport type spec",
+          "text" : "Check a \n'generic'\nport type spec",
           "textAlignment" : "CENTER",
           "type" : "NodeAnnotation",
           "version" : 20151123
@@ -7694,6 +8426,113 @@
         },
         "webViewNames" : [ ]
       },
+      "25" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Compute",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
+        },
+        "nodeID" : "25",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 110,
+            "x" : 904,
+            "y" : 397
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "14" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -7776,6 +8615,103 @@
             "width" : 82,
             "x" : 784,
             "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "26" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "PCA model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Apply",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 1013,
+            "y" : 539
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "test of another\nport object spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
+        },
+        "nodeID" : "26",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 84,
+            "x" : 1064,
+            "y" : 477
           },
           "dropLocation" : false,
           "snapToGrid" : false,
@@ -9466,6 +10402,86 @@
         "sourcePort" : 0,
         "type" : "STD"
       },
+      "12_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "12",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "11_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "11",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "10_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "10",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "19_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "19",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "18_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "18",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "16",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "25",
+        "sourcePort" : 3,
+        "type" : "STD"
+      },
+      "25_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "25",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "22_2" : {
         "bendPoints" : [ ],
         "deletable" : true,
@@ -9480,16 +10496,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "23",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
-      },
-      "12_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "12",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -9523,16 +10529,6 @@
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "10",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "11_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "11",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "2",
         "sourcePort" : 1,
         "type" : "STD"
       },
@@ -9570,16 +10566,6 @@
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "21",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "10_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "10",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "1",
@@ -9638,26 +10624,6 @@
         "source" : "1",
         "sourcePort" : 2,
         "type" : "STD"
-      },
-      "19_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "19",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "18_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "18",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "16",
-        "sourcePort" : 1,
-        "type" : "STD"
       }
     },
     "hasCredentials" : false,
@@ -9701,14 +10667,14 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 57,
+            "height" : 60,
             "width" : 134,
             "x" : 493,
             "y" : 139
           },
           "defaultFontSize" : 11,
           "styleRanges" : [ ],
-          "text" : "Check a \nunsupported\nport type spec",
+          "text" : "Check a \n'generic'\nport type spec",
           "textAlignment" : "CENTER",
           "type" : "NodeAnnotation",
           "version" : 20151123
@@ -10124,6 +11090,113 @@
         },
         "webViewNames" : [ ]
       },
+      "25" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Compute",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
+        },
+        "nodeID" : "25",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 110,
+            "x" : 904,
+            "y" : 397
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "14" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -10206,6 +11279,103 @@
             "width" : 82,
             "x" : 784,
             "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "26" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "PCA model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Apply",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 1013,
+            "y" : 539
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "test of another\nport object spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
+        },
+        "nodeID" : "26",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 84,
+            "x" : 1064,
+            "y" : 477
           },
           "dropLocation" : false,
           "snapToGrid" : false,
