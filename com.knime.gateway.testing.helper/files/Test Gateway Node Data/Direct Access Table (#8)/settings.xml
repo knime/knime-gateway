@@ -11,6 +11,11 @@
 <entry key="EnabledStatus" type="xboolean" value="true"/>
 </config>
 <entry key="row_count" type="xint" value="1000"/>
+<config key="unknown_row_count_Internals">
+<entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+<entry key="EnabledStatus" type="xboolean" value="true"/>
+</config>
+<entry key="unknown_row_count" type="xboolean" value="false"/>
 </config>
 <entry key="customDescription" type="xstring" isnull="true" value=""/>
 <entry key="state" type="xstring" value="EXECUTED"/>
@@ -41,6 +46,6 @@
 </config>
 <config key="filestores">
 <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-<entry key="file_store_id" type="xstring" value="e7e828ba-31f9-428a-b805-ef28d4e84561"/>
+<entry key="file_store_id" type="xstring" value="ef14c024-4ce3-4817-a107-1e0a928b0ef4"/>
 </config>
 </config>
