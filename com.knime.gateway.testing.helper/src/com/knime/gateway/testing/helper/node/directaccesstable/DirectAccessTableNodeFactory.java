@@ -33,7 +33,9 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -50,6 +52,10 @@ public class DirectAccessTableNodeFactory extends NodeFactory<NodeModel> {
         return new SettingsModelInteger("row_count", 1000);
     }
 
+    private static SettingsModelBoolean createUnknownRowCountModel() {
+        return new SettingsModelBoolean("unknown_row_count", false);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -59,14 +65,17 @@ public class DirectAccessTableNodeFactory extends NodeFactory<NodeModel> {
 
             private SettingsModelInteger m_rowCount = createRowCountModel();
 
+            private SettingsModelBoolean m_unknownRowCount = createUnknownRowCountModel();
+
             @Override
             protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-                return new PortObjectSpec[]{new DirectAccessTablePortObject(0).getSpec().getDataTableSpec()};
+                return new PortObjectSpec[]{new DirectAccessTablePortObject(0, false).getSpec().getDataTableSpec()};
             }
 
             @Override
             protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
-                return new PortObject[]{new DirectAccessTablePortObject(m_rowCount.getIntValue())};
+                return new PortObject[]{
+                    new DirectAccessTablePortObject(m_rowCount.getIntValue(), m_unknownRowCount.getBooleanValue())};
             }
 
             @Override
@@ -77,6 +86,7 @@ public class DirectAccessTableNodeFactory extends NodeFactory<NodeModel> {
             @Override
             protected void saveSettingsTo(final NodeSettingsWO settings) {
                 m_rowCount.saveSettingsTo(settings);
+                m_unknownRowCount.saveSettingsTo(settings);
             }
 
             @Override
@@ -93,6 +103,7 @@ public class DirectAccessTableNodeFactory extends NodeFactory<NodeModel> {
             @Override
             protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
                 m_rowCount.loadSettingsFrom(settings);
+                m_unknownRowCount.loadSettingsFrom(settings);
             }
 
             @Override
@@ -135,6 +146,7 @@ public class DirectAccessTableNodeFactory extends NodeFactory<NodeModel> {
         return new DefaultNodeSettingsPane() {
             {
                 addDialogComponent(new DialogComponentNumber(createRowCountModel(), "row count", 1));
+                addDialogComponent(new DialogComponentBoolean(createUnknownRowCountModel(), "unkown row count"));
             }
         };
     }

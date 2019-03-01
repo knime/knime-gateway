@@ -58,12 +58,15 @@ public class DirectAccessTablePortObject extends AbstractSimplePortObject implem
     }
 
     private int m_rowCount;
+    private boolean m_unknownRowCount;
 
     /**
-     * @param rowCount if < 0 -> unkown row count
+     * @param rowCount the maximum number of rows available
+     * @param unknownRowCount if row count is not known in advance, i.e. {@link #getRowCount()} throws an exception
      */
-    public DirectAccessTablePortObject(final int rowCount) {
+    public DirectAccessTablePortObject(final int rowCount, final boolean unknownRowCount) {
         m_rowCount = rowCount;
+        m_unknownRowCount = unknownRowCount;
     }
 
     /**
@@ -106,12 +109,7 @@ public class DirectAccessTablePortObject extends AbstractSimplePortObject implem
         if (m_rowCount >= 0 && start >= m_rowCount) {
             throw new IndexOutOfBoundsException();
         }
-        int actualLength;
-        if (m_rowCount >= 0) {
-            actualLength = (int)Math.min(length, m_rowCount - start);
-        } else {
-            actualLength = length;
-        }
+        int actualLength = (int)Math.min(length, m_rowCount - start);
         return LongStream.range(start, start + actualLength).mapToObj(i -> {
             return new DefaultRow(RowKey.createRowKey(i), i);
         }).collect(Collectors.toList());
@@ -122,8 +120,8 @@ public class DirectAccessTablePortObject extends AbstractSimplePortObject implem
      */
     @Override
     public long getRowCount() throws UnknownRowCountException {
-        if (m_rowCount < 0) {
-            throw new UnknownRowCountException("negative row count");
+        if (m_unknownRowCount) {
+            throw new UnknownRowCountException("unknown row count");
         }
         return m_rowCount;
     }
@@ -142,6 +140,7 @@ public class DirectAccessTablePortObject extends AbstractSimplePortObject implem
     @Override
     protected void save(final ModelContentWO model, final ExecutionMonitor exec) throws CanceledExecutionException {
         model.addInt("row_count", m_rowCount);
+        model.addBoolean("unknown_row_count", m_unknownRowCount);
     }
 
     /**
@@ -151,6 +150,7 @@ public class DirectAccessTablePortObject extends AbstractSimplePortObject implem
     protected void load(final ModelContentRO model, final PortObjectSpec spec, final ExecutionMonitor exec)
         throws InvalidSettingsException, CanceledExecutionException {
         m_rowCount = model.getInt("row_count");
+        m_unknownRowCount = model.getBoolean("unknown_row_count");
     }
 
 }
