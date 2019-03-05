@@ -291,13 +291,15 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
                             }
                         }
                     }
-                    if (m_totalRowCount != null) {
+                    if (m_totalRowCount != null && m_rowCountKnownCallback != null) {
                         m_rowCountKnownCallback.accept(m_totalRowCount);
                     }
                 }
             }
 
-            m_rowsAvailableCallback.accept(from, from + chunk.getRows().size());
+            if (m_rowsAvailableCallback != null) {
+                m_rowsAvailableCallback.accept(from, from + chunk.getRows().size());
+            }
             return chunk;
         }, REMOTE_TABLE_CHUNK_LOADER_EXECUTORS);
     }
