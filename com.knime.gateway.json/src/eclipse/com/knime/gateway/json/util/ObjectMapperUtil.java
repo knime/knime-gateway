@@ -32,6 +32,8 @@ public final class ObjectMapperUtil {
         m_mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         m_mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
+        m_mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
         JsonUtil.addMixIns(m_mapper);
     }
 
