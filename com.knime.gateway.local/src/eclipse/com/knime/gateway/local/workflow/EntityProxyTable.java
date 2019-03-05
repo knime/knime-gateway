@@ -50,7 +50,7 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.tableview.AsyncDataRow;
-import org.knime.core.node.tableview.AsyncDataTable;
+import org.knime.core.node.tableview.AsyncTable;
 import org.knime.core.node.tableview.TableContentModel;
 import org.knime.core.node.workflow.BufferedDataTableView;
 
@@ -63,13 +63,13 @@ import com.knime.gateway.v0.entity.NodeEnt;
 import com.knime.gateway.v0.entity.NodePortEnt;
 
 /**
- * Entity-proxy class that proxies {@link NodePortEnt} and implements {@link PortObject} and {@link AsyncDataTable}.
+ * Entity-proxy class that proxies {@link NodePortEnt} and implements {@link PortObject} and {@link AsyncTable}.
  *
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
-    implements PortObject, AsyncDataTable, DirectAccessTable, DataTable {
+    implements PortObject, AsyncTable, DirectAccessTable, DataTable {
 
     /**
      * The size of the chunks to be retrieved and cached.
