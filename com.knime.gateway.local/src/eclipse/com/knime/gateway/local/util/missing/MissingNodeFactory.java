@@ -25,6 +25,9 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeView;
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
+import org.knime.core.util.Version;
+import org.knime.node.v31.BrDocument.Br;
 import org.knime.node.v31.FullDescription;
 import org.knime.node.v31.Intro;
 import org.knime.node.v31.KnimeNode;
@@ -41,19 +44,22 @@ public class MissingNodeFactory extends DynamicNodeFactory<NodeModel> {
 
     private String m_name;
     private String m_cause;
+    private RemoteWorkflowContext m_context;
 
     /**
      * Creates a new missing node factory.
      *
+     *
      * @param name the name of the node missing.
      * @param cause a possible cause why the node is missing that will be added to the node description. Can be
      *            <code>null</code>.
+     * @param context the workflow context in which the node is missing - can be <code>null</code>
      */
-    public MissingNodeFactory(final String name, final String cause) {
+    public MissingNodeFactory(final String name, final String cause, final RemoteWorkflowContext context) {
         m_name = name;
         m_cause = cause;
+        m_context = context;
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -97,16 +103,31 @@ public class MissingNodeFactory extends DynamicNodeFactory<NodeModel> {
         node.setType(org.knime.node.v31.NodeType.UNKNOWN);
         node.setName("MISSING " + m_name);
 
-        String shortDescription = "No node description available.";
+        String shortDescription = "The node is missing in your Analytics Platform and therefore can't be configured.";
         node.setShortDescription(shortDescription);
 
         FullDescription fullDesc = node.addNewFullDescription();
         Intro intro = fullDesc.addNewIntro();
         P p = intro.addNewP();
         p.newCursor().setTextValue(shortDescription);
+        p = intro.addNewP();
+        p.newCursor().setTextValue("The extension containing the missing node is probably not installed.");
         if(m_cause != null) {
             p = intro.addNewP();
-            p.newCursor().setTextValue("Cause: " + m_cause);
+            p.newCursor().setTextValue("Problem message:");
+            Br br = p.addNewBr();
+            br.newCursor().setTextValue("'" + m_cause + "'");
+        }
+        if (m_context != null) {
+            Version clientVersion = m_context.getClientVersion();
+            Version serverVersion = m_context.getServerVersion();
+            if (!clientVersion.isSameOrNewer(serverVersion)) {
+                p = intro.addNewP();
+                p.newCursor().setTextValue(
+                    "Please note that the server has a newer version (" + serverVersion + ") than this client ("
+                        + clientVersion
+                        + ")\nwhat might also cause the problem. Please try updating your KNIME Analytics Platform.");
+            }
         }
         return new NodeDescription31Proxy(doc);
     }

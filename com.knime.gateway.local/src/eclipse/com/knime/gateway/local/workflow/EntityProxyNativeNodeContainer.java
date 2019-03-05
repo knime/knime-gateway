@@ -38,6 +38,7 @@ import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
@@ -145,7 +146,7 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
 
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
         if (m_nodeFactory == null) {
-            m_nodeFactory = createNodeFactoryInstance(getEntity());
+            m_nodeFactory = createNodeFactoryInstance(getEntity(), getWorkflowContext().orElse(null));
         }
         return m_nodeFactory;
     }
@@ -154,9 +155,11 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
      * Creates a new node factory instance from a {@link NativeNodeEnt}.
      *
      * @param node contains the info to create the node factory
+     * @param workflowContext the context of the workflow this newly created node will be added to, or <code>null</code>
      * @return a newly created node factory or a {@link MissingNodeFactory} if creation failed
      */
-    static NodeFactory<? extends NodeModel> createNodeFactoryInstance(final NativeNodeEnt node) {
+    static NodeFactory<? extends NodeModel> createNodeFactoryInstance(final NativeNodeEnt node,
+        final RemoteWorkflowContext workflowContext) {
         NodeFactoryKeyEnt nodeFactoryKey = node.getNodeFactoryKey();
         NodeFactory<? extends NodeModel> nodeFactory;
         try {
@@ -173,7 +176,7 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
             }
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException
                 | InvalidSettingsException ex) {
-            nodeFactory = new MissingNodeFactory(node.getName(), ex.getMessage());
+            nodeFactory = new MissingNodeFactory(node.getName(), ex.getMessage(), workflowContext);
             nodeFactory.init();
         }
         return nodeFactory;

@@ -61,7 +61,7 @@ public final class NativeNodeEntityProxyWebView extends AbstractEntityProxyWebVi
     @Override
     protected WizardNode<WebViewContent, WebViewContent> createWizardNode() {
         return (WizardNode<WebViewContent, WebViewContent>)EntityProxyNativeNodeContainer
-            .createNodeFactoryInstance(getEntity()).createNodeModel();
+            .createNodeFactoryInstance(getEntity(), null).createNodeModel();
     }
 
 }
