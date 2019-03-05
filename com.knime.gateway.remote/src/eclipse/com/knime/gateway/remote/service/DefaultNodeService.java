@@ -47,6 +47,7 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.interactive.DefaultReexecutionCallback;
 import org.knime.core.node.interactive.ViewContent;
+import org.knime.core.node.port.DataTableSpecProvider;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -310,7 +311,7 @@ public class DefaultNodeService implements NodeService {
         PortObject portObject = nc.getOutPort(portIdx).getPortObject();
         if (portObject instanceof BufferedDataTable) {
             return EntityBuilderUtil.buildDataTableEnt((BufferedDataTable)portObject, from, size);
-        } else if (portObject instanceof DirectAccessTable) {
+        } else if (portObject instanceof DirectAccessTable && portObject.getSpec() instanceof DataTableSpecProvider) {
             return EntityBuilderUtil.buildDataTableEnt((DirectAccessTable)portObject, from, size);
         } else {
             throw new InvalidRequestException("Not a table at port index " + portIdx);
