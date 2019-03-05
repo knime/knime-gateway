@@ -39,6 +39,7 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
+import org.knime.core.util.Version;
 
 import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.ProblemPortObjectSpec;
@@ -166,7 +167,22 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
             getAccess().nodeService().setNodeSettings(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
                 settingsEnt);
         } catch (ServiceExceptions.InvalidSettingsException ex) {
-            throw new InvalidSettingsException(ex);
+            StringBuilder sb = new StringBuilder("Settings could not be applied on server.");
+            getWorkflowContext().ifPresent(context -> {
+                Version clientVersion = context.getClientVersion();
+                Version serverVersion = context.getServerVersion();
+                if (!clientVersion.isSameOrNewer(serverVersion)) {
+                    sb.append("\nThe server has a newer version (");
+                    sb.append(serverVersion);
+                    sb.append(") than this client (");
+                    sb.append(clientVersion);
+                    sb.append(")\nwhat might cause the problem.\nPlease try updating your Analytics Platform.");
+                }
+            });
+            sb.append("\n\n(Server message: ");
+            sb.append(ex.getMessage());
+            sb.append(")");
+            throw new InvalidSettingsException(sb.toString(), ex);
         } catch (ServiceExceptions.IllegalStateException | NodeNotFoundException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         }

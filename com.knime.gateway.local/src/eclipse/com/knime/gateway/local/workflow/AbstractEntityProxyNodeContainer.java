@@ -22,6 +22,7 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -37,6 +38,7 @@ import org.knime.core.node.workflow.NodeAnnotationData;
 import org.knime.core.node.workflow.NodeContainer.NodeLock;
 import org.knime.core.node.workflow.NodeContainer.NodeLocks;
 import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
@@ -55,6 +57,8 @@ import org.knime.core.ui.node.workflow.InteractiveWebViewsResultUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
+import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
@@ -836,5 +840,15 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
         } catch (ActionNotAllowedException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+    /**
+     * @return the {@link RemoteWorkflowContext} associated with this remote node
+     */
+    protected static Optional<RemoteWorkflowContext> getWorkflowContext() {
+        return Optional.ofNullable(NodeContext.getContext())
+            .map(nodeCtx -> nodeCtx.getContextObjectForClass(WorkflowManagerUI.class).orElse(null))
+            .map(wfm -> wfm.getContext())
+            .map(ctx -> ((ctx instanceof RemoteWorkflowContext) ? (RemoteWorkflowContext)ctx : null));
     }
 }
