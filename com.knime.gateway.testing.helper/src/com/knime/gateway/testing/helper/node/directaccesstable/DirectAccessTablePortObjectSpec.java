@@ -28,14 +28,14 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec;
-import org.knime.core.node.port.HasDataTableSpec;
+import org.knime.core.node.port.DataTableSpecProvider;
 
 /**
  * To test {@link DirectAccessTable} in the remote workflow editor.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DirectAccessTablePortObjectSpec extends AbstractSimplePortObjectSpec implements HasDataTableSpec {
+public class DirectAccessTablePortObjectSpec extends AbstractSimplePortObjectSpec implements DataTableSpecProvider {
 
     @SuppressWarnings("javadoc")
     public static class PageableTablePortObjectSpecSerializer

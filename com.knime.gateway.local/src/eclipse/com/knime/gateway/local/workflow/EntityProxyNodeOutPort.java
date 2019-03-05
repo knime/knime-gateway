@@ -35,7 +35,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DirectAccessTable;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.port.HasDataTableSpec;
+import org.knime.core.node.port.DataTableSpecProvider;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -124,10 +124,10 @@ class EntityProxyNodeOutPort<N extends NodeEnt> extends AbstractEntityProxy<Node
                     (DataTableSpec)getPortObjectSpecInternal());
             });
         } else if (DirectAccessTable.class.isAssignableFrom(portType.getPortObjectClass())
-            && HasDataTableSpec.class.isAssignableFrom(portType.getPortObjectSpecClass())) {
+            && DataTableSpecProvider.class.isAssignableFrom(portType.getPortObjectSpecClass())) {
             return supplyAsync(() -> {
                 return getAccess().getOutputDataTable(getEntity(), getNodeEnt(),
-                    ((HasDataTableSpec)getPortObjectSpecInternal()).getDataTableSpec());
+                    ((DataTableSpecProvider)getPortObjectSpecInternal()).getDataTableSpec());
             });
         } else {
             return completedFuture(new UnsupportedPortObject(portType));
