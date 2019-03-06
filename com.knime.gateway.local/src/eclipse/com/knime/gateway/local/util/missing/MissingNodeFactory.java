@@ -25,6 +25,7 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.missing.MissingNodeDialog;
 import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.util.Version;
 import org.knime.node.v31.BrDocument.Br;
@@ -82,13 +83,13 @@ public class MissingNodeFactory extends DynamicNodeFactory<NodeModel> {
     /** {@inheritDoc} */
     @Override
     protected boolean hasDialog() {
-        return false;
+        return true;
     }
 
     /** {@inheritDoc} */
     @Override
     protected NodeDialogPane createNodeDialogPane() {
-        return null;
+        return new MissingNodeDialog();
     }
 
     /**
