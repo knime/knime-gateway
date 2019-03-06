@@ -104,15 +104,17 @@ public class MissingNodeFactory extends DynamicNodeFactory<NodeModel> {
         node.setType(org.knime.node.v31.NodeType.UNKNOWN);
         node.setName("MISSING " + m_name);
 
-        String shortDescription = "The node is missing in your Analytics Platform and therefore can't be configured.";
+        String shortDescription =
+            "The node is missing in your Analytics Platform because the respective extension is probably not installed."
+                + " The node can't be configured."
+                + " Node execution and opening the port views (if available) is still possible.";
         node.setShortDescription(shortDescription);
 
         FullDescription fullDesc = node.addNewFullDescription();
         Intro intro = fullDesc.addNewIntro();
         P p = intro.addNewP();
         p.newCursor().setTextValue(shortDescription);
-        p = intro.addNewP();
-        p.newCursor().setTextValue("The extension containing the missing node is probably not installed.");
+
         if(m_cause != null) {
             p = intro.addNewP();
             p.newCursor().setTextValue("Problem message:");
