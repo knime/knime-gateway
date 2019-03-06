@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.JSONConfig;
@@ -58,6 +59,8 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException
  */
 abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends AbstractEntityProxyNodeContainer<E>
     implements SingleNodeContainerUI {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AbstractEntityProxySingleNodeContainer.class);
 
     private NodeDialogPane m_dialogPane;
 
@@ -144,12 +147,20 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
     public void applySettingsFromDialog() throws InvalidSettingsException {
         CheckUtils.checkState(hasDialog(), "Node \"%s\" has no dialog", getName());
         // TODO do we need to reset the node first??
-        NodeSettings sett = new NodeSettings("node settings");
+        NodeSettings sett = new NodeSettings("settings");
         NodeContext.pushContext(this);
         try {
             m_dialogPane.finishEditingAndSaveSettingsTo(sett);
         } finally {
             NodeContext.removeLastContext();
+        }
+
+        // only transfer settings to server when they vary
+        // (we assume that settings haven't been changed on the server meanwhile -
+        // we don't check that, yet)
+        if (sett.equals(m_nodeSettings)) {
+            LOGGER.debug("Settings haven't changed and are not stored back to server");
+            return;
         }
 
         //convert settings into a settings entity
