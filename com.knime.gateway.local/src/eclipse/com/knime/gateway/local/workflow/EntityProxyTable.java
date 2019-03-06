@@ -151,11 +151,6 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
     @Override
     public List<DataRow> getRows(final long from, final int count, final ExecutionMonitor exec)
         throws IndexOutOfBoundsException, CanceledExecutionException {
-        if (m_cancelled) {
-            m_totalRowCount = null;
-            m_cancelled = false;
-        }
-
         int newCount = count;
         if (m_totalRowCount != null) {
             if (from >= m_totalRowCount) {
@@ -233,7 +228,13 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
      */
     @Override
     public void setRowCountKnownCallback(final Consumer<Long> rowCountKnownCallback) {
-        m_rowCountKnownCallback = rowCountKnownCallback;
+        if (m_rowCountKnownCallback != rowCountKnownCallback) {
+            m_rowCountKnownCallback = rowCountKnownCallback;
+            if (m_totalRowCount != null) {
+                //immediately inform row count callback if total row count is already known
+                m_rowCountKnownCallback.accept(m_totalRowCount);
+            }
+        }
     }
 
     /**
