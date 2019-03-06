@@ -27,6 +27,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NotConfigurableException;
@@ -183,5 +184,13 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
             nodeFactory.init();
         }
         return nodeFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeType getType() {
+        return getNodeFactoryInstance().getType();
     }
 }
