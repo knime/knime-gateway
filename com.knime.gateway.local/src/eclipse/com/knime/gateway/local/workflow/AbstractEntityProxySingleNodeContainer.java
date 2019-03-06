@@ -129,14 +129,8 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                     }
                 }
 
-                //cache the node settings
                 m_nodeSettings = nodeSettings;
-
-                //get (if not already) and cache the node dialog
-                if (m_dialogPane == null) {
-                    m_dialogPane =
-                        getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
-                }
+                m_dialogPane = getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
                 return m_dialogPane;
             } catch (NotConfigurableException | InterruptedException | ExecutionException e) {
                 throw new CompletionException(e);
