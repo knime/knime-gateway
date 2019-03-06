@@ -38,7 +38,9 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
+import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 import org.knime.core.util.Version;
 
@@ -173,9 +175,10 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                 settingsEnt);
         } catch (ServiceExceptions.InvalidSettingsException ex) {
             StringBuilder sb = new StringBuilder("Settings could not be applied on server.");
-            getWorkflowContext().ifPresent(context -> {
-                Version clientVersion = context.getClientVersion();
-                Version serverVersion = context.getServerVersion();
+            WorkflowContextUI context = getParent().getContext();
+            if (context instanceof RemoteWorkflowContext) {
+                Version clientVersion = ((RemoteWorkflowContext)context).getClientVersion();
+                Version serverVersion = ((RemoteWorkflowContext)context).getServerVersion();
                 if (!clientVersion.isSameOrNewer(serverVersion)) {
                     sb.append("\nThe server has a newer version (");
                     sb.append(serverVersion);
@@ -183,7 +186,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                     sb.append(clientVersion);
                     sb.append(")\nwhat might cause the problem.\nPlease try updating your Analytics Platform.");
                 }
-            });
+            }
             sb.append("\n\n(Server message: ");
             sb.append(ex.getMessage());
             sb.append(")");

@@ -39,6 +39,7 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
+import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
@@ -146,7 +147,9 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
 
     private NodeFactory<? extends NodeModel> getNodeFactoryInstance() {
         if (m_nodeFactory == null) {
-            m_nodeFactory = createNodeFactoryInstance(getEntity(), getWorkflowContext().orElse(null));
+            WorkflowContextUI context = getParent().getContext();
+            m_nodeFactory = createNodeFactoryInstance(getEntity(),
+                context instanceof RemoteWorkflowContext ? (RemoteWorkflowContext)context : null);
         }
         return m_nodeFactory;
     }
