@@ -2039,7 +2039,7 @@
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
           },
-          "summary" : "4 principal components",
+          "summary" : "4 linearly uncorrelated variables",
           "type" : "NodeOutPort"
         } ],
         "parentNodeID" : "root",
