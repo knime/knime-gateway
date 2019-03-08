@@ -67,7 +67,12 @@ public abstract class AbstractGatewayServiceTestHelper {
         /**
          * A workflow to test nodes' data.
          */
-        WORKFLOW_DATA("/files/Test Gateway Node Data.knwf", "workflow_data");
+        WORKFLOW_DATA("/files/Test Gateway Node Data.knwf", "workflow_data"),
+
+        /**
+         * A workflow to test large table output.
+         */
+        WORKFLOW_LARGE_TABLE("/files/Test Gateway Large Table.knwf", "workflow_large_table");
 
         private final String m_url;
         private final String m_name;
