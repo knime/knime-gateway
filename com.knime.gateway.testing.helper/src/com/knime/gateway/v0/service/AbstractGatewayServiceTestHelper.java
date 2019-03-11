@@ -72,7 +72,12 @@ public abstract class AbstractGatewayServiceTestHelper {
         /**
          * A workflow to test large table output.
          */
-        WORKFLOW_LARGE_TABLE("/files/Test Gateway Large Table.knwf", "workflow_large_table");
+        WORKFLOW_LARGE_TABLE("/files/Test Gateway Large Table.knwf", "workflow_large_table"),
+
+        /**
+         * A workflow to test the wizard execution endpoints.
+         */
+        WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution");
 
         private final String m_url;
         private final String m_name;
@@ -220,5 +225,12 @@ public abstract class AbstractGatewayServiceTestHelper {
      */
     protected final AnnotationService as() {
         return m_serviceProvider.getAnnotationService();
+    }
+
+    /**
+     * @return the supplied {@link WizardExecutionService} under test
+     */
+    protected final WizardExecutionService wes() {
+        return m_serviceProvider.getWizardExecutionService();
     }
 }

@@ -31,6 +31,7 @@ import com.knime.gateway.v0.service.NodeDataTestHelper;
 import com.knime.gateway.v0.service.UpdateWorkflowTestHelper;
 import com.knime.gateway.v0.service.ViewWorkflowTestHelper;
 import com.knime.gateway.v0.service.WMetaNodeDialogTest;
+import com.knime.gateway.v0.service.WizardExecutionTestHelper;
 
 /**
  * Gives programmatic access to all gateway test (helper) that mainly test the correct behavior of gateway services
@@ -95,6 +96,9 @@ public class GatewayTestCollection {
 
         res.put("testGetWMetaNodeDialog",
             (sp, rc, wl, we) -> new WMetaNodeDialogTest(sp, rc, wl).testGetWMetaNodeDialog());
+
+        res.put("testGetCurrentPageNoPage",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageNoPage());
 
         return res;
     }
