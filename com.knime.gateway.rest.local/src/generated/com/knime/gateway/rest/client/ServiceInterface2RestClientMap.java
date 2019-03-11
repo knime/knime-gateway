@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.rest.client;
 
+import com.knime.gateway.rest.client.service.WizardExecutionClient;
+import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.rest.client.service.NodeClient;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.rest.client.service.WorkflowClient;
@@ -55,6 +57,9 @@ public class ServiceInterface2RestClientMap {
      */
     public static AbstractGatewayClient<?> get(Class<? extends GatewayService> clazz, final URI restAddress,
         final String jwt)  throws InstantiationException, IllegalAccessException, IOException {
+        if(clazz == WizardExecutionService.class) {
+            return new WizardExecutionClient(restAddress, jwt);
+        }        
         if(clazz == NodeService.class) {
             return new NodeClient(restAddress, jwt);
         }        

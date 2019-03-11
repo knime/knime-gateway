@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.v0.service.util;
 
+import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.v0.service.WorkflowService;
 import com.knime.gateway.v0.service.AnnotationService;
@@ -44,6 +45,7 @@ public class ListServices {
      */
     public static List<Class<?>> listServiceInterfaces() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(WizardExecutionService.class);
         res.add(NodeService.class);
         res.add(WorkflowService.class);
         res.add(AnnotationService.class);

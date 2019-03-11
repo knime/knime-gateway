@@ -16,38 +16,28 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.testing.helper;
+package com.knime.gateway.jsonrpc.local.service;
 
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.NodeService;
+
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+
 import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.WorkflowService;
 
 /**
- * Provides implementations of all gateway services.
+ * Interface that adds json rpc annotations. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface ServiceProvider {
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+public interface JsonRpcWizardExecutionService extends WizardExecutionService {
 
-    /**
-     * @return workflow service implementatin
+	/**
+     * {@inheritDoc}
      */
-	WorkflowService getWorkflowService();
-
-	/**
-	 * @return node service implementation
-	 */
-	NodeService getNodeService();
-
-	/**
-	 * @return annotation service implementation
-	 */
-	AnnotationService getAnnotationService();
-
-	/**
-	 * @return service implementation
-	 */
-	WizardExecutionService getWizardExecutionService();
+    @Override
+    @JsonRpcMethod(value = "WizardExecutionService.getCurrentPage")
+    String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
 
 }

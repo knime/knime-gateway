@@ -19,6 +19,8 @@
 
 package com.knime.gateway.jsonrpc.local.service.util;
 
+import com.knime.gateway.jsonrpc.local.service.JsonRpcWizardExecutionService;
+import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcNodeService;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcWorkflowService;
@@ -41,6 +43,9 @@ public class ServiceInterface2JsonRpcMap {
     }
 
     public static Class<?> get(Class<? extends GatewayService> clazz) {
+        if(clazz == WizardExecutionService.class) {
+            return JsonRpcWizardExecutionService.class;
+        }        
         if(clazz == NodeService.class) {
             return JsonRpcNodeService.class;
         }        

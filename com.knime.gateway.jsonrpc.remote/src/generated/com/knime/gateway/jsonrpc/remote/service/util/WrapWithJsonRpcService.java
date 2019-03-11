@@ -19,6 +19,8 @@
 
 package com.knime.gateway.jsonrpc.remote.service.util;
 
+import com.knime.gateway.jsonrpc.remote.service.JsonRpcWizardExecutionServiceWrapper;
+import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.jsonrpc.remote.service.JsonRpcNodeServiceWrapper;
 import com.knime.gateway.v0.service.NodeService;
 import com.knime.gateway.jsonrpc.remote.service.JsonRpcWorkflowServiceWrapper;
@@ -53,6 +55,9 @@ public class WrapWithJsonRpcService {
     public static GatewayService wrap(final GatewayService service, final Class<?> serviceInterface) {
         try {
         
+            if(serviceInterface == WizardExecutionService.class) {
+                return JsonRpcWizardExecutionServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
             if(serviceInterface == NodeService.class) {
                 return JsonRpcNodeServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }

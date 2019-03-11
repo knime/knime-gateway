@@ -16,38 +16,28 @@
  * ---------------------------------------------------------------------
  *
  */
-package com.knime.gateway.testing.helper;
+package com.knime.gateway.v0.service;
 
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.GatewayService;
+import com.knime.gateway.v0.service.util.ServiceExceptions;
+
 
 /**
- * Provides implementations of all gateway services.
+ * 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface ServiceProvider {
+@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+public interface WizardExecutionService extends GatewayService {
 
     /**
-     * @return workflow service implementatin
+     * Returns the output for a workflow&#39;s current page. This is identical to the response returned by executing a workflow to the next page however it can be retrieved again at a later time. 
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      */
-	WorkflowService getWorkflowService();
-
-	/**
-	 * @return node service implementation
-	 */
-	NodeService getNodeService();
-
-	/**
-	 * @return annotation service implementation
-	 */
-	AnnotationService getAnnotationService();
-
-	/**
-	 * @return service implementation
-	 */
-	WizardExecutionService getWizardExecutionService();
-
+    String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+        
 }

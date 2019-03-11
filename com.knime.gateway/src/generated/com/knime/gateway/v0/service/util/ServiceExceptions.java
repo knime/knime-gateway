@@ -117,5 +117,18 @@ public final class ServiceExceptions {
         }
     }
 
+   /**
+    * If a wizard page is not available.
+    */
+    public static class NoWizardPageException extends Exception {
+        public NoWizardPageException(String message) {
+            super(message);
+        }
+        
+        public NoWizardPageException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     
 }

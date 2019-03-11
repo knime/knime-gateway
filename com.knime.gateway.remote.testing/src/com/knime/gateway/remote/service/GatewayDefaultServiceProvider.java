@@ -21,6 +21,7 @@ package com.knime.gateway.remote.service;
 import com.knime.gateway.testing.helper.ServiceProvider;
 import com.knime.gateway.v0.service.AnnotationService;
 import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.v0.service.WorkflowService;
 
 /**
@@ -43,6 +44,11 @@ public class GatewayDefaultServiceProvider implements ServiceProvider {
     @Override
     public AnnotationService getAnnotationService() {
         return DefaultAnnotationService.getInstance();
+    }
+
+    @Override
+    public WizardExecutionService getWizardExecutionService() {
+        return DefaultWizardExecutionService.getInstance();
     }
 
 }
