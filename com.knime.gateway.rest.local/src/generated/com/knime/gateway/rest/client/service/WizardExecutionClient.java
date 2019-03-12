@@ -60,7 +60,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
-    public String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.TimeoutException {
+    public String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
         try{
             return doRequest(c -> {
                 try {
@@ -76,11 +76,11 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 204) {
-                throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
-            }
             if (ex.getResponse().getStatus() == 400) {
                 throw new ServiceExceptions.InvalidSettingsException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 404) {
+                throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
             }
             if (ex.getResponse().getStatus() == 502) {
                 throw new ServiceExceptions.TimeoutException(readExceptionMessage(ex));
@@ -107,7 +107,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 204) {
+            if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
             }
             throw new ServiceException(

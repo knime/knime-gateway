@@ -38,7 +38,7 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.executeToNextPage")
-    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.TimeoutException;
+    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
 
 	/**
      * {@inheritDoc}

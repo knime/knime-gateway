@@ -31,6 +31,21 @@ import com.knime.gateway.v0.service.util.ServiceExceptions;
 public interface WizardExecutionService extends GatewayService {
 
     /**
+     * Executes the workflow to the next page. If no data is sent the job is executed with the current view values (if there are any), otherwise the view values are set according to the JSON map provided.
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param async If true the call will return immediately after input validation and starting the execution. If false the call will wait until execution has finished (which is the default if no request parameter is specified)
+     * @param timeout Timeout in milliseconds when synchronous execution is requested. The request will return with a timeout-response if the workflow doesn&#39;t finish execution (step) before the timeout
+     * @param requestBody optional view parameter for the workflow page execution
+     *
+     * @return the result
+     * @throws ServiceExceptions.InvalidSettingsException If settings couldn&#39;t be applied.
+     * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
+     * @throws ServiceExceptions.TimeoutException If the executor got a timeout, e.g., because a workflow didn&#39;t finish execution before the timeout.
+     */
+    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
+        
+    /**
      * Returns the output for a workflow&#39;s current page. This is identical to the response returned by executing a workflow to the next page however it can be retrieved again at a later time. 
      *
      * @param jobId ID of the job the workflow is requested for.
@@ -39,18 +54,5 @@ public interface WizardExecutionService extends GatewayService {
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      */
     String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
-        
-    /**
-     * Executes the workflow to the next page. If no data is sent the job is executed with the current view values (if there are any), otherwise the view values are set according to the JSON map provided.
-     *
-     * @param jobId ID of the job the workflow is requested for.
-     * @param async If true the call will return immediately after input validation and starting the execution. If false the call will wait until execution has finished (which is the default if no request parameter is specified)
-     * @param requestBody optional view parameter for the workflow page execution
-     *
-     * @return the result
-     * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
-     * @throws ServiceExceptions.InvalidSettingsException If settings couldn&#39;t be applied.
-     */
-    String getNextPage(java.util.UUID jobId, Boolean async, java.util.Map<String, String> requestBody)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.InvalidSettingsException;
         
 }
