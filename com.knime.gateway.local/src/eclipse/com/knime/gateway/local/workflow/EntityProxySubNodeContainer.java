@@ -44,6 +44,7 @@ import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.MetaNodeDialogPane;
 import org.knime.core.node.workflow.NodeContainer.NodeContainerSettings.SplitType;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
@@ -137,7 +138,12 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
 
                 NodeDialogPane resDialogPane;
                 if (dialogPane == null) {
-                    resDialogPane = createDialogPane();
+                    NodeContext.pushContext(this);
+                    try {
+                        resDialogPane = createDialogPane();
+                    } finally {
+                        NodeContext.removeLastContext();
+                    }
                 } else {
                     resDialogPane = dialogPane;
                 }
