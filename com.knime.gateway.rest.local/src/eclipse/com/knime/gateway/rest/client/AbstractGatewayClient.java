@@ -172,17 +172,16 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
     }
 
     /**
-     * Serializes a gateway entity as json into a byte array.
+     * Serializes an object (usually a {@link GatewayEntity}) into into a byte array.
      *
-     * @param entity the entity to serialize
+     * @param obj the object to serialize
      * @return byte array result
      */
-    protected static byte[] toByteArray(final GatewayEntity entity) {
+    protected static byte[] toByteArray(final Object obj) {
         try {
-            return ObjectMapperUtil.getInstance().getObjectMapper().writeValueAsString(entity).getBytes();
+            return ObjectMapperUtil.getInstance().getObjectMapper().writeValueAsString(obj).getBytes();
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 }

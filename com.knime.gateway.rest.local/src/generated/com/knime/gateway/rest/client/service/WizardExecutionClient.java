@@ -60,6 +60,37 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
+    public String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.TimeoutException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.executeToNextPage(jobId, async, timeout, toByteArray(requestBody));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
+                }
+            }, String.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            if (ex.getResponse().getStatus() == 204) {
+                throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 400) {
+                throw new ServiceExceptions.InvalidSettingsException(readExceptionMessage(ex));
+            }
+            if (ex.getResponse().getStatus() == 502) {
+                throw new ServiceExceptions.TimeoutException(readExceptionMessage(ex));
+            }
+            throw new ServiceException(
+                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+        }
+    }
+    
+    @Override
     public String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
         try{
             return doRequest(c -> {
@@ -76,7 +107,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
+            if (ex.getResponse().getStatus() == 204) {
                 throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
             }
             throw new ServiceException(

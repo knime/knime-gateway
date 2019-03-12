@@ -130,5 +130,18 @@ public final class ServiceExceptions {
         }
     }
 
+   /**
+    * If the executor got a timeout, e.g., because a workflow didn&#39;t finish execution before the timeout.
+    */
+    public static class TimeoutException extends Exception {
+        public TimeoutException(String message) {
+            super(message);
+        }
+        
+        public TimeoutException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     
 }
