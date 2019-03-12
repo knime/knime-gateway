@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.WizardExecutionController;
 import org.knime.core.node.workflow.WorkflowExecutionMode;
 import org.knime.core.node.workflow.WorkflowLock;
@@ -127,15 +130,10 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         }
 
         if (async) {
-            if (wec.hasCurrentWizardPage()) {
-                return "";
-            } else {
-                //no content
-                throw new NoWizardPageException("No wizard page available");
-            }
+            return "";
         } else {
             try {
-                if (wfm.waitWhileInExecution(timeout, TimeUnit.MILLISECONDS)) {
+                if (waitWhileInExecution(wfm, timeout, TimeUnit.MILLISECONDS)) {
                     return getCurrentPage(jobId);
                 } else {
                     throw new TimeoutException("Workflow didn't finish before timeout");
@@ -145,5 +143,53 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                 throw new IllegalStateException(ex);
             }
         }
+    }
+
+    /**
+     * Causes the current thread to wait
+     *
+     * Copied and adopted from {@link WorkflowManager#waitWhileInExecution(long, TimeUnit)}.
+     *
+     * @param wfm the workflow manager to wait for
+     * @param time the maximum time to wait (0 or negative for waiting infinitely)
+     * @param unit the time unit of the {@code time} argument
+     * @return {@code false} if the waiting time detectably elapsed before return from the method, else {@code true}. It
+     *         returns {@code true} if the time argument is 0 or negative.
+     * @throws InterruptedException if the current thread is interrupted
+     */
+    private static boolean waitWhileInExecution(final WorkflowManager wfm, final long time, final TimeUnit unit)
+        throws InterruptedException {
+        ReentrantLock lock = wfm.getReentrantLockInstance();
+        Condition whileInExecCondition = lock.newCondition();
+        NodeStateChangeListener listener = e -> {
+            lock.lock();
+            try {
+                if (isWfmDone(wfm)) {
+                    whileInExecCondition.signalAll();
+                }
+            } finally {
+                lock.unlock();
+            }
+        };
+        wfm.addNodeStateChangeListener(listener);
+        lock.lockInterruptibly();
+        try {
+            if (isWfmDone(wfm)) {
+                return true;
+            }
+            if (time > 0) {
+                return whileInExecCondition.await(time, unit);
+            } else {
+                whileInExecCondition.await();
+                return true;
+            }
+        } finally {
+            lock.unlock();
+            wfm.removeNodeStateChangeListener(listener);
+        }
+    }
+
+    private static boolean isWfmDone(final WorkflowManager wfm) {
+        return wfm.getNodeContainerState().isConfigured() || wfm.getNodeContainerState().isWaitingToBeExecuted();
     }
 }
