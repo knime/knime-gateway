@@ -190,6 +190,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
     }
 
     private static boolean isWfmDone(final WorkflowManager wfm) {
-        return wfm.getNodeContainerState().isConfigured() || wfm.getNodeContainerState().isWaitingToBeExecuted();
+        return wfm.getNodeContainerState().isConfigured() || wfm.getNodeContainerState().isWaitingToBeExecuted()
+            || wfm.getNodeContainerState().isExecuted();
     }
 }
