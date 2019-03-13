@@ -18,16 +18,29 @@
  */
 package com.knime.gateway.v0.service;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import com.knime.gateway.testing.helper.ResultChecker;
 import com.knime.gateway.testing.helper.ServiceProvider;
 import com.knime.gateway.testing.helper.WorkflowLoader;
+import com.knime.gateway.v0.entity.WizardPageInputEnt;
+import com.knime.gateway.v0.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
+import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NoWizardPageException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.TimeoutException;
 
 /**
  * Tests the wizard execution functionality of a workflow via the gateway API.
@@ -35,6 +48,8 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.NoWizardPageException
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper {
+
+    private static final long WF_EXECUTION_TIMEOUT = 600000;
 
 	/**
      * See
@@ -50,6 +65,111 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
     }
 
     /**
+     * Checks if stepping to the first page works as expected.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToFirstPage() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        String pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        checkFirstPageContents(pageContent);
+    }
+
+    /**
+     * Checks if stepping to the second page works as expected.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToSecondPage() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+
+        int rowCount = (int)(5 * Math.random()) + 1;
+        // the the integer input parameter which controls a row filter
+        Map<String, String> viewValues = Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}");
+        String pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT,
+            builder(WizardPageInputEntBuilder.class).setViewValues(viewValues).build());
+        checkSecondPageContents(pageContent, rowCount);
+    }
+
+    /**
+     * Checks to advance to the next page asynchronously and retrieve the content via 'current-page'.
+     *
+     * @throws Exception
+     */
+    public void testAsyncExecuteToNextPageAndGetCurrentPage() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        String emptyPage = wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        assertThat("Wizard page not empty", emptyPage, is(""));
+        //wait a bit for the wizard page to be available
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            String pageContent = wes().getCurrentPage(wfId);
+            checkFirstPageContents(pageContent);
+        });
+    }
+
+    /**
+     * Checks if stepping until the end with user input works as expected.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToEnd() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+
+        int rowCount = (int)(5 * Math.random()) + 1;
+        Map<String, String> viewValues = Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}");
+        WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class).setViewValues(viewValues).build();
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, wizardPageInput);
+
+        wizardPageInput =
+            builder(WizardPageInputEntBuilder.class).setViewValues(Collections.emptyMap()).build();
+        try {
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, wizardPageInput);
+            fail("Exception expected");
+        } catch (NoWizardPageException e) {
+            assertThat("Unexpected exception message", e.getMessage(), is("No wizard page available"));
+        }
+    }
+
+    /**
+     * Checks that the correct exception is thrown when the passed view values for the next page are not valid (e.g.
+     * exceeding the maximum value).
+     *
+     * @throws Exception
+     */
+    public void testExecuteToNextPageWithInvalidViewValues() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+
+        // the the integer input parameter which controls a row filter
+        Map<String, String> viewValues = Collections.singletonMap("5:0:1", "{\"integer\": " + 100 + "}");
+        try {
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT,
+                builder(WizardPageInputEntBuilder.class).setViewValues(viewValues).build());
+            fail("Expected exception");
+        } catch (InvalidSettingsException e) {
+            assertThat("Unexpected exception message", e.getMessage(),
+                containsString("Validation of view parameters failed"));
+        }
+    }
+
+    /**
+     * Tests that the timeout works.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToNextPageTimeout() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        try {
+            wes().executeToNextPage(wfId, false, 1L, emptyWizardPageInput());
+            fail("Exception expected");
+        } catch (TimeoutException e) {
+            assertThat("Unexpected exception message", e.getMessage(), is("Workflow didn't finish before timeout"));
+        }
+    }
+
+    /**
      * Tests the {@link WizardExecutionService#getCurrentPage(UUID)} endpoint when no page is available.
      *
      * @throws Exception if an error occurs
@@ -60,7 +180,25 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             wes().getCurrentPage(wfId);
             fail("Exception expected to be thrown");
         } catch (NoWizardPageException e) {
-            assertThat("Unexpected exception method", e.getMessage(), is("No current wizard page"));
+            assertThat("Unexpected exception method", e.getMessage(), is("No wizard page available"));
     	}
+    }
+
+    private static void checkSecondPageContents(final String pageContents, final int expectedRowCount) {
+        assertThat("Expected page element not found", pageContents,
+            hasJsonPath("$.webNodes.9:0:7.nodeInfo.nodeName", is("Text Output")));
+        assertThat("Unexpected output content", pageContents,
+            hasJsonPath("$.webNodes.9:0:7.viewRepresentation.text", is(Integer.toString(expectedRowCount))));
+    }
+
+    private static void checkFirstPageContents(final String pageContents) {
+        assertThat("Expected page element not found", pageContents,
+            hasJsonPath("$.webNodePageConfiguration.layout.rows[*].columns[*].content", is(not(empty()))));
+        assertThat("Expected page element not found", pageContents,
+            hasJsonPath("$.webNodes.5:0:1.nodeInfo.nodeName", is("Integer Input")));
+    }
+
+    private static WizardPageInputEnt emptyWizardPageInput() {
+        return builder(WizardPageInputEntBuilder.class).setViewValues(Collections.emptyMap()).build();
     }
 }

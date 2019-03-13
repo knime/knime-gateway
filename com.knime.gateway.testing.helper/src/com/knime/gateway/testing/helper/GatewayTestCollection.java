@@ -99,6 +99,18 @@ public class GatewayTestCollection {
 
         res.put("testGetCurrentPageNoPage",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageNoPage());
+        res.put("testExecuteToFirstPage",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToFirstPage());
+        res.put("testExecuteToSecondPage",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToSecondPage());
+        res.put("testAsyncExecuteToNextPageAndGetCurrentPage", (sp, rc, wl,
+            we) -> new WizardExecutionTestHelper(sp, rc, wl).testAsyncExecuteToNextPageAndGetCurrentPage());
+        res.put("testExecuteToNextPageTimeout",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToNextPageTimeout());
+        res.put("testExecuteToEnd",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToEnd());
+        res.put("testExecuteToNextPageWithInvalidViewValues",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToNextPageWithInvalidViewValues());
 
         return res;
     }
