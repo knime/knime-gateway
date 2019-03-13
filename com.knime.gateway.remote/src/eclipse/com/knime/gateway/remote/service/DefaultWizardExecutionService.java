@@ -19,7 +19,6 @@
 package com.knime.gateway.remote.service;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -36,6 +35,7 @@ import org.knime.core.wizard.WizardPageManager;
 
 import com.knime.enterprise.executor.ExecutorUtil;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
+import com.knime.gateway.v0.entity.WizardPageInputEnt;
 import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidSettingsException;
@@ -98,7 +98,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      */
     @Override
     public String executeToNextPage(final UUID jobId, final Boolean async, final Long timeout,
-        final Map<String, String> requestBody)
+        final WizardPageInputEnt wizardPageInput)
         throws NoWizardPageException, InvalidSettingsException, TimeoutException {
         LOGGER.info("Stepping to next page of workflow with id '" + jobId + "'");
 
@@ -115,7 +115,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             if (!wec.hasCurrentWizardPage()) {
                 wec.stepFirst();
             } else {
-                validationResult = pageManager.applyViewValuesToCurrentPage(requestBody);
+                validationResult = pageManager.applyViewValuesToCurrentPage(wizardPageInput.getViewValues());
                 if (StringUtils.isEmpty(validationResult)) {
                     wec.stepNext();
                 } else {

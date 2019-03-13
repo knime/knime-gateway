@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.rest.client.service;
 
+import com.knime.gateway.v0.entity.WizardPageInputEnt;
 
 
 import java.io.IOException;
@@ -60,11 +61,11 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
-    public String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
+    public String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.executeToNextPage(jobId, async, timeout, toByteArray(requestBody));
+                    return c.executeToNextPage(jobId, async, timeout, toByteArray(wizardPageInputEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

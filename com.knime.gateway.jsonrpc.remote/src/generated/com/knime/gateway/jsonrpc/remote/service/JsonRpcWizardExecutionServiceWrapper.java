@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
+import com.knime.gateway.v0.entity.WizardPageInputEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -57,8 +58,8 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.TimeoutException.class, code = -32600,
             data = "502" /*per convention the data property contains the status code*/)
     })
-    public String executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="requestBody") java.util.Map<String, String> requestBody)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
-        return m_service.executeToNextPage(jobId, async, timeout, requestBody);    
+    public String executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="wizardPageInputEnt") WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
+        return m_service.executeToNextPage(jobId, async, timeout, wizardPageInputEnt);    
     }
 
 	/**

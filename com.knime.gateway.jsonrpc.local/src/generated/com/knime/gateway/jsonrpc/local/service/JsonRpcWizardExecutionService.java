@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
+import com.knime.gateway.v0.entity.WizardPageInputEnt;
 
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 
@@ -38,7 +39,7 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.executeToNextPage")
-    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, java.util.Map<String, String> requestBody)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
+    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
 
 	/**
      * {@inheritDoc}

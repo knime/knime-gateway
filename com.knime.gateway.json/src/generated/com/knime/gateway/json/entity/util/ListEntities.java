@@ -48,6 +48,7 @@ import com.knime.gateway.json.entity.PortObjectSpecEntMixIn;
 import com.knime.gateway.json.entity.PortTypeEntMixIn;
 import com.knime.gateway.json.entity.StyleRangeEntMixIn;
 import com.knime.gateway.json.entity.ViewDataEntMixIn;
+import com.knime.gateway.json.entity.WizardPageInputEntMixIn;
 import com.knime.gateway.json.entity.WorkflowAnnotationEntMixIn;
 import com.knime.gateway.json.entity.WorkflowEntMixIn;
 import com.knime.gateway.json.entity.WorkflowNodeEntMixIn;
@@ -109,6 +110,7 @@ public class ListEntities {
         res.add(PortTypeEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
         res.add(ViewDataEntMixIn.class);
+        res.add(WizardPageInputEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
         res.add(WorkflowNodeEntMixIn.class);
@@ -156,6 +158,7 @@ public class ListEntities {
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
         res.add(ViewDataEntMixIn.ViewDataEntMixInBuilder.class);
+        res.add(WizardPageInputEntMixIn.WizardPageInputEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
         res.add(WorkflowNodeEntMixIn.WorkflowNodeEntMixInBuilder.class);

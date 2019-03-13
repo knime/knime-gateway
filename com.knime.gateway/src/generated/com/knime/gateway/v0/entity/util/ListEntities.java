@@ -48,6 +48,7 @@ import com.knime.gateway.v0.entity.PortObjectSpecEnt;
 import com.knime.gateway.v0.entity.PortTypeEnt;
 import com.knime.gateway.v0.entity.StyleRangeEnt;
 import com.knime.gateway.v0.entity.ViewDataEnt;
+import com.knime.gateway.v0.entity.WizardPageInputEnt;
 import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.v0.entity.WorkflowEnt;
 import com.knime.gateway.v0.entity.WorkflowNodeEnt;
@@ -109,6 +110,7 @@ public class ListEntities {
         res.add(PortTypeEnt.class);
         res.add(StyleRangeEnt.class);
         res.add(ViewDataEnt.class);
+        res.add(WizardPageInputEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowEnt.class);
         res.add(WorkflowNodeEnt.class);
@@ -156,6 +158,7 @@ public class ListEntities {
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(ViewDataEnt.ViewDataEntBuilder.class);
+        res.add(WizardPageInputEnt.WizardPageInputEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
         res.add(WorkflowNodeEnt.WorkflowNodeEntBuilder.class);
