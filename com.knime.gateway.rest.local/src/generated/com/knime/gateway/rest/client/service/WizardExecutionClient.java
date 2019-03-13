@@ -83,7 +83,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             if (ex.getResponse().getStatus() == 404) {
                 throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
             }
-            if (ex.getResponse().getStatus() == 502) {
+            if (ex.getResponse().getStatus() == 503) {
                 throw new ServiceExceptions.TimeoutException(readExceptionMessage(ex));
             }
             throw new ServiceException(

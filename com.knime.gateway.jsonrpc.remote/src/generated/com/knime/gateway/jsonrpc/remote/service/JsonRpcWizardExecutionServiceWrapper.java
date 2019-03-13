@@ -56,7 +56,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
             data = "404" /*per convention the data property contains the status code*/),
         @JsonRpcError(exception = ServiceExceptions.TimeoutException.class, code = -32600,
-            data = "502" /*per convention the data property contains the status code*/)
+            data = "503" /*per convention the data property contains the status code*/)
     })
     public String executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="wizardPageInputEnt") WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
         return m_service.executeToNextPage(jobId, async, timeout, wizardPageInputEnt);    
