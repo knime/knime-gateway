@@ -28,12 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.WizardExecutionController;
-import org.knime.core.node.workflow.WorkflowExecutionMode;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.wizard.WizardPageManager;
 
-import com.knime.enterprise.executor.ExecutorUtil;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
 import com.knime.gateway.v0.entity.WizardPageInputEnt;
 import com.knime.gateway.v0.service.WizardExecutionService;
@@ -105,10 +103,6 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageManager pageManager = WizardPageManager.of(wfm);
         WizardExecutionController wec = pageManager.getWizardExecutionController();
-
-        if(ExecutorUtil.getPossibleExecutionMode(wfm) == WorkflowExecutionMode.REGULAR) {
-            throw new NoWizardPageException("Workflow not in wizard execution mode");
-        }
 
         String validationResult = null;
         try (WorkflowLock lock = wfm.lock()) {
