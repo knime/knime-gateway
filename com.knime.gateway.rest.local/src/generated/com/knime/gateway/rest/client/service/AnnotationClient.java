@@ -77,11 +77,12 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -102,14 +103,15 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     

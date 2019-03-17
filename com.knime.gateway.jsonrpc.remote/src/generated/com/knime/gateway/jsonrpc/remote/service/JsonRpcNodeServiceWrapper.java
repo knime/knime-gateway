@@ -61,9 +61,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "changeAndGetNodeState")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "ActionNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public String changeAndGetNodeState(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         return m_service.changeAndGetNodeState(jobId, nodeId, action);    
@@ -76,11 +76,11 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "createNode")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public String createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, Integer x, Integer y, @JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.createNode(jobId, x, y, nodeFactoryKeyEnt, parentNodeId);    
@@ -93,7 +93,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getInputFlowVariables")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public java.util.List<FlowVariableEnt> getInputFlowVariables(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getInputFlowVariables(jobId, nodeId);    
@@ -106,7 +106,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getInputPortSpecs")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public java.util.List<PortObjectSpecEnt> getInputPortSpecs(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getInputPortSpecs(jobId, nodeId);    
@@ -119,7 +119,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getNode")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public NodeEnt getNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getNode(jobId, nodeId);    
@@ -132,7 +132,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getNodeSettings")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public NodeSettingsEnt getNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getNodeSettings(jobId, nodeId);    
@@ -145,9 +145,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getOutputDataTable")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public DataTableEnt getOutputDataTable(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.getOutputDataTable(jobId, nodeId, portIdx, from, size);    
@@ -160,7 +160,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getOutputFlowVariables")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public java.util.List<FlowVariableEnt> getOutputFlowVariables(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getOutputFlowVariables(jobId, nodeId);    
@@ -173,7 +173,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getOutputPortSpecs")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.getOutputPortSpecs(jobId, nodeId);    
@@ -195,9 +195,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getViewData")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public ViewDataEnt getViewData(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.getViewData(jobId, nodeId);    
@@ -210,9 +210,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "getWMetaNodeDialog")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public MetaNodeDialogEnt getWMetaNodeDialog(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.getWMetaNodeDialog(jobId, nodeId);    
@@ -225,7 +225,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "setNodeBounds")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public void setNodeBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException {
         m_service.setNodeBounds(jobId, nodeId, boundsEnt);    
@@ -238,11 +238,11 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "setNodeSettings")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidSettingsException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/),
+            data = "InvalidSettingsException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.IllegalStateException.class, code = -32600,
-            data = "409" /*per convention the data property contains the status code*/)
+            data = "IllegalStateException" /*per convention the data property contains the exception name*/)
     })
     public void setNodeSettings(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="nodeSettingsEnt") NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
         m_service.setNodeSettings(jobId, nodeId, nodeSettingsEnt);    
@@ -255,9 +255,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcMethod(value = "setViewValue")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public void setViewValue(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, Boolean useAsDefault, @JsonRpcParam(value="javaObjectEnt") JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         m_service.setViewValue(jobId, nodeId, useAsDefault, javaObjectEnt);    

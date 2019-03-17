@@ -77,17 +77,18 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.InvalidSettingsException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("InvalidSettingsException")) {
+                throw new ServiceExceptions.InvalidSettingsException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NoWizardPageException")) {
+                throw new ServiceExceptions.NoWizardPageException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 503) {
-                throw new ServiceExceptions.TimeoutException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("TimeoutException")) {
+                throw new ServiceExceptions.TimeoutException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -108,11 +109,12 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NoWizardPageException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NoWizardPageException")) {
+                throw new ServiceExceptions.NoWizardPageException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     

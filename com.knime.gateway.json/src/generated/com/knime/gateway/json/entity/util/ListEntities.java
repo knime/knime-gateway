@@ -25,6 +25,7 @@ import com.knime.gateway.json.entity.DataCellEntMixIn;
 import com.knime.gateway.json.entity.DataRowEntMixIn;
 import com.knime.gateway.json.entity.DataTableEntMixIn;
 import com.knime.gateway.json.entity.FlowVariableEntMixIn;
+import com.knime.gateway.json.entity.GatewayExceptionEntMixIn;
 import com.knime.gateway.json.entity.JavaObjectEntMixIn;
 import com.knime.gateway.json.entity.JobManagerEntMixIn;
 import com.knime.gateway.json.entity.MetaNodeDialogCompEntMixIn;
@@ -87,6 +88,7 @@ public class ListEntities {
         res.add(DataRowEntMixIn.class);
         res.add(DataTableEntMixIn.class);
         res.add(FlowVariableEntMixIn.class);
+        res.add(GatewayExceptionEntMixIn.class);
         res.add(JavaObjectEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(MetaNodeDialogCompEntMixIn.class);
@@ -135,6 +137,7 @@ public class ListEntities {
         res.add(DataRowEntMixIn.DataRowEntMixInBuilder.class);
         res.add(DataTableEntMixIn.DataTableEntMixInBuilder.class);
         res.add(FlowVariableEntMixIn.FlowVariableEntMixInBuilder.class);
+        res.add(GatewayExceptionEntMixIn.GatewayExceptionEntMixInBuilder.class);
         res.add(JavaObjectEntMixIn.JavaObjectEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(MetaNodeDialogCompEntMixIn.MetaNodeDialogCompEntMixInBuilder.class);

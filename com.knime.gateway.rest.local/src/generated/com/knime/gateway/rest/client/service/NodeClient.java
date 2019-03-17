@@ -86,14 +86,15 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.ActionNotAllowedException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("ActionNotAllowedException")) {
+                throw new ServiceExceptions.ActionNotAllowedException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -114,17 +115,18 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidRequestException")) {
+                throw new ServiceExceptions.InvalidRequestException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -145,11 +147,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<FlowVariableEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -170,11 +173,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<PortObjectSpecEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -195,11 +199,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -220,11 +225,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeSettingsEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -245,14 +251,15 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, DataTableEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidRequestException")) {
+                throw new ServiceExceptions.InvalidRequestException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -273,11 +280,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<FlowVariableEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -298,11 +306,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<PortObjectSpecEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -323,8 +332,9 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -345,14 +355,15 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, ViewDataEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidRequestException")) {
+                throw new ServiceExceptions.InvalidRequestException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -373,14 +384,15 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, MetaNodeDialogEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidRequestException")) {
+                throw new ServiceExceptions.InvalidRequestException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -401,11 +413,12 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -426,17 +439,18 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidSettingsException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidSettingsException")) {
+                throw new ServiceExceptions.InvalidSettingsException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 409) {
-                throw new ServiceExceptions.IllegalStateException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("IllegalStateException")) {
+                throw new ServiceExceptions.IllegalStateException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -457,14 +471,15 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidRequestException")) {
+                throw new ServiceExceptions.InvalidRequestException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     

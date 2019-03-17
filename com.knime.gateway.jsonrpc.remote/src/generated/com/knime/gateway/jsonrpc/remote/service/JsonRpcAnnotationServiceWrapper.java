@@ -52,7 +52,7 @@ public class JsonRpcAnnotationServiceWrapper implements AnnotationService {
     @JsonRpcMethod(value = "setAnnotationBounds")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
     public void setAnnotationBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="annoId") String annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotFoundException {
         m_service.setAnnotationBounds(jobId, annoId, boundsEnt);    
@@ -65,9 +65,9 @@ public class JsonRpcAnnotationServiceWrapper implements AnnotationService {
     @JsonRpcMethod(value = "setAnnotationBoundsInSubWorkflow")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
     public void setAnnotationBoundsInSubWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="annoId") String annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         m_service.setAnnotationBoundsInSubWorkflow(jobId, nodeId, annoId, boundsEnt);    

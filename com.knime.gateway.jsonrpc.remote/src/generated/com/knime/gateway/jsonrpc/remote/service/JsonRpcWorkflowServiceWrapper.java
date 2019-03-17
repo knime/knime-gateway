@@ -55,7 +55,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "createConnection")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "ActionNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public String createConnection(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="connectionEnt") ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException {
         return m_service.createConnection(jobId, connectionEnt);    
@@ -68,11 +68,11 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "createWorkflowCopy")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public java.util.UUID createWorkflowCopy(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowPartsEnt") WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.createWorkflowCopy(jobId, workflowPartsEnt);    
@@ -85,11 +85,11 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "deleteWorkflowParts")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/),
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
-            data = "405" /*per convention the data property contains the status code*/)
+            data = "ActionNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public java.util.UUID deleteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowPartsEnt") WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         return m_service.deleteWorkflowParts(jobId, workflowPartsEnt, copy);    
@@ -102,9 +102,9 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "getSubWorkflow")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public WorkflowSnapshotEnt getSubWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         return m_service.getSubWorkflow(jobId, nodeId);    
@@ -117,9 +117,9 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "getSubWorkflowDiff")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
     public PatchEnt getSubWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         return m_service.getSubWorkflowDiff(jobId, nodeId, snapshotId);    
@@ -141,7 +141,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "getWorkflowDiff")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
     public PatchEnt getWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException {
         return m_service.getWorkflowDiff(jobId, snapshotId);    
@@ -154,9 +154,9 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @JsonRpcMethod(value = "pasteWorkflowParts")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "400" /*per convention the data property contains the status code*/),
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "404" /*per convention the data property contains the status code*/)
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
     public WorkflowPartsEnt pasteWorkflowParts(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="partsId") java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         return m_service.pasteWorkflowParts(jobId, partsId, x, y, nodeId);    

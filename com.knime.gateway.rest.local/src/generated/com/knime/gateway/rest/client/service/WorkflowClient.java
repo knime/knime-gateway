@@ -80,11 +80,12 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.ActionNotAllowedException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("ActionNotAllowedException")) {
+                throw new ServiceExceptions.ActionNotAllowedException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -105,17 +106,18 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.InvalidRequestException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("InvalidRequestException")) {
+                throw new ServiceExceptions.InvalidRequestException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -136,17 +138,18 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 405) {
-                throw new ServiceExceptions.ActionNotAllowedException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("ActionNotAllowedException")) {
+                throw new ServiceExceptions.ActionNotAllowedException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -167,14 +170,15 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NodeNotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -195,14 +199,15 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -223,8 +228,9 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -245,11 +251,12 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     
@@ -270,14 +277,15 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, WorkflowPartsEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            if (ex.getResponse().getStatus() == 400) {
-                throw new ServiceExceptions.NotASubWorkflowException(readExceptionMessage(ex));
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
-            if (ex.getResponse().getStatus() == 404) {
-                throw new ServiceExceptions.NotFoundException(readExceptionMessage(ex));
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
-            throw new ServiceException(
-                "Error response with status code '" + ex.getResponse().getStatus() + "' and message: " + readExceptionMessage(ex));
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
         }
     }
     

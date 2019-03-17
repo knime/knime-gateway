@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.googlecode.jsonrpc4j.AnnotationsErrorResolver;
-import com.googlecode.jsonrpc4j.ErrorData;
 import com.googlecode.jsonrpc4j.ErrorResolver;
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -49,8 +48,7 @@ public class JsonRpcErrorResolver implements ErrorResolver {
         }
 
         String message = hasErrorMessage(resolver) ? resolver.message() : thrownException.getMessage();
-        return new JsonError(resolver.code(), message,
-            new ErrorData(thrownException.getClass().getName(), resolver.data()));
+        return new JsonError(resolver.code(), thrownException.getClass().getSimpleName(), message);
     }
 
     private JsonRpcError getResolverForException(final Throwable thrownException, final Method method) {

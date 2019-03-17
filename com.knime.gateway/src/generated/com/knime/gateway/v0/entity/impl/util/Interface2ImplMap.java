@@ -32,6 +32,8 @@ import com.knime.gateway.v0.entity.DataTableEnt.DataTableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultDataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt;
+import com.knime.gateway.v0.entity.GatewayExceptionEnt.GatewayExceptionEntBuilder;
+import com.knime.gateway.v0.entity.impl.DefaultGatewayExceptionEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
 import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -131,6 +133,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == FlowVariableEntBuilder.class) {
             return new DefaultFlowVariableEnt.DefaultFlowVariableEntBuilder();
+        }        
+        if(clazz == GatewayExceptionEntBuilder.class) {
+            return new DefaultGatewayExceptionEnt.DefaultGatewayExceptionEntBuilder();
         }        
         if(clazz == JavaObjectEntBuilder.class) {
             return new DefaultJavaObjectEnt.DefaultJavaObjectEntBuilder();

@@ -25,6 +25,7 @@ import com.knime.gateway.v0.entity.DataCellEnt;
 import com.knime.gateway.v0.entity.DataRowEnt;
 import com.knime.gateway.v0.entity.DataTableEnt;
 import com.knime.gateway.v0.entity.FlowVariableEnt;
+import com.knime.gateway.v0.entity.GatewayExceptionEnt;
 import com.knime.gateway.v0.entity.JavaObjectEnt;
 import com.knime.gateway.v0.entity.JobManagerEnt;
 import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
@@ -87,6 +88,7 @@ public class ListEntities {
         res.add(DataRowEnt.class);
         res.add(DataTableEnt.class);
         res.add(FlowVariableEnt.class);
+        res.add(GatewayExceptionEnt.class);
         res.add(JavaObjectEnt.class);
         res.add(JobManagerEnt.class);
         res.add(MetaNodeDialogCompEnt.class);
@@ -135,6 +137,7 @@ public class ListEntities {
         res.add(DataRowEnt.DataRowEntBuilder.class);
         res.add(DataTableEnt.DataTableEntBuilder.class);
         res.add(FlowVariableEnt.FlowVariableEntBuilder.class);
+        res.add(GatewayExceptionEnt.GatewayExceptionEntBuilder.class);
         res.add(JavaObjectEnt.JavaObjectEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(MetaNodeDialogCompEnt.MetaNodeDialogCompEntBuilder.class);

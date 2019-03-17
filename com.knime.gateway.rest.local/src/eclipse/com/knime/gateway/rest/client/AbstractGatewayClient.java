@@ -32,6 +32,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -51,6 +52,8 @@ import com.knime.gateway.rest.client.providers.json.CollectionJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.StringJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
+import com.knime.gateway.service.ServiceException;
+import com.knime.gateway.v0.entity.GatewayExceptionEnt;
 
 /**
  * Abstract gateway client to provide functions to the auto-generated clients (such as {@link WorkflowClient} for
@@ -169,6 +172,29 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
                 return "Unknown message";
             }
         }
+    }
+
+    /**
+     * Reads and parses the response body in to a {@link GatewayExceptionEnt}.
+     *
+     * @param e
+     * @return the entity
+     * @throws ServiceException if the parsing failed or the provided {@link WebApplicationException} doesn't wrap the
+     *             expected response (i.e. status code)
+     */
+    protected static GatewayExceptionEnt readAndParseGatewayExceptionResponse(final WebApplicationException e)
+        throws ServiceException {
+        if (e.getResponse().getStatus() == Status.BAD_REQUEST.getStatusCode()) {
+            try {
+                return ObjectMapperUtil.getInstance().getObjectMapper().readValue(e.getMessage(),
+                    GatewayExceptionEnt.class);
+            } catch (IOException ex) {
+                throw new ServiceException("Error response with status code '" + e.getResponse().getStatus()
+                    + "' and message '" + readExceptionMessage(e) + "' couldn't be parsed to a gateway exception.", ex);
+            }
+        }
+        throw new ServiceException("Error response with status code '" + e.getResponse().getStatus() + "' and message: "
+            + readExceptionMessage(e));
     }
 
     /**
