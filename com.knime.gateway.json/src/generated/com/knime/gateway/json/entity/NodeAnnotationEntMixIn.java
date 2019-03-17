@@ -49,7 +49,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeAnnotationEnt.DefaultNodeAnno
     @Type(value = DefaultNodeAnnotationEnt.class, name="NodeAnnotation")
 })
 @JsonDeserialize(builder=DefaultNodeAnnotationEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
 
     @Override

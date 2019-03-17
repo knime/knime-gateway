@@ -47,7 +47,7 @@ import com.knime.gateway.v0.entity.impl.DefaultDataRowEnt.DefaultDataRowEntBuild
     @Type(value = DefaultDataRowEnt.class, name="DataRow")
 })
 @JsonDeserialize(builder=DefaultDataRowEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface DataRowEntMixIn extends DataRowEnt {
 
     @Override

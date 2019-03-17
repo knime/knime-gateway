@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeStateEnt.DefaultNodeStateEntB
     @Type(value = DefaultNodeStateEnt.class, name="NodeState")
 })
 @JsonDeserialize(builder=DefaultNodeStateEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface NodeStateEntMixIn extends NodeStateEnt {
 
     @Override

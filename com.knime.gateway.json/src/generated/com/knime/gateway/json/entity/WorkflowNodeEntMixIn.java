@@ -58,7 +58,7 @@ import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
   @Type(value = DefaultWrappedWorkflowNodeEnt.class, name = "WrappedWorkflowNode")
 })
 @JsonDeserialize(builder=DefaultWorkflowNodeEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
 
     @Override

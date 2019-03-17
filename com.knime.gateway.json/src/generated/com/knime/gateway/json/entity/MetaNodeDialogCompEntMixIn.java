@@ -47,7 +47,7 @@ import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogCompEnt.DefaultMeta
     @Type(value = DefaultMetaNodeDialogCompEnt.class, name="MetaNodeDialogComp")
 })
 @JsonDeserialize(builder=DefaultMetaNodeDialogCompEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
 
     @Override

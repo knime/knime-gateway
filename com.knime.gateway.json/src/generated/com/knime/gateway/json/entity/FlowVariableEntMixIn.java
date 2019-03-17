@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultFlowVariableEnt.DefaultFlowVariab
     @Type(value = DefaultFlowVariableEnt.class, name="FlowVariable")
 })
 @JsonDeserialize(builder=DefaultFlowVariableEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface FlowVariableEntMixIn extends FlowVariableEnt {
 
     @Override

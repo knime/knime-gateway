@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultDataCellEnt.DefaultDataCellEntBui
     @Type(value = DefaultDataCellEnt.class, name="DataCell")
 })
 @JsonDeserialize(builder=DefaultDataCellEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface DataCellEntMixIn extends DataCellEnt {
 
     @Override

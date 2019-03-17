@@ -47,7 +47,7 @@ import com.knime.gateway.v0.entity.impl.DefaultPortObjectSpecEnt.DefaultPortObje
     @Type(value = DefaultPortObjectSpecEnt.class, name="PortObjectSpec")
 })
 @JsonDeserialize(builder=DefaultPortObjectSpecEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface PortObjectSpecEntMixIn extends PortObjectSpecEnt {
 
     @Override

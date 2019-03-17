@@ -56,7 +56,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt.DefaultNativeNodeEn
     @Type(value = DefaultNativeNodeEnt.class, name="NativeNode")
 })
 @JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface NativeNodeEntMixIn extends NativeNodeEnt {
 
     @Override

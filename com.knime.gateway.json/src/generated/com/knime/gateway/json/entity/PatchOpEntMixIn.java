@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt.DefaultPatchOpEntBuild
     @Type(value = DefaultPatchOpEnt.class, name="PatchOp")
 })
 @JsonDeserialize(builder=DefaultPatchOpEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface PatchOpEntMixIn extends PatchOpEnt {
 
     @Override

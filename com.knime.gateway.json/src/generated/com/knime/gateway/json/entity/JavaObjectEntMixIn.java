@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt.DefaultJavaObjectEn
     @Type(value = DefaultJavaObjectEnt.class, name="JavaObject")
 })
 @JsonDeserialize(builder=DefaultJavaObjectEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface JavaObjectEntMixIn extends JavaObjectEnt {
 
     @Override

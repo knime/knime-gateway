@@ -47,7 +47,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeProgressEnt.DefaultNodeProgre
     @Type(value = DefaultNodeProgressEnt.class, name="NodeProgress")
 })
 @JsonDeserialize(builder=DefaultNodeProgressEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface NodeProgressEntMixIn extends NodeProgressEnt {
 
     @Override

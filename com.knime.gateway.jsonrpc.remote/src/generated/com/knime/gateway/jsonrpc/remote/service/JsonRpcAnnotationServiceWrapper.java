@@ -36,7 +36,7 @@ import com.knime.gateway.v0.service.AnnotationService;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @JsonRpcService(value = "AnnotationService")
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.jsonrpc.remote-config.json"})
 public class JsonRpcAnnotationServiceWrapper implements AnnotationService {
 
     private final AnnotationService m_service;

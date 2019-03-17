@@ -35,7 +35,7 @@ import com.knime.gateway.service.GatewayService;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.jsonrpc.local-config.json"})
 public class ServiceInterface2JsonRpcMap {
 
     private ServiceInterface2JsonRpcMap() {

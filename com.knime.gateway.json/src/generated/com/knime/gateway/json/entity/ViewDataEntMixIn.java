@@ -47,7 +47,7 @@ import com.knime.gateway.v0.entity.impl.DefaultViewDataEnt.DefaultViewDataEntBui
     @Type(value = DefaultViewDataEnt.class, name="ViewData")
 })
 @JsonDeserialize(builder=DefaultViewDataEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface ViewDataEntMixIn extends ViewDataEnt {
 
     @Override

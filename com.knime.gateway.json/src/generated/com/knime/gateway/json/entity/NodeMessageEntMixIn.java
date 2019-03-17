@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessage
     @Type(value = DefaultNodeMessageEnt.class, name="NodeMessage")
 })
 @JsonDeserialize(builder=DefaultNodeMessageEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface NodeMessageEntMixIn extends NodeMessageEnt {
 
     @Override

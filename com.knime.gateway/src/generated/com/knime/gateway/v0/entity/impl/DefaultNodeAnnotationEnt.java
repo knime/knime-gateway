@@ -33,7 +33,7 @@ import com.knime.gateway.v0.entity.NodeAnnotationEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements NodeAnnotationEnt {
 
   protected Boolean m__default;

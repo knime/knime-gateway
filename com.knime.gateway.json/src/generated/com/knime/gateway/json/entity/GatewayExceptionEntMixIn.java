@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultGatewayExceptionEnt.DefaultGatewa
     @Type(value = DefaultGatewayExceptionEnt.class, name="GatewayException")
 })
 @JsonDeserialize(builder=DefaultGatewayExceptionEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface GatewayExceptionEntMixIn extends GatewayExceptionEnt {
 
     @Override

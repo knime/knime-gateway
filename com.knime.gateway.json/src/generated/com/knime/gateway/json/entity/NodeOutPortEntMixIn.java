@@ -48,7 +48,7 @@ import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt.DefaultNodeOutPort
     @Type(value = DefaultNodeOutPortEnt.class, name="NodeOutPort")
 })
 @JsonDeserialize(builder=DefaultNodeOutPortEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
 
     @Override

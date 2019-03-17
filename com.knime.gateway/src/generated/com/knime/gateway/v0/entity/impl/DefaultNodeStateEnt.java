@@ -30,7 +30,7 @@ import com.knime.gateway.v0.entity.NodeStateEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultNodeStateEnt  implements NodeStateEnt {
 
   protected StateEnum m_state;

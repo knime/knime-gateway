@@ -46,7 +46,7 @@ import com.knime.gateway.v0.entity.impl.DefaultWizardPageInputEnt.DefaultWizardP
     @Type(value = DefaultWizardPageInputEnt.class, name="WizardPageInput")
 })
 @JsonDeserialize(builder=DefaultWizardPageInputEntBuilder.class)
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.json-config.json"})
 public interface WizardPageInputEntMixIn extends WizardPageInputEnt {
 
     @Override

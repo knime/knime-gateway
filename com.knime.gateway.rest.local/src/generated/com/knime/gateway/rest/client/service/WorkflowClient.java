@@ -46,7 +46,7 @@ import com.knime.gateway.rest.client.AbstractGatewayClient;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway.rest.local-config.json"})
 public class WorkflowClient extends AbstractGatewayClient<Workflow> implements WorkflowService {
 
     /**

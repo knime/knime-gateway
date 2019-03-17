@@ -31,7 +31,7 @@ import com.knime.gateway.v0.entity.ConnectionEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultConnectionEnt  implements ConnectionEnt {
 
   protected String m_dest;

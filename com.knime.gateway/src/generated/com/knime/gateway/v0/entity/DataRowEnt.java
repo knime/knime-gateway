@@ -30,7 +30,7 @@ import com.knime.gateway.entity.GatewayEntity;
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = "org.knime.gateway.codegen.GatewayCodegen")
+@javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-interfaces-config.json"})
 public interface DataRowEnt extends GatewayEntity {
 
 
