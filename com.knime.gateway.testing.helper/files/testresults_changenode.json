@@ -1347,7 +1347,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "PCA model",
+          "portName" : "Model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -3919,7 +3919,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "PCA model",
+          "portName" : "Model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -6273,7 +6273,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "PCA model",
+          "portName" : "Model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -8635,7 +8635,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "PCA model",
+          "portName" : "Model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -11299,7 +11299,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "PCA model",
+          "portName" : "Model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
