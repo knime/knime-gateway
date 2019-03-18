@@ -46,4 +46,9 @@ public interface WorkflowProject {
      */
     WorkflowManager openProject();
 
+    /**
+     * Clears the report directory of the workflow project (if there is any).
+     */
+    default void clearReport() {}
+
 }

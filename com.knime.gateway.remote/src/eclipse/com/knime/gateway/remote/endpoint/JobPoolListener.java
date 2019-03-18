@@ -22,6 +22,9 @@ import java.util.UUID;
 
 import org.knime.core.node.workflow.WorkflowManager;
 
+import com.knime.enterprise.executor.ExecutorUtil;
+import com.knime.enterprise.executor.WorkflowJob;
+
 /**
  * It keeps track of created and discarded jobs at the executor and adds/removes the them to/from the
  * {@link WorkflowProjectManager}.
@@ -35,7 +38,7 @@ public class JobPoolListener implements com.knime.enterprise.executor.JobPoolLis
      * {@inheritDoc}
      */
     @Override
-    public void jobLoaded(final UUID id, final WorkflowManager wfm) {
+    public void jobLoaded(final UUID id, final WorkflowJob job, final WorkflowManager wfm) {
         WorkflowProjectManager.addWorkflowProject(id, new WorkflowProject() {
 
             @Override
@@ -51,6 +54,11 @@ public class JobPoolListener implements com.knime.enterprise.executor.JobPoolLis
             @Override
             public String getID() {
                 return id.toString();
+            }
+
+            @Override
+            public void clearReport() {
+                ExecutorUtil.clearReport(job);
             }
         });
     }

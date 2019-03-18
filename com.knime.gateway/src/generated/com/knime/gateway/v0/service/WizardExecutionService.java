@@ -56,4 +56,14 @@ public interface WizardExecutionService extends GatewayService {
      */
     String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
         
+    /**
+     * Resets a workflow to a previously executed page.
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
+     */
+    String resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+        
 }

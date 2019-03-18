@@ -118,4 +118,30 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
         }
     }
     
+    @Override
+    public String resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.resetToPreviousPage(jobId);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
+                }
+            }, String.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NoWizardPageException")) {
+                throw new ServiceExceptions.NoWizardPageException(gatewayException.getExceptionMessage());
+            }
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
+        }
+    }
+    
 }

@@ -48,4 +48,11 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
     @JsonRpcMethod(value = "WizardExecutionService.getCurrentPage")
     String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WizardExecutionService.resetToPreviousPage")
+    String resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+
 }

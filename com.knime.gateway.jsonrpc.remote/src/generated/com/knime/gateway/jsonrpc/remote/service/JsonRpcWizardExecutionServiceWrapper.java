@@ -75,4 +75,17 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         return m_service.getCurrentPage(jobId);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "resetToPreviousPage")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
+            data = "NoWizardPageException" /*per convention the data property contains the exception name*/)
+    })
+    public String resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+        return m_service.resetToPreviousPage(jobId);    
+    }
+
 }

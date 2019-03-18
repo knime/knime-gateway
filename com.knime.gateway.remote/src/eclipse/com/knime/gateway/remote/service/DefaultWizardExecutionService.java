@@ -187,4 +187,20 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         return wfm.getNodeContainerState().isConfigured() || wfm.getNodeContainerState().isWaitingToBeExecuted()
             || wfm.getNodeContainerState().isExecuted();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String resetToPreviousPage(final UUID jobId) throws NoWizardPageException {
+        WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
+        WizardPageManager pageManager = WizardPageManager.of(wfm);
+        WizardExecutionController wec = pageManager.getWizardExecutionController();
+        if (!wec.hasPreviousWizardPage()) {
+            throw new NoWizardPageException("No previous wizard page");
+        }
+        wec.stepBack();
+        DefaultServiceUtil.getWorkflowProject(jobId).clearReport();
+        return getCurrentPage(jobId);
+    }
 }
