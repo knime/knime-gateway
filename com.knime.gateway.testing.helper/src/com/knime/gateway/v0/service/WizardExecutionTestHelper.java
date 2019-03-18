@@ -83,12 +83,9 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
     public void testExecuteToSecondPage() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
-
         int rowCount = (int)(5 * Math.random()) + 1;
-        // the the integer input parameter which controls a row filter
-        Map<String, String> viewValues = Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}");
-        String pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT,
-            builder(WizardPageInputEntBuilder.class).setViewValues(viewValues).build());
+        WizardPageInputEnt input = secondWizardPageInput(rowCount);
+        String pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
         checkSecondPageContents(pageContent, rowCount);
     }
 
@@ -117,15 +114,11 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
 
-        int rowCount = (int)(5 * Math.random()) + 1;
-        Map<String, String> viewValues = Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}");
-        WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class).setViewValues(viewValues).build();
-        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, wizardPageInput);
+        WizardPageInputEnt input = secondWizardPageInput((int)(5 * Math.random()) + 1);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
 
-        wizardPageInput =
-            builder(WizardPageInputEntBuilder.class).setViewValues(Collections.emptyMap()).build();
         try {
-            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, wizardPageInput);
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
             fail("Exception expected");
         } catch (NoWizardPageException e) {
             assertThat("Unexpected exception message", e.getMessage(), is("No wizard page available"));
@@ -184,6 +177,44 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
     	}
     }
 
+    /**
+     * Checks for the right exception thrown when execution is reseted to the zeroth page which doesn't exist.
+     *
+     * @throws Exception
+     */
+    public void testResetToZerothPage() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+
+        try {
+            wes().resetToPreviousPage(wfId);
+            fail("Exception expected");
+        } catch (NoWizardPageException e) {
+            assertThat("Unexpected exception message", e.getMessage(), is("No previous wizard page"));
+        }
+    }
+
+    /**
+     * Executes to second page, resets to first page and re-executes to second page with changed inputs.
+     *
+     * @throws Exception
+     */
+    public void testResetToFirstPageAndExecuteToNextPageWithChangedInputs() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        int rowCount = (int)(5 * Math.random()) + 1;
+        String pageContent =
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
+        checkSecondPageContents(pageContent, rowCount);
+
+        pageContent = wes().resetToPreviousPage(wfId);
+        checkFirstPageContents(pageContent);
+
+        rowCount = (int)(5 * Math.random()) + 1;
+        pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
+        checkSecondPageContents(pageContent, rowCount);
+    }
+
     private static void checkSecondPageContents(final String pageContents, final int expectedRowCount) {
         assertThat("Expected page element not found", pageContents,
             hasJsonPath("$.webNodes.9:0:7.nodeInfo.nodeName", is("Text Output")));
@@ -200,5 +231,12 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
 
     private static WizardPageInputEnt emptyWizardPageInput() {
         return builder(WizardPageInputEntBuilder.class).setViewValues(Collections.emptyMap()).build();
+    }
+
+    private static WizardPageInputEnt secondWizardPageInput(final int rowCount) {
+        // the the integer input parameter which controls a row filter
+        WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class)
+            .setViewValues(Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}")).build();
+        return wizardPageInput;
     }
 }
