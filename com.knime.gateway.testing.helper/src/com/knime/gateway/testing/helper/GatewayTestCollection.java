@@ -118,6 +118,10 @@ public class GatewayTestCollection {
                 .testResetToFirstPageAndExecuteToNextPageWithChangedInputs());
         res.put("testListWebResources",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testListWebResources());
+        res.put("testGetWebResource",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetWebResource());
+        res.put("testGetWebResourceNotFound",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetWebResourceNotFound());
 
         return res;
     }

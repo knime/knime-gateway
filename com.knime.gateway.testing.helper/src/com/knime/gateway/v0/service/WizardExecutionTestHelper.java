@@ -42,6 +42,7 @@ import com.knime.gateway.v0.entity.WizardPageInputEnt;
 import com.knime.gateway.v0.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NoWizardPageException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.TimeoutException;
 
 /**
@@ -258,5 +259,34 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             "js-lib/jQueryUI/min/themes/base/jquery.ui.theme.min.css"};
 
         assertThat("No all expected resources found", resources, hasItems(expectedResources));
+    }
+
+    /**
+     * Tests to request a single web resource via its id.
+     *
+     * @throws Exception
+     */
+    public void testGetWebResource() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+
+        String webResource = new String(
+            wes().getWebResource(wfId, "org/knime/js/base/node/quickform/selection/single/SingleSelection.js"));
+        assertThat("Unexpected web resource", webResource, containsString("singleSelection.name"));
+        assertThat("Unexpected web resource", webResource, containsString("return singleSelection"));
+    }
+
+    /**
+     * Checks that exception is thrown when invalid resource id is passed.
+     *
+     * @throws Exception
+     */
+    public void testGetWebResourceNotFound() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        try {
+            wes().getWebResource(wfId, "not_existing_resource_id");
+            fail("Exception expected");
+        } catch (NotFoundException e) {
+            assertThat("Unexpected exception message", e.getMessage(), is("No resource for given id available"));
+        }
     }
 }
