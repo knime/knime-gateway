@@ -23,12 +23,14 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -238,5 +240,23 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class)
             .setViewValues(Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}")).build();
         return wizardPageInput;
+    }
+
+    /**
+     * Checks if available web resources are retrieved correctly.
+     *
+     * @throws Exception if an error occurs
+     */
+    public void testListWebResources() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+
+        List<String> resources = wes().listWebResources(wfId);
+
+        String[] expectedResources = {
+            "org/knime/js/base/node/quickform/selection/single/SingleSelection.js",
+            "org/knime/js/base/node/quickform/input/listbox/ListBoxInput.js",
+            "js-lib/jQueryUI/min/themes/base/jquery.ui.theme.min.css"};
+
+        assertThat("No all expected resources found", resources, hasItems(expectedResources));
     }
 }
