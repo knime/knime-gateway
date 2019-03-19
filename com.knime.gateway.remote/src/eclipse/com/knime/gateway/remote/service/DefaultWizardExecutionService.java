@@ -19,18 +19,37 @@
 package com.knime.gateway.remote.service;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.WizardExecutionController;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.FileUtil;
 import org.knime.core.wizard.WizardPageManager;
+import org.osgi.framework.Bundle;
 
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
 import com.knime.gateway.v0.entity.WizardPageInputEnt;
@@ -49,7 +68,15 @@ import com.knime.gateway.v0.service.util.ServiceExceptions.TimeoutException;
 public class DefaultWizardExecutionService implements WizardExecutionService {
     private static final DefaultWizardExecutionService INSTANCE = new DefaultWizardExecutionService();
 
+    private static final String ID_WEB_RES = "org.knime.js.core.webResources";
+    private static final String ELEM_BUNDLE = "webResourceBundle";
+    private static final String ELEM_RES = "webResource";
+    private static final String ATTR_SOURCE = "relativePathSource";
+    private static final String ATTR_TARGET = "relativePathTarget";
+
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultWizardExecutionService.class);
+
+    private static Map<String, Path> m_webResourcesPaths;
 
     private DefaultWizardExecutionService() {
         //private constructor since it's a singleton
@@ -202,5 +229,97 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         wec.stepBack();
         DefaultServiceUtil.getWorkflowProject(jobId).clearReport();
         return getCurrentPage(jobId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> listWebResources(final UUID jobId) {
+        if (m_webResourcesPaths == null) {
+            try {
+                m_webResourcesPaths = collectWebResourcePaths();
+            } catch (IOException | URISyntaxException ex) {
+                //should never happen
+                LOGGER.error("Problem collecting the web resource paths", ex);
+                throw new IllegalStateException(ex);
+            }
+        }
+        return new ArrayList<String>(m_webResourcesPaths.keySet());
+    }
+
+    private static Map<String, Path> collectWebResourcePaths() throws IOException, URISyntaxException {
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint point = registry.getExtensionPoint(ID_WEB_RES);
+        if (point == null) {
+            throw new IllegalStateException("Invalid extension point : " + ID_WEB_RES);
+
+        }
+
+        Map<String, Path> paths = new HashMap<>();
+
+        for (IExtension ext : point.getExtensions()) {
+            // get plugin path
+            String pluginName = ext.getContributor().getName();
+            Bundle bundle = Platform.getBundle(pluginName);
+
+            // get relative paths and collect in map
+            IConfigurationElement[] bundleElements = ext.getConfigurationElements();
+            for (IConfigurationElement bundleElem : bundleElements) {
+                assert bundleElem.getName().equals(ELEM_BUNDLE);
+
+                for (IConfigurationElement resElement : bundleElem.getChildren(ELEM_RES)) {
+                    String relSource = resElement.getAttribute(ATTR_SOURCE);
+                    URL resourceUrl = bundle.getEntry(relSource);
+                    assert (resourceUrl != null) : "Resource '" + relSource + "' does not exist in plug-in '"
+                        + pluginName + "'";
+
+                    String relTarget = resElement.getAttribute(ATTR_TARGET);
+                    if (StringUtils.isEmpty(relTarget)) {
+                        relTarget = relSource;
+                    }
+                    URL fileUrl = FileLocator.toFileURL(resourceUrl);
+                    Path resourceFile = FileUtil.resolveToPath(fileUrl);
+                    if (Files.isDirectory(resourceFile)) {
+                        collectWebResourcePathsFromDirectory(resourceFile, relTarget, paths);
+                    } else {
+                        paths.put(relTarget, resourceFile);
+                    }
+                }
+            }
+        }
+        return paths;
+    }
+
+    private static void collectWebResourcePathsFromDirectory(final Path dir, String relTarget, final Map<String, Path> paths)
+        throws IOException {
+        Deque<Path> queue = new ArrayDeque<>(32);
+        queue.push(dir);
+
+        if (!relTarget.isEmpty() && !relTarget.endsWith("/")) {
+            relTarget += "/";
+        }
+        if (relTarget.startsWith("/")) {
+            relTarget = relTarget.substring(1);
+        }
+
+        while (!queue.isEmpty()) {
+            Path p = queue.poll();
+            if (Files.isDirectory(p)) {
+                if (!relTarget.isEmpty() || (p != dir)) {
+                    // don't add an (empty) entry for the root directory itself
+                    String s = relTarget + dir.relativize(p);
+                    if (!s.endsWith("/")) {
+                        s += "/";
+                    }
+                    paths.put(s, p);
+                }
+                try (DirectoryStream<Path> contents = Files.newDirectoryStream(p)) {
+                    contents.forEach(e -> queue.add(e));
+                }
+            } else {
+                paths.put(relTarget + dir.relativize(p), p);
+            }
+        }
     }
 }
