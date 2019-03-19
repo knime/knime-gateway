@@ -76,7 +76,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultWizardExecutionService.class);
 
-    private static Map<String, Path> m_webResourcesPaths;
+    private static Map<String, Path> webResourcesPaths;
 
     private DefaultWizardExecutionService() {
         //private constructor since it's a singleton
@@ -236,16 +236,16 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      */
     @Override
     public List<String> listWebResources(final UUID jobId) {
-        if (m_webResourcesPaths == null) {
+        if (webResourcesPaths == null) {
             try {
-                m_webResourcesPaths = collectWebResourcePaths();
+                webResourcesPaths = collectWebResourcePaths();
             } catch (IOException | URISyntaxException ex) {
                 //should never happen
                 LOGGER.error("Problem collecting the web resource paths", ex);
                 throw new IllegalStateException(ex);
             }
         }
-        return new ArrayList<String>(m_webResourcesPaths.keySet());
+        return new ArrayList<String>(webResourcesPaths.keySet());
     }
 
     private static Map<String, Path> collectWebResourcePaths() throws IOException, URISyntaxException {
