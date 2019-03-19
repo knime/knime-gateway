@@ -66,6 +66,17 @@ public interface WizardExecutionService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
+    byte[] getWebResource(java.util.UUID jobId, String resourceId)  throws ServiceExceptions.NotFoundException;
+        
+    /**
+     * Returns a list of web resources needed for this job to handle wizard execution.
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param resourceId The id (usually a relative path) of a single web resource (e.g. js, css, png, ...).
+     *
+     * @return the result
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
+     */
     File getWebResource(java.util.UUID jobId, String resourceId)  throws ServiceExceptions.NotFoundException;
         
     /**

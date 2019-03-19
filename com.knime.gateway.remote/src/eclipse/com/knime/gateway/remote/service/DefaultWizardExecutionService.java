@@ -18,7 +18,9 @@
  */
 package com.knime.gateway.remote.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -35,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -57,6 +60,7 @@ import com.knime.gateway.v0.service.WizardExecutionService;
 import com.knime.gateway.v0.service.util.ServiceExceptions;
 import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.NoWizardPageException;
+import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.v0.service.util.ServiceExceptions.TimeoutException;
 
 /**
@@ -76,7 +80,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultWizardExecutionService.class);
 
-    private static Map<String, Path> webResourcesPaths;
+    private static Map<String, URL> webResourcesUrls;
 
     private DefaultWizardExecutionService() {
         //private constructor since it's a singleton
@@ -236,19 +240,23 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      */
     @Override
     public List<String> listWebResources(final UUID jobId) {
-        if (webResourcesPaths == null) {
+        ensureThatWebResourceUrlsAreAvailable();
+        return new ArrayList<String>(webResourcesUrls.keySet());
+    }
+
+    private static void ensureThatWebResourceUrlsAreAvailable() {
+        if (webResourcesUrls == null) {
             try {
-                webResourcesPaths = collectWebResourcePaths();
+                webResourcesUrls = collectWebResourceUrls();
             } catch (IOException | URISyntaxException ex) {
                 //should never happen
                 LOGGER.error("Problem collecting the web resource paths", ex);
                 throw new IllegalStateException(ex);
             }
         }
-        return new ArrayList<String>(webResourcesPaths.keySet());
     }
 
-    private static Map<String, Path> collectWebResourcePaths() throws IOException, URISyntaxException {
+    private static Map<String, URL> collectWebResourceUrls() throws IOException, URISyntaxException {
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint(ID_WEB_RES);
         if (point == null) {
@@ -256,7 +264,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
         }
 
-        Map<String, Path> paths = new HashMap<>();
+        Map<String, URL> urls = new HashMap<>();
 
         for (IExtension ext : point.getExtensions()) {
             // get plugin path
@@ -281,19 +289,20 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                     URL fileUrl = FileLocator.toFileURL(resourceUrl);
                     Path resourceFile = FileUtil.resolveToPath(fileUrl);
                     if (Files.isDirectory(resourceFile)) {
-                        collectWebResourcePathsFromDirectory(resourceFile, relTarget, paths);
+                        collectWebResourceUrlsFromDirectory(fileUrl, relTarget, urls);
                     } else {
-                        paths.put(relTarget, resourceFile);
+                        urls.put(relTarget, resourceFile.toUri().toURL());
                     }
                 }
             }
         }
-        return paths;
+        return urls;
     }
 
-    private static void collectWebResourcePathsFromDirectory(final Path dir, String relTarget, final Map<String, Path> paths)
-        throws IOException {
+    private static void collectWebResourceUrlsFromDirectory(final URL url, String relTarget,
+        final Map<String, URL> urls) throws IOException, URISyntaxException {
         Deque<Path> queue = new ArrayDeque<>(32);
+        Path dir = FileUtil.resolveToPath(url);
         queue.push(dir);
 
         if (!relTarget.isEmpty() && !relTarget.endsWith("/")) {
@@ -312,14 +321,35 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                     if (!s.endsWith("/")) {
                         s += "/";
                     }
-                    paths.put(s, p);
+                    urls.put(s, p.toUri().toURL());
                 }
                 try (DirectoryStream<Path> contents = Files.newDirectoryStream(p)) {
                     contents.forEach(e -> queue.add(e));
                 }
             } else {
-                paths.put(relTarget + dir.relativize(p), p);
+                urls.put(relTarget + dir.relativize(p), p.toUri().toURL());
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] getWebResource(final UUID jobId, final String resourceId) throws NotFoundException {
+        ensureThatWebResourceUrlsAreAvailable();
+        URL url = webResourcesUrls.get(resourceId);
+        if (url == null) {
+            throw new NotFoundException("No resource for given id available");
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (InputStream is = url.openStream()) {
+            IOUtils.copyLarge(is, baos);
+        } catch (IOException ex) {
+            //should never happen
+            LOGGER.error("Problem to provide web resource", ex);
+            throw new IllegalStateException(ex);
+        }
+        return baos.toByteArray();
     }
 }

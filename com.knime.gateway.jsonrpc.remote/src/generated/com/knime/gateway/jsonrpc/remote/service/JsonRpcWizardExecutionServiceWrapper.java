@@ -93,6 +93,19 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "getWebResource")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
+    })
+    public byte[] getWebResource(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="resourceId") String resourceId)  throws ServiceExceptions.NotFoundException {
+        return m_service.getWebResource(jobId, resourceId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "listWebResources")
     public java.util.List<String> listWebResources(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
         return m_service.listWebResources(jobId);    

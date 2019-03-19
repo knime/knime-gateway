@@ -146,6 +146,32 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
+    public byte[] getWebResource(java.util.UUID jobId, String resourceId)  throws ServiceExceptions.NotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.getWebResource(jobId, resourceId);
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
+                }
+            }, byte[].class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
+            }
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
+        }
+    }
+    
+    @Override
     public java.util.List<String> listWebResources(java.util.UUID jobId)  {
         try{
             return doRequest(c -> {

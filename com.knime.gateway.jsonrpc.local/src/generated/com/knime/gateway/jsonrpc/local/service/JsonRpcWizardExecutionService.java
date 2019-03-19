@@ -60,6 +60,13 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "WizardExecutionService.getWebResource")
+    byte[] getWebResource(java.util.UUID jobId, String resourceId)  throws ServiceExceptions.NotFoundException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "WizardExecutionService.listWebResources")
     java.util.List<String> listWebResources(java.util.UUID jobId) ;
 
