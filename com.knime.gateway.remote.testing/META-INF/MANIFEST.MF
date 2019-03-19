@@ -8,4 +8,5 @@ Fragment-Host: com.knime.gateway.remote;bundle-version="4.9.0"
 Automatic-Module-Name: com.knime.gateway.remote.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.knime.testing;bundle-version="[3.8.0,4.0.0)",
- com.knime.gateway.testing.helper;bundle-version="[4.9.0,5.0.0)"
+ com.knime.gateway.testing.helper;bundle-version="[4.9.0,5.0.0)",
+ org.mockito.mockito-core;bundle-version="[2.18.3,3.0.0)"
