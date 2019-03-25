@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.knime.gateway.json.JsonUtil;
 
+import de.undercouch.bson4jackson.BsonFactory;
+
 /**
  * Utility class around Jackson's {@link ObjectMapper}. It set's up an {@link ObjectMapper}.
  *
@@ -27,14 +29,18 @@ public final class ObjectMapperUtil {
 
     private ObjectMapperUtil() {
         m_mapper = new ObjectMapper();
-        m_mapper.registerModule(new Jdk8Module());
+        configureObjectMapper(m_mapper);
+    }
 
-        m_mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-        m_mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+    private static void configureObjectMapper(final ObjectMapper mapper) {
+        mapper.registerModule(new Jdk8Module());
 
-        m_mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
-        JsonUtil.addMixIns(m_mapper);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        JsonUtil.addMixIns(mapper);
     }
 
     /**
@@ -44,5 +50,11 @@ public final class ObjectMapperUtil {
      */
     public ObjectMapper getObjectMapper() {
         return m_mapper;
+    }
+
+    public ObjectMapper getBinaryObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+        configureObjectMapper(mapper);
+        return mapper;
     }
 }

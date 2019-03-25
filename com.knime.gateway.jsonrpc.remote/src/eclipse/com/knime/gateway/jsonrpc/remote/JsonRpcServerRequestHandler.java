@@ -29,8 +29,8 @@ import java.util.UUID;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
+import com.knime.enterprise.executor.JobPoolListener;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
@@ -55,7 +55,7 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
      */
     public JsonRpcServerRequestHandler() {
         //setup json-rpc server
-        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
 
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
         m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
@@ -63,6 +63,13 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
         for (Entry<String, GatewayService> entry : createWrappedServices().entrySet()) {
             m_jsonRpcMultiServer.addService(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * @return the object mapper to use for json-rpc-request deserialization and json-rpc-response serialization
+     */
+    protected ObjectMapper getObjectMapper() {
+        return ObjectMapperUtil.getInstance().getObjectMapper();
     }
 
     /**
