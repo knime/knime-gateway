@@ -18,8 +18,6 @@
  */
 package com.knime.gateway.remote.endpoint;
 
-import java.util.UUID;
-
 import org.knime.core.node.workflow.WorkflowManager;
 
 import com.knime.enterprise.executor.ExecutorUtil;
@@ -38,22 +36,22 @@ public class JobPoolListener implements com.knime.enterprise.executor.JobPoolLis
      * {@inheritDoc}
      */
     @Override
-    public void jobLoaded(final UUID id, final WorkflowJob job, final WorkflowManager wfm) {
-        WorkflowProjectManager.addWorkflowProject(id, new WorkflowProject() {
+    public void jobLoaded(final WorkflowJob job) {
+        WorkflowProjectManager.addWorkflowProject(job.getId(), new WorkflowProject() {
 
             @Override
             public WorkflowManager openProject() {
-                return wfm;
+                return job.getWorkflowManager();
             }
 
             @Override
             public String getName() {
-                return wfm.getName();
+                return job.getWorkflowManager().getName();
             }
 
             @Override
             public String getID() {
-                return id.toString();
+                return job.getId().toString();
             }
 
             @Override
@@ -67,7 +65,7 @@ public class JobPoolListener implements com.knime.enterprise.executor.JobPoolLis
      * {@inheritDoc}
      */
     @Override
-    public void jobDiscarded(final UUID id) {
-        WorkflowProjectManager.removeWorkflowProject(id);
+    public void jobDiscarded(final WorkflowJob job) {
+        WorkflowProjectManager.removeWorkflowProject(job.getId());
     }
 }
