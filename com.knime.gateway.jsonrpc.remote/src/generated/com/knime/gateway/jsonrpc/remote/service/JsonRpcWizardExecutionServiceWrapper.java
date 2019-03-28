@@ -18,7 +18,6 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
-import java.io.File;
 import com.knime.gateway.v0.entity.WizardPageInputEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -74,19 +73,6 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
     })
     public String getCurrentPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
         return m_service.getCurrentPage(jobId);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getWebResource")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "NotFoundException" /*per convention the data property contains the exception name*/)
-    })
-    public File getWebResource(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="resourceId") String resourceId)  throws ServiceExceptions.NotFoundException {
-        return m_service.getWebResource(jobId, resourceId);    
     }
 
 	/**
