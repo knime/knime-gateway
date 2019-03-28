@@ -25,9 +25,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.local.patch.EntityPatchApplier;
-import com.knime.gateway.v0.entity.PatchEnt;
 
 /**
  * Entity patch applier implementation that uses {@link JsonPatch} to apply the {@link PatchEnt}. It assumes that

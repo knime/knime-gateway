@@ -20,7 +20,7 @@ package com.knime.gateway.local.workflow;
 
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 
 /**
  * {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a

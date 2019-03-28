@@ -26,12 +26,12 @@ import java.util.UUID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 
+import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
-import com.knime.gateway.v0.entity.BoundsEnt;
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
+import com.knime.gateway.service.AnnotationService;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Default implementation of {@link AnnotationService} that delegates the operations to knime.core (e.g.

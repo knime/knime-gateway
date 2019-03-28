@@ -69,26 +69,26 @@ import org.knime.core.util.Pair;
 import org.knime.core.wizard.SubnodeViewableModel;
 import org.knime.workbench.repository.RepositoryManager;
 
+import com.knime.gateway.entity.BoundsEnt;
+import com.knime.gateway.entity.DataTableEnt;
+import com.knime.gateway.entity.FlowVariableEnt;
+import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.MetaNodeDialogEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.entity.NodeSettingsEnt;
+import com.knime.gateway.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
+import com.knime.gateway.entity.PortObjectSpecEnt;
+import com.knime.gateway.entity.ViewDataEnt;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.knime.gateway.service.NodeService;
+import com.knime.gateway.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.util.EntityUtil;
-import com.knime.gateway.v0.entity.BoundsEnt;
-import com.knime.gateway.v0.entity.DataTableEnt;
-import com.knime.gateway.v0.entity.FlowVariableEnt;
-import com.knime.gateway.v0.entity.JavaObjectEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
-import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
-import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewDataEnt;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
-import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.

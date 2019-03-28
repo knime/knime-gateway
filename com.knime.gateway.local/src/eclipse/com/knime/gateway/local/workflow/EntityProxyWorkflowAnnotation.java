@@ -34,13 +34,13 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowAnnotationUI;
 
-import com.knime.gateway.v0.entity.AnnotationEnt;
-import com.knime.gateway.v0.entity.BoundsEnt;
-import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
-import com.knime.gateway.v0.entity.StyleRangeEnt.FontStyleEnum;
-import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
+import com.knime.gateway.entity.AnnotationEnt;
+import com.knime.gateway.entity.BoundsEnt;
+import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
+import com.knime.gateway.entity.StyleRangeEnt.FontStyleEnum;
+import com.knime.gateway.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link WorkflowAnnotationEnt} and extends {@link WorkflowAnnotation}.

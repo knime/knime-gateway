@@ -18,8 +18,8 @@
  */
 package com.knime.gateway.json.entity;
 
+import com.knime.gateway.entity.PortTypeEnt;
 import com.knime.gateway.json.entity.NodePortEntMixIn;
-import com.knime.gateway.v0.entity.PortTypeEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.NodeOutPortEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder;
+import com.knime.gateway.entity.NodeOutPortEnt;
+import com.knime.gateway.entity.impl.DefaultNodeOutPortEnt;
+import com.knime.gateway.entity.impl.DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

@@ -20,10 +20,10 @@ package com.knime.gateway.remote.service.util;
 
 import java.util.UUID;
 
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.remote.service.DefaultWorkflowService;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
 
 /**
  * Repository to keep track of changes to {@link WorkflowEnt} objects. Different versions of the same object can be

@@ -45,14 +45,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.PortObjectSpecEnt;
+import com.knime.gateway.entity.impl.DefaultJavaObjectEnt;
+import com.knime.gateway.entity.impl.DefaultNodeEnt;
+import com.knime.gateway.entity.impl.DefaultNodeMessageEnt;
+import com.knime.gateway.entity.impl.DefaultPatchEnt;
+import com.knime.gateway.entity.impl.DefaultPatchOpEnt;
+import com.knime.gateway.entity.impl.DefaultWorkflowSnapshotEnt;
 import com.knime.gateway.json.JsonUtil;
-import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.impl.DefaultJavaObjectEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt;
-import com.knime.gateway.v0.entity.impl.DefaultPatchEnt;
-import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowSnapshotEnt;
 
 /**
  * Compares objects to a representation stored to files.

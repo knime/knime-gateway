@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
+import com.knime.gateway.entity.MetaNodeDialogCompEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogEnt;
-import com.knime.gateway.v0.entity.impl.DefaultMetaNodeDialogEnt.DefaultMetaNodeDialogEntBuilder;
+import com.knime.gateway.entity.MetaNodeDialogEnt;
+import com.knime.gateway.entity.impl.DefaultMetaNodeDialogEnt;
+import com.knime.gateway.entity.impl.DefaultMetaNodeDialogEnt.DefaultMetaNodeDialogEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

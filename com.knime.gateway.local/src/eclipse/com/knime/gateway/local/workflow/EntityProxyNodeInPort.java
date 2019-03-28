@@ -22,9 +22,9 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 
+import com.knime.gateway.entity.NodeInPortEnt;
+import com.knime.gateway.entity.PortTypeEnt;
 import com.knime.gateway.local.util.missing.MissingPortObject;
-import com.knime.gateway.v0.entity.NodeInPortEnt;
-import com.knime.gateway.v0.entity.PortTypeEnt;
 
 /**
  * Entity-proxy class that proxies {@link NodeInPortEnt} and implements {@link NodeInPortUI}.

@@ -48,23 +48,23 @@ import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowEnt;
+import com.knime.gateway.entity.WorkflowPartsEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.service.util.SimpleRepository;
 import com.knime.gateway.remote.service.util.WorkflowCopyRepository;
 import com.knime.gateway.remote.service.util.WorkflowEntRepository;
+import com.knime.gateway.service.WorkflowService;
+import com.knime.gateway.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.util.EntityUtil;
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
-import com.knime.gateway.v0.service.WorkflowService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
-import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Default implementation of {@link WorkflowService} that delegates the operations to knime.core (e.g.

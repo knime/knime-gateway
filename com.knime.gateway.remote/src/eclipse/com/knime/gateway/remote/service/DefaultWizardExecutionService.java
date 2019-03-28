@@ -54,14 +54,14 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.wizard.WizardPageManager;
 import org.osgi.framework.Bundle;
 
+import com.knime.gateway.entity.WizardPageInputEnt;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
-import com.knime.gateway.v0.entity.WizardPageInputEnt;
-import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidSettingsException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NoWizardPageException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.TimeoutException;
+import com.knime.gateway.service.WizardExecutionService;
+import com.knime.gateway.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidSettingsException;
+import com.knime.gateway.service.util.ServiceExceptions.NoWizardPageException;
+import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions.TimeoutException;
 
 /**
  * Default implementation of {@link WizardExecutionService} that delegates the operations to knime.core (e.g.

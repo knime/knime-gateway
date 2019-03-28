@@ -45,12 +45,12 @@ import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 import org.knime.core.util.Version;
 
 import com.knime.enterprise.utility.KnimeServerConstants;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeSettingsEnt;
+import com.knime.gateway.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.local.workflow.EntityProxyNodeOutPort.ProblemPortObjectSpec;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link SingleNodeContainerUI}.

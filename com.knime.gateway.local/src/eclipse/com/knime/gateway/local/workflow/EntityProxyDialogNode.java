@@ -31,7 +31,7 @@ import org.knime.js.core.JSONViewContent;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.knime.gateway.v0.entity.MetaNodeDialogCompEnt;
+import com.knime.gateway.entity.MetaNodeDialogCompEnt;
 
 /**
  * Entity-proxy class that proxies {@link MetaNodeDialogCompEnt} and implements {@link DialogNode}.

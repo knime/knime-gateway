@@ -32,11 +32,11 @@ import org.knime.core.util.LRUCache;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.EntityBuilderManager;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
+import com.knime.gateway.entity.impl.DefaultWorkflowEnt;
 
 /**
  * Straightforward repository implementation that just keeps every single snapshot as is and sacrifices memory (and a

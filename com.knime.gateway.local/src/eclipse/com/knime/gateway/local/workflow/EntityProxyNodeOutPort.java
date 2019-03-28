@@ -50,9 +50,9 @@ import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeOutPortUI;
 import org.knime.workbench.ui.async.AsyncUtil;
 
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeOutPortEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeOutPortEnt;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodeOutPortEnt} and implements {@link NodeOutPortUI}.

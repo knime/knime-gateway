@@ -36,7 +36,7 @@ import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
 import com.knime.gateway.remote.service.DefaultServices;
 import com.knime.gateway.service.GatewayService;
-import com.knime.gateway.v0.service.util.ListServices;
+import com.knime.gateway.service.util.ListServices;
 
 /**
  * Implementation of the {@link GenericServerRequestHandler} extension point that executes json-rpc 2.0 requests and

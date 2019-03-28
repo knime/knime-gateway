@@ -21,7 +21,7 @@ package com.knime.gateway.json;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knime.gateway.v0.entity.util.ListEntities;
+import com.knime.gateway.json.entity.util.ListEntities;
 
 /**
  * Utility class for json rpc stuff.

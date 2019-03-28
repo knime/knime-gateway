@@ -55,13 +55,13 @@ import org.knime.core.node.workflow.BufferedDataTableView;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.knime.gateway.entity.DataRowEnt;
+import com.knime.gateway.entity.DataTableEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodePortEnt;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.util.EntityTranslateUtil;
-import com.knime.gateway.v0.entity.DataRowEnt;
-import com.knime.gateway.v0.entity.DataTableEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodePortEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodePortEnt} and implements {@link PortObject} and {@link AsyncTable}.

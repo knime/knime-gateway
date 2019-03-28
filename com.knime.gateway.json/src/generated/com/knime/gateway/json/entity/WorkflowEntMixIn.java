@@ -18,11 +18,11 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.MetaPortInfoEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.MetaPortInfoEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.entity.WorkflowUIInfoEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,9 +32,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.WorkflowEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import com.knime.gateway.entity.WorkflowEnt;
+import com.knime.gateway.entity.impl.DefaultWorkflowEnt;
+import com.knime.gateway.entity.impl.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

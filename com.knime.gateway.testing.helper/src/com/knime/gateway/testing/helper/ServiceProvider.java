@@ -18,10 +18,10 @@
  */
 package com.knime.gateway.testing.helper;
 
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.AnnotationService;
+import com.knime.gateway.service.NodeService;
+import com.knime.gateway.service.WizardExecutionService;
+import com.knime.gateway.service.WorkflowService;
 
 /**
  * Provides implementations of all gateway services.

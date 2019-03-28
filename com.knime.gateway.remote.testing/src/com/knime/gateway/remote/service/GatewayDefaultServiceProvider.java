@@ -18,11 +18,11 @@
  */
 package com.knime.gateway.remote.service;
 
+import com.knime.gateway.service.AnnotationService;
+import com.knime.gateway.service.NodeService;
+import com.knime.gateway.service.WizardExecutionService;
+import com.knime.gateway.service.WorkflowService;
 import com.knime.gateway.testing.helper.ServiceProvider;
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.WorkflowService;
 
 /**
  * Provides the default service implementations such as {@link DefaultWorkflowService}.

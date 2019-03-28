@@ -33,9 +33,9 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.service.GatewayService;
+import com.knime.gateway.service.NodeService;
+import com.knime.gateway.service.WorkflowService;
 import com.knime.gateway.util.ExtPointUtil;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WorkflowService;
 
 /**
  * Manages services (i.e. {@link GatewayService}s) and gives access to service interface implementations.

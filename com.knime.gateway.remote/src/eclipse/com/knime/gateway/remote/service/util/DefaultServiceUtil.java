@@ -32,10 +32,10 @@ import org.knime.core.util.Pair;
 
 import com.knime.gateway.remote.endpoint.WorkflowProject;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.knime.gateway.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.util.EntityUtil;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
 
 /**
  * Helper methods useful for the default service implementations.

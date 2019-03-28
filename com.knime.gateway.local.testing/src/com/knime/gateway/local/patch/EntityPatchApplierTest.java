@@ -40,14 +40,14 @@ import org.osgi.framework.FrameworkUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.NodeMessageEnt;
+import com.knime.gateway.entity.NodeMessageEnt.NodeMessageEntBuilder;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.PatchEnt.PatchEntBuilder;
+import com.knime.gateway.entity.PatchOpEnt.OpEnum;
+import com.knime.gateway.entity.PatchOpEnt.PatchOpEntBuilder;
+import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.json.util.ObjectMapperUtil;
-import com.knime.gateway.v0.entity.NodeMessageEnt;
-import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
-import com.knime.gateway.v0.entity.PatchOpEnt.OpEnum;
-import com.knime.gateway.v0.entity.PatchOpEnt.PatchOpEntBuilder;
-import com.knime.gateway.v0.entity.WorkflowEnt;
 
 /**
  * Tests the {@link EntityPatchApplier}-implementation that is provided by {@link EntityPatchApplierManager}.

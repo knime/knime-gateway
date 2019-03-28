@@ -32,8 +32,8 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.workbench.editor2.commands.DeleteCommand;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.XYEnt;
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.XYEnt;
 
 /**
  * Entity-proxy class that proxies {@link ConnectionEnt} and implements {@link ConnectionContainerUI}.

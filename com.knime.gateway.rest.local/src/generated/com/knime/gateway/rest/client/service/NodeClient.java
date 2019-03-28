@@ -18,16 +18,16 @@
  */
 package com.knime.gateway.rest.client.service;
 
-import com.knime.gateway.v0.entity.BoundsEnt;
-import com.knime.gateway.v0.entity.DataTableEnt;
-import com.knime.gateway.v0.entity.FlowVariableEnt;
-import com.knime.gateway.v0.entity.JavaObjectEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
-import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewDataEnt;
+import com.knime.gateway.entity.BoundsEnt;
+import com.knime.gateway.entity.DataTableEnt;
+import com.knime.gateway.entity.FlowVariableEnt;
+import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.MetaNodeDialogEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.entity.NodeSettingsEnt;
+import com.knime.gateway.entity.PortObjectSpecEnt;
+import com.knime.gateway.entity.ViewDataEnt;
 
 
 import java.io.IOException;
@@ -39,8 +39,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 import com.knime.gateway.service.ServiceException;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.NodeService;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.knime.enterprise.gateway.rest.api.Node;
 import com.knime.enterprise.utility.ExecutorException;
@@ -86,7 +86,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -115,7 +115,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
@@ -147,7 +147,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<FlowVariableEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -173,7 +173,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<PortObjectSpecEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -199,7 +199,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -225,7 +225,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeSettingsEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -251,7 +251,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, DataTableEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -280,7 +280,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<FlowVariableEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -306,7 +306,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, new GenericType<java.util.List<PortObjectSpecEnt>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -332,7 +332,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, NodeEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
                 + "' with message: " + gatewayException.getExceptionMessage());
         }
@@ -355,7 +355,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, ViewDataEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -384,7 +384,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             }, MetaNodeDialogEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -413,7 +413,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -439,7 +439,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }
@@ -471,7 +471,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
                 throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
             }

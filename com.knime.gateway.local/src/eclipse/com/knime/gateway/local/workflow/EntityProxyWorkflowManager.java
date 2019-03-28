@@ -21,8 +21,8 @@ package com.knime.gateway.local.workflow;
 import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 
-import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
-import com.knime.gateway.v0.entity.WorkflowNodeEnt;
+import com.knime.gateway.entity.NodeStateEnt.StateEnum;
+import com.knime.gateway.entity.WorkflowNodeEnt;
 
 /**
  * {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a

@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.rest.client.service;
 
-import com.knime.gateway.v0.entity.WizardPageInputEnt;
+import com.knime.gateway.entity.WizardPageInputEnt;
 
 
 import java.io.IOException;
@@ -30,8 +30,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 import com.knime.gateway.service.ServiceException;
-import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.WizardExecutionService;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.knime.enterprise.gateway.rest.api.WizardExecution;
 import com.knime.enterprise.utility.ExecutorException;
@@ -77,7 +77,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("InvalidSettingsException")) {
                 throw new ServiceExceptions.InvalidSettingsException(gatewayException.getExceptionMessage());
             }
@@ -109,7 +109,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NoWizardPageException")) {
                 throw new ServiceExceptions.NoWizardPageException(gatewayException.getExceptionMessage());
             }
@@ -135,7 +135,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, byte[].class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotFoundException")) {
                 throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
@@ -161,7 +161,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, new GenericType<java.util.List<String>>(){});
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
                 + "' with message: " + gatewayException.getExceptionMessage());
         }
@@ -184,7 +184,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NoWizardPageException")) {
                 throw new ServiceExceptions.NoWizardPageException(gatewayException.getExceptionMessage());
             }

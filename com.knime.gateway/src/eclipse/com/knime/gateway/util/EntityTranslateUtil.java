@@ -48,9 +48,9 @@ import org.knime.core.node.workflow.NodeUIInformation.Builder;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 
-import com.knime.gateway.v0.entity.DataCellEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
+import com.knime.gateway.entity.DataCellEnt;
+import com.knime.gateway.entity.NodeUIInfoEnt;
+import com.knime.gateway.entity.WorkflowPartsEnt;
 
 /**
  * Helper methods to translate gateway entities into KNIME-core objects.

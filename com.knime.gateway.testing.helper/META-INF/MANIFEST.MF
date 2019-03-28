@@ -19,6 +19,6 @@ Require-Bundle: org.knime.core;bundle-version="[3.8.0,4.0.0)",
  com.jayway.jsonpath.json-path-assert;bundle-version="[2.4.0,3.0.0)",
  org.hamcrest.library;bundle-version="[1.3.0,2.0.0)",
  org.knime.json;bundle-version="[3.8.0,4.0.0)"
-Export-Package: com.knime.gateway.testing.helper,
- com.knime.gateway.testing.helper.node.directaccesstable,
- com.knime.gateway.v0.service
+Export-Package: com.knime.gateway.service,
+ com.knime.gateway.testing.helper,
+ com.knime.gateway.testing.helper.node.directaccesstable

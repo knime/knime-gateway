@@ -18,13 +18,13 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
-import com.knime.gateway.v0.entity.BoundsEnt;
+import com.knime.gateway.entity.BoundsEnt;
 
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 
-import com.knime.gateway.v0.service.AnnotationService;
+import com.knime.gateway.service.AnnotationService;
 
 /**
  * Interface that adds json rpc annotations. 

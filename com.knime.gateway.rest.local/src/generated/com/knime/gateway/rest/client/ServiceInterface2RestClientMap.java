@@ -19,13 +19,13 @@
 package com.knime.gateway.rest.client;
 
 import com.knime.gateway.rest.client.service.WizardExecutionClient;
-import com.knime.gateway.v0.service.WizardExecutionService;
+import com.knime.gateway.service.WizardExecutionService;
 import com.knime.gateway.rest.client.service.NodeClient;
-import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.service.NodeService;
 import com.knime.gateway.rest.client.service.WorkflowClient;
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.WorkflowService;
 import com.knime.gateway.rest.client.service.AnnotationClient;
-import com.knime.gateway.v0.service.AnnotationService;
+import com.knime.gateway.service.AnnotationService;
 
 import java.io.IOException;
 import java.net.URI;

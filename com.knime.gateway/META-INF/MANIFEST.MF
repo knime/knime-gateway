@@ -7,12 +7,12 @@ Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: com.knime.gateway.entity,
   com.knime.gateway.service,
   com.knime.gateway.util,
-  com.knime.gateway.v0.entity,
-  com.knime.gateway.v0.entity.impl,
-  com.knime.gateway.v0.entity.impl.util,
-  com.knime.gateway.v0.entity.util,
-  com.knime.gateway.v0.service,
-  com.knime.gateway.v0.service.util
+  com.knime.gateway.entity,
+  com.knime.gateway.entity.impl,
+  com.knime.gateway.entity.impl.util,
+  com.knime.gateway.entity.util,
+  com.knime.gateway.service,
+  com.knime.gateway.service.util
 Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
  org.knime.core;bundle-version="[3.3.0,4.0.0)",
  org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",

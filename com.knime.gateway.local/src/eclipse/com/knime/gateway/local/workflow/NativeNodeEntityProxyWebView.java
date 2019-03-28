@@ -24,7 +24,7 @@ import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.wizard.WizardViewCreator;
 import org.knime.js.core.JavaScriptViewCreator;
 
-import com.knime.gateway.v0.entity.NativeNodeEnt;
+import com.knime.gateway.entity.NativeNodeEnt;
 
 /**
  * A combination of a {@link ViewableModel} and {@link WizardNode} that is backed by a {@link NativeNodeEnt}.
@@ -37,7 +37,7 @@ public final class NativeNodeEntityProxyWebView extends AbstractEntityProxyWebVi
 
     /**
      * see
-     * {@link AbstractEntityProxyWebView#AbstractEntityProxyWebViewModel(com.knime.gateway.v0.entity.NodeEnt, String, EntityProxyAccess)}
+     * {@link AbstractEntityProxyWebView#AbstractEntityProxyWebViewModel(com.knime.gateway.entity.NodeEnt, String, EntityProxyAccess)}
      */
     NativeNodeEntityProxyWebView(final NativeNodeEnt node, final String viewName, final EntityProxyAccess access) {
         super(node, viewName, access);

@@ -35,19 +35,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.knime.gateway.entity.EntityBuilderManager;
-import com.knime.gateway.remote.service.util.JaversRepository;
-import com.knime.gateway.remote.service.util.WorkflowEntRepository;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeEnt.NodeEntBuilder;
-import com.knime.gateway.v0.entity.NodeMessageEnt.NodeMessageEntBuilder;
-import com.knime.gateway.v0.entity.NodeStateEnt.NodeStateEntBuilder;
-import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt.WorkflowEntBuilder;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
-import com.knime.gateway.v0.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeEnt.NodeEntBuilder;
+import com.knime.gateway.entity.NodeMessageEnt.NodeMessageEntBuilder;
+import com.knime.gateway.entity.NodeStateEnt.NodeStateEntBuilder;
+import com.knime.gateway.entity.NodeStateEnt.StateEnum;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowEnt;
+import com.knime.gateway.entity.WorkflowEnt.WorkflowEntBuilder;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
+import com.knime.gateway.entity.WorkflowUIInfoEnt.WorkflowUIInfoEntBuilder;
+import com.knime.gateway.entity.impl.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
 
 /**
  * Tests for {@link WorkflowEntRepository}.

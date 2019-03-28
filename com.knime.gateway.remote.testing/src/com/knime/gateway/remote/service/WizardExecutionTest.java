@@ -29,12 +29,12 @@ import java.util.UUID;
 import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 
+import com.knime.gateway.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
 import com.knime.gateway.remote.endpoint.WorkflowProject;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
+import com.knime.gateway.service.AbstractGatewayServiceTestHelper.TestWorkflow;
 import com.knime.gateway.testing.helper.GatewayTestCollection;
 import com.knime.gateway.testing.helper.TestUtil;
-import com.knime.gateway.v0.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
-import com.knime.gateway.v0.service.AbstractGatewayServiceTestHelper.TestWorkflow;
 
 /**
  * Test for the wizard execution implementation that is not covered by {@link GatewayTestCollection}.

@@ -27,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeSettingsEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeSettingsEnt.DefaultNodeSettingsEntBuilder;
+import com.knime.gateway.entity.NodeSettingsEnt;
+import com.knime.gateway.entity.impl.DefaultNodeSettingsEnt;
+import com.knime.gateway.entity.impl.DefaultNodeSettingsEnt.DefaultNodeSettingsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

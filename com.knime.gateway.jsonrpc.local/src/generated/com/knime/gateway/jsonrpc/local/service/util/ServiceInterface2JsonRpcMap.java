@@ -20,13 +20,13 @@
 package com.knime.gateway.jsonrpc.local.service.util;
 
 import com.knime.gateway.jsonrpc.local.service.JsonRpcWizardExecutionService;
-import com.knime.gateway.v0.service.WizardExecutionService;
+import com.knime.gateway.service.WizardExecutionService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcNodeService;
-import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.service.NodeService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcWorkflowService;
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.WorkflowService;
 import com.knime.gateway.jsonrpc.local.service.JsonRpcAnnotationService;
-import com.knime.gateway.v0.service.AnnotationService;
+import com.knime.gateway.service.AnnotationService;
 
 import com.knime.gateway.service.GatewayService;
 

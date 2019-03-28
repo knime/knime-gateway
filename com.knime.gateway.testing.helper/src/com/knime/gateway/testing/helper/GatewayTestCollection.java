@@ -21,17 +21,17 @@ package com.knime.gateway.testing.helper;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.knime.gateway.v0.service.AddNodeTestHelper;
-import com.knime.gateway.v0.service.AddPartsTestHelper;
-import com.knime.gateway.v0.service.ChangeNodeTestHelper;
-import com.knime.gateway.v0.service.ChangeWorkflowAnnotationTestHelper;
-import com.knime.gateway.v0.service.DeleteCutCopyPastePartsTestHelper;
-import com.knime.gateway.v0.service.JSViewTestHelper;
-import com.knime.gateway.v0.service.NodeDataTestHelper;
-import com.knime.gateway.v0.service.UpdateWorkflowTestHelper;
-import com.knime.gateway.v0.service.ViewWorkflowTestHelper;
-import com.knime.gateway.v0.service.WMetaNodeDialogTest;
-import com.knime.gateway.v0.service.WizardExecutionTestHelper;
+import com.knime.gateway.service.AddNodeTestHelper;
+import com.knime.gateway.service.AddPartsTestHelper;
+import com.knime.gateway.service.ChangeNodeTestHelper;
+import com.knime.gateway.service.ChangeWorkflowAnnotationTestHelper;
+import com.knime.gateway.service.DeleteCutCopyPastePartsTestHelper;
+import com.knime.gateway.service.JSViewTestHelper;
+import com.knime.gateway.service.NodeDataTestHelper;
+import com.knime.gateway.service.UpdateWorkflowTestHelper;
+import com.knime.gateway.service.ViewWorkflowTestHelper;
+import com.knime.gateway.service.WMetaNodeDialogTest;
+import com.knime.gateway.service.WizardExecutionTestHelper;
 
 /**
  * Gives programmatic access to all gateway test (helper) that mainly test the correct behavior of gateway services

@@ -34,7 +34,7 @@ import org.knime.js.core.JSONWebNodePage;
 import org.knime.js.core.JSONWebNodePageConfiguration;
 import org.knime.js.core.JavaScriptViewCreator;
 
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 
 /**
  * A combination of a {@link ViewableModel} and {@link WizardNode} that is backed by a {@link WrappedWorkflowNodeEnt}.
@@ -45,7 +45,7 @@ public final class WorkflowNodeEntityProxyWebView extends AbstractEntityProxyWeb
 
     /**
      * see
-     * {@link AbstractEntityProxyWebView#AbstractEntityProxyWebViewModel(com.knime.gateway.v0.entity.NodeEnt, String, EntityProxyAccess)}
+     * {@link AbstractEntityProxyWebView#AbstractEntityProxyWebViewModel(com.knime.gateway.entity.NodeEnt, String, EntityProxyAccess)}
      */
     WorkflowNodeEntityProxyWebView(final WrappedWorkflowNodeEnt node, final String viewName,
         final EntityProxyAccess access) {

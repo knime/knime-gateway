@@ -32,8 +32,6 @@ import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 
-import com.knime.gateway.util.EntityUtil;
-
 /**
  * Tests {@link EntityUtil}.
  * 

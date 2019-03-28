@@ -18,16 +18,16 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowPartsEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
 
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.WorkflowService;
 
 /**
  * Interface that adds json rpc annotations. 

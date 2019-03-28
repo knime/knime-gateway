@@ -28,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflowUIInfoEntBuilder;
+import com.knime.gateway.entity.WorkflowUIInfoEnt;
+import com.knime.gateway.entity.impl.DefaultWorkflowUIInfoEnt;
+import com.knime.gateway.entity.impl.DefaultWorkflowUIInfoEnt.DefaultWorkflowUIInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.testing.helper;
 
-import com.knime.gateway.v0.service.AbstractGatewayServiceTestHelper;
+import com.knime.gateway.service.AbstractGatewayServiceTestHelper;
 
 /**
  * Runs a gateway tests, e.g. those derived from {@link AbstractGatewayServiceTestHelper}.

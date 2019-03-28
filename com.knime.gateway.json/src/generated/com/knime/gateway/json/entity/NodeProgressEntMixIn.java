@@ -28,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.NodeProgressEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeProgressEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder;
+import com.knime.gateway.entity.NodeProgressEnt;
+import com.knime.gateway.entity.impl.DefaultNodeProgressEnt;
+import com.knime.gateway.entity.impl.DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

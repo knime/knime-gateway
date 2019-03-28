@@ -18,22 +18,22 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
-import com.knime.gateway.v0.entity.BoundsEnt;
-import com.knime.gateway.v0.entity.DataTableEnt;
-import com.knime.gateway.v0.entity.FlowVariableEnt;
-import com.knime.gateway.v0.entity.JavaObjectEnt;
-import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
-import com.knime.gateway.v0.entity.NodeSettingsEnt;
-import com.knime.gateway.v0.entity.PortObjectSpecEnt;
-import com.knime.gateway.v0.entity.ViewDataEnt;
+import com.knime.gateway.entity.BoundsEnt;
+import com.knime.gateway.entity.DataTableEnt;
+import com.knime.gateway.entity.FlowVariableEnt;
+import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.MetaNodeDialogEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.entity.NodeSettingsEnt;
+import com.knime.gateway.entity.PortObjectSpecEnt;
+import com.knime.gateway.entity.ViewDataEnt;
 
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 
-import com.knime.gateway.v0.service.NodeService;
+import com.knime.gateway.service.NodeService;
 
 /**
  * Interface that adds json rpc annotations. 

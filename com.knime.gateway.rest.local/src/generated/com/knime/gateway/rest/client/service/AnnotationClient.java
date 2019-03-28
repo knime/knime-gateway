@@ -18,7 +18,7 @@
  */
 package com.knime.gateway.rest.client.service;
 
-import com.knime.gateway.v0.entity.BoundsEnt;
+import com.knime.gateway.entity.BoundsEnt;
 
 
 import java.io.IOException;
@@ -30,8 +30,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 import com.knime.gateway.service.ServiceException;
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.AnnotationService;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.knime.enterprise.gateway.rest.api.Annotation;
 import com.knime.enterprise.utility.ExecutorException;
@@ -77,7 +77,7 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotFoundException")) {
                 throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
@@ -103,7 +103,7 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }

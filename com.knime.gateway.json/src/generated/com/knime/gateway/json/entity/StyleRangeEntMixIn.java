@@ -27,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.StyleRangeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder;
+import com.knime.gateway.entity.StyleRangeEnt;
+import com.knime.gateway.entity.impl.DefaultStyleRangeEnt;
+import com.knime.gateway.entity.impl.DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

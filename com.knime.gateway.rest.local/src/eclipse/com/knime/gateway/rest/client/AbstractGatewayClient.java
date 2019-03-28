@@ -47,13 +47,13 @@ import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
 import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.GatewayExceptionEnt;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.rest.client.providers.json.CollectionJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.StringJSONDeserializer;
 import com.knime.gateway.rest.client.service.WorkflowClient;
 import com.knime.gateway.service.ServiceException;
-import com.knime.gateway.v0.entity.GatewayExceptionEnt;
 
 /**
  * Abstract gateway client to provide functions to the auto-generated clients (such as {@link WorkflowClient} for

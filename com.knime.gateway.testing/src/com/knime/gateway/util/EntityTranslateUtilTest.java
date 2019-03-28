@@ -37,15 +37,11 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
-import org.knime.core.node.workflow.WorkflowCopyContent;
-import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 
-import com.knime.gateway.v0.entity.DataCellEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
-import com.knime.gateway.v0.entity.impl.DefaultDataCellEnt.DefaultDataCellEntBuilder;
+import com.knime.gateway.entity.DataCellEnt;
+import com.knime.gateway.entity.NodeUIInfoEnt;
+import com.knime.gateway.entity.impl.DefaultDataCellEnt.DefaultDataCellEntBuilder;
 
 /**
  * Tests {@link EntityTranslateUtil}.

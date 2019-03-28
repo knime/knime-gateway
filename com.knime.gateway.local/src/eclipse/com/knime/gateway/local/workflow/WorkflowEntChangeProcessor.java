@@ -21,12 +21,12 @@ package com.knime.gateway.local.workflow;
 import java.util.Arrays;
 import java.util.List;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.PatchOpEnt;
-import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.PatchOpEnt;
+import com.knime.gateway.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.entity.WorkflowEnt;
 
 /**
  * Helper class to help apply changes made to a {@link WorkflowEnt} represented by a {@link PatchEnt}.

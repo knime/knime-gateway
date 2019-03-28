@@ -54,8 +54,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.knime.gateway.v0.entity.MetaNodeDialogEnt;
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.entity.MetaNodeDialogEnt;
+import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 
 /**
  * Entity-proxy class that proxies {@link WrappedWorkflowNodeEnt} and implements {@link SubNodeContainerUI}.

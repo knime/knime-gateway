@@ -43,17 +43,17 @@ import org.javers.core.metamodel.object.GlobalId;
 import org.javers.core.metamodel.object.UnboundedValueObjectId;
 import org.javers.core.metamodel.object.ValueObjectId;
 
+import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.entity.GatewayEntity;
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.PatchEnt.PatchEntBuilder;
-import com.knime.gateway.v0.entity.PatchOpEnt;
-import com.knime.gateway.v0.entity.PatchOpEnt.OpEnum;
-import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import com.knime.gateway.v0.entity.impl.DefaultPatchEnt.DefaultPatchEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.PatchEnt.PatchEntBuilder;
+import com.knime.gateway.entity.PatchOpEnt;
+import com.knime.gateway.entity.PatchOpEnt.OpEnum;
+import com.knime.gateway.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.entity.impl.DefaultPatchEnt.DefaultPatchEntBuilder;
+import com.knime.gateway.entity.impl.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
 
 /**
  * Processes changes between gateway entities determined using the javers library and returns them as {@link PatchEnt}.

@@ -18,15 +18,15 @@
  */
 package com.knime.gateway.json.entity;
 
+import com.knime.gateway.entity.JobManagerEnt;
+import com.knime.gateway.entity.NodeAnnotationEnt;
+import com.knime.gateway.entity.NodeInPortEnt;
+import com.knime.gateway.entity.NodeMessageEnt;
+import com.knime.gateway.entity.NodeOutPortEnt;
+import com.knime.gateway.entity.NodeProgressEnt;
+import com.knime.gateway.entity.NodeStateEnt;
+import com.knime.gateway.entity.NodeUIInfoEnt;
 import com.knime.gateway.json.entity.WorkflowNodeEntMixIn;
-import com.knime.gateway.v0.entity.JobManagerEnt;
-import com.knime.gateway.v0.entity.NodeAnnotationEnt;
-import com.knime.gateway.v0.entity.NodeInPortEnt;
-import com.knime.gateway.v0.entity.NodeMessageEnt;
-import com.knime.gateway.v0.entity.NodeOutPortEnt;
-import com.knime.gateway.v0.entity.NodeProgressEnt;
-import com.knime.gateway.v0.entity.NodeStateEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,9 +36,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder;
+import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
+import com.knime.gateway.entity.impl.DefaultWrappedWorkflowNodeEnt;
+import com.knime.gateway.entity.impl.DefaultWrappedWorkflowNodeEnt.DefaultWrappedWorkflowNodeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

@@ -18,14 +18,14 @@
  */
 package com.knime.gateway.json.entity;
 
-import com.knime.gateway.v0.entity.JobManagerEnt;
-import com.knime.gateway.v0.entity.NodeAnnotationEnt;
-import com.knime.gateway.v0.entity.NodeInPortEnt;
-import com.knime.gateway.v0.entity.NodeMessageEnt;
-import com.knime.gateway.v0.entity.NodeOutPortEnt;
-import com.knime.gateway.v0.entity.NodeProgressEnt;
-import com.knime.gateway.v0.entity.NodeStateEnt;
-import com.knime.gateway.v0.entity.NodeUIInfoEnt;
+import com.knime.gateway.entity.JobManagerEnt;
+import com.knime.gateway.entity.NodeAnnotationEnt;
+import com.knime.gateway.entity.NodeInPortEnt;
+import com.knime.gateway.entity.NodeMessageEnt;
+import com.knime.gateway.entity.NodeOutPortEnt;
+import com.knime.gateway.entity.NodeProgressEnt;
+import com.knime.gateway.entity.NodeStateEnt;
+import com.knime.gateway.entity.NodeUIInfoEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,12 +35,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNodeEnt.DefaultNodeEntBuilder;
-import com.knime.gateway.v0.entity.impl.DefaultWorkflowNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultNativeNodeEnt;
-import com.knime.gateway.v0.entity.impl.DefaultWrappedWorkflowNodeEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.impl.DefaultNodeEnt;
+import com.knime.gateway.entity.impl.DefaultNodeEnt.DefaultNodeEntBuilder;
+import com.knime.gateway.entity.impl.DefaultWorkflowNodeEnt;
+import com.knime.gateway.entity.impl.DefaultNativeNodeEnt;
+import com.knime.gateway.entity.impl.DefaultWrappedWorkflowNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

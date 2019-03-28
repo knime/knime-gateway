@@ -27,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import com.knime.gateway.v0.entity.JobManagerEnt;
-import com.knime.gateway.v0.entity.impl.DefaultJobManagerEnt;
-import com.knime.gateway.v0.entity.impl.DefaultJobManagerEnt.DefaultJobManagerEntBuilder;
+import com.knime.gateway.entity.JobManagerEnt;
+import com.knime.gateway.entity.impl.DefaultJobManagerEnt;
+import com.knime.gateway.entity.impl.DefaultJobManagerEnt.DefaultJobManagerEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

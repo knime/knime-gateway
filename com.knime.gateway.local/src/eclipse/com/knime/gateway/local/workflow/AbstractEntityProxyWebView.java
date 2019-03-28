@@ -35,12 +35,12 @@ import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.wizard.WizardNode;
 
-import com.knime.gateway.v0.entity.JavaObjectEnt;
-import com.knime.gateway.v0.entity.JavaObjectEnt.JavaObjectEntBuilder;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.ViewDataEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.JavaObjectEnt.JavaObjectEntBuilder;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.ViewDataEnt;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * A combination of a {@link ViewableModel} and {@link WizardNode} that is backed by a {@link NodeEnt}.

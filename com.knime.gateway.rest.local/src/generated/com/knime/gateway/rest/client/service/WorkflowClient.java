@@ -18,10 +18,10 @@
  */
 package com.knime.gateway.rest.client.service;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowPartsEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
 
 
 import java.io.IOException;
@@ -33,8 +33,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 import com.knime.gateway.service.ServiceException;
-import com.knime.gateway.v0.service.WorkflowService;
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.WorkflowService;
+import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.knime.enterprise.gateway.rest.api.Workflow;
 import com.knime.enterprise.utility.ExecutorException;
@@ -80,7 +80,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, String.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("ActionNotAllowedException")) {
                 throw new ServiceExceptions.ActionNotAllowedException(gatewayException.getExceptionMessage());
             }
@@ -106,7 +106,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
@@ -138,7 +138,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, java.util.UUID.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
@@ -170,7 +170,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
@@ -199,7 +199,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }
@@ -228,7 +228,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, WorkflowSnapshotEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
                 + "' with message: " + gatewayException.getExceptionMessage());
         }
@@ -251,7 +251,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, PatchEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotFoundException")) {
                 throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
             }
@@ -277,7 +277,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
             }, WorkflowPartsEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.v0.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }

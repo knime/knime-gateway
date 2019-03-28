@@ -20,7 +20,7 @@ package com.knime.gateway.testing.helper;
 
 import java.util.UUID;
 
-import com.knime.gateway.v0.service.AbstractGatewayServiceTestHelper.TestWorkflow;
+import com.knime.gateway.service.AbstractGatewayServiceTestHelper.TestWorkflow;
 
 /**
  * Loads workflows into memory that are later (directly or indirectly) accessed from the gateway's

@@ -44,9 +44,9 @@ import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.workbench.repository.RepositoryManager;
 import org.w3c.dom.Element;
 
+import com.knime.gateway.entity.NativeNodeEnt;
+import com.knime.gateway.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
-import com.knime.gateway.v0.entity.NativeNodeEnt;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt;
 
 /**
  * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.

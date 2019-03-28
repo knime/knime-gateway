@@ -18,10 +18,10 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.WorkflowPartsEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -29,9 +29,9 @@ import com.googlecode.jsonrpc4j.JsonRpcMethod;
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 
-import com.knime.gateway.v0.service.util.ServiceExceptions;
+import com.knime.gateway.service.util.ServiceExceptions;
 
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.WorkflowService;
 
 /**
  * Json rpc annotated class that wraps another service and delegates the method calls. 

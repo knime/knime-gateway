@@ -26,9 +26,9 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.knime.gateway.entity.XYEnt;
+import com.knime.gateway.entity.impl.DefaultXYEnt.DefaultXYEntBuilder;
 import com.knime.gateway.json.util.ObjectMapperUtil;
-import com.knime.gateway.v0.entity.XYEnt;
-import com.knime.gateway.v0.entity.impl.DefaultXYEnt.DefaultXYEntBuilder;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany

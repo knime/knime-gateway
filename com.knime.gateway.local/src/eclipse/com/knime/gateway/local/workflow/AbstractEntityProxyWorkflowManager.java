@@ -92,29 +92,29 @@ import org.knime.core.ui.node.workflow.lazy.LazyWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.lazy.NotLoadedException;
 import org.knime.core.util.Pair;
 
+import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.MetaPortInfoEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.entity.PatchEnt;
+import com.knime.gateway.entity.PortTypeEnt;
+import com.knime.gateway.entity.WorkflowAnnotationEnt;
+import com.knime.gateway.entity.WorkflowEnt;
+import com.knime.gateway.entity.WorkflowNodeEnt;
+import com.knime.gateway.entity.WorkflowPartsEnt;
+import com.knime.gateway.entity.WorkflowSnapshotEnt;
+import com.knime.gateway.entity.WorkflowUIInfoEnt;
+import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 import com.knime.gateway.local.patch.EntityPatchApplierManager;
 import com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.WorkflowEntChangeListener;
+import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
+import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
+import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.util.EntityUtil;
-import com.knime.gateway.v0.entity.ConnectionEnt;
-import com.knime.gateway.v0.entity.MetaPortInfoEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
-import com.knime.gateway.v0.entity.PatchEnt;
-import com.knime.gateway.v0.entity.PortTypeEnt;
-import com.knime.gateway.v0.entity.WorkflowAnnotationEnt;
-import com.knime.gateway.v0.entity.WorkflowEnt;
-import com.knime.gateway.v0.entity.WorkflowNodeEnt;
-import com.knime.gateway.v0.entity.WorkflowPartsEnt;
-import com.knime.gateway.v0.entity.WorkflowSnapshotEnt;
-import com.knime.gateway.v0.entity.WorkflowUIInfoEnt;
-import com.knime.gateway.v0.entity.WrappedWorkflowNodeEnt;
-import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.InvalidRequestException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotASubWorkflowException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NotFoundException;
 
 /**
  * Abstract {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a

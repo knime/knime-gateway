@@ -20,11 +20,11 @@ package com.knime.gateway.remote.service;
 
 import java.util.NoSuchElementException;
 
+import com.knime.gateway.service.AnnotationService;
 import com.knime.gateway.service.GatewayService;
-import com.knime.gateway.v0.service.AnnotationService;
-import com.knime.gateway.v0.service.NodeService;
-import com.knime.gateway.v0.service.WizardExecutionService;
-import com.knime.gateway.v0.service.WorkflowService;
+import com.knime.gateway.service.NodeService;
+import com.knime.gateway.service.WizardExecutionService;
+import com.knime.gateway.service.WorkflowService;
 
 /**
  * Provides the default service implementations for gateway services.

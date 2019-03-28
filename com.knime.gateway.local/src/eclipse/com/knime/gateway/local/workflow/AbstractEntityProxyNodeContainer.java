@@ -59,17 +59,17 @@ import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 
+import com.knime.gateway.entity.BoundsEnt;
+import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
+import com.knime.gateway.entity.NodeAnnotationEnt;
+import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeMessageEnt;
+import com.knime.gateway.entity.NodeStateEnt;
+import com.knime.gateway.entity.NodeStateEnt.StateEnum;
+import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.util.EntityTranslateUtil;
 import com.knime.gateway.util.EntityUtil;
-import com.knime.gateway.v0.entity.BoundsEnt;
-import com.knime.gateway.v0.entity.BoundsEnt.BoundsEntBuilder;
-import com.knime.gateway.v0.entity.NodeAnnotationEnt;
-import com.knime.gateway.v0.entity.NodeEnt;
-import com.knime.gateway.v0.entity.NodeMessageEnt;
-import com.knime.gateway.v0.entity.NodeStateEnt;
-import com.knime.gateway.v0.entity.NodeStateEnt.StateEnum;
-import com.knime.gateway.v0.service.util.ServiceExceptions.ActionNotAllowedException;
-import com.knime.gateway.v0.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.

@@ -31,8 +31,8 @@ import java.util.UUID;
 
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.entity.GatewayEntityBuilder;
-import com.knime.gateway.v0.entity.impl.util.Interface2ImplMap;
-import com.knime.gateway.v0.entity.util.ListEntities;
+import com.knime.gateway.entity.impl.util.Interface2ImplMap;
+import com.knime.gateway.entity.util.ListEntities;
 
 /**
  * Helper class to create random entities (mainly for unit tests).

@@ -19,7 +19,7 @@
 package com.knime.gateway.local.patch;
 
 import com.knime.gateway.entity.GatewayEntity;
-import com.knime.gateway.v0.entity.PatchEnt;
+import com.knime.gateway.entity.PatchEnt;
 
 /**
  * Applies patches ({@link PatchEnt}) to {@link GatewayEntity gateway entities}.
