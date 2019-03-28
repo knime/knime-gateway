@@ -211,213 +211,6 @@
       "zoomLevel" : 1
     }
   },
-  "workflowent_6_moved_node_3" : {
-    "connections" : {
-      "6_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "6",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "6:3",
-        "sourcePort" : 2,
-        "type" : "WFMOUT"
-      },
-      "6:3_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "6:3",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "6",
-        "sourcePort" : 0,
-        "type" : "WFMIN"
-      },
-      "6_0" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "6",
-        "destPort" : 0,
-        "flowVariablePortConnection" : false,
-        "source" : "6:3",
-        "sourcePort" : 1,
-        "type" : "WFMOUT"
-      }
-    },
-    "hasCredentials" : false,
-    "inWizardExecution" : false,
-    "metaInPortInfos" : [ {
-      "connected" : true,
-      "message" : "Connected to one upstream node and 1 downstream node(s)",
-      "newIndex" : -1,
-      "oldIndex" : -1,
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-      }
-    } ],
-    "metaOutPortInfos" : [ {
-      "connected" : true,
-      "message" : "Connected to one upstream node and 1 downstream node(s)",
-      "newIndex" : -1,
-      "oldIndex" : -1,
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-      }
-    }, {
-      "connected" : true,
-      "message" : "Connected to one upstream node and 1 downstream node(s)",
-      "newIndex" : -1,
-      "oldIndex" : -1,
-      "portType" : {
-        "optional" : false,
-        "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-      }
-    } ],
-    "nodes" : {
-      "6:3" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "To be filtered",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Row Splitter",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory"
-        },
-        "nodeID" : "6:3",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Filtered",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 2,
-          "portName" : "Filtered Out",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "6",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 116,
-            "x" : 204,
-            "y" : 337
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      }
-    },
-    "workflowAnnotations" : {
-      "6_0" : {
-        "annotationID" : "6_0",
-        "backgroundColor" : 16777215,
-        "borderColor" : 16766976,
-        "borderSize" : 10,
-        "bounds" : {
-          "height" : 140,
-          "width" : 250,
-          "x" : 233,
-          "y" : 293
-        },
-        "defaultFontSize" : 11,
-        "styleRanges" : [ {
-          "fontName" : "Nimbus Sans L",
-          "fontSize" : 11,
-          "fontStyle" : "normal",
-          "foregroundColor" : 15673641,
-          "length" : 13,
-          "start" : 25
-        }, {
-          "fontName" : "Nimbus Sans L",
-          "fontSize" : 11,
-          "fontStyle" : "bold",
-          "foregroundColor" : 15673641,
-          "length" : 15,
-          "start" : 38
-        } ],
-        "text" : "Workflow Annotation with Style Ranges and another one",
-        "textAlignment" : "LEFT",
-        "type" : "WorkflowAnnotation"
-      }
-    },
-    "workflowUIInfo" : {
-      "connectionLineWidth" : 1,
-      "gridX" : 20,
-      "gridY" : 20,
-      "hasCurvedConnection" : true,
-      "showGrid" : true,
-      "snapToGrid" : true,
-      "zoomLevel" : 1
-    }
-  },
   "worklfowent_root_executed_till_node_2" : {
     "connections" : {
       "16_1" : {
@@ -2990,217 +2783,27 @@
       "zoomLevel" : 1
     }
   },
-  "workflowent_root_moved_node_1" : {
+  "workflowent_6_moved_node_3" : {
     "connections" : {
-      "16_1" : {
+      "6_1" : {
         "bendPoints" : [ ],
         "deletable" : true,
-        "dest" : "16",
+        "dest" : "6",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
-        "source" : "15",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "14_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "14",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "13",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "13_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "13",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "1",
-        "sourcePort" : 0,
-        "type" : "STD"
-      },
-      "12_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "12",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
+        "source" : "6:3",
         "sourcePort" : 2,
-        "type" : "STD"
+        "type" : "WFMOUT"
       },
-      "11_1" : {
+      "6:3_1" : {
         "bendPoints" : [ ],
         "deletable" : true,
-        "dest" : "11",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "2",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "10_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "10",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "19_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "19",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "18_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "18",
-        "destPort" : 1,
-        "flowVariablePortConnection" : true,
-        "source" : "16",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "26_2" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "26",
-        "destPort" : 2,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "26_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "26",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "25",
-        "sourcePort" : 3,
-        "type" : "STD"
-      },
-      "25_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "25",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "22_2" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "22",
-        "destPort" : 2,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "23_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "23",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
-      },
-      "2_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "2",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "20_3" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "20",
-        "destPort" : 3,
-        "flowVariablePortConnection" : false,
-        "source" : "19",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "22_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "22",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "10",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "4_0" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "4",
-        "destPort" : 0,
-        "flowVariablePortConnection" : true,
-        "source" : "1",
-        "sourcePort" : 0,
-        "type" : "STD"
-      },
-      "4_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "4",
+        "dest" : "6:3",
         "destPort" : 1,
         "flowVariablePortConnection" : false,
         "source" : "6",
         "sourcePort" : 0,
-        "type" : "STD"
-      },
-      "20_2" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "20",
-        "destPort" : 2,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "21_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "21",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "5_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "5",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "6",
-        "sourcePort" : 1,
-        "type" : "STD"
+        "type" : "WFMIN"
       },
       "6_0" : {
         "bendPoints" : [ ],
@@ -3208,50 +2811,44 @@
         "dest" : "6",
         "destPort" : 0,
         "flowVariablePortConnection" : false,
-        "source" : "2",
+        "source" : "6:3",
         "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "20_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "20",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "8_1" : {
-        "bendPoints" : [ ],
-        "deletable" : true,
-        "dest" : "8",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "9",
-        "sourcePort" : 1,
-        "type" : "STD"
-      },
-      "9_1" : {
-        "bendPoints" : [ {
-          "x" : 242,
-          "y" : 518
-        } ],
-        "deletable" : true,
-        "dest" : "9",
-        "destPort" : 1,
-        "flowVariablePortConnection" : false,
-        "source" : "1",
-        "sourcePort" : 2,
-        "type" : "STD"
+        "type" : "WFMOUT"
       }
     },
     "hasCredentials" : false,
     "inWizardExecution" : false,
-    "metaInPortInfos" : [ ],
-    "metaOutPortInfos" : [ ],
+    "metaInPortInfos" : [ {
+      "connected" : true,
+      "message" : "Connected to one upstream node and 1 downstream node(s)",
+      "newIndex" : -1,
+      "oldIndex" : -1,
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+      }
+    } ],
+    "metaOutPortInfos" : [ {
+      "connected" : true,
+      "message" : "Connected to one upstream node and 1 downstream node(s)",
+      "newIndex" : -1,
+      "oldIndex" : -1,
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+      }
+    }, {
+      "connected" : true,
+      "message" : "Connected to one upstream node and 1 downstream node(s)",
+      "newIndex" : -1,
+      "oldIndex" : -1,
+      "portType" : {
+        "optional" : false,
+        "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+      }
+    } ],
     "nodes" : {
-      "22" : {
+      "6:3" : {
         "deletable" : true,
         "hasDialog" : true,
         "inPorts" : [ {
@@ -3264,15 +2861,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "Weka model",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 2,
-          "portName" : "Test data",
+          "portName" : "To be filtered",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
@@ -3280,96 +2869,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Weka Predictor (3.7)",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 60,
-            "width" : 134,
-            "x" : 493,
-            "y" : 139
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "Check a \n'generic'\nport type spec",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
-        },
-        "nodeID" : "22",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Predictor",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Classified Test data",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 117,
-            "x" : 544,
-            "y" : 77
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "11" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Any input table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Fail in execution",
+        "name" : "Row Splitter",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -3389,282 +2889,9 @@
           "version" : 20151123
         },
         "nodeFactoryKey" : {
-          "className" : "org.knime.testing.node.failing.FailingNodeFactory"
+          "className" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory"
         },
-        "nodeID" : "11",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Other",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Copy of input",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 125,
-            "x" : 484,
-            "y" : 377
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "23" : {
-        "deletable" : true,
-        "encrypted" : false,
-        "hasDialog" : true,
-        "hasWizardPage" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Port 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Wrapped Metanode",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 40,
-            "width" : 166,
-            "x" : 97,
-            "y" : 679
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "with JS view inside\n(i.e. with composite view)",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeID" : "23",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "IDLE"
-        },
-        "nodeType" : "Subnode",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Port 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "resetable" : false,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "WrappedWorkflowNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 148,
-            "x" : 164,
-            "y" : 617
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "virtualInNodeID" : "23:0:8",
-        "virtualOutNodeID" : "23:0:9",
-        "webViewNames" : [ "Wrapped Metanode" ],
-        "workflowIncomingPorts" : [ ],
-        "workflowOutgoingPortNodeStates" : [ ],
-        "workflowOutgoingPorts" : [ ]
-      },
-      "12" : {
-        "deletable" : true,
-        "encrypted" : false,
-        "hasDialog" : true,
-        "hasWizardPage" : false,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Port 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Wrapped Metanode Failing",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 19,
-            "width" : 134,
-            "x" : 293,
-            "y" : 679
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeID" : "12",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "IDLE"
-        },
-        "nodeType" : "Subnode",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Port 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "resetable" : false,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "WrappedWorkflowNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 148,
-            "x" : 344,
-            "y" : 617
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "virtualInNodeID" : "12:0:8",
-        "virtualOutNodeID" : "12:0:9",
-        "webViewNames" : [ ],
-        "workflowIncomingPorts" : [ ],
-        "workflowOutgoingPortNodeStates" : [ ],
-        "workflowOutgoingPorts" : [ ]
-      },
-      "13" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Input",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Active Branch Inverter",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 19,
-            "width" : 134,
-            "x" : 633,
-            "y" : 619
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "Node 13",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
-        },
-        "nodeID" : "13",
+        "nodeID" : "6:3",
         "nodeMessage" : {
           "message" : "",
           "type" : "RESET"
@@ -3685,96 +2912,7 @@
         }, {
           "inactive" : false,
           "portIndex" : 1,
-          "portName" : "Output",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 108,
-            "x" : 684,
-            "y" : 557
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "25" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Table to transform",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "PCA Compute",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
-        },
-        "nodeID" : "25",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Covariance matrix",
+          "portName" : "Filtered",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
@@ -3783,647 +2921,14 @@
         }, {
           "inactive" : false,
           "portIndex" : 2,
-          "portName" : "Spectral decomposition",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 3,
-          "portName" : "Projection model",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 110,
-            "x" : 904,
-            "y" : 397
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "14" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Variables input",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Variable to Table Row",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 20,
-            "width" : 134,
-            "x" : 733,
-            "y" : 619
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "inactive branch",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
-        },
-        "nodeID" : "14",
-        "nodeMessage" : {
-          "message" : "No variables selected",
-          "type" : "WARNING"
-        },
-        "nodeState" : {
-          "state" : "IDLE"
-        },
-        "nodeType" : "Other",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Variable table",
+          "portName" : "Filtered Out",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
           },
           "type" : "NodeOutPort"
         } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : false,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 82,
-            "x" : 784,
-            "y" : 557
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "26" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Model",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 2,
-          "portName" : "Table to transform",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "PCA Apply",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 38,
-            "width" : 134,
-            "x" : 1013,
-            "y" : 539
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "test of another\nport object spec",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
-        },
-        "nodeID" : "26",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Projected data",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 84,
-            "x" : 1064,
-            "y" : 477
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "15" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Table Creator",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
-        },
-        "nodeID" : "15",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Source",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Manually created table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 104,
-            "x" : 224,
-            "y" : 757
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "16" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Parameters table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Table Row to Variable",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
-        },
-        "nodeID" : "16",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Other",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Variables Output",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 82,
-            "x" : 344,
-            "y" : 757
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "18" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Input variables (optional)",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "String Manipulation (Variable)",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 38,
-            "width" : 134,
-            "x" : 413,
-            "y" : 819
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "checking flow\nvariables (string)",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
-        },
-        "nodeID" : "18",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Appended variables",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 150,
-            "x" : 464,
-            "y" : 757
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "19" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Input Table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Numeric Distances",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
-        },
-        "nodeID" : "19",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Distance Measure",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 145,
-            "x" : 684,
-            "y" : 757
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "1" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Data Generator",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
-        },
-        "nodeID" : "1",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Source",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Random data with cluster ID",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 2,
-          "portName" : "Cluster centers",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
+        "parentNodeID" : "6",
         "progress" : { },
         "resetable" : true,
         "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
@@ -4432,864 +2937,8 @@
           "bounds" : {
             "height" : 83,
             "width" : 116,
-            "x" : 0,
-            "y" : 0
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "2" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Table to be filtered",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Column Filter",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 19,
-            "width" : 134,
-            "x" : 293,
-            "y" : 399
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "node annotation",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
-        },
-        "nodeID" : "2",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Filtered table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 104,
-            "x" : 344,
+            "x" : 204,
             "y" : 337
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "4" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Input to display",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Interactive Table",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.viz.table.TableNodeFactory"
-        },
-        "nodeID" : "4",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Visualizer",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 126,
-            "x" : 704,
-            "y" : 197
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "5" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Input data",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Decision Tree Learner",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 19,
-            "width" : 138,
-            "x" : 651,
-            "y" : 419
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "a non-executing node",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
-        },
-        "nodeID" : "5",
-        "nodeMessage" : {
-          "message" : "Class column \"Cluster Membership\" not found or incompatible",
-          "type" : "WARNING"
-        },
-        "nodeState" : {
-          "state" : "IDLE"
-        },
-        "nodeType" : "Learner",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Decision Tree Model",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.port.pmml.PMMLPortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : false,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 97,
-            "x" : 704,
-            "y" : 357
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "6" : {
-        "deletable" : true,
-        "encrypted" : false,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Inport 0",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "name" : "Metanode",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeID" : "6",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Meta",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Connected to: Filtered",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Connected to: Filtered Out",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "WorkflowNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 70,
-            "width" : 74,
-            "x" : 484,
-            "y" : 257
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ],
-        "workflowIncomingPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Connected to: Filtered table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "workflowOutgoingPortNodeStates" : [ {
-          "state" : "CONFIGURED"
-        }, {
-          "state" : "CONFIGURED"
-        } ],
-        "workflowOutgoingPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Inport 0",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Inport 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ]
-      },
-      "8" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Display data",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Box Plot",
-        "nodeAnnotation" : {
-          "_default" : true,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 0,
-            "width" : 0,
-            "x" : 0,
-            "y" : 0
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
-        },
-        "nodeID" : "8",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "IDLE"
-        },
-        "nodeType" : "Visualizer",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Robust Statistics",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : false,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 66,
-            "x" : 484,
-            "y" : 497
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "9" : {
-        "deletable" : true,
-        "encrypted" : false,
-        "hasDialog" : true,
-        "hasWizardPage" : false,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Port 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Wrapped Metanode",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 0,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 19,
-            "width" : 134,
-            "x" : 293,
-            "y" : 559
-          },
-          "defaultFontSize" : -1,
-          "styleRanges" : [ ],
-          "text" : "",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeID" : "9",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "IDLE"
-        },
-        "nodeType" : "Subnode",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Port 1",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "resetable" : false,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "WrappedWorkflowNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 148,
-            "x" : 344,
-            "y" : 497
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "virtualInNodeID" : "9:0:8",
-        "virtualOutNodeID" : "9:0:9",
-        "webViewNames" : [ ],
-        "workflowIncomingPorts" : [ ],
-        "workflowOutgoingPortNodeStates" : [ ],
-        "workflowOutgoingPorts" : [ ]
-      },
-      "20" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Query table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 2,
-          "portName" : "Reference table (neighbors)",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 3,
-          "portName" : "Distance Measure",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Similarity Search",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 38,
-            "width" : 166,
-            "x" : 797,
-            "y" : 819
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "check for simple port spec\n(distance measure)",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
-        },
-        "nodeID" : "20",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Input 1 + columns/rows with neighbor information",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 130,
-            "x" : 864,
-            "y" : 757
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "21" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "First table to concatenate",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 2,
-          "portName" : "Optional second table to concatenate",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 3,
-          "portName" : "Optional third table to concatenate",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 4,
-          "portName" : "Optional fourth table to concatenate",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "Concatenate (Optional in)",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 38,
-            "width" : 134,
-            "x" : 333,
-            "y" : 79
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "optional\nin-ports",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
-        },
-        "nodeID" : "21",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Manipulator",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Concatenated table",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 103,
-            "width" : 96,
-            "x" : 384,
-            "y" : 17
-          },
-          "dropLocation" : false,
-          "snapToGrid" : false,
-          "symbolRelative" : true
-        },
-        "webViewNames" : [ ]
-      },
-      "10" : {
-        "deletable" : true,
-        "hasDialog" : true,
-        "inPorts" : [ {
-          "portIndex" : 0,
-          "portName" : "Variable Inport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeInPort"
-        }, {
-          "portIndex" : 1,
-          "portName" : "Training data",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
-          },
-          "type" : "NodeInPort"
-        } ],
-        "inactive" : false,
-        "name" : "J48 (3.7)",
-        "nodeAnnotation" : {
-          "_default" : false,
-          "backgroundColor" : 16777215,
-          "borderColor" : 16777215,
-          "borderSize" : 0,
-          "bounds" : {
-            "height" : 38,
-            "width" : 136,
-            "x" : 292,
-            "y" : 219
-          },
-          "defaultFontSize" : 11,
-          "styleRanges" : [ ],
-          "text" : "a node created\nvia a node set factory",
-          "textAlignment" : "CENTER",
-          "type" : "NodeAnnotation",
-          "version" : 20151123
-        },
-        "nodeFactoryKey" : {
-          "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
-        },
-        "nodeID" : "10",
-        "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
-        },
-        "nodeState" : {
-          "state" : "CONFIGURED"
-        },
-        "nodeType" : "Learner",
-        "outPorts" : [ {
-          "inactive" : false,
-          "portIndex" : 0,
-          "portName" : "Variable Outport",
-          "portType" : {
-            "optional" : true,
-            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-          },
-          "type" : "NodeOutPort"
-        }, {
-          "inactive" : false,
-          "portIndex" : 1,
-          "portName" : "Trained model",
-          "portType" : {
-            "optional" : false,
-            "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject"
-          },
-          "type" : "NodeOutPort"
-        } ],
-        "parentNodeID" : "root",
-        "progress" : { },
-        "resetable" : true,
-        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
-        "type" : "NativeNode",
-        "uIInfo" : {
-          "bounds" : {
-            "height" : 83,
-            "width" : 63,
-            "x" : 344,
-            "y" : 157
           },
           "dropLocation" : false,
           "snapToGrid" : false,
@@ -5299,37 +2948,34 @@
       }
     },
     "workflowAnnotations" : {
-      "root_1" : {
-        "annotationID" : "root_1",
-        "backgroundColor" : 16777215,
-        "borderColor" : 15673641,
-        "borderSize" : 10,
-        "bounds" : {
-          "height" : 140,
-          "width" : 250,
-          "x" : 880,
-          "y" : 20
-        },
-        "defaultFontSize" : 11,
-        "styleRanges" : [ ],
-        "text" : "this is a red workflow annotation",
-        "textAlignment" : "LEFT",
-        "type" : "WorkflowAnnotation"
-      },
-      "root_0" : {
-        "annotationID" : "root_0",
+      "6_0" : {
+        "annotationID" : "6_0",
         "backgroundColor" : 16777215,
         "borderColor" : 16766976,
         "borderSize" : 10,
         "bounds" : {
           "height" : 140,
           "width" : 250,
-          "x" : 20,
-          "y" : 20
+          "x" : 233,
+          "y" : 293
         },
         "defaultFontSize" : 11,
-        "styleRanges" : [ ],
-        "text" : "this is a workflow annotation",
+        "styleRanges" : [ {
+          "fontName" : "Nimbus Sans L",
+          "fontSize" : 11,
+          "fontStyle" : "normal",
+          "foregroundColor" : 15673641,
+          "length" : 13,
+          "start" : 25
+        }, {
+          "fontName" : "Nimbus Sans L",
+          "fontSize" : 11,
+          "fontStyle" : "bold",
+          "foregroundColor" : 15673641,
+          "length" : 15,
+          "start" : 38
+        } ],
+        "text" : "Workflow Annotation with Style Ranges and another one",
         "textAlignment" : "LEFT",
         "type" : "WorkflowAnnotation"
       }
@@ -7331,6 +4977,2360 @@
         } ],
         "parentNodeID" : "root",
         "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "WrappedWorkflowNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 148,
+            "x" : 344,
+            "y" : 497
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "virtualInNodeID" : "9:0:8",
+        "virtualOutNodeID" : "9:0:9",
+        "webViewNames" : [ ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
+      },
+      "20" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Query table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Reference table (neighbors)",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 3,
+          "portName" : "Distance Measure",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Similarity Search",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 166,
+            "x" : 797,
+            "y" : 819
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "check for simple port spec\n(distance measure)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
+        },
+        "nodeID" : "20",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Input 1 + columns/rows with neighbor information",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 130,
+            "x" : 864,
+            "y" : 757
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "21" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "First table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Optional second table to concatenate",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 3,
+          "portName" : "Optional third table to concatenate",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 4,
+          "portName" : "Optional fourth table to concatenate",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Concatenate (Optional in)",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 333,
+            "y" : 79
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "optional\nin-ports",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
+        },
+        "nodeID" : "21",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Concatenated table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 96,
+            "x" : 384,
+            "y" : 17
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "10" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Training data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "J48 (3.7)",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 136,
+            "x" : 292,
+            "y" : 219
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "a node created\nvia a node set factory",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
+          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+        },
+        "nodeID" : "10",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Learner",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Trained model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 63,
+            "x" : 344,
+            "y" : 157
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      }
+    },
+    "workflowAnnotations" : {
+      "root_1" : {
+        "annotationID" : "root_1",
+        "backgroundColor" : 16777215,
+        "borderColor" : 15673641,
+        "borderSize" : 10,
+        "bounds" : {
+          "height" : 140,
+          "width" : 250,
+          "x" : 880,
+          "y" : 20
+        },
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : "this is a red workflow annotation",
+        "textAlignment" : "LEFT",
+        "type" : "WorkflowAnnotation"
+      },
+      "root_0" : {
+        "annotationID" : "root_0",
+        "backgroundColor" : 16777215,
+        "borderColor" : 16766976,
+        "borderSize" : 10,
+        "bounds" : {
+          "height" : 140,
+          "width" : 250,
+          "x" : 20,
+          "y" : 20
+        },
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : "this is a workflow annotation",
+        "textAlignment" : "LEFT",
+        "type" : "WorkflowAnnotation"
+      }
+    },
+    "workflowUIInfo" : {
+      "connectionLineWidth" : 1,
+      "gridX" : 20,
+      "gridY" : 20,
+      "hasCurvedConnection" : true,
+      "showGrid" : true,
+      "snapToGrid" : true,
+      "zoomLevel" : 1
+    }
+  },
+  "workflowent_root_moved_node_1" : {
+    "connections" : {
+      "16_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "16",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "15",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "14_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "14",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "13",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "13_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "13",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "1",
+        "sourcePort" : 0,
+        "type" : "STD"
+      },
+      "12_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "12",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "11_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "11",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "10_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "10",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "19_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "19",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "18_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "18",
+        "destPort" : 1,
+        "flowVariablePortConnection" : true,
+        "source" : "16",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "26_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "26",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "25",
+        "sourcePort" : 3,
+        "type" : "STD"
+      },
+      "25_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "25",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "22_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "22",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "23_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "23",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "2_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "2",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "20_3" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "20",
+        "destPort" : 3,
+        "flowVariablePortConnection" : false,
+        "source" : "19",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "22_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "22",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "10",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "4_0" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "4",
+        "destPort" : 0,
+        "flowVariablePortConnection" : true,
+        "source" : "1",
+        "sourcePort" : 0,
+        "type" : "STD"
+      },
+      "4_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "4",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "6",
+        "sourcePort" : 0,
+        "type" : "STD"
+      },
+      "20_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "20",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "21_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "21",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "5_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "5",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "6",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "6_0" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "6",
+        "destPort" : 0,
+        "flowVariablePortConnection" : false,
+        "source" : "2",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "20_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "20",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "8_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "8",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "9",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "9_1" : {
+        "bendPoints" : [ {
+          "x" : 242,
+          "y" : 518
+        } ],
+        "deletable" : true,
+        "dest" : "9",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      }
+    },
+    "hasCredentials" : false,
+    "inWizardExecution" : false,
+    "metaInPortInfos" : [ ],
+    "metaOutPortInfos" : [ ],
+    "nodes" : {
+      "22" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Weka model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Test data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Weka Predictor (3.7)",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 60,
+            "width" : 134,
+            "x" : 493,
+            "y" : 139
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "Check a \n'generic'\nport type spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
+        },
+        "nodeID" : "22",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Predictor",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Classified Test data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 117,
+            "x" : 544,
+            "y" : 77
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "11" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Any input table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Fail in execution",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.testing.node.failing.FailingNodeFactory"
+        },
+        "nodeID" : "11",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Other",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Copy of input",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 125,
+            "x" : 484,
+            "y" : 377
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "23" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "hasDialog" : true,
+        "hasWizardPage" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "width" : 166,
+            "x" : 97,
+            "y" : 679
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "with JS view inside\n(i.e. with composite view)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "23",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "IDLE"
+        },
+        "nodeType" : "Subnode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "WrappedWorkflowNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 148,
+            "x" : 164,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "virtualInNodeID" : "23:0:8",
+        "virtualOutNodeID" : "23:0:9",
+        "webViewNames" : [ "Wrapped Metanode" ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
+      },
+      "12" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "hasDialog" : true,
+        "hasWizardPage" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode Failing",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 19,
+            "width" : 134,
+            "x" : 293,
+            "y" : 679
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "12",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "IDLE"
+        },
+        "nodeType" : "Subnode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "WrappedWorkflowNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 148,
+            "x" : 344,
+            "y" : 617
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "virtualInNodeID" : "12:0:8",
+        "virtualOutNodeID" : "12:0:9",
+        "webViewNames" : [ ],
+        "workflowIncomingPorts" : [ ],
+        "workflowOutgoingPortNodeStates" : [ ],
+        "workflowOutgoingPorts" : [ ]
+      },
+      "13" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Input",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Active Branch Inverter",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 19,
+            "width" : 134,
+            "x" : 633,
+            "y" : 619
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "Node 13",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
+        },
+        "nodeID" : "13",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Output",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 108,
+            "x" : 684,
+            "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "25" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Compute",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
+        },
+        "nodeID" : "25",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 110,
+            "x" : 904,
+            "y" : 397
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "14" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Variables input",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Variable to Table Row",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 20,
+            "width" : 134,
+            "x" : 733,
+            "y" : 619
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "inactive branch",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
+        },
+        "nodeID" : "14",
+        "nodeMessage" : {
+          "message" : "No variables selected",
+          "type" : "WARNING"
+        },
+        "nodeState" : {
+          "state" : "IDLE"
+        },
+        "nodeType" : "Other",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Variable table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 82,
+            "x" : 784,
+            "y" : 557
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "26" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "PCA Apply",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 1013,
+            "y" : 539
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "test of another\nport object spec",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
+        },
+        "nodeID" : "26",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 84,
+            "x" : 1064,
+            "y" : 477
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "15" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Table Creator",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
+        },
+        "nodeID" : "15",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Source",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Manually created table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 104,
+            "x" : 224,
+            "y" : 757
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "16" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Parameters table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Table Row to Variable",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
+        },
+        "nodeID" : "16",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Other",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Variables Output",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 82,
+            "x" : 344,
+            "y" : 757
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "18" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Input variables (optional)",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "String Manipulation (Variable)",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 38,
+            "width" : 134,
+            "x" : 413,
+            "y" : 819
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "checking flow\nvariables (string)",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
+        },
+        "nodeID" : "18",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Appended variables",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 150,
+            "x" : 464,
+            "y" : 757
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "19" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Input Table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Numeric Distances",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
+        },
+        "nodeID" : "19",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Distance Measure",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 145,
+            "x" : 684,
+            "y" : 757
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "1" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Data Generator",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
+        },
+        "nodeID" : "1",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Source",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Random data with cluster ID",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 2,
+          "portName" : "Cluster centers",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 116,
+            "x" : 0,
+            "y" : 0
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "2" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Table to be filtered",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Column Filter",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 19,
+            "width" : 134,
+            "x" : 293,
+            "y" : 399
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "node annotation",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
+        },
+        "nodeID" : "2",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Filtered table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 104,
+            "x" : 344,
+            "y" : 337
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "4" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Input to display",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Interactive Table",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.viz.table.TableNodeFactory"
+        },
+        "nodeID" : "4",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Visualizer",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 126,
+            "x" : 704,
+            "y" : 197
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "5" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Input data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Decision Tree Learner",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 19,
+            "width" : 138,
+            "x" : 651,
+            "y" : 419
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "a non-executing node",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
+        },
+        "nodeID" : "5",
+        "nodeMessage" : {
+          "message" : "Class column \"Cluster Membership\" not found or incompatible",
+          "type" : "WARNING"
+        },
+        "nodeState" : {
+          "state" : "IDLE"
+        },
+        "nodeType" : "Learner",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Decision Tree Model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.pmml.PMMLPortObject"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 103,
+            "width" : 97,
+            "x" : 704,
+            "y" : 357
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "6" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Inport 0",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "name" : "Metanode",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "6",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Meta",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Connected to: Filtered",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Connected to: Filtered Out",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "WorkflowNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 70,
+            "width" : 74,
+            "x" : 484,
+            "y" : 257
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ],
+        "workflowIncomingPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Connected to: Filtered table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "workflowOutgoingPortNodeStates" : [ {
+          "state" : "CONFIGURED"
+        }, {
+          "state" : "CONFIGURED"
+        } ],
+        "workflowOutgoingPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Inport 0",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Inport 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ]
+      },
+      "8" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Display data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Box Plot",
+        "nodeAnnotation" : {
+          "_default" : true,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 0,
+            "width" : 0,
+            "x" : 0,
+            "y" : 0
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
+        },
+        "nodeID" : "8",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "IDLE"
+        },
+        "nodeType" : "Visualizer",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Robust Statistics",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : false,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 66,
+            "x" : 484,
+            "y" : 497
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
+      "9" : {
+        "deletable" : true,
+        "encrypted" : false,
+        "hasDialog" : true,
+        "hasWizardPage" : false,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Wrapped Metanode",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 0,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 19,
+            "width" : 134,
+            "x" : 293,
+            "y" : 559
+          },
+          "defaultFontSize" : -1,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeID" : "9",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "IDLE"
+        },
+        "nodeType" : "Subnode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "resetable" : false,
         "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
         "type" : "WrappedWorkflowNode",
         "uIInfo" : {
