@@ -39,6 +39,7 @@ import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.workbench.repository.RepositoryManager;
@@ -53,7 +54,8 @@ import com.knime.gateway.local.util.missing.MissingNodeFactory;
  *
  * @author Martin Horn, University of Konstanz
  */
-class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContainer<NativeNodeEnt> {
+class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContainer<NativeNodeEnt>
+    implements NativeNodeContainerUI {
 
     private NodeFactory<? extends NodeModel> m_nodeFactory = null;
 
@@ -192,5 +194,13 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
     @Override
     public NodeType getType() {
         return getNodeFactoryInstance().getType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getNodeFactoryClassName() {
+        return getEntity().getNodeFactoryKey().getClassName();
     }
 }
