@@ -23,18 +23,20 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
+
+import com.knime.gateway.entity.AnnotationIDEnt;
+import com.knime.gateway.entity.ConnectionIDEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 
 /**
  * Tests {@link EntityUtil}.
- * 
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class EntityUtilTest {
@@ -67,35 +69,35 @@ public class EntityUtilTest {
 	}
 
 	@Test
-	public void testNodeIDToString() {
-		String nodeID = EntityUtil.nodeIDToString(NodeID.fromString("5:10:0:3"));
-		assertThat("node id to string conversion failed", nodeID, is("10:0:3"));
+    public void testCreateNodeIDEntList() {
+        List<NodeIDEnt> list = EntityUtil.createNodeIDEntList(new int[][]{{4, 3, 1}, {0}, {}});
+        List<NodeIDEnt> expectedList = Arrays.asList(new NodeIDEnt(4, 3, 1), new NodeIDEnt(0), NodeIDEnt.getRootID());
+        assertThat("unexpected result list", list, is(expectedList));
+    }
 
-		nodeID = EntityUtil.nodeIDToString(NodeID.fromString("5"));
-		assertThat("node id to string conversion failed", nodeID, is(EntityUtil.ROOT_NODE_ID));
-	}
+    @Test
+    public void testCreateConnectionIDEntList() {
+        List<ConnectionIDEnt> list = EntityUtil.createConnectionIDEntList(new int[][]{{5, 6}, {}}, 4, 5);
+        List<ConnectionIDEnt> expectedList =
+            Arrays.asList(new ConnectionIDEnt(new NodeIDEnt(5, 6), 4), new ConnectionIDEnt(NodeIDEnt.getRootID(), 5));
+        assertThat("unexpected result list", list, is(expectedList));
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testStringToNodeID() {
-		NodeID nodeID = EntityUtil.stringToNodeID("5", "0:6");
-		assertThat("string to node id conversion failed", nodeID, is(NodeID.fromString("5:0:6")));
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateConnectionIDEntListException() {
+        EntityUtil.createConnectionIDEntList(new int[][]{{5, 6}, {}}, 4);
+    }
 
-		nodeID = EntityUtil.stringToNodeID("5", EntityUtil.ROOT_NODE_ID);
-		assertThat("string to node id conversion failed", nodeID, is(NodeID.fromString("5")));
+    @Test
+    public void testCreateAnnotationIDEntList() {
+        List<AnnotationIDEnt> list = EntityUtil.createAnnotationIDEntList(new int[][]{{5, 6}, {}}, 4, 5);
+        List<AnnotationIDEnt> expectedList =
+            Arrays.asList(new AnnotationIDEnt(new NodeIDEnt(5, 6), 4), new AnnotationIDEnt(NodeIDEnt.getRootID(), 5));
+        assertThat("unexpected result list", list, is(expectedList));
+    }
 
-		EntityUtil.stringToNodeID("test", "test");
-	}
-
-	@Test
-	public void testConnectionIDToString() {
-		String connID = EntityUtil.connectionIDToString(new ConnectionID(NodeID.fromString("4"), 2));
-		assertThat("connection id to string conversion failed", connID, is("root_2"));
-	}
-
-	@Test
-	public void testAnnotationIDToString() {
-		String annoID = EntityUtil.annotationIDToString(new WorkflowAnnotationID(NodeID.fromString("10:4"), 6));
-		assertThat("annotation id to string conversion failed", annoID, is("4_6"));
-	}
-
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateAnnotationIDEntListException() {
+        EntityUtil.createAnnotationIDEntList(new int[][]{{5, 6}, {}}, 4);
+    }
 }

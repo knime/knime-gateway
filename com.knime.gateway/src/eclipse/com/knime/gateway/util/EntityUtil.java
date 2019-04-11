@@ -82,7 +82,9 @@ public final class EntityUtil {
      */
     public static List<AnnotationIDEnt> createAnnotationIDEntList(final int[][] nodeIds, final int... indices) {
         List<AnnotationIDEnt> res = new ArrayList<AnnotationIDEnt>();
-        assert nodeIds.length == indices.length;
+        if (nodeIds.length != indices.length) {
+            throw new IllegalArgumentException("array of node ids and indices must be of same length");
+        }
         for (int i = 0; i < nodeIds.length; i++) {
             NodeIDEnt id = new NodeIDEnt(nodeIds[i]);
             res.add(new AnnotationIDEnt(id, indices[i]));
@@ -99,7 +101,9 @@ public final class EntityUtil {
      */
     public static List<ConnectionIDEnt> createConnectionIDEntList(final int[][] nodeIds, final int... indices) {
         List<ConnectionIDEnt> res = new ArrayList<>();
-        assert nodeIds.length == indices.length;
+        if (nodeIds.length != indices.length) {
+            throw new IllegalArgumentException("array of node ids and indices must be of same length");
+        }
         for (int i = 0; i < nodeIds.length; i++) {
             NodeIDEnt id = new NodeIDEnt(nodeIds[i]);
             res.add(new ConnectionIDEnt(id, indices[i]));
