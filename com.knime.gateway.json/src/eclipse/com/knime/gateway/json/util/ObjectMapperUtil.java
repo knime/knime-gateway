@@ -24,11 +24,11 @@ public final class ObjectMapperUtil {
         return INSTANCE;
     }
 
-    private final ObjectMapper m_mapper;
+    private ObjectMapper m_mapper = null;
+    private ObjectMapper m_binaryMapper = null;
 
     private ObjectMapperUtil() {
-        m_mapper = new ObjectMapper();
-        configureObjectMapper(m_mapper);
+        //utility class
     }
 
     private static void configureObjectMapper(final ObjectMapper mapper) {
@@ -48,10 +48,29 @@ public final class ObjectMapperUtil {
      * @return an object mapper
      */
     public ObjectMapper getObjectMapper() {
+        if (m_mapper == null) {
+            m_mapper = createObjectMapper();
+        }
         return m_mapper;
     }
 
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        configureObjectMapper(mapper);
+        return mapper;
+    }
+
+    /**
+     * @return object mapper that reads/writes bson (binary json)
+     */
     public ObjectMapper getBinaryObjectMapper() {
+        if (m_binaryMapper == null) {
+            m_binaryMapper = createBinaryObjectMapper();
+        }
+        return m_binaryMapper;
+    }
+
+    private static ObjectMapper createBinaryObjectMapper() {
         ObjectMapper mapper = new ObjectMapper(new BsonFactory());
         configureObjectMapper(mapper);
         return mapper;
