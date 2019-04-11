@@ -34,12 +34,6 @@ public interface WorkflowPartsEnt extends GatewayEntity {
 
 
   /**
-   * The parent node id of parts or &#39;root&#39; if it&#39;s the root node/workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
-   * @return parentNodeID , never <code>null</code>
-   **/
-  public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
-
-  /**
    * The ids of the nodes referenced.
    * @return nodeIDs 
    **/
@@ -63,14 +57,6 @@ public interface WorkflowPartsEnt extends GatewayEntity {
      */
     public interface WorkflowPartsEntBuilder extends GatewayEntityBuilder<WorkflowPartsEnt> {
 
-        /**
-         * The parent node id of parts or &#39;root&#39; if it&#39;s the root node/workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
-         * 
-         * @param parentNodeID the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowPartsEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID);
-        
         /**
          * The ids of the nodes referenced.
          * 

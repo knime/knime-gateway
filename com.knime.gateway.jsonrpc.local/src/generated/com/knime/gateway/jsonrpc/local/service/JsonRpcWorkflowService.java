@@ -49,14 +49,14 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.createWorkflowCopy")
-    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    java.util.UUID createWorkflowCopy(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.deleteWorkflowParts")
-    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
 
 	/**
      * {@inheritDoc}
@@ -77,6 +77,6 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.pasteWorkflowParts")
-    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID partsId, Integer x, Integer y)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 }

@@ -238,9 +238,10 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         final WorkflowAnnotationID[] annotationIDs) {
         return futureExRefresh(() -> {
             WorkflowPartsEnt parts =
-                EntityBuilderUtil.buildWorkflowPartsEnt(getID(), nodeIDs, connectionIDs, annotationIDs);
+                EntityBuilderUtil.buildWorkflowPartsEnt(nodeIDs, connectionIDs, annotationIDs);
             try {
-                getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(), parts, false);
+                getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(),
+                    getEntity().getNodeID(), parts, false);
             } catch (NotASubWorkflowException | NodeNotFoundException ex) {
                 //should never happen
                 throw new CompletionException(ex);
@@ -871,11 +872,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public CompletableFuture<WorkflowCopyWithOffsetUI> copyAsync(final WorkflowCopyContent content) {
         return AsyncNodeContainerUI.future(() -> {
-            WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(getID(), content);
+            WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(content);
             UUID partsID;
             try {
                 partsID = getAccess().workflowService().createWorkflowCopy(getEntity().getRootWorkflowID(),
-                    workflowPartsEnt);
+                    getEntity().getNodeID(), workflowPartsEnt);
             } catch (NotASubWorkflowException | NodeNotFoundException | InvalidRequestException ex) {
                 //should never happen
                 throw new CompletionException(ex);
@@ -892,11 +893,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public CompletableFutureEx<WorkflowCopyWithOffsetUI, OperationNotAllowedException>
         cutAsync(final WorkflowCopyContent content) {
         return futureExRefresh(() -> {
-            WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(getID(), content);
+            WorkflowPartsEnt workflowPartsEnt = EntityBuilderUtil.buildWorkflowPartsEnt(content);
             UUID partsId;
             try {
                 partsId = getAccess().workflowService().deleteWorkflowParts(getEntity().getRootWorkflowID(),
-                    workflowPartsEnt, true);
+                    getEntity().getNodeID(), workflowPartsEnt, true);
             } catch (NotASubWorkflowException | NodeNotFoundException ex) {
                 //should never happen
                 throw new CompletionException(ex);
@@ -921,9 +922,9 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                 EntityProxyWorkflowCopy epwc = (EntityProxyWorkflowCopy)workflowCopy;
                 WorkflowPartsEnt workflowPartsEnt;
                 try {
-                    workflowPartsEnt = getAccess().workflowService()
-                        .pasteWorkflowParts(getEntity().getRootWorkflowID(), epwc.getPartsID(),
-                            epwc.getX() + epwc.getXShift(), epwc.getY() + epwc.getYShift(), getEntity().getNodeID());
+                    workflowPartsEnt = getAccess().workflowService().pasteWorkflowParts(getEntity().getRootWorkflowID(),
+                        getEntity().getNodeID(), epwc.getPartsID(), epwc.getX() + epwc.getXShift(),
+                        epwc.getY() + epwc.getYShift());
                 } catch (NotASubWorkflowException ex) {
                     //should never happen
                     throw new CompletionException(ex);

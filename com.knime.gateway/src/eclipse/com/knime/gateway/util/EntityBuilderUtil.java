@@ -485,27 +485,24 @@ public class EntityBuilderUtil {
     /**
      * Helper to build a {@link WorkflowPartsEnt}-object from a {@link WorkflowCopyContent}-object.
      *
-     * @param parentNodeID node id of the parent workflow
      * @param cc the object to build from
      * @return a new {@link WorkflowPartsEnt}-object
      */
-    public static WorkflowPartsEnt buildWorkflowPartsEnt(final NodeID parentNodeID, final WorkflowCopyContent cc) {
-        return buildWorkflowPartsEnt(parentNodeID, cc.getNodeIDs(), new ConnectionID[0], cc.getAnnotationIDs());
+    public static WorkflowPartsEnt buildWorkflowPartsEnt(final WorkflowCopyContent cc) {
+        return buildWorkflowPartsEnt(cc.getNodeIDs(), new ConnectionID[0], cc.getAnnotationIDs());
     }
 
     /**
      * Helper to build a {@link WorkflowPartsEnt}-object from individual id-arrays.
      *
-     * @param parentNodeID node id of the parent workflow
      * @param nodeIDs the node ids to be included
      * @param connectionIDs the connection ids to be included
      * @param annotationIDs the annotation ids to be included
      * @return a new {@link WorkflowPartsEnt}-object
      */
-    public static WorkflowPartsEnt buildWorkflowPartsEnt(final NodeID parentNodeID, final NodeID[] nodeIDs,
-        final ConnectionID[] connectionIDs, final WorkflowAnnotationID[] annotationIDs) {
+    public static WorkflowPartsEnt buildWorkflowPartsEnt(final NodeID[] nodeIDs, final ConnectionID[] connectionIDs,
+        final WorkflowAnnotationID[] annotationIDs) {
         return builder(WorkflowPartsEntBuilder.class)
-            .setParentNodeID(new NodeIDEnt(parentNodeID))
             .setNodeIDs(
                 nodeIDs != null ? Arrays.stream(nodeIDs).map(id -> new NodeIDEnt(id)).collect(Collectors.toList())
                     : Collections.emptyList())

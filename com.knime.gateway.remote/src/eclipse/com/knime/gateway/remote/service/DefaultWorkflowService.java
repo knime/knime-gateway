@@ -129,9 +129,9 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public UUID createWorkflowCopy(final UUID rootWorkflowID, final WorkflowPartsEnt parts)
+    public UUID createWorkflowCopy(final UUID rootWorkflowID, final NodeIDEnt workflowID, final WorkflowPartsEnt parts)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
-        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parts.getParentNodeID());
+        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, workflowID);
         UUID partID = UUID.randomUUID();
         WorkflowPersistor copy;
         WorkflowCopyContent content = translateWorkflowPartsEnt(parts, s -> entityToNodeID(rootWorkflowID, s),
@@ -155,9 +155,9 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public UUID deleteWorkflowParts(final UUID rootWorkflowID, final WorkflowPartsEnt parts, final Boolean copy)
-        throws NotASubWorkflowException, NodeNotFoundException, ActionNotAllowedException {
-        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parts.getParentNodeID());
+    public UUID deleteWorkflowParts(final UUID rootWorkflowID, final NodeIDEnt workflowID, final WorkflowPartsEnt parts,
+        final Boolean copy) throws NotASubWorkflowException, NodeNotFoundException, ActionNotAllowedException {
+        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, workflowID);
         if (parts.getAnnotationIDs().isEmpty() && parts.getNodeIDs().isEmpty() && parts.getConnectionIDs().isEmpty()) {
             return null;
         }
@@ -223,11 +223,12 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowPartsEnt pasteWorkflowParts(final UUID rootWorkflowID, final UUID partsID, final Integer x,
-        final Integer y, final NodeIDEnt nodeID) throws NotASubWorkflowException, NotFoundException, NotFoundException {
+    public WorkflowPartsEnt pasteWorkflowParts(final UUID rootWorkflowID, final NodeIDEnt workflowID,
+        final UUID partsID, final Integer x, final Integer y)
+        throws NotASubWorkflowException, NotFoundException, NotFoundException {
         WorkflowManager wfm;
         try {
-            wfm = getWorkflowManager(rootWorkflowID, nodeID);
+            wfm = getWorkflowManager(rootWorkflowID, workflowID);
         } catch (NodeNotFoundException ex) {
             throw new NotFoundException("No node found for the given parent-id", ex);
         }
@@ -264,7 +265,7 @@ public class DefaultWorkflowService implements WorkflowService {
         for (WorkflowAnnotation a : pastedAnnos) {
             a.shiftPosition(shift[0], shift[1]);
         }
-        return buildWorkflowPartsEnt(wfm.getID(), copyContent);
+        return buildWorkflowPartsEnt(copyContent);
     }
 
     private static int[] calcOffset(final NodeID[] nodes, final WorkflowAnnotationID[] annotations,

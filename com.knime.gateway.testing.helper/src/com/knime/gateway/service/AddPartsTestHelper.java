@@ -123,9 +123,8 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
         //delete connection
         WorkflowPartsEnt parts =
             builder(WorkflowPartsEntBuilder.class)
-                .setConnectionIDs(Arrays.asList(new ConnectionIDEnt(new NodeIDEnt(6), 1)))
-                .setParentNodeID(new NodeIDEnt(6)).build();
-        ws().deleteWorkflowParts(wfId, parts, false);
+                .setConnectionIDs(Arrays.asList(new ConnectionIDEnt(new NodeIDEnt(6), 1))).build();
+        ws().deleteWorkflowParts(wfId, new NodeIDEnt(6), parts, false);
         connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(6, 3)).setSourcePort(2)
             .setDest(new NodeIDEnt(6)).setDestPort(1).setType(TypeEnum.WFMOUT).build();
         ws().createConnection(wfId, connection);

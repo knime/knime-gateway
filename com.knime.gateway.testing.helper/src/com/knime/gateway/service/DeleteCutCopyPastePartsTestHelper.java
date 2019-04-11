@@ -88,14 +88,14 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
                 .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{}}, 1))
                 //"4_0", "22_1"
                 .setConnectionIDs(createConnectionIDEntList(new int[][] {{4},{22}}, 0, 1))
-                .setParentNodeID(getRootID()).build();
+                .build();
         int[] min = calcMinOffset(parts, workflow);
-        UUID partsId = ws().deleteWorkflowParts(wfId, parts, true);
+        UUID partsId = ws().deleteWorkflowParts(wfId, getRootID(), parts, true);
         workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed");
 
         //partly undo the delete (i.e. paste) - some former connection are expected to be not contained
-        ws().pasteWorkflowParts(wfId, partsId, min[0], min[1], getRootID());
+        ws().pasteWorkflowParts(wfId, getRootID(), partsId, min[0], min[1]);
         workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed_undo");
 
@@ -106,23 +106,23 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
                 .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{}}, 2))
                 //"4_0", "22_1"
                 .setConnectionIDs(createConnectionIDEntList(new int[][] {{4},{22}}, 0, 1))
-                .setParentNodeID(getRootID()).build();
-        UUID nullPartsId = ws().deleteWorkflowParts(wfId, parts, false);
+                .build();
+        UUID nullPartsId = ws().deleteWorkflowParts(wfId, getRootID(), parts, false);
         //since no copy is made, partsId is expected to be null
         assertNull("Parts id is expected to be null", nullPartsId);
         workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed");
 
         //restore parts
-        ws().pasteWorkflowParts(wfId, partsId, min[0], min[1], getRootID());
+        ws().pasteWorkflowParts(wfId, getRootID(), partsId, min[0], min[1]);
 
         // delete parts in a sub-workflow
         parts = builder(WorkflowPartsEntBuilder.class)
                 .setNodeIDs(createNodeIDEntList(new int[][] {{6, 3}}))
                 //6_0
                 .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{6}}, 0))
-                .setParentNodeID(new NodeIDEnt(6)).build();
-        ws().deleteWorkflowParts(wfId, parts, false);
+                .build();
+        ws().deleteWorkflowParts(wfId, new NodeIDEnt(6), parts, false);
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
         cr(workflow, "workflowent_6_parts_removed");
         workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
@@ -135,15 +135,15 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
                 .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{}}, 10))
                 //"99_4"
                 .setConnectionIDs(createConnectionIDEntList(new int[][] {{99}}, 4))
-                .setParentNodeID(getRootID()).build();
-        ws().deleteWorkflowParts(wfId, parts, false);
+                .build();
+        ws().deleteWorkflowParts(wfId, getRootID(), parts, false);
         workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed_from_6");
 
         //remove parts with a non existing parent node id
-        parts = builder(WorkflowPartsEntBuilder.class).setParentNodeID(new NodeIDEnt(99)).build();
+        parts = builder(WorkflowPartsEntBuilder.class).build();
         try {
-            ws().deleteWorkflowParts(wfId, parts, false);
+            ws().deleteWorkflowParts(wfId, new NodeIDEnt(99), parts, false);
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No such node"));
@@ -153,9 +153,9 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         UUID wfIdLongrunning = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
         executeWorkflowAsync(wfIdLongrunning);
         //delete node
-        parts = builder(WorkflowPartsEntBuilder.class).setNodeIDs(createNodeIDEntList(new int[][] {{1}})).setParentNodeID(getRootID()).build();
+        parts = builder(WorkflowPartsEntBuilder.class).setNodeIDs(createNodeIDEntList(new int[][] {{1}})).build();
         try {
-            ws().deleteWorkflowParts(wfIdLongrunning, parts, false);
+            ws().deleteWorkflowParts(wfIdLongrunning, getRootID(), parts, false);
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.ActionNotAllowedException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -177,21 +177,21 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
                 //copying isolated connections won't have an effect
                 //"4_0", "22_1"
                 .setConnectionIDs(createConnectionIDEntList(new int[][] {{4},{22}}, 0, 1))
-                .setParentNodeID(getRootID()).build();
-        UUID partsId = ws().createWorkflowCopy(wfId, parts);
+                .build();
+        UUID partsId = ws().createWorkflowCopy(wfId, getRootID(), parts);
 
-        ws().pasteWorkflowParts(wfId, partsId, 0, 0, getRootID());
+        ws().pasteWorkflowParts(wfId, getRootID(), partsId, 0, 0);
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_pasted");
 
         //paste the same parts into a sub-workflow
-        ws().pasteWorkflowParts(wfId, partsId, 0, 0, new NodeIDEnt(6));
+        ws().pasteWorkflowParts(wfId, new NodeIDEnt(6), partsId, 0, 0);
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
         cr(workflow, "workflowent_6_pasted");
 
         //try pasting parts with none-existing id
         try {
-            ws().pasteWorkflowParts(wfId, UUID.randomUUID(), 0, 0, getRootID());
+            ws().pasteWorkflowParts(wfId, getRootID(), UUID.randomUUID(), 0, 0);
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -202,9 +202,9 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         //non-existing node
         parts = builder(WorkflowPartsEntBuilder.class)
                 .setNodeIDs(createNodeIDEntList(new int[][] {{99}}))
-                .setParentNodeID(getRootID()).build();
+                .build();
         try {
-            ws().createWorkflowCopy(wfId, parts);
+            ws().createWorkflowCopy(wfId, getRootID(), parts);
         } catch (ServiceExceptions.InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("Failed to copy parts: No such node ID"));
@@ -212,9 +212,9 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         //non-existing annotation
         parts = builder(WorkflowPartsEntBuilder.class)
                 .setAnnotationIDs(asList(new AnnotationIDEnt(getRootID(), 9)))
-                .setParentNodeID(getRootID()).build();
+                .build();
         try {
-            ws().createWorkflowCopy(wfId, parts);
+            ws().createWorkflowCopy(wfId, getRootID(), parts);
         } catch (ServiceExceptions.InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("Failed to copy parts: No annotation with ID"));

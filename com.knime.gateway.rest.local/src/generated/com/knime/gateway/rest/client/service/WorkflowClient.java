@@ -90,11 +90,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public java.util.UUID createWorkflowCopy(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createWorkflowCopy(jobId, toByteArray(workflowPartsEnt));
+                    return c.createWorkflowCopy(jobId, workflowId.toString(), toByteArray(workflowPartsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -122,11 +122,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+    public java.util.UUID deleteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.deleteWorkflowParts(jobId, toByteArray(workflowPartsEnt), copy);
+                    return c.deleteWorkflowParts(jobId, workflowId.toString(), toByteArray(workflowPartsEnt), copy);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -212,11 +212,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    public WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID partsId, Integer x, Integer y)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.pasteWorkflowParts(jobId, partsId, x, y, nodeId.toString());
+                    return c.pasteWorkflowParts(jobId, workflowId.toString(), partsId, x, y);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

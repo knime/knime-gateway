@@ -54,10 +54,6 @@ public interface WorkflowPartsEntMixIn extends WorkflowPartsEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("parentNodeID")
-    public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
-    
-    @Override
     @JsonProperty("nodeIDs")
     public java.util.List<com.knime.gateway.entity.NodeIDEnt> getNodeIDs();
     
@@ -89,10 +85,6 @@ public interface WorkflowPartsEntMixIn extends WorkflowPartsEnt {
         @Override
         public WorkflowPartsEntMixIn build();
     
-        @Override
-        @JsonProperty("parentNodeID")
-        public WorkflowPartsEntMixInBuilder setParentNodeID(final com.knime.gateway.entity.NodeIDEnt parentNodeID);
-        
         @Override
         @JsonProperty("nodeIDs")
         public WorkflowPartsEntMixInBuilder setNodeIDs(final java.util.List<com.knime.gateway.entity.NodeIDEnt> nodeIDs);

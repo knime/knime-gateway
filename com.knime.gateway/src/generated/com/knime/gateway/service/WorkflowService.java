@@ -49,6 +49,7 @@ public interface WorkflowService extends GatewayService {
      * Selects and essentially copies the specified part of the workflow. It will still be available even if (sub)parts are deleted. The parts are referenced by a part-id.  Note: connections will be ignored and _not_ copied!
      *
      * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
      * @param workflowPartsEnt The actual part selection.
      *
      * @return the result
@@ -56,12 +57,13 @@ public interface WorkflowService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    java.util.UUID createWorkflowCopy(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    java.util.UUID createWorkflowCopy(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, WorkflowPartsEnt workflowPartsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Deletes the given workflow parts. Cannot be undone unless a copy has been made before.
      *
      * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
      * @param workflowPartsEnt The parts to be deleted.
      * @param copy If a copy should be created before removal. False by default. Please note that the copy will _only_ include the connections that are entirely enclosed by the parts to be removed (i.e. connections that are connecting two removed nodes - all others won&#39;t be kept)
      *
@@ -70,7 +72,7 @@ public interface WorkflowService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.ActionNotAllowedException If the an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
      */
-    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+    java.util.UUID deleteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
         
     /**
      * Retrieves the complete structure (nodes, connections, annotations) of (sub-)workflows.
@@ -101,15 +103,15 @@ public interface WorkflowService extends GatewayService {
      * Pastes the referenced parts into the referenced (sub-)workflow.
      *
      * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
      * @param partsId The id referencing the parts to paste.
      * @param x The x position to paste the parts.
      * @param y The y position to paste the parts.
-     * @param nodeId The ID of the node referencing a sub-workflow to paste the parts into. If none is given it will be pasted into the root workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
-    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID partsId, Integer x, Integer y)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         
 }
