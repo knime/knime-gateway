@@ -28,7 +28,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 
 import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.BoundsEnt;
-import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.service.AnnotationService;
 import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -60,10 +59,10 @@ public class DefaultAnnotationService implements AnnotationService {
      * {@inheritDoc}
      */
     @Override
-    public void setAnnotationBounds(final UUID rootWorkflowID, final NodeIDEnt nodeID, final AnnotationIDEnt annoID,
+    public void setAnnotationBounds(final UUID rootWorkflowID, final AnnotationIDEnt annoID,
         final BoundsEnt bounds) throws NotFoundException, NotASubWorkflowException {
         try {
-            WorkflowManager wfm = getWorkflowManager(rootWorkflowID, nodeID);
+            WorkflowManager wfm = getWorkflowManager(rootWorkflowID, annoID.getNodeIDEnt());
             WorkflowAnnotation workflowAnnotation =
                 wfm.getWorkflowAnnotations(entityToAnnotationID(rootWorkflowID, annoID))[0];
             if (workflowAnnotation == null) {
@@ -72,7 +71,7 @@ public class DefaultAnnotationService implements AnnotationService {
             workflowAnnotation.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 
         } catch (NodeNotFoundException ex) {
-            throw new NotFoundException("Node for id '" + nodeID + "' not found", ex);
+            throw new NotFoundException("Workflow for id '" + annoID.getNodeIDEnt() + "' not found", ex);
         }
     }
 }

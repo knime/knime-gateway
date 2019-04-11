@@ -39,6 +39,6 @@ public interface JsonRpcAnnotationService extends AnnotationService {
      */
     @Override
     @JsonRpcMethod(value = "AnnotationService.setAnnotationBounds")
-    void setAnnotationBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, com.knime.gateway.entity.AnnotationIDEnt annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+    void setAnnotationBounds(java.util.UUID jobId, com.knime.gateway.entity.AnnotationIDEnt annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 }

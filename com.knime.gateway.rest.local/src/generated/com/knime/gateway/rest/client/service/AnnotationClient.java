@@ -61,11 +61,11 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
     }
     
     @Override
-    public void setAnnotationBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, com.knime.gateway.entity.AnnotationIDEnt annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    public void setAnnotationBounds(java.util.UUID jobId, com.knime.gateway.entity.AnnotationIDEnt annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setAnnotationBounds(jobId, nodeId.toString(), annoId.toString(), toByteArray(boundsEnt));
+                    return c.setAnnotationBounds(jobId, annoId.toString(), toByteArray(boundsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

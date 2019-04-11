@@ -56,8 +56,8 @@ public class JsonRpcAnnotationServiceWrapper implements AnnotationService {
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
             data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public void setAnnotationBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") com.knime.gateway.entity.NodeIDEnt nodeId, @JsonRpcParam(value="annoId") com.knime.gateway.entity.AnnotationIDEnt annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
-        m_service.setAnnotationBounds(jobId, nodeId, annoId, boundsEnt);    
+    public void setAnnotationBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="annoId") com.knime.gateway.entity.AnnotationIDEnt annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        m_service.setAnnotationBounds(jobId, annoId, boundsEnt);    
     }
 
 }

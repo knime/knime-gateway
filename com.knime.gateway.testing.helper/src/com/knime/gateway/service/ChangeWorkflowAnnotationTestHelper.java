@@ -68,21 +68,21 @@ public class ChangeWorkflowAnnotationTestHelper extends AbstractGatewayServiceTe
 
         //move and resize annotation
         BoundsEnt newBounds = builder(BoundsEntBuilder.class).setX(400).setY(400).setHeight(600).setWidth(600).build();
-        as().setAnnotationBounds(wfId, getRootID(), new AnnotationIDEnt(getRootID(), 0), newBounds);
+        as().setAnnotationBounds(wfId, new AnnotationIDEnt(getRootID(), 0), newBounds);
         cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_annotation_moved");
 
         //move and resize back
-        as().setAnnotationBounds(wfId, getRootID(), new AnnotationIDEnt(getRootID(), 0),
+        as().setAnnotationBounds(wfId, new AnnotationIDEnt(getRootID(), 0),
             workflow.getWorkflowAnnotations().get(new AnnotationIDEnt(getRootID(), 0).toString()).getBounds());
         cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root");
 
         //move and resize annotation within a metanode
-        as().setAnnotationBounds(wfId, new NodeIDEnt(6), new AnnotationIDEnt(new NodeIDEnt(6), 0), newBounds);
+        as().setAnnotationBounds(wfId, new AnnotationIDEnt(new NodeIDEnt(6), 0), newBounds);
         cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6_annotation_moved");
 
         //try moving a non-existing annotation
         try {
-            as().setAnnotationBounds(wfId, getRootID(), new AnnotationIDEnt(getRootID(), 3), newBounds);
+            as().setAnnotationBounds(wfId, new AnnotationIDEnt(getRootID(), 3), newBounds);
         } catch (NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("Annotation for id '" + getRootID() + "_3' not found"));

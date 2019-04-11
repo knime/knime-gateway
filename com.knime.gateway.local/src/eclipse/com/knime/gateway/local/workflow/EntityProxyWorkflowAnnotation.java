@@ -159,8 +159,8 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation
         BoundsEnt bounds = builder(BoundsEntBuilder.class).setX(x).setY(y).setWidth(width).setHeight(height).build();
         return AsyncNodeContainerUI.future(() -> {
             try {
-                getAccess().annotationService().setAnnotationBounds(m_rootWorkflowID, m_parentNodeID,
-                    m_entity.getAnnotationID(), bounds);
+                getAccess().annotationService().setAnnotationBounds(m_rootWorkflowID, m_entity.getAnnotationID(),
+                    bounds);
                 return null;
             } catch (NotFoundException | NotASubWorkflowException ex) {
                 //should never happen
