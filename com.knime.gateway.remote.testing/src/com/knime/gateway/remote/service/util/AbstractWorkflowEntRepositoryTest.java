@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.remote.service.util;
 
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static com.knime.gateway.remote.service.util.RandomEntityBuilder.buildRandomEntityBuilder;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
@@ -81,17 +82,17 @@ public abstract class AbstractWorkflowEntRepositoryTest {
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         UUID wfID = UUID.randomUUID();
         WorkflowEnt newEntity = wfBuilder.build();
-        WorkflowSnapshotEnt res = m_repo.commit(wfID, null, newEntity);
+        WorkflowSnapshotEnt res = m_repo.commit(wfID, getRootID(), newEntity);
 
         WorkflowEnt newUnchangedEntity = wfBuilder.build();
-        WorkflowSnapshotEnt res2 = m_repo.commit(wfID, null, newUnchangedEntity);
+        WorkflowSnapshotEnt res2 = m_repo.commit(wfID, getRootID(), newUnchangedEntity);
 
         //since nothing has changed, the snapshot id should remain unchanged
         assertEquals(res.getSnapshotID(), res2.getSnapshotID());
 
         WorkflowEnt newChangedEntity =
             wfBuilder.setWorkflowUIInfo(buildRandomEntityBuilder(WorkflowUIInfoEntBuilder.class).build()).build();
-        WorkflowSnapshotEnt res3 = m_repo.commit(wfID, null, newChangedEntity);
+        WorkflowSnapshotEnt res3 = m_repo.commit(wfID, getRootID(), newChangedEntity);
 
         //since there is a change, the snapshot id should be new
         assertNotEquals(res.getSnapshotID(), res3.getSnapshotID());

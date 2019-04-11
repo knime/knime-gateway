@@ -46,8 +46,7 @@ public interface WorkflowEntRepository {
      * commit (if there weren't any changes).
      *
      * @param workflowID the ID of the workflow to be committed
-     * @param nodeID the node ID of the node the workflow is contained in in case of a sub-workflow, otherwise an empty
-     *            string or <code>null</code>
+     * @param nodeID the node ID of the node the workflow is contained in or {@link NodeIDEnt#getRootID()}
      * @param entity the entity to commit (and possibly compare with the latest snapshot)
      * @return the workflow entity together with the respective snapshot id encapsulated in a
      *         {@link WorkflowSnapshotEnt}
