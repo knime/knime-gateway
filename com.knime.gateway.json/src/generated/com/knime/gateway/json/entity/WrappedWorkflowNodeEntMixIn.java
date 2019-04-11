@@ -72,7 +72,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     
     @Override
     @JsonProperty("nodeID")
-    public String getNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getNodeID();
     
     @Override
     @JsonProperty("nodeType")
@@ -80,7 +80,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     
     @Override
     @JsonProperty("parentNodeID")
-    public String getParentNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
     
     @Override
     @JsonProperty("rootWorkflowID")
@@ -152,11 +152,11 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
     
     @Override
     @JsonProperty("virtualInNodeID")
-    public String getVirtualInNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getVirtualInNodeID();
     
     @Override
     @JsonProperty("virtualOutNodeID")
-    public String getVirtualOutNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getVirtualOutNodeID();
     
     @Override
     @JsonProperty("inactive")
@@ -196,7 +196,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         
         @Override
         @JsonProperty("nodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setNodeID(final String nodeID);
+        public WrappedWorkflowNodeEntMixInBuilder setNodeID(final com.knime.gateway.entity.NodeIDEnt nodeID);
         
         @Override
         @JsonProperty("nodeType")
@@ -204,7 +204,7 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         
         @Override
         @JsonProperty("parentNodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setParentNodeID(final String parentNodeID);
+        public WrappedWorkflowNodeEntMixInBuilder setParentNodeID(final com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         @Override
         @JsonProperty("rootWorkflowID")
@@ -276,11 +276,11 @@ public interface WrappedWorkflowNodeEntMixIn extends WrappedWorkflowNodeEnt {
         
         @Override
         @JsonProperty("virtualInNodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setVirtualInNodeID(final String virtualInNodeID);
+        public WrappedWorkflowNodeEntMixInBuilder setVirtualInNodeID(final com.knime.gateway.entity.NodeIDEnt virtualInNodeID);
         
         @Override
         @JsonProperty("virtualOutNodeID")
-        public WrappedWorkflowNodeEntMixInBuilder setVirtualOutNodeID(final String virtualOutNodeID);
+        public WrappedWorkflowNodeEntMixInBuilder setVirtualOutNodeID(final com.knime.gateway.entity.NodeIDEnt virtualOutNodeID);
         
         @Override
         @JsonProperty("inactive")

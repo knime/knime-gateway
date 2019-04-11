@@ -80,7 +80,7 @@ public interface NodeEntMixIn extends NodeEnt {
     
     @Override
     @JsonProperty("nodeID")
-    public String getNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getNodeID();
     
     @Override
     @JsonProperty("nodeType")
@@ -88,7 +88,7 @@ public interface NodeEntMixIn extends NodeEnt {
     
     @Override
     @JsonProperty("parentNodeID")
-    public String getParentNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
     
     @Override
     @JsonProperty("rootWorkflowID")
@@ -178,7 +178,7 @@ public interface NodeEntMixIn extends NodeEnt {
         
         @Override
         @JsonProperty("nodeID")
-        public NodeEntMixInBuilder setNodeID(final String nodeID);
+        public NodeEntMixInBuilder setNodeID(final com.knime.gateway.entity.NodeIDEnt nodeID);
         
         @Override
         @JsonProperty("nodeType")
@@ -186,7 +186,7 @@ public interface NodeEntMixIn extends NodeEnt {
         
         @Override
         @JsonProperty("parentNodeID")
-        public NodeEntMixInBuilder setParentNodeID(final String parentNodeID);
+        public NodeEntMixInBuilder setParentNodeID(final com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         @Override
         @JsonProperty("rootWorkflowID")

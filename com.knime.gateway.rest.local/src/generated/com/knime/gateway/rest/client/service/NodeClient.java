@@ -70,11 +70,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+    public String changeAndGetNodeState(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.changeAndGetNodeState(jobId, nodeId, action);
+                    return c.changeAndGetNodeState(jobId, nodeId.toString(), action);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -99,11 +99,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public String createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt, com.knime.gateway.entity.NodeIDEnt parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createNode(jobId, x, y, toByteArray(nodeFactoryKeyEnt), parentNodeId);
+                    return c.createNode(jobId, x, y, toByteArray(nodeFactoryKeyEnt), parentNodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -112,7 +112,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     throw new ServiceException("Server doesn't seem to be reachable.",
                         e.getCause());
                 }
-            }, String.class);
+            }, com.knime.gateway.entity.NodeIDEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
@@ -131,11 +131,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getInputFlowVariables(jobId, nodeId);
+                    return c.getInputFlowVariables(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -157,11 +157,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<PortObjectSpecEnt> getInputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public java.util.List<PortObjectSpecEnt> getInputPortSpecs(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getInputPortSpecs(jobId, nodeId);
+                    return c.getInputPortSpecs(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -183,11 +183,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public NodeEnt getNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getNode(jobId, nodeId);
+                    return c.getNode(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -209,11 +209,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public NodeSettingsEnt getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public NodeSettingsEnt getNodeSettings(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getNodeSettings(jobId, nodeId);
+                    return c.getNodeSettings(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -235,11 +235,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public DataTableEnt getOutputDataTable(java.util.UUID jobId, String nodeId, Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public DataTableEnt getOutputDataTable(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getOutputDataTable(jobId, nodeId, portIdx, from, size);
+                    return c.getOutputDataTable(jobId, nodeId.toString(), portIdx, from, size);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -264,11 +264,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<FlowVariableEnt> getOutputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public java.util.List<FlowVariableEnt> getOutputFlowVariables(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getOutputFlowVariables(jobId, nodeId);
+                    return c.getOutputFlowVariables(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -290,11 +290,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException {
+    public java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getOutputPortSpecs(jobId, nodeId);
+                    return c.getOutputPortSpecs(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -316,34 +316,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public NodeEnt getRootNode(java.util.UUID jobId)  {
+    public ViewDataEnt getViewData(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getRootNode(jobId);
-                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
-                    //server errors
-                    throw new ServiceException("Internal server error.", ex);
-                } catch (ProcessingException e) {
-                    //in case the server cannot be reached (timeout, connection refused)
-                    throw new ServiceException("Server doesn't seem to be reachable.",
-                        e.getCause());
-                }
-            }, NodeEnt.class);
-        } catch (WebApplicationException ex) {
-            //executor errors
-            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
-            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
-                + "' with message: " + gatewayException.getExceptionMessage());
-        }
-    }
-    
-    @Override
-    public ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        try{
-            return doRequest(c -> {
-                try {
-                    return c.getViewData(jobId, nodeId);
+                    return c.getViewData(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -368,11 +345,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getWMetaNodeDialog(jobId, nodeId);
+                    return c.getWMetaNodeDialog(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -397,11 +374,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public void setNodeBounds(java.util.UUID jobId, String nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException {
+    public void setNodeBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setNodeBounds(jobId, nodeId, toByteArray(boundsEnt));
+                    return c.setNodeBounds(jobId, nodeId.toString(), toByteArray(boundsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -423,11 +400,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
+    public void setNodeSettings(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setNodeSettings(jobId, nodeId, toByteArray(nodeSettingsEnt));
+                    return c.setNodeSettings(jobId, nodeId.toString(), toByteArray(nodeSettingsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -455,11 +432,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public void setViewValue(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Boolean useAsDefault, JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setViewValue(jobId, nodeId, useAsDefault, toByteArray(javaObjectEnt));
+                    return c.setViewValue(jobId, nodeId.toString(), useAsDefault, toByteArray(javaObjectEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

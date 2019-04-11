@@ -29,8 +29,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.entity.GatewayEntityBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.impl.util.Interface2ImplMap;
 import com.knime.gateway.entity.util.ListEntities;
 
@@ -104,6 +106,10 @@ public class RandomEntityBuilder {
             } else if (Enum.class.isAssignableFrom(clazz)) {
                 Object[] enumVals = clazz.getEnumConstants();
                 return enumVals[RANDOM.nextInt(enumVals.length)];
+            } else if(clazz.equals(NodeIDEnt.class)) {
+                return new NodeIDEnt(RANDOM.nextInt());
+            } else if (clazz.equals(AnnotationIDEnt.class)) {
+                return new AnnotationIDEnt(new NodeIDEnt(RANDOM.nextInt()), RANDOM.nextInt());
             } else if (GatewayEntity.class.isAssignableFrom(clazz)) {
                 Class<GatewayEntityBuilder> builderInterface =
                     getBuilderInterfaceForEntity((Class<GatewayEntity>)clazz);

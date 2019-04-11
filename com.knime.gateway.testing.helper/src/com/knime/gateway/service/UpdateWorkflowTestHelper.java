@@ -18,12 +18,14 @@
  */
 package com.knime.gateway.service;
 
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.UUID;
 
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.WorkflowSnapshotEnt;
 import com.knime.gateway.service.util.ServiceExceptions;
@@ -62,26 +64,26 @@ public class UpdateWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
     	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
 
         //download workflows un-executed
-        WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId);
-        WorkflowSnapshotEnt subWorkflow = ws().getSubWorkflow(wfId, "12");
+        WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID());
+        WorkflowSnapshotEnt subWorkflow = ws().getWorkflow(wfId, new NodeIDEnt(12));
 
         executeWorkflow(wfId);
 
         //get workflow diff/patch, apply and check result
         PatchEnt workflowPatch =
-            ws().getWorkflowDiff(wfId, workflow.getSnapshotID());
+            ws().getWorkflowDiff(wfId, getRootID(), workflow.getSnapshotID());
         cr(workflowPatch, "patchent_root_executed");
 
 
 
         //try updating a sub-workflow
         PatchEnt subWorkflowPatch =
-            ws().getSubWorkflowDiff(wfId, "12", subWorkflow.getSnapshotID());
+            ws().getWorkflowDiff(wfId, new NodeIDEnt(12), subWorkflow.getSnapshotID());
         cr(subWorkflowPatch, "patchent_12");
 
         // check the executor exceptions
         try {
-            ws().getWorkflowDiff(wfId, UUID.randomUUID());
+            ws().getWorkflowDiff(wfId, getRootID(), UUID.randomUUID());
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -89,7 +91,7 @@ public class UpdateWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         }
 
         try {
-            ws().getSubWorkflowDiff(wfId, "12", UUID.randomUUID());
+            ws().getWorkflowDiff(wfId, new NodeIDEnt(12), UUID.randomUUID());
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -97,7 +99,7 @@ public class UpdateWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         }
 
         try {
-            ws().getWorkflowDiff(wfId, null);
+            ws().getWorkflowDiff(wfId, getRootID(), null);
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No snapshot id given!"));

@@ -52,7 +52,7 @@ import com.knime.gateway.entity.impl.DefaultNodeMessageEnt;
 import com.knime.gateway.entity.impl.DefaultPatchEnt;
 import com.knime.gateway.entity.impl.DefaultPatchOpEnt;
 import com.knime.gateway.entity.impl.DefaultWorkflowSnapshotEnt;
-import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.json.util.JsonUtil;
 
 /**
  * Compares objects to a representation stored to files.

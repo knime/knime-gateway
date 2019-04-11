@@ -21,8 +21,7 @@ package com.knime.gateway.remote.service;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeContainer;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWfmAndNc;
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWorkflowManager;
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getSubWorkflowManager;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getWorkflowManager;
 import static com.knime.gateway.util.EntityBuilderUtil.buildNodeEnt;
 
 import java.io.IOException;
@@ -59,7 +58,6 @@ import org.knime.core.node.workflow.FlowVariable.Scope;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
@@ -76,6 +74,7 @@ import com.knime.gateway.entity.JavaObjectEnt;
 import com.knime.gateway.entity.MetaNodeDialogEnt;
 import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeSettingsEnt;
 import com.knime.gateway.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.entity.PortObjectSpecEnt;
@@ -88,7 +87,6 @@ import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.util.EntityBuilderUtil;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Default implementation of {@link NodeService} that delegates the operations to knime.core (e.g.
@@ -116,7 +114,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void setNodeBounds(final UUID rootWorkflowID, final String nodeID, final BoundsEnt bounds)
+    public void setNodeBounds(final UUID rootWorkflowID, final NodeIDEnt nodeID, final BoundsEnt bounds)
         throws NodeNotFoundException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         NodeUIInformation information = NodeUIInformation.builder()
@@ -129,7 +127,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public NodeSettingsEnt getNodeSettings(final UUID rootWorkflowID, final String nodeID)
+    public NodeSettingsEnt getNodeSettings(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException {
         NodeSettings settings = getNodeContainer(rootWorkflowID, nodeID).getNodeSettings();
         return builder(NodeSettingsEntBuilder.class).setJsonContent(JSONConfig.toJSONString(settings, WriterConfig.PRETTY))
@@ -140,7 +138,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void setNodeSettings(final UUID rootWorkflowID, final String nodeID, final NodeSettingsEnt nodeSettings)
+    public void setNodeSettings(final UUID rootWorkflowID, final NodeIDEnt nodeID, final NodeSettingsEnt nodeSettings)
         throws NodeNotFoundException, ServiceExceptions.InvalidSettingsException,
         ServiceExceptions.IllegalStateException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
@@ -160,9 +158,10 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String createNode(final UUID rootWorkflowID, final Integer x, final Integer y, final NodeFactoryKeyEnt nodeFactoryKey,
-        final String parentNodeID) throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
-        WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parentNodeID);
+    public NodeIDEnt createNode(final UUID rootWorkflowID, final Integer x, final Integer y,
+        final NodeFactoryKeyEnt nodeFactoryKey, final NodeIDEnt parentNodeID)
+        throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
+        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parentNodeID);
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
@@ -187,14 +186,14 @@ public class DefaultNodeService implements NodeService {
         NodeUIInformation info =
             NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(true).build();
         wfm.getNodeContainer(nodeID).setUIInformation(info);
-        return EntityUtil.nodeIDToString(nodeID);
+        return new NodeIDEnt(nodeID);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeEnt getNode(final UUID rootWorkflowID, final String nodeID) throws NodeNotFoundException {
+    public NodeEnt getNode(final UUID rootWorkflowID, final NodeIDEnt nodeID) throws NodeNotFoundException {
         NodeContainer node = getNodeContainer(rootWorkflowID, nodeID);
         return buildNodeEnt(node, rootWorkflowID);
     }
@@ -203,25 +202,17 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public NodeEnt getRootNode(final UUID rootWorkflowID) {
-        return buildNodeEnt(getRootWorkflowManager(rootWorkflowID), rootWorkflowID);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String changeAndGetNodeState(final UUID rootWorkflowID, final String nodeId, final String action)
+    public String changeAndGetNodeState(final UUID rootWorkflowID, final NodeIDEnt nodeId, final String action)
         throws NodeNotFoundException, ActionNotAllowedException {
         WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
         NodeID nodeID;
         WorkflowManager wfm;
-        if (nodeId.equals(EntityUtil.ROOT_NODE_ID)) {
+        if (nodeId.equals(NodeIDEnt.getRootID())) {
             nodeID = rootWfm.getID();
             wfm = rootWfm.getParent();
         } else {
-            nodeID = NodeIDSuffix.fromString(nodeId).prependParent(rootWfm.getID());
+            nodeID = nodeId.toNodeID(rootWfm.getID());
             try {
                 NodeContainer nc = rootWfm.findNodeContainer(nodeID);
                 wfm = nc.getParent();
@@ -260,7 +251,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<PortObjectSpecEnt> getInputPortSpecs(final UUID rootWorkflowID, final String nodeID)
+    public List<PortObjectSpecEnt> getInputPortSpecs(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         WorkflowManager wfm = rootWfmAndNc.getFirst();
@@ -290,7 +281,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final String nodeID)
+    public List<PortObjectSpecEnt> getOutputPortSpecs(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         List<NodeOutPort> outPorts = IntStream.range(0, nodeContainer.getNrOutPorts())
@@ -302,8 +293,9 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public DataTableEnt getOutputDataTable(final UUID rootWorkflowID, final String nodeID, final Integer portIdx,
-        final Long from, final Integer size) throws NodeNotFoundException, InvalidRequestException {
+    public DataTableEnt getOutputDataTable(final UUID rootWorkflowID, final NodeIDEnt nodeID,
+        final Integer portIdx, final Long from, final Integer size)
+        throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         if (portIdx >= nc.getNrOutPorts()) {
             throw new InvalidRequestException("No port at index " + portIdx);
@@ -322,8 +314,8 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<FlowVariableEnt> getInputFlowVariables(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException {
+    public List<FlowVariableEnt> getInputFlowVariables(final UUID rootWorkflowID,
+        final NodeIDEnt nodeID) throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         return getFlowVariableEntListFromFlowObjectStack(nodeContainer.getFlowObjectStack());
     }
@@ -332,8 +324,8 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<FlowVariableEnt> getOutputFlowVariables(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException {
+    public List<FlowVariableEnt> getOutputFlowVariables(final UUID rootWorkflowID,
+        final NodeIDEnt nodeID) throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         if (nodeContainer instanceof SingleNodeContainer) {
             return getFlowVariableEntListFromFlowObjectStack(
@@ -355,7 +347,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public ViewDataEnt getViewData(final UUID rootWorkflowID, final String nodeID)
+    public ViewDataEnt getViewData(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
@@ -382,7 +374,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void setViewValue(final UUID rootWorkflowID, final String nodeID, final Boolean useAsDefault,
+    public void setViewValue(final UUID rootWorkflowID, final NodeIDEnt nodeID, final Boolean useAsDefault,
         final JavaObjectEnt viewValue) throws NodeNotFoundException, InvalidRequestException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
         NodeContainer nc = rootWfmAndNc.getSecond();
@@ -427,7 +419,7 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public MetaNodeDialogEnt getWMetaNodeDialog(final UUID rootWorkflowID, final String nodeID)
+    public MetaNodeDialogEnt getWMetaNodeDialog(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         if (nc instanceof SubNodeContainer) {

@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import com.googlecode.jsonrpc4j.ProxyUtil;
-import com.knime.gateway.json.JsonUtil;
+import com.knime.gateway.json.util.JsonUtil;
 import com.knime.gateway.jsonrpc.local.service.util.ServiceInterface2JsonRpcMap;
 import com.knime.gateway.local.service.ServerServiceConfig;
 import com.knime.gateway.local.service.ServiceConfig;

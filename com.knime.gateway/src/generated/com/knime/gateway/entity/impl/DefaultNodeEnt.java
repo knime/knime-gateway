@@ -43,9 +43,9 @@ public class DefaultNodeEnt  implements NodeEnt {
 
   protected String m_type;
   protected String m_name;
-  protected String m_nodeID;
+  protected com.knime.gateway.entity.NodeIDEnt m_nodeID;
   protected NodeTypeEnum m_nodeType;
-  protected String m_parentNodeID;
+  protected com.knime.gateway.entity.NodeIDEnt m_parentNodeID;
   protected java.util.UUID m_rootWorkflowID;
   protected NodeMessageEnt m_nodeMessage;
   protected NodeStateEnt m_nodeState;
@@ -139,7 +139,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public String getNodeID() {
+  public com.knime.gateway.entity.NodeIDEnt getNodeID() {
         return m_nodeID;
     }
     
@@ -149,7 +149,7 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public String getParentNodeID() {
+  public com.knime.gateway.entity.NodeIDEnt getParentNodeID() {
         return m_parentNodeID;
     }
     
@@ -227,9 +227,9 @@ public class DefaultNodeEnt  implements NodeEnt {
     
         private String m_type;
         private String m_name;
-        private String m_nodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_nodeID;
         private NodeTypeEnum m_nodeType;
-        private String m_parentNodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_parentNodeID;
         private java.util.UUID m_rootWorkflowID;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnt m_nodeState;
@@ -263,7 +263,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setNodeID(String nodeID) {
+        public DefaultNodeEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID) {
              if(nodeID == null) {
                  throw new IllegalArgumentException("nodeID must not be null.");
              }
@@ -281,7 +281,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setParentNodeID(String parentNodeID) {
+        public DefaultNodeEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID) {
              m_parentNodeID = parentNodeID;
              return this;
         }

@@ -148,9 +148,9 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
     
         private String m_type;
         private String m_name;
-        private String m_nodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_nodeID;
         private NodeTypeEnum m_nodeType;
-        private String m_parentNodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_parentNodeID;
         private java.util.UUID m_rootWorkflowID;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnt m_nodeState;
@@ -188,7 +188,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setNodeID(String nodeID) {
+        public DefaultWorkflowNodeEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID) {
              if(nodeID == null) {
                  throw new IllegalArgumentException("nodeID must not be null.");
              }
@@ -206,7 +206,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setParentNodeID(String parentNodeID) {
+        public DefaultWorkflowNodeEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID) {
              m_parentNodeID = parentNodeID;
              return this;
         }

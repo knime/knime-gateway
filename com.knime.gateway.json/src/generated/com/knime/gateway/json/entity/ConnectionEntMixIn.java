@@ -56,7 +56,7 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
 
     @Override
     @JsonProperty("dest")
-    public String getDest();
+    public com.knime.gateway.entity.NodeIDEnt getDest();
     
     @Override
     @JsonProperty("destPort")
@@ -64,7 +64,7 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
     
     @Override
     @JsonProperty("source")
-    public String getSource();
+    public com.knime.gateway.entity.NodeIDEnt getSource();
     
     @Override
     @JsonProperty("sourcePort")
@@ -108,7 +108,7 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
     
         @Override
         @JsonProperty("dest")
-        public ConnectionEntMixInBuilder setDest(final String dest);
+        public ConnectionEntMixInBuilder setDest(final com.knime.gateway.entity.NodeIDEnt dest);
         
         @Override
         @JsonProperty("destPort")
@@ -116,7 +116,7 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
         
         @Override
         @JsonProperty("source")
-        public ConnectionEntMixInBuilder setSource(final String source);
+        public ConnectionEntMixInBuilder setSource(final com.knime.gateway.entity.NodeIDEnt source);
         
         @Override
         @JsonProperty("sourcePort")

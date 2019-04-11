@@ -36,7 +36,7 @@ import com.knime.gateway.entity.WorkflowAnnotationEnt;
 @javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implements WorkflowAnnotationEnt {
 
-  protected String m_annotationID;
+  protected com.knime.gateway.entity.AnnotationIDEnt m_annotationID;
   
   protected DefaultWorkflowAnnotationEnt() {
     //for sub-classes
@@ -88,7 +88,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
 
 
   @Override
-  public String getAnnotationID() {
+  public com.knime.gateway.entity.AnnotationIDEnt getAnnotationID() {
         return m_annotationID;
     }
     
@@ -109,7 +109,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         private Integer m_defaultFontSize;
         private Integer m_version;
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
-        private String m_annotationID;
+        private com.knime.gateway.entity.AnnotationIDEnt m_annotationID;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setType(String type) {
@@ -175,7 +175,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         }
 
         @Override
-        public DefaultWorkflowAnnotationEntBuilder setAnnotationID(String annotationID) {
+        public DefaultWorkflowAnnotationEntBuilder setAnnotationID(com.knime.gateway.entity.AnnotationIDEnt annotationID) {
              if(annotationID == null) {
                  throw new IllegalArgumentException("annotationID must not be null.");
              }

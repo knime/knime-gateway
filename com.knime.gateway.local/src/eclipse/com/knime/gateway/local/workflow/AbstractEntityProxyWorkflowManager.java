@@ -21,8 +21,6 @@ package com.knime.gateway.local.workflow;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.local.workflow.WorkflowEntChangeProcessor.processChanges;
 import static com.knime.gateway.util.EntityBuilderUtil.buildConnectionEnt;
-import static com.knime.gateway.util.EntityUtil.connectionIDToString;
-import static com.knime.gateway.util.EntityUtil.nodeIDToString;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -92,10 +90,13 @@ import org.knime.core.ui.node.workflow.lazy.LazyWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.lazy.NotLoadedException;
 import org.knime.core.util.Pair;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.ConnectionIDEnt;
 import com.knime.gateway.entity.MetaPortInfoEnt;
 import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.PortTypeEnt;
 import com.knime.gateway.entity.WorkflowAnnotationEnt;
@@ -114,7 +115,6 @@ import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException
 import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.util.EntityBuilderUtil;
 import com.knime.gateway.util.EntityTranslateUtil;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Abstract {@link WorkflowManagerUI} implementation that wraps (and therewith retrieves its information) from a
@@ -269,7 +269,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             throw new IllegalArgumentException("Relative node coordinates are not supported");
         }
         return futureRefresh(() -> {
-            String id;
+            NodeIDEnt id;
             try {
                 NodeFactoryKeyEntBuilder factoryKeyBuilder =
                     builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getClass().getCanonicalName());
@@ -396,7 +396,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         throws NotLoadedException {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
-        String nodeID = nodeIDToString(id);
+        NodeIDEnt nodeID = new NodeIDEnt(id);
         for (ConnectionEnt c : getWorkflow().getConnections().values()) {
             if (c.getSource().equals(nodeID) && c.getSourcePort() == portIdx) {
                 res.add(getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()));
@@ -414,7 +414,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public Set<ConnectionContainerUI> getOutgoingConnectionsFor(final NodeID id) throws NotLoadedException {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
-        String nodeID = nodeIDToString(id);
+        NodeIDEnt nodeID = new NodeIDEnt(id);
         for (ConnectionEnt c : getWorkflow().getConnections().values()) {
             if (c.getSource().equals(nodeID)) {
                 res.add(getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()));
@@ -431,7 +431,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public ConnectionContainerUI getIncomingConnectionFor(final NodeID id, final int portIdx)
         throws NotLoadedException {
-        String connID = connectionIDToString(nodeIDToString(id), portIdx);
+        String connID = connectionIDToString(id, portIdx);
         return getAccess().getConnectionContainer(getWorkflow().getConnections().get(connID),
             getEntity().getRootWorkflowID());
     }
@@ -445,7 +445,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     public Set<ConnectionContainerUI> getIncomingConnectionsFor(final NodeID id) throws NotLoadedException {
         //TODO introduce a more efficient data structure to access the right connection
         Set<ConnectionContainerUI> res = new HashSet<ConnectionContainerUI>();
-        String nodeID = nodeIDToString(id);
+        NodeIDEnt nodeID = new NodeIDEnt(id);
         for (ConnectionEnt c : getWorkflow().getConnections().values()) {
             if (c.getDest().equals(nodeID)) {
                 res.add(getAccess().getConnectionContainer(c, getEntity().getRootWorkflowID()));
@@ -1083,7 +1083,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         }
         return Arrays.stream(ids).map(waID -> {
             WorkflowAnnotationEnt ent =
-                getWorkflow().getWorkflowAnnotations().get(EntityUtil.annotationIDToString(waID));
+                getWorkflow().getWorkflowAnnotations().get(new AnnotationIDEnt(waID).toString());
             return getAccess().getWorkflowAnnotation(ent, getEntity().getRootWorkflowID(),
                 getEntity().getNodeID());
         }).toArray(size -> new WorkflowAnnotation[size]);
@@ -1298,7 +1298,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
                     //refresh the workflow node entity, too, if it is the root workflow
                     //(e.g. that contains the state of this metanode)
-                    if (getEntity().getNodeID().equals(EntityUtil.ROOT_NODE_ID)) {
+                    if (getEntity().getNodeID().equals(NodeIDEnt.getRootID())) {
                         //only try updating the root workflow node entity
                         //if there is at least one state change of the contained nodes
                         //(saves http-requests)
@@ -1473,6 +1473,22 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
     @Override
     public void removeWriteProtectionChangedListener(final Runnable listener) {
         m_writeProtectionChangedListeners.remove(listener);
+    }
+
+    private String nodeIDToString(final NodeID id) {
+        return new NodeIDEnt(id).toString();
+    }
+
+    private String connectionIDToString(final NodeID nodeId, final int portIdx) {
+        return new ConnectionIDEnt(new NodeIDEnt(nodeId), portIdx).toString();
+    }
+
+    private String connectionIDToString(final ConnectionID id) {
+        return new ConnectionIDEnt(id).toString();
+    }
+
+    private String annotationIDToString(final WorkflowAnnotationID id) {
+        return new AnnotationIDEnt(id).toString();
     }
 
     /**

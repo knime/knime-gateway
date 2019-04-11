@@ -19,6 +19,10 @@
 package com.knime.gateway.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
+import static com.knime.gateway.util.EntityUtil.createAnnotationIDEntList;
+import static com.knime.gateway.util.EntityUtil.createConnectionIDEntList;
+import static com.knime.gateway.util.EntityUtil.createNodeIDEntList;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertNull;
@@ -31,7 +35,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.BoundsEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
@@ -71,64 +77,71 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
     public void testDeleteParts() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
 
-        WorkflowEnt workflow = ws().getWorkflow(wfId).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
 
         //cut a selection of nodes and workflow annotations
         WorkflowPartsEnt parts = builder(WorkflowPartsEntBuilder.class)
                 //delete nodes with many connections, a metanode that contains a workflow annotation
                 //a node with a flow variable connection
-                .setNodeIDs(Arrays.asList("20", "1", "6", "9", "14"))
-                .setAnnotationIDs(Arrays.asList("root_1"))
-                .setConnectionIDs(Arrays.asList("4_0", "22_1"))
-                .setParentNodeID("root").build();
+                .setNodeIDs(createNodeIDEntList(new int[][] {{20}, {1}, {6}, {9}, {14}}))
+                //root_1
+                .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{}}, 1))
+                //"4_0", "22_1"
+                .setConnectionIDs(createConnectionIDEntList(new int[][] {{4},{22}}, 0, 1))
+                .setParentNodeID(getRootID()).build();
         int[] min = calcMinOffset(parts, workflow);
         UUID partsId = ws().deleteWorkflowParts(wfId, parts, true);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed");
 
         //partly undo the delete (i.e. paste) - some former connection are expected to be not contained
-        ws().pasteWorkflowParts(wfId, partsId, min[0], min[1], null);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        ws().pasteWorkflowParts(wfId, partsId, min[0], min[1], getRootID());
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed_undo");
 
         // delete parts without a copy
         parts = builder(WorkflowPartsEntBuilder.class)
-                .setNodeIDs(Arrays.asList("20", "1", "6", "9", "14"))
-                .setAnnotationIDs(Arrays.asList("root_2"))
-                .setConnectionIDs(Arrays.asList("4_0", "22_1"))
-                .setParentNodeID("root").build();
+                .setNodeIDs(createNodeIDEntList(new int[][] {{20}, {1}, {6}, {9}, {14}}))
+                //root_2
+                .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{}}, 2))
+                //"4_0", "22_1"
+                .setConnectionIDs(createConnectionIDEntList(new int[][] {{4},{22}}, 0, 1))
+                .setParentNodeID(getRootID()).build();
         UUID nullPartsId = ws().deleteWorkflowParts(wfId, parts, false);
         //since no copy is made, partsId is expected to be null
         assertNull("Parts id is expected to be null", nullPartsId);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed");
 
         //restore parts
-        ws().pasteWorkflowParts(wfId, partsId, min[0], min[1], null);
+        ws().pasteWorkflowParts(wfId, partsId, min[0], min[1], getRootID());
 
         // delete parts in a sub-workflow
         parts = builder(WorkflowPartsEntBuilder.class)
-                .setNodeIDs(Arrays.asList("6:3"))
-                .setAnnotationIDs(Arrays.asList("6_0"))
-                .setParentNodeID("6").build();
+                .setNodeIDs(createNodeIDEntList(new int[][] {{6, 3}}))
+                //6_0
+                .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{6}}, 0))
+                .setParentNodeID(new NodeIDEnt(6)).build();
         ws().deleteWorkflowParts(wfId, parts, false);
-        workflow = ws().getSubWorkflow(wfId, "6").getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
         cr(workflow, "workflowent_6_parts_removed");
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed_from_6");
 
         //remove some non-existing parts - nothing should happen
         parts = builder(WorkflowPartsEntBuilder.class)
-                .setNodeIDs(Arrays.asList("99"))
-                .setAnnotationIDs(Arrays.asList("root_10"))
-                .setConnectionIDs(Arrays.asList("99_4"))
-                .setParentNodeID("root").build();
+                .setNodeIDs(createNodeIDEntList(new int[][] {{99}}))
+                //root_10
+                .setAnnotationIDs(createAnnotationIDEntList(new int[][] {{}}, 10))
+                //"99_4"
+                .setConnectionIDs(createConnectionIDEntList(new int[][] {{99}}, 4))
+                .setParentNodeID(getRootID()).build();
         ws().deleteWorkflowParts(wfId, parts, false);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_parts_removed_from_6");
 
         //remove parts with a non existing parent node id
-        parts = builder(WorkflowPartsEntBuilder.class).setParentNodeID("99").build();
+        parts = builder(WorkflowPartsEntBuilder.class).setParentNodeID(new NodeIDEnt(99)).build();
         try {
             ws().deleteWorkflowParts(wfId, parts, false);
             fail("Expected a ServiceException to be thrown");
@@ -140,7 +153,7 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         UUID wfIdLongrunning = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
         executeWorkflowAsync(wfIdLongrunning);
         //delete node
-        parts = builder(WorkflowPartsEntBuilder.class).setNodeIDs(Arrays.asList("1")).setParentNodeID("root").build();
+        parts = builder(WorkflowPartsEntBuilder.class).setNodeIDs(createNodeIDEntList(new int[][] {{1}})).setParentNodeID(getRootID()).build();
         try {
             ws().deleteWorkflowParts(wfIdLongrunning, parts, false);
             fail("Expected a ServiceException to be thrown");
@@ -159,25 +172,26 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
 
         WorkflowPartsEnt parts = builder(WorkflowPartsEntBuilder.class)
-                .setNodeIDs(Arrays.asList("20", "1", "6", "9", "14"))
-                .setAnnotationIDs(Arrays.asList("root_1"))
+                .setNodeIDs(createNodeIDEntList(new int[][] {{20}, {1}, {6}, {9}, {14}}))
+                .setAnnotationIDs(Arrays.asList(new AnnotationIDEnt(getRootID(), 1)))
                 //copying isolated connections won't have an effect
-                .setConnectionIDs(Arrays.asList("4_0", "22_1"))
-                .setParentNodeID("root").build();
+                //"4_0", "22_1"
+                .setConnectionIDs(createConnectionIDEntList(new int[][] {{4},{22}}, 0, 1))
+                .setParentNodeID(getRootID()).build();
         UUID partsId = ws().createWorkflowCopy(wfId, parts);
 
-        ws().pasteWorkflowParts(wfId, partsId, 0, 0, null);
-        WorkflowEnt workflow = ws().getWorkflow(wfId).getWorkflow();
+        ws().pasteWorkflowParts(wfId, partsId, 0, 0, getRootID());
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_pasted");
 
         //paste the same parts into a sub-workflow
-        ws().pasteWorkflowParts(wfId, partsId, 0, 0, "6");
-        workflow = ws().getSubWorkflow(wfId, "6").getWorkflow();
+        ws().pasteWorkflowParts(wfId, partsId, 0, 0, new NodeIDEnt(6));
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
         cr(workflow, "workflowent_6_pasted");
 
         //try pasting parts with none-existing id
         try {
-            ws().pasteWorkflowParts(wfId, UUID.randomUUID(), 0, 0, null);
+            ws().pasteWorkflowParts(wfId, UUID.randomUUID(), 0, 0, getRootID());
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -187,8 +201,8 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         //try copying parts that don't exist
         //non-existing node
         parts = builder(WorkflowPartsEntBuilder.class)
-                .setNodeIDs(asList("99"))
-                .setParentNodeID("root").build();
+                .setNodeIDs(createNodeIDEntList(new int[][] {{99}}))
+                .setParentNodeID(getRootID()).build();
         try {
             ws().createWorkflowCopy(wfId, parts);
         } catch (ServiceExceptions.InvalidRequestException e) {
@@ -196,9 +210,9 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
                 containsString("Failed to copy parts: No such node ID"));
         }
         //non-existing annotation
-        parts =
-            builder(WorkflowPartsEntBuilder.class)
-            .setAnnotationIDs(asList("root_9")).setParentNodeID("root").build();
+        parts = builder(WorkflowPartsEntBuilder.class)
+                .setAnnotationIDs(asList(new AnnotationIDEnt(getRootID(), 9)))
+                .setParentNodeID(getRootID()).build();
         try {
             ws().createWorkflowCopy(wfId, parts);
         } catch (ServiceExceptions.InvalidRequestException e) {
@@ -209,9 +223,9 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
 
     private static int[] calcMinOffset(final WorkflowPartsEnt parts, final WorkflowEnt workflow) {
         List<BoundsEnt> bounds = new ArrayList<BoundsEnt>();
-        parts.getNodeIDs().stream().map(id -> workflow.getNodes().get(id).getUIInfo().getBounds())
+        parts.getNodeIDs().stream().map(id -> workflow.getNodes().get(id.toString()).getUIInfo().getBounds())
             .forEach(bounds::add);
-        parts.getAnnotationIDs().stream().map(id -> workflow.getWorkflowAnnotations().get(id).getBounds())
+        parts.getAnnotationIDs().stream().map(id -> workflow.getWorkflowAnnotations().get(id.toString()).getBounds())
             .forEach(bounds::add);
 
         Optional<Integer> minX = bounds.stream().map(b -> b.getX()).min((x, y) -> Integer.compare(x, y));

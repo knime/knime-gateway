@@ -48,104 +48,97 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.changeAndGetNodeState")
-    String changeAndGetNodeState(java.util.UUID jobId, String nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+    String changeAndGetNodeState(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.createNode")
-    String createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt, String parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt, com.knime.gateway.entity.NodeIDEnt parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getInputFlowVariables")
-    java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    java.util.List<FlowVariableEnt> getInputFlowVariables(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getInputPortSpecs")
-    java.util.List<PortObjectSpecEnt> getInputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    java.util.List<PortObjectSpecEnt> getInputPortSpecs(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNode")
-    NodeEnt getNode(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    NodeEnt getNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getNodeSettings")
-    NodeSettingsEnt getNodeSettings(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    NodeSettingsEnt getNodeSettings(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getOutputDataTable")
-    DataTableEnt getOutputDataTable(java.util.UUID jobId, String nodeId, Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    DataTableEnt getOutputDataTable(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Integer portIdx, Long from, Integer size)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getOutputFlowVariables")
-    java.util.List<FlowVariableEnt> getOutputFlowVariables(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
+    java.util.List<FlowVariableEnt> getOutputFlowVariables(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getOutputPortSpecs")
-    java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException;
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "NodeService.getRootNode")
-    NodeEnt getRootNode(java.util.UUID jobId) ;
+    java.util.List<PortObjectSpecEnt> getOutputPortSpecs(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getViewData")
-    ViewDataEnt getViewData(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    ViewDataEnt getViewData(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.getWMetaNodeDialog")
-    MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.setNodeBounds")
-    void setNodeBounds(java.util.UUID jobId, String nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException;
+    void setNodeBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.setNodeSettings")
-    void setNodeSettings(java.util.UUID jobId, String nodeId, NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
+    void setNodeSettings(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, NodeSettingsEnt nodeSettingsEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidSettingsException, ServiceExceptions.IllegalStateException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "NodeService.setViewValue")
-    void setViewValue(java.util.UUID jobId, String nodeId, Boolean useAsDefault, JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    void setViewValue(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Boolean useAsDefault, JavaObjectEnt javaObjectEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 }

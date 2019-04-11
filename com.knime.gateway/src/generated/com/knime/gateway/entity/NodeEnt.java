@@ -110,7 +110,7 @@ public interface NodeEnt extends GatewayEntity {
    * The ID of the node.
    * @return nodeID , never <code>null</code>
    **/
-  public String getNodeID();
+  public com.knime.gateway.entity.NodeIDEnt getNodeID();
 
   /**
    * The type of the node.
@@ -122,7 +122,7 @@ public interface NodeEnt extends GatewayEntity {
    * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
    * @return parentNodeID 
    **/
-  public String getParentNodeID();
+  public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
 
   /**
    * The id of the root workflow this node is contained in or represents.
@@ -230,7 +230,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param nodeID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setNodeID(String nodeID);
+        NodeEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID);
         
         /**
          * The type of the node.
@@ -246,7 +246,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param parentNodeID the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setParentNodeID(String parentNodeID);
+        NodeEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         /**
          * The id of the root workflow this node is contained in or represents.

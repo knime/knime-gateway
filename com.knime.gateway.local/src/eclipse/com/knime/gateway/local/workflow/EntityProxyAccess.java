@@ -18,8 +18,8 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static com.knime.gateway.local.service.ServiceManager.service;
-import static com.knime.gateway.util.EntityUtil.stringToNodeID;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -60,11 +60,13 @@ import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.util.Pair;
 
 import com.google.common.collect.MapMaker;
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.FlowVariableEnt;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.entity.NativeNodeEnt;
 import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeInPortEnt;
 import com.knime.gateway.entity.NodeOutPortEnt;
 import com.knime.gateway.entity.NodePortEnt;
@@ -102,13 +104,13 @@ public class EntityProxyAccess {
      *
      * TODO: remove workflow id's from the list that aren't in memory anymore
      */
-    private static final Map<UUID, String> ROOT_ID_MAP = new HashMap<UUID, String>();
+    private static final Map<UUID, NodeID> ROOT_ID_MAP = new HashMap<UUID, NodeID>();
 
     /* Maps the identity hash code of a entity to the entity proxy object */
     @SuppressWarnings("rawtypes")
     private final Map<Pair<Integer, Class<EntityProxy>>, EntityProxy> m_entityProxyMap;
 
-    private final Map<Pair<UUID, String>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>> m_wfmMap;
+    private final Map<Pair<UUID, NodeIDEnt>, AbstractEntityProxyWorkflowManager<? extends NodeEnt>> m_wfmMap;
 
     private final ServerServiceConfig m_serviceConfig;
 
@@ -136,7 +138,7 @@ public class EntityProxyAccess {
      */
     public static EntityProxyWorkflowManager createWorkflowManager(final ServerServiceConfig serviceConfig,
         final UUID rootWorkflowID, final RemoteWorkflowContext workflowContext) {
-        ROOT_ID_MAP.computeIfAbsent(rootWorkflowID, s -> String.valueOf(ROOT_ID_MAP.size() + 1));
+        ROOT_ID_MAP.computeIfAbsent(rootWorkflowID, s -> new NodeID(ROOT_ID_MAP.size() + 1));
         return new EntityProxyAccess(serviceConfig).getOrCreateRootWorkflowManager(rootWorkflowID, workflowContext);
     }
 
@@ -151,11 +153,17 @@ public class EntityProxyAccess {
      */
     public EntityProxyWorkflowManager getOrCreateRootWorkflowManager(final UUID rootWorkflowID,
         final RemoteWorkflowContext workflowContext) {
-        Pair<UUID, String> keyPair = Pair.create(rootWorkflowID, null);
+        Pair<UUID, NodeIDEnt> keyPair = Pair.create(rootWorkflowID, null);
         if (m_wfmMap.containsKey(keyPair)) {
             return (EntityProxyWorkflowManager)m_wfmMap.get(keyPair);
         } else {
-            NodeEnt node = service(NodeService.class, m_serviceConfig).getRootNode(rootWorkflowID);
+            NodeEnt node;
+            try {
+                node = service(NodeService.class, m_serviceConfig).getNode(rootWorkflowID, getRootID());
+            } catch (NodeNotFoundException ex) {
+                //can never happen, root node always exist;
+                throw new RuntimeException(ex);
+            }
             assert node instanceof WorkflowNodeEnt;
             EntityProxyWorkflowManager wfm = getOrCreate((WorkflowNodeEnt)node,
                 n -> new EntityProxyWorkflowManager(n, this, workflowContext), EntityProxyWorkflowManager.class);
@@ -181,7 +189,7 @@ public class EntityProxyAccess {
      * @return an existing workflow manager instance or <code>null</code>
      */
     AbstractEntityProxyWorkflowManager<? extends NodeEnt> getAbstractWorkflowManager(final UUID rootWorkflowID,
-        final String nodeID) {
+        final NodeIDEnt nodeID) {
         return m_wfmMap.get(Pair.create(rootWorkflowID, nodeID));
     }
 
@@ -195,7 +203,7 @@ public class EntityProxyAccess {
      */
     EntityProxyWrappedWorkflowManager getWrappedWorkflowManager(final WrappedWorkflowNodeEnt ent) {
         //workflow ids of wrapped metanodes have a trailing ":0" - see line 309 in SubNodeContainer
-        Pair<UUID, String> keyPair = Pair.create(ent.getRootWorkflowID(), ent.getNodeID() + ":0");
+        Pair<UUID, NodeIDEnt> keyPair = Pair.create(ent.getRootWorkflowID(), ent.getNodeID().appendNodeID(0));
         if (m_wfmMap.get(keyPair) != null) {
             EntityProxyWrappedWorkflowManager wfm = (EntityProxyWrappedWorkflowManager)m_wfmMap.get(keyPair);
             //put the workflow manager also into the entity map (in case it's a varying node entity
@@ -246,29 +254,29 @@ public class EntityProxyAccess {
      * @return the {@link NodeID}
      */
     NodeID getNodeID(final NodeEnt ent) {
-        return stringToNodeID(ROOT_ID_MAP.get(ent.getRootWorkflowID()), ent.getNodeID());
+        return ent.getNodeID().toNodeID(ROOT_ID_MAP.get(ent.getRootWorkflowID()));
     }
 
     /**
-     * Gives the correct node id determined from a root workflow id and a string node id
+     * Gives the correct node id determined from a root workflow id and a passed node id entity
+     *
      * @param rootWorkflowID the id of the root workflow
-     * @param nodeID the id string to parse
+     * @param nodeID the node id entity to convert
      * @return the {@link NodeID}
      */
-    NodeID getNodeID(final UUID rootWorkflowID, final String nodeID) {
-        return stringToNodeID(ROOT_ID_MAP.get(rootWorkflowID), nodeID);
+    NodeID getNodeID(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
+        return nodeID.toNodeID(ROOT_ID_MAP.get(rootWorkflowID));
     }
 
     /**
      * Turns a string into the respective {@link WorkflowAnnotationID}.
      * @param rootWorkflowID the id of the root workflow
-     * @param annotationID the id-string to parse
+     * @param annotationID the annotation id entity to convert
      * @return the {@link WorkflowAnnotationID}
      */
-    WorkflowAnnotationID getAnnotationID(final UUID rootWorkflowID, final String annotationID) {
-        String[] id = annotationID.split("_");
-        NodeID nodeID = getNodeID(rootWorkflowID, id[0]);
-        return new WorkflowAnnotationID(nodeID, Integer.valueOf(id[1]));
+    WorkflowAnnotationID getAnnotationID(final UUID rootWorkflowID, final AnnotationIDEnt annotationID) {
+        NodeID nodeID = getNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
+        return new WorkflowAnnotationID(nodeID, annotationID.getIndex());
     }
 
     /**
@@ -361,7 +369,7 @@ public class EntityProxyAccess {
      * @return the {@link WorkflowAnnotation}
      */
     EntityProxyWorkflowAnnotation getWorkflowAnnotation(final WorkflowAnnotationEnt wa, final UUID rootWorkflowID,
-        final String parentNodeID) {
+        final NodeIDEnt parentNodeID) {
         return getOrCreate(wa, o -> {
             return new EntityProxyWorkflowAnnotation(wa, rootWorkflowID, parentNodeID, this);
         }, EntityProxyWorkflowAnnotation.class);
@@ -378,13 +386,18 @@ public class EntityProxyAccess {
             //in case it's a sub-workflow
             try {
                 return workflowService()
-                    .getSubWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
+                    .getWorkflow(workflowNodeEnt.getRootWorkflowID(), workflowNodeEnt.getNodeID());
             } catch (NotASubWorkflowException | NodeNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
         } else {
             //in case it's the root workflow
-            return workflowService().getWorkflow(workflowNodeEnt.getRootWorkflowID());
+            try {
+                return workflowService().getWorkflow(workflowNodeEnt.getRootWorkflowID(), getRootID());
+            } catch (NotASubWorkflowException | NodeNotFoundException ex) {
+                //never happens in case in case of the root workflow
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -400,11 +413,17 @@ public class EntityProxyAccess {
     PatchEnt getWorkflowPatch(final WorkflowNodeEnt workflowNodeEnt, final UUID snapshotID) throws NotFoundException {
         if (workflowNodeEnt.getParentNodeID() == null) {
             //in case it's the root workflow
-            return workflowService().getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(), snapshotID);
+            try {
+                return workflowService().getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(), NodeIDEnt.getRootID(),
+                    snapshotID);
+            } catch (NotASubWorkflowException ex) {
+                //can never happen
+                throw new RuntimeException(ex);
+            }
         } else {
             // in case it's a sub-workflow
             try {
-                return workflowService().getSubWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
+                return workflowService().getWorkflowDiff(workflowNodeEnt.getRootWorkflowID(),
                     workflowNodeEnt.getNodeID(), snapshotID);
             } catch (NotASubWorkflowException ex) {
                 //should never happen

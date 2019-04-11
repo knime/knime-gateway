@@ -39,7 +39,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
    * Identifier for the workflow annotations.
    * @return annotationID , never <code>null</code>
    **/
-  public String getAnnotationID();
+  public com.knime.gateway.entity.AnnotationIDEnt getAnnotationID();
 
 
     /**
@@ -133,7 +133,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
          * @param annotationID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setAnnotationID(String annotationID);
+        WorkflowAnnotationEntBuilder setAnnotationID(com.knime.gateway.entity.AnnotationIDEnt annotationID);
         
         
         /**

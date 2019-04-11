@@ -48,7 +48,9 @@ import org.knime.core.node.workflow.NodeUIInformation.Builder;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.DataCellEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeUIInfoEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt;
 
@@ -69,16 +71,16 @@ public class EntityTranslateUtil {
      * Translates {@link WorkflowPartsEnt} into {@link WorkflowCopyContent}.
      *
      * @param ent the entity
-     * @param string2NodeID function that translates a string into a {@link NodeID}-instance
-     * @param string2AnnotationID function that tranlates a string into a {@link WorkflowAnnotationID}-instance.
+     * @param entity2NodeID function that translates a {@link NodeIDEnt} to a {@link NodeID}-instance
+     * @param entity2AnnotationID function that translates a string into a {@link WorkflowAnnotationID}-instance.
      * @return the newly created translation result
      */
     public static WorkflowCopyContent translateWorkflowPartsEnt(final WorkflowPartsEnt ent,
-        final Function<String, NodeID> string2NodeID,
-        final Function<String, WorkflowAnnotationID> string2AnnotationID) {
+        final Function<NodeIDEnt, NodeID> entity2NodeID,
+        final Function<AnnotationIDEnt, WorkflowAnnotationID> entity2AnnotationID) {
         return WorkflowCopyContent.builder()
-            .setNodeIDs(ent.getNodeIDs().stream().map(s -> string2NodeID.apply(s)).toArray(size -> new NodeID[size]))
-            .setAnnotationIDs(ent.getAnnotationIDs().stream().map(s -> string2AnnotationID.apply(s))
+            .setNodeIDs(ent.getNodeIDs().stream().map(e -> entity2NodeID.apply(e)).toArray(size -> new NodeID[size]))
+            .setAnnotationIDs(ent.getAnnotationIDs().stream().map(s -> entity2AnnotationID.apply(s))
                 .toArray(size -> new WorkflowAnnotationID[size]))
             .build();
     }

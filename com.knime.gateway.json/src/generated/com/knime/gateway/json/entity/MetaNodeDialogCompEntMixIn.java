@@ -60,7 +60,7 @@ public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
     
     @Override
     @JsonProperty("nodeID")
-    public String getNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getNodeID();
     
     @Override
     @JsonProperty("isHideInDialog")
@@ -96,7 +96,7 @@ public interface MetaNodeDialogCompEntMixIn extends MetaNodeDialogCompEnt {
         
         @Override
         @JsonProperty("nodeID")
-        public MetaNodeDialogCompEntMixInBuilder setNodeID(final String nodeID);
+        public MetaNodeDialogCompEntMixInBuilder setNodeID(final com.knime.gateway.entity.NodeIDEnt nodeID);
         
         @Override
         @JsonProperty("isHideInDialog")

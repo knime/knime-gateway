@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.util.UUID;
 
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.service.util.ServiceExceptions;
 import com.knime.gateway.testing.helper.ResultChecker;
 import com.knime.gateway.testing.helper.ServiceProvider;
@@ -58,12 +59,12 @@ public class WMetaNodeDialogTest extends AbstractGatewayServiceTestHelper {
     public void testGetWMetaNodeDialog() throws Exception {
     	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_QUICKFORMS);
 
-        GatewayEntity entity = ns().getWMetaNodeDialog(wfId, "19");
+        GatewayEntity entity = ns().getWMetaNodeDialog(wfId, new NodeIDEnt(19));
         cr(entity, "wmetanodedialog_19");
 
         //what if the node to get the meta node dialog for is not a wrapped metanode?
         try {
-            ns().getWMetaNodeDialog(wfId, "1");
+            ns().getWMetaNodeDialog(wfId, new NodeIDEnt(1));
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),

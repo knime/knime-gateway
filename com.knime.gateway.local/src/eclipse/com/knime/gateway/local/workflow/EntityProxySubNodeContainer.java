@@ -82,7 +82,7 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
      */
     @Override
     public NodeID getVirtualInNodeID() {
-        return NodeID.fromString(getEntity().getVirtualInNodeID());
+        return getEntity().getVirtualInNodeID().toNodeID(getID());
     }
 
     /**
@@ -90,7 +90,7 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
      */
     @Override
     public NodeID getVirtualOutNodeID() {
-        return NodeID.fromString(getEntity().getVirtualOutNodeID());
+        return getEntity().getVirtualOutNodeID().toNodeID(getID());
     }
 
     /**

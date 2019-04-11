@@ -20,6 +20,7 @@ package com.knime.gateway.remote.service.util;
 
 import java.util.UUID;
 
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.entity.WorkflowSnapshotEnt;
@@ -51,7 +52,7 @@ public interface WorkflowEntRepository {
      * @return the workflow entity together with the respective snapshot id encapsulated in a
      *         {@link WorkflowSnapshotEnt}
      */
-    WorkflowSnapshotEnt commit(UUID workflowID, String nodeID, WorkflowEnt entity);
+    WorkflowSnapshotEnt commit(UUID workflowID, NodeIDEnt nodeID, WorkflowEnt entity);
 
     /**
      * Determines the diff (i.e. changes as a patch) of the provided entity to the entity once committed to the

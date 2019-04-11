@@ -19,13 +19,16 @@
 package com.knime.gateway.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 
 import java.util.UUID;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.testing.helper.ResultChecker;
@@ -60,28 +63,29 @@ public class ChangeWorkflowAnnotationTestHelper extends AbstractGatewayServiceTe
     public void testChangeAnnotationBounds() throws Exception {
     	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
 
-        WorkflowEnt workflow = ws().getWorkflow(wfId).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root");
 
         //move and resize annotation
         BoundsEnt newBounds = builder(BoundsEntBuilder.class).setX(400).setY(400).setHeight(600).setWidth(600).build();
-        as().setAnnotationBounds(wfId, "root_0", newBounds);
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root_annotation_moved");
+        as().setAnnotationBounds(wfId, getRootID(), new AnnotationIDEnt(getRootID(), 0), newBounds);
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_annotation_moved");
 
         //move and resize back
-        as().setAnnotationBounds(wfId, "root_0", workflow.getWorkflowAnnotations().get("root_0").getBounds());
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root");
+        as().setAnnotationBounds(wfId, getRootID(), new AnnotationIDEnt(getRootID(), 0),
+            workflow.getWorkflowAnnotations().get(new AnnotationIDEnt(getRootID(), 0).toString()).getBounds());
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root");
 
         //move and resize annotation within a metanode
-        as().setAnnotationBoundsInSubWorkflow(wfId, "6", "6_0", newBounds);
-        cr(ws().getSubWorkflow(wfId, "6").getWorkflow(), "workflowent_6_annotation_moved");
+        as().setAnnotationBounds(wfId, new NodeIDEnt(6), new AnnotationIDEnt(new NodeIDEnt(6), 0), newBounds);
+        cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6_annotation_moved");
 
         //try moving a non-existing annotation
         try {
-            as().setAnnotationBounds(wfId, "root_3", newBounds);
+            as().setAnnotationBounds(wfId, getRootID(), new AnnotationIDEnt(getRootID(), 3), newBounds);
         } catch (NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
-                containsString("Annotation for id 'root_3' not found"));
+                containsString("Annotation for id '" + getRootID() + "_3' not found"));
         }
     }
 }

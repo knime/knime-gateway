@@ -58,7 +58,7 @@ public class EntityTest {
 
 		assertEquals(ent.getName(), "name");
 		assertEquals(ent.hasDialog(), true);
-		assertEquals(ent.getNodeID(), "node_id");
+		assertEquals(ent.getNodeID(), new NodeIDEnt(14));
 		assertEquals(ent.getNodeState().getState(), NodeStateEnt.StateEnum.CONFIGURED);
 		assertEquals(ent.getNodeType(), NodeTypeEnum.LEARNER);
 		assertEquals(ent.getType(), "NativeNode");
@@ -85,7 +85,7 @@ public class EntityTest {
         return builder(NativeNodeEntBuilder.class)
                 .setName("name")
                 .setHasDialog(true)
-                .setNodeID("node_id")
+                .setNodeID(new NodeIDEnt(14))
                 .setNodeState(builder(NodeStateEntBuilder.class).setState(NodeStateEnt.StateEnum.CONFIGURED).build())
                 .setNodeType(NodeTypeEnum.LEARNER)
                 .setType("NativeNode")
@@ -137,10 +137,10 @@ public class EntityTest {
         }
 
         /* test immutability of lists */
-        ConnectionEnt con = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
-            .setSourcePort(3).setType(TypeEnum.STD).build();
-        ConnectionEnt con2 = builder(ConnectionEntBuilder.class).setDest("dest").setDestPort(1).setSource("source")
-            .setSourcePort(3).setType(TypeEnum.STD).build();
+        ConnectionEnt con = builder(ConnectionEntBuilder.class).setDest(new NodeIDEnt(10)).setDestPort(1)
+            .setSource(new NodeIDEnt(11)).setSourcePort(3).setType(TypeEnum.STD).build();
+        ConnectionEnt con2 = builder(ConnectionEntBuilder.class).setDest(new NodeIDEnt(10)).setDestPort(1)
+            .setSource(new NodeIDEnt(11)).setSourcePort(3).setType(TypeEnum.STD).build();
 
         Map<String, ConnectionEnt> connections = new HashMap<String, ConnectionEnt>();
         connections.put("con1", con);

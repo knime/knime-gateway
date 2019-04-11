@@ -37,6 +37,7 @@ import org.junit.Test;
 import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeEnt.NodeEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeMessageEnt.NodeMessageEntBuilder;
 import com.knime.gateway.entity.NodeStateEnt.NodeStateEntBuilder;
 import com.knime.gateway.entity.NodeStateEnt.StateEnum;
@@ -71,7 +72,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
     protected abstract WorkflowEntRepository createRepo();
 
     /**
-     * Tests the {@link WorkflowEntRepository#commit(UUID, String, WorkflowEnt)} method.
+     * Tests the {@link WorkflowEntRepository#commit(UUID, NodeIDEnt, WorkflowEnt)} method.
      *
      * @throws Exception
      */
@@ -113,7 +114,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
         wfBuilder.setNodes(nodes);
 
         WorkflowEnt wfEntity = wfBuilder.build();
-        WorkflowSnapshotEnt commitRes = m_repo.commit(wfID, "3", wfEntity);
+        WorkflowSnapshotEnt commitRes = m_repo.commit(wfID, new NodeIDEnt(3), wfEntity);
 
         //modify workflow entity
         nodeBuilder
@@ -148,7 +149,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
         UUID wfID = UUID.randomUUID();
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         WorkflowEnt newEntity = wfBuilder.build();
-        WorkflowSnapshotEnt commitRes = m_repo.commit(wfID, "2", newEntity);
+        WorkflowSnapshotEnt commitRes = m_repo.commit(wfID, new NodeIDEnt(2), newEntity);
 
         m_repo.disposeHistory(wfID);
 
@@ -159,7 +160,7 @@ public abstract class AbstractWorkflowEntRepositoryTest {
             assertThat(e.getMessage(), containsString("No workflow found for snapshot with ID"));
         }
 
-        WorkflowSnapshotEnt commitRes2 = m_repo.commit(wfID, "2", newEntity);
+        WorkflowSnapshotEnt commitRes2 = m_repo.commit(wfID, new NodeIDEnt(2), newEntity);
         assertNotEquals(commitRes.getSnapshotID(), commitRes2.getSnapshotID());
     }
 

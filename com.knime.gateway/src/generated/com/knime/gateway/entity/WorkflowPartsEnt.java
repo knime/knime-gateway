@@ -34,28 +34,28 @@ public interface WorkflowPartsEnt extends GatewayEntity {
 
 
   /**
-   * The parent node id of parts or &#39;root&#39; if it&#39;s the root node/workflow. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+   * The parent node id of parts or &#39;root&#39; if it&#39;s the root node/workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
    * @return parentNodeID , never <code>null</code>
    **/
-  public String getParentNodeID();
+  public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
 
   /**
    * The ids of the nodes referenced.
    * @return nodeIDs 
    **/
-  public java.util.List<String> getNodeIDs();
+  public java.util.List<com.knime.gateway.entity.NodeIDEnt> getNodeIDs();
 
   /**
    * The ids of the connections referenced. The id has the following format: &lt;dest-node-id&gt;_&lt;dest-port-idx&gt;
    * @return connectionIDs 
    **/
-  public java.util.List<String> getConnectionIDs();
+  public java.util.List<com.knime.gateway.entity.ConnectionIDEnt> getConnectionIDs();
 
   /**
    * The ids of the workflow annotations referenced.
    * @return annotationIDs 
    **/
-  public java.util.List<String> getAnnotationIDs();
+  public java.util.List<com.knime.gateway.entity.AnnotationIDEnt> getAnnotationIDs();
 
 
     /**
@@ -64,12 +64,12 @@ public interface WorkflowPartsEnt extends GatewayEntity {
     public interface WorkflowPartsEntBuilder extends GatewayEntityBuilder<WorkflowPartsEnt> {
 
         /**
-         * The parent node id of parts or &#39;root&#39; if it&#39;s the root node/workflow. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes required an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+         * The parent node id of parts or &#39;root&#39; if it&#39;s the root node/workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
          * 
          * @param parentNodeID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowPartsEntBuilder setParentNodeID(String parentNodeID);
+        WorkflowPartsEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         /**
          * The ids of the nodes referenced.
@@ -77,7 +77,7 @@ public interface WorkflowPartsEnt extends GatewayEntity {
          * @param nodeIDs the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowPartsEntBuilder setNodeIDs(java.util.List<String> nodeIDs);
+        WorkflowPartsEntBuilder setNodeIDs(java.util.List<com.knime.gateway.entity.NodeIDEnt> nodeIDs);
         
         /**
          * The ids of the connections referenced. The id has the following format: &lt;dest-node-id&gt;_&lt;dest-port-idx&gt;
@@ -85,7 +85,7 @@ public interface WorkflowPartsEnt extends GatewayEntity {
          * @param connectionIDs the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowPartsEntBuilder setConnectionIDs(java.util.List<String> connectionIDs);
+        WorkflowPartsEntBuilder setConnectionIDs(java.util.List<com.knime.gateway.entity.ConnectionIDEnt> connectionIDs);
         
         /**
          * The ids of the workflow annotations referenced.
@@ -93,7 +93,7 @@ public interface WorkflowPartsEnt extends GatewayEntity {
          * @param annotationIDs the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowPartsEntBuilder setAnnotationIDs(java.util.List<String> annotationIDs);
+        WorkflowPartsEntBuilder setAnnotationIDs(java.util.List<com.knime.gateway.entity.AnnotationIDEnt> annotationIDs);
         
         
         /**

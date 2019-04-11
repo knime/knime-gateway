@@ -93,7 +93,7 @@ public interface WorkflowNodeEnt extends NodeEnt {
          * @param nodeID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setNodeID(String nodeID);
+        WorkflowNodeEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID);
         
         /**
          * The type of the node.
@@ -109,7 +109,7 @@ public interface WorkflowNodeEnt extends NodeEnt {
          * @param parentNodeID the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setParentNodeID(String parentNodeID);
+        WorkflowNodeEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         /**
          * The id of the root workflow this node is contained in or represents.

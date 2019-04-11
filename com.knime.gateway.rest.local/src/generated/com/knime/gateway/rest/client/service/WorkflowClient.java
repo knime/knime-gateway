@@ -64,7 +64,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public String createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException {
+    public com.knime.gateway.entity.ConnectionIDEnt createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException {
         try{
             return doRequest(c -> {
                 try {
@@ -77,7 +77,7 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
                     throw new ServiceException("Server doesn't seem to be reachable.",
                         e.getCause());
                 }
-            }, String.class);
+            }, com.knime.gateway.entity.ConnectionIDEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
@@ -154,11 +154,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public WorkflowSnapshotEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getSubWorkflow(jobId, nodeId);
+                    return c.getWorkflow(jobId, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -183,11 +183,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public PatchEnt getSubWorkflowDiff(java.util.UUID jobId, String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    public PatchEnt getWorkflowDiff(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getSubWorkflowDiff(jobId, nodeId, snapshotId);
+                    return c.getWorkflowDiff(jobId, nodeId.toString(), snapshotId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -212,60 +212,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId)  {
+    public WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getWorkflow(jobId);
-                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
-                    //server errors
-                    throw new ServiceException("Internal server error.", ex);
-                } catch (ProcessingException e) {
-                    //in case the server cannot be reached (timeout, connection refused)
-                    throw new ServiceException("Server doesn't seem to be reachable.",
-                        e.getCause());
-                }
-            }, WorkflowSnapshotEnt.class);
-        } catch (WebApplicationException ex) {
-            //executor errors
-            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
-            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
-                + "' with message: " + gatewayException.getExceptionMessage());
-        }
-    }
-    
-    @Override
-    public PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException {
-        try{
-            return doRequest(c -> {
-                try {
-                    return c.getWorkflowDiff(jobId, snapshotId);
-                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
-                    //server errors
-                    throw new ServiceException("Internal server error.", ex);
-                } catch (ProcessingException e) {
-                    //in case the server cannot be reached (timeout, connection refused)
-                    throw new ServiceException("Server doesn't seem to be reachable.",
-                        e.getCause());
-                }
-            }, PatchEnt.class);
-        } catch (WebApplicationException ex) {
-            //executor errors
-            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
-            if (gatewayException.getExceptionName().equals("NotFoundException")) {
-                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
-            }
-            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
-                + "' with message: " + gatewayException.getExceptionMessage());
-        }
-    }
-    
-    @Override
-    public WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
-        try{
-            return doRequest(c -> {
-                try {
-                    return c.pasteWorkflowParts(jobId, partsId, x, y, nodeId);
+                    return c.pasteWorkflowParts(jobId, partsId, x, y, nodeId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

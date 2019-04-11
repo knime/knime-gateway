@@ -51,26 +51,13 @@ public class JsonRpcAnnotationServiceWrapper implements AnnotationService {
     @Override
     @JsonRpcMethod(value = "setAnnotationBounds")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "NotFoundException" /*per convention the data property contains the exception name*/)
-    })
-    public void setAnnotationBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="annoId") String annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotFoundException {
-        m_service.setAnnotationBounds(jobId, annoId, boundsEnt);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "setAnnotationBoundsInSubWorkflow")
-    @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
             data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
             data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public void setAnnotationBoundsInSubWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") String nodeId, @JsonRpcParam(value="annoId") String annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
-        m_service.setAnnotationBoundsInSubWorkflow(jobId, nodeId, annoId, boundsEnt);    
+    public void setAnnotationBounds(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") com.knime.gateway.entity.NodeIDEnt nodeId, @JsonRpcParam(value="annoId") com.knime.gateway.entity.AnnotationIDEnt annoId, @JsonRpcParam(value="boundsEnt") BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        m_service.setAnnotationBounds(jobId, nodeId, annoId, boundsEnt);    
     }
 
 }

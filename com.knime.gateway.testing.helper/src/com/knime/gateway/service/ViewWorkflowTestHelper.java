@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.service;
 
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
@@ -26,13 +27,13 @@ import static org.junit.Assert.fail;
 import java.util.UUID;
 
 import com.knime.gateway.entity.DataTableEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.service.util.ServiceExceptions;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.testing.helper.ResultChecker;
 import com.knime.gateway.testing.helper.ServiceProvider;
 import com.knime.gateway.testing.helper.WorkflowExecutor;
 import com.knime.gateway.testing.helper.WorkflowLoader;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Tests to get entities (such as nodes, workflows, settings etc.) via the job gateway. I.e. it mainly tests the
@@ -67,57 +68,50 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
 
         //download and check workflow un-executed
         //retrieve the workflow entity
-        Object entity = ns().getRootNode(wfId);
-        cr(entity, "workflownodeent_root");
-        //this should be the same as above (root worklfow entity retrieved via "root" node id)
-        entity = ns().getNode(wfId, EntityUtil.ROOT_NODE_ID);
+        Object entity = ns().getNode(wfId, getRootID());
         cr(entity, "workflownodeent_root");
         //retrieve the workflow
-        entity = ws().getWorkflow(wfId).getWorkflow();
-        cr(entity, "workflowent_root");
-        //retrieve the workflow via the "root" node id (should return the same as above)
-        entity = ws().getSubWorkflow(wfId, EntityUtil.ROOT_NODE_ID)
-            .getWorkflow();
+        entity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(entity, "workflowent_root");
 
         //execute workflow
         executeWorkflow(wfId);
 
         //download and check executed workflow
-        entity = ws().getWorkflow(wfId).getWorkflow();
+        entity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(entity, "workflowent_root_executed");
 
         //download and check contained metanode '6'
-        entity = ws().getSubWorkflow(wfId, "6").getWorkflow();
+        entity = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
         cr(entity, "workflowent_6");
 
         //download and check contained wrapped metanode '9'
-        entity = ws().getSubWorkflow(wfId, "9").getWorkflow();
+        entity = ws().getWorkflow(wfId, new NodeIDEnt(9)).getWorkflow();
         cr(entity, "workflowent_9");
 
         //download and check contained wrapped metanode '12'
-        entity = ws().getSubWorkflow(wfId, "12").getWorkflow();
+        entity = ws().getWorkflow(wfId, new NodeIDEnt(12)).getWorkflow();
         cr(entity, "workflowent_12");
 
         //download and check the native node '2'
-        entity = ns().getNode(wfId, "2");
+        entity = ns().getNode(wfId, new NodeIDEnt(2));
         cr(entity, "nodeent_2");
 
         //access a node within a metanode '6:3'
-        entity = ns().getNode(wfId, "6:3");
+        entity = ns().getNode(wfId, new NodeIDEnt(6, 3));
         cr(entity, "nodeent_6_3");
 
         //download and check wrapped metanode '9'
-        entity = ns().getNode(wfId, "9");
+        entity = ns().getNode(wfId, new NodeIDEnt(9));
         cr(entity, "wrappedworkflownodeent_9");
 
         //wrapped metanode 23
-        entity = ns().getNode(wfId, "23");
+        entity = ns().getNode(wfId, new NodeIDEnt(23));
         cr(entity, "wrappedworkflownodeent_23");
 
         //try to download a workflow for an existing node that doesn't represent a workflow (i.e. an ordinary node)
         try {
-            ws().getSubWorkflow(wfId, "1");
+            ws().getWorkflow(wfId, new NodeIDEnt(1));
             fail("Expected a NotASubWorkflowException to be thrown");
         } catch (ServiceExceptions.NotASubWorkflowException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -126,7 +120,7 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
 
         //try to download a sub-workflow for a node that doesn't exist
         try {
-            ws().getSubWorkflow(wfId, "99");
+            ws().getWorkflow(wfId, new NodeIDEnt(99));
             fail("Expected a NodeNotFoundException to be thrown");
         } catch (ServiceExceptions.NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No such node"));
@@ -134,7 +128,7 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
 
         //try to download a node for an id that doesn't exist
         try {
-            ns().getNode(wfId, "99");
+            ns().getNode(wfId, new NodeIDEnt(99));
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No such node"));
@@ -143,12 +137,12 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         /* Test node settings endpoint */
 
         //download and check the node settings for a node
-        String jsonString = ns().getNodeSettings(wfId, "10").getJsonContent();
+        String jsonString = ns().getNodeSettings(wfId, new NodeIDEnt(10)).getJsonContent();
         cr(jsonString, "nodesettings_10");
 
         //try get settings for a node that doesn't exist
         try {
-            ns().getNodeSettings(wfId, "99");
+            ns().getNodeSettings(wfId, new NodeIDEnt(99));
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No such node"));
@@ -157,85 +151,85 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         /* Test flow variables endpoint */
 
         //test downloading the input flow variables for a node
-        entity = ns().getInputFlowVariables(wfId, "18");
+        entity = ns().getInputFlowVariables(wfId, new NodeIDEnt(18));
         cr(entity, "inputflowvariablesent_18");
 
         //test downloading the output flow variables for a node
-        entity = ns().getOutputFlowVariables(wfId, "18");
+        entity = ns().getOutputFlowVariables(wfId, new NodeIDEnt(18));
         cr(entity, "outputflowvariablesent_18");
 
         /* Test input port object spec endpoint */
 
         //test downloading the port object specs for a node
         //(including different port types, i.e. data table, flow variables and simple port object specs)
-        entity = ns().getInputPortSpecs(wfId, "20");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(20));
         cr(entity, "inportspecsent_20");
 
-        entity = ns().getInputPortSpecs(wfId, "18");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(18));
         cr(entity, "inportspecsent_18");
 
         //test for a node contained in a subworkflow
-        entity = ns().getInputPortSpecs(wfId, "6:3");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(6, 3));
         cr(entity, "inportspecsent_6_3");
 
         //test a inactive port
-        entity = ns().getInputPortSpecs(wfId, "14");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(14));
         cr(entity, "inportspecsent_14");
 
         //test optional port without connection
-        entity = ns().getInputPortSpecs(wfId, "21");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(21));
         cr(entity, "inportspecsent_21");
 
         //test a 'generic' (i.e. not a simple) port object spec
-        entity = ns().getInputPortSpecs(wfId, "22");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(22));
         cr(entity, "inportspecsent_22");
 
         //test another 'generic' (i.e. not a simple) port object spec
-        entity = ns().getInputPortSpecs(wfId, "26");
+        entity = ns().getInputPortSpecs(wfId, new NodeIDEnt(26));
         cr(entity, "inportspecsent_26");
 
 
         /* Test output port object spec endpoint */
 
         //test data table spec
-        entity = ns().getOutputPortSpecs(wfId, "1");
+        entity = ns().getOutputPortSpecs(wfId, new NodeIDEnt(1));
         cr(entity, "outportspecsent_1");
 
         //test a simple port object spec
-        entity = ns().getOutputPortSpecs(wfId, "19");
+        entity = ns().getOutputPortSpecs(wfId, new NodeIDEnt(19));
         cr(entity, "outportspecsent_19");
 
         //outspec of a node that is not configured (outspec is null then)
-        entity = ns().getOutputPortSpecs(wfId, "5");
+        entity = ns().getOutputPortSpecs(wfId, new NodeIDEnt(5));
         cr(entity, "outportspecsent_5");
 
         //test a unsupported port object spec
-        entity = ns().getOutputPortSpecs(wfId, "10");
+        entity = ns().getOutputPortSpecs(wfId, new NodeIDEnt(10));
         cr(entity, "outportspecsent_10");
 
         /* Try getting the output table */
         //at port 1
-        entity = ns().getOutputDataTable(wfId, "1", 1, 2l, 4);
+        entity = ns().getOutputDataTable(wfId, new NodeIDEnt(1), 1, 2l, 4);
         cr(entity, "outportdataent_1_1");
 
         //at port 2
-        entity = ns().getOutputDataTable(wfId, "1", 2, 2l, 10);
+        entity = ns().getOutputDataTable(wfId, new NodeIDEnt(1), 2, 2l, 10);
         cr(entity, "outportdataent_1_2");
 
         //call without 'from' and 'size' parameters - entire table is expected
-        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "1", 1, null, null);
+        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(1), 1, null, null);
         assertThat("Unexpected number of rows", tableEnt.getRows().size(), is(8));
 
         //check exceptions
         try {
-            ns().getOutputDataTable(wfId, "10", 1, 0l, 10);
+            ns().getOutputDataTable(wfId, new NodeIDEnt(10), 1, 0l, 10);
             fail("Expected a ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("Not a table at port index"));
         }
 
         try {
-            ns().getOutputDataTable(wfId, "10", 2, 0l, 10);
+            ns().getOutputDataTable(wfId, new NodeIDEnt(10), 2, 0l, 10);
             fail("Expected a ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(), containsString("No port at index"));

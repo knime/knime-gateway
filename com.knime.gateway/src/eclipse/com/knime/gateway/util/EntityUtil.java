@@ -24,23 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
+import com.knime.gateway.entity.AnnotationIDEnt;
+import com.knime.gateway.entity.ConnectionIDEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 
 /**
- * Utility methods used by the default entity implementations and to deal with other entity related stuff.
+ * Utility methods used by the default entity implementations, tests etc. and to deal with other entity related stuff.
  *
  * @author Martin Horn, University of Konstanz
  * @noreference This class is not intended to be referenced by clients.
  */
 public final class EntityUtil {
-
-    /**
-     * Node id of the root node.
-     */
-    public static final String ROOT_NODE_ID = "root";
 
     private EntityUtil() {
         // utility class
@@ -66,59 +60,51 @@ public final class EntityUtil {
     }
 
     /**
-     * Unifies the conversion from a node id to a string. The root id is either removed or replaced by 'root' if the
-     * node id consist of the root id only.
+     * Helper to more conveniently create a list of {@link NodeIDEnt}s.
      *
-     * @param nodeID a node ID, must not be <code>null</code>
-     * @return the node ID without the root as a string, or <tt>root</tt>
+     * @param ids 2-dim array where the first dim is the list dimension, the second the nested node ids
+     * @return the new list of {@link NodeIDEnt}s
      */
-    public static String nodeIDToString(final NodeID nodeID) {
-        String s = nodeID.toString();
-        int index = s.indexOf(":");
-        return (index >= 0) ? s.substring(index + 1) : EntityUtil.ROOT_NODE_ID;
-    }
-
-
-    /**
-     * Unifies the conversion from a string to the node id.
-     * A root node id is prepended.
-     *
-     * @param rootID the root node id to be prepended
-     * @param nodeID the actual node id or 'root' if the root id
-     * @return the node id as {@link NodeID} object with the root node id prepended
-     */
-    public static NodeID stringToNodeID(final String rootID, final String nodeID) {
-        if (EntityUtil.ROOT_NODE_ID.equals(nodeID)) {
-            return NodeID.fromString(rootID);
-        } else {
-            return NodeIDSuffix.fromString(nodeID).prependParent(NodeID.fromString(rootID));
+    public static List<NodeIDEnt> createNodeIDEntList(final int[][] ids) {
+        List<NodeIDEnt> res = new ArrayList<>();
+        for (int i = 0; i < ids.length; i++) {
+            res.add(new NodeIDEnt(ids[i]));
         }
+        return res;
     }
 
     /**
-     * @param connectionId
-     * @return the connection id as string formatted as '<dest-node-id>_<dest-port-idx>'
+     * Helper to more conveniently create a list of {@link AnnotationIDEnt}s.
+     *
+     * @param nodeIds all node ids
+     * @param indices all annotation indices
+     * @return the new list of {@link AnnotationIDEnt}s
      */
-    public static String connectionIDToString(final ConnectionID connectionId) {
-        String destNodeId = nodeIDToString(connectionId.getDestinationNode());
-        return connectionIDToString(destNodeId, connectionId.getDestinationPort());
+    public static List<AnnotationIDEnt> createAnnotationIDEntList(final int[][] nodeIds, final int... indices) {
+        List<AnnotationIDEnt> res = new ArrayList<AnnotationIDEnt>();
+        assert nodeIds.length == indices.length;
+        for (int i = 0; i < nodeIds.length; i++) {
+            NodeIDEnt id = new NodeIDEnt(nodeIds[i]);
+            res.add(new AnnotationIDEnt(id, indices[i]));
+        }
+        return res;
     }
 
     /**
-     * @param destNodeID
-     * @param destPortIdx
-     * @return the connection id as string formatted as '<dest-node-id>_<dest-port-idx>'
+     * Helper to more conveniently create a list of {@link ConnectionIDEnt}s.
+     *
+     * @param nodeIds all destination node ids
+     * @param indices all destination port indices
+     * @return the new list of {@link ConnectionIDEnt}s
      */
-    public static String connectionIDToString(final String destNodeID, final int destPortIdx) {
-        return String.format("%1$s_%2$d", destNodeID, destPortIdx);
+    public static List<ConnectionIDEnt> createConnectionIDEntList(final int[][] nodeIds, final int... indices) {
+        List<ConnectionIDEnt> res = new ArrayList<>();
+        assert nodeIds.length == indices.length;
+        for (int i = 0; i < nodeIds.length; i++) {
+            NodeIDEnt id = new NodeIDEnt(nodeIds[i]);
+            res.add(new ConnectionIDEnt(id, indices[i]));
+        }
+        return res;
     }
 
-    /**
-     * @param id
-     * @return the annotation id as string formatted as '<node-id>_<index>'
-     */
-    public static String annotationIDToString(final WorkflowAnnotationID id) {
-        String nodeid = nodeIDToString(id.getNodeID());
-        return String.format("%1$s_%2$d", nodeid, id.getIndex());
-    }
 }

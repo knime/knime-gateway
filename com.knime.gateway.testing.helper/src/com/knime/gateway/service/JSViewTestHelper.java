@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.knime.gateway.entity.JavaObjectEnt;
 import com.knime.gateway.entity.JavaObjectEnt.JavaObjectEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.ViewDataEnt;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.testing.helper.ResultChecker;
@@ -76,7 +77,7 @@ public class JSViewTestHelper extends AbstractGatewayServiceTestHelper {
         executeWorkflow(wfId);
 
         //get node views data
-        ViewDataEnt viewDataEnt = ns().getViewData(wfId, "2");
+        ViewDataEnt viewDataEnt = ns().getViewData(wfId, new NodeIDEnt(2));
         //check plain result
         checkViewDataEnt(viewDataEnt, "null");
 
@@ -84,20 +85,20 @@ public class JSViewTestHelper extends AbstractGatewayServiceTestHelper {
         String newViewValue = viewDataEnt.getViewValue().getJsonContent().replace("\"chartTitle\":null", "\"chartTitle\":\"title\"");
         JavaObjectEnt viewContentEnt = builder(JavaObjectEntBuilder.class)
             .setClassname(viewDataEnt.getViewValue().getClassname()).setJsonContent(newViewValue).build();
-        ns().setViewValue(wfId, "2", true, viewContentEnt);
+        ns().setViewValue(wfId, new NodeIDEnt(2), true, viewContentEnt);
         //check new view data
-        checkViewDataEnt(ns().getViewData(wfId, "2"), "title");
+        checkViewDataEnt(ns().getViewData(wfId, new NodeIDEnt(2)), "title");
 
         //check default parameter - i.e. after re-execute, the view data should be the same
-        ns().changeAndGetNodeState(wfId, "2", "reset");
-        ns().changeAndGetNodeState(wfId, "2", "execute");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(2), "reset");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(2), "execute");
         assertThat("View settings have changed after reset",
-            ns().getViewData(wfId, "2").getViewValue().getJsonContent(),
+            ns().getViewData(wfId, new NodeIDEnt(2)).getViewValue().getJsonContent(),
             is(newViewValue));
 
         //test exceptions when view data is requested for a node that doesn't have a js-view
         try {
-            ns().getViewData(wfId, "1");
+            ns().getViewData(wfId, new NodeIDEnt(1));
             fail("Expected ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(), is("Node doesn't provide view data."));

@@ -18,14 +18,13 @@
  */
 package com.knime.gateway.remote.service;
 
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getSubWorkflowManager;
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.stringToAnnotationID;
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.stringToConnectionID;
-import static com.knime.gateway.remote.service.util.DefaultServiceUtil.stringToNodeID;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.entityToAnnotationID;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.entityToConnectionID;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.entityToNodeID;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getWorkflowManager;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowEnt;
 import static com.knime.gateway.util.EntityBuilderUtil.buildWorkflowPartsEnt;
 import static com.knime.gateway.util.EntityTranslateUtil.translateWorkflowPartsEnt;
-import static com.knime.gateway.util.EntityUtil.connectionIDToString;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,7 +38,6 @@ import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -48,7 +46,10 @@ import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.ConnectionEnt;
+import com.knime.gateway.entity.ConnectionIDEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt;
@@ -64,7 +65,6 @@ import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
 import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Default implementation of {@link WorkflowService} that delegates the operations to knime.core (e.g.
@@ -99,27 +99,11 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final UUID rootWorkflowID) {
-        WorkflowEnt ent = createWorkflowEnt(rootWorkflowID);
-        return m_entityRepo.commit(rootWorkflowID, null, ent);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PatchEnt getWorkflowDiff(final UUID rootWorkflowID, final UUID snapshotID) throws NotFoundException {
-        return createWorkflowDiff(snapshotID, createWorkflowEnt(rootWorkflowID));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public WorkflowSnapshotEnt getSubWorkflow(final UUID rootWorkflowID, final String nodeID)
+    public WorkflowSnapshotEnt getWorkflow(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NotASubWorkflowException, NodeNotFoundException {
-        if (nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
-            return getWorkflow(rootWorkflowID);
+        if (nodeID.equals(NodeIDEnt.getRootID())) {
+            WorkflowEnt ent = createWorkflowEnt(rootWorkflowID);
+            return m_entityRepo.commit(rootWorkflowID, null, ent);
         }
         WorkflowEnt ent = createSubWorkflowEnt(rootWorkflowID, nodeID);
         return m_entityRepo.commit(rootWorkflowID, nodeID, ent);
@@ -129,10 +113,10 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public PatchEnt getSubWorkflowDiff(final UUID rootWorkflowID, final String nodeID, final UUID snapshotID)
+    public PatchEnt getWorkflowDiff(final UUID rootWorkflowID, final NodeIDEnt nodeID, final UUID snapshotID)
         throws NotASubWorkflowException, NotFoundException {
-        if (nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
-            return getWorkflowDiff(rootWorkflowID, snapshotID);
+        if (nodeID.equals(NodeIDEnt.getRootID())) {
+            return createWorkflowDiff(snapshotID, createWorkflowEnt(rootWorkflowID));
         }
         try {
             return createWorkflowDiff(snapshotID, createSubWorkflowEnt(rootWorkflowID, nodeID));
@@ -147,11 +131,11 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public UUID createWorkflowCopy(final UUID rootWorkflowID, final WorkflowPartsEnt parts)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
-        WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parts.getParentNodeID());
+        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parts.getParentNodeID());
         UUID partID = UUID.randomUUID();
         WorkflowPersistor copy;
-        WorkflowCopyContent content = translateWorkflowPartsEnt(parts, s -> stringToNodeID(rootWorkflowID, s),
-            s -> stringToAnnotationID(rootWorkflowID, s));
+        WorkflowCopyContent content = translateWorkflowPartsEnt(parts, s -> entityToNodeID(rootWorkflowID, s),
+            s -> entityToAnnotationID(rootWorkflowID, s));
         for (WorkflowAnnotationID id : content.getAnnotationIDs()) {
             if (wfm.getWorkflowAnnotations(id)[0] == null) {
                 throw new InvalidRequestException("Failed to copy parts: No annotation with ID " + id);
@@ -173,7 +157,7 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public UUID deleteWorkflowParts(final UUID rootWorkflowID, final WorkflowPartsEnt parts, final Boolean copy)
         throws NotASubWorkflowException, NodeNotFoundException, ActionNotAllowedException {
-        WorkflowManager wfm = getSubWorkflowManager(rootWorkflowID, parts.getParentNodeID());
+        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parts.getParentNodeID());
         if (parts.getAnnotationIDs().isEmpty() && parts.getNodeIDs().isEmpty() && parts.getConnectionIDs().isEmpty()) {
             return null;
         }
@@ -182,13 +166,13 @@ public class DefaultWorkflowService implements WorkflowService {
         if (copy != null && copy) {
             //create a copy before removal
             WorkflowPersistor wp = wfm.copy(true, translateWorkflowPartsEnt(parts,
-                s -> stringToNodeID(rootWorkflowID, s), s -> stringToAnnotationID(rootWorkflowID, s)));
+                e -> entityToNodeID(rootWorkflowID, e), e -> entityToAnnotationID(rootWorkflowID, e)));
             partsID = UUID.randomUUID();
             m_copyRepo.put(partsID, wp);
         }
 
-        for (String nodeID : parts.getNodeIDs()) {
-            NodeID id = stringToNodeID(rootWorkflowID, nodeID);
+        for (NodeIDEnt nodeID : parts.getNodeIDs()) {
+            NodeID id = entityToNodeID(rootWorkflowID, nodeID);
             if (!wfm.containsNodeContainer(id)) {
                 continue;
             }
@@ -207,8 +191,8 @@ public class DefaultWorkflowService implements WorkflowService {
             }
         }
 
-        for (String connectionID : parts.getConnectionIDs()) {
-            ConnectionID id = stringToConnectionID(rootWorkflowID, connectionID);
+        for (ConnectionIDEnt connectionID : parts.getConnectionIDs()) {
+            ConnectionID id = entityToConnectionID(rootWorkflowID, connectionID);
             try {
                 ConnectionContainer cc;
                 if ((cc = wfm.getConnection(id)) != null) {
@@ -225,8 +209,8 @@ public class DefaultWorkflowService implements WorkflowService {
             }
         }
 
-        for (String annotationID : parts.getAnnotationIDs()) {
-            WorkflowAnnotationID id = stringToAnnotationID(rootWorkflowID, annotationID);
+        for (AnnotationIDEnt annotationID : parts.getAnnotationIDs()) {
+            WorkflowAnnotationID id = entityToAnnotationID(rootWorkflowID, annotationID);
             WorkflowAnnotation workflowAnnotation = wfm.getWorkflowAnnotations(id)[0];
             if (workflowAnnotation != null) {
                 wfm.removeAnnotation(workflowAnnotation);
@@ -240,10 +224,10 @@ public class DefaultWorkflowService implements WorkflowService {
      */
     @Override
     public WorkflowPartsEnt pasteWorkflowParts(final UUID rootWorkflowID, final UUID partsID, final Integer x,
-        final Integer y, final String nodeID) throws NotASubWorkflowException, NotFoundException, NotFoundException {
+        final Integer y, final NodeIDEnt nodeID) throws NotASubWorkflowException, NotFoundException, NotFoundException {
         WorkflowManager wfm;
         try {
-            wfm = getSubWorkflowManager(rootWorkflowID, nodeID);
+            wfm = getWorkflowManager(rootWorkflowID, nodeID);
         } catch (NodeNotFoundException ex) {
             throw new NotFoundException("No node found for the given parent-id", ex);
         }
@@ -317,10 +301,10 @@ public class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public String createConnection(final UUID rootWorkflowID, final ConnectionEnt connection)
+    public ConnectionIDEnt createConnection(final UUID rootWorkflowID, final ConnectionEnt connection)
         throws ActionNotAllowedException {
-        NodeID source = stringToNodeID(rootWorkflowID, connection.getSource());
-        NodeID dest = stringToNodeID(rootWorkflowID, connection.getDest());
+        NodeID source = entityToNodeID(rootWorkflowID, connection.getSource());
+        NodeID dest = entityToNodeID(rootWorkflowID, connection.getDest());
 
         //get prefix that references the subworkflow
         NodeID prefix;
@@ -338,7 +322,7 @@ public class DefaultWorkflowService implements WorkflowService {
 
         WorkflowManager wfm;
         try {
-            wfm = getSubWorkflowManager(rootWorkflowID, EntityUtil.nodeIDToString(prefix));
+            wfm = getWorkflowManager(rootWorkflowID, new NodeIDEnt(prefix));
         } catch (NotASubWorkflowException | NodeNotFoundException ex) {
             throw new ServiceExceptions.ActionNotAllowedException(
                 "Parent id of dest/source node-id doesn't reference a (sub-)workflow.");
@@ -355,7 +339,7 @@ public class DefaultWorkflowService implements WorkflowService {
         int[][] bendpoints = connection.getBendPoints().stream().map(xy -> new int[]{xy.getX(), xy.getY()})
             .toArray(size -> new int[size][]);
         cc.setUIInfo(ConnectionUIInformation.builder().setBendpoints(bendpoints).build());
-        return connectionIDToString(cc.getID());
+        return new ConnectionIDEnt(cc.getID());
     }
 
     private static WorkflowEnt createWorkflowEnt(final UUID rootWorkflowID) {
@@ -368,14 +352,14 @@ public class DefaultWorkflowService implements WorkflowService {
         return buildWorkflowEnt(wfm, rootWorkflowID);
     }
 
-    private static WorkflowEnt createSubWorkflowEnt(final UUID rootWorkflowID, final String nodeID)
+    private static WorkflowEnt createSubWorkflowEnt(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NotASubWorkflowException, NodeNotFoundException {
         // get the right IWorkflowManager for the given id and create a WorkflowEnt from it
         WorkflowManager rootWfm = WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
         try {
             NodeContainer metaNode =
-                rootWfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(rootWfm.getID()));
+                rootWfm.findNodeContainer(nodeID.toNodeID(rootWfm.getID()));
             if (metaNode instanceof WorkflowManager) {
                 WorkflowManager wfm = (WorkflowManager)metaNode;
                 if (wfm.isEncrypted()) {

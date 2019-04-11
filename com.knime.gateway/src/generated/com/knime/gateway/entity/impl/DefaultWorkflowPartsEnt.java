@@ -33,10 +33,10 @@ import com.knime.gateway.entity.WorkflowPartsEnt;
 @javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultWorkflowPartsEnt  implements WorkflowPartsEnt {
 
-  protected String m_parentNodeID;
-  protected java.util.List<String> m_nodeIDs;
-  protected java.util.List<String> m_connectionIDs;
-  protected java.util.List<String> m_annotationIDs;
+  protected com.knime.gateway.entity.NodeIDEnt m_parentNodeID;
+  protected java.util.List<com.knime.gateway.entity.NodeIDEnt> m_nodeIDs;
+  protected java.util.List<com.knime.gateway.entity.ConnectionIDEnt> m_connectionIDs;
+  protected java.util.List<com.knime.gateway.entity.AnnotationIDEnt> m_annotationIDs;
   
   protected DefaultWorkflowPartsEnt() {
     //for sub-classes
@@ -78,22 +78,22 @@ public class DefaultWorkflowPartsEnt  implements WorkflowPartsEnt {
 
 
   @Override
-  public String getParentNodeID() {
+  public com.knime.gateway.entity.NodeIDEnt getParentNodeID() {
         return m_parentNodeID;
     }
     
   @Override
-  public java.util.List<String> getNodeIDs() {
+  public java.util.List<com.knime.gateway.entity.NodeIDEnt> getNodeIDs() {
         return m_nodeIDs;
     }
     
   @Override
-  public java.util.List<String> getConnectionIDs() {
+  public java.util.List<com.knime.gateway.entity.ConnectionIDEnt> getConnectionIDs() {
         return m_connectionIDs;
     }
     
   @Override
-  public java.util.List<String> getAnnotationIDs() {
+  public java.util.List<com.knime.gateway.entity.AnnotationIDEnt> getAnnotationIDs() {
         return m_annotationIDs;
     }
     
@@ -104,13 +104,13 @@ public class DefaultWorkflowPartsEnt  implements WorkflowPartsEnt {
             
         }
     
-        private String m_parentNodeID;
-        private java.util.List<String> m_nodeIDs = new java.util.ArrayList<>();
-        private java.util.List<String> m_connectionIDs = new java.util.ArrayList<>();
-        private java.util.List<String> m_annotationIDs = new java.util.ArrayList<>();
+        private com.knime.gateway.entity.NodeIDEnt m_parentNodeID;
+        private java.util.List<com.knime.gateway.entity.NodeIDEnt> m_nodeIDs = new java.util.ArrayList<>();
+        private java.util.List<com.knime.gateway.entity.ConnectionIDEnt> m_connectionIDs = new java.util.ArrayList<>();
+        private java.util.List<com.knime.gateway.entity.AnnotationIDEnt> m_annotationIDs = new java.util.ArrayList<>();
 
         @Override
-        public DefaultWorkflowPartsEntBuilder setParentNodeID(String parentNodeID) {
+        public DefaultWorkflowPartsEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID) {
              if(parentNodeID == null) {
                  throw new IllegalArgumentException("parentNodeID must not be null.");
              }
@@ -119,19 +119,19 @@ public class DefaultWorkflowPartsEnt  implements WorkflowPartsEnt {
         }
 
         @Override
-        public DefaultWorkflowPartsEntBuilder setNodeIDs(java.util.List<String> nodeIDs) {
+        public DefaultWorkflowPartsEntBuilder setNodeIDs(java.util.List<com.knime.gateway.entity.NodeIDEnt> nodeIDs) {
              m_nodeIDs = nodeIDs;
              return this;
         }
 
         @Override
-        public DefaultWorkflowPartsEntBuilder setConnectionIDs(java.util.List<String> connectionIDs) {
+        public DefaultWorkflowPartsEntBuilder setConnectionIDs(java.util.List<com.knime.gateway.entity.ConnectionIDEnt> connectionIDs) {
              m_connectionIDs = connectionIDs;
              return this;
         }
 
         @Override
-        public DefaultWorkflowPartsEntBuilder setAnnotationIDs(java.util.List<String> annotationIDs) {
+        public DefaultWorkflowPartsEntBuilder setAnnotationIDs(java.util.List<com.knime.gateway.entity.AnnotationIDEnt> annotationIDs) {
              m_annotationIDs = annotationIDs;
              return this;
         }

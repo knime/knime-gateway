@@ -63,13 +63,13 @@ import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.entity.NodeAnnotationEnt;
 import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeMessageEnt;
 import com.knime.gateway.entity.NodeStateEnt;
 import com.knime.gateway.entity.NodeStateEnt.StateEnum;
 import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.util.EntityTranslateUtil;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Entity-proxy class that proxies {@link NodeEnt} and implements {@link NodeContainerUI}.
@@ -137,8 +137,8 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
         }
         if (getEntity().getParentNodeID() != null) {
             //get parent wf
-            String parentNodeID;
-            if (EntityUtil.ROOT_NODE_ID.equals(getEntity().getParentNodeID())) {
+            NodeIDEnt parentNodeID;
+            if (NodeIDEnt.getRootID().equals(getEntity().getParentNodeID())) {
                 //parent is the highest level workflow
                 //the node id has then no meaning here and need to be empty
                 parentNodeID = null;

@@ -43,7 +43,7 @@ public interface WorkflowService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.ActionNotAllowedException If the an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
      */
-    String createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException;
+    com.knime.gateway.entity.ConnectionIDEnt createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException;
         
     /**
      * Selects and essentially copies the specified part of the workflow. It will still be available even if (sub)parts are deleted. The parts are referenced by a part-id.  Note: connections will be ignored and _not_ copied!
@@ -73,49 +73,29 @@ public interface WorkflowService extends GatewayService {
     java.util.UUID deleteWorkflowParts(java.util.UUID jobId, WorkflowPartsEnt workflowPartsEnt, Boolean copy)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
         
     /**
-     * Retrieves the complete structure (nodes, connections, annotations) of sub-workflows.
+     * Retrieves the complete structure (nodes, connections, annotations) of (sub-)workflows.
      *
      * @param jobId ID of the job the workflow is requested for.
-     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    WorkflowSnapshotEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Gives the changes of the sub-workflow as a patch.
      *
      * @param jobId ID of the job the workflow is requested for.
-     * @param nodeId The ID of a node. The node-id format: For nested nodes the node ids are concatenated with an &#39;:&#39;, e.g. 3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. 3:6:0:4 (if 3:6 is a wrapped metanode).
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
      * @param snapshotId The id of the workflow snapshot already retrieved.
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
-    PatchEnt getSubWorkflowDiff(java.util.UUID jobId, String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
-        
-    /**
-     * Retrieves the complete structure (nodes, connections, annotations) of the workflow
-     *
-     * @param jobId ID of the job the workflow is requested for.
-     *
-     * @return the result
-     */
-    WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId) ;
-        
-    /**
-     * Gives the changes of the workflow as patch. Please note that there is not always a snapshot available for the provided snapshot id, either because the snapshot never existed or has expired.
-     *
-     * @param jobId ID of the job the workflow is requested for.
-     * @param snapshotId The id of the workflow snapshot already retrieved.
-     *
-     * @return the result
-     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
-     */
-    PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException;
+    PatchEnt getWorkflowDiff(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         
     /**
      * Pastes the referenced parts into the referenced (sub-)workflow.
@@ -124,12 +104,12 @@ public interface WorkflowService extends GatewayService {
      * @param partsId The id referencing the parts to paste.
      * @param x The x position to paste the parts.
      * @param y The y position to paste the parts.
-     * @param nodeId The ID of the node referencing a sub-workflow to paste the parts into. If none is given it will be pasted into the root workflow. For nested sub-workflows the node id&#39;s are concatenated with an &#39;:&#39; (e.g. 6:4:3).
+     * @param nodeId The ID of the node referencing a sub-workflow to paste the parts into. If none is given it will be pasted into the root workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
      */
-    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         
 }

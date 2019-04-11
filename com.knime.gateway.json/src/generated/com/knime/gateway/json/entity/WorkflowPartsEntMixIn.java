@@ -55,19 +55,19 @@ public interface WorkflowPartsEntMixIn extends WorkflowPartsEnt {
 
     @Override
     @JsonProperty("parentNodeID")
-    public String getParentNodeID();
+    public com.knime.gateway.entity.NodeIDEnt getParentNodeID();
     
     @Override
     @JsonProperty("nodeIDs")
-    public java.util.List<String> getNodeIDs();
+    public java.util.List<com.knime.gateway.entity.NodeIDEnt> getNodeIDs();
     
     @Override
     @JsonProperty("connectionIDs")
-    public java.util.List<String> getConnectionIDs();
+    public java.util.List<com.knime.gateway.entity.ConnectionIDEnt> getConnectionIDs();
     
     @Override
     @JsonProperty("annotationIDs")
-    public java.util.List<String> getAnnotationIDs();
+    public java.util.List<com.knime.gateway.entity.AnnotationIDEnt> getAnnotationIDs();
     
 
     /**
@@ -91,19 +91,19 @@ public interface WorkflowPartsEntMixIn extends WorkflowPartsEnt {
     
         @Override
         @JsonProperty("parentNodeID")
-        public WorkflowPartsEntMixInBuilder setParentNodeID(final String parentNodeID);
+        public WorkflowPartsEntMixInBuilder setParentNodeID(final com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         @Override
         @JsonProperty("nodeIDs")
-        public WorkflowPartsEntMixInBuilder setNodeIDs(final java.util.List<String> nodeIDs);
+        public WorkflowPartsEntMixInBuilder setNodeIDs(final java.util.List<com.knime.gateway.entity.NodeIDEnt> nodeIDs);
         
         @Override
         @JsonProperty("connectionIDs")
-        public WorkflowPartsEntMixInBuilder setConnectionIDs(final java.util.List<String> connectionIDs);
+        public WorkflowPartsEntMixInBuilder setConnectionIDs(final java.util.List<com.knime.gateway.entity.ConnectionIDEnt> connectionIDs);
         
         @Override
         @JsonProperty("annotationIDs")
-        public WorkflowPartsEntMixInBuilder setAnnotationIDs(final java.util.List<String> annotationIDs);
+        public WorkflowPartsEntMixInBuilder setAnnotationIDs(final java.util.List<com.knime.gateway.entity.AnnotationIDEnt> annotationIDs);
         
     }
 

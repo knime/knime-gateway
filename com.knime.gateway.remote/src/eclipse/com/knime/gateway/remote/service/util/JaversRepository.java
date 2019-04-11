@@ -36,6 +36,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.EntityBuilderManager;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.entity.WorkflowSnapshotEnt;
@@ -64,10 +65,10 @@ public class JaversRepository implements WorkflowEntRepository {
 
     private final Map<UUID, SnapshotMetadata> m_snapshotMetadataMap = new HashMap<>();
 
-    private final Map<Pair<UUID, String>, UUID> m_latestSnapshotIDs = new HashMap<>();
+    private final Map<Pair<UUID, NodeIDEnt>, UUID> m_latestSnapshotIDs = new HashMap<>();
 
     @Override
-    public WorkflowSnapshotEnt commit(final UUID workflowID, final String nodeID, final WorkflowEnt entity) {
+    public WorkflowSnapshotEnt commit(final UUID workflowID, final NodeIDEnt nodeID, final WorkflowEnt entity) {
         if (!(entity instanceof DefaultWorkflowEnt)) {
             throw new IllegalArgumentException(
                 "Javers repository only supports default entity implementations so far!");
@@ -117,7 +118,7 @@ public class JaversRepository implements WorkflowEntRepository {
         m_latestSnapshotIDs.entrySet().removeIf(e -> e.getKey().getFirst().equals(workflowID));
     }
 
-    private UUID commitInternal(final UUID workflowID, final String nodeID, final WorkflowEnt entity) {
+    private UUID commitInternal(final UUID workflowID, final NodeIDEnt nodeID, final WorkflowEnt entity) {
         Commit commit = getOrCreateRepo(workflowID).commit("knime",
             new WorkflowEntWrapper(getNonNullNodeID(nodeID), (DefaultWorkflowEnt)entity));
         UUID snapshotID;
@@ -148,8 +149,8 @@ public class JaversRepository implements WorkflowEntRepository {
         return m_repos.computeIfAbsent(workflowID, id -> JaversBuilder.javers().build());
     }
 
-    private static String getNonNullNodeID(final String nodeID) {
-        return nodeID == null ? "" : nodeID;
+    private static NodeIDEnt getNonNullNodeID(final NodeIDEnt nodeID) {
+        return nodeID == null ? NodeIDEnt.getRootID() : nodeID;
     }
 
     private void logStats() {
@@ -161,9 +162,9 @@ public class JaversRepository implements WorkflowEntRepository {
         private final DefaultWorkflowEnt m_ent;
 
         @Id
-        private final String m_workflowID;
+        private final NodeIDEnt m_workflowID;
 
-        public WorkflowEntWrapper(final String workflowID, final DefaultWorkflowEnt ent) {
+        public WorkflowEntWrapper(final NodeIDEnt workflowID, final DefaultWorkflowEnt ent) {
             m_workflowID = workflowID;
             m_ent = ent;
         }
@@ -176,11 +177,11 @@ public class JaversRepository implements WorkflowEntRepository {
     private static class SnapshotMetadata {
         private final UUID m_rootWorkflowID;
 
-        private final String m_nodeID;
+        private final NodeIDEnt m_nodeID;
 
         private final CommitId m_commitID;
 
-        public SnapshotMetadata(final UUID rootWorkflowID, final String nodeID, final CommitId commitID) {
+        public SnapshotMetadata(final UUID rootWorkflowID, final NodeIDEnt nodeID, final CommitId commitID) {
             m_rootWorkflowID = rootWorkflowID;
             m_nodeID = nodeID;
             m_commitID = commitID;
@@ -190,7 +191,7 @@ public class JaversRepository implements WorkflowEntRepository {
             return m_rootWorkflowID;
         }
 
-        public String getNodeID() {
+        public NodeIDEnt getNodeID() {
             return m_nodeID;
         }
 

@@ -42,16 +42,16 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
 
 
   /**
-   * Node ID of the virtual in-node (i.e. source).
+   * Node ID of the virtual in-node (i.e. source). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
    * @return virtualInNodeID 
    **/
-  public String getVirtualInNodeID();
+  public com.knime.gateway.entity.NodeIDEnt getVirtualInNodeID();
 
   /**
-   * Node ID of the virtual out-node (i.e. sink).
+   * Node ID of the virtual out-node (i.e. sink). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
    * @return virtualOutNodeID 
    **/
-  public String getVirtualOutNodeID();
+  public com.knime.gateway.entity.NodeIDEnt getVirtualOutNodeID();
 
   /**
    * Whether this node is inactive, e.g. due to inactive connections
@@ -93,7 +93,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
          * @param nodeID the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WrappedWorkflowNodeEntBuilder setNodeID(String nodeID);
+        WrappedWorkflowNodeEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID);
         
         /**
          * The type of the node.
@@ -109,7 +109,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
          * @param parentNodeID the property value,  
          * @return this entity builder for chaining
          */
-        WrappedWorkflowNodeEntBuilder setParentNodeID(String parentNodeID);
+        WrappedWorkflowNodeEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID);
         
         /**
          * The id of the root workflow this node is contained in or represents.
@@ -248,20 +248,20 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
         
         /**
-         * Node ID of the virtual in-node (i.e. source).
+         * Node ID of the virtual in-node (i.e. source). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
          * 
          * @param virtualInNodeID the property value,  
          * @return this entity builder for chaining
          */
-        WrappedWorkflowNodeEntBuilder setVirtualInNodeID(String virtualInNodeID);
+        WrappedWorkflowNodeEntBuilder setVirtualInNodeID(com.knime.gateway.entity.NodeIDEnt virtualInNodeID);
         
         /**
-         * Node ID of the virtual out-node (i.e. sink).
+         * Node ID of the virtual out-node (i.e. sink). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
          * 
          * @param virtualOutNodeID the property value,  
          * @return this entity builder for chaining
          */
-        WrappedWorkflowNodeEntBuilder setVirtualOutNodeID(String virtualOutNodeID);
+        WrappedWorkflowNodeEntBuilder setVirtualOutNodeID(com.knime.gateway.entity.NodeIDEnt virtualOutNodeID);
         
         /**
          * Whether this node is inactive, e.g. due to inactive connections

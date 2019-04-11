@@ -49,12 +49,12 @@ import org.knime.core.util.Pair;
 import com.knime.gateway.entity.DataCellEnt;
 import com.knime.gateway.entity.DataRowEnt;
 import com.knime.gateway.entity.DataTableEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.testing.helper.ResultChecker;
 import com.knime.gateway.testing.helper.ServiceProvider;
 import com.knime.gateway.testing.helper.TestUtil;
 import com.knime.gateway.testing.helper.WorkflowLoader;
 import com.knime.gateway.util.EntityTranslateUtil;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Tests to make sure that data at a node's output port is still exactly the same data when passed through the gateway
@@ -100,12 +100,12 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
     	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
 
         //compare first port of node #3
-        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "3", 1, 0l, 100);
-        compare(tableEnt, "3", 1, 0, 100);
+        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(3), 1, 0l, 100);
+        compare(tableEnt, new NodeIDEnt(3), 1, 0, 100);
 
         //compare the first port of node #5 (transposed table)
-        tableEnt = ns().getOutputDataTable(wfId, "5", 1, 0l, 100);
-        compare(tableEnt, "5", 1, 0, 100);
+        tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(5), 1, 0l, 100);
+        compare(tableEnt, new NodeIDEnt(5), 1, 0, 100);
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
@@ -119,8 +119,8 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
 
         //compare first port of node #8
-        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "8", 1, 23l, 100);
-        compare(tableEnt, "8", 1, 23, 100);
+        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(8), 1, 23l, 100);
+        compare(tableEnt, new NodeIDEnt(8), 1, 23, 100);
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
@@ -134,8 +134,8 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
 
         //get first port of node #9
-        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, "9", 1, 23l, 100);
-        compare(tableEnt, "9", 1, 23l, 100);
+        DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(9), 1, 23l, 100);
+        compare(tableEnt, new NodeIDEnt(9), 1, 23l, 100);
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
@@ -148,7 +148,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
     public void testDirectAccessTableExceedingTotalRowCount() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
         Assert.assertThat("Empty list of rows expected",
-            ns().getOutputDataTable(wfId, "8", 1, 1001l, 10).getRows().isEmpty(), is(true));
+            ns().getOutputDataTable(wfId, new NodeIDEnt(8), 1, 1001l, 10).getRows().isEmpty(), is(true));
 
         TestUtil.cancelAndCloseLoadedWorkflow(m_workflowManager);
     }
@@ -166,7 +166,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws CanceledExecutionException
      * @throws IndexOutOfBoundsException
      */
-    private void compare(final DataTableEnt tableEnt, final String nodeID, final int portIdx, final long startIdx,
+    private void compare(final DataTableEnt tableEnt, final NodeIDEnt nodeID, final int portIdx, final long startIdx,
         final int count) throws IndexOutOfBoundsException, CanceledExecutionException, UnknownRowCountException {
         Pair<List<DataRow>, Long> dataRowsAndTotalCount = getDataRowsAndTotalCount(nodeID, portIdx, startIdx, count);
 
@@ -206,11 +206,11 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws IndexOutOfBoundsException
      * @throws UnknownRowCountException
      */
-    private Pair<List<DataRow>, Long> getDataRowsAndTotalCount(final String nodeID, final int portIdx, final long from,
+    private Pair<List<DataRow>, Long> getDataRowsAndTotalCount(final NodeIDEnt nodeID, final int portIdx, final long from,
         final int count) throws IndexOutOfBoundsException, CanceledExecutionException {
         PortObject portObject =
-            m_workflowManager.getNodeContainer(EntityUtil.stringToNodeID(m_workflowManager.getID().toString(), nodeID))
-                .getOutPort(portIdx).getPortObject();
+            m_workflowManager.getNodeContainer(nodeID.toNodeID(m_workflowManager.getID())).getOutPort(portIdx)
+                .getPortObject();
         if (portObject instanceof BufferedDataTable) {
             BufferedDataTable bdt = (BufferedDataTable)portObject;
             return Pair.create(

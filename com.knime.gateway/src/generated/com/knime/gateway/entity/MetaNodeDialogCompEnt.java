@@ -44,7 +44,7 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
    * The id of the node contributing to this dialog.
    * @return nodeID 
    **/
-  public String getNodeID();
+  public com.knime.gateway.entity.NodeIDEnt getNodeID();
 
   /**
    * Whether the component should be hidden in the subnode&#39;s dialog.
@@ -78,7 +78,7 @@ public interface MetaNodeDialogCompEnt extends GatewayEntity {
          * @param nodeID the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeDialogCompEntBuilder setNodeID(String nodeID);
+        MetaNodeDialogCompEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID);
         
         /**
          * Whether the component should be hidden in the subnode&#39;s dialog.

@@ -98,7 +98,7 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     
     @Override
     @JsonProperty("annotationID")
-    public String getAnnotationID();
+    public com.knime.gateway.entity.AnnotationIDEnt getAnnotationID();
     
 
     /**
@@ -162,7 +162,7 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         
         @Override
         @JsonProperty("annotationID")
-        public WorkflowAnnotationEntMixInBuilder setAnnotationID(final String annotationID);
+        public WorkflowAnnotationEntMixInBuilder setAnnotationID(final com.knime.gateway.entity.AnnotationIDEnt annotationID);
         
     }
 

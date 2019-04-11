@@ -61,37 +61,11 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
     }
     
     @Override
-    public void setAnnotationBounds(java.util.UUID jobId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotFoundException {
+    public void setAnnotationBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, com.knime.gateway.entity.AnnotationIDEnt annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             doRequest(c -> {
                 try {
-                    return c.setAnnotationBounds(jobId, annoId, toByteArray(boundsEnt));
-                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
-                    //server errors
-                    throw new ServiceException("Internal server error.", ex);
-                } catch (ProcessingException e) {
-                    //in case the server cannot be reached (timeout, connection refused)
-                    throw new ServiceException("Server doesn't seem to be reachable.",
-                        e.getCause());
-                }
-            });
-        } catch (WebApplicationException ex) {
-            //executor errors
-            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
-            if (gatewayException.getExceptionName().equals("NotFoundException")) {
-                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
-            }
-            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
-                + "' with message: " + gatewayException.getExceptionMessage());
-        }
-    }
-    
-    @Override
-    public void setAnnotationBoundsInSubWorkflow(java.util.UUID jobId, String nodeId, String annoId, BoundsEnt boundsEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
-        try{
-            doRequest(c -> {
-                try {
-                    return c.setAnnotationBoundsInSubWorkflow(jobId, nodeId, annoId, toByteArray(boundsEnt));
+                    return c.setAnnotationBounds(jobId, nodeId.toString(), annoId.toString(), toByteArray(boundsEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

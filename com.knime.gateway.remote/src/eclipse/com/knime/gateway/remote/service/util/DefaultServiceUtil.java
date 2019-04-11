@@ -24,18 +24,19 @@ import java.util.UUID;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
+import com.knime.gateway.entity.ConnectionIDEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.remote.endpoint.WorkflowProject;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.service.util.ServiceExceptions;
 import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
-import com.knime.gateway.util.EntityUtil;
 
 /**
  * Helper methods useful for the default service implementations.
@@ -52,20 +53,20 @@ public class DefaultServiceUtil {
      * Gets the node container (including (sub-)workflows) for the id-pair of root workflow- and node ID.
      *
      * @param rootWorkflowID id of the root workflow
-     * @param nodeID the node id to get the node/workflow for - if {@link EntityUtil#ROOT_NODE_ID} the root workflow
+     * @param nodeID the node id to get the node/workflow for - if {@link NodeIDEnt#getRootID()} the root workflow
      *            itself will be returned
      * @return the {@link NodeContainer} instance
      * @throws NodeNotFoundException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
-    public static NodeContainer getNodeContainer(final UUID rootWorkflowID, final String nodeID)
+    public static NodeContainer getNodeContainer(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException {
         WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
-        if (nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
+        if (nodeID.equals(NodeIDEnt.getRootID())) {
             return wfm;
         } else {
             try {
-                return wfm.findNodeContainer(NodeIDSuffix.fromString(nodeID).prependParent(wfm.getID()));
+                return wfm.findNodeContainer(nodeID.toNodeID(wfm.getID()));
             } catch (IllegalArgumentException e) {
                 throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
             }
@@ -105,10 +106,10 @@ public class DefaultServiceUtil {
      * @throws NotASubWorkflowException if the node id doesn't reference a workflow (i.e. a sub- or metanode)
      * @throws NodeNotFoundException if there is no node for the given node id
      */
-    public static WorkflowManager getSubWorkflowManager(final UUID rootWorkflowID, final String nodeID)
+    public static WorkflowManager getWorkflowManager(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NotASubWorkflowException, NodeNotFoundException {
         NodeContainer nodeContainer;
-        if (nodeID == null || nodeID.equals(EntityUtil.ROOT_NODE_ID)) {
+        if (nodeID == null || nodeID.equals(NodeIDEnt.getRootID())) {
             nodeContainer = getRootWorkflowManager(rootWorkflowID);
         } else {
             nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
@@ -125,7 +126,7 @@ public class DefaultServiceUtil {
 
     /**
      * Gets the root workflow manager and the contained node container at the same time (see
-     * {@link #getNodeContainer(UUID, String)} and {@link #getRootWorkflowManager(UUID)}).
+     * {@link #getNodeContainer(UUID, NodeIDEnt)} and {@link #getRootWorkflowManager(UUID)}).
      *
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
@@ -133,51 +134,46 @@ public class DefaultServiceUtil {
      * @throws NodeNotFoundException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
-    public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final UUID rootWorkflowID, final String nodeID)
-        throws NodeNotFoundException {
+    public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final UUID rootWorkflowID,
+        final NodeIDEnt nodeID) throws NodeNotFoundException {
         return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
     }
 
     /**
-     * Converts a string representation of a node id (as provided by gateway entities) to a {@link NodeID} instance.
+     * Converts a node id entity (as provided by gateway entities) to a {@link NodeID} instance.
      *
      * @param rootWorkflowID id of the workflow the node belongs to
-     * @param nodeID the node id (without the root workflow node id)
+     * @param nodeID the node id entity
      *
      * @return the {@link NodeID} instance
      */
-    public static NodeID stringToNodeID(final UUID rootWorkflowID, final String nodeID) {
-        return EntityUtil.stringToNodeID(getRootWorkflowManager(rootWorkflowID).getID().toString(), nodeID);
+    public static NodeID entityToNodeID(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
+        return nodeID.toNodeID(getRootWorkflowManager(rootWorkflowID).getID());
     }
 
     /**
-     * Converts/parses a string representation of a annotation id (as provided by gateway entities) to a
+     * Converts annotation id entity (as provided by gateway entities) to a
      * {@link WorkflowAnnotationID}-instance.
      *
      * @param rootWorkflowID id of the root(!) workflow the annotations belongs to
-     * @param annotationID the annotation id to parse (without the root workflow node id)
+     * @param annotationID the annotation id entity to convert
      * @return the {@link WorkflowAnnotationID} instance
      */
-    public static WorkflowAnnotationID stringToAnnotationID(final UUID rootWorkflowID, final String annotationID) {
-        String[] split = annotationID.split("_");
-        NodeID nodeID = stringToNodeID(rootWorkflowID, split[0]);
-        return new WorkflowAnnotationID(nodeID, Integer.valueOf(split[1]));
+    public static WorkflowAnnotationID entityToAnnotationID(final UUID rootWorkflowID,
+        final AnnotationIDEnt annotationID) {
+        NodeID nodeID = entityToNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
+        return new WorkflowAnnotationID(nodeID, annotationID.getIndex());
     }
 
     /**
-     * Converts a string representation of a connection id (as provided by gateway entities) to a {@link ConnectionID}
-     * instance.
+     * Converts a connection id entity (as provided by gateway entities) to a {@link ConnectionID} instance.
      *
      * @param rootWorkflowID id of the workflow the connection belongs to
-     *
-     * @param s the string representation to convert
+     * @param connectionID the id entity to convert
      * @return the {@link ConnectionID} instance
      */
-    public static ConnectionID stringToConnectionID(final UUID rootWorkflowID, final String s) {
-        if (!s.contains("_")) {
-            throw new IllegalArgumentException("Unable to parse connection id from string.");
-        }
-        String[] split = s.split("_");
-        return new ConnectionID(stringToNodeID(rootWorkflowID, split[0]), Integer.valueOf(split[1]));
+    public static ConnectionID entityToConnectionID(final UUID rootWorkflowID, final ConnectionIDEnt connectionID) {
+        return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
+            connectionID.getDestPortIdx());
     }
 }

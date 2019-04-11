@@ -35,7 +35,7 @@ import com.knime.gateway.entity.MetaNodeDialogCompEnt;
 public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
 
   protected String m_paramName;
-  protected String m_nodeID;
+  protected com.knime.gateway.entity.NodeIDEnt m_nodeID;
   protected Boolean m_isHideInDialog;
   protected JavaObjectEnt m_representation;
   
@@ -81,7 +81,7 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
     }
     
   @Override
-  public String getNodeID() {
+  public com.knime.gateway.entity.NodeIDEnt getNodeID() {
         return m_nodeID;
     }
     
@@ -103,7 +103,7 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
         }
     
         private String m_paramName;
-        private String m_nodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_nodeID;
         private Boolean m_isHideInDialog;
         private JavaObjectEnt m_representation;
 
@@ -114,7 +114,7 @@ public class DefaultMetaNodeDialogCompEnt  implements MetaNodeDialogCompEnt {
         }
 
         @Override
-        public DefaultMetaNodeDialogCompEntBuilder setNodeID(String nodeID) {
+        public DefaultMetaNodeDialogCompEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID) {
              m_nodeID = nodeID;
              return this;
         }

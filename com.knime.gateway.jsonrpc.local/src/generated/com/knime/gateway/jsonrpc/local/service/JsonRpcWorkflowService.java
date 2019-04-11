@@ -42,7 +42,7 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.createConnection")
-    String createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException;
+    com.knime.gateway.entity.ConnectionIDEnt createConnection(java.util.UUID jobId, ConnectionEnt connectionEnt)  throws ServiceExceptions.ActionNotAllowedException;
 
 	/**
      * {@inheritDoc}
@@ -62,35 +62,21 @@ public interface JsonRpcWorkflowService extends WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "WorkflowService.getSubWorkflow")
-    WorkflowSnapshotEnt getSubWorkflow(java.util.UUID jobId, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "WorkflowService.getSubWorkflowDiff")
-    PatchEnt getSubWorkflowDiff(java.util.UUID jobId, String nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
     @JsonRpcMethod(value = "WorkflowService.getWorkflow")
-    WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId) ;
+    WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.getWorkflowDiff")
-    PatchEnt getWorkflowDiff(java.util.UUID jobId, java.util.UUID snapshotId)  throws ServiceExceptions.NotFoundException;
+    PatchEnt getWorkflowDiff(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WorkflowService.pasteWorkflowParts")
-    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, String nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+    WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, java.util.UUID partsId, Integer x, Integer y, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
 }

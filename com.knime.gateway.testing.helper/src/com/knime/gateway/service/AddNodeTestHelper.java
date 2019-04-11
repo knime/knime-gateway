@@ -19,6 +19,7 @@
 package com.knime.gateway.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -29,6 +30,7 @@ import org.hamcrest.core.Is;
 import org.junit.Assert;
 
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 import com.knime.gateway.testing.helper.ResultChecker;
@@ -68,25 +70,25 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         //create and add a new node
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)
             .setClassName("org.knime.base.node.io.filereader.FileReaderNodeFactory");
-        String newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), null);
-        Assert.assertThat(newNodeID, Is.is("27"));
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root_new_node");
+        NodeIDEnt newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+        Assert.assertThat(newNodeID, Is.is(new NodeIDEnt(27)));
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_new_node");
 
         //create and add a new node in sub workflow
-        newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), "6");
-        Assert.assertThat(newNodeID, Is.is("6:4"));
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_6_new_node");
+        newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), new NodeIDEnt(6));
+        Assert.assertThat(newNodeID, Is.is(new NodeIDEnt(6, 4)));
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_6_new_node");
 
         //create and add a node created from a dynamic node factory (in particular the Box Plot (JavaScript)-node)
         nodeFactoryKeyBuilder.setClassName("org.knime.dynamic.js.v30.DynamicJSNodeFactory").setSettings(
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}");
-        newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), null);
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root_new_dynamic_node");
+        newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_new_dynamic_node");
 
         //try adding a dynamic node but without providing the required settings
         nodeFactoryKeyBuilder.setSettings(null);
         try {
-            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), null);
+            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
             fail("Expected ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -96,7 +98,7 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         //try adding a dynamic node with corrupted settings
         nodeFactoryKeyBuilder.setSettings("nonsense-settings");
         try {
-            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), null);
+            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
             fail("Expected ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -106,7 +108,7 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         //try adding a node with factory key that doesn't exist
         nodeFactoryKeyBuilder.setClassName("nonsense-node-factory-class");
         try {
-            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), null);
+            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
             fail("Expected ServiceException to be thrown");
         } catch (NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),

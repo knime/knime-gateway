@@ -19,7 +19,6 @@
 package com.knime.gateway.util;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
-import static com.knime.gateway.util.EntityUtil.nodeIDToString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -110,11 +109,13 @@ import org.knime.core.wizard.SinglePageManager;
 import org.knime.js.base.node.quickform.QuickFormNodeModel;
 import org.knime.js.base.node.quickform.QuickFormRepresentationImpl;
 
+import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.entity.ConnectionEnt.TypeEnum;
+import com.knime.gateway.entity.ConnectionIDEnt;
 import com.knime.gateway.entity.DataCellEnt;
 import com.knime.gateway.entity.DataCellEnt.DataCellEntBuilder;
 import com.knime.gateway.entity.DataRowEnt;
@@ -140,6 +141,7 @@ import com.knime.gateway.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeEnt.NodeTypeEnum;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeInPortEnt;
 import com.knime.gateway.entity.NodeInPortEnt.NodeInPortEntBuilder;
 import com.knime.gateway.entity.NodeMessageEnt;
@@ -198,14 +200,15 @@ public class EntityBuilderUtil {
         Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
         Map<String, NodeEnt> nodes = nodeContainers.stream()
                 .map(nc -> buildNodeEnt(nc, rootWorkflowID))
-                .collect(Collectors.toMap(n -> n.getNodeID(), n -> n));
+                .collect(Collectors.toMap(n -> n.getNodeID().toString(), n -> n));
         Map<String, ConnectionEnt> connections =
             wfm.getConnectionContainers().stream().map(cc -> buildConnectionEnt(cc)).collect(
-                Collectors.toMap(c -> EntityUtil.connectionIDToString(c.getDest(), c.getDestPort()), c -> c));
-        Map<String, WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
-            .map(wa -> buildWorkflowAnnotationEnt(wa)).collect(Collectors.toMap(wa -> wa.getAnnotationID(), wa -> wa));
+                Collectors.toMap(c -> new ConnectionIDEnt(c.getDest(), c.getDestPort()).toString(), c -> c));
+        Map<String, WorkflowAnnotationEnt> annotations =
+            wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa))
+                .collect(Collectors.toMap(wa -> wa.getAnnotationID().toString(), wa -> wa));
         return builder(WorkflowEntBuilder.class)
-             .setNodes(nodes)
+            .setNodes(nodes)
             .setConnections(connections)
             .setMetaInPortInfos(buildMetaInPortInfoEnts(wfm))
             .setMetaOutPortInfos(buildMetaOutPortInfoEnts(wfm))
@@ -278,11 +281,11 @@ public class EntityBuilderUtil {
         } else {
             jobManager = wm.getJobManager();
         }
-        String parentNodeID;
+        NodeIDEnt parentNodeID;
         if (wm.getParent() == null || wm.getParent() == WorkflowManager.ROOT) {
             parentNodeID = null;
         } else {
-            parentNodeID = nodeIDToString(wm.getParent().getID());
+            parentNodeID = new NodeIDEnt(wm.getParent().getID());
         }
 
         //retrieve states of nodes connected to the workflow outports
@@ -291,7 +294,8 @@ public class EntityBuilderUtil {
             outNodeStates.add(buildNodeStateEnt(wm.getOutPort(i).getNodeContainerState().toString()));
         }
 
-        return builder(WorkflowNodeEntBuilder.class).setName(wm.getName()).setNodeID(nodeIDToString(wm.getID()))
+        return builder(WorkflowNodeEntBuilder.class).setName(wm.getName())
+                .setNodeID(new NodeIDEnt(wm.getID()))
                 .setNodeMessage(buildNodeMessageEnt(wm))
                 .setNodeType(NodeTypeEnum.valueOf(wm.getType().toString().toUpperCase()))
                 .setUIInfo(buildNodeUIInfoEnt(wm.getUIInformation()))
@@ -331,7 +335,7 @@ public class EntityBuilderUtil {
         }
         boolean hasWizardPage = SinglePageManager.of(subNode.getParent()).hasWizardPage(subNode.getID());
         return builder(WrappedWorkflowNodeEntBuilder.class).setName(subNode.getName())
-                .setNodeID(nodeIDToString(subNode.getID()))
+                .setNodeID(new NodeIDEnt(subNode.getID()))
                 .setNodeMessage(buildNodeMessageEnt(subNode))
                 .setNodeType(NodeTypeEnum.valueOf(subNode.getType().toString().toUpperCase()))
                 .setUIInfo(buildNodeUIInfoEnt(subNode.getUIInformation()))
@@ -340,7 +344,7 @@ public class EntityBuilderUtil {
                 .setNodeState(buildNodeStateEnt((subNode.getNodeContainerState().toString())))
                 .setOutPorts(buildNodeOutPortEnts(subNode))
                 .setParentNodeID(
-                    subNode.getParent() == WorkflowManager.ROOT ? null : nodeIDToString(subNode.getParent().getID()))
+                    subNode.getParent() == WorkflowManager.ROOT ? null : new NodeIDEnt(subNode.getParent().getID()))
                 .setJobManager(buildJobManagerEnt(jobManager))
                 .setNodeAnnotation(buildNodeAnnotationEnt(subNode))
                 .setInPorts(buildNodeInPortEnts(subNode))
@@ -349,8 +353,8 @@ public class EntityBuilderUtil {
                 .setWorkflowOutgoingPorts(buildWorkflowOutgoingPortEnts(subNode.getWorkflowManager()))
                 .setRootWorkflowID(rootWorkflowID)
                 .setEncrypted(subNode.getWorkflowManager().isEncrypted())
-                .setVirtualInNodeID(nodeIDToString(subNode.getVirtualInNodeID()))
-                .setVirtualOutNodeID(nodeIDToString(subNode.getVirtualOutNodeID()))
+                .setVirtualInNodeID(new NodeIDEnt(subNode.getVirtualInNodeID()))
+                .setVirtualOutNodeID(new NodeIDEnt(subNode.getVirtualOutNodeID()))
                 .setInactive(subNode.isInactive())
                 .setWebViewNames(hasWizardPage ? Arrays.asList(subNode.getName()) : Collections.emptyList())
                 .setHasWizardPage(hasWizardPage)
@@ -467,7 +471,7 @@ public class EntityBuilderUtil {
             QuickFormRepresentationImpl rep = e.getValue().getDialogRepresentation();
             JavaObjectEnt representationEnt = buildJavaObjectEntFromViewContent(rep);
             comps.add(builder(MetaNodeDialogCompEntBuilder.class)
-                    .setNodeID(nodeIDToString(e.getKey()))
+                    .setNodeID(new NodeIDEnt(e.getKey()))
                     .setIsHideInDialog(e.getValue().isHideInDialog())
                     .setRepresentation(representationEnt)
                     .setParamName(e.getValue().getParameterName())
@@ -501,14 +505,14 @@ public class EntityBuilderUtil {
     public static WorkflowPartsEnt buildWorkflowPartsEnt(final NodeID parentNodeID, final NodeID[] nodeIDs,
         final ConnectionID[] connectionIDs, final WorkflowAnnotationID[] annotationIDs) {
         return builder(WorkflowPartsEntBuilder.class)
-            .setParentNodeID(nodeIDToString(parentNodeID))
+            .setParentNodeID(new NodeIDEnt(parentNodeID))
             .setNodeIDs(
-                nodeIDs != null ? Arrays.stream(nodeIDs).map(id -> nodeIDToString(id)).collect(Collectors.toList())
+                nodeIDs != null ? Arrays.stream(nodeIDs).map(id -> new NodeIDEnt(id)).collect(Collectors.toList())
                     : Collections.emptyList())
             .setConnectionIDs(connectionIDs != null ? Arrays.stream(connectionIDs)
-                .map(id -> EntityUtil.connectionIDToString(id)).collect(Collectors.toList()) : Collections.emptyList())
+                .map(id -> new ConnectionIDEnt(id)).collect(Collectors.toList()) : Collections.emptyList())
             .setAnnotationIDs(annotationIDs != null ? Arrays.stream(annotationIDs)
-                .map(id -> EntityUtil.annotationIDToString(id)).collect(Collectors.toList()) : Collections.emptyList())
+                .map(id -> new AnnotationIDEnt(id)).collect(Collectors.toList()) : Collections.emptyList())
             .build();
     }
 
@@ -827,7 +831,8 @@ public class EntityBuilderUtil {
             nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.PRETTY));
         }
         InteractiveWebViewsResult webViews = nc.getInteractiveWebViews();
-        return builder(NativeNodeEntBuilder.class).setName(nc.getName()).setNodeID(nodeIDToString(nc.getID()))
+        return builder(NativeNodeEntBuilder.class).setName(nc.getName())
+            .setNodeID(new NodeIDEnt(nc.getID()))
             .setNodeMessage(buildNodeMessageEnt(nc))
             .setNodeType(NodeTypeEnum.valueOf(nc.getType().toString().toUpperCase()))
             .setUIInfo(buildNodeUIInfoEnt(nc.getUIInformation()))
@@ -839,7 +844,7 @@ public class EntityBuilderUtil {
                     nc.getProgressMonitor().getMessage(),
                     nc.getNodeContainerState()))
             .setOutPorts(buildNodeOutPortEnts(nc))
-            .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? null : nodeIDToString(nc.getParent().getID()))
+            .setParentNodeID(nc.getParent() == WorkflowManager.ROOT ? null : new NodeIDEnt(nc.getParent().getID()))
             .setRootWorkflowID(rootWorkflowID)
             .setJobManager(buildJobManagerEnt(nc.getJobManager()))
             .setNodeAnnotation(buildNodeAnnotationEnt(nc))
@@ -872,8 +877,9 @@ public class EntityBuilderUtil {
         } else {
             bendpoints = Collections.emptyList();
         }
-        return builder(ConnectionEntBuilder.class).setDest(nodeIDToString(cc.getDest())).setDestPort(cc.getDestPort())
-            .setSource(nodeIDToString(cc.getSource())).setSourcePort(cc.getSourcePort())
+        return builder(ConnectionEntBuilder.class).setDest(new NodeIDEnt(cc.getDest()))
+            .setDestPort(cc.getDestPort())
+            .setSource(new NodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())
             .setDeletable(cc.isDeletable()).setType(TypeEnum.valueOf(cc.getType().toString().toUpperCase()))
             .setBendPoints(bendpoints)
             .setFlowVariablePortConnection(cc.isFlowVariablePortConnection()).build();
@@ -901,9 +907,9 @@ public class EntityBuilderUtil {
             bendpointsEnts = Collections.emptyList();
         }
         return builder(ConnectionEntBuilder.class)
-                .setSource(nodeIDToString(source))
+                .setSource(new NodeIDEnt(source))
                 .setSourcePort(sourcePort)
-                .setDest(nodeIDToString(dest))
+                .setDest(new NodeIDEnt(dest))
                 .setDestPort(destPort)
                 .setType(TypeEnum.valueOf(type.toString()))
                 .setDeletable(true) //deletable by default
@@ -920,7 +926,7 @@ public class EntityBuilderUtil {
         List<StyleRangeEnt> styleRanges =
             Arrays.stream(wa.getStyleRanges()).map(sr -> buildStyleRangeEnt(sr)).collect(Collectors.toList());
         return builder(WorkflowAnnotationEntBuilder.class)
-                .setAnnotationID(EntityUtil.annotationIDToString(wa.getID()))
+                .setAnnotationID(new AnnotationIDEnt(wa.getID()))
                 .setTextAlignment(wa.getAlignment().toString())
                 .setBackgroundColor(wa.getBgColor())
                 .setBorderColor(wa.getBorderColor())

@@ -19,6 +19,7 @@
 package com.knime.gateway.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
@@ -30,6 +31,8 @@ import java.util.UUID;
 import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.entity.ConnectionEnt.TypeEnum;
+import com.knime.gateway.entity.ConnectionIDEnt;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.WorkflowEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
@@ -67,36 +70,36 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
     public void testAddConnections() throws Exception {
     	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
 
-        ConnectionEnt connection = builder(ConnectionEntBuilder.class).setDest("21").setDestPort(2).setSource("1")
-            .setSourcePort(1).setType(TypeEnum.STD).build();
+        ConnectionEnt connection = builder(ConnectionEntBuilder.class).setDest(new NodeIDEnt(21)).setDestPort(2)
+            .setSource(new NodeIDEnt(1)).setSourcePort(1).setType(TypeEnum.STD).build();
         //returns connection id as json (i.e. a string in quotation marks)
-        String connId = ws().createConnection(wfId, connection);
-        assertThat("Unexpected connection id", connId, is("21_2"));
-        WorkflowEnt workflow = ws().getWorkflow(wfId).getWorkflow();
+        ConnectionIDEnt connId = ws().createConnection(wfId, connection);
+        assertThat("Unexpected connection id", connId, is(new ConnectionIDEnt(new NodeIDEnt(21), 2)));
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_connectionadded");
 
         //try adding a connection that already exists (nothing should happen)
         ws().createConnection(wfId, connection);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_connectionadded");
 
         //replace an existing connection (different source, but same dest)
-        connection = builder(ConnectionEntBuilder.class).setSource("1").setSourcePort(1).setDest("5").setDestPort(1)
-            .setType(TypeEnum.STD).build();
+        connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(1)).setSourcePort(1)
+            .setDest(new NodeIDEnt(5)).setDestPort(1).setType(TypeEnum.STD).build();
         ws().createConnection(wfId, connection);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_connectionreplaced");
 
         //add flow variable connection
-        connection = builder(ConnectionEntBuilder.class).setSource("1").setSourcePort(0).setDest("14").setDestPort(1)
-            .setType(TypeEnum.STD).build();
+        connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(1)).setSourcePort(0)
+            .setDest(new NodeIDEnt(14)).setDestPort(1).setType(TypeEnum.STD).build();
         ws().createConnection(wfId, connection);
-        workflow = ws().getWorkflow(wfId).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root_flowvariableconnection");
 
         //try adding a connection to a node that doesn't exist
-        connection = builder(ConnectionEntBuilder.class).setSource("99").setSourcePort(0).setDest("14").setDestPort(1)
-            .setType(TypeEnum.STD).build();
+        connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(99)).setSourcePort(0)
+            .setDest(new NodeIDEnt(14)).setDestPort(1).setType(TypeEnum.STD).build();
         try {
             ws().createConnection(wfId, connection);
             fail("Expected a ServiceException to be thrown");
@@ -105,8 +108,8 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
         }
 
         //try connecting incompatible ports
-        connection = builder(ConnectionEntBuilder.class).setSource("0").setSourcePort(1).setDest("16").setDestPort(1)
-            .setType(TypeEnum.STD).build();
+        connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(0)).setSourcePort(1)
+            .setDest(new NodeIDEnt(16)).setDestPort(1).setType(TypeEnum.STD).build();
         try {
             ws().createConnection(wfId, connection);
             fail("Expected a ServiceException to be thrown");
@@ -116,23 +119,24 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
 
         //add a connection within in a metanode (from the metanode in-port)
         //check sub-workflow before removal
-        cr(ws().getSubWorkflow(wfId, "6").getWorkflow(), "workflowent_6");
+        cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6");
         //delete connection
         WorkflowPartsEnt parts =
-            builder(WorkflowPartsEntBuilder.class).setConnectionIDs(Arrays.asList("6_1")).setParentNodeID("6").build();
+            builder(WorkflowPartsEntBuilder.class)
+                .setConnectionIDs(Arrays.asList(new ConnectionIDEnt(new NodeIDEnt(6), 1)))
+                .setParentNodeID(new NodeIDEnt(6)).build();
         ws().deleteWorkflowParts(wfId, parts, false);
-        //re-add connection
-        connection = builder(ConnectionEntBuilder.class).setSource("6:3").setSourcePort(2).setDest("6").setDestPort(1)
-            .setType(TypeEnum.WFMOUT).build();
+        connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(6, 3)).setSourcePort(2)
+            .setDest(new NodeIDEnt(6)).setDestPort(1).setType(TypeEnum.WFMOUT).build();
         ws().createConnection(wfId, connection);
         //check
-        cr(ws().getSubWorkflow(wfId, "6").getWorkflow(), "workflowent_6");
+        cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6");
 
         //add a connection in a wrapped metanode (to the metanode out-port)
-        connection = builder(ConnectionEntBuilder.class).setSource("12:0:10").setSourcePort(1).setDest("12:0:9")
-            .setDestPort(1).setType(TypeEnum.STD).build();
+        connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(12, 0, 10)).setSourcePort(1)
+            .setDest(new NodeIDEnt(12, 0, 9)).setDestPort(1).setType(TypeEnum.STD).build();
         ws().createConnection(wfId, connection);
-        workflow = ws().getSubWorkflow(wfId, "12").getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(12)).getWorkflow();
         cr(workflow, "workflowent_12_connectionadded");
     }
 }

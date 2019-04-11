@@ -37,6 +37,7 @@ import org.knime.core.ui.node.workflow.async.AsyncWorkflowAnnotationUI;
 import com.knime.gateway.entity.AnnotationEnt;
 import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -56,7 +57,7 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation
 
     private UUID m_rootWorkflowID;
 
-    private String m_parentNodeID;
+    private NodeIDEnt m_parentNodeID;
 
     private WorkflowAnnotationEnt m_oldEntity;
 
@@ -67,8 +68,8 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation
      * @param rootWorkflowID the id of the root workflow
      * @param clientProxyAccess
      */
-    EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final UUID rootWorkflowID, final String parentNodeID,
-        final EntityProxyAccess clientProxyAccess) {
+    EntityProxyWorkflowAnnotation(final WorkflowAnnotationEnt entity, final UUID rootWorkflowID,
+        final NodeIDEnt parentNodeID, final EntityProxyAccess clientProxyAccess) {
         super(getAnnotationData(entity));
         m_entity = entity;
         m_rootWorkflowID = rootWorkflowID;
@@ -158,7 +159,7 @@ class EntityProxyWorkflowAnnotation extends WorkflowAnnotation
         BoundsEnt bounds = builder(BoundsEntBuilder.class).setX(x).setY(y).setWidth(width).setHeight(height).build();
         return AsyncNodeContainerUI.future(() -> {
             try {
-                getAccess().annotationService().setAnnotationBoundsInSubWorkflow(m_rootWorkflowID, m_parentNodeID,
+                getAccess().annotationService().setAnnotationBounds(m_rootWorkflowID, m_parentNodeID,
                     m_entity.getAnnotationID(), bounds);
                 return null;
             } catch (NotFoundException | NotASubWorkflowException ex) {

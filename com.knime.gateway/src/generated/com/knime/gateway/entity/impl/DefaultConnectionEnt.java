@@ -34,9 +34,9 @@ import com.knime.gateway.entity.ConnectionEnt;
 @javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultConnectionEnt  implements ConnectionEnt {
 
-  protected String m_dest;
+  protected com.knime.gateway.entity.NodeIDEnt m_dest;
   protected Integer m_destPort;
-  protected String m_source;
+  protected com.knime.gateway.entity.NodeIDEnt m_source;
   protected Integer m_sourcePort;
   protected Boolean m_deletable;
   protected Boolean m_flowVariablePortConnection;
@@ -99,7 +99,7 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
 
 
   @Override
-  public String getDest() {
+  public com.knime.gateway.entity.NodeIDEnt getDest() {
         return m_dest;
     }
     
@@ -109,7 +109,7 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     }
     
   @Override
-  public String getSource() {
+  public com.knime.gateway.entity.NodeIDEnt getSource() {
         return m_source;
     }
     
@@ -145,9 +145,9 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
             
         }
     
-        private String m_dest;
+        private com.knime.gateway.entity.NodeIDEnt m_dest;
         private Integer m_destPort;
-        private String m_source;
+        private com.knime.gateway.entity.NodeIDEnt m_source;
         private Integer m_sourcePort;
         private Boolean m_deletable;
         private Boolean m_flowVariablePortConnection;
@@ -155,7 +155,7 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
         private TypeEnum m_type;
 
         @Override
-        public DefaultConnectionEntBuilder setDest(String dest) {
+        public DefaultConnectionEntBuilder setDest(com.knime.gateway.entity.NodeIDEnt dest) {
              if(dest == null) {
                  throw new IllegalArgumentException("dest must not be null.");
              }
@@ -173,7 +173,7 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
         }
 
         @Override
-        public DefaultConnectionEntBuilder setSource(String source) {
+        public DefaultConnectionEntBuilder setSource(com.knime.gateway.entity.NodeIDEnt source) {
              if(source == null) {
                  throw new IllegalArgumentException("source must not be null.");
              }

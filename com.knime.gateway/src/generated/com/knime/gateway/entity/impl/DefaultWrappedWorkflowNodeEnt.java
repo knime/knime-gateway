@@ -42,8 +42,8 @@ import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 @javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implements WrappedWorkflowNodeEnt {
 
-  protected String m_virtualInNodeID;
-  protected String m_virtualOutNodeID;
+  protected com.knime.gateway.entity.NodeIDEnt m_virtualInNodeID;
+  protected com.knime.gateway.entity.NodeIDEnt m_virtualOutNodeID;
   protected Boolean m_inactive;
   protected Boolean m_hasWizardPage;
   
@@ -124,12 +124,12 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
 
 
   @Override
-  public String getVirtualInNodeID() {
+  public com.knime.gateway.entity.NodeIDEnt getVirtualInNodeID() {
         return m_virtualInNodeID;
     }
     
   @Override
-  public String getVirtualOutNodeID() {
+  public com.knime.gateway.entity.NodeIDEnt getVirtualOutNodeID() {
         return m_virtualOutNodeID;
     }
     
@@ -152,9 +152,9 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
     
         private String m_type;
         private String m_name;
-        private String m_nodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_nodeID;
         private NodeTypeEnum m_nodeType;
-        private String m_parentNodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_parentNodeID;
         private java.util.UUID m_rootWorkflowID;
         private NodeMessageEnt m_nodeMessage;
         private NodeStateEnt m_nodeState;
@@ -172,8 +172,8 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         private java.util.List<NodeInPortEnt> m_workflowOutgoingPorts = new java.util.ArrayList<>();
         private Boolean m_encrypted;
         private java.util.List<NodeStateEnt> m_workflowOutgoingPortNodeStates = new java.util.ArrayList<>();
-        private String m_virtualInNodeID;
-        private String m_virtualOutNodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_virtualInNodeID;
+        private com.knime.gateway.entity.NodeIDEnt m_virtualOutNodeID;
         private Boolean m_inactive;
         private Boolean m_hasWizardPage;
 
@@ -196,7 +196,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setNodeID(String nodeID) {
+        public DefaultWrappedWorkflowNodeEntBuilder setNodeID(com.knime.gateway.entity.NodeIDEnt nodeID) {
              if(nodeID == null) {
                  throw new IllegalArgumentException("nodeID must not be null.");
              }
@@ -214,7 +214,7 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setParentNodeID(String parentNodeID) {
+        public DefaultWrappedWorkflowNodeEntBuilder setParentNodeID(com.knime.gateway.entity.NodeIDEnt parentNodeID) {
              m_parentNodeID = parentNodeID;
              return this;
         }
@@ -328,13 +328,13 @@ public class DefaultWrappedWorkflowNodeEnt extends DefaultWorkflowNodeEnt implem
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setVirtualInNodeID(String virtualInNodeID) {
+        public DefaultWrappedWorkflowNodeEntBuilder setVirtualInNodeID(com.knime.gateway.entity.NodeIDEnt virtualInNodeID) {
              m_virtualInNodeID = virtualInNodeID;
              return this;
         }
 
         @Override
-        public DefaultWrappedWorkflowNodeEntBuilder setVirtualOutNodeID(String virtualOutNodeID) {
+        public DefaultWrappedWorkflowNodeEntBuilder setVirtualOutNodeID(com.knime.gateway.entity.NodeIDEnt virtualOutNodeID) {
              m_virtualOutNodeID = virtualOutNodeID;
              return this;
         }

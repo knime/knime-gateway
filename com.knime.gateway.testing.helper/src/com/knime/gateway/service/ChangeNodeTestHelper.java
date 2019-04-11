@@ -19,6 +19,7 @@
 package com.knime.gateway.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
+import static com.knime.gateway.entity.NodeIDEnt.getRootID;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
@@ -36,6 +37,7 @@ import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
 import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
 import com.knime.gateway.service.util.ServiceExceptions.IllegalStateException;
@@ -78,61 +80,61 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
     	UUID longrunningWfId = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
 
         //execute individual node
-        ns().changeAndGetNodeState(wfId, "2", "execute");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(2), "execute");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(wfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
             cr(wfEntity, "worklfowent_root_executed_till_node_2");
         });
 
         //reset node #1
-        ns().changeAndGetNodeState(wfId, "1", "reset");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(1), "reset");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(wfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
             cr(wfEntity, "workflowent_root");
         });
 
         //execute a node within a metanode
-        ns().changeAndGetNodeState(wfId, "6:3", "execute");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(6, 3), "execute");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(wfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
             cr(wfEntity, "worklfowent_root_executed_till_node_6_3");
         });
 
         //reset entire workflow by reseting the first node
-        ns().changeAndGetNodeState(wfId, "1", "reset");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(1), "reset");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(wfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
             cr(wfEntity, "workflowent_root");
         });
 
         //execute a metanode
-        ns().changeAndGetNodeState(wfId, "6", "execute");
+        ns().changeAndGetNodeState(wfId, new NodeIDEnt(6), "execute");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(wfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(wfId, getRootID()).getWorkflow();
             cr(wfEntity, "worklfowent_root_executed_till_node_6_3");
         });
 
         //execute & cancel individual node
         //execute all
-        ns().changeAndGetNodeState(longrunningWfId, "root", "execute");
+        ns().changeAndGetNodeState(longrunningWfId, getRootID(), "execute");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(longrunningWfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(longrunningWfId, getRootID()).getWorkflow();
             cr(wfEntity, "workflowent_longrunning_root_executing");
         });
 
         //cancel node 13
-        ns().changeAndGetNodeState(longrunningWfId, "13", "cancel");
+        ns().changeAndGetNodeState(longrunningWfId, new NodeIDEnt(13), "cancel");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            GatewayEntity wfEntity = ws().getWorkflow(longrunningWfId).getWorkflow();
+            GatewayEntity wfEntity = ws().getWorkflow(longrunningWfId, getRootID()).getWorkflow();
             cr(wfEntity, "workflowent_longrunning_root_canceled_node_13");
         });
 
         //check exceptions
         //execute all again
-        ns().changeAndGetNodeState(longrunningWfId, "root", "execute");
+        ns().changeAndGetNodeState(longrunningWfId, getRootID(), "execute");
         //try canceling the first node (that has an executing successor)
         try {
-            ns().changeAndGetNodeState(longrunningWfId, "1", "reset");
+            ns().changeAndGetNodeState(longrunningWfId, new NodeIDEnt(1), "reset");
             fail("Expected ServiceException to be thrown");
         } catch (ActionNotAllowedException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -150,21 +152,21 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
 
         NodeSettings settings = new NodeSettings("configuration");
         JSONConfig.readJSON(settings,
-            new StringReader(ns().getNodeSettings(wfId, "1").getJsonContent()));
+            new StringReader(ns().getNodeSettings(wfId, new NodeIDEnt(1)).getJsonContent()));
 
         //manipulate settings and save back to server
         settings.getConfig("model").addInt("patcount", 20);
         String settingsString = JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
         NodeSettingsEntBuilder settingsBuilder = builder(NodeSettingsEntBuilder.class).setJsonContent(settingsString);
-        ns().setNodeSettings(wfId, "1", settingsBuilder.build());
+        ns().setNodeSettings(wfId, new NodeIDEnt(1), settingsBuilder.build());
 
         //check the changed settings
         assertThat("Unexpected node settings after modification",
-            ns().getNodeSettings(wfId, "1").getJsonContent(), is(settingsString));
+            ns().getNodeSettings(wfId, new NodeIDEnt(1)).getJsonContent(), is(settingsString));
 
         //check invalid settings
         try {
-            ns().setNodeSettings(wfId, "2", settingsBuilder.build());
+            ns().setNodeSettings(wfId, new NodeIDEnt(2), settingsBuilder.build());
             fail("Expected ServiceException to be thrown");
         } catch (InvalidSettingsException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -175,7 +177,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
         UUID longrunningWfId = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
         executeWorkflowAsync(longrunningWfId);
         try {
-            ns().setNodeSettings(longrunningWfId, "13", settingsBuilder.build());
+            ns().setNodeSettings(longrunningWfId, new NodeIDEnt(13), settingsBuilder.build());
             fail("Expected ServiceException to be thrown");
         } catch (IllegalStateException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -191,32 +193,32 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
     public void testChangeNodeBounds() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
 
-        BoundsEnt oldBounds = ns().getNode(wfId, "1").getUIInfo().getBounds();
+        BoundsEnt oldBounds = ns().getNode(wfId, new NodeIDEnt(1)).getUIInfo().getBounds();
         BoundsEnt newBounds = builder(BoundsEntBuilder.class).setWidth(oldBounds.getWidth())
             .setHeight(oldBounds.getHeight()).setX(0).setY(0).build();
-        ns().setNodeBounds(wfId, "1", newBounds);
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root_moved_node_1");
+        ns().setNodeBounds(wfId, new NodeIDEnt(1), newBounds);
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_moved_node_1");
 
         //move back
-        ns().setNodeBounds(wfId, "1", oldBounds);
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root");
+        ns().setNodeBounds(wfId, new NodeIDEnt(1), oldBounds);
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root");
 
         //settings different width and height
-        ns().setNodeBounds(wfId, "1",
+        ns().setNodeBounds(wfId, new NodeIDEnt(1),
             builder(BoundsEntBuilder.class).setX(0).setY(0).setWidth(0).setHeight(0).build());
-        cr(ws().getWorkflow(wfId).getWorkflow(), "workflowent_root_moved_node_1_0_bounds");
+        cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_moved_node_1_0_bounds");
 
         //move node within a metanode
-        ns().setNodeBounds(wfId, "6:3", oldBounds);
-        cr(ws().getSubWorkflow(wfId, "6").getWorkflow(), "workflowent_6_moved_node_3");
+        ns().setNodeBounds(wfId, new NodeIDEnt(6, 3), oldBounds);
+        cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6_moved_node_3");
 
         //move node within a wrapped metanode
-        ns().setNodeBounds(wfId, "9:0:7", oldBounds);
-        cr(ws().getSubWorkflow(wfId, "9").getWorkflow(), "workflowent_9_moved_node_7");
+        ns().setNodeBounds(wfId, new NodeIDEnt(9, 0, 7), oldBounds);
+        cr(ws().getWorkflow(wfId, new NodeIDEnt(9)).getWorkflow(), "workflowent_9_moved_node_7");
 
         //try moving a non-existing node
         try {
-            ns().setNodeBounds(wfId, "99", oldBounds);
+            ns().setNodeBounds(wfId, new NodeIDEnt(99), oldBounds);
             fail("Expected ServiceException to be thrown");
         } catch (NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),
