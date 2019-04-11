@@ -2,7 +2,7 @@
   "wmetanodedialog_19" : {
     "components" : [ {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:3",
+      "nodeID" : "root:19:0:3",
       "paramName" : "string-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.string.StringInputQuickFormRepresentation",
@@ -10,7 +10,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:4",
+      "nodeID" : "root:19:0:4",
       "paramName" : "double-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.dbl.DoubleInputQuickFormRepresentation",
@@ -18,7 +18,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:5",
+      "nodeID" : "root:19:0:5",
       "paramName" : "int-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.integer.IntInputQuickFormRepresentation",
@@ -26,7 +26,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:6",
+      "nodeID" : "root:19:0:6",
       "paramName" : "slider-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.slider.SliderInputQuickFormRepresentation",
@@ -34,7 +34,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:7",
+      "nodeID" : "root:19:0:7",
       "paramName" : "boolean-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.bool.BooleanInputQuickFormRepresentation",
@@ -42,7 +42,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:8",
+      "nodeID" : "root:19:0:8",
       "paramName" : "list-box-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.listbox.ListBoxInputQuickFormRepresentation",
@@ -50,7 +50,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:9",
+      "nodeID" : "root:19:0:9",
       "paramName" : "date-time-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.date2.DateInput2QuickFormRepresentation",
@@ -58,7 +58,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:10",
+      "nodeID" : "root:19:0:10",
       "paramName" : "credentials-input",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.credentials.CredentialsInputQuickFormRepresentation",
@@ -66,7 +66,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:11",
+      "nodeID" : "root:19:0:11",
       "paramName" : "molecule-string-input",
       "representation" : {
         "classname" : "org.knime.ext.js.node.quickform.input.molecule.MoleculeStringInputQuickFormRepresentation",
@@ -74,7 +74,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:23",
+      "nodeID" : "root:19:0:23",
       "paramName" : "single-selection",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.selection.single.SingleSelectionQuickFormRepresentation",
@@ -82,7 +82,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:25",
+      "nodeID" : "root:19:0:25",
       "paramName" : "file-upload",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.input.fileupload.FileUploadQuickFormRepresentation",
@@ -90,7 +90,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:26",
+      "nodeID" : "root:19:0:26",
       "paramName" : "column-selection",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.selection.column.ColumnSelectionQuickFormRepresentation",
@@ -98,7 +98,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:27",
+      "nodeID" : "root:19:0:27",
       "paramName" : "multiple-selection",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.selection.multiple.MultipleSelectionQuickFormRepresentation",
@@ -106,7 +106,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:28",
+      "nodeID" : "root:19:0:28",
       "paramName" : "value-selection",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.selection.value.ValueSelectionQuickFormRepresentation",
@@ -114,7 +114,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:29",
+      "nodeID" : "root:19:0:29",
       "paramName" : "value-filter",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.filter.value.ValueFilterQuickFormRepresentation",
@@ -122,7 +122,7 @@
       }
     }, {
       "isHideInDialog" : false,
-      "nodeID" : "19:0:30",
+      "nodeID" : "root:19:0:30",
       "paramName" : "column-filter",
       "representation" : {
         "classname" : "org.knime.js.base.node.quickform.filter.column.ColumnFilterQuickFormRepresentation",
