@@ -158,8 +158,8 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public NodeIDEnt createNode(final UUID rootWorkflowID, final Integer x, final Integer y,
-        final NodeFactoryKeyEnt nodeFactoryKey, final NodeIDEnt parentNodeID)
+    public NodeIDEnt createNode(final UUID rootWorkflowID, final NodeIDEnt parentNodeID, final Integer x,
+        final Integer y, final NodeFactoryKeyEnt nodeFactoryKey)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parentNodeID);
         NodeFactory<NodeModel> nodeFactory;

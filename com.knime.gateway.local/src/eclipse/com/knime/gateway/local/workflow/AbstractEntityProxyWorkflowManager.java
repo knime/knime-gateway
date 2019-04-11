@@ -278,8 +278,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
                 if (settings.getChildCount() > 0) {
                     factoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
                 }
-                id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(), uiInfo.getBounds()[0],
-                    uiInfo.getBounds()[1], factoryKeyBuilder.build(), getEntity().getNodeID());
+                id = getAccess().nodeService().createNode(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
+                    uiInfo.getBounds()[0], uiInfo.getBounds()[1], factoryKeyBuilder.build());
             } catch (NotASubWorkflowException | NodeNotFoundException | InvalidRequestException ex) {
                 //should never happen
                 throw new CompletionException(ex);

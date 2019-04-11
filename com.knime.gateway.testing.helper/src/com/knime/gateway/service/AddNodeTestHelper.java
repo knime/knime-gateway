@@ -70,25 +70,25 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         //create and add a new node
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)
             .setClassName("org.knime.base.node.io.filereader.FileReaderNodeFactory");
-        NodeIDEnt newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+        NodeIDEnt newNodeID = ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
         Assert.assertThat(newNodeID, Is.is(new NodeIDEnt(27)));
         cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_new_node");
 
         //create and add a new node in sub workflow
-        newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), new NodeIDEnt(6));
+        newNodeID = ns().createNode(wfId, new NodeIDEnt(6), 100, 100, nodeFactoryKeyBuilder.build());
         Assert.assertThat(newNodeID, Is.is(new NodeIDEnt(6, 4)));
         cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_6_new_node");
 
         //create and add a node created from a dynamic node factory (in particular the Box Plot (JavaScript)-node)
         nodeFactoryKeyBuilder.setClassName("org.knime.dynamic.js.v30.DynamicJSNodeFactory").setSettings(
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}");
-        newNodeID = ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+        newNodeID = ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
         cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_new_dynamic_node");
 
         //try adding a dynamic node but without providing the required settings
         nodeFactoryKeyBuilder.setSettings(null);
         try {
-            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+            ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
             fail("Expected ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -98,7 +98,7 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         //try adding a dynamic node with corrupted settings
         nodeFactoryKeyBuilder.setSettings("nonsense-settings");
         try {
-            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+            ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
             fail("Expected ServiceException to be thrown");
         } catch (InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
@@ -108,7 +108,7 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         //try adding a node with factory key that doesn't exist
         nodeFactoryKeyBuilder.setClassName("nonsense-node-factory-class");
         try {
-            ns().createNode(wfId, 100, 100, nodeFactoryKeyBuilder.build(), getRootID());
+            ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
             fail("Expected ServiceException to be thrown");
         } catch (NodeNotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(),

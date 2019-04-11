@@ -57,17 +57,17 @@ public interface NodeService extends GatewayService {
      * Creates and adds a new native node to the workflow.
      *
      * @param jobId ID of the job the workflow is requested for.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
      * @param x the x coordinate to place the new node
      * @param y the y coordinate to place the new node
      * @param nodeFactoryKeyEnt The key representing the native node to be added to the workflow.
-     * @param parentNodeId Optional id of the parent node if the new node should be added to a sub-workflow. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt, com.knime.gateway.entity.NodeIDEnt parentNodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Provides the node&#39;s flow variables available for the node with the given node-id.
