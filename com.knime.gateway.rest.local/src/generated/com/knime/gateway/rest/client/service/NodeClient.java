@@ -99,11 +99,11 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
-    public com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.createNode(jobId, nodeId.toString(), x, y, toByteArray(nodeFactoryKeyEnt));
+                    return c.createNode(jobId, workflowId.toString(), x, y, toByteArray(nodeFactoryKeyEnt));
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

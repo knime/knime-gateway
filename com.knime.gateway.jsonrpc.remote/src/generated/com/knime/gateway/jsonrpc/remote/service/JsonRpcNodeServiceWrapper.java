@@ -82,8 +82,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public com.knime.gateway.entity.NodeIDEnt createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") com.knime.gateway.entity.NodeIDEnt nodeId, Integer x, Integer y, @JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.createNode(jobId, nodeId, x, y, nodeFactoryKeyEnt);    
+    public com.knime.gateway.entity.NodeIDEnt createNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowId") com.knime.gateway.entity.NodeIDEnt workflowId, Integer x, Integer y, @JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.createNode(jobId, workflowId, x, y, nodeFactoryKeyEnt);    
     }
 
 	/**

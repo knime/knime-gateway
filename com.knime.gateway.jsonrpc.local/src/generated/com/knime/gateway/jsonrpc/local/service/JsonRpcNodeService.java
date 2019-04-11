@@ -55,7 +55,7 @@ public interface JsonRpcNodeService extends NodeService {
      */
     @Override
     @JsonRpcMethod(value = "NodeService.createNode")
-    com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    com.knime.gateway.entity.NodeIDEnt createNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, Integer x, Integer y, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
 
 	/**
      * {@inheritDoc}

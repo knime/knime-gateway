@@ -154,11 +154,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public WorkflowSnapshotEnt getWorkflow(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getWorkflow(jobId, nodeId.toString());
+                    return c.getWorkflow(jobId, workflowId.toString());
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);
@@ -183,11 +183,11 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
     }
     
     @Override
-    public PatchEnt getWorkflowDiff(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    public PatchEnt getWorkflowDiff(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
         try{
             return doRequest(c -> {
                 try {
-                    return c.getWorkflowDiff(jobId, nodeId.toString(), snapshotId);
+                    return c.getWorkflowDiff(jobId, workflowId.toString(), snapshotId);
                 } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
                     //server errors
                     throw new ServiceException("Internal server error.", ex);

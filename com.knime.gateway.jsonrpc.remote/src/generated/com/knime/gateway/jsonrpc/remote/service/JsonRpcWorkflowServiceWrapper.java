@@ -106,8 +106,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
-        return m_service.getWorkflow(jobId, nodeId);    
+    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowId") com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+        return m_service.getWorkflow(jobId, workflowId);    
     }
 
 	/**
@@ -121,8 +121,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
             data = "NotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public PatchEnt getWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") com.knime.gateway.entity.NodeIDEnt nodeId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
-        return m_service.getWorkflowDiff(jobId, nodeId, snapshotId);    
+    public PatchEnt getWorkflowDiff(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowId") com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID snapshotId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        return m_service.getWorkflowDiff(jobId, workflowId, snapshotId);    
     }
 
 	/**
