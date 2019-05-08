@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.knime.features.gateway.rest.local"
-      label="KNIME Remote Workflow Editor REST-Connector (preview, don&apos;t install)"
+      label="KNIME Remote Workflow Editor REST-Connector (don&apos;t install)"
       version="4.9.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 

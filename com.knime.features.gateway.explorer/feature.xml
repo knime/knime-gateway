@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.knime.features.gateway.explorer"
-      label="KNIME Remote Workflow Editor (preview)"
+      label="KNIME Remote Workflow Editor"
       version="4.9.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 

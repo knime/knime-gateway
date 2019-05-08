@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.knime.features.gateway.remote"
-      label="KNIME Remote Workflow Editor for Executor (preview)"
+      label="KNIME Remote Workflow Editor for Executor"
       version="4.9.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 

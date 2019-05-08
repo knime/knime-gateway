@@ -9,7 +9,7 @@
           category="org.knime.workbench.ui.preferences.gui"
           class="com.knime.gateway.local.workflow.prefs.RemoteWorkflowEditorPreferencePage"
           id="org.knime.workbench.ui.preferences.gui.remoteworkfloweditor"
-          name="Remote Workflow Editor (preview)">
+          name="Remote Workflow Editor">
     </page>
  </extension>
 </plugin>
