@@ -124,7 +124,6 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
 
                 NodeSettings nodeSettings = f1.get();
                 PortObjectSpec[] portObjectSpecs = f2.get();
-                FlowObjectStack flowObjectStack = f3.get();
 
                 for (PortObjectSpec spec : portObjectSpecs) {
                     if (spec instanceof ProblemPortObjectSpec) {
@@ -135,7 +134,6 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                 }
 
                 m_nodeSettings = nodeSettings;
-                m_dialogPane = getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
                 return m_dialogPane;
             } catch (NotConfigurableException | InterruptedException | ExecutionException e) {
                 throw new CompletionException(e);
