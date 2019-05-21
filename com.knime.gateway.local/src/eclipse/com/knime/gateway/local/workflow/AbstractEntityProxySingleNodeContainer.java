@@ -124,6 +124,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
 
                 NodeSettings nodeSettings = f1.get();
                 PortObjectSpec[] portObjectSpecs = f2.get();
+                FlowObjectStack flowObjectStack = f3.get();
 
                 for (PortObjectSpec spec : portObjectSpecs) {
                     if (spec instanceof ProblemPortObjectSpec) {
@@ -134,6 +135,12 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                 }
 
                 m_nodeSettings = nodeSettings;
+
+                //get dialog pane if the call above (to get the dialog pane) didn't return it already
+                if (m_dialogPane == null) {
+                    m_dialogPane =
+                        getDialogPaneWithSettings(nodeSettings, portObjectSpecs, flowObjectStack, m_dialogPane);
+                }
                 return m_dialogPane;
             } catch (NotConfigurableException | InterruptedException | ExecutionException e) {
                 throw new CompletionException(e);
@@ -256,7 +263,9 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
     }
 
     /**
-     * Returns the dialog pane initialized with the node settings etc.
+     * Returns the dialog pane initialized with the node settings etc. Either this method or
+     * {@link #getDialogPaneWithSettings(Future, Future, Future, NodeDialogPane, ExecutorService)} need to be
+     * overridden! (but not both)
      *
      * @param nodeSettings the node settings
      * @param portObjectSpecs the node input port specs
