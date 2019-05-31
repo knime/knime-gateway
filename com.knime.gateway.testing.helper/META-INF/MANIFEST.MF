@@ -1,24 +1,24 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Helper for testing gateway API implementation, i.e. services and entites
+Bundle-Name: Helper for testing gateway API implementation
 Bundle-SymbolicName: com.knime.gateway.testing.helper;singleton:=true
 Bundle-Version: 4.9.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Automatic-Module-Name: com.knime.gateway.testing.helper
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.knime.core;bundle-version="[3.8.0,4.0.0)",
- com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.8.9,3.0.0)",
- com.knime.gateway;bundle-version="[4.8.0,5.0.0)",
- com.fasterxml.jackson.core.jackson-core;bundle-version="[2.8.9,3.0.0)",
- org.awaitility;bundle-version="[3.0.0.v20180814-knime,4.0.0)",
- org.junit;bundle-version="[4.12.0,5.0.0)",
- com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.8.9,3.0.0)",
- org.knime.testing;bundle-version="[3.8.0,4.0.0)",
- com.knime.gateway.json;bundle-version="[4.7.0,5.0.0)",
- org.knime.workbench.repository;bundle-version="[3.8.0,4.0.0)",
- com.jayway.jsonpath.json-path-assert;bundle-version="[2.4.0,3.0.0)",
- org.hamcrest.library;bundle-version="[1.3.0,2.0.0)",
- org.knime.json;bundle-version="[3.8.0,4.0.0)"
 Export-Package: com.knime.gateway.service,
- com.knime.gateway.testing.helper,
- com.knime.gateway.testing.helper.node.directaccesstable
+  com.knime.gateway.testing.helper,
+  com.knime.gateway.testing.helper.node.directaccesstable
+Require-Bundle: org.knime.core;bundle-version="[3.8.0,4.0.0)",
+  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.8.9,3.0.0)",
+  com.knime.gateway;bundle-version="[4.8.0,5.0.0)",
+  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.8.9,3.0.0)",
+  org.awaitility;bundle-version="[3.0.0.v20180814-knime,4.0.0)",
+  org.junit;bundle-version="[4.12.0,5.0.0)",
+  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.8.9,3.0.0)",
+  org.knime.testing;bundle-version="[3.8.0,4.0.0)",
+  com.knime.gateway.json;bundle-version="[4.7.0,5.0.0)",
+  org.knime.workbench.repository;bundle-version="[3.8.0,4.0.0)",
+  com.jayway.jsonpath.json-path-assert;bundle-version="[2.4.0,3.0.0)",
+  org.hamcrest.library;bundle-version="[1.3.0,2.0.0)",
+  org.knime.json;bundle-version="[3.8.0,4.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: com.knime.gateway.testing.helper

@@ -2,28 +2,26 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Gateway Specification
 Bundle-SymbolicName: com.knime.gateway;singleton:=true
-Bundle-Version: 4.8.0.qualifier
+Bundle-Version: 4.9.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: com.knime.gateway.entity,
-  com.knime.gateway.service,
-  com.knime.gateway.util,
-  com.knime.gateway.entity,
   com.knime.gateway.entity.impl,
   com.knime.gateway.entity.impl.util,
   com.knime.gateway.entity.util,
   com.knime.gateway.service,
-  com.knime.gateway.service.util
+  com.knime.gateway.service.util,
+  com.knime.gateway.util
 Require-Bundle: org.knime.core.util;bundle-version="[5.4.1,6.0.0)",
- org.knime.core;bundle-version="[3.3.0,4.0.0)",
- org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
- com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.7.1,3.0.0)",
- com.fasterxml.jackson.core.jackson-core;bundle-version="[2.7.1,3.0.0)",
- com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.7.1,3.0.0)",
- com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.7.1,3.0.0)",
- org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
- org.knime.js.quickforms;bundle-version="[3.6.0,4.0.0)",
- org.knime.js.core;bundle-version="[3.6.0,4.0.0)",
- org.apache.commons.codec;bundle-version="[1.10.0,1.11.0)",
- org.knime.core.wizard;bundle-version="[3.8.0,4.0.0)"
+  org.knime.core;bundle-version="[3.3.0,4.0.0)",
+  org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
+  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.7.1,3.0.0)",
+  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.7.1,3.0.0)",
+  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.7.1,3.0.0)",
+  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.7.1,3.0.0)",
+  org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
+  org.knime.js.quickforms;bundle-version="[3.6.0,4.0.0)",
+  org.knime.js.core;bundle-version="[3.6.0,4.0.0)",
+  org.apache.commons.codec;bundle-version="[1.10.0,1.11.0)",
+  org.knime.core.wizard;bundle-version="[3.8.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
