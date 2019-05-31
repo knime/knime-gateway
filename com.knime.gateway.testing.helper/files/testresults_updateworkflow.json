@@ -172,7 +172,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/root:25/outPorts/3/summary",
-      "value" : "4 linearly uncorrelated variables"
+      "value" : "4 principal components"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:25/outPorts/0/summary",
@@ -340,7 +340,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/root:12/nodeMessage/message",
-      "value" : "Not all contained nodes are executed:"
+      "value" : "Error during execution:"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:19/outPorts/0/summary",

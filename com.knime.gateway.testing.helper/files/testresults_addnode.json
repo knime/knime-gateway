@@ -1313,7 +1313,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "PCA Compute",
+        "name" : "PCA Compute (deprecated)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -2052,7 +2052,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "Model",
+          "portName" : "PCA model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -2068,7 +2068,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "PCA Apply",
+        "name" : "PCA Apply (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
@@ -3748,7 +3748,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "PCA Compute",
+        "name" : "PCA Compute (deprecated)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -4487,7 +4487,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "Model",
+          "portName" : "PCA model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -4503,7 +4503,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "PCA Apply",
+        "name" : "PCA Apply (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
@@ -5915,7 +5915,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "PCA Compute",
+        "name" : "PCA Compute (deprecated)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -6293,7 +6293,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "Model",
+          "portName" : "PCA model",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
@@ -6309,7 +6309,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "PCA Apply",
+        "name" : "PCA Apply (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
