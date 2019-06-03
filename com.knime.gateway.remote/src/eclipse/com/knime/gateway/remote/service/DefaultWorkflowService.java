@@ -372,7 +372,7 @@ public class DefaultWorkflowService implements WorkflowService {
                 return buildWorkflowEnt(snc.getWorkflowManager(), rootWorkflowID);
             } else {
                 throw new ServiceExceptions.NotASubWorkflowException("Node for the given node id ('" + nodeID.toString()
-                    + "') is neither a metanode nor a wrapped metanode.");
+                    + "') is neither a metanode nor a component.");
             }
         } catch (IllegalArgumentException e) {
             throw new ServiceExceptions.NodeNotFoundException(e.getMessage(), e);

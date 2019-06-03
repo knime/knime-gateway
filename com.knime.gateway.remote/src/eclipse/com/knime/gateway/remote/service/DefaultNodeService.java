@@ -430,7 +430,7 @@ public class DefaultNodeService implements NodeService {
                 throw new IllegalStateException("Data for metanode dialog cannot be accessed.", ex);
             }
         } else {
-            throw new InvalidRequestException("The node the dialog is requested for is not a wrapped metanode!");
+            throw new InvalidRequestException("The node the dialog is requested for is not a component!");
         }
     }
 }

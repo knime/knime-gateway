@@ -202,7 +202,7 @@ public class EntityProxyAccess {
      * @return the {@link EntityProxyWrappedWorkflowManager} - either the cached one or newly created
      */
     EntityProxyWrappedWorkflowManager getWrappedWorkflowManager(final WrappedWorkflowNodeEnt ent) {
-        //workflow ids of wrapped metanodes have a trailing ":0" - see line 309 in SubNodeContainer
+        //workflow ids of components have a trailing ":0" - see line 309 in SubNodeContainer
         Pair<UUID, NodeIDEnt> keyPair = Pair.create(ent.getRootWorkflowID(), ent.getNodeID().appendNodeID(0));
         if (m_wfmMap.get(keyPair) != null) {
             EntityProxyWrappedWorkflowManager wfm = (EntityProxyWrappedWorkflowManager)m_wfmMap.get(keyPair);

@@ -131,7 +131,7 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
         //check
         cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6");
 
-        //add a connection in a wrapped metanode (to the metanode out-port)
+        //add a connection in a component (to the metanode out-port)
         connection = builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(12, 0, 10)).setSourcePort(1)
             .setDest(new NodeIDEnt(12, 0, 9)).setDestPort(1).setType(TypeEnum.STD).build();
         ws().createConnection(wfId, connection);

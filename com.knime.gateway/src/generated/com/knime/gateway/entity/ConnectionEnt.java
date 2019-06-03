@@ -60,7 +60,7 @@ public interface ConnectionEnt extends GatewayEntity {
 
 
   /**
-   * The destination node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
+   * The destination node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
    * @return dest , never <code>null</code>
    **/
   public com.knime.gateway.entity.NodeIDEnt getDest();
@@ -72,7 +72,7 @@ public interface ConnectionEnt extends GatewayEntity {
   public Integer getDestPort();
 
   /**
-   * The source node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
+   * The source node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
    * @return source , never <code>null</code>
    **/
   public com.knime.gateway.entity.NodeIDEnt getSource();
@@ -114,7 +114,7 @@ public interface ConnectionEnt extends GatewayEntity {
     public interface ConnectionEntBuilder extends GatewayEntityBuilder<ConnectionEnt> {
 
         /**
-         * The destination node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
+         * The destination node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
          * 
          * @param dest the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -130,7 +130,7 @@ public interface ConnectionEnt extends GatewayEntity {
         ConnectionEntBuilder setDestPort(Integer destPort);
         
         /**
-         * The source node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode).
+         * The source node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
          * 
          * @param source the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

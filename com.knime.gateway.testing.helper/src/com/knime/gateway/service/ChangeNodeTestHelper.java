@@ -212,7 +212,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
         ns().setNodeBounds(wfId, new NodeIDEnt(6, 3), oldBounds);
         cr(ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow(), "workflowent_6_moved_node_3");
 
-        //move node within a wrapped metanode
+        //move node within a component
         ns().setNodeBounds(wfId, new NodeIDEnt(9, 0, 7), oldBounds);
         cr(ws().getWorkflow(wfId, new NodeIDEnt(9)).getWorkflow(), "workflowent_9_moved_node_7");
 

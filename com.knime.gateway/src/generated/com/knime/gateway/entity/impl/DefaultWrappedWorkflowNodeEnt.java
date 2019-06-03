@@ -35,7 +35,7 @@ import com.knime.gateway.entity.impl.DefaultWorkflowNodeEnt;
 import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 
 /**
- * A node wrapping (referencing) a workflow (also referred to it as wrapped metanode or subnode) that almost behaves as a ordinary node.
+ * A node wrapping (referencing) a workflow (also referred to it as component or subnode) that almost behaves as a ordinary node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

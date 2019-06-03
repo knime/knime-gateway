@@ -205,7 +205,7 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
     @Override
     public Element getXMLDescription() {
         String noDescriptionAvailableText =
-            "Node description for wrapped metanodes within remotely opened workflows not available, yet.";
+            "Node description for components within remotely opened workflows not available, yet.";
 
         try {
             // Document
@@ -242,7 +242,7 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
             //                inPort.setAttribute("name", inPortNames[i]);
             //                String defaultText = NO_DESCRIPTION_SET;
             //                if (i == 0) {
-            //                    defaultText += "\nChange this label by browsing the input node contained in the Wrapped Metanode "
+            //                    defaultText += "\nChange this label by browsing the input node contained in the Component "
             //                            + "and changing its configuration.";
             //                }
             //                addText(inPort, inPortDescriptions[i], defaultText);
@@ -255,7 +255,7 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
             //                outPort.setAttribute("name", outPortNames[i]);
             //                String defaultText = NO_DESCRIPTION_SET;
             //                if (i == 0) {
-            //                    defaultText += "\nChange this label by browsing the output node contained in the Wrapped Metanode "
+            //                    defaultText += "\nChange this label by browsing the output node contained in the Component "
             //                            + "and changing its configuration.";
             //                }
             //                addText(outPort, outPortDescriptions[i], defaultText);
@@ -263,7 +263,7 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
 
             return new NodeDescription27Proxy(doc).getXMLDescription();
         } catch (XmlException | DOMException | ParserConfigurationException ex) {
-            LOGGER.warn("Could not generate Wrapped Metanode description (for a remotely opened workflow)", ex);
+            LOGGER.warn("Could not generate Component description (for a remotely opened workflow)", ex);
         }
         return null;
     }

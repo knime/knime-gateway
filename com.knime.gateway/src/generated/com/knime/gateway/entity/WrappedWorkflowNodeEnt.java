@@ -33,7 +33,7 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 
 
 /**
- * A node wrapping (referencing) a workflow (also referred to it as wrapped metanode or subnode) that almost behaves as a ordinary node.
+ * A node wrapping (referencing) a workflow (also referred to it as component or subnode) that almost behaves as a ordinary node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -42,13 +42,13 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
 
 
   /**
-   * Node ID of the virtual in-node (i.e. source). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
+   * Node ID of the virtual in-node (i.e. source). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component). 
    * @return virtualInNodeID 
    **/
   public com.knime.gateway.entity.NodeIDEnt getVirtualInNodeID();
 
   /**
-   * Node ID of the virtual out-node (i.e. sink). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
+   * Node ID of the virtual out-node (i.e. sink). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component). 
    * @return virtualOutNodeID 
    **/
   public com.knime.gateway.entity.NodeIDEnt getVirtualOutNodeID();
@@ -248,7 +248,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
         
         /**
-         * Node ID of the virtual in-node (i.e. source). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
+         * Node ID of the virtual in-node (i.e. source). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component). 
          * 
          * @param virtualInNodeID the property value,  
          * @return this entity builder for chaining
@@ -256,7 +256,7 @@ public interface WrappedWorkflowNodeEnt extends WorkflowNodeEnt {
         WrappedWorkflowNodeEntBuilder setVirtualInNodeID(com.knime.gateway.entity.NodeIDEnt virtualInNodeID);
         
         /**
-         * Node ID of the virtual out-node (i.e. sink). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within wrapped metanodes require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a wrapped metanode). 
+         * Node ID of the virtual out-node (i.e. sink). The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component). 
          * 
          * @param virtualOutNodeID the property value,  
          * @return this entity builder for chaining

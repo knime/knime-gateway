@@ -32,7 +32,7 @@ import com.knime.gateway.testing.helper.ServiceProvider;
 import com.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
- * Tests the necessary parts for the configuration of wrapped metanodes.
+ * Tests the necessary parts for the configuration of components.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -62,13 +62,13 @@ public class WMetaNodeDialogTest extends AbstractGatewayServiceTestHelper {
         GatewayEntity entity = ns().getWMetaNodeDialog(wfId, new NodeIDEnt(19));
         cr(entity, "wmetanodedialog_19");
 
-        //what if the node to get the meta node dialog for is not a wrapped metanode?
+        //what if the node to get the meta node dialog for is not a component?
         try {
             ns().getWMetaNodeDialog(wfId, new NodeIDEnt(1));
             fail("Expected a ServiceException to be thrown");
         } catch (ServiceExceptions.InvalidRequestException e) {
             assertThat("Unexpected exception message", e.getMessage(),
-                containsString("The node the dialog is requested for is not a wrapped metanode"));
+                containsString("The node the dialog is requested for is not a component"));
         }
     }
 }

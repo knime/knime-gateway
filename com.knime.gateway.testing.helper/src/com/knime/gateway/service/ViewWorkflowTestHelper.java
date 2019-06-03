@@ -85,11 +85,11 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         entity = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
         cr(entity, "workflowent_6");
 
-        //download and check contained wrapped metanode '9'
+        //download and check contained component '9'
         entity = ws().getWorkflow(wfId, new NodeIDEnt(9)).getWorkflow();
         cr(entity, "workflowent_9");
 
-        //download and check contained wrapped metanode '12'
+        //download and check contained component '12'
         entity = ws().getWorkflow(wfId, new NodeIDEnt(12)).getWorkflow();
         cr(entity, "workflowent_12");
 
@@ -101,11 +101,11 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
         entity = ns().getNode(wfId, new NodeIDEnt(6, 3));
         cr(entity, "nodeent_6_3");
 
-        //download and check wrapped metanode '9'
+        //download and check component '9'
         entity = ns().getNode(wfId, new NodeIDEnt(9));
         cr(entity, "wrappedworkflownodeent_9");
 
-        //wrapped metanode 23
+        //component 23
         entity = ns().getNode(wfId, new NodeIDEnt(23));
         cr(entity, "wrappedworkflownodeent_23");
 
@@ -115,7 +115,7 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
             fail("Expected a NotASubWorkflowException to be thrown");
         } catch (ServiceExceptions.NotASubWorkflowException e) {
             assertThat("Unexpected exception message", e.getMessage(),
-                containsString("is neither a metanode nor a wrapped metanode"));
+                containsString("is neither a metanode nor a component"));
         }
 
         //try to download a sub-workflow for a node that doesn't exist
