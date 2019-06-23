@@ -766,7 +766,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -1442,7 +1442,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -3545,7 +3545,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -4223,7 +4223,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -5902,7 +5902,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -6577,7 +6577,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -8256,7 +8256,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -8931,7 +8931,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -10101,7 +10101,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "WrappedNode Input",
+        "name" : "Component Input",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -10145,7 +10145,7 @@
         }, {
           "inactive" : false,
           "portIndex" : 1,
-          "portName" : "Delegated Wrapped Metanode Input 0",
+          "portName" : "Delegated Component Input 0",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
@@ -10290,7 +10290,7 @@
           "type" : "NodeInPort"
         }, {
           "portIndex" : 1,
-          "portName" : "Passed-on Wrapped Metanode Output 0",
+          "portName" : "Passed-on Component Output 0",
           "portType" : {
             "optional" : false,
             "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
@@ -10298,7 +10298,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "WrappedNode Output",
+        "name" : "Component Output",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -10920,7 +10920,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -11595,7 +11595,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,

@@ -246,7 +246,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -707,7 +707,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -2008,7 +2008,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -2683,7 +2683,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -4395,7 +4395,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -5948,7 +5948,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -7855,7 +7855,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Interactive Table",
+        "name" : "Interactive Table (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -8530,7 +8530,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Box Plot",
+        "name" : "Box Plot (local)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
