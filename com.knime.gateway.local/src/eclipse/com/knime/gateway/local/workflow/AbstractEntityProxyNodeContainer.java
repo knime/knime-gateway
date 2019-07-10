@@ -794,9 +794,6 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      * @throws IllegalStateException when the node cannot be reset
      */
     void reset() {
-        if(!canReset()) {
-            throw new IllegalStateException("Node is not in the right state to be reset.");
-        }
         try {
             getAccess().nodeService().changeAndGetNodeState(getEntity().getRootWorkflowID(), getEntity().getNodeID(),
                 "reset");
@@ -804,7 +801,7 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
             //should actually not happen
             throw new RuntimeException(ex);
         } catch (ActionNotAllowedException ex) {
-            throw new IllegalStateException("", ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
 
