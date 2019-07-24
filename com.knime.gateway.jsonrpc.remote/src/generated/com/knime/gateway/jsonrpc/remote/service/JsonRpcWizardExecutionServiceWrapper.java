@@ -58,7 +58,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.TimeoutException.class, code = -32600,
             data = "TimeoutException" /*per convention the data property contains the exception name*/)
     })
-    public String executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="wizardPageInputEnt") WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
+    public byte[] executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="wizardPageInputEnt") WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
         return m_service.executeToNextPage(jobId, async, timeout, wizardPageInputEnt);    
     }
 
@@ -71,7 +71,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
             data = "NoWizardPageException" /*per convention the data property contains the exception name*/)
     })
-    public String getCurrentPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+    public byte[] getCurrentPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
         return m_service.getCurrentPage(jobId);    
     }
 
@@ -106,7 +106,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
             data = "NoWizardPageException" /*per convention the data property contains the exception name*/)
     })
-    public String resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+    public byte[] resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
         return m_service.resetToPreviousPage(jobId);    
     }
 

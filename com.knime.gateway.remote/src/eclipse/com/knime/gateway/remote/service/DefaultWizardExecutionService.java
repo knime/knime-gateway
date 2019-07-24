@@ -99,7 +99,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public String getCurrentPage(final UUID jobId) throws NoWizardPageException {
+    public byte[] getCurrentPage(final UUID jobId) throws NoWizardPageException {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageManager pageManager = WizardPageManager.of(wfm);
 
@@ -112,7 +112,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         }
 
         try {
-            return pageManager.createCurrentWizardPageString();
+            return pageManager.createCurrentWizardPageString().getBytes();
         } catch (IOException ex) {
             String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
             LOGGER.error(s, ex);
@@ -126,7 +126,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public String executeToNextPage(final UUID jobId, final Boolean async, final Long timeout,
+    public byte[] executeToNextPage(final UUID jobId, final Boolean async, final Long timeout,
         final WizardPageInputEnt wizardPageInput)
         throws NoWizardPageException, InvalidSettingsException, TimeoutException {
         LOGGER.info("Stepping to next page of workflow with id '" + jobId + "'");
@@ -155,7 +155,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         }
 
         if (async) {
-            return "";
+            return new byte[0];
         } else {
             try {
                 if (waitWhileInExecution(wfm, timeout, TimeUnit.MILLISECONDS)) {
@@ -223,7 +223,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public String resetToPreviousPage(final UUID jobId) throws NoWizardPageException {
+    public byte[] resetToPreviousPage(final UUID jobId) throws NoWizardPageException {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageManager pageManager = WizardPageManager.of(wfm);
         WizardExecutionController wec = pageManager.getWizardExecutionController();

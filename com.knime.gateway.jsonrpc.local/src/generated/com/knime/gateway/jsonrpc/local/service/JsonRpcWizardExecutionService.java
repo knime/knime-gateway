@@ -39,14 +39,14 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.executeToNextPage")
-    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
+    byte[] executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.getCurrentPage")
-    String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    byte[] getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
 
 	/**
      * {@inheritDoc}
@@ -67,6 +67,6 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.resetToPreviousPage")
-    String resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    byte[] resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
 
 }

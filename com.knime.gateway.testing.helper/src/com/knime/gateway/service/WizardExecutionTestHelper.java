@@ -74,8 +74,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      */
     public void testExecuteToFirstPage() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
-        String pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
-        checkFirstPageContents(pageContent);
+        byte[] pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        checkFirstPageContents(new String(pageContent));
     }
 
     /**
@@ -88,8 +88,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageInputEnt input = secondWizardPageInput(rowCount);
-        String pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
-        checkSecondPageContents(pageContent, rowCount);
+        byte[] pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        checkSecondPageContents(new String(pageContent), rowCount);
     }
 
     /**
@@ -99,12 +99,12 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      */
     public void testAsyncExecuteToNextPageAndGetCurrentPage() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
-        String emptyPage = wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
-        assertThat("Wizard page not empty", emptyPage, is(""));
+        byte[] emptyPage = wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        assertThat("Wizard page not empty", emptyPage, is(new byte[0]));
         //wait a bit for the wizard page to be available
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            String pageContent = wes().getCurrentPage(wfId);
-            checkFirstPageContents(pageContent);
+            byte[] pageContent = wes().getCurrentPage(wfId);
+            checkFirstPageContents(new String(pageContent));
         });
     }
 
@@ -206,16 +206,16 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         int rowCount = (int)(5 * Math.random()) + 1;
-        String pageContent =
+        byte[] pageContent =
             wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
-        checkSecondPageContents(pageContent, rowCount);
+        checkSecondPageContents(new String(pageContent), rowCount);
 
         pageContent = wes().resetToPreviousPage(wfId);
-        checkFirstPageContents(pageContent);
+        checkFirstPageContents(new String(pageContent));
 
         rowCount = (int)(5 * Math.random()) + 1;
         pageContent = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
-        checkSecondPageContents(pageContent, rowCount);
+        checkSecondPageContents(new String(pageContent), rowCount);
     }
 
     private static void checkSecondPageContents(final String pageContents, final int expectedRowCount) {

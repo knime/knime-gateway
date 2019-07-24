@@ -44,7 +44,7 @@ public interface WizardExecutionService extends GatewayService {
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      * @throws ServiceExceptions.TimeoutException If the executor got a timeout, e.g., because a workflow didn&#39;t finish execution before the timeout.
      */
-    String executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
+    byte[] executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
         
     /**
      * Returns the output for a workflow&#39;s current page. This is identical to the response returned by executing a workflow to the next page however it can be retrieved again at a later time. 
@@ -54,7 +54,7 @@ public interface WizardExecutionService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      */
-    String getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    byte[] getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
         
     /**
      * Returns a list of web resources needed for this job to handle wizard execution.
@@ -84,6 +84,6 @@ public interface WizardExecutionService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      */
-    String resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    byte[] resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
         
 }
