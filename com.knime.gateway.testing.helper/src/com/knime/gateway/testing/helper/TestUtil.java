@@ -39,7 +39,6 @@ import org.knime.core.node.workflow.WorkflowPersistor.WorkflowLoadResult;
 import org.knime.core.util.LoadVersion;
 import org.knime.core.util.LockFailedException;
 import org.knime.core.util.Version;
-import org.knime.testing.core.ng.WorkflowLoadTest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -84,7 +83,7 @@ public class TestUtil {
     }
 
     /**
-     * Loads a workflow into memory. Mainly copied from {@link WorkflowLoadTest}.
+     * Loads a workflow into memory. Mainly copied from {@link org.knime.testing.core.ng.WorkflowLoadTest}.
      *
      * @param workflowDir
      * @return the loaded workflow
@@ -146,6 +145,4 @@ public class TestUtil {
         }
         wfm.getParent().removeProject(wfm.getID());
     }
-
-
 }
