@@ -85,16 +85,6 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
         newNodeID = ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
         cr(ws().getWorkflow(wfId, getRootID()).getWorkflow(), "workflowent_root_new_dynamic_node");
 
-        //try adding a dynamic node but without providing the required settings
-        nodeFactoryKeyBuilder.setSettings(null);
-        try {
-            ns().createNode(wfId, getRootID(), 100, 100, nodeFactoryKeyBuilder.build());
-            fail("Expected ServiceException to be thrown");
-        } catch (InvalidRequestException e) {
-            assertThat("Unexpected exception message", e.getMessage(),
-                containsString("Settings are expected for dynamic node"));
-        }
-
         //try adding a dynamic node with corrupted settings
         nodeFactoryKeyBuilder.setSettings("nonsense-settings");
         try {
@@ -114,6 +104,5 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("No node found for factory key"));
         }
-
     }
 }
