@@ -179,8 +179,9 @@ public class DefaultNodeService implements NodeService {
                     + nodeFactoryKey.getClassName() + "'", ex);
             }
         } else if (nodeFactory instanceof DynamicNodeFactory) {
-            throw new InvalidRequestException(
-                "Settings are expected for dynamic node '" + nodeFactoryKey.getClassName() + "'");
+            //no settings stored with a dynamic node factory (which is the, e.g., with the spark nodes)
+            //at least init the node factory in order to have the node description available
+            nodeFactory.init();
         }
         NodeID nodeID = wfm.createAndAddNode(nodeFactory);
         NodeUIInformation info =
