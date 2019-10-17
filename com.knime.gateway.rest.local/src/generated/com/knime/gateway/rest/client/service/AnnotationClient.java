@@ -77,7 +77,7 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
             });
         } catch (WebApplicationException ex) {
             //executor errors
-            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex);
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "Annotation", "setAnnotationBounds");
             if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
                 throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
             }

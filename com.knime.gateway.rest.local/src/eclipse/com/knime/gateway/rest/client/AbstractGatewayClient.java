@@ -46,8 +46,10 @@ import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
 import com.knime.enterprise.utility.KnimeServerConstants;
+import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.entity.GatewayExceptionEnt;
+import com.knime.gateway.entity.GatewayExceptionEnt.GatewayExceptionEntBuilder;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.rest.client.providers.json.CollectionJSONDeserializer;
 import com.knime.gateway.rest.client.providers.json.EntityJSONDeserializer;
@@ -178,12 +180,14 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
      * Reads and parses the response body in to a {@link GatewayExceptionEnt}.
      *
      * @param e
+     * @param service
+     * @param method
      * @return the entity
      * @throws ServiceException if the parsing failed or the provided {@link WebApplicationException} doesn't wrap the
      *             expected response (i.e. status code)
      */
-    protected static GatewayExceptionEnt readAndParseGatewayExceptionResponse(final WebApplicationException e)
-        throws ServiceException {
+    protected static GatewayExceptionEnt readAndParseGatewayExceptionResponse(final WebApplicationException e,
+        final String service, final String method) throws ServiceException {
         if (e.getResponse().getStatus() == Status.BAD_REQUEST.getStatusCode()) {
             try {
                 return ObjectMapperUtil.getInstance().getObjectMapper().readValue(e.getMessage(),
@@ -191,6 +195,13 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
             } catch (IOException ex) {
                 throw new ServiceException("Error response with status code '" + e.getResponse().getStatus()
                     + "' and message '" + readExceptionMessage(e) + "' couldn't be parsed to a gateway exception.", ex);
+            }
+        } else {
+            int status = e.getResponse().getStatus();
+            String exceptionName = ResponseToExceptionMap.getExceptionName(service, method, status).orElse(null);
+            if (exceptionName != null) {
+                return EntityBuilderManager.builder(GatewayExceptionEntBuilder.class)
+                    .setExceptionMessage(e.getMessage()).setExceptionName(exceptionName).build();
             }
         }
         throw new ServiceException("Error response with status code '" + e.getResponse().getStatus() + "' and message: "

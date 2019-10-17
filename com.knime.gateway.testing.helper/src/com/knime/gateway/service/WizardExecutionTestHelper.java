@@ -146,7 +146,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             fail("Expected exception");
         } catch (InvalidSettingsException e) {
             assertThat("Unexpected exception message", e.getMessage(),
-                containsString("Validation of view parameters failed"));
+                containsString("The set integer 100 is bigger than the allowed maximum of 10"));
         }
     }
 

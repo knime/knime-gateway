@@ -144,7 +144,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                 if (StringUtils.isEmpty(validationResult)) {
                     wec.stepNext();
                 } else {
-                    throw new InvalidSettingsException("Validation of view parameters failed: " + validationResult);
+                    throw new InvalidSettingsException(validationResult);
                 }
             }
         } catch (IOException ex) {
