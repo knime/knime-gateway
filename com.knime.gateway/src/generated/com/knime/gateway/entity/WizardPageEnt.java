@@ -26,7 +26,7 @@ import com.knime.gateway.entity.GatewayEntityBuilder;
 import com.knime.gateway.entity.GatewayEntity;
 
 /**
- * TODO
+ * Wizard page as returned, e.g., by the next-page and current-page endpoints. 
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -34,7 +34,7 @@ import com.knime.gateway.entity.GatewayEntity;
 public interface WizardPageEnt extends GatewayEntity {
 
   /**
-   * Gets or Sets wizardExecutionState
+   * The wizard execution state. 
    */
   public enum WizardExecutionStateEnum {
     INTERACTION_REQUIRED("INTERACTION_REQUIRED"),
@@ -62,13 +62,13 @@ public interface WizardPageEnt extends GatewayEntity {
 
 
   /**
-   * Page content is guaranteed to be not available if wizard execution state is &#39;executing&#39;, &#39;undefined&#39; or &#39;execution_failed&#39;. 
+   * The actual page content as provided by a component. Page content is guaranteed to be not available if wizard execution state is &#39;executing&#39;, &#39;undefined&#39; or &#39;execution_failed&#39;. 
    * @return wizardPageContent 
    **/
   public String getWizardPageContent();
 
   /**
-   * Get wizardExecutionState
+   * The wizard execution state. 
    * @return wizardExecutionState 
    **/
   public WizardExecutionStateEnum getWizardExecutionState();
@@ -80,7 +80,7 @@ public interface WizardPageEnt extends GatewayEntity {
   public java.util.Map<String, NodeMessageEnt> getNodeMessages();
 
   /**
-   * Get hasPreviousPage
+   * Whether there is a previous page available or not.
    * @return hasPreviousPage 
    **/
   public Boolean hasPreviousPage();
@@ -92,7 +92,7 @@ public interface WizardPageEnt extends GatewayEntity {
     public interface WizardPageEntBuilder extends GatewayEntityBuilder<WizardPageEnt> {
 
         /**
-         * Page content is guaranteed to be not available if wizard execution state is &#39;executing&#39;, &#39;undefined&#39; or &#39;execution_failed&#39;. 
+         * The actual page content as provided by a component. Page content is guaranteed to be not available if wizard execution state is &#39;executing&#39;, &#39;undefined&#39; or &#39;execution_failed&#39;. 
          * 
          * @param wizardPageContent the property value,  
          * @return this entity builder for chaining
@@ -100,7 +100,7 @@ public interface WizardPageEnt extends GatewayEntity {
         WizardPageEntBuilder setWizardPageContent(String wizardPageContent);
         
         /**
-   		 * Set wizardExecutionState
+         * The wizard execution state. 
          * 
          * @param wizardExecutionState the property value,  
          * @return this entity builder for chaining
@@ -116,7 +116,7 @@ public interface WizardPageEnt extends GatewayEntity {
         WizardPageEntBuilder setNodeMessages(java.util.Map<String, NodeMessageEnt> nodeMessages);
         
         /**
-   		 * Set hasPreviousPage
+         * Whether there is a previous page available or not.
          * 
          * @param hasPreviousPage the property value,  
          * @return this entity builder for chaining

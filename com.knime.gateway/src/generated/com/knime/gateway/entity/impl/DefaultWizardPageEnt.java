@@ -27,7 +27,7 @@ import com.knime.gateway.entity.NodeMessageEnt;
 import com.knime.gateway.entity.WizardPageEnt;
 
 /**
- * TODO
+ * Wizard page as returned, e.g., by the next-page and current-page endpoints. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
