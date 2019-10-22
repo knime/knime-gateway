@@ -26,7 +26,7 @@ import com.knime.gateway.json.util.ObjectMapperUtil;
 /**
  * Implementation of the {@link GenericServerRequestHandler} extension point that executes json-rpc 2.0 requests and
  * delegates the respective calls to the default service implementations. However, with one difference to the
- * {@link JsonRpcServerRequestHandler}: the requests and responses are encoded into binary jason (bson).
+ * {@link JsonRpcServerRequestHandler}: the requests and responses are encoded into binary json (bson).
  *
  * The workflows the default service implementations work on are added via the {@link JobPoolListener}.
  *

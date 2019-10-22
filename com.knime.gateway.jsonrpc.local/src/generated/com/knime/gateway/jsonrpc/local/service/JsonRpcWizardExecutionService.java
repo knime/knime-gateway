@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
+import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
 import com.knime.gateway.service.util.ServiceExceptions;
@@ -39,14 +40,14 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.executeToNextPage")
-    byte[] executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
+    WizardPageEnt executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
 
 	/**
      * {@inheritDoc}
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.getCurrentPage")
-    byte[] getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    WizardPageEnt getCurrentPage(java.util.UUID jobId) ;
 
 	/**
      * {@inheritDoc}
@@ -67,6 +68,6 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.resetToPreviousPage")
-    byte[] resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    WizardPageEnt resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
 
 }

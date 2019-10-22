@@ -80,6 +80,8 @@ import com.knime.gateway.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.entity.impl.DefaultStyleRangeEnt;
 import com.knime.gateway.entity.ViewDataEnt.ViewDataEntBuilder;
 import com.knime.gateway.entity.impl.DefaultViewDataEnt;
+import com.knime.gateway.entity.WizardPageEnt.WizardPageEntBuilder;
+import com.knime.gateway.entity.impl.DefaultWizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
 import com.knime.gateway.entity.impl.DefaultWizardPageInputEnt;
 import com.knime.gateway.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
@@ -205,6 +207,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ViewDataEntBuilder.class) {
             return new DefaultViewDataEnt.DefaultViewDataEntBuilder();
+        }        
+        if(clazz == WizardPageEntBuilder.class) {
+            return new DefaultWizardPageEnt.DefaultWizardPageEntBuilder();
         }        
         if(clazz == WizardPageInputEntBuilder.class) {
             return new DefaultWizardPageInputEnt.DefaultWizardPageInputEntBuilder();

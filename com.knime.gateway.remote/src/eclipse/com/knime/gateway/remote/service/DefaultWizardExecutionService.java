@@ -18,6 +18,8 @@
  */
 package com.knime.gateway.remote.service;
 
+import static com.knime.gateway.entity.EntityBuilderManager.builder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,14 +56,17 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.wizard.WizardPageManager;
 import org.osgi.framework.Bundle;
 
+import com.knime.gateway.entity.WizardPageEnt;
+import com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum;
+import com.knime.gateway.entity.WizardPageEnt.WizardPageEntBuilder;
 import com.knime.gateway.entity.WizardPageInputEnt;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
 import com.knime.gateway.service.WizardExecutionService;
-import com.knime.gateway.service.util.ServiceExceptions;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.service.util.ServiceExceptions.NoWizardPageException;
 import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
 import com.knime.gateway.service.util.ServiceExceptions.TimeoutException;
+import com.knime.gateway.util.EntityBuilderUtil;
 
 /**
  * Default implementation of {@link WizardExecutionService} that delegates the operations to knime.core (e.g.
@@ -99,34 +104,53 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public byte[] getCurrentPage(final UUID jobId) throws NoWizardPageException {
+    public WizardPageEnt getCurrentPage(final UUID jobId) {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
+
+        WizardPageEntBuilder wizardPageBuilder = builder(WizardPageEntBuilder.class);
+        if (!wfm.isInWizardExecution()) {
+            return wizardPageBuilder.setNodeMessages(null).setWizardExecutionState(WizardExecutionStateEnum.UNDEFINED)
+                .build();
+        }
+
         WizardPageManager pageManager = WizardPageManager.of(wfm);
 
         //otherwise jackson core isn't able to find classes outside its bundle
         ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
-        if (!pageManager.getWizardExecutionController().hasCurrentWizardPage()) {
-            throw new ServiceExceptions.NoWizardPageException("No wizard page available");
-        }
+        WizardExecutionController controller = pageManager.getWizardExecutionController();
 
-        try {
-            return pageManager.createCurrentWizardPageString().getBytes();
-        } catch (IOException ex) {
-            String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
-            LOGGER.error(s, ex);
-            throw new IllegalStateException(s, ex);
-        } finally {
-            Thread.currentThread().setContextClassLoader(contextLoader);
-       }
+        if (wfm.getNodeContainerState().isExecuted()) {
+            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FINISHED);
+            wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
+        } else if (controller.hasCurrentWizardPage()) {
+            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.INTERACTION_REQUIRED);
+            wizardPageBuilder.setNodeMessages(null);
+            try {
+                wizardPageBuilder.setWizardPageContent(pageManager.createCurrentWizardPageString());
+            } catch (IOException ex) {
+                String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
+                LOGGER.error(s, ex);
+                throw new IllegalStateException(s, ex);
+            } finally {
+                Thread.currentThread().setContextClassLoader(contextLoader);
+            }
+        } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
+            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTING);
+            wizardPageBuilder.setNodeMessages(null);
+        } else {
+            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FAILED);
+            wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
+        }
+        return wizardPageBuilder.setHasPreviousPage(controller.hasPreviousWizardPage()).build();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public byte[] executeToNextPage(final UUID jobId, final Boolean async, final Long timeout,
+    public WizardPageEnt executeToNextPage(final UUID jobId, final Boolean async, final Long timeout,
         final WizardPageInputEnt wizardPageInput)
         throws NoWizardPageException, InvalidSettingsException, TimeoutException {
         LOGGER.info("Stepping to next page of workflow with id '" + jobId + "'");
@@ -155,7 +179,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         }
 
         if (async) {
-            return new byte[0];
+            return builder(WizardPageEntBuilder.class).setNodeMessages(null).build();
         } else {
             try {
                 if (waitWhileInExecution(wfm, timeout, TimeUnit.MILLISECONDS)) {
@@ -216,14 +240,14 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
     private static boolean isWfmDone(final WorkflowManager wfm) {
         return wfm.getNodeContainerState().isConfigured() || wfm.getNodeContainerState().isWaitingToBeExecuted()
-            || wfm.getNodeContainerState().isExecuted();
+            || wfm.getNodeContainerState().isExecuted() || wfm.getNodeContainerState().isIdle();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public byte[] resetToPreviousPage(final UUID jobId) throws NoWizardPageException {
+    public WizardPageEnt resetToPreviousPage(final UUID jobId) throws NoWizardPageException {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageManager pageManager = WizardPageManager.of(wfm);
         WizardExecutionController wec = pageManager.getWizardExecutionController();

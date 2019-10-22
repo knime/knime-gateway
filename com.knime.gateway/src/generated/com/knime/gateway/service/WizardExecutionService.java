@@ -21,6 +21,7 @@ package com.knime.gateway.service;
 import com.knime.gateway.service.GatewayService;
 import com.knime.gateway.service.util.ServiceExceptions;
 
+import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
 /**
@@ -44,7 +45,7 @@ public interface WizardExecutionService extends GatewayService {
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      * @throws ServiceExceptions.TimeoutException If the executor got a timeout, e.g., because a workflow didn&#39;t finish execution before the timeout.
      */
-    byte[] executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
+    WizardPageEnt executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
         
     /**
      * Returns the output for a workflow&#39;s current page. This is identical to the response returned by executing a workflow to the next page however it can be retrieved again at a later time. 
@@ -52,9 +53,8 @@ public interface WizardExecutionService extends GatewayService {
      * @param jobId ID of the job the workflow is requested for.
      *
      * @return the result
-     * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      */
-    byte[] getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    WizardPageEnt getCurrentPage(java.util.UUID jobId) ;
         
     /**
      * Returns a list of web resources needed for this job to handle wizard execution.
@@ -84,6 +84,6 @@ public interface WizardExecutionService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
      */
-    byte[] resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    WizardPageEnt resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
         
 }

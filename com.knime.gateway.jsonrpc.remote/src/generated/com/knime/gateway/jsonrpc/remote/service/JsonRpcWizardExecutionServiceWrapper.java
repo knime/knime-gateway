@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.remote.service;
 
+import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -58,7 +59,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.TimeoutException.class, code = -32600,
             data = "TimeoutException" /*per convention the data property contains the exception name*/)
     })
-    public byte[] executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="wizardPageInputEnt") WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
+    public WizardPageEnt executeToNextPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Boolean async, Long timeout, @JsonRpcParam(value="wizardPageInputEnt") WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
         return m_service.executeToNextPage(jobId, async, timeout, wizardPageInputEnt);    
     }
 
@@ -67,11 +68,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
      */
     @Override
     @JsonRpcMethod(value = "getCurrentPage")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
-            data = "NoWizardPageException" /*per convention the data property contains the exception name*/)
-    })
-    public byte[] getCurrentPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+    public WizardPageEnt getCurrentPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  {
         return m_service.getCurrentPage(jobId);    
     }
 
@@ -106,7 +103,7 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
         @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
             data = "NoWizardPageException" /*per convention the data property contains the exception name*/)
     })
-    public byte[] resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+    public WizardPageEnt resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
         return m_service.resetToPreviousPage(jobId);    
     }
 

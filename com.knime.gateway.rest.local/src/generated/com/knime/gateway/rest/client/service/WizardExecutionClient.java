@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.rest.client.service;
 
+import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
 
@@ -61,7 +62,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
-    public byte[] executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
+    public WizardPageEnt executeToNextPage(java.util.UUID jobId, Boolean async, Long timeout, WizardPageInputEnt wizardPageInputEnt)  throws ServiceExceptions.InvalidSettingsException, ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
         try{
             return doRequest(c -> {
                 try {
@@ -74,7 +75,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
                     throw new ServiceException("Server doesn't seem to be reachable.",
                         e.getCause());
                 }
-            }, byte[].class);
+            }, WizardPageEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "WizardExecution", "executeToNextPage");
@@ -93,7 +94,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
-    public byte[] getCurrentPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+    public WizardPageEnt getCurrentPage(java.util.UUID jobId)  {
         try{
             return doRequest(c -> {
                 try {
@@ -106,13 +107,10 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
                     throw new ServiceException("Server doesn't seem to be reachable.",
                         e.getCause());
                 }
-            }, byte[].class);
+            }, WizardPageEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "WizardExecution", "getCurrentPage");
-            if (gatewayException.getExceptionName().equals("NoWizardPageException")) {
-                throw new ServiceExceptions.NoWizardPageException(gatewayException.getExceptionMessage());
-            }
             throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
                 + "' with message: " + gatewayException.getExceptionMessage());
         }
@@ -168,7 +166,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
     }
     
     @Override
-    public byte[] resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
+    public WizardPageEnt resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
         try{
             return doRequest(c -> {
                 try {
@@ -181,7 +179,7 @@ public class WizardExecutionClient extends AbstractGatewayClient<WizardExecution
                     throw new ServiceException("Server doesn't seem to be reachable.",
                         e.getCause());
                 }
-            }, byte[].class);
+            }, WizardPageEnt.class);
         } catch (WebApplicationException ex) {
             //executor errors
             com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "WizardExecution", "resetToPreviousPage");

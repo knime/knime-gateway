@@ -96,6 +96,7 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
+import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -810,6 +811,20 @@ public class EntityBuilderUtil {
             return Arrays.stream(wm.getParent().getMetanodeOutputPortInfo(wm.getID())).map(i -> buildMetaPortInfoEnt(i))
                 .collect(Collectors.toList());
         }
+    }
+
+    /**
+     * Extracts the node messages from a workflow manager and returns them as {@link NodeMessageEnt} instance.
+     *
+     * @param wfm the workflow manager to extract the node messages from
+     * @return the new node message entity instance
+     */
+    public static Map<String, NodeMessageEnt> buildNodeMessageEntMap(final WorkflowManager wfm) {
+        return wfm.getNodeMessages(NodeMessage.Type.ERROR, NodeMessage.Type.WARNING).stream()
+            .collect(Collectors.toMap(nm -> nm.getFirst(), nm -> {
+                return builder(NodeMessageEntBuilder.class).setMessage(nm.getSecond().getMessage())
+                    .setType(nm.getSecond().getMessageType().toString()).build();
+            }));
     }
 
     private static NodeMessageEnt buildNodeMessageEnt(final NodeContainer nc) {
