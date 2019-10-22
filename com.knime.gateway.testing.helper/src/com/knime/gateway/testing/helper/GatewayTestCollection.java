@@ -97,8 +97,8 @@ public class GatewayTestCollection {
         res.put("testGetWMetaNodeDialog",
             (sp, rc, wl, we) -> new WMetaNodeDialogTest(sp, rc, wl).testGetWMetaNodeDialog());
 
-        res.put("testGetCurrentPageNoPage",
-            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageNoPage());
+        res.put("testGetCurrentPageAfterLoad",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageAfterLoad());
         res.put("testExecuteToFirstPage",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToFirstPage());
         res.put("testExecuteToSecondPage",
@@ -109,6 +109,12 @@ public class GatewayTestCollection {
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToNextPageTimeout());
         res.put("testExecuteToEnd",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToEnd());
+        res.put("testExecuteToSecondPageWithFailure",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToSecondPageWithFailure());
+        res.put("testGetCurrentPageWhileExecuting",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageWhileExecuting());
+        res.put("testGetCurrentPageIfNotInWizardExecution",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageIfNotInWizardExecution());
         res.put("testExecuteToNextPageWithInvalidViewValues",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToNextPageWithInvalidViewValues());
         res.put("testResetToZerothPage",
