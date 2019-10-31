@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 
 import com.knime.gateway.remote.service.DefaultWorkflowService;
@@ -40,8 +39,6 @@ import com.knime.gateway.remote.service.DefaultWorkflowService;
  * @noreference This class is not intended to be referenced by clients.
  */
 public final class WorkflowProjectManager {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowProjectManager.class);
 
     private static Map<UUID, WorkflowProject> WORKFLOW_PROJECT_MAP = new HashMap<UUID, WorkflowProject>();
 

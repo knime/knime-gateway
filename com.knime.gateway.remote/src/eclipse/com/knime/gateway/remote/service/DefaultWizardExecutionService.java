@@ -106,27 +106,16 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
     @Override
     public WizardPageEnt getCurrentPage(final UUID jobId) {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
-
         WizardPageEntBuilder wizardPageBuilder = builder(WizardPageEntBuilder.class);
-        if (!wfm.isInWizardExecution()) {
-            return wizardPageBuilder.setNodeMessages(null).setWizardExecutionState(WizardExecutionStateEnum.UNDEFINED)
-                .build();
-        }
 
-        WizardPageManager pageManager = WizardPageManager.of(wfm);
-
-        //otherwise jackson core isn't able to find classes outside its bundle
-        ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-
-        WizardExecutionController controller = pageManager.getWizardExecutionController();
-
-        if (wfm.getNodeContainerState().isExecuted()) {
-            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FINISHED);
-            wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
-        } else if (controller.hasCurrentWizardPage()) {
+        if (wfm.isInWizardExecution() && wfm.getWizardExecutionController().hasCurrentWizardPage()) {
+            WizardPageManager pageManager = WizardPageManager.of(wfm);
             wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.INTERACTION_REQUIRED);
             wizardPageBuilder.setNodeMessages(null);
+
+            //otherwise jackson core isn't able to find classes outside its bundle
+            ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             try {
                 wizardPageBuilder.setWizardPageContent(pageManager.createCurrentWizardPageString());
             } catch (IOException ex) {
@@ -136,14 +125,29 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             } finally {
                 Thread.currentThread().setContextClassLoader(contextLoader);
             }
+        } else if (wfm.getNodeContainerState().isExecuted()) {
+            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FINISHED);
+            wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
         } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
             wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTING);
             wizardPageBuilder.setNodeMessages(null);
+        } else if (!hasWorkflowExecutionStarted(wfm)) {
+            return wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.UNDEFINED).setNodeMessages(null)
+                .build();
         } else {
             wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FAILED);
             wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
         }
-        return wizardPageBuilder.setHasPreviousPage(controller.hasPreviousWizardPage()).build();
+
+        if (wfm.isInWizardExecution()) {
+            wizardPageBuilder.setHasPreviousPage(wfm.getWizardExecutionController().hasPreviousWizardPage());
+        }
+        return wizardPageBuilder.build();
+    }
+
+    private static boolean hasWorkflowExecutionStarted(final WorkflowManager wfm) {
+        //is there a better way?
+        return wfm.getNodeContainers().stream().anyMatch(n -> n.getNodeTimer().getNrExecsSinceStart() > 0);
     }
 
     /**

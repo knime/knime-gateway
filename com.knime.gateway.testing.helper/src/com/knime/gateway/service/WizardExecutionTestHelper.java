@@ -226,18 +226,23 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      */
     public void testGetCurrentPageIfNotInWizardExecution() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        WizardPageEnt wizardPage = wes().getCurrentPage(wfId);
+        assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.UNDEFINED));
+        assertNull(wizardPage.getWizardPageContent());
+        assertNull(wizardPage.getNodeMessages());
+        assertNull(wizardPage.hasPreviousPage());
 
         //execute entire workflow
         ns().changeAndGetNodeState(wfId, new NodeIDEnt(10), "execute");
 
         //check get current page
         await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WizardPageEnt wizardPage = wes().getCurrentPage(wfId);
-            assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
-                is(WizardExecutionStateEnum.UNDEFINED));
-            assertNull(wizardPage.getWizardPageContent());
-            assertNull(wizardPage.getNodeMessages());
-            assertNull(wizardPage.hasPreviousPage());
+            WizardPageEnt wizardPage2 = wes().getCurrentPage(wfId);
+            assertThat("unexpected wizard execution state", wizardPage2.getWizardExecutionState(),
+                is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+            assertNull(wizardPage2.getWizardPageContent());
+            assertNull(wizardPage2.hasPreviousPage());
         });
     }
 
