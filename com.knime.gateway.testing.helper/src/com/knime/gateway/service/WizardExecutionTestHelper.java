@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.knime.gateway.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.entity.ConnectionEnt.TypeEnum;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
@@ -49,6 +50,7 @@ import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum;
 import com.knime.gateway.entity.WizardPageInputEnt;
 import com.knime.gateway.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
+import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.service.util.ServiceExceptions.NoWizardPageException;
 import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
@@ -125,7 +127,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
 
         //wait a bit for the wizard page to be available
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            String pageContent = wes().getCurrentPage(wfId).getWizardPageContent();
+            Object pageContent = wes().getCurrentPage(wfId).getWizardPageContent();
             checkFirstPageContents(pageContent);
         });
     }
@@ -150,7 +152,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
     }
 
     /**
-     * Checks whats happens if workflow failes in wizard execution.
+     * Checks what happens if workflow fails in wizard execution.
      *
      * @throws Exception
      */
@@ -333,17 +335,21 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
     }
 
-    private static void checkSecondPageContents(final String pageContents, final int expectedRowCount) {
-        assertThat("Expected page element not found", pageContents,
+    private static void checkSecondPageContents(final Object pageContents, final int expectedRowCount) {
+        String pageContentString =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(pageContents, JsonNode.class).toString();
+        assertThat("Expected page element not found", pageContentString,
             hasJsonPath("$.webNodes.9:0:7.nodeInfo.nodeName", is("Text Output")));
-        assertThat("Unexpected output content", pageContents,
+        assertThat("Unexpected output content", pageContentString,
             hasJsonPath("$.webNodes.9:0:7.viewRepresentation.text", is(Integer.toString(expectedRowCount))));
     }
 
-    private static void checkFirstPageContents(final String pageContents) {
-        assertThat("Expected page element not found", pageContents,
+    private static void checkFirstPageContents(final Object pageContents) {
+        String pageContentString =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(pageContents, JsonNode.class).toString();
+        assertThat("Expected page element not found", pageContentString,
             hasJsonPath("$.webNodePageConfiguration.layout.rows[*].columns[*].content", is(not(empty()))));
-        assertThat("Expected page element not found", pageContents,
+        assertThat("Expected page element not found", pageContentString,
             hasJsonPath("$.webNodes.5:0:1.nodeInfo.nodeName", is("Integer Input")));
     }
 

@@ -54,8 +54,12 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
 import org.knime.core.wizard.WizardPageManager;
+import org.knime.js.core.JSONWebNodePage;
+import org.knime.js.core.layout.bs.JSONLayoutPage;
 import org.osgi.framework.Bundle;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum;
 import com.knime.gateway.entity.WizardPageEnt.WizardPageEntBuilder;
@@ -117,7 +121,10 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             try {
-                wizardPageBuilder.setWizardPageContent(pageManager.createCurrentWizardPageString());
+                JSONWebNodePage jsonPage = pageManager.createCurrentWizardPage();
+                ObjectMapper mapper = JSONLayoutPage.getConfiguredVerboseObjectMapper();
+                JsonNode jsonNode = mapper.convertValue(jsonPage, JsonNode.class);
+                wizardPageBuilder.setWizardPageContent(jsonNode);
             } catch (IOException ex) {
                 String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
                 LOGGER.error(s, ex);

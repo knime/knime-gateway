@@ -56,7 +56,7 @@ public interface WizardPageEntMixIn extends WizardPageEnt {
 
     @Override
     @JsonProperty("wizardPageContent")
-    public String getWizardPageContent();
+    public Object getWizardPageContent();
     
     @Override
     @JsonProperty("wizardExecutionState")
@@ -92,7 +92,7 @@ public interface WizardPageEntMixIn extends WizardPageEnt {
     
         @Override
         @JsonProperty("wizardPageContent")
-        public WizardPageEntMixInBuilder setWizardPageContent(final String wizardPageContent);
+        public WizardPageEntMixInBuilder setWizardPageContent(final Object wizardPageContent);
         
         @Override
         @JsonProperty("wizardExecutionState")

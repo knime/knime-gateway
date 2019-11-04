@@ -65,7 +65,7 @@ public interface WizardPageEnt extends GatewayEntity {
    * The actual page content as provided by a component. Page content is guaranteed to be not available if wizard execution state is &#39;executing&#39;, &#39;undefined&#39; or &#39;execution_failed&#39;. 
    * @return wizardPageContent 
    **/
-  public String getWizardPageContent();
+  public Object getWizardPageContent();
 
   /**
    * The wizard execution state. 
@@ -97,7 +97,7 @@ public interface WizardPageEnt extends GatewayEntity {
          * @param wizardPageContent the property value,  
          * @return this entity builder for chaining
          */
-        WizardPageEntBuilder setWizardPageContent(String wizardPageContent);
+        WizardPageEntBuilder setWizardPageContent(Object wizardPageContent);
         
         /**
          * The wizard execution state. 

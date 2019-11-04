@@ -34,7 +34,7 @@ import com.knime.gateway.entity.WizardPageEnt;
 @javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-implementations-config.json"})
 public class DefaultWizardPageEnt  implements WizardPageEnt {
 
-  protected String m_wizardPageContent;
+  protected Object m_wizardPageContent;
   protected WizardExecutionStateEnum m_wizardExecutionState;
   protected java.util.Map<String, NodeMessageEnt> m_nodeMessages;
   protected Boolean m_hasPreviousPage;
@@ -76,7 +76,7 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
 
 
   @Override
-  public String getWizardPageContent() {
+  public Object getWizardPageContent() {
         return m_wizardPageContent;
     }
     
@@ -102,13 +102,13 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
             
         }
     
-        private String m_wizardPageContent;
+        private Object m_wizardPageContent = null;
         private WizardExecutionStateEnum m_wizardExecutionState;
         private java.util.Map<String, NodeMessageEnt> m_nodeMessages = new java.util.HashMap<>();
         private Boolean m_hasPreviousPage;
 
         @Override
-        public DefaultWizardPageEntBuilder setWizardPageContent(String wizardPageContent) {
+        public DefaultWizardPageEntBuilder setWizardPageContent(Object wizardPageContent) {
              m_wizardPageContent = wizardPageContent;
              return this;
         }
