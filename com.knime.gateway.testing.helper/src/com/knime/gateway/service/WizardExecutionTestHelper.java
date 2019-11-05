@@ -22,11 +22,12 @@ import static com.jayway.jsonassert.impl.matcher.IsEmptyCollection.empty;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.knime.gateway.entity.ConnectionEnt.ConnectionEntBuilder;
 import com.knime.gateway.entity.ConnectionEnt.TypeEnum;
+import com.knime.gateway.entity.ExecutionStatisticsEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeMessageEnt.NodeMessageEntBuilder;
@@ -409,5 +411,61 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         } catch (NotFoundException e) {
             assertThat("Unexpected exception message", e.getMessage(), is("No resource for given id available"));
         }
+    }
+
+    /**
+     * Checks the execution-statistics endpoint for a running workflow (started in wizard execution) and a workflow in
+     * wizard execution.
+     *
+     * @throws Exception
+     */
+    public void testGetExecutionStatistics() throws Exception {
+        UUID wfIdAsync = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
+        wes().executeToNextPage(wfIdAsync, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            ExecutionStatisticsEnt executionStatistics = wes().getExecutionStatistics(wfIdAsync);
+            assertThat("executing nodes expected", executionStatistics.getNodesExecuting(), not(empty()));
+            assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
+            assertThat("total execution time expected to be set",
+                executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+            assertThat("execution duration musst be set for executing nodes",
+                executionStatistics.getNodesExecuting().get(0).getExecutionDuration().longValue(), greaterThan(0l));
+            assertThat("node annotation expected to be absent",
+                executionStatistics.getNodesExecuted().get(0).getAnnotation(), nullValue());
+            assertThat("node annotation expected to be present",
+                executionStatistics.getNodesExecuting().get(0).getAnnotation(), is("executing node"));
+        });
+
+        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        ExecutionStatisticsEnt executionStatistics = wes().getExecutionStatistics(wfId);
+        assertThat("no executing nodes expected", executionStatistics.getNodesExecuting(), empty());
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
+        assertThat("total execution time expected to be set",
+            executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+
+        int rowCount = (int)(5 * Math.random()) + 1;
+        WizardPageInputEnt input = secondWizardPageInput(rowCount);
+        WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
+        assertThat("no executing nodes expected", executionStatistics.getNodesExecuting(), empty());
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
+        assertThat("total execution time expected to be set",
+            executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+
+        wfId = loadWorkflow(TestWorkflow.WORKFLOW_LOOP);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        executionStatistics = wes().getExecutionStatistics(wfId);
+        assertThat("no executing nodes expected", executionStatistics.getNodesExecuting(), empty());
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(4));
+        assertThat("one run expected for first node",
+            executionStatistics.getNodesExecuted().get(0).getRuns().intValue(), is(1));
+        assertThat("multiple runs expected for node in loop",
+            executionStatistics.getNodesExecuted().get(2).getRuns().intValue(), is(20));
+        assertThat("total execution time expected to be set",
+            executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
     }
 }

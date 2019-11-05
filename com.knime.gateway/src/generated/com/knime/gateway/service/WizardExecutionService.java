@@ -21,6 +21,7 @@ package com.knime.gateway.service;
 import com.knime.gateway.service.GatewayService;
 import com.knime.gateway.service.util.ServiceExceptions;
 
+import com.knime.gateway.entity.ExecutionStatisticsEnt;
 import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
@@ -55,6 +56,16 @@ public interface WizardExecutionService extends GatewayService {
      * @return the result
      */
     WizardPageEnt getCurrentPage(java.util.UUID jobId) ;
+        
+    /**
+     * Provides statistics on the node execution between wizard pages.
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
+     */
+    ExecutionStatisticsEnt getExecutionStatistics(java.util.UUID jobId)  throws ServiceExceptions.NotFoundException;
         
     /**
      * Returns a list of web resources needed for this job to handle wizard execution.

@@ -128,6 +128,8 @@ public class GatewayTestCollection {
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetWebResource());
         res.put("testGetWebResourceNotFound",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetWebResourceNotFound());
+        res.put("testGetExecutionStatistics",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetExecutionStatistics());
 
         return res;
     }

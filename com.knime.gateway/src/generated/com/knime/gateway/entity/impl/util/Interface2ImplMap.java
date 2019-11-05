@@ -30,6 +30,8 @@ import com.knime.gateway.entity.DataRowEnt.DataRowEntBuilder;
 import com.knime.gateway.entity.impl.DefaultDataRowEnt;
 import com.knime.gateway.entity.DataTableEnt.DataTableEntBuilder;
 import com.knime.gateway.entity.impl.DefaultDataTableEnt;
+import com.knime.gateway.entity.ExecutionStatisticsEnt.ExecutionStatisticsEntBuilder;
+import com.knime.gateway.entity.impl.DefaultExecutionStatisticsEnt;
 import com.knime.gateway.entity.FlowVariableEnt.FlowVariableEntBuilder;
 import com.knime.gateway.entity.impl.DefaultFlowVariableEnt;
 import com.knime.gateway.entity.GatewayExceptionEnt.GatewayExceptionEntBuilder;
@@ -50,6 +52,10 @@ import com.knime.gateway.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import com.knime.gateway.entity.impl.DefaultNodeAnnotationEnt;
 import com.knime.gateway.entity.NodeEnt.NodeEntBuilder;
 import com.knime.gateway.entity.impl.DefaultNodeEnt;
+import com.knime.gateway.entity.NodeExecutedStatisticsEnt.NodeExecutedStatisticsEntBuilder;
+import com.knime.gateway.entity.impl.DefaultNodeExecutedStatisticsEnt;
+import com.knime.gateway.entity.NodeExecutingStatisticsEnt.NodeExecutingStatisticsEntBuilder;
+import com.knime.gateway.entity.impl.DefaultNodeExecutingStatisticsEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.entity.impl.DefaultNodeFactoryKeyEnt;
 import com.knime.gateway.entity.NodeInPortEnt.NodeInPortEntBuilder;
@@ -133,6 +139,9 @@ public class Interface2ImplMap {
         if(clazz == DataTableEntBuilder.class) {
             return new DefaultDataTableEnt.DefaultDataTableEntBuilder();
         }        
+        if(clazz == ExecutionStatisticsEntBuilder.class) {
+            return new DefaultExecutionStatisticsEnt.DefaultExecutionStatisticsEntBuilder();
+        }        
         if(clazz == FlowVariableEntBuilder.class) {
             return new DefaultFlowVariableEnt.DefaultFlowVariableEntBuilder();
         }        
@@ -162,6 +171,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeEntBuilder.class) {
             return new DefaultNodeEnt.DefaultNodeEntBuilder();
+        }        
+        if(clazz == NodeExecutedStatisticsEntBuilder.class) {
+            return new DefaultNodeExecutedStatisticsEnt.DefaultNodeExecutedStatisticsEntBuilder();
+        }        
+        if(clazz == NodeExecutingStatisticsEntBuilder.class) {
+            return new DefaultNodeExecutingStatisticsEnt.DefaultNodeExecutingStatisticsEntBuilder();
         }        
         if(clazz == NodeFactoryKeyEntBuilder.class) {
             return new DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder();

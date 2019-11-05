@@ -76,7 +76,14 @@ public abstract class AbstractGatewayServiceTestHelper {
         /**
          * A workflow to test the wizard execution endpoints.
          */
-        WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution");
+        WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution"),
+
+        /**
+         * A workflow with a loop.
+         */
+        WORKFLOW_LOOP("/files/Test Gateway Workflow Loop.knwf", "workflow_loop");
+
+
 
         private final String m_url;
         private final String m_name;

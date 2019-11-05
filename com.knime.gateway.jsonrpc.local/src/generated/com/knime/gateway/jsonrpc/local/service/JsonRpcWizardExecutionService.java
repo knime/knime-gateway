@@ -18,6 +18,7 @@
  */
 package com.knime.gateway.jsonrpc.local.service;
 
+import com.knime.gateway.entity.ExecutionStatisticsEnt;
 import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
@@ -48,6 +49,13 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.getCurrentPage")
     WizardPageEnt getCurrentPage(java.util.UUID jobId) ;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WizardExecutionService.getExecutionStatistics")
+    ExecutionStatisticsEnt getExecutionStatistics(java.util.UUID jobId)  throws ServiceExceptions.NotFoundException;
 
 	/**
      * {@inheritDoc}

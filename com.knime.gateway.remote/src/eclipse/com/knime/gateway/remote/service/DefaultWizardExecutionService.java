@@ -23,6 +23,7 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -38,6 +39,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +50,15 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeStateEvent;
+import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.WizardExecutionController;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
+import org.knime.core.util.Pair;
 import org.knime.core.wizard.WizardPageManager;
 import org.knime.js.core.JSONWebNodePage;
 import org.knime.js.core.layout.bs.JSONLayoutPage;
@@ -60,11 +66,19 @@ import org.osgi.framework.Bundle;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knime.gateway.entity.ExecutionStatisticsEnt;
+import com.knime.gateway.entity.ExecutionStatisticsEnt.ExecutionStatisticsEntBuilder;
+import com.knime.gateway.entity.NodeExecutedStatisticsEnt;
+import com.knime.gateway.entity.NodeExecutedStatisticsEnt.NodeExecutedStatisticsEntBuilder;
+import com.knime.gateway.entity.NodeExecutingStatisticsEnt;
+import com.knime.gateway.entity.NodeExecutingStatisticsEnt.NodeExecutingStatisticsEntBuilder;
 import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum;
 import com.knime.gateway.entity.WizardPageEnt.WizardPageEntBuilder;
 import com.knime.gateway.entity.WizardPageInputEnt;
+import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
+import com.knime.gateway.remote.service.util.WorkflowStateRepository;
 import com.knime.gateway.service.WizardExecutionService;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.service.util.ServiceExceptions.NoWizardPageException;
@@ -91,8 +105,17 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
     private static Map<String, URL> webResourcesUrls;
 
+    private final Map<UUID, Pair<Long, Long>> m_executionStartsAndEnds = new HashMap<>();
+
+    private final WorkflowStateRepository m_workflowStateRepo = new WorkflowStateRepository();
+
     private DefaultWizardExecutionService() {
         //private constructor since it's a singleton
+
+        WorkflowProjectManager.addWorkflowProjectRemovedListener(id -> {
+            m_executionStartsAndEnds.remove(id);
+            m_workflowStateRepo.removeWorkflowStateSnapshot(id);
+        });
     }
 
     /**
@@ -172,6 +195,10 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
         String validationResult = null;
         try (WorkflowLock lock = wfm.lock()) {
+            //take snapshot in order to be able to report statistics on the execution
+            m_workflowStateRepo.addDeepWorkflowStateSnapshot(jobId, wfm);
+            timeWorkflowExecution(jobId, wfm);
+
             if (!wec.hasCurrentWizardPage()) {
                 wec.stepFirst();
             } else {
@@ -203,6 +230,26 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                 throw new IllegalStateException(ex);
             }
         }
+    }
+
+    /**
+     * Keeps track of start and end time of workflow execution to be able to return the total execution duration in
+     * between wizard pages (returned at {@link #getExecutionStatistics(UUID)}).
+     */
+    private void timeWorkflowExecution(final UUID jobId, final WorkflowManager wfm) {
+        m_executionStartsAndEnds.put(jobId, Pair.create(System.currentTimeMillis(), null));
+        NodeStateChangeListener listener = new NodeStateChangeListener() {
+
+            @Override
+            public void stateChanged(final NodeStateEvent state) {
+                if (isWfmDone(wfm)) {
+                    m_executionStartsAndEnds.put(jobId,
+                        Pair.create(m_executionStartsAndEnds.get(jobId).getFirst(), System.currentTimeMillis()));
+                    wfm.removeNodeStateChangeListener(this);
+                }
+            }
+        };
+        wfm.addNodeStateChangeListener(listener);
     }
 
     /**
@@ -266,8 +313,67 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             throw new NoWizardPageException("No previous wizard page");
         }
         wec.stepBack();
+        m_workflowStateRepo.removeWorkflowStateSnapshot(jobId);
         DefaultServiceUtil.getWorkflowProject(jobId).clearReport();
         return getCurrentPage(jobId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ExecutionStatisticsEnt getExecutionStatistics(final UUID rootWorkflowID) throws NotFoundException {
+        if (!m_workflowStateRepo.containsWorkflowStateSnapshotFor(rootWorkflowID)) {
+            return builder(ExecutionStatisticsEntBuilder.class).build();
+        }
+
+        //extract node state changes and get respective nodes
+        WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(rootWorkflowID);
+        List<Pair<Long, NodeExecutedStatisticsEnt>> executedNodes = new ArrayList<>();
+        List<Pair<Long, NodeExecutingStatisticsEnt>> executingNodes = new ArrayList<>();
+
+        m_workflowStateRepo.compareStates(rootWorkflowID, wfm, new WorkflowStateRepository.NodeStateChangeProcessor() {
+
+            @Override
+            public void nodeExecuting(final NodeContainer nc) {
+                long startTime = nc.getNodeTimer().getStartTime();
+                long executionDuration = System.currentTimeMillis() - startTime;
+                NodeExecutingStatisticsEntBuilder nodeStats =
+                    builder(NodeExecutingStatisticsEntBuilder.class).setName(nc.getName())
+                        .setNodeID(nc.getID().toString()).setExecutionDuration(BigDecimal.valueOf(executionDuration));
+                if (nc.getProgressMonitor() != null && nc.getProgressMonitor().getProgress() != null) {
+                    nodeStats.setProgress(BigDecimal.valueOf(nc.getProgressMonitor().getProgress()));
+                }
+                if (!nc.getNodeAnnotation().getText().isEmpty()) {
+                    nodeStats.setAnnotation(nc.getNodeAnnotation().getText());
+                }
+                executingNodes.add(Pair.create(startTime, nodeStats.build()));
+            }
+
+            @Override
+            public void nodeExecuted(final NodeContainer nc, final long runs) {
+                NodeTimer nodeTimer = nc.getNodeTimer();
+                NodeExecutedStatisticsEntBuilder nodeStats = builder(NodeExecutedStatisticsEntBuilder.class)
+                    .setName(nc.getName()).setNodeID(nc.getID().toString())
+                    .setExecutionDuration(BigDecimal.valueOf(nodeTimer.getLastExecutionDuration()))
+                    .setRuns(BigDecimal.valueOf(runs));
+                if (!nc.getNodeAnnotation().getText().isEmpty()) {
+                    nodeStats.setAnnotation(nc.getNodeAnnotation().getText());
+                }
+                executedNodes.add(Pair.create(nodeTimer.getStartTime(), nodeStats.build()));
+            }
+        });
+
+        Pair<Long, Long> startAndEnd = m_executionStartsAndEnds.get(rootWorkflowID);
+        long totalExecutionTime = startAndEnd.getSecond() == null ? System.currentTimeMillis() - startAndEnd.getFirst()
+            : startAndEnd.getSecond() - startAndEnd.getFirst();
+        //sort with respect to the node's start time
+        executedNodes.sort((p1, p2) -> Long.compare(p1.getFirst(), p2.getFirst()));
+        executingNodes.sort((p1, p2) -> Long.compare(p1.getFirst(), p2.getFirst()));
+        return builder(ExecutionStatisticsEntBuilder.class)
+            .setNodesExecuted(executedNodes.stream().map(p -> p.getSecond()).collect(Collectors.toList()))
+            .setNodesExecuting(executingNodes.stream().map(p -> p.getSecond()).collect(Collectors.toList()))
+            .setTotalExecutionDuration(BigDecimal.valueOf(totalExecutionTime)).build();
     }
 
     /**
