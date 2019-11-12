@@ -63,6 +63,7 @@ public class ExtPointUtil {
         for (IConfigurationElement elem : point.getConfigurationElements()) {
             String attr = elem.getAttribute(extPointAttr);
             String decl = elem.getDeclaringExtension().getUniqueIdentifier();
+            LOGGER.debug("Found configuration element for " + extPointID + " from " + elem.getContributor().getName());
 
             if (attr == null || attr.isEmpty()) {
                 LOGGER.error(
