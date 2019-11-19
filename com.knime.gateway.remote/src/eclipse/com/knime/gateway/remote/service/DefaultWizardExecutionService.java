@@ -336,6 +336,11 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
             @Override
             public void nodeExecuting(final NodeContainer nc) {
+                if (nc.getNodeContainerState().isExecuted()) {
+                    //node seems to be executed meanwhile
+                    nodeExecuted(nc, nc.getNodeTimer().getNrExecsSinceStart());
+                    return;
+                }
                 long startTime = nc.getNodeTimer().getStartTime();
                 long executionDuration = System.currentTimeMillis() - startTime;
                 NodeExecutingStatisticsEntBuilder nodeStats =

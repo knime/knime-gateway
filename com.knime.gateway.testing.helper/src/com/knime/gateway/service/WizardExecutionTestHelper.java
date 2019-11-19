@@ -22,8 +22,10 @@ import static com.jayway.jsonassert.impl.matcher.IsEmptyCollection.empty;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
@@ -420,6 +422,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testGetExecutionStatistics() throws Exception {
+        long maxExecTime = 60000l;
         UUID wfIdAsync = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
         wes().executeToNextPage(wfIdAsync, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
@@ -427,9 +430,10 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             assertThat("executing nodes expected", executionStatistics.getNodesExecuting(), not(empty()));
             assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
             assertThat("total execution time expected to be set",
-                executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+                executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
             assertThat("execution duration musst be set for executing nodes",
-                executionStatistics.getNodesExecuting().get(0).getExecutionDuration().longValue(), greaterThan(0l));
+                executionStatistics.getNodesExecuting().get(0).getExecutionDuration().longValue(),
+                allOf(greaterThan(0l), lessThan(maxExecTime)));
             assertThat("node annotation expected to be absent",
                 executionStatistics.getNodesExecuted().get(0).getAnnotation(), nullValue());
             assertThat("node annotation expected to be present",
@@ -443,7 +447,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
         assertThat("total execution time expected to be set",
-            executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+            executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
 
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageInputEnt input = secondWizardPageInput(rowCount);
@@ -453,7 +457,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
         assertThat("total execution time expected to be set",
-            executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+            executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
 
         wfId = loadWorkflow(TestWorkflow.WORKFLOW_LOOP);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
@@ -466,6 +470,6 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("multiple runs expected for node in loop",
             executionStatistics.getNodesExecuted().get(2).getRuns().intValue(), is(20));
         assertThat("total execution time expected to be set",
-            executionStatistics.getTotalExecutionDuration().longValue(), greaterThan(0l));
+            executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
     }
 }
