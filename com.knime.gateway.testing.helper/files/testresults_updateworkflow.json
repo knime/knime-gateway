@@ -251,6 +251,14 @@
       "value" : "Rows: 8, Cols: 8"
     }, {
       "op" : "replace",
+      "path" : "/nodes/root:9/nodeMessage/type",
+      "value" : "RESET"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:9/nodeMessage/message",
+      "value" : ""
+    }, {
+      "op" : "replace",
       "path" : "/nodes/root:12/resetable",
       "value" : "true"
     }, {
@@ -340,7 +348,7 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/root:12/nodeMessage/message",
-      "value" : "Error during execution:"
+      "value" : "Execute failed: "
     }, {
       "op" : "replace",
       "path" : "/nodes/root:19/outPorts/0/summary",
@@ -381,6 +389,14 @@
       "op" : "replace",
       "path" : "/nodes/root:2/outPorts/1/summary",
       "value" : "Rows: 8, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/nodeMessage/type",
+      "value" : "RESET"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/nodeMessage/message",
+      "value" : ""
     }, {
       "op" : "replace",
       "path" : "/nodes/root:13/outPorts/1/summary",

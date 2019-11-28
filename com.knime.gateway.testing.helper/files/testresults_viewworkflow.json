@@ -530,7 +530,7 @@
     "jobManager" : {
       "id" : "org.knime.core.node.exec.ThreadNodeExecutionJobManagerFactory"
     },
-    "name" : "workflow",
+    "name" : "GatewayClientServiceTests_test[testViewWorkflow]",
     "nodeAnnotation" : {
       "_default" : true,
       "backgroundColor" : 16777215,
@@ -2193,7 +2193,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Concatenate (Optional in)",
+        "name" : "Concatenate (Optional in) (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
@@ -2669,7 +2669,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : true,
-        "name" : "Variable to Table Row",
+        "name" : "Variable to Table Row (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
@@ -3159,7 +3159,7 @@
         },
         "nodeID" : "root:12",
         "nodeMessage" : {
-          "message" : "Error during execution:",
+          "message" : "Execute failed: ",
           "type" : "ERROR"
         },
         "nodeState" : {
@@ -3501,7 +3501,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Table Row to Variable",
+        "name" : "Table Row to Variable (deprecated)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
@@ -5001,7 +5001,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Concatenate (Optional in)",
+        "name" : "Concatenate (Optional in) (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
@@ -5465,7 +5465,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Variable to Table Row",
+        "name" : "Variable to Table Row (deprecated)",
         "nodeAnnotation" : {
           "_default" : false,
           "backgroundColor" : 16777215,
@@ -5577,8 +5577,8 @@
         },
         "nodeID" : "root:9",
         "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
+          "message" : "Component Input 0:9:0:8: Component does not have input data, execute upstream nodes first",
+          "type" : "WARNING"
         },
         "nodeState" : {
           "state" : "IDLE"
@@ -5855,8 +5855,8 @@
         },
         "nodeID" : "root:23",
         "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
+          "message" : "Component Input 0:23:0:8: Component does not have input data, execute upstream nodes first",
+          "type" : "WARNING"
         },
         "nodeState" : {
           "state" : "IDLE"
@@ -5947,8 +5947,8 @@
         },
         "nodeID" : "root:12",
         "nodeMessage" : {
-          "message" : "",
-          "type" : "RESET"
+          "message" : "Component Input 0:12:0:8: Component does not have input data, execute upstream nodes first",
+          "type" : "WARNING"
         },
         "nodeState" : {
           "state" : "IDLE"
@@ -6283,7 +6283,7 @@
           "type" : "NodeInPort"
         } ],
         "inactive" : false,
-        "name" : "Table Row to Variable",
+        "name" : "Table Row to Variable (deprecated)",
         "nodeAnnotation" : {
           "_default" : true,
           "backgroundColor" : 16777215,
