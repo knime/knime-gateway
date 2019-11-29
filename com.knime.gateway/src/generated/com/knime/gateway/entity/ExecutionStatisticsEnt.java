@@ -35,6 +35,33 @@ import com.knime.gateway.entity.GatewayEntity;
 @javax.annotation.Generated(value = {"org.knime.gateway.codegen.GatewayCodegen", "src-gen/com.knime.gateway-interfaces-config.json"})
 public interface ExecutionStatisticsEnt extends GatewayEntity {
 
+  /**
+   * The wizard execution state. 
+   */
+  public enum WizardExecutionStateEnum {
+    INTERACTION_REQUIRED("INTERACTION_REQUIRED"),
+    
+    EXECUTING("EXECUTING"),
+    
+    EXECUTION_FINISHED("EXECUTION_FINISHED"),
+    
+    EXECUTION_FAILED("EXECUTION_FAILED"),
+    
+    UNDEFINED("UNDEFINED");
+
+    private String value;
+
+    WizardExecutionStateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Total time execution took or is still taking, in milliseconds.
@@ -53,6 +80,12 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
    * @return nodesExecuting 
    **/
   public java.util.List<NodeExecutingStatisticsEnt> getNodesExecuting();
+
+  /**
+   * The wizard execution state. 
+   * @return wizardExecutionState 
+   **/
+  public WizardExecutionStateEnum getWizardExecutionState();
 
 
     /**
@@ -83,6 +116,14 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ExecutionStatisticsEntBuilder setNodesExecuting(java.util.List<NodeExecutingStatisticsEnt> nodesExecuting);
+        
+        /**
+         * The wizard execution state. 
+         * 
+         * @param wizardExecutionState the property value,  
+         * @return this entity builder for chaining
+         */
+        ExecutionStatisticsEntBuilder setWizardExecutionState(WizardExecutionStateEnum wizardExecutionState);
         
         
         /**

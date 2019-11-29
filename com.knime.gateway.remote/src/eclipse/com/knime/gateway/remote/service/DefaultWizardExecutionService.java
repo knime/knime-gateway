@@ -135,38 +135,37 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageEntBuilder wizardPageBuilder = builder(WizardPageEntBuilder.class);
 
-        if (wfm.isInWizardExecution() && wfm.getWizardExecutionController().hasCurrentWizardPage()) {
-            WizardPageManager pageManager = WizardPageManager.of(wfm);
-            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.INTERACTION_REQUIRED);
-            wizardPageBuilder.setNodeMessages(null);
+        WizardExecutionStateEnum wes = WizardExecutionStateEnum.valueOf(getWizardExecutionState(wfm));
+        wizardPageBuilder.setWizardExecutionState(wes);
+        switch (wes) {
+            case INTERACTION_REQUIRED:
+                WizardPageManager pageManager = WizardPageManager.of(wfm);
+                wizardPageBuilder.setNodeMessages(null);
 
-            //otherwise jackson core isn't able to find classes outside its bundle
-            ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            try {
-                JSONWebNodePage jsonPage = pageManager.createCurrentWizardPage();
-                ObjectMapper mapper = JSONLayoutPage.getConfiguredVerboseObjectMapper();
-                JsonNode jsonNode = mapper.convertValue(jsonPage, JsonNode.class);
-                wizardPageBuilder.setWizardPageContent(jsonNode);
-            } catch (IOException ex) {
-                String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
-                LOGGER.error(s, ex);
-                throw new IllegalStateException(s, ex);
-            } finally {
-                Thread.currentThread().setContextClassLoader(contextLoader);
-            }
-        } else if (wfm.getNodeContainerState().isExecuted()) {
-            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FINISHED);
-            wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
-        } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
-            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTING);
-            wizardPageBuilder.setNodeMessages(null);
-        } else if (!hasWorkflowExecutionStarted(wfm)) {
-            return wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.UNDEFINED).setNodeMessages(null)
-                .build();
-        } else {
-            wizardPageBuilder.setWizardExecutionState(WizardExecutionStateEnum.EXECUTION_FAILED);
-            wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
+                //otherwise jackson core isn't able to find classes outside its bundle
+                ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                try {
+                    JSONWebNodePage jsonPage = pageManager.createCurrentWizardPage();
+                    ObjectMapper mapper = JSONLayoutPage.getConfiguredVerboseObjectMapper();
+                    JsonNode jsonNode = mapper.convertValue(jsonPage, JsonNode.class);
+                    wizardPageBuilder.setWizardPageContent(jsonNode);
+                } catch (IOException ex) {
+                    String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
+                    LOGGER.error(s, ex);
+                    throw new IllegalStateException(s, ex);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(contextLoader);
+                }
+                break;
+            case EXECUTING:
+                wizardPageBuilder.setNodeMessages(null);
+                break;
+            case UNDEFINED:
+                return wizardPageBuilder.setNodeMessages(null).build();
+            case EXECUTION_FAILED:
+            case EXECUTION_FINISHED:
+                wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
         }
 
         if (wfm.isInWizardExecution()) {
@@ -178,6 +177,20 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
     private static boolean hasWorkflowExecutionStarted(final WorkflowManager wfm) {
         //is there a better way?
         return wfm.getNodeContainers().stream().anyMatch(n -> n.getNodeTimer().getNrExecsSinceStart() > 0);
+    }
+
+    private static String getWizardExecutionState(final WorkflowManager wfm) {
+        if (wfm.isInWizardExecution() && wfm.getWizardExecutionController().hasCurrentWizardPage()) {
+            return "INTERACTION_REQUIRED";
+        } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
+            return "EXECUTING";
+        } else if (wfm.getNodeContainerState().isExecuted()) {
+            return "EXECUTION_FINISHED";
+        } else if (!hasWorkflowExecutionStarted(wfm)) {
+            return "UNDEFINED";
+        } else {
+            return "EXECUTION_FAILED";
+        }
     }
 
     /**
@@ -379,7 +392,10 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         return builder(ExecutionStatisticsEntBuilder.class)
             .setNodesExecuted(executedNodes.stream().map(p -> p.getSecond()).collect(Collectors.toList()))
             .setNodesExecuting(executingNodes.stream().map(p -> p.getSecond()).collect(Collectors.toList()))
-            .setTotalExecutionDuration(BigDecimal.valueOf(totalExecutionTime)).build();
+            .setTotalExecutionDuration(BigDecimal.valueOf(totalExecutionTime))
+            .setWizardExecutionState(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum
+                .valueOf(getWizardExecutionState(wfm)))
+            .build();
     }
 
     /**

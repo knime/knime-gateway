@@ -68,6 +68,10 @@ public interface ExecutionStatisticsEntMixIn extends ExecutionStatisticsEnt {
     @JsonProperty("nodesExecuting")
     public java.util.List<NodeExecutingStatisticsEnt> getNodesExecuting();
     
+    @Override
+    @JsonProperty("wizardExecutionState")
+    public WizardExecutionStateEnum getWizardExecutionState();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -99,6 +103,10 @@ public interface ExecutionStatisticsEntMixIn extends ExecutionStatisticsEnt {
         @Override
         @JsonProperty("nodesExecuting")
         public ExecutionStatisticsEntMixInBuilder setNodesExecuting(final java.util.List<NodeExecutingStatisticsEnt> nodesExecuting);
+        
+        @Override
+        @JsonProperty("wizardExecutionState")
+        public ExecutionStatisticsEntMixInBuilder setWizardExecutionState(final WizardExecutionStateEnum wizardExecutionState);
         
     }
 
