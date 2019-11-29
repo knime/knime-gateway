@@ -530,7 +530,7 @@
     "jobManager" : {
       "id" : "org.knime.core.node.exec.ThreadNodeExecutionJobManagerFactory"
     },
-    "name" : "GatewayClientServiceTests_test[testViewWorkflow]",
+    "name" : "PLACEHOLDER_FOR_NAME",
     "nodeAnnotation" : {
       "_default" : true,
       "backgroundColor" : 16777215,

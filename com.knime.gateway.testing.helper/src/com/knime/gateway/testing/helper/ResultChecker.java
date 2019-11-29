@@ -45,7 +45,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.knime.gateway.entity.GatewayEntity;
+import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PortObjectSpecEnt;
+import com.knime.gateway.entity.WorkflowNodeEnt;
 import com.knime.gateway.entity.impl.DefaultJavaObjectEnt;
 import com.knime.gateway.entity.impl.DefaultNodeEnt;
 import com.knime.gateway.entity.impl.DefaultNodeMessageEnt;
@@ -79,11 +81,11 @@ public class ResultChecker {
          * Name of the field that holds the root workflow id (e.g. in NodeEnt). Since the id changes with every run it
          * cannot be compared.
          */
-        pe.addException(DefaultNodeEnt.class, "rootWorkflowID", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_WORKFLOW_ID"));
+        pe.addException(DefaultNodeEnt.class, "rootWorkflowID", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_WORKFLOW_ID"));
 
         /** Same as above but for the snapshot id. */
-        pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotID", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
-        pe.addException(DefaultPatchEnt.class, "snapshotID", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
+        pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotID", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
+        pe.addException(DefaultPatchEnt.class, "snapshotID", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
 
         /**
          * Name of the field the holds the (node) message. It is treated a bit differently for comparison since wrapped
@@ -91,7 +93,7 @@ public class ResultChecker {
          * workflow root node id that varies depending on how many other workflows are loaded). Thus, only the first
          * line is used for comparison.
          */
-        PropertyException firstLineOnly = (v, gen) -> {
+        PropertyException firstLineOnly = (v, gen, e) -> {
             String s = v.toString();
             if (s.contains("\n")) {
                 gen.writeString(s.split("\n")[0]);
@@ -110,13 +112,24 @@ public class ResultChecker {
          * Name of the field that holds json-objects as string. Since json-objects are regarded as the same although the
          * order of the fields varies, those fields are essentially ignored for comparison.
          */
-        pe.addException(DefaultJavaObjectEnt.class, "jsonContent", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_JSON_CONTENT"));
+        pe.addException(DefaultJavaObjectEnt.class, "jsonContent", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_JSON_CONTENT"));
 
         /**
          * The representation-field of some entities varies with every test run (e.g. the serialized and base64-encoded port
          * object specs). Hence, representations-strings are ignored for comparison.
          */
-        pe.addException(PortObjectSpecEnt.class, "representation", (v, gen) -> gen.writeString("PLACEHOLDER_FOR_REPRESENTATION"));
+        pe.addException(PortObjectSpecEnt.class, "representation", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_REPRESENTATION"));
+
+        /**
+         * The name-field of a workflow varies if the test is executed as part of an it-test or unit-test.
+         */
+        pe.addException(WorkflowNodeEnt.class, "name", (v, gen, e) -> {
+            if (e.getNodeID().equals(NodeIDEnt.getRootID())) {
+                gen.writeString("PLACEHOLDER_FOR_NAME");
+            } else {
+                gen.writeString(e.getName());
+            }
+        });
 
         PROPERTY_EXCEPTIONS = pe;
     }
@@ -343,7 +356,7 @@ public class ResultChecker {
          * @param altFunc how the property should be serialized alternatively
          */
         <E extends GatewayEntity> void addException(final Class<E> entityClass, final String propName,
-            final PropertyException altFunc) {
+            final PropertyException<E> altFunc) {
             m_classes.add(entityClass);
             m_propNames.add(propName);
             m_altFuncs.add(altFunc);
@@ -363,7 +376,7 @@ public class ResultChecker {
             if (GatewayEntity.class.isAssignableFrom(parentEntity)) {
                 for (int i = 0; i < m_classes.size(); i++) {
                     if (m_classes.get(i).isAssignableFrom(parentEntity) && propName.equals(m_propNames.get(i))) {
-                        m_altFuncs.get(i).alternativeSerialization(value, gen);
+                        m_altFuncs.get(i).alternativeSerialization(value, gen, gen.getCurrentValue());
                         return true;
                     }
                 }
@@ -373,7 +386,7 @@ public class ResultChecker {
     }
 
     @FunctionalInterface
-    private static interface PropertyException {
-        void alternativeSerialization(Object value, JsonGenerator gen) throws IOException;
+    private static interface PropertyException<E> {
+        void alternativeSerialization(Object value, JsonGenerator gen, E entity) throws IOException;
     }
 }

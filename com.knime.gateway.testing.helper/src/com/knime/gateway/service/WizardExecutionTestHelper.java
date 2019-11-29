@@ -438,6 +438,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
                 executionStatistics.getNodesExecuted().get(0).getAnnotation(), nullValue());
             assertThat("node annotation expected to be present",
                 executionStatistics.getNodesExecuting().get(0).getAnnotation(), is("executing node"));
+            assertThat("execution state expected to be 'executing'", executionStatistics.getWizardExecutionState(),
+                is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.EXECUTING));
         });
 
         UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
@@ -448,6 +450,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
         assertThat("total execution time expected to be set",
             executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+        assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
+            is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.INTERACTION_REQUIRED));
 
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageInputEnt input = secondWizardPageInput(rowCount);
@@ -458,6 +462,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
         assertThat("total execution time expected to be set",
             executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+        assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
+            is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.INTERACTION_REQUIRED));
 
         wfId = loadWorkflow(TestWorkflow.WORKFLOW_LOOP);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
@@ -470,6 +476,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("multiple runs expected for node in loop",
             executionStatistics.getNodesExecuted().get(2).getRuns().intValue(), is(20));
         assertThat("total execution time expected to be set",
-            executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+             executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+        assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
+            is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.EXECUTION_FINISHED));
     }
 }
