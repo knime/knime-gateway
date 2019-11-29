@@ -365,14 +365,15 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                 if (!nc.getNodeAnnotation().getText().isEmpty()) {
                     nodeStats.setAnnotation(nc.getNodeAnnotation().getText());
                 }
-                executedNodes.add(Pair.create(nodeTimer.getStartTime(), nodeStats.build()));
+                executedNodes.add(
+                    Pair.create(nodeTimer.getStartTime() + nodeTimer.getLastExecutionDuration(), nodeStats.build()));
             }
         });
 
         Pair<Long, Long> startAndEnd = m_executionStartsAndEnds.get(rootWorkflowID);
         long totalExecutionTime = startAndEnd.getSecond() == null ? System.currentTimeMillis() - startAndEnd.getFirst()
             : startAndEnd.getSecond() - startAndEnd.getFirst();
-        //sort with respect to the node's start time
+        //sort with respect to the node's end (executed nodes) and start (executing nodes) time
         executedNodes.sort((p1, p2) -> Long.compare(p1.getFirst(), p2.getFirst()));
         executingNodes.sort((p1, p2) -> Long.compare(p1.getFirst(), p2.getFirst()));
         return builder(ExecutionStatisticsEntBuilder.class)

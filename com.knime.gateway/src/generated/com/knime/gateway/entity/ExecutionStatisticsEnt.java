@@ -43,13 +43,13 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
   public BigDecimal getTotalExecutionDuration();
 
   /**
-   * Nodes executed since the last snapshot (or triggered execution).
+   * Nodes executed since the last snapshot (or triggered execution). In the order of their end time. 
    * @return nodesExecuted 
    **/
   public java.util.List<NodeExecutedStatisticsEnt> getNodesExecuted();
 
   /**
-   * Nodes currently executing (TODO since last snapshot), in no particular order.
+   * Nodes currently executing. In the order of their start time. 
    * @return nodesExecuting 
    **/
   public java.util.List<NodeExecutingStatisticsEnt> getNodesExecuting();
@@ -69,7 +69,7 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
         ExecutionStatisticsEntBuilder setTotalExecutionDuration(BigDecimal totalExecutionDuration);
         
         /**
-         * Nodes executed since the last snapshot (or triggered execution).
+         * Nodes executed since the last snapshot (or triggered execution). In the order of their end time. 
          * 
          * @param nodesExecuted the property value,  
          * @return this entity builder for chaining
@@ -77,7 +77,7 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
         ExecutionStatisticsEntBuilder setNodesExecuted(java.util.List<NodeExecutedStatisticsEnt> nodesExecuted);
         
         /**
-         * Nodes currently executing (TODO since last snapshot), in no particular order.
+         * Nodes currently executing. In the order of their start time. 
          * 
          * @param nodesExecuting the property value,  
          * @return this entity builder for chaining
