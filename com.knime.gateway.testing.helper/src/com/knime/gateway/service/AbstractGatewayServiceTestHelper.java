@@ -79,6 +79,12 @@ public abstract class AbstractGatewayServiceTestHelper {
         WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution"),
 
         /**
+         * A workflow that contains a wizard page (i.e. component) that needs some time to be (re)-executed
+         */
+        WORKFLOW_WIZARD_EXECUTION_LONG_REEXECUTE("/files/Wizard Execution Long Reexecute.knwf",
+            "wizard_execution_long_reexecute"),
+
+        /**
          * A workflow with a loop.
          */
         WORKFLOW_LOOP("/files/Test Gateway Workflow Loop.knwf", "workflow_loop");

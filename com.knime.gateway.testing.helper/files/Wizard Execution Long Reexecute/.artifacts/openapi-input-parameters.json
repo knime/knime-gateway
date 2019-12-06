@@ -1,0 +1,18 @@
+
+{
+    "type": "object",
+    "properties": {
+        "string-input-6:7": {
+            "type": "string",
+            "default": "",
+            "description": "Enter Description",
+            "example": ""
+        },
+        "string-input-5:2": {
+            "type": "string",
+            "default": "",
+            "description": "Enter Description",
+            "example": ""
+        }
+    }
+}

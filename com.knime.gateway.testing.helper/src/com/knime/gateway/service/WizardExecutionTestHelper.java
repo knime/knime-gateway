@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.knime.gateway.entity.ConnectionEnt.ConnectionEntBuilder;
@@ -272,6 +273,32 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("The set integer 100 is bigger than the allowed maximum of 10"));
         }
+    }
+
+    /**
+     * Tests that wizard execution state is not 'INTERACTION_REQUIRED' while a page is 're-executed' to apply view
+     * values. Fixed with SRV-2777.
+     *
+     * @throws Exception
+     */
+    public void testGetCurrentPageWhileReexecuting() throws Exception {
+        UUID wfIdAsync = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION_LONG_REEXECUTE);
+        wes().executeToNextPage(wfIdAsync, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class)
+            .setViewValues(
+                Collections.singletonMap("5:0:2", "{\"viewValues\":{\"5:0:2\":\"{\\\"string\\\":\\\"\\\"}\"}}"))
+            .build();
+        wes().executeToNextPage(wfIdAsync, true, WF_EXECUTION_TIMEOUT, wizardPageInput);
+        AtomicReference<WizardPageEnt> currentPage = new AtomicReference<WizardPageEnt>();
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            currentPage.set(wes().getCurrentPage(wfIdAsync));
+            assertThat("unexpected wizard execution state", currentPage.get().getWizardExecutionState(),
+                is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
+        });
+        String pageContentString = ObjectMapperUtil.getInstance().getObjectMapper()
+            .convertValue(currentPage.get().getWizardPageContent(), JsonNode.class).toString();
+        assertThat("Expected page element not found - not the second page", pageContentString,
+            hasJsonPath("$.webNodes.6:0:7.viewRepresentation.label", is("Second Page!")));
     }
 
     /**
