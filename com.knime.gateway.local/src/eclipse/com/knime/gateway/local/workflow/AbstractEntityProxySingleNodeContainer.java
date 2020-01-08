@@ -184,6 +184,9 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
             if (context instanceof RemoteWorkflowContext) {
                 Version clientVersion = ((RemoteWorkflowContext)context).getClientVersion();
                 Version serverVersion = ((RemoteWorkflowContext)context).getServerVersion();
+                //remove qualifier from server version (for comparison)
+                serverVersion =
+                    new Version(serverVersion.getMajor(), serverVersion.getMinor(), serverVersion.getRevision(), null);
                 if (!clientVersion.isSameOrNewer(serverVersion)) {
                     sb.append("\nThe server has a newer version (");
                     sb.append(serverVersion);

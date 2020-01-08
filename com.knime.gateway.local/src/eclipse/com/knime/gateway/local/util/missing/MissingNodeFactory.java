@@ -124,6 +124,9 @@ public class MissingNodeFactory extends DynamicNodeFactory<NodeModel> {
         if (m_context != null) {
             Version clientVersion = m_context.getClientVersion();
             Version serverVersion = m_context.getServerVersion();
+            //remove qualifier from server version (for comparison)
+            serverVersion =
+                new Version(serverVersion.getMajor(), serverVersion.getMinor(), serverVersion.getRevision(), null);
             if (!clientVersion.isSameOrNewer(serverVersion)) {
                 p = intro.addNewP();
                 p.newCursor().setTextValue(
