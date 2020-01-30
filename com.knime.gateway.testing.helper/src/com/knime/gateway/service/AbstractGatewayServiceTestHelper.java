@@ -78,6 +78,16 @@ public abstract class AbstractGatewayServiceTestHelper {
          */
         WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution"),
 
+         /**
+         * An simple workflow that generates a report.
+         */
+        WORKFLOW_REPORT("/files/Simple Report.knwf", "simple_report"),
+
+        /**
+         * An executed workflow that generates a report.
+         */
+        WORKFLOW_REPORT_EXECUTED("/files/Simple Report (executed).knwf", "simple_report_executed"),
+
         /**
          * A workflow with a loop.
          */
