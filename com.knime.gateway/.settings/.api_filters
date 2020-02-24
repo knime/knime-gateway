@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="com.knime.gateway" version="2">
+    <resource path="src/generated/com/knime/gateway/service/WizardExecutionService.java" type="com.knime.gateway.service.WizardExecutionService">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="com.knime.gateway.service.WizardExecutionService"/>
+                <message_argument value="renderReport(UUID, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="renderReport(UUID, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

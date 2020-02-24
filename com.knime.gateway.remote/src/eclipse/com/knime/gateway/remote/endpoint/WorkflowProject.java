@@ -18,7 +18,10 @@
  */
 package com.knime.gateway.remote.endpoint;
 
+import org.eclipse.birt.report.model.api.IllegalOperationException;
 import org.knime.core.node.workflow.WorkflowManager;
+
+import com.knime.enterprise.executor.JobPool;
 
 /**
  * Represents a workflow project.
@@ -51,4 +54,17 @@ public interface WorkflowProject {
      */
     default void clearReport() {}
 
+    /**
+     * Generates a report. See
+     * {@link JobPool#generateReport(com.knime.enterprise.executor.WorkflowJob, org.knime.core.util.report.ReportingConstants.RptOutputFormat, org.knime.core.util.report.ReportingConstants.RptOutputOptions)}
+     *
+     * @param format the report format
+     * @return the report directory or an empty optional
+     * @throws IllegalArgumentException if the format is not supported or invalid
+     * @throws IllegalStateException if report generation failed for some reason
+     * @since 4.11
+     */
+    default byte[] generateReport(final String format) {
+        throw new IllegalOperationException("Report generation not supported");
+    }
 }

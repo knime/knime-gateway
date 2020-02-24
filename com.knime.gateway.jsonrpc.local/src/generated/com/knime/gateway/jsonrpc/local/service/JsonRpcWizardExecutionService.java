@@ -75,6 +75,13 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "WizardExecutionService.renderReport")
+    byte[] renderReport(java.util.UUID jobId, String format)  throws ServiceExceptions.TimeoutException, ServiceExceptions.InvalidRequestException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "WizardExecutionService.resetToPreviousPage")
     WizardPageEnt resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
 

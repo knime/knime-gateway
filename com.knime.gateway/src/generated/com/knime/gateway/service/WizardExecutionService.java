@@ -88,6 +88,18 @@ public interface WizardExecutionService extends GatewayService {
     java.util.List<String> listWebResources(java.util.UUID jobId) ;
         
     /**
+     * Renders the report of an executed workflow into a certain format. 
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param format the requested report format
+     *
+     * @return the result
+     * @throws ServiceExceptions.TimeoutException If the executor got a timeout, e.g., because a workflow didn&#39;t finish execution before the timeout.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    byte[] renderReport(java.util.UUID jobId, String format)  throws ServiceExceptions.TimeoutException, ServiceExceptions.InvalidRequestException;
+        
+    /**
      * Resets a workflow to a previously executed page.
      *
      * @param jobId ID of the job the workflow is requested for.

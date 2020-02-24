@@ -18,9 +18,16 @@
  */
 package com.knime.gateway.remote.endpoint;
 
+import java.io.IOException;
+
+import org.eclipse.birt.report.engine.api.EngineException;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.report.ReportingConstants;
+import org.knime.core.util.report.ReportingConstants.RptOutputFormat;
+import org.knime.core.util.report.ReportingConstants.RptOutputOptions;
 
 import com.knime.enterprise.executor.ExecutorUtil;
+import com.knime.enterprise.executor.JobPool;
 import com.knime.enterprise.executor.WorkflowJob;
 
 /**
@@ -58,6 +65,21 @@ public class JobPoolListener implements com.knime.enterprise.executor.JobPoolLis
             public void clearReport() {
                 ExecutorUtil.clearReport(job);
             }
+
+            @Override
+            public byte[] generateReport(final String format) {
+                RptOutputFormat reportFormat;
+                reportFormat = RptOutputFormat.valueOf(format);
+
+                RptOutputOptions options = ReportingConstants.getDefaultReportOptions(reportFormat);
+
+                try {
+                    return JobPool.generateReport(job, reportFormat, options);
+                } catch (EngineException | IOException ex) {
+                    throw new IllegalStateException(ex);
+                }
+            }
+
         });
     }
 

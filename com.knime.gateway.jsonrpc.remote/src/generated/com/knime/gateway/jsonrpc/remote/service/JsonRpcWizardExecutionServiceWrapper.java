@@ -112,6 +112,21 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "renderReport")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.TimeoutException.class, code = -32600,
+            data = "TimeoutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public byte[] renderReport(@JsonRpcParam(value="jobId") java.util.UUID jobId, String format)  throws ServiceExceptions.TimeoutException, ServiceExceptions.InvalidRequestException {
+        return m_service.renderReport(jobId, format);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "resetToPreviousPage")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,

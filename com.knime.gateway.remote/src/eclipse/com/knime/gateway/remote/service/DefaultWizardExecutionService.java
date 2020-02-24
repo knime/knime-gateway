@@ -76,10 +76,13 @@ import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum;
 import com.knime.gateway.entity.WizardPageEnt.WizardPageEntBuilder;
 import com.knime.gateway.entity.WizardPageInputEnt;
+import com.knime.gateway.remote.endpoint.WorkflowProject;
 import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.service.util.DefaultServiceUtil;
 import com.knime.gateway.remote.service.util.WorkflowStateRepository;
+import com.knime.gateway.service.ServiceException;
 import com.knime.gateway.service.WizardExecutionService;
+import com.knime.gateway.service.util.ServiceExceptions.InvalidRequestException;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.service.util.ServiceExceptions.NoWizardPageException;
 import com.knime.gateway.service.util.ServiceExceptions.NotFoundException;
@@ -514,5 +517,21 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             throw new IllegalStateException(ex);
         }
         return baos.toByteArray();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] renderReport(final UUID rootWorkflowID, final String format)
+        throws TimeoutException, InvalidRequestException {
+        WorkflowProject wfProj = WorkflowProjectManager.getWorkflowProject(rootWorkflowID).get();
+        try {
+            return wfProj.generateReport(format);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestException("Unsupported report format: " + format, e);
+        } catch(IllegalStateException e) {
+            throw new ServiceException("Report generation failed", e);
+        }
     }
 }
