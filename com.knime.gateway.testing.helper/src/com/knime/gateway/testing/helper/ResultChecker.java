@@ -93,20 +93,19 @@ public class ResultChecker {
          * workflow root node id that varies depending on how many other workflows are loaded). Thus, only the first
          * line is used for comparison.
          */
-        PropertyException firstLineOnly = (v, gen, e) -> {
+        PropertyException firstLineOnlyAndIgnoreRootIDs = (v, gen, e) -> {
             String s = v.toString();
-            if (s.contains("\n")) {
-                gen.writeString(s.split("\n")[0]);
-            } else {
-                gen.writeString(s);
-            }
+            String firstLine = s.contains("\n") ? s.split("\n")[0] : s;
+            firstLine = firstLine.replaceAll(" \\d+:", " ROOT:");
+            gen.writeString(firstLine);
         };
-        pe.addException(DefaultNodeMessageEnt.class, "message", firstLineOnly);
+
+        pe.addException(DefaultNodeMessageEnt.class, "message", firstLineOnlyAndIgnoreRootIDs);
 
         /**
          * Same as with 'message' above, especially for the case when a patch contains a new value for a node message.
          */
-        pe.addException(DefaultPatchOpEnt.class, "value", firstLineOnly);
+        pe.addException(DefaultPatchOpEnt.class, "value", firstLineOnlyAndIgnoreRootIDs);
 
         /**
          * Name of the field that holds json-objects as string. Since json-objects are regarded as the same although the
