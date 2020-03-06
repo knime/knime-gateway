@@ -44,6 +44,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.interactive.DefaultReexecutionCallback;
 import org.knime.core.node.interactive.ViewContent;
 import org.knime.core.node.port.DataTableSpecProvider;
@@ -165,7 +166,7 @@ public class DefaultNodeService implements NodeService {
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
+        } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException
                 | InvalidSettingsException ex) {
             throw new NodeNotFoundException("No node found for factory key " + nodeFactoryKey);
         }

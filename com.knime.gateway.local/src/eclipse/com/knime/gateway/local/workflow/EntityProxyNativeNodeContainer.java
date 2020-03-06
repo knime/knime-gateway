@@ -32,6 +32,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -180,7 +181,7 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
                     nodeFactory.init();
                 }
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IOException
+        } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException | IOException
                 | InvalidSettingsException ex) {
             nodeFactory = new MissingNodeFactory(node.getName(), ex.getMessage(), workflowContext);
             nodeFactory.init();
