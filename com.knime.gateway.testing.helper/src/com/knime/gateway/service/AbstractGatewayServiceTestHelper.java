@@ -78,6 +78,11 @@ public abstract class AbstractGatewayServiceTestHelper {
          */
         WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution"),
 
+        /**
+         * A webportal workflow that takes a bit more time to execute from the first to the second page.
+         */
+        WORKFLOW_WIZARD_EXECUTION_LONGRUNNING("/files/Wizard Execution Longrunning.knwf", "wizard_execution_longrunning"),
+
          /**
          * An simple workflow that generates a report.
          */

@@ -83,6 +83,6 @@ public interface JsonRpcWizardExecutionService extends WizardExecutionService {
      */
     @Override
     @JsonRpcMethod(value = "WizardExecutionService.resetToPreviousPage")
-    WizardPageEnt resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    WizardPageEnt resetToPreviousPage(java.util.UUID jobId, Long timeout)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
 
 }

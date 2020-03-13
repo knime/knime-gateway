@@ -130,10 +130,12 @@ public class JsonRpcWizardExecutionServiceWrapper implements WizardExecutionServ
     @JsonRpcMethod(value = "resetToPreviousPage")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NoWizardPageException.class, code = -32600,
-            data = "NoWizardPageException" /*per convention the data property contains the exception name*/)
+            data = "NoWizardPageException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.TimeoutException.class, code = -32600,
+            data = "TimeoutException" /*per convention the data property contains the exception name*/)
     })
-    public WizardPageEnt resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException {
-        return m_service.resetToPreviousPage(jobId);    
+    public WizardPageEnt resetToPreviousPage(@JsonRpcParam(value="jobId") java.util.UUID jobId, Long timeout)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException {
+        return m_service.resetToPreviousPage(jobId, timeout);    
     }
 
 }

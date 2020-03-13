@@ -321,12 +321,26 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public WizardPageEnt resetToPreviousPage(final UUID jobId) throws NoWizardPageException {
+    public WizardPageEnt resetToPreviousPage(final UUID jobId, final Long timeout)
+        throws NoWizardPageException, TimeoutException {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageManager pageManager = WizardPageManager.of(wfm);
         WizardExecutionController wec = pageManager.getWizardExecutionController();
         if (!wec.hasPreviousWizardPage()) {
             throw new NoWizardPageException("No previous wizard page");
+        }
+        if (wfm.getNodeContainerState().isExecutionInProgress()) {
+            wfm.cancelExecution(wfm);
+            boolean timedOut;
+            try {
+                timedOut = !wfm.waitWhileInExecution(timeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException ex) {
+                //if the waiting gets interrupted we assume it's a timeout
+                timedOut = true;
+            }
+            if (timedOut) {
+                throw new TimeoutException("Workflow couldn't be cancelled before timeout");
+            }
         }
         wec.stepBack();
         m_workflowStateRepo.removeWorkflowStateSnapshot(jobId);

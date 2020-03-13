@@ -124,6 +124,9 @@ public class GatewayTestCollection {
         res.put("testResetToFirstPageAndExecuteToNextPageWithChangedInputs",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl)
                 .testResetToFirstPageAndExecuteToNextPageWithChangedInputs());
+        res.put("testResetToPreviousPageWhileWorkflowIsExecuting",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl)
+                .testResetToPreviousPageWhileWorkflowIsExecuting());
         res.put("testListWebResources",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testListWebResources());
         res.put("testGetWebResource",

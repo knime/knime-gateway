@@ -338,7 +338,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
 
         try {
-            wes().resetToPreviousPage(wfId);
+            wes().resetToPreviousPage(wfId, 2000l);
             fail("Exception expected");
         } catch (NoWizardPageException e) {
             assertThat("Unexpected exception message", e.getMessage(), is("No previous wizard page"));
@@ -358,12 +358,34 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
 
-        wizardPage = wes().resetToPreviousPage(wfId);
+        wizardPage = wes().resetToPreviousPage(wfId, 2000l);
         checkFirstPageContents(wizardPage.getWizardPageContent());
 
         rowCount = (int)(5 * Math.random()) + 1;
         wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
+    }
+
+    /**
+     * Method name says it all. Test for bugfix WEBP-277.
+     *
+     * @throws Exception
+     */
+    public void testResetToPreviousPageWhileWorkflowIsExecuting() throws Exception {
+        final UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION_LONGRUNNING);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            assertThat(wes().getExecutionStatistics(wfId).getWizardExecutionState(),
+                is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.EXECUTING));
+        });
+
+        WizardPageEnt page = wes().resetToPreviousPage(wfId, 2000l);
+        //that we get the wizard page without failures is all we want to test
+        assertThat(page.getWizardExecutionState(), is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
+
+        //should also test the timeout exception here - but couldn't come up with a workflow
+        //that resists the cancellation
     }
 
     private static void checkSecondPageContents(final Object pageContents, final int expectedRowCount) {

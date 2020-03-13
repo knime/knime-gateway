@@ -61,7 +61,7 @@ public class WizardExecutionTest {
         DefaultWizardExecutionService.getInstance().executeToNextPage(uuid, false, 60000L,
             builder(WizardPageInputEntBuilder.class)
                 .setViewValues(Collections.singletonMap("5:0:1", "{\"integer\": 3 }")).build());
-        DefaultWizardExecutionService.getInstance().resetToPreviousPage(uuid);
+        DefaultWizardExecutionService.getInstance().resetToPreviousPage(uuid, 2000l);
 
         //here is what we are actually testing for
         verify(workflowProject).clearReport();

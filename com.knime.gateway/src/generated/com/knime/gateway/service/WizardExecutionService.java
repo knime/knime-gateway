@@ -103,10 +103,12 @@ public interface WizardExecutionService extends GatewayService {
      * Resets a workflow to a previously executed page.
      *
      * @param jobId ID of the job the workflow is requested for.
+     * @param timeout Time (in milliseconds) to wait for the workflow to be cancelled. The request will return with a timeout-response if  the cancellation didn&#39;t succeed before the timeout
      *
      * @return the result
      * @throws ServiceExceptions.NoWizardPageException If a wizard page is not available.
+     * @throws ServiceExceptions.TimeoutException If the executor got a timeout, e.g., because a workflow didn&#39;t finish execution before the timeout.
      */
-    WizardPageEnt resetToPreviousPage(java.util.UUID jobId)  throws ServiceExceptions.NoWizardPageException;
+    WizardPageEnt resetToPreviousPage(java.util.UUID jobId, Long timeout)  throws ServiceExceptions.NoWizardPageException, ServiceExceptions.TimeoutException;
         
 }
