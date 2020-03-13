@@ -85,6 +85,12 @@ public interface WizardPageEnt extends GatewayEntity {
    **/
   public Boolean hasPreviousPage();
 
+  /**
+   * Whether the workflow provides a report at the end. The property will only be available if this is the very last page (i.e. wizard execution state is &#39;executed&#39;). 
+   * @return hasReport 
+   **/
+  public Boolean hasReport();
+
 
     /**
      * The builder for the entity.
@@ -122,6 +128,14 @@ public interface WizardPageEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WizardPageEntBuilder setHasPreviousPage(Boolean hasPreviousPage);
+        
+        /**
+         * Whether the workflow provides a report at the end. The property will only be available if this is the very last page (i.e. wizard execution state is &#39;executed&#39;). 
+         * 
+         * @param hasReport the property value,  
+         * @return this entity builder for chaining
+         */
+        WizardPageEntBuilder setHasReport(Boolean hasReport);
         
         
         /**

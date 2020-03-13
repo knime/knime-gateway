@@ -70,6 +70,10 @@ public interface WizardPageEntMixIn extends WizardPageEnt {
     @JsonProperty("hasPreviousPage")
     public Boolean hasPreviousPage();
     
+    @Override
+    @JsonProperty("hasReport")
+    public Boolean hasReport();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -105,6 +109,10 @@ public interface WizardPageEntMixIn extends WizardPageEnt {
         @Override
         @JsonProperty("hasPreviousPage")
         public WizardPageEntMixInBuilder setHasPreviousPage(final Boolean hasPreviousPage);
+        
+        @Override
+        @JsonProperty("hasReport")
+        public WizardPageEntMixInBuilder setHasReport(final Boolean hasReport);
         
     }
 

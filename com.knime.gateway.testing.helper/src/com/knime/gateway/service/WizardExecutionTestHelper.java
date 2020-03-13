@@ -99,6 +99,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
         assertThat("previous page expected to be false", wizardPage.hasPreviousPage(), is(false));
         assertThat("no no messages expected", wizardPage.getNodeMessages(), nullValue());
+        assertThat("no hasReport flag is set", wizardPage.hasReport(), nullValue());
     }
 
     /**
@@ -117,6 +118,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
         assertThat("no node messages expected", wizardPage.getNodeMessages(), nullValue());
+        assertThat("no hasReport flag is set", wizardPage.hasReport(), nullValue());
     }
 
     /**
@@ -154,6 +156,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             is(WizardExecutionStateEnum.EXECUTION_FINISHED));
         assertThat("previous page expected to be true", wizardPage.hasPreviousPage(), is(true));
         assertThat("empty list of node messages expected", wizardPage.getNodeMessages().isEmpty(), is(true));
+        assertThat("has report flag is true", wizardPage.hasReport(), is(true));
     }
 
     /**
@@ -295,6 +298,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             assertThat("unexpected wizard execution state", currentPage.get().getWizardExecutionState(),
                 is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
         });
+        assertThat("hasReport flag set to false", currentPage.get().hasReport(), is(false));
         String pageContentString = ObjectMapperUtil.getInstance().getObjectMapper()
             .convertValue(currentPage.get().getWizardPageContent(), JsonNode.class).toString();
         assertThat("Expected page element not found - not the second page", pageContentString,

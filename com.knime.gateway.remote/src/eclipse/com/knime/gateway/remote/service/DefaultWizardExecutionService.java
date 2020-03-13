@@ -62,6 +62,7 @@ import org.knime.core.util.Pair;
 import org.knime.core.wizard.WizardPageManager;
 import org.knime.js.core.JSONWebNodePage;
 import org.knime.js.core.layout.bs.JSONLayoutPage;
+import org.knime.reporting.nodes.dataset.ReportingDataSetNodeModel;
 import org.osgi.framework.Bundle;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -173,6 +174,9 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
 
         if (wfm.isInWizardExecution()) {
             wizardPageBuilder.setHasPreviousPage(wfm.getWizardExecutionController().hasPreviousWizardPage());
+        }
+        if (wfm.getNodeContainerState().isExecuted()) {
+            wizardPageBuilder.setHasReport(!wfm.findNodes(ReportingDataSetNodeModel.class, false).isEmpty());
         }
         return wizardPageBuilder.build();
     }
