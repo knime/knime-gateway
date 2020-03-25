@@ -21,6 +21,7 @@ package com.knime.gateway.util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.util.Optional;
 import java.util.function.Function;
@@ -38,7 +39,6 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.eclipseUtil.GlobalObjectInputStream;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.tableview.CellLoadingError;
@@ -234,7 +234,7 @@ public class EntityTranslateUtil {
     /**
      * Input stream used for deserializing a data cell. Mainly copied from {@link PortObjectRepository}
      */
-    private static final class DataCellObjectInputStream extends GlobalObjectInputStream implements DataCellDataInput {
+    private static final class DataCellObjectInputStream extends ObjectInputStream implements DataCellDataInput {
 
         private final ClassLoader m_loader;
 
