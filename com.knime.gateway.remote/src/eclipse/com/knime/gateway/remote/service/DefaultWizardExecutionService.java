@@ -334,7 +334,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             throw new NoWizardPageException("No previous wizard page");
         }
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
-            wfm.cancelExecution(wfm);
+            wfm.getParent().cancelExecution(wfm);
             boolean timedOut;
             try {
                 timedOut = !wfm.waitWhileInExecution(timeout, TimeUnit.MILLISECONDS);

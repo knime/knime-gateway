@@ -132,13 +132,14 @@ public class EntityTranslateUtil {
 
 
         Class<? extends DataCell> cellClass;
-        if(cellEnt.getType() != null) {
+        if (cellEnt.getType() != null) {
             //use type provided with the entity for deserialization
             try {
-                cellClass =
-                    (Class<? extends DataCell>)DataTypeRegistry.class.getClassLoader().loadClass(cellEnt.getType());
-            } catch (ClassNotFoundException ex) {
-                return new ErrorCell("Cannot deserialize cell of type '" + cellEnt.getType() + "' - class not found");
+                cellClass = DataTypeRegistry.getInstance().getCellClass(cellEnt.getType())
+                    .orElseThrow(ClassNotFoundException::new);
+            } catch (ClassCastException | ClassNotFoundException ex) {
+                return new ErrorCell(
+                    "Cannot deserialize cell of type '" + cellEnt.getType() + "': " + ex.getClass().getSimpleName());
             }
         } else {
             //use the type from the data table spec
