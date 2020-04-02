@@ -840,7 +840,7 @@ public class EntityBuilderUtil {
         if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
             NodeSettings settings = new NodeSettings("settings");
             nc.getNode().getFactory().saveAdditionalFactorySettings(settings);
-            nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.PRETTY));
+            nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
         }
         InteractiveWebViewsResult webViews = nc.getInteractiveWebViews();
         return builder(NativeNodeEntBuilder.class).setName(nc.getName())

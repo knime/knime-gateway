@@ -1066,7 +1066,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"
         },
         "nodeID" : "root:10",
         "nodeMessage" : {
@@ -3501,7 +3501,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"
         },
         "nodeID" : "root:10",
         "nodeMessage" : {
@@ -6232,7 +6232,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.dynamic.js.v30.DynamicJSNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"nodeDir\" : {\n      \"type\" : \"string\",\n      \"value\" : \"org.knime.dynamic.js.base:nodes/:boxplot_v2\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}"
         },
         "nodeID" : "root:28",
         "nodeMessage" : {
@@ -6500,7 +6500,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"
         },
         "nodeID" : "root:10",
         "nodeMessage" : {

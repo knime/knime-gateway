@@ -1283,7 +1283,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"
         },
         "nodeID" : "root:10",
         "nodeMessage" : {
@@ -3647,7 +3647,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"
         },
         "nodeID" : "root:10",
         "nodeMessage" : {
@@ -6011,7 +6011,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"weka-class\" : {\n      \"type\" : \"string\",\n      \"value\" : \"weka.classifiers.trees.J48\"\n    },\n    \"weka-version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"3.7\"\n    },\n    \"weka_nodes_version\" : {\n      \"type\" : \"string\",\n      \"value\" : \"V112015\"\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"
         },
         "nodeID" : "root:10",
         "nodeMessage" : {
@@ -7378,7 +7378,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"port_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"index\" : {\n          \"type\" : \"int\",\n          \"value\" : 0\n        },\n        \"type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"object_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.node.BufferedDataTable\"\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"port_0\":{\"type\":\"tree\",\"value\":{\"index\":{\"type\":\"int\",\"value\":0},\"type\":{\"type\":\"tree\",\"value\":{\"object_class\":{\"type\":\"string\",\"value\":\"org.knime.core.node.BufferedDataTable\"}}}}}}}"
         },
         "nodeID" : "root:12:0:9",
         "nodeMessage" : {
@@ -7558,7 +7558,7 @@
         },
         "nodeFactoryKey" : {
           "className" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory",
-          "settings" : "{\n  \"name\" : \"settings\",\n  \"value\" : {\n    \"port_0\" : {\n      \"type\" : \"tree\",\n      \"value\" : {\n        \"index\" : {\n          \"type\" : \"int\",\n          \"value\" : 0\n        },\n        \"type\" : {\n          \"type\" : \"tree\",\n          \"value\" : {\n            \"object_class\" : {\n              \"type\" : \"string\",\n              \"value\" : \"org.knime.core.node.BufferedDataTable\"\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+          "settings" : "{\"name\":\"settings\",\"value\":{\"port_0\":{\"type\":\"tree\",\"value\":{\"index\":{\"type\":\"int\",\"value\":0},\"type\":{\"type\":\"tree\",\"value\":{\"object_class\":{\"type\":\"string\",\"value\":\"org.knime.core.node.BufferedDataTable\"}}}}}}}"
         },
         "nodeID" : "root:12:0:8",
         "nodeMessage" : {
