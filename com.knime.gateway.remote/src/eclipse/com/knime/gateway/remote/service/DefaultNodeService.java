@@ -131,8 +131,8 @@ public class DefaultNodeService implements NodeService {
     public NodeSettingsEnt getNodeSettings(final UUID rootWorkflowID, final NodeIDEnt nodeID)
         throws NodeNotFoundException {
         NodeSettings settings = getNodeContainer(rootWorkflowID, nodeID).getNodeSettings();
-        return builder(NodeSettingsEntBuilder.class).setJsonContent(JSONConfig.toJSONString(settings, WriterConfig.PRETTY))
-            .build();
+        return builder(NodeSettingsEntBuilder.class)
+            .setJsonContent(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT)).build();
     }
 
     /**
@@ -165,7 +165,7 @@ public class DefaultNodeService implements NodeService {
         WorkflowManager wfm = getWorkflowManager(rootWorkflowID, parentNodeID);
         NodeFactory<NodeModel> nodeFactory;
         try {
-            nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
+            nodeFactory = RepositoryManager.loadNodeFactory(nodeFactoryKey.getClassName());
         } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException
                 | InvalidSettingsException ex) {
             throw new NodeNotFoundException("No node found for factory key " + nodeFactoryKey);

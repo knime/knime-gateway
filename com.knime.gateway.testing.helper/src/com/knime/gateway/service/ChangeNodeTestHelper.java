@@ -156,7 +156,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
 
         //manipulate settings and save back to server
         settings.getConfig("model").addInt("patcount", 20);
-        String settingsString = JSONConfig.toJSONString(settings, WriterConfig.PRETTY);
+        String settingsString = JSONConfig.toJSONString(settings, WriterConfig.DEFAULT);
         NodeSettingsEntBuilder settingsBuilder = builder(NodeSettingsEntBuilder.class).setJsonContent(settingsString);
         ns().setNodeSettings(wfId, new NodeIDEnt(1), settingsBuilder.build());
 

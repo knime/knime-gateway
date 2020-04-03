@@ -209,8 +209,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         NodeSettingsEnt newNodeSettings =
             builder(NodeSettingsEntBuilder.class)
                 .setJsonContent(nodeSettings.getJsonContent().replace(
-                    "\"for_seconds\" : {\n" + "          \"type\" : \"int\",\n" + "          \"value\" : 0",
-                    "\"for_seconds\" : {\n" + "          \"type\" : \"int\",\n" + "          \"value\" : 10"))
+                    "for_seconds\":{\"type\":\"int\",\"value\":0",
+                    "for_seconds\":{\"type\":\"int\",\"value\":10"))
                 .build();
         ns().setNodeSettings(wfId, newNodeID, newNodeSettings);
 
