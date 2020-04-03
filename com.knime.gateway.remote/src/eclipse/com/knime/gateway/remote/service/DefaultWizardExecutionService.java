@@ -425,7 +425,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
     @Override
     public List<String> listWebResources(final UUID jobId) {
         ensureThatWebResourceUrlsAreAvailable();
-        return new ArrayList<String>(webResourcesUrls.keySet());
+        return new ArrayList<>(webResourcesUrls.keySet());
     }
 
     private static void ensureThatWebResourceUrlsAreAvailable() {
@@ -508,10 +508,10 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                     urls.put(s, p.toUri().toURL());
                 }
                 try (DirectoryStream<Path> contents = Files.newDirectoryStream(p)) {
-                    contents.forEach(e -> queue.add(e));
+                    contents.forEach(queue::add);
                 }
             } else {
-                urls.put(relTarget + dir.relativize(p), p.toUri().toURL());
+                urls.put(relTarget + dir.relativize(p).toString().replace("\\", "/"), p.toUri().toURL());
             }
         }
     }
