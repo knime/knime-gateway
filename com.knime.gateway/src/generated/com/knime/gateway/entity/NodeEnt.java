@@ -56,6 +56,8 @@ public interface NodeEnt extends GatewayEntity {
     
     VISUALIZER("Visualizer"),
     
+    WIDGET("Widget"),
+    
     META("Meta"),
     
     LOOPSTART("LoopStart"),
@@ -68,6 +70,8 @@ public interface NodeEnt extends GatewayEntity {
     
     QUICKFORM("QuickForm"),
     
+    CONFIGURATION("Configuration"),
+    
     OTHER("Other"),
     
     MISSING("Missing"),
@@ -78,7 +82,9 @@ public interface NodeEnt extends GatewayEntity {
     
     VIRTUALIN("VirtualIn"),
     
-    VIRTUALOUT("VirtualOut");
+    VIRTUALOUT("VirtualOut"),
+    
+    CONTAINER("Container");
 
     private String value;
 
