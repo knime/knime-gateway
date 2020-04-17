@@ -73,7 +73,7 @@ public class JSViewTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testGetAndSetNodeViewsData() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_VIEWS);
+        UUID wfId = loadWorkflow(TestWorkflow.VIEWS);
         executeWorkflow(wfId);
 
         //get node views data

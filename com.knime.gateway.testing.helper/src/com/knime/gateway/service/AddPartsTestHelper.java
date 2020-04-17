@@ -68,7 +68,7 @@ public class AddPartsTestHelper extends AbstractGatewayServiceTestHelper {
      *
      */
     public void testAddConnections() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+    	UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         ConnectionEnt connection = builder(ConnectionEntBuilder.class).setDest(new NodeIDEnt(21)).setDestPort(2)
             .setSource(new NodeIDEnt(1)).setSourcePort(1).setType(TypeEnum.STD).build();

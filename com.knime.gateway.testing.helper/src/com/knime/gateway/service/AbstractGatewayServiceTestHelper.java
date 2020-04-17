@@ -46,63 +46,63 @@ public abstract class AbstractGatewayServiceTestHelper {
         /**
          * The main workflow the tests are based on.
          */
-        WORKFLOW("/files/Test Gateway Workflow.knwf", "workflow"),
+        GENERAL("/files/Test Gateway Workflow.knwf", "workflow"),
 
         /**
          * A longrunning workflow some tests are based on.
          */
-        WORKFLOW_LONGRUNNING("/files/Test Gateway Workflow Longrunning.knwf", "workflow_longrunning"),
+        LONGRUNNING("/files/Test Gateway Workflow Longrunning.knwf", "workflow_longrunning"),
 
         /**
          * A workflow containing quickforms some tests are based on.
          */
-        WORKFLOW_QUICKFORMS("/files/Test Gateway Workflow Quickforms.knwf", "workflow_quickforms"),
+        QUICKFORMS("/files/Test Gateway Workflow Quickforms.knwf", "workflow_quickforms"),
 
         /**
          * A workflow containing js views some tests are based on.
          */
-        WORKFLOW_VIEWS("/files/Test Gateway Workflow Views.knwf", "workflow_views"),
+        VIEWS("/files/Test Gateway Workflow Views.knwf", "workflow_views"),
 
         /**
          * A workflow to test nodes' data.
          */
-        WORKFLOW_DATA("/files/Test Gateway Node Data.knwf", "workflow_data"),
+        DATA("/files/Test Gateway Node Data.knwf", "workflow_data"),
 
         /**
          * A workflow to test large table output.
          */
-        WORKFLOW_LARGE_TABLE("/files/Test Gateway Large Table.knwf", "workflow_large_table"),
+        LARGE_TABLE("/files/Test Gateway Large Table.knwf", "workflow_large_table"),
 
         /**
          * A workflow to test the wizard execution endpoints.
          */
-        WORKFLOW_WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution"),
+        WIZARD_EXECUTION("/files/Wizard Execution.knwf", "wizard_execution"),
 
         /**
          * A webportal workflow that takes a bit more time to execute from the first to the second page.
          */
-        WORKFLOW_WIZARD_EXECUTION_LONGRUNNING("/files/Wizard Execution Longrunning.knwf", "wizard_execution_longrunning"),
+        WIZARD_EXECUTION_LONGRUNNING("/files/Wizard Execution Longrunning.knwf", "wizard_execution_longrunning"),
 
          /**
          * An simple workflow that generates a report.
          */
-        WORKFLOW_REPORT("/files/Simple Report.knwf", "simple_report"),
+        REPORT("/files/Simple Report.knwf", "simple_report"),
 
         /**
          * An executed workflow that generates a report.
          */
-        WORKFLOW_REPORT_EXECUTED("/files/Simple Report (executed).knwf", "simple_report_executed"),
+        REPORT_EXECUTED("/files/Simple Report (executed).knwf", "simple_report_executed"),
 
         /**
          * A workflow that contains a wizard page (i.e. component) that needs some time to be (re)-executed
          */
-        WORKFLOW_WIZARD_EXECUTION_LONG_REEXECUTE("/files/Wizard Execution Long Reexecute.knwf",
+        WIZARD_EXECUTION_LONG_REEXECUTE("/files/Wizard Execution Long Reexecute.knwf",
             "wizard_execution_long_reexecute"),
 
         /**
          * A workflow with a loop.
          */
-        WORKFLOW_LOOP("/files/Test Gateway Workflow Loop.knwf", "workflow_loop");
+        LOOP("/files/Test Gateway Workflow Loop.knwf", "workflow_loop");
 
 
 

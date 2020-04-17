@@ -76,8 +76,8 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testChangeNodeState() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
-    	UUID longrunningWfId = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
+    	UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
+    	UUID longrunningWfId = loadWorkflow(TestWorkflow.LONGRUNNING);
 
         //execute individual node
         ns().changeAndGetNodeState(wfId, new NodeIDEnt(2), "execute");
@@ -148,7 +148,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testChangeNodeSettings() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+        UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         NodeSettings settings = new NodeSettings("configuration");
         JSONConfig.readJSON(settings,
@@ -174,7 +174,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
         }
 
         //check illegal node state
-        UUID longrunningWfId = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
+        UUID longrunningWfId = loadWorkflow(TestWorkflow.LONGRUNNING);
         executeWorkflowAsync(longrunningWfId);
         try {
             ns().setNodeSettings(longrunningWfId, new NodeIDEnt(13), settingsBuilder.build());
@@ -191,7 +191,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if something goes wrong
      */
     public void testChangeNodeBounds() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+        UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         BoundsEnt oldBounds = ns().getNode(wfId, new NodeIDEnt(1)).getUIInfo().getBounds();
         BoundsEnt newBounds = builder(BoundsEntBuilder.class).setWidth(oldBounds.getWidth())

@@ -88,7 +88,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
         UnsupportedWorkflowVersionException, LockFailedException {
         super("nodedata", serviceProvider, entityResultChecker, workflowLoader);
 
-        m_workflowManager = TestUtil.loadWorkflow(TestWorkflow.WORKFLOW_DATA.getUrlFolder());
+        m_workflowManager = TestUtil.loadWorkflow(TestWorkflow.DATA.getUrlFolder());
     }
 
     /**
@@ -97,7 +97,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testCompareNodeDataForBufferedDataTable() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
+    	UUID wfId = loadWorkflow(TestWorkflow.DATA);
 
         //compare first port of node #3
         DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(3), 1, 0l, 100);
@@ -116,7 +116,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testCompareNodeDataForDirectAccessTable() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
+        UUID wfId = loadWorkflow(TestWorkflow.DATA);
 
         //compare first port of node #8
         DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(8), 1, 23l, 100);
@@ -131,7 +131,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testDirectAccessTableUnknownRowCount() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
+        UUID wfId = loadWorkflow(TestWorkflow.DATA);
 
         //get first port of node #9
         DataTableEnt tableEnt = ns().getOutputDataTable(wfId, new NodeIDEnt(9), 1, 23l, 100);
@@ -146,7 +146,7 @@ public class NodeDataTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testDirectAccessTableExceedingTotalRowCount() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_DATA);
+        UUID wfId = loadWorkflow(TestWorkflow.DATA);
         Assert.assertThat("Empty list of rows expected",
             ns().getOutputDataTable(wfId, new NodeIDEnt(8), 1, 1001l, 10).getRows().isEmpty(), is(true));
 

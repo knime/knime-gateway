@@ -64,7 +64,7 @@ public class ViewWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testViewWorkflow() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+    	UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         //download and check workflow un-executed
         //retrieve the workflow entity

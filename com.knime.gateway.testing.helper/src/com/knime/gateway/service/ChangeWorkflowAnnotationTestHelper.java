@@ -61,7 +61,7 @@ public class ChangeWorkflowAnnotationTestHelper extends AbstractGatewayServiceTe
      * @throws Exception if an error occurs
      */
     public void testChangeAnnotationBounds() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+    	UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
         cr(workflow, "workflowent_root");

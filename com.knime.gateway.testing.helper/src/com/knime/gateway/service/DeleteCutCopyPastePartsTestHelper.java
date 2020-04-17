@@ -75,7 +75,7 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
      * @throws Exception if an error occurs
      */
     public void testDeleteParts() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+        UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID()).getWorkflow();
 
@@ -150,7 +150,7 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
         }
 
         //try removing a node with an executing successor
-        UUID wfIdLongrunning = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
+        UUID wfIdLongrunning = loadWorkflow(TestWorkflow.LONGRUNNING);
         executeWorkflowAsync(wfIdLongrunning);
         //delete node
         parts = builder(WorkflowPartsEntBuilder.class).setNodeIDs(createNodeIDEntList(new int[][] {{1}})).build();
@@ -169,7 +169,7 @@ public class DeleteCutCopyPastePartsTestHelper extends AbstractGatewayServiceTes
      * @throws Exception if an error occurs
      */
     public void testCopyPasteParts() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+        UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         WorkflowPartsEnt parts = builder(WorkflowPartsEntBuilder.class)
                 .setNodeIDs(createNodeIDEntList(new int[][] {{20}, {1}, {6}, {9}, {14}}))

@@ -53,7 +53,7 @@ public class WizardExecutionTest {
         UUID uuid = UUID.randomUUID();
         WorkflowProject workflowProject = mock(WorkflowProject.class);
         WorkflowProjectManager.addWorkflowProject(uuid, workflowProject);
-        WorkflowManager wfm = TestUtil.loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION.getUrlFolder());
+        WorkflowManager wfm = TestUtil.loadWorkflow(TestWorkflow.WIZARD_EXECUTION.getUrlFolder());
         when(workflowProject.openProject()).thenReturn(wfm);
         when(workflowProject.getID()).thenReturn(uuid.toString());
         DefaultWizardExecutionService.getInstance().executeToNextPage(uuid, false, 60000L,

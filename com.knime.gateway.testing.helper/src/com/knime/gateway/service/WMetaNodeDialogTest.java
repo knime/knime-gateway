@@ -57,7 +57,7 @@ public class WMetaNodeDialogTest extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testGetWMetaNodeDialog() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_QUICKFORMS);
+    	UUID wfId = loadWorkflow(TestWorkflow.QUICKFORMS);
 
         GatewayEntity entity = ns().getWMetaNodeDialog(wfId, new NodeIDEnt(19));
         cr(entity, "wmetanodedialog_19");

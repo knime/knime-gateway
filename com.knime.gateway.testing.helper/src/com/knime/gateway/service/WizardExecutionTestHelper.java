@@ -92,7 +92,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testExecuteToFirstPage() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         checkFirstPageContents(wizardPage.getWizardPageContent());
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
@@ -108,7 +108,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testExecuteToSecondPage() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageInputEnt input = secondWizardPageInput(rowCount);
@@ -127,7 +127,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testAsyncExecuteToNextPageAndGetCurrentPage() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         WizardPageEnt emptyPage = wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         assertNull("Wizard page content not empty", emptyPage.getWizardPageContent());
         assertNull("Wizard page execution state is set", emptyPage.getWizardExecutionState());
@@ -145,7 +145,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testExecuteToEnd() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
 
         WizardPageInputEnt input = secondWizardPageInput((int)(5 * Math.random()) + 1);
@@ -165,7 +165,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testExecuteToSecondPageWithFailure() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
 
         //insert failing node between first and second page
         NodeIDEnt newNodeID = ns().createNode(wfId, NodeIDEnt.getRootID(), 10, 10,
@@ -197,7 +197,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testGetCurrentPageWhileExecuting() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
 
         //insert 'Wait ...' node to the beginning and configure
         NodeIDEnt newNodeID =
@@ -235,7 +235,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testGetCurrentPageIfNotInWizardExecution() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         WizardPageEnt wizardPage = wes().getCurrentPage(wfId);
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.UNDEFINED));
@@ -263,7 +263,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testExecuteToNextPageWithInvalidViewValues() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
 
         // the the integer input parameter which controls a row filter
@@ -285,7 +285,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testGetCurrentPageWhileReexecuting() throws Exception {
-        UUID wfIdAsync = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION_LONG_REEXECUTE);
+        UUID wfIdAsync = loadWorkflow(TestWorkflow.WIZARD_EXECUTION_LONG_REEXECUTE);
         wes().executeToNextPage(wfIdAsync, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class)
             .setViewValues(
@@ -311,7 +311,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testExecuteToNextPageTimeout() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         try {
             wes().executeToNextPage(wfId, false, 1L, emptyWizardPageInput());
             fail("Exception expected");
@@ -326,7 +326,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception if an error occurs
      */
     public void testGetCurrentPageAfterLoad() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         WizardPageEnt wizardPage = wes().getCurrentPage(wfId);
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.UNDEFINED));
@@ -338,7 +338,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testResetToZerothPage() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
 
         try {
@@ -355,7 +355,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testResetToFirstPageAndExecuteToNextPageWithChangedInputs() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageEnt wizardPage =
@@ -376,7 +376,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testResetToPreviousPageWhileWorkflowIsExecuting() throws Exception {
-        final UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION_LONGRUNNING);
+        final UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION_LONGRUNNING);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
@@ -427,7 +427,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception if an error occurs
      */
     public void testListWebResources() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
 
         List<String> resources = wes().listWebResources(wfId);
 
@@ -445,7 +445,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testGetWebResource() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
 
         String webResource = new String(
             wes().getWebResource(wfId, "org/knime/js/base/node/quickform/selection/single/SingleSelection.js"));
@@ -459,7 +459,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      * @throws Exception
      */
     public void testGetWebResourceNotFound() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         try {
             wes().getWebResource(wfId, "not_existing_resource_id");
             fail("Exception expected");
@@ -476,7 +476,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
      */
     public void testGetExecutionStatistics() throws Exception {
         long maxExecTime = 60000l;
-        UUID wfIdAsync = loadWorkflow(TestWorkflow.WORKFLOW_LONGRUNNING);
+        UUID wfIdAsync = loadWorkflow(TestWorkflow.LONGRUNNING);
         wes().executeToNextPage(wfIdAsync, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             ExecutionStatisticsEnt executionStatistics = wes().getExecutionStatistics(wfIdAsync);
@@ -495,7 +495,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
                 is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.EXECUTING));
         });
 
-        UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW_WIZARD_EXECUTION);
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         ExecutionStatisticsEnt executionStatistics = wes().getExecutionStatistics(wfId);
         assertThat("no executing nodes expected", executionStatistics.getNodesExecuting(), empty());
@@ -518,7 +518,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
             is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.INTERACTION_REQUIRED));
 
-        wfId = loadWorkflow(TestWorkflow.WORKFLOW_LOOP);
+        wfId = loadWorkflow(TestWorkflow.LOOP);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         executionStatistics = wes().getExecutionStatistics(wfId);
         assertThat("no executing nodes expected", executionStatistics.getNodesExecuting(), empty());

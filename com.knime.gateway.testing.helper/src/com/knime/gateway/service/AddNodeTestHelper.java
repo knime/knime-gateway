@@ -65,7 +65,7 @@ public class AddNodeTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testAddNode() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+    	UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         //create and add a new node
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)

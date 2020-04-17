@@ -61,7 +61,7 @@ public class UpdateWorkflowTestHelper extends AbstractGatewayServiceTestHelper {
      * @throws Exception if an error occurs
      */
     public void testUpdatebWorkflow() throws Exception {
-    	UUID wfId = loadWorkflow(TestWorkflow.WORKFLOW);
+    	UUID wfId = loadWorkflow(TestWorkflow.GENERAL);
 
         //download workflows un-executed
         WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID());
