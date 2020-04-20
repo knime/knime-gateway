@@ -37,6 +37,7 @@ import com.knime.gateway.entity.ExecutionStatisticsEnt;
 public class DefaultExecutionStatisticsEnt  implements ExecutionStatisticsEnt {
 
   protected BigDecimal m_totalExecutionDuration;
+  protected Integer m_totalNodeExecutionsCount;
   protected java.util.List<NodeExecutedStatisticsEnt> m_nodesExecuted;
   protected java.util.List<NodeExecutingStatisticsEnt> m_nodesExecuting;
   protected WizardExecutionStateEnum m_wizardExecutionState;
@@ -53,6 +54,7 @@ public class DefaultExecutionStatisticsEnt  implements ExecutionStatisticsEnt {
   private DefaultExecutionStatisticsEnt(DefaultExecutionStatisticsEntBuilder builder) {
     
     m_totalExecutionDuration = immutable(builder.m_totalExecutionDuration);
+    m_totalNodeExecutionsCount = immutable(builder.m_totalNodeExecutionsCount);
     m_nodesExecuted = immutable(builder.m_nodesExecuted);
     m_nodesExecuting = immutable(builder.m_nodesExecuting);
     m_wizardExecutionState = immutable(builder.m_wizardExecutionState);
@@ -73,13 +75,18 @@ public class DefaultExecutionStatisticsEnt  implements ExecutionStatisticsEnt {
             return false;
         }
         DefaultExecutionStatisticsEnt ent = (DefaultExecutionStatisticsEnt)o;
-        return Objects.equals(m_totalExecutionDuration, ent.m_totalExecutionDuration) && Objects.equals(m_nodesExecuted, ent.m_nodesExecuted) && Objects.equals(m_nodesExecuting, ent.m_nodesExecuting) && Objects.equals(m_wizardExecutionState, ent.m_wizardExecutionState);
+        return Objects.equals(m_totalExecutionDuration, ent.m_totalExecutionDuration) && Objects.equals(m_totalNodeExecutionsCount, ent.m_totalNodeExecutionsCount) && Objects.equals(m_nodesExecuted, ent.m_nodesExecuted) && Objects.equals(m_nodesExecuting, ent.m_nodesExecuting) && Objects.equals(m_wizardExecutionState, ent.m_wizardExecutionState);
     }
 
 
   @Override
   public BigDecimal getTotalExecutionDuration() {
         return m_totalExecutionDuration;
+    }
+    
+  @Override
+  public Integer getTotalNodeExecutionsCount() {
+        return m_totalNodeExecutionsCount;
     }
     
   @Override
@@ -105,6 +112,7 @@ public class DefaultExecutionStatisticsEnt  implements ExecutionStatisticsEnt {
         }
     
         private BigDecimal m_totalExecutionDuration;
+        private Integer m_totalNodeExecutionsCount;
         private java.util.List<NodeExecutedStatisticsEnt> m_nodesExecuted = new java.util.ArrayList<>();
         private java.util.List<NodeExecutingStatisticsEnt> m_nodesExecuting = new java.util.ArrayList<>();
         private WizardExecutionStateEnum m_wizardExecutionState;
@@ -112,6 +120,12 @@ public class DefaultExecutionStatisticsEnt  implements ExecutionStatisticsEnt {
         @Override
         public DefaultExecutionStatisticsEntBuilder setTotalExecutionDuration(BigDecimal totalExecutionDuration) {
              m_totalExecutionDuration = totalExecutionDuration;
+             return this;
+        }
+
+        @Override
+        public DefaultExecutionStatisticsEntBuilder setTotalNodeExecutionsCount(Integer totalNodeExecutionsCount) {
+             m_totalNodeExecutionsCount = totalNodeExecutionsCount;
              return this;
         }
 

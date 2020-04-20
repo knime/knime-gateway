@@ -61,6 +61,10 @@ public interface ExecutionStatisticsEntMixIn extends ExecutionStatisticsEnt {
     public BigDecimal getTotalExecutionDuration();
     
     @Override
+    @JsonProperty("totalNodeExecutionsCount")
+    public Integer getTotalNodeExecutionsCount();
+    
+    @Override
     @JsonProperty("nodesExecuted")
     public java.util.List<NodeExecutedStatisticsEnt> getNodesExecuted();
     
@@ -95,6 +99,10 @@ public interface ExecutionStatisticsEntMixIn extends ExecutionStatisticsEnt {
         @Override
         @JsonProperty("totalExecutionDuration")
         public ExecutionStatisticsEntMixInBuilder setTotalExecutionDuration(final BigDecimal totalExecutionDuration);
+        
+        @Override
+        @JsonProperty("totalNodeExecutionsCount")
+        public ExecutionStatisticsEntMixInBuilder setTotalNodeExecutionsCount(final Integer totalNodeExecutionsCount);
         
         @Override
         @JsonProperty("nodesExecuted")

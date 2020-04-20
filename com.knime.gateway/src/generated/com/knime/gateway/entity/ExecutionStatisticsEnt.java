@@ -70,6 +70,12 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
   public BigDecimal getTotalExecutionDuration();
 
   /**
+   * The number of estimated node executions.
+   * @return totalNodeExecutionsCount 
+   **/
+  public Integer getTotalNodeExecutionsCount();
+
+  /**
    * Nodes executed since the last snapshot (or triggered execution). In the order of their end time. 
    * @return nodesExecuted 
    **/
@@ -100,6 +106,14 @@ public interface ExecutionStatisticsEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ExecutionStatisticsEntBuilder setTotalExecutionDuration(BigDecimal totalExecutionDuration);
+        
+        /**
+         * The number of estimated node executions.
+         * 
+         * @param totalNodeExecutionsCount the property value,  
+         * @return this entity builder for chaining
+         */
+        ExecutionStatisticsEntBuilder setTotalNodeExecutionsCount(Integer totalNodeExecutionsCount);
         
         /**
          * Nodes executed since the last snapshot (or triggered execution). In the order of their end time. 
