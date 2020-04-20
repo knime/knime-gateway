@@ -102,8 +102,12 @@ public abstract class AbstractGatewayServiceTestHelper {
         /**
          * A workflow with a loop.
          */
-        LOOP("/files/Test Gateway Workflow Loop.knwf", "workflow_loop");
+        LOOP("/files/Test Gateway Workflow Loop.knwf", "workflow_loop"),
 
+        /**
+         * A workflow mainly to test the node executions count.
+         */
+        NODE_EXECUTIONS_COUNT("/files/Test Gateway Node Executions Count.knwf", "node_executions_count");
 
 
         private final String m_url;

@@ -484,6 +484,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
             assertThat("total execution time expected to be set",
                 executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+            assertThat("wrong total node executions count", executionStatistics.getTotalNodeExecutionsCount(), is(2));
             assertThat("execution duration musst be set for executing nodes",
                 executionStatistics.getNodesExecuting().get(0).getExecutionDuration().longValue(),
                 allOf(greaterThan(0l), lessThan(maxExecTime)));
@@ -503,19 +504,23 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
         assertThat("total execution time expected to be set",
             executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+        assertThat("wrong total node executions count", executionStatistics.getTotalNodeExecutionsCount(), is(7));
         assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
             is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.INTERACTION_REQUIRED));
 
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageInputEnt input = secondWizardPageInput(rowCount);
         WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        executionStatistics = wes().getExecutionStatistics(wfId);
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
         assertThat("no executing nodes expected", executionStatistics.getNodesExecuting(), empty());
         assertThat("executed nodes expected", executionStatistics.getNodesExecuted(), not(empty()));
-        assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(7));
+        assertThat("executed nodes expected", executionStatistics.getNodesExecuted().size(), is(14));
         assertThat("total execution time expected to be set",
             executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
-        assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
+        assertThat("wrong total node executions count", executionStatistics.getTotalNodeExecutionsCount(), is(14));
+        assertThat("execution state expected to be 'interaction required'",
+            executionStatistics.getWizardExecutionState(),
             is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.INTERACTION_REQUIRED));
 
         wfId = loadWorkflow(TestWorkflow.LOOP);
@@ -530,6 +535,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             executionStatistics.getNodesExecuted().get(2).getRuns().intValue(), is(20));
         assertThat("total execution time expected to be set",
              executionStatistics.getTotalExecutionDuration().longValue(), allOf(greaterThan(0l), lessThan(maxExecTime)));
+        assertThat("wrong total node executions count", executionStatistics.getTotalNodeExecutionsCount(), is(4));
         assertThat("execution state expected to be 'execution finished'", executionStatistics.getWizardExecutionState(),
             is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.EXECUTION_FINISHED));
     }
