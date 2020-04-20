@@ -57,18 +57,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.FlowLoopContext;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeTimer;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WebResourceController;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -88,7 +90,15 @@ import com.knime.gateway.entity.NodeExecutingStatisticsEnt.NodeExecutingStatisti
  */
 public class WizardExecutionStatistics {
 
-    private final Map<NodeID, Integer> m_watchedNodes = new HashMap<>();
+    private final Set<NodeID> m_watchedNodeSuccessors = new HashSet<>();
+
+    private final Set<NodeID> m_watchedNodesInLoop = new HashSet<>();
+
+    //adds a constant value to the node executions count
+    //only role is to add the number of executions of a wizard page in a loop twice
+    private int m_extraNodeExecutionsCountInLoop = 0;
+
+    private Map<NodeID, Integer> m_nodesExecutionCount = new HashMap<>();
 
     private long m_executionStartTime;
 
@@ -133,26 +143,50 @@ public class WizardExecutionStatistics {
      * @param wfm the workflow
      */
     public void resetStatisticsToWizardPage(final NodeID wizardPageNodeID, final WorkflowManager wfm) {
-        assert isWizardPage(wfm.getNodeContainer(wizardPageNodeID));
+        assert wizardPageNodeID == null || isWizardPage(wfm.getNodeContainer(wizardPageNodeID));
         timeWorkflowExecution(wfm);
+        m_watchedNodeSuccessors.clear();
+        m_nodesExecutionCount.clear();
+        m_watchedNodesInLoop.clear();
+        m_extraNodeExecutionsCountInLoop = 0;
 
-        //TODO loop contexts
-        //notes:
-        //* get the loop context stack of the start node
-        //* the loop body are the affected nodes in each context
-        //* store them in a map with loop start node as key
-        //* context selection if start node is re-executed (i.e. nr-exec increased)
-
-        m_watchedNodes.clear();
         if (wizardPageNodeID == null) {
             // only include source nodes, 'source' wizard pages and the nodes in between
             final Set<NodeID> dependentWizardPages = getDependentWizardPages(wfm);
             for (NodeID sourceNode : getSourceNodes(wfm)) {
                 addContainedAndConnectedNativeNodes(sourceNode, sourceNode, wfm,
-                    nc -> dependentWizardPages.contains(nc.getID()), m_watchedNodes);
+                    nc -> dependentWizardPages.contains(nc.getID()), m_watchedNodeSuccessors, m_nodesExecutionCount);
             }
         } else {
-            addContainedAndConnectedNativeNodes(wizardPageNodeID, wizardPageNodeID, wfm, nc -> false, m_watchedNodes);
+            // handle a wizard page in a loop
+            // TODO multiple nested loops are not handled
+            getLoopBodyOfOutermostLoop(wizardPageNodeID, wfm, m_watchedNodesInLoop, m_nodesExecutionCount);
+            Set<NodeID> tmp = new HashSet<>();
+            addContainedNativeNodes(wfm.getNodeContainer(wizardPageNodeID), tmp, null);
+            m_extraNodeExecutionsCountInLoop = tmp.size();
+
+            // handle 'wizard page successor'
+            addContainedAndConnectedNativeNodes(wizardPageNodeID, wizardPageNodeID, wfm, nc -> false,
+                m_watchedNodeSuccessors, m_nodesExecutionCount);
+        }
+    }
+
+    private static void getLoopBodyOfOutermostLoop(final NodeID wizardPageNodeID, final WorkflowManager wfm,
+        final Set<NodeID> watchedNodesInLoop, final Map<NodeID, Integer> nodesExecutionCount) {
+        NodeContainer wizardPage = wfm.getNodeContainer(wizardPageNodeID);
+        FlowObjectStack fos = wizardPage.getFlowObjectStack();
+        if (fos != null) {
+            FlowLoopContext flc = null;
+            for (Object o : fos) {
+                if (o instanceof FlowLoopContext) {
+                    flc = (FlowLoopContext)o;
+                }
+            }
+            if (flc != null) {
+                wfm.getNodesInScope((SingleNodeContainer)wfm.getNodeContainer(flc.getHeadNode())).forEach(nc -> {
+                    addContainedNativeNodes(nc, watchedNodesInLoop, nodesExecutionCount);
+                });
+            }
         }
     }
 
@@ -201,20 +235,21 @@ public class WizardExecutionStatistics {
      * as soon as another wizard page is encountered.
      */
     private static void addContainedAndConnectedNativeNodes(final NodeID startNodeID, final NodeID currentNodeID,
-        final WorkflowManager wfm, final Predicate<NodeContainer> exclude, final Map<NodeID, Integer> nodes) {
-        if (nodes.containsKey(currentNodeID)) {
+        final WorkflowManager wfm, final Predicate<NodeContainer> exclude, final Set<NodeID> nodes,
+        final Map<NodeID, Integer> executionsCount) {
+        if (nodes.contains(currentNodeID)) {
             return;
         }
         NodeContainer nc = wfm.getNodeContainer(currentNodeID);
         if (!exclude.test(nc)) {
-            addContainedNativeNodes(nc, nodes);
+            addContainedNativeNodes(nc, nodes, executionsCount);
         }
         if (!currentNodeID.equals(startNodeID) && isWizardPage(nc)) {
             return;
         }
         Set<NodeID> nextNodes = getSuccessors(currentNodeID, wfm);
         for (NodeID nextID : nextNodes) {
-            addContainedAndConnectedNativeNodes(startNodeID, nextID, wfm, exclude, nodes);
+            addContainedAndConnectedNativeNodes(startNodeID, nextID, wfm, exclude, nodes, executionsCount);
         }
     }
 
@@ -228,22 +263,27 @@ public class WizardExecutionStatistics {
     /*
      * Recursively adds all (deeply) contained native nodes to the provided list.
      */
-    private static void addContainedNativeNodes(final NodeContainer nc, final Map<NodeID, Integer> nativeNodes) {
+    private static void addContainedNativeNodes(final NodeContainer nc, final Set<NodeID> nativeNodes,
+        final Map<NodeID, Integer> executionsCount) {
         if (nc instanceof SubNodeContainer) {
-            addContainedNativeNodes(((SubNodeContainer)nc).getWorkflowManager(), nativeNodes);
+            addContainedNativeNodes(((SubNodeContainer)nc).getWorkflowManager(), nativeNodes, executionsCount);
         } else if (nc instanceof WorkflowManager) {
-            addContainedNativeNodes(nc, nativeNodes);
-        } else if (nc instanceof NativeNodeContainer) {
-            nativeNodes.put(nc.getID(), nc.getNodeTimer().getNrExecsSinceStart());
+            addContainedNativeNodes(nc, nativeNodes, executionsCount);
+        } else {
+            nativeNodes.add(nc.getID());
+            if (executionsCount != null) {
+                executionsCount.put(nc.getID(), nc.getNodeTimer().getNrExecsSinceStart());
+            }
         }
     }
 
     /*
      * Recursively adds all (deeply) contained native nodes to the provided list.
      */
-    private static void addContainedNativeNodes(final WorkflowManager wfm, final Map<NodeID, Integer> nativeNodes) {
+    private static void addContainedNativeNodes(final WorkflowManager wfm, final Set<NodeID> nativeNodes,
+        final Map<NodeID, Integer> executionsCount) {
         for (NodeContainer nc : wfm.getNodeContainers()) {
-            addContainedNativeNodes(nc, nativeNodes);
+            addContainedNativeNodes(nc, nativeNodes, executionsCount);
         }
     }
 
@@ -265,17 +305,18 @@ public class WizardExecutionStatistics {
         List<Pair<Long, NodeExecutingStatisticsEnt>> executingNodes = new ArrayList<>();
         List<Pair<Long, NodeExecutedStatisticsEnt>> executedNodes = new ArrayList<>();
         int inactiveNodeCount = 0;
-        for (Entry<NodeID, Integer> node : m_watchedNodes.entrySet()) {
-            NodeContainer nc = wfm.findNodeContainer(node.getKey());
+        Pair<Set<NodeID>, Integer> watchedNodes = selectWatchedNodes(wfm);
+        for (NodeID node : watchedNodes.getFirst()) {
+            NodeContainer nc = wfm.findNodeContainer(node);
             if (((NativeNodeContainer)nc).getNode().isInactive()) {
                 inactiveNodeCount++;
-            } else if (nc.getNodeTimer().getNrExecsSinceStart() > node.getValue()) {
+            } else if (nc.getNodeTimer().getNrExecsSinceStart() > m_nodesExecutionCount.get(node)) {
                 executedNodes.add(getExecutedNodeStatistics(nc, nc.getNodeTimer().getNrExecsSinceStart()));
             } else if (nc.getNodeContainerState().isExecutionInProgress()) {
                 executingNodes.add(getExecutingNodeStatistics(nc));
             }
         }
-        int executionsCount = m_watchedNodes.size() - inactiveNodeCount;
+        int executionsCount = watchedNodes.getFirst().size() - inactiveNodeCount + watchedNodes.getSecond();
         long totalExecutionTime = m_executionEndTime == null ? System.currentTimeMillis() - m_executionStartTime
             : m_executionEndTime - m_executionStartTime;
         //sort with respect to the node's end (executed nodes) and start (executing nodes) time
@@ -291,9 +332,34 @@ public class WizardExecutionStatistics {
     }
 
     /*
+     * Selects the node set to be watched atm (depending in what loop context we are).
+     */
+    private Pair<Set<NodeID>, Integer> selectWatchedNodes(final WorkflowManager wfm) {
+        if (!m_watchedNodesInLoop.isEmpty() && isLoopInProgress(m_watchedNodesInLoop, wfm)) {
+            return Pair.create(m_watchedNodesInLoop, m_extraNodeExecutionsCountInLoop);
+        }
+        m_watchedNodesInLoop.clear();
+        return Pair.create(m_watchedNodeSuccessors, 0);
+    }
+
+    /*
+     * Helper to determine whether a loop is still in progress (i.e. still looping).
+     */
+    private static boolean isLoopInProgress(final Set<NodeID> nodesInScope, final WorkflowManager wfm) {
+        //TODO is there a better way?
+        //loop executing is finished if all nodes are executed
+        for (NodeID node : nodesInScope) {
+            if (!wfm.findNodeContainer(node).getNodeContainerState().isExecuted()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
      * Helper to get the details of an executing node.
      */
-    private Pair<Long, NodeExecutingStatisticsEnt> getExecutingNodeStatistics(final NodeContainer nc) {
+    private static Pair<Long, NodeExecutingStatisticsEnt> getExecutingNodeStatistics(final NodeContainer nc) {
         long startTime = nc.getNodeTimer().getStartTime();
         long executionDuration = System.currentTimeMillis() - startTime;
         NodeExecutingStatisticsEntBuilder nodeStats =
@@ -311,7 +377,8 @@ public class WizardExecutionStatistics {
     /*
      * Helper to get the details of an executed node.
      */
-    private Pair<Long, NodeExecutedStatisticsEnt> getExecutedNodeStatistics(final NodeContainer nc, final int runs) {
+    private static Pair<Long, NodeExecutedStatisticsEnt> getExecutedNodeStatistics(final NodeContainer nc,
+        final int runs) {
         NodeTimer nodeTimer = nc.getNodeTimer();
         NodeExecutedStatisticsEntBuilder nodeStats =
             builder(NodeExecutedStatisticsEntBuilder.class).setName(nc.getName()).setNodeID(nc.getID().toString())

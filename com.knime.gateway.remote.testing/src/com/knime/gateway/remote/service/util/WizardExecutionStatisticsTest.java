@@ -91,11 +91,22 @@ public class WizardExecutionStatisticsTest {
         wfm.executeUpToHere(wfm.getID().createChild(26));
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         stats = wes.getUpdatedStatistics(wfm);
-        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(15));
-        assertThat("wrong executed node count", stats.getNodesExecuted().size(), is(15));
+        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(16));
+        assertThat("wrong executed node count", stats.getNodesExecuted().size(), is(16));
 
-        // wizard page in loop scopes
+        // wizard page in nested loop (2x)
+        // if loop is not finished, yet
         wes.resetStatisticsToWizardPage(wfm.getID().createChild(26), wfm);
+        stats = wes.getUpdatedStatistics(wfm);
+        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(13));
+        // if inner loop is finished (same as above since nested loops are not supported, yet)
+        wfm.executeUpToHere(wfm.getID().createChild(34));
+        wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
+        stats = wes.getUpdatedStatistics(wfm);
+        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(13));
+        // if outer loop is finished
+        wfm.executeUpToHere(wfm.getID().createChild(39));
+        wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         stats = wes.getUpdatedStatistics(wfm);
         assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(10));
 
