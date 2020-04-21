@@ -61,11 +61,18 @@ import com.knime.gateway.service.AbstractGatewayServiceTestHelper.TestWorkflow;
 import com.knime.gateway.testing.helper.TestUtil;
 
 /**
+ * Tests {@link WizardExecutionStatistics}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WizardExecutionStatisticsTest {
 
+    /**
+     * Tests the expected node executions count of the {@link ExecutionStatisticsEnt#getTotalNodeExecutionsCount()} as
+     * returned by {@link WizardExecutionStatistics#getUpdatedStatistics(WorkflowManager)}.
+     *
+     * @throws Exception if something goes wrong
+     */
     @Test
     public void testTotalNodeExecutionsCount() throws Exception {
         WorkflowManager wfm = TestUtil.loadWorkflow(TestWorkflow.NODE_EXECUTIONS_COUNT.getUrlFolder());
