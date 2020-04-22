@@ -83,14 +83,14 @@ public class WizardExecutionStatisticsTest {
 
         wes.resetStatisticsToWizardPage(wfm.getID().createChild(9), wfm);
         stats = wes.getUpdatedStatistics(wfm);
-        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(21));
+        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(23));
         assertThat("wrong executed node count", stats.getNodesExecuted().size(), is(0));
 
         wfm.executeUpToHere(wfm.getID().createChild(17));
         wfm.executeUpToHere(wfm.getID().createChild(19));
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         stats = wes.getUpdatedStatistics(wfm);
-        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(14));
+        assertThat("wrong node executions count", stats.getTotalNodeExecutionsCount(), is(16));
         assertThat("wrong executed node count", stats.getNodesExecuted().size(), is(13));
 
         wfm.resetAndConfigureNode(wfm.getID().createChild(17));
