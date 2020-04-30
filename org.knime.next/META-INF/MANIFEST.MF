@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: KNIME Next
+Bundle-SymbolicName: org.knime.next;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: knime-next
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.swt;bundle-version="3.106.3",
+ org.eclipse.ui;bundle-version="3.109.0",
+ com.knime.gateway.remote;bundle-version="4.11.0",
+ com.knime.gateway;bundle-version="4.11.0",
+ com.knime.gateway.json;bundle-version="4.11.0",
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.10.2",
+ com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="2.10.2",
+ org.knime.core;bundle-version="4.2.0"
+Bundle-ClassPath: .,
+ lib/JerseyJettyEx.jar
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.knime.next.Activator

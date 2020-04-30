@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.knime.next.KnimeNextView"
+            id="org.knime.next.view"
+            inject="true"
+            name="KNIME Next"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.knime.next.ui.KnimeNextPerspective"
+            id="org.knime.next.perspective"
+            name="KNIME.next">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.knime.next.switchToNext"
+            name="Switch to KNIME.next">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.knime.next.toolbar"
+               label="KNIME.next">
+            <command
+                  commandId="org.knime.next.switchToNext"
+                  label="Open KNIME.next"
+                  tooltip="TODO">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activePartId">
+                     <equals
+                           value="org.knime.workbench.editor.WorkflowEditor">
+                     </equals>
+                  </with>
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.knime.next.ui.SwitchToKnimeNext"
+            commandId="org.knime.next.switchToNext">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.knime.next.perspective">
+         <hiddenMenuItem
+               id="org.knime.workbench.editor.menu">
+         </hiddenMenuItem>
+         <hiddenToolBarItem
+               id="org.knime.workbench.editor.menu">
+         </hiddenToolBarItem>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
