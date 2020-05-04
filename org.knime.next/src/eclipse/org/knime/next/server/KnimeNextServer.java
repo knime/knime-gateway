@@ -48,11 +48,15 @@
  */
 package org.knime.next.server;
 
+import java.io.File;
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.PathResource;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.knime.core.node.NodeLogger;
@@ -79,7 +83,15 @@ public class KnimeNextServer {
     public void start() {
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(m_port).build();
         ResourceConfig config = new KnimeServerApplication();
-        m_server = JettyHttpContainerFactory.createServer(baseUri, config);
+        m_server = JettyHttpContainerFactory.createServer(baseUri, config, false);
+        ResourceHandler rh = new ResourceHandler();
+        //Bundle myBundle = FrameworkUtil.getBundle(getClass());
+        //URL webApp = myBundle.getEntry("ui");
+        //TODO
+        rh.setBaseResource(
+            new PathResource(new File("/home/hornm/dev-knime/workspace/knime-gateway/knime-next-ui/dist")));
+        HandlerList handlers = new HandlerList(rh, m_server.getHandler());
+        m_server.setHandler(handlers);
         try {
             m_server.start();
         } catch (Exception ex) {

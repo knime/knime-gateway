@@ -18,7 +18,8 @@ public class KnimeNextView extends ViewPart {
     @Override
     public void createPartControl(final Composite parent) {
         m_browser = new Browser(parent, SWT.NONE);
-        m_browser.setUrl("https://hub.knime.com");
+        m_browser.setUrl("http://localhost:3000/index.html");
+        //m_browser.setUrl("https://hub.knime.com");
 
         if (m_server == null) {
             m_server = new KnimeNextServer(3000);
