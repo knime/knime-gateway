@@ -21,8 +21,6 @@ package com.knime.gateway.remote.endpoint;
 import org.eclipse.birt.report.model.api.IllegalOperationException;
 import org.knime.core.node.workflow.WorkflowManager;
 
-import com.knime.enterprise.executor.JobPool;
-
 /**
  * Represents a workflow project.
  *
@@ -56,7 +54,6 @@ public interface WorkflowProject {
 
     /**
      * Generates a report. See
-     * {@link JobPool#generateReport(com.knime.enterprise.executor.WorkflowJob, org.knime.core.util.report.ReportingConstants.RptOutputFormat, org.knime.core.util.report.ReportingConstants.RptOutputOptions)}
      *
      * @param format the report format
      * @return the report directory or an empty optional

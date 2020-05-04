@@ -54,6 +54,7 @@ import com.knime.gateway.entity.impl.DefaultWorkflowEnt;
  * commits are there. Thus the simpler {@link SimpleRepository}-implementation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @since 4.11
  */
 public class JaversRepository implements WorkflowEntRepository {
 

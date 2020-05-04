@@ -48,6 +48,7 @@ import com.knime.gateway.entity.impl.DefaultWorkflowEnt;
  * NOTE: not a thread-safe implementation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @since 4.11
  */
 public class SimpleRepository implements WorkflowEntRepository {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SimpleRepository.class);
