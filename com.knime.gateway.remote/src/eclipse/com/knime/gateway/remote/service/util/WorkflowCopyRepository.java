@@ -30,7 +30,6 @@ import org.knime.core.util.LRUCache;
  * The number of copies kept in the repository is limited and least recently used ones will be removed if exceeded.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 4.11
  */
 public class WorkflowCopyRepository {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowCopyRepository.class);

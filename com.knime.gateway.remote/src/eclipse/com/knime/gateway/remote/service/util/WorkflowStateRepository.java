@@ -51,7 +51,6 @@ import org.knime.core.node.workflow.WorkflowManager;
  * Utility class to save and compare workflow states (including nested sub-workflows).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 4.11
  */
 public class WorkflowStateRepository {
 
