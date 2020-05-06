@@ -49,12 +49,19 @@
 package org.knime.next.server;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
 
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
@@ -90,7 +97,7 @@ public class KnimeNextServer {
         //TODO
         rh.setBaseResource(
             new PathResource(new File("/home/hornm/dev-knime/workspace/knime-gateway/knime-next-ui/dist")));
-        HandlerList handlers = new HandlerList(rh, m_server.getHandler());
+        HandlerList handlers = new HandlerList(rh, new AddHeaders(m_server.getHandler()));
         m_server.setHandler(handlers);
         try {
             m_server.start();
@@ -104,6 +111,24 @@ public class KnimeNextServer {
         if (m_server != null) {
             m_server.destroy();
         }
+    }
+
+    private class AddHeaders extends HandlerWrapper {
+
+        AddHeaders(final Handler handler) {
+            setHandler(handler);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void handle(final String target, final Request baseRequest, final HttpServletRequest request,
+            final HttpServletResponse response) throws IOException, ServletException {
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            super.handle(target, baseRequest, request, response);
+        }
+
     }
 
 }
