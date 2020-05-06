@@ -71,6 +71,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -135,6 +136,8 @@ public class EventService {
 
         private Map<NodeID, NodeProgressListener> m_progressListeners = new HashMap<>();
 
+        private Map<NodeID, NodeUIInformationListener> m_nodeUIListeners = new HashMap<>();
+
         private UUID m_rootWorkflowID;
 
         private NodeIDEnt m_workflowID;
@@ -173,12 +176,16 @@ public class EventService {
             NodeProgressListener pl = e -> broadcast();
             m_progressListeners.put(nc.getID(), pl);
             nc.getProgressMonitor().addProgressListener(pl);
+            NodeUIInformationListener uil = e -> broadcast();
+            m_nodeUIListeners.put(nc.getID(), uil);
+            nc.addUIInformationListener(uil);
             //TODO node message listener?
         }
 
         private void deregisterNode(final NodeContainer nc) {
             nc.removeNodeStateChangeListener(m_nodeStateChangeListeners.get(nc.getID()));
             nc.getProgressMonitor().removeProgressListener(m_progressListeners.get(nc.getID()));
+            nc.removeUIInformationListener(m_nodeUIListeners.get(nc.getID()));
         }
 
         void registerSseEventSink(final SseEventSink sseEventSink, final UUID snapshotID) {
