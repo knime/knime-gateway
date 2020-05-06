@@ -46,37 +46,46 @@
  * History
  *   Apr 29, 2020 (hornm): created
  */
-package org.knime.next.server;
+package org.knime.next.api;
 
-import org.glassfish.jersey.media.sse.SseFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.knime.next.api.DialogService;
-import org.knime.next.api.EventService;
-import org.knime.next.api.InitService;
-import org.knime.next.api.providers.CollectionJSONSerializer;
-import org.knime.next.api.providers.EntityJSONSerializer;
-import org.knime.next.api.util.WrapWithNextService;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeContainer;
+import static org.knime.core.ui.wrapper.NodeContainerWrapper.wrap;
 
-import com.knime.gateway.remote.service.DefaultServices;
-import com.knime.gateway.service.util.ListServices;
+import java.util.UUID;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import org.eclipse.swt.widgets.Display;
+import org.knime.workbench.editor2.editparts.NodeContainerEditPart;
+
+import com.knime.gateway.entity.NodeIDEnt;
+import com.knime.gateway.service.util.ServiceExceptions.NodeNotFoundException;
 
 /**
  *
- * @author hornm
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class KnimeServerApplication extends ResourceConfig {
+@Path("/workflows/{job-id}")
+public class DialogService {
 
-    public KnimeServerApplication() {
-        for (Class serviceClass : ListServices.listServiceInterfaces()) {
-            register(WrapWithNextService.wrap(DefaultServices.getDefaultService(serviceClass), serviceClass));
-        }
-        register(new EventService());
-        register(new InitService());
-        register(new DialogService());
-
-        register(EntityJSONSerializer.class);
-        register(CollectionJSONSerializer.class);
-
-        register(SseFeature.class);
+    @GET
+    @Path("/workflow/node/{node-id}/open-dialog")
+    @Produces({"application/json"})
+    public Response openDialog(@PathParam("job-id") final UUID rootWorkflowID,
+        @PathParam("node-id") final NodeIDEnt nodeID) {
+        Display.getDefault().asyncExec(() -> {
+            try {
+                NodeContainerEditPart.openNodeDialog(wrap(getNodeContainer(rootWorkflowID, nodeID)), null);
+            } catch (NodeNotFoundException e) {
+                //TODO
+                throw new RuntimeException(e);
+            }
+        });
+        return Response.ok().build();
     }
+
 }

@@ -16,7 +16,9 @@ Require-Bundle: org.eclipse.swt;bundle-version="3.106.3",
  org.knime.core;bundle-version="4.2.0",
  org.knime.workbench.editor;bundle-version="4.2.0",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.10.2",
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.knime.core.ui,
+ org.eclipse.gef;bundle-version="3.11.0"
 Bundle-ClassPath: .,
  lib/JerseyJettyEx.jar
 Bundle-ActivationPolicy: lazy
