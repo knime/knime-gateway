@@ -118,6 +118,9 @@ public class EventService {
             throw (NodeNotFoundException)exception.get();
         }
         updateListener.registerSseEventSink(eventSink, snapshotId);
+
+        //send first diff
+        updateListener.broadcast();
     }
 
     private class UpdateListener implements Closeable {
@@ -214,7 +217,7 @@ public class EventService {
             });
         }
 
-        private synchronized void broadcast() {
+        synchronized void broadcast() {
             if (m_isBroadcastInProgress.get()) {
                 m_isBroadcastWaiting.set(true);
             } else {
