@@ -51,7 +51,7 @@ package org.knime.next.server;
 import org.glassfish.jersey.media.sse.SseFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.knime.next.api.EventService;
-import org.knime.next.api.ExplorerService;
+import org.knime.next.api.InitService;
 import org.knime.next.api.providers.CollectionJSONSerializer;
 import org.knime.next.api.providers.EntityJSONSerializer;
 import org.knime.next.api.util.WrapWithNextService;
@@ -70,7 +70,7 @@ public class KnimeServerApplication extends ResourceConfig {
             register(WrapWithNextService.wrap(DefaultServices.getDefaultService(serviceClass), serviceClass));
         }
         register(new EventService());
-        register(new ExplorerService());
+        register(new InitService());
 
         register(EntityJSONSerializer.class);
         register(CollectionJSONSerializer.class);
