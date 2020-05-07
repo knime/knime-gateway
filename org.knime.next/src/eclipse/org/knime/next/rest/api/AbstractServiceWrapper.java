@@ -46,37 +46,22 @@
  * History
  *   Apr 29, 2020 (hornm): created
  */
-package org.knime.next.server;
+package org.knime.next.rest.api;
 
-import org.glassfish.jersey.media.sse.SseFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.knime.next.api.util.WrapWithNextService;
-import org.knime.next.rest.api.DialogService;
-import org.knime.next.rest.api.EventService;
-import org.knime.next.rest.api.InitService;
-import org.knime.next.rest.providers.CollectionJSONSerializer;
-import org.knime.next.rest.providers.EntityJSONSerializer;
-
-import com.knime.gateway.remote.service.DefaultServices;
-import com.knime.gateway.service.util.ListServices;
+import javax.ws.rs.core.Response;
 
 /**
  *
  * @author hornm
  */
-public class KnimeServerApplication extends ResourceConfig {
+public abstract class AbstractServiceWrapper {
 
-    public KnimeServerApplication() {
-        for (Class serviceClass : ListServices.listServiceInterfaces()) {
-            register(WrapWithNextService.wrap(DefaultServices.getDefaultService(serviceClass), serviceClass));
-        }
-        register(new EventService());
-        register(new InitService());
-        register(new DialogService());
-
-        register(EntityJSONSerializer.class);
-        register(CollectionJSONSerializer.class);
-
-        register(SseFeature.class);
+    protected Response createResponse(final Object entity) {
+        return Response.ok(entity).build();
     }
+
+    protected Response createResponse() {
+        return Response.ok().build();
+    }
+
 }

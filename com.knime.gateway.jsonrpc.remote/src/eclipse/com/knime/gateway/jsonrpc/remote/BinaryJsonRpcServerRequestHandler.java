@@ -19,8 +19,6 @@
 package com.knime.gateway.jsonrpc.remote;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knime.enterprise.executor.JobPoolListener;
-import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 
 /**
@@ -37,11 +35,6 @@ public class BinaryJsonRpcServerRequestHandler extends JsonRpcServerRequestHandl
     @Override
     protected ObjectMapper getObjectMapper() {
         return ObjectMapperUtil.getInstance().getBinaryObjectMapper();
-    }
-
-    @Override
-    public String getMessageId() {
-        return "binary jsonrpc2.0";
     }
 
 }

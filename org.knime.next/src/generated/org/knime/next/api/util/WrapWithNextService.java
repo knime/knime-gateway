@@ -24,13 +24,13 @@ import com.knime.gateway.service.WizardExecutionService;
 import org.knime.next.api.NextNodeServiceWrapper;
 import com.knime.gateway.service.NodeService;
 import org.knime.next.api.NextWorkflowServiceWrapper;
+import org.knime.next.rest.api.AbstractServiceWrapper;
+
 import com.knime.gateway.service.WorkflowService;
 import org.knime.next.api.NextAnnotationServiceWrapper;
 import com.knime.gateway.service.AnnotationService;
 
 import com.knime.gateway.service.GatewayService;
-
-import org.knime.next.api.AbstractServiceWrapper;
 
 import java.lang.reflect.InvocationTargetException;
 

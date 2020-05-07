@@ -46,7 +46,7 @@
  * History
  *   Apr 29, 2020 (hornm): created
  */
-package org.knime.next.api.providers;
+package org.knime.next.rest.providers;
 
 import java.io.IOException;
 import java.io.OutputStream;

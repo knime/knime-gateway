@@ -44,24 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 29, 2020 (hornm): created
+ *   May 7, 2020 (hornm): created
  */
-package org.knime.next.api;
+package org.knime.next.websocket;
 
-import javax.ws.rs.core.Response;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
 /**
  *
- * @author hornm
+ * @author Martin Horn, KNIME GmbH, Konstanz Germany
  */
-public abstract class AbstractServiceWrapper {
+public class WebSocketJsonRpcServlet extends WebSocketServlet {
 
-    protected Response createResponse(final Object entity) {
-        return Response.ok(entity).build();
-    }
-
-    protected Response createResponse() {
-        return Response.ok().build();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configure(final WebSocketServletFactory factory) {
+        factory.register(WebSocketJsonRpcAdapter.class);
     }
 
 }

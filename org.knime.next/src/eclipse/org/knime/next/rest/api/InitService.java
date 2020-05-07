@@ -46,7 +46,7 @@
  * History
  *   Apr 29, 2020 (hornm): created
  */
-package org.knime.next.api;
+package org.knime.next.rest.api;
 
 import java.net.URI;
 import java.util.ArrayList;

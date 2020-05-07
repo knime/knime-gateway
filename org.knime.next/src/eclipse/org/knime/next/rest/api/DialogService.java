@@ -46,7 +46,7 @@
  * History
  *   Apr 29, 2020 (hornm): created
  */
-package org.knime.next.api;
+package org.knime.next.rest.api;
 
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeContainer;
 import static org.knime.core.ui.wrapper.NodeContainerWrapper.wrap;

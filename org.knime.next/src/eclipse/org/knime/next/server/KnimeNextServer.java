@@ -63,10 +63,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.knime.core.node.NodeLogger;
+import org.knime.next.websocket.WebSocketJsonRpcServlet;
 
 /**
  *
@@ -89,15 +91,27 @@ public class KnimeNextServer {
 
     public void start() {
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(m_port).build();
+
+        // REST resources
         ResourceConfig config = new KnimeServerApplication();
+        //TODO make servlet based
         m_server = JettyHttpContainerFactory.createServer(baseUri, config, false);
-        ResourceHandler rh = new ResourceHandler();
+        Handler restHandler = new AddHeaders(m_server.getHandler());
+
+        // file resources
+        ResourceHandler resourceHandler = new ResourceHandler();
         //Bundle myBundle = FrameworkUtil.getBundle(getClass());
         //URL webApp = myBundle.getEntry("ui");
         //TODO
-        rh.setBaseResource(
+        resourceHandler.setBaseResource(
             new PathResource(new File("/home/hornm/dev-knime/workspace/knime-gateway/knime-next-ui/dist")));
-        HandlerList handlers = new HandlerList(rh, new AddHeaders(m_server.getHandler()));
+
+        // servlets (e.g. websocket servlet)
+        ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        servletHandler.setContextPath("/workflows/ws");
+        servletHandler.addServlet(WebSocketJsonRpcServlet.class, "");
+
+        HandlerList handlers = new HandlerList(resourceHandler, servletHandler, restHandler);
         m_server.setHandler(handlers);
         try {
             m_server.start();

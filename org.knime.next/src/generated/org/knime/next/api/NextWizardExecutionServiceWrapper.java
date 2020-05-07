@@ -10,6 +10,8 @@ import com.knime.gateway.entity.WizardPageInputEnt;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import org.knime.next.rest.api.AbstractServiceWrapper;
+
 import com.knime.gateway.service.util.ServiceExceptions;
 
 import com.knime.gateway.service.WizardExecutionService;

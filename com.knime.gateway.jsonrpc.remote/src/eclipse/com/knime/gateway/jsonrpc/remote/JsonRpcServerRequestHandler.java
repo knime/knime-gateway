@@ -24,14 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
-import com.knime.enterprise.executor.JobPoolListener;
-import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
 import com.knime.gateway.remote.service.DefaultServices;
@@ -46,7 +43,7 @@ import com.knime.gateway.service.util.ListServices;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class JsonRpcServerRequestHandler implements GenericServerRequestHandler {
+public class JsonRpcServerRequestHandler {
 
     private JsonRpcMultiServer m_jsonRpcMultiServer;
 
@@ -72,20 +69,8 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
         return ObjectMapperUtil.getInstance().getObjectMapper();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getMessageId() {
-        return "jsonrpc2.0";
-    }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public byte[] handle(final UUID jobId, final byte[] messageBody) {
+    public byte[] handle(final byte[] messageBody) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             m_jsonRpcMultiServer.handleRequest(new ByteArrayInputStream(messageBody), out);
