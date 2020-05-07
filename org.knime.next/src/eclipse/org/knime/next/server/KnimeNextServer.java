@@ -139,7 +139,11 @@ public class KnimeNextServer {
         @Override
         public void handle(final String target, final Request baseRequest, final HttpServletRequest request,
             final HttpServletResponse response) throws IOException, ServletException {
-            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("origin"));
+            response.setHeader("Access-Control-Expose-Headers", "*");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+
             super.handle(target, baseRequest, request, response);
         }
 
