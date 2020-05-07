@@ -58,14 +58,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 
 /**
  *
  * @author hornm
  */
-public class EntityJSONSerializer implements MessageBodyWriter<GatewayEntity> {
+public class EntityJSONSerializer implements MessageBodyWriter<Object> {
 
     /**
      * {@inheritDoc}
@@ -80,7 +79,7 @@ public class EntityJSONSerializer implements MessageBodyWriter<GatewayEntity> {
      * {@inheritDoc}
      */
     @Override
-    public long getSize(final GatewayEntity t, final Class<?> type, final Type genericType,
+    public long getSize(final Object t, final Class<?> type, final Type genericType,
         final Annotation[] annotations, final MediaType mediaType) {
         return -1;
     }
@@ -89,7 +88,7 @@ public class EntityJSONSerializer implements MessageBodyWriter<GatewayEntity> {
      * {@inheritDoc}
      */
     @Override
-    public void writeTo(final GatewayEntity t, final Class<?> type, final Type genericType,
+    public void writeTo(final Object t, final Class<?> type, final Type genericType,
         final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, Object> httpHeaders,
         final OutputStream entityStream) throws IOException, WebApplicationException {
         ObjectMapperUtil.getInstance().getObjectMapper().writeValue(entityStream, t);

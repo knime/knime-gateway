@@ -55,6 +55,7 @@ import org.knime.next.rest.api.DialogService;
 import org.knime.next.rest.api.EventService;
 import org.knime.next.rest.api.InitService;
 import org.knime.next.rest.providers.CollectionJSONSerializer;
+import org.knime.next.rest.providers.EntityJSONDeserializer;
 import org.knime.next.rest.providers.EntityJSONSerializer;
 
 import com.knime.gateway.remote.service.DefaultServices;
@@ -75,6 +76,7 @@ public class KnimeServerApplication extends ResourceConfig {
         register(new DialogService());
 
         register(EntityJSONSerializer.class);
+        register(EntityJSONDeserializer.class);
         register(CollectionJSONSerializer.class);
 
         register(SseFeature.class);
