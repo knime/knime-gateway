@@ -51,7 +51,6 @@ package org.knime.next.ui;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IViewLayout;
-import org.knime.next.KnimeNextView;
 
 public class KnimeNextPerspective implements IPerspectiveFactory {
 

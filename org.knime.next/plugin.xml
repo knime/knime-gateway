@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="org.knime.next.KnimeNextView"
+            class="org.knime.next.ui.KnimeNextView"
             id="org.knime.next.view"
             inject="true"
             name="KNIME Next"
