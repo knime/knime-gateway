@@ -139,10 +139,13 @@ public class KnimeNextServer {
         @Override
         public void handle(final String target, final Request baseRequest, final HttpServletRequest request,
             final HttpServletResponse response) throws IOException, ServletException {
+
+            // FIXME this is insecure!
             response.setHeader("Access-Control-Allow-Origin", request.getHeader("origin"));
             response.setHeader("Access-Control-Expose-Headers", "*");
             response.setHeader("Access-Control-Allow-Headers", "Content-Type");
             response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods", "OPTIONS,INFO,GET,POST,PUT,DELETE");
 
             super.handle(target, baseRequest, request, response);
         }
