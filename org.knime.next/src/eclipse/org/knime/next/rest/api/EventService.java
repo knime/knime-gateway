@@ -87,7 +87,7 @@ public class EventService {
     @GET
     @Path("/events/{workflow-id}")
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void getServerSentEvents(@PathParam("job-id") final UUID rootWorkflowID,
+    public synchronized void getServerSentEvents(@PathParam("job-id") final UUID rootWorkflowID,
         @PathParam("workflow-id") final NodeIDEnt workflowId, @QueryParam("snapshot-id") final UUID snapshotId,
         @Context final SseEventSink eventSink, @Context final Sse sse) throws Exception {
         AtomicReference<Exception> exception = new AtomicReference<>();
@@ -106,7 +106,7 @@ public class EventService {
         if (exception.get() instanceof NodeNotFoundException) {
             throw (NodeNotFoundException)exception.get();
         }
-        updateListener.registerSseEventSink(eventSink, snapshotId);
+        updateListener.registerSseEventSinkAndTriggerEvent(eventSink, snapshotId);
     }
 
     private class UpdateListener implements Closeable {
@@ -125,10 +125,12 @@ public class EventService {
             m_sse = sse;
         }
 
-        void registerSseEventSink(final SseEventSink sseEventSink, final UUID snapshotID) {
+        void registerSseEventSinkAndTriggerEvent(final SseEventSink sseEventSink, final UUID snapshotID) {
             getBroadcaster(snapshotID).register(sseEventSink);
-            m_workflowListener.registerCallback(snapshotID, this::broadcast, true);
             m_sinkCount.replace(snapshotID, m_sinkCount.computeIfAbsent(snapshotID, k -> 0) + 1);
+            m_workflowListener.registerCallback(snapshotID, this::broadcast, true);
+            // trigger first event storm right away
+            m_workflowListener.callback();
         }
 
         private SseBroadcaster getBroadcaster(final UUID snapshotID) {
@@ -156,6 +158,8 @@ public class EventService {
             broadcaster.broadcast(sseEvent);
             m_broadcasters.remove(oldSnapshotID);
             m_broadcasters.put(patch.getSnapshotID(), broadcaster);
+            Integer sinkCount = m_sinkCount.remove(oldSnapshotID);
+            m_sinkCount.put(patch.getSnapshotID(), sinkCount);
         }
 
         //TODO never be called so far

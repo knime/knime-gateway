@@ -128,12 +128,6 @@ public class WorkflowChangeListener implements Closeable {
         if (m_workflowListener == null) {
             startListening();
         }
-
-        // directly call back after registering
-        PatchEnt patch = createPatch(initSnapshotID);
-        if (!patch.getOps().isEmpty()) {
-            callback.accept(patch, initSnapshotID);
-        }
     }
 
     public void deregisterCallbacks(final UUID snapshotID) {
@@ -200,7 +194,7 @@ public class WorkflowChangeListener implements Closeable {
         nc.removeUIInformationListener(m_nodeUIListeners.get(nc.getID()));
     }
 
-    synchronized void callback() {
+    public synchronized void callback() {
         if (m_isCallbackInProgress.get()) {
             m_isCallbackWaiting.set(true);
         } else {

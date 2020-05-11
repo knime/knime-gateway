@@ -23,7 +23,7 @@ public class KnimeNextView extends ViewPart {
         }
 
         m_browser = new Browser(parent, SWT.NONE);
-        m_browser.setUrl("http://localhost:3000/");
+        m_browser.setUrl("http://localhost:4000/");
         //m_browser.setUrl("https://hub.knime.com");
 
     }
