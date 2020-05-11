@@ -8,10 +8,10 @@ import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.WorkflowPartsEnt;
 import com.knime.gateway.entity.WorkflowSnapshotEnt;
 
+import org.knime.next.rest.api.AbstractServiceWrapper;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-
-import org.knime.next.rest.api.AbstractServiceWrapper;
 
 import com.knime.gateway.service.util.ServiceExceptions;
 

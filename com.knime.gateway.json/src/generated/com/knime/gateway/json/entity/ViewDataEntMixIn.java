@@ -19,6 +19,7 @@
 package com.knime.gateway.json.entity;
 
 import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.ViewTemplateEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,6 +71,10 @@ public interface ViewDataEntMixIn extends ViewDataEnt {
     @JsonProperty("hideInWizard")
     public Boolean isHideInWizard();
     
+    @Override
+    @JsonProperty("viewTemplate")
+    public ViewTemplateEnt getViewTemplate();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -105,6 +110,10 @@ public interface ViewDataEntMixIn extends ViewDataEnt {
         @Override
         @JsonProperty("hideInWizard")
         public ViewDataEntMixInBuilder setHideInWizard(final Boolean hideInWizard);
+        
+        @Override
+        @JsonProperty("viewTemplate")
+        public ViewDataEntMixInBuilder setViewTemplate(final ViewTemplateEnt viewTemplate);
         
     }
 

@@ -23,6 +23,7 @@ import static com.knime.gateway.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.ViewTemplateEnt;
 
 import com.knime.gateway.entity.ViewDataEnt;
 
@@ -38,6 +39,7 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
   protected JavaObjectEnt m_viewRepresentation;
   protected JavaObjectEnt m_viewValue;
   protected Boolean m_hideInWizard;
+  protected ViewTemplateEnt m_viewTemplate;
   
   protected DefaultViewDataEnt() {
     //for sub-classes
@@ -54,6 +56,7 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
     m_viewRepresentation = immutable(builder.m_viewRepresentation);
     m_viewValue = immutable(builder.m_viewValue);
     m_hideInWizard = immutable(builder.m_hideInWizard);
+    m_viewTemplate = immutable(builder.m_viewTemplate);
   }
   
    /**
@@ -71,7 +74,7 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
             return false;
         }
         DefaultViewDataEnt ent = (DefaultViewDataEnt)o;
-        return Objects.equals(m_javascriptObjectID, ent.m_javascriptObjectID) && Objects.equals(m_viewRepresentation, ent.m_viewRepresentation) && Objects.equals(m_viewValue, ent.m_viewValue) && Objects.equals(m_hideInWizard, ent.m_hideInWizard);
+        return Objects.equals(m_javascriptObjectID, ent.m_javascriptObjectID) && Objects.equals(m_viewRepresentation, ent.m_viewRepresentation) && Objects.equals(m_viewValue, ent.m_viewValue) && Objects.equals(m_hideInWizard, ent.m_hideInWizard) && Objects.equals(m_viewTemplate, ent.m_viewTemplate);
     }
 
 
@@ -95,6 +98,11 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         return m_hideInWizard;
     }
     
+  @Override
+  public ViewTemplateEnt getViewTemplate() {
+        return m_viewTemplate;
+    }
+    
   
     public static class DefaultViewDataEntBuilder implements ViewDataEntBuilder {
     
@@ -106,6 +114,7 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         private JavaObjectEnt m_viewRepresentation;
         private JavaObjectEnt m_viewValue;
         private Boolean m_hideInWizard;
+        private ViewTemplateEnt m_viewTemplate;
 
         @Override
         public DefaultViewDataEntBuilder setJavascriptObjectID(String javascriptObjectID) {
@@ -128,6 +137,12 @@ public class DefaultViewDataEnt  implements ViewDataEnt {
         @Override
         public DefaultViewDataEntBuilder setHideInWizard(Boolean hideInWizard) {
              m_hideInWizard = hideInWizard;
+             return this;
+        }
+
+        @Override
+        public DefaultViewDataEntBuilder setViewTemplate(ViewTemplateEnt viewTemplate) {
+             m_viewTemplate = viewTemplate;
              return this;
         }
 

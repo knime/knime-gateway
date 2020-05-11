@@ -7,10 +7,10 @@ import com.knime.gateway.entity.ExecutionStatisticsEnt;
 import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt;
 
+import org.knime.next.rest.api.AbstractServiceWrapper;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-
-import org.knime.next.rest.api.AbstractServiceWrapper;
 
 import com.knime.gateway.service.util.ServiceExceptions;
 

@@ -19,6 +19,7 @@
 package com.knime.gateway.entity;
 
 import com.knime.gateway.entity.JavaObjectEnt;
+import com.knime.gateway.entity.ViewTemplateEnt;
 
 import com.knime.gateway.entity.GatewayEntityBuilder;
 
@@ -58,6 +59,12 @@ public interface ViewDataEnt extends GatewayEntity {
    **/
   public Boolean isHideInWizard();
 
+  /**
+   * Get viewTemplate
+   * @return viewTemplate 
+   **/
+  public ViewTemplateEnt getViewTemplate();
+
 
     /**
      * The builder for the entity.
@@ -95,6 +102,14 @@ public interface ViewDataEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ViewDataEntBuilder setHideInWizard(Boolean hideInWizard);
+        
+        /**
+   		 * Set viewTemplate
+         * 
+         * @param viewTemplate the property value,  
+         * @return this entity builder for chaining
+         */
+        ViewDataEntBuilder setViewTemplate(ViewTemplateEnt viewTemplate);
         
         
         /**

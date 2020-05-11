@@ -5,10 +5,10 @@ package org.knime.next.api;
 
 import com.knime.gateway.entity.BoundsEnt;
 
+import org.knime.next.rest.api.AbstractServiceWrapper;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-
-import org.knime.next.rest.api.AbstractServiceWrapper;
 
 import com.knime.gateway.service.util.ServiceExceptions;
 

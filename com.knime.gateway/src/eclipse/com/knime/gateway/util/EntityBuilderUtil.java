@@ -81,6 +81,9 @@ import org.knime.core.node.port.PortUtil;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.web.WebResourceLocator;
+import org.knime.core.node.web.WebResourceLocator.WebResourceType;
+import org.knime.core.node.web.WebTemplate;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.WizardNode;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
@@ -100,6 +103,7 @@ import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WebResourceController;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
@@ -164,6 +168,8 @@ import com.knime.gateway.entity.StyleRangeEnt.FontStyleEnum;
 import com.knime.gateway.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.entity.ViewDataEnt;
 import com.knime.gateway.entity.ViewDataEnt.ViewDataEntBuilder;
+import com.knime.gateway.entity.ViewTemplateEnt;
+import com.knime.gateway.entity.ViewTemplateEnt.ViewTemplateEntBuilder;
 import com.knime.gateway.entity.WorkflowAnnotationEnt;
 import com.knime.gateway.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import com.knime.gateway.entity.WorkflowEnt;
@@ -440,11 +446,34 @@ public class EntityBuilderUtil {
      */
     public static ViewDataEnt buildViewDataEnt(final WizardNode<?, ?> wnode)
         throws UnsupportedEncodingException, IOException {
+        WebTemplate template = WebResourceController.getWebTemplateFromJSObjectID(wnode.getJavascriptObjectID());
         return builder(ViewDataEntBuilder.class)
                 .setJavascriptObjectID(wnode.getJavascriptObjectID())
                 .setViewRepresentation(buildJavaObjectEntFromViewContent(wnode.getViewRepresentation()))
                 .setViewValue(buildJavaObjectEntFromViewContent(wnode.getViewValue()))
-                .setHideInWizard(wnode.isHideInWizard()).build();
+                .setHideInWizard(wnode.isHideInWizard())
+                .setViewTemplate(buildViewTemplateEnt(template)).build();
+    }
+
+    private static ViewTemplateEnt buildViewTemplateEnt(final WebTemplate template) {
+        List<String> jsList = new ArrayList<>();
+        List<String> cssList = new ArrayList<>();
+        for (WebResourceLocator locator : template.getWebResources()) {
+            if (locator.getType() == WebResourceType.JAVASCRIPT) {
+                jsList.add(locator.getRelativePathTarget());
+            } else if (locator.getType() == WebResourceType.CSS) {
+                cssList.add(locator.getRelativePathTarget());
+            }
+        }
+        return builder(ViewTemplateEntBuilder.class)
+                .setJavascriptLibraries(jsList)
+                .setStylesheets(cssList)
+                .setNamespace(template.getNamespace())
+                .setInitMethodName(template.getInitMethodName())
+                .setValidateMethodName(template.getValidateMethodName())
+                .setSetValidationErrorMethodName(template.getSetValidationErrorMethodName())
+                .setGetViewValueMethodName(template.getValidateMethodName())
+                .build();
     }
 
     /**

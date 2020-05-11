@@ -86,6 +86,8 @@ import com.knime.gateway.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import com.knime.gateway.entity.impl.DefaultStyleRangeEnt;
 import com.knime.gateway.entity.ViewDataEnt.ViewDataEntBuilder;
 import com.knime.gateway.entity.impl.DefaultViewDataEnt;
+import com.knime.gateway.entity.ViewTemplateEnt.ViewTemplateEntBuilder;
+import com.knime.gateway.entity.impl.DefaultViewTemplateEnt;
 import com.knime.gateway.entity.WizardPageEnt.WizardPageEntBuilder;
 import com.knime.gateway.entity.impl.DefaultWizardPageEnt;
 import com.knime.gateway.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
@@ -222,6 +224,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ViewDataEntBuilder.class) {
             return new DefaultViewDataEnt.DefaultViewDataEntBuilder();
+        }        
+        if(clazz == ViewTemplateEntBuilder.class) {
+            return new DefaultViewTemplateEnt.DefaultViewTemplateEntBuilder();
         }        
         if(clazz == WizardPageEntBuilder.class) {
             return new DefaultWizardPageEnt.DefaultWizardPageEntBuilder();

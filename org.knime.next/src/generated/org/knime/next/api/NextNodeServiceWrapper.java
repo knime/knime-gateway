@@ -14,10 +14,10 @@ import com.knime.gateway.entity.NodeSettingsEnt;
 import com.knime.gateway.entity.PortObjectSpecEnt;
 import com.knime.gateway.entity.ViewDataEnt;
 
+import org.knime.next.rest.api.AbstractServiceWrapper;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-
-import org.knime.next.rest.api.AbstractServiceWrapper;
 
 import com.knime.gateway.service.util.ServiceExceptions;
 
