@@ -1,5 +1,6 @@
 */bin/
-*/target/
 */build/
 **/.openapi-generator-ignore
 **/.openapi-generator/
+**/.flattened-pom.xml
+**/target
