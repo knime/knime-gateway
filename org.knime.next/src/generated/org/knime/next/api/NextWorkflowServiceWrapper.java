@@ -249,5 +249,71 @@ public class NextWorkflowServiceWrapper extends AbstractServiceWrapper {
 	}
    
    }
+
+    /**
+     * TODO
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @return the response
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
+     */
+    @POST
+    @Path("/workflow/{workflow-id}/redo")
+    @Produces({ "application/json" })
+    public Response redo(@PathParam("job-id") java.util.UUID jobId, @PathParam("workflow-id") com.knime.gateway.entity.NodeIDEnt workflowId)
+      throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    try {
+        Boolean entity = m_service.redo(jobId, workflowId);    
+        return createResponse(entity);    
+            
+    }
+	catch(ServiceExceptions.NotASubWorkflowException e) {
+	    //TODO
+	    return null;
+	}
+	catch(ServiceExceptions.NotFoundException e) {
+	    //TODO
+	    return null;
+	}
+	finally {
+		//TODO
+	}
+   
+   }
+
+    /**
+     * TODO
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @return the response
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
+     */
+    @POST
+    @Path("/workflow/{workflow-id}/undo")
+    @Produces({ "application/json" })
+    public Response undo(@PathParam("job-id") java.util.UUID jobId, @PathParam("workflow-id") com.knime.gateway.entity.NodeIDEnt workflowId)
+      throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+    try {
+        Boolean entity = m_service.undo(jobId, workflowId);    
+        return createResponse(entity);    
+            
+    }
+	catch(ServiceExceptions.NotASubWorkflowException e) {
+	    //TODO
+	    return null;
+	}
+	catch(ServiceExceptions.NotFoundException e) {
+	    //TODO
+	    return null;
+	}
+	finally {
+		//TODO
+	}
+   
+   }
 }
 

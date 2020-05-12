@@ -114,4 +114,28 @@ public interface WorkflowService extends GatewayService {
      */
     WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID partsId, Integer x, Integer y)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
         
+    /**
+     * TODO
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
+     */
+    Boolean redo(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+        
+    /**
+     * TODO
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NotFoundException A resource couldn&#39;t be found.
+     */
+    Boolean undo(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+        
 }

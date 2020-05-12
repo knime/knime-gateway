@@ -45,6 +45,7 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.ConnectionEnt;
@@ -58,6 +59,7 @@ import com.knime.gateway.remote.endpoint.WorkflowProjectManager;
 import com.knime.gateway.remote.service.util.SimpleRepository;
 import com.knime.gateway.remote.service.util.WorkflowCopyRepository;
 import com.knime.gateway.remote.service.util.WorkflowEntRepository;
+import com.knime.gateway.remote.service.util.WorkflowUndoStack;
 import com.knime.gateway.service.WorkflowService;
 import com.knime.gateway.service.util.ServiceExceptions;
 import com.knime.gateway.service.util.ServiceExceptions.ActionNotAllowedException;
@@ -157,66 +159,87 @@ public class DefaultWorkflowService implements WorkflowService {
     @Override
     public UUID deleteWorkflowParts(final UUID rootWorkflowID, final NodeIDEnt workflowID, final WorkflowPartsEnt parts,
         final Boolean copy) throws NotASubWorkflowException, NodeNotFoundException, ActionNotAllowedException {
-        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, workflowID);
         if (parts.getAnnotationIDs().isEmpty() && parts.getNodeIDs().isEmpty() && parts.getConnectionIDs().isEmpty()) {
             return null;
         }
 
-        UUID partsID = null;
-        if (copy != null && copy) {
-            //create a copy before removal
-            WorkflowPersistor wp = wfm.copy(true, translateWorkflowPartsEnt(parts,
-                e -> entityToNodeID(rootWorkflowID, e), e -> entityToAnnotationID(rootWorkflowID, e)));
-            partsID = UUID.randomUUID();
-            m_copyRepo.put(partsID, wp);
-        }
+        return WorkflowUndoStack.getUndoStack(rootWorkflowID, workflowID).addAndRunOperation(wfm -> {
+            UUID partsID = null;
+            if (copy != null && copy) {
+                //create a copy before removal
+                WorkflowPersistor wp = wfm.copy(true, translateWorkflowPartsEnt(parts,
+                    e -> entityToNodeID(rootWorkflowID, e), e -> entityToAnnotationID(rootWorkflowID, e)));
+                partsID = UUID.randomUUID();
+                m_copyRepo.put(partsID, wp);
+            }
 
-        for (NodeIDEnt nodeID : parts.getNodeIDs()) {
-            NodeID id = entityToNodeID(rootWorkflowID, nodeID);
-            if (!wfm.containsNodeContainer(id)) {
-                continue;
-            }
-            if (wfm.getIncomingConnectionsFor(id).stream().anyMatch(cc -> !wfm.canRemoveConnection(cc))) {
-                throw new ActionNotAllowedException(
-                    "There is an incoming connection that cannot be removed for node with id '" + nodeID + "'");
-            }
-            if (wfm.getOutgoingConnectionsFor(id).stream().anyMatch(cc -> !wfm.canRemoveConnection(cc))) {
-                throw new ActionNotAllowedException(
-                    "There is an outgoing connection that cannot be removed for node with id '" + nodeID + "'");
-            }
-            if (wfm.canRemoveNode(id)) {
-                wfm.removeNode(id);
-            } else {
-                throw new ActionNotAllowedException("Node with id '" + nodeID + "' cannot be removed");
-            }
-        }
-
-        for (ConnectionIDEnt connectionID : parts.getConnectionIDs()) {
-            ConnectionID id = entityToConnectionID(rootWorkflowID, connectionID);
-            try {
-                ConnectionContainer cc;
-                if ((cc = wfm.getConnection(id)) != null) {
-                    if (wfm.canRemoveConnection(cc)) {
-                        wfm.removeConnection(cc);
-                    } else {
-                        throw new ActionNotAllowedException(
-                            "Connection with id '" + connectionID + "' cannot be removed");
-                    }
+            int x = Integer.MAX_VALUE;
+            int y = Integer.MAX_VALUE;
+            for (NodeIDEnt nodeID : parts.getNodeIDs()) {
+                NodeID id = entityToNodeID(rootWorkflowID, nodeID);
+                if (!wfm.containsNodeContainer(id)) {
+                    continue;
                 }
-            } catch (IllegalArgumentException e) {
-                //fail silently
-                //TODO better add a respective method to workflow manager to be able to check for existence
+                if (wfm.getIncomingConnectionsFor(id).stream().anyMatch(cc -> !wfm.canRemoveConnection(cc))) {
+                    //TODO
+                    //throw new ActionNotAllowedException(
+                    throw new RuntimeException(
+                        "There is an incoming connection that cannot be removed for node with id '" + nodeID + "'");
+                }
+                if (wfm.getOutgoingConnectionsFor(id).stream().anyMatch(cc -> !wfm.canRemoveConnection(cc))) {
+                    //TODO
+                    //throw new ActionNotAllowedException(
+                    throw new RuntimeException(
+                        "There is an outgoing connection that cannot be removed for node with id '" + nodeID + "'");
+                }
+                if (wfm.canRemoveNode(id)) {
+                    int[] bounds = wfm.getNodeContainer(id).getUIInformation().getBounds();
+                    x = Math.min(x, bounds[0]);
+                    y = Math.min(y, bounds[1]);
+                    wfm.removeNode(id);
+                } else {
+                    //TODO
+                    //throw new ActionNotAllowedException("Node with id '" + nodeID + "' cannot be removed");
+                    throw new RuntimeException("Node cannot be removed");
+                }
             }
-        }
 
-        for (AnnotationIDEnt annotationID : parts.getAnnotationIDs()) {
-            WorkflowAnnotationID id = entityToAnnotationID(rootWorkflowID, annotationID);
-            WorkflowAnnotation workflowAnnotation = wfm.getWorkflowAnnotations(id)[0];
-            if (workflowAnnotation != null) {
-                wfm.removeAnnotation(workflowAnnotation);
+            for (ConnectionIDEnt connectionID : parts.getConnectionIDs()) {
+                ConnectionID id = entityToConnectionID(rootWorkflowID, connectionID);
+                try {
+                    ConnectionContainer cc;
+                    if ((cc = wfm.getConnection(id)) != null) {
+                        if (wfm.canRemoveConnection(cc)) {
+                            wfm.removeConnection(cc);
+                        } else {
+                            //TODO
+                            //throw new ActionNotAllowedException(
+                            throw new RuntimeException(
+                                "Connection with id '" + connectionID + "' cannot be removed");
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    //fail silently
+                    //TODO better add a respective method to workflow manager to be able to check for existence
+                }
             }
-        }
-        return partsID;
+
+            for (AnnotationIDEnt annotationID : parts.getAnnotationIDs()) {
+                WorkflowAnnotationID id = entityToAnnotationID(rootWorkflowID, annotationID);
+                WorkflowAnnotation workflowAnnotation = wfm.getWorkflowAnnotations(id)[0];
+                if (workflowAnnotation != null) {
+                    wfm.removeAnnotation(workflowAnnotation);
+                }
+            }
+            return Pair.create(partsID, Pair.create(x, y));
+        }, (wfm, id) -> {
+            try {
+                pasteWorkflowParts(wfm, id.getFirst(), id.getSecond().getFirst(), id.getSecond().getSecond());
+            } catch (NotFoundException ex) {
+                // TODO
+                throw new RuntimeException(ex);
+            }
+        }, getWorkflowManager(rootWorkflowID, workflowID)).getFirst();
     }
 
     /**
@@ -232,6 +255,12 @@ public class DefaultWorkflowService implements WorkflowService {
         } catch (NodeNotFoundException ex) {
             throw new NotFoundException("No node found for the given parent-id", ex);
         }
+        WorkflowCopyContent copyContent = pasteWorkflowParts(wfm, partsID, x, y);
+        return buildWorkflowPartsEnt(copyContent);
+    }
+
+    private WorkflowCopyContent pasteWorkflowParts(final WorkflowManager wfm, final UUID partsID, final int x,
+        final int y) throws NotFoundException {
         WorkflowPersistor persistor = m_copyRepo.get(partsID);
         if (persistor == null) {
             throw new NotFoundException("No workflow-part copy available for the given id");
@@ -249,14 +278,11 @@ public class DefaultWorkflowService implements WorkflowService {
             nc.setUIInformation(newUI);
         }
         for (ConnectionContainer conn : wfm.getConnectionContainers()) {
-            if (newIDs.contains(conn.getDest())
-                    && newIDs.contains(conn.getSource())) {
+            if (newIDs.contains(conn.getDest()) && newIDs.contains(conn.getSource())) {
                 // get bend points and move them
-                ConnectionUIInformation oldUI =
-                    conn.getUIInfo();
+                ConnectionUIInformation oldUI = conn.getUIInfo();
                 if (oldUI != null) {
-                    ConnectionUIInformation newUI =
-                        ConnectionUIInformation.builder(oldUI).translate(shift).build();
+                    ConnectionUIInformation newUI = ConnectionUIInformation.builder(oldUI).translate(shift).build();
                     conn.setUIInfo(newUI);
                 }
             }
@@ -265,7 +291,7 @@ public class DefaultWorkflowService implements WorkflowService {
         for (WorkflowAnnotation a : pastedAnnos) {
             a.shiftPosition(shift[0], shift[1]);
         }
-        return buildWorkflowPartsEnt(copyContent);
+        return copyContent;
     }
 
     private static int[] calcOffset(final NodeID[] nodes, final WorkflowAnnotationID[] annotations,
@@ -389,5 +415,17 @@ public class DefaultWorkflowService implements WorkflowService {
             //thrown when there is no snapshot for the given snapshot id
             throw new NotFoundException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Boolean undo(final UUID rootWorkflowID, final NodeIDEnt workflowID)
+        throws NotASubWorkflowException, NotFoundException {
+        return WorkflowUndoStack.getUndoStack(rootWorkflowID, workflowID).undo();
+    }
+
+    @Override
+    public Boolean redo(final UUID rootWorkflowID, final NodeIDEnt workflowID)
+        throws NotASubWorkflowException, NotFoundException {
+        return WorkflowUndoStack.getUndoStack(rootWorkflowID, workflowID).redo();
     }
 }

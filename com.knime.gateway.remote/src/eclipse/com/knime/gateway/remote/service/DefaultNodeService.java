@@ -22,6 +22,7 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeContainer;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWfmAndNc;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getWorkflowManager;
+import static com.knime.gateway.remote.service.util.WorkflowUndoStack.getUndoStack;
 import static com.knime.gateway.util.EntityBuilderUtil.buildNodeEnt;
 
 import java.io.IOException;
@@ -118,10 +119,19 @@ public class DefaultNodeService implements NodeService {
     public void setNodeBounds(final UUID rootWorkflowID, final NodeIDEnt nodeID, final BoundsEnt bounds)
         throws NodeNotFoundException {
         Pair<WorkflowManager, NodeContainer> rootWfmAndNc = getRootWfmAndNc(rootWorkflowID, nodeID);
+        NodeUIInformation orgInfo = rootWfmAndNc.getSecond().getUIInformation();
         NodeUIInformation information = NodeUIInformation.builder()
             .setNodeLocation(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()).build();
-        rootWfmAndNc.getSecond().setUIInformation(information);
-        rootWfmAndNc.getFirst().setDirty();
+        // undo stack id: workflow root id + workflow id
+        //TODO better only keep ids in the closure instead of workflow manager?
+        getUndoStack(rootWorkflowID, new NodeIDEnt(nodeID.toNodeID(rootWfmAndNc.getFirst().getID()).getPrefix()))
+            .addAndRunOperation(p -> {
+                rootWfmAndNc.getSecond().setUIInformation(information);
+                rootWfmAndNc.getFirst().setDirty();
+            }, p -> {
+                rootWfmAndNc.getSecond().setUIInformation(orgInfo);
+                rootWfmAndNc.getFirst().setDirty();
+            }, rootWfmAndNc);
     }
 
     /**
@@ -184,11 +194,16 @@ public class DefaultNodeService implements NodeService {
             //at least init the node factory in order to have the node description available
             nodeFactory.init();
         }
-        NodeID nodeID = wfm.createAndAddNode(nodeFactory);
-        NodeUIInformation info =
-            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(true).build();
-        wfm.getNodeContainer(nodeID).setUIInformation(info);
-        return new NodeIDEnt(nodeID);
+
+        return new NodeIDEnt(getUndoStack(rootWorkflowID, parentNodeID).addAndRunOperation(w -> {
+            NodeID nodeID = wfm.createAndAddNode(nodeFactory);
+            NodeUIInformation info =
+                NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(true).build();
+            wfm.getNodeContainer(nodeID).setUIInformation(info);
+            return nodeID;
+        }, (w, r) -> {
+            w.removeNode(r);
+        }, wfm));
     }
 
     /**
@@ -295,9 +310,8 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public DataTableEnt getOutputDataTable(final UUID rootWorkflowID, final NodeIDEnt nodeID,
-        final Integer portIdx, final Long from, final Integer size)
-        throws NodeNotFoundException, InvalidRequestException {
+    public DataTableEnt getOutputDataTable(final UUID rootWorkflowID, final NodeIDEnt nodeID, final Integer portIdx,
+        final Long from, final Integer size) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         if (portIdx >= nc.getNrOutPorts()) {
             throw new InvalidRequestException("No port at index " + portIdx);
@@ -316,8 +330,8 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<FlowVariableEnt> getInputFlowVariables(final UUID rootWorkflowID,
-        final NodeIDEnt nodeID) throws NodeNotFoundException {
+    public List<FlowVariableEnt> getInputFlowVariables(final UUID rootWorkflowID, final NodeIDEnt nodeID)
+        throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         return getFlowVariableEntListFromFlowObjectStack(nodeContainer.getFlowObjectStack());
     }
@@ -326,8 +340,8 @@ public class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public List<FlowVariableEnt> getOutputFlowVariables(final UUID rootWorkflowID,
-        final NodeIDEnt nodeID) throws NodeNotFoundException {
+    public List<FlowVariableEnt> getOutputFlowVariables(final UUID rootWorkflowID, final NodeIDEnt nodeID)
+        throws NodeNotFoundException {
         NodeContainer nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         if (nodeContainer instanceof SingleNodeContainer) {
             return getFlowVariableEntListFromFlowObjectStack(
@@ -355,7 +369,7 @@ public class DefaultNodeService implements NodeService {
         if (nc instanceof NativeNodeContainer && ((NativeNodeContainer)nc).getNodeModel() instanceof WizardNode) {
             NativeNodeContainer nnc = (NativeNodeContainer)nc;
             try {
-                return EntityBuilderUtil.buildViewDataEnt((WizardNode<?,?>)nnc.getNodeModel());
+                return EntityBuilderUtil.buildViewDataEnt((WizardNode<?, ?>)nnc.getNodeModel());
             } catch (IOException ex) {
                 //should not happen, that's why it's just a runtime exception
                 throw new IllegalStateException("Views data cannot be accessed.", ex);
@@ -425,7 +439,7 @@ public class DefaultNodeService implements NodeService {
         throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc = getNodeContainer(rootWorkflowID, nodeID);
         if (nc instanceof SubNodeContainer) {
-            SubNodeContainer snc = (SubNodeContainer) nc;
+            SubNodeContainer snc = (SubNodeContainer)nc;
             try {
                 return EntityBuilderUtil.buildMetaNodeDialogEnt(snc);
             } catch (IOException | InvalidSettingsException ex) {

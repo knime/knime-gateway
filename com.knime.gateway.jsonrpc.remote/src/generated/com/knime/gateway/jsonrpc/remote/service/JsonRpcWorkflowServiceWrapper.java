@@ -140,4 +140,34 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         return m_service.pasteWorkflowParts(jobId, workflowId, partsId, x, y);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "redo")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
+    })
+    public Boolean redo(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowId") com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        return m_service.redo(jobId, workflowId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "undo")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
+            data = "NotFoundException" /*per convention the data property contains the exception name*/)
+    })
+    public Boolean undo(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="workflowId") com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        return m_service.undo(jobId, workflowId);    
+    }
+
 }

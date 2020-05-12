@@ -240,4 +240,62 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
         }
     }
     
+    @Override
+    public Boolean redo(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.redo(jobId, workflowId.toString());
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
+                }
+            }, Boolean.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "Workflow", "redo");
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
+            }
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
+            }
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
+        }
+    }
+    
+    @Override
+    public Boolean undo(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.undo(jobId, workflowId.toString());
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
+                }
+            }, Boolean.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "Workflow", "undo");
+            if (gatewayException.getExceptionName().equals("NotASubWorkflowException")) {
+                throw new ServiceExceptions.NotASubWorkflowException(gatewayException.getExceptionMessage());
+            }
+            if (gatewayException.getExceptionName().equals("NotFoundException")) {
+                throw new ServiceExceptions.NotFoundException(gatewayException.getExceptionMessage());
+            }
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
+        }
+    }
+    
 }

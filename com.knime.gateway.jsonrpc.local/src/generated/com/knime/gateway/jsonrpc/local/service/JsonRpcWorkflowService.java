@@ -79,4 +79,18 @@ public interface JsonRpcWorkflowService extends WorkflowService {
     @JsonRpcMethod(value = "WorkflowService.pasteWorkflowParts")
     WorkflowPartsEnt pasteWorkflowParts(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId, java.util.UUID partsId, Integer x, Integer y)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.redo")
+    Boolean redo(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "WorkflowService.undo")
+    Boolean undo(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NotFoundException;
+
 }
