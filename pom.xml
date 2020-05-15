@@ -17,7 +17,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<revision>4.2.0</revision>
+		<revision>4.11.0</revision>
 		<changelist>-SNAPSHOT</changelist>
 		<feature-branch-extension.branchListProperty>git.branch</feature-branch-extension.branchListProperty>
 		<feature-branch-extension.appendArtifactoryProperties>false</feature-branch-extension.appendArtifactoryProperties>
@@ -32,11 +32,11 @@
 		<module>com.knime.gateway.local</module>
 		<module>com.knime.gateway.remote</module>
 		<module>com.knime.gateway.rest.local</module>
-		<module>com.knime.gateway.testing</module>
-		<module>com.knime.gateway.json.testing</module>
+		<module>com.knime.gateway.tests</module>
+		<module>com.knime.gateway.json.tests</module>
 		<module>com.knime.gateway.testing.helper</module>
-		<module>com.knime.gateway.local.testing</module>
-		<module>com.knime.gateway.remote.testing</module>
+		<module>com.knime.gateway.local.tests</module>
+		<module>com.knime.gateway.remote.tests</module>
 		<module>com.knime.features.gateway.explorer</module>
 		<module>com.knime.features.gateway.jsonrpc.local</module>
 		<module>com.knime.features.gateway.remote</module>
@@ -119,6 +119,38 @@
 			<id>p2-knime-server-api</id>
 			<layout>p2</layout>
 			<url>${knime.server.api.p2}</url>
+		</repository>
+	
+		<!-- dependencies for testing only -->
+		<repository>
+			<id>p2-knime-distance</id>
+			<layout>p2</layout>
+			<url>${knime.distance.p2}</url>
+		</repository>
+		<repository>
+			<id>p2-knime-weka</id>
+			<layout>p2</layout>
+			<url>${knime.weka.p2}</url>
+		</repository>
+		<repository>
+			<id>p2-knime-dev</id>
+			<layout>p2</layout>
+			<url>${knime.dev.p2}</url>
+		</repository>
+		<repository>
+			<id>p2-knime-chromium</id>
+			<layout>p2</layout>
+			<url>${knime.chromium.p2}</url>
+		</repository>
+		<repository>
+			<id>p2-knime-js-core</id>
+			<layout>p2</layout>
+			<url>${knime.js.core.p2}</url>
+		</repository>
+		<repository>
+			<id>p2-knime-stats</id>
+			<layout>p2</layout>
+			<url>${knime.stats.p2}</url>
 		</repository>
 	</repositories>
 

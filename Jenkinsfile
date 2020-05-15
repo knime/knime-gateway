@@ -29,8 +29,7 @@ try {
 
     stage('Sonarqube analysis') {
         env.lastStage = env.STAGE_NAME
-        // TODO remove empty configurations once workflow tests are enabled
-        workflowTests.runSonar([])
+        workflowTests.runSonar()
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'
