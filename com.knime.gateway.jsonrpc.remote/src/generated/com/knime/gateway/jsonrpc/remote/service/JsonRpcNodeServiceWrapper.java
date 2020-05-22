@@ -213,6 +213,21 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "replaceNode")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ActionNotAllowedException.class, code = -32600,
+            data = "ActionNotAllowedException" /*per convention the data property contains the exception name*/)
+    })
+    public NodeEnt replaceNode(@JsonRpcParam(value="jobId") java.util.UUID jobId, @JsonRpcParam(value="nodeId") com.knime.gateway.entity.NodeIDEnt nodeId, @JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+        return m_service.replaceNode(jobId, nodeId, nodeFactoryKeyEnt);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "setNodeBounds")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,

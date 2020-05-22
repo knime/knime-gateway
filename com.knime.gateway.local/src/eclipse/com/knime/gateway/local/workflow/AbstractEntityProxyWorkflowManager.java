@@ -48,6 +48,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.dialog.ExternalNodeData;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
@@ -61,6 +62,8 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
+import org.knime.core.node.workflow.NodePropertyChangedEvent;
+import org.knime.core.node.workflow.NodePropertyChangedEvent.NodeProperty;
 import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.NodeUIInformationEvent;
@@ -71,6 +74,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.ui.node.workflow.ConnectionContainerUI;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
@@ -95,6 +99,7 @@ import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.ConnectionIDEnt;
 import com.knime.gateway.entity.MetaPortInfoEnt;
 import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.PatchEnt;
@@ -287,6 +292,34 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             }
             return getAccess().getNodeID(getEntity().getRootWorkflowID(), id);
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canReplaceNode(final NodeID id) {
+        return canRemoveNode(id) && getNodeContainer(id) instanceof NativeNodeContainerUI;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFutureEx<Void, OperationNotAllowedException> replaceNodeAsync(final NodeID id,
+        final ModifiableNodeCreationConfiguration creationConfig) {
+        NodeFactoryKeyEnt nodeFactory = EntityBuilderUtil.buildNodeFactoryKeyEnt(null, creationConfig);
+        return futureExRefresh(() -> {
+            try {
+                getAccess().nodeService().replaceNode(getEntity().getRootWorkflowID(), new NodeIDEnt(id), nodeFactory);
+            } catch (NodeNotFoundException ex) {
+                // should never happen
+                throw new CompletionException(ex);
+            } catch (ActionNotAllowedException ex) {
+                throw new CompletionException(new OperationNotAllowedException(ex.getMessage(), ex));
+            }
+            return null;
+        }, OperationNotAllowedException.class);
     }
 
     /**
@@ -1545,6 +1578,17 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
          * {@inheritDoc}
          */
         @Override
+        public void nodePortsChanged(final NodeEnt node) {
+            @SuppressWarnings("rawtypes")
+            AbstractEntityProxyNodeContainer nc = getAccess().getNodeContainer(node);
+            // TODO node property
+            nc.notifyNodePropertyChangedListener(new NodePropertyChangedEvent(nc.getID(), NodeProperty.MetaNodePorts));
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void connectionEntAdded(final ConnectionEnt newConnection) {
             EntityProxyConnectionContainer cc =
                 getAccess().getConnectionContainer(newConnection, getEntity().getRootWorkflowID());
@@ -1567,12 +1611,8 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
          */
         @Override
         public void connectionEntReplaced(final ConnectionEnt oldConnection, final ConnectionEnt newConnection) {
-            ConnectionContainerUI oldCC =
-                getAccess().getConnectionContainer(oldConnection, getEntity().getRootWorkflowID());
-            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_REMOVED, null, oldCC, null));
-            ConnectionContainerUI newCC =
-                getAccess().getConnectionContainer(newConnection, getEntity().getRootWorkflowID());
-            notifyWorkflowListeners(new WorkflowEvent(WorkflowEvent.Type.CONNECTION_ADDED, null, null, newCC));
+            connectionEntRemoved(oldConnection);
+            connectionEntAdded(newConnection);
         }
 
         /**

@@ -23,6 +23,7 @@ import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getNodeCo
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getRootWfmAndNc;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getWorkflowManager;
 import static com.knime.gateway.util.EntityBuilderUtil.buildNodeEnt;
+import static com.knime.gateway.util.EntityTranslateUtil.translateNodeCreationConfiguration;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -44,6 +45,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.interactive.DefaultReexecutionCallback;
 import org.knime.core.node.interactive.ViewContent;
@@ -198,6 +200,29 @@ public class DefaultNodeService implements NodeService {
     public NodeEnt getNode(final UUID rootWorkflowID, final NodeIDEnt nodeID) throws NodeNotFoundException {
         NodeContainer node = getNodeContainer(rootWorkflowID, nodeID);
         return buildNodeEnt(node, rootWorkflowID);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeEnt replaceNode(final UUID rootWorkflowID, final NodeIDEnt nodeID,
+        final NodeFactoryKeyEnt nodeFactoryKeyEnt) throws NodeNotFoundException, ActionNotAllowedException {
+        // TODO incomplete endpoint implementation!
+        // node is only replaced by a node with the same factory and the provided
+        // node factory class is ignored
+        // needs to be completed with https://knime-com.atlassian.net/browse/SRV-1692
+        NativeNodeContainer node = (NativeNodeContainer)getNodeContainer(rootWorkflowID, nodeID);
+        NodeID id = node.getID();
+        WorkflowManager wfm = node.getParent();
+        if (!wfm.canReplaceNode(id)) {
+            throw new ActionNotAllowedException("Node can't be replaced");
+        }
+        ModifiableNodeCreationConfiguration nodeCreationConfig =
+            translateNodeCreationConfiguration(nodeFactoryKeyEnt.getNodeCreationConfigSettings(),
+                node.getNode().getFactory()).orElse(null);
+        wfm.replaceNode(node.getID(), nodeCreationConfig);
+        return buildNodeEnt(wfm.getNodeContainer(id), rootWorkflowID);
     }
 
     /**

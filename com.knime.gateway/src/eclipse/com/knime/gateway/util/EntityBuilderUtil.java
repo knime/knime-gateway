@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec;
 import org.knime.core.node.port.AbstractSimplePortObjectSpec.AbstractSimplePortObjectSpecSerializer;
@@ -141,6 +143,7 @@ import com.knime.gateway.entity.NodeAnnotationEnt;
 import com.knime.gateway.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeEnt.NodeTypeEnum;
+import com.knime.gateway.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeInPortEnt;
@@ -833,15 +836,6 @@ public class EntityBuilderUtil {
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc, final UUID rootWorkflowID) {
-        NodeFactory<NodeModel> factory = nc.getNode().getFactory();
-        NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class)
-                .setClassName(factory.getClass().getCanonicalName());
-        //only set settings in case of a dynamic node factory
-        if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
-            NodeSettings settings = new NodeSettings("settings");
-            nc.getNode().getFactory().saveAdditionalFactorySettings(settings);
-            nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
-        }
         InteractiveWebViewsResult webViews = nc.getInteractiveWebViews();
         return builder(NativeNodeEntBuilder.class).setName(nc.getName())
             .setNodeID(new NodeIDEnt(nc.getID()))
@@ -862,11 +856,56 @@ public class EntityBuilderUtil {
             .setNodeAnnotation(buildNodeAnnotationEnt(nc))
             .setInPorts(buildNodeInPortEnts(nc))
             .setHasDialog(nc.hasDialog())
-            .setNodeFactoryKey(nodeFactoryKeyBuilder.build())
+            .setNodeFactoryKey(buildNodeFactoryKeyEnt(nc))
             .setInactive(nc.isInactive())
             .setWebViewNames(IntStream.range(0, webViews.size())
                 .mapToObj(i -> webViews.get(i).getViewName()).collect(Collectors.toList()))
             .setType("NativeNode").build();
+    }
+
+    private static NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NativeNodeContainer nnc) {
+        return buildNodeFactoryKeyEnt(nnc.getNode().getFactory(), nnc.getNode().getCopyOfCreationConfig().orElse(null));
+    }
+
+    /**
+     * Creates a new {@link NodeFactoryKeyEnt} instance from a {@link NativeNodeContainer}.
+     *
+     * @param factory
+     * @param config
+     * @return the node factory entity
+     */
+    public static NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeFactory<NodeModel> factory,
+        final ModifiableNodeCreationConfiguration config) {
+        NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class);
+        if (factory != null) {
+            nodeFactoryKeyBuilder.setClassName(factory.getClass().getCanonicalName());
+            //only set settings in case of a dynamic node factory
+            if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
+                NodeSettings settings = new NodeSettings("settings");
+                factory.saveAdditionalFactorySettings(settings);
+                nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
+            }
+        } else {
+            nodeFactoryKeyBuilder.setClassName("");
+        }
+        nodeFactoryKeyBuilder.setNodeCreationConfigSettings(getNodeCreationConfigSettingsString(config));
+        return nodeFactoryKeyBuilder.build();
+    }
+
+    private static String getNodeCreationConfigSettingsString(final ModifiableNodeCreationConfiguration config) {
+        if (config == null) {
+            return null;
+        }
+        NodeSettings settings = new NodeSettings("node creation config");
+        StringWriter sw = new StringWriter();
+        config.saveSettingsTo(settings);
+        try {
+            JSONConfig.writeJSON(settings, sw, WriterConfig.DEFAULT);
+        } catch (IOException ex) {
+            // should never happen
+            throw new RuntimeException("Problem serializing node creation configuration settings as json", ex);
+        }
+        return sw.toString();
     }
 
     private static NodeProgressEnt buildNodeProgressEnt(final Double progress, final String message,

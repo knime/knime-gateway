@@ -45,6 +45,12 @@ public interface NodeFactoryKeyEnt extends GatewayEntity {
    **/
   public String getSettings();
 
+  /**
+   * The json-serialized settings of the configuration that has been used to create a native node.
+   * @return nodeCreationConfigSettings 
+   **/
+  public String getNodeCreationConfigSettings();
+
 
     /**
      * The builder for the entity.
@@ -66,6 +72,14 @@ public interface NodeFactoryKeyEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeFactoryKeyEntBuilder setSettings(String settings);
+        
+        /**
+         * The json-serialized settings of the configuration that has been used to create a native node.
+         * 
+         * @param nodeCreationConfigSettings the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeFactoryKeyEntBuilder setNodeCreationConfigSettings(String nodeCreationConfigSettings);
         
         
         /**

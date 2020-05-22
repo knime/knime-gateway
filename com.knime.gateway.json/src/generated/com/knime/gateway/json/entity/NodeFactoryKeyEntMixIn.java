@@ -61,6 +61,10 @@ public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
     @JsonProperty("settings")
     public String getSettings();
     
+    @Override
+    @JsonProperty("nodeCreationConfigSettings")
+    public String getNodeCreationConfigSettings();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -88,6 +92,10 @@ public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
         @Override
         @JsonProperty("settings")
         public NodeFactoryKeyEntMixInBuilder setSettings(final String settings);
+        
+        @Override
+        @JsonProperty("nodeCreationConfigSettings")
+        public NodeFactoryKeyEntMixInBuilder setNodeCreationConfigSettings(final String nodeCreationConfigSettings);
         
     }
 

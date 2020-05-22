@@ -36,6 +36,8 @@ import org.javers.core.diff.changetype.container.ArrayChange;
 import org.javers.core.diff.changetype.container.ContainerChange;
 import org.javers.core.diff.changetype.container.ListChange;
 import org.javers.core.diff.changetype.container.SetChange;
+import org.javers.core.diff.changetype.container.ValueAdded;
+import org.javers.core.diff.changetype.container.ValueRemoved;
 import org.javers.core.diff.changetype.map.EntryAdded;
 import org.javers.core.diff.changetype.map.EntryRemoved;
 import org.javers.core.diff.changetype.map.MapChange;
@@ -47,6 +49,8 @@ import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.entity.NodeEnt;
+import com.knime.gateway.entity.NodeInPortEnt;
+import com.knime.gateway.entity.NodeOutPortEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.PatchEnt.PatchEntBuilder;
 import com.knime.gateway.entity.PatchOpEnt;
@@ -126,7 +130,10 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
     @Override
     public void onNewObject(final NewObject newObject) {
         Object newObj = newObject.getAffectedObject().get();
-        if (newObj instanceof NodeEnt || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt) {
+        // these are all objects that are newly added to a map
+        // the respective patch operation will be added in the onMapChange- or onListChange-methods
+        if (newObj instanceof NodeEnt || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt
+            || newObj instanceof NodeInPortEnt || newObj instanceof NodeOutPortEnt) {
             ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
             String path = "/" + globalId.getFragment().replaceAll("m_", "");
             m_newObjects.put(path, (GatewayEntity)newObject.getAffectedObject().get());
@@ -151,6 +158,19 @@ class PatchEntChangeProcessor implements ChangeProcessor<PatchEnt> {
 
     @Override
     public void onListChange(final ListChange listChange) {
+        for (ValueRemoved vr : listChange.getValueRemovedChanges()) {
+            ValueObjectId val = (ValueObjectId)vr.getValue();
+            String path = "/" + val.getFragment().replaceAll("m_", "");
+            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REMOVE).setPath(path).build());
+        }
+        for(ValueAdded va : listChange.getValueAddedChanges()) {
+            ValueObjectId val = (ValueObjectId)va.getValue();
+            String path = "/" + val.getFragment().replaceAll("m_", "");
+            //NOTE: setValue relies on the fact the #onNewObject has been called before, with the right object
+            m_ops.add(
+                new DefaultPatchOpEntBuilder().setOp(OpEnum.ADD).setPath(path).setValue(m_newObjects.get(path))
+                    .build());
+        }
     }
 
     @Override

@@ -124,6 +124,13 @@ public interface JsonRpcNodeService extends NodeService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "NodeService.replaceNode")
+    NodeEnt replaceNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "NodeService.setNodeBounds")
     void setNodeBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException;
 

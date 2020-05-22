@@ -21,6 +21,7 @@ package com.knime.gateway.local.workflow;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Optional;
 
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -32,6 +33,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -49,6 +51,7 @@ import org.w3c.dom.Element;
 import com.knime.gateway.entity.NativeNodeEnt;
 import com.knime.gateway.entity.NodeFactoryKeyEnt;
 import com.knime.gateway.local.util.missing.MissingNodeFactory;
+import com.knime.gateway.util.EntityTranslateUtil;
 
 /**
  * Entity-proxy class that proxies {@link NativeNodeEnt} and mimics a {@link NativeNodeContainer}.
@@ -123,8 +126,9 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
         if (dialogPane == null) {
             NodeContext.pushContext(this);
             try {
-                resDialogPane = Node.createDialogPane((NodeFactory<NodeModel>)getNodeFactoryInstance(),
-                    getEntity().getInPorts().size(), false);
+                NodeFactory<NodeModel> nodeFactory = (NodeFactory<NodeModel>)getNodeFactoryInstance();
+                resDialogPane = Node.createDialogPane(nodeFactory, getEntity().getInPorts().size(), false,
+                    getCopyOfCreationConfig().orElse(null));
             } finally {
                 NodeContext.removeLastContext();
             }
@@ -170,7 +174,7 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
         NodeFactoryKeyEnt nodeFactoryKey = node.getNodeFactoryKey();
         NodeFactory<? extends NodeModel> nodeFactory;
         try {
-            nodeFactory = RepositoryManager.INSTANCE.loadNodeFactory(nodeFactoryKey.getClassName());
+            nodeFactory = RepositoryManager.loadNodeFactory(nodeFactoryKey.getClassName());
             if (nodeFactory instanceof DynamicNodeFactory) {
                 if (nodeFactoryKey.getSettings() != null) {
                     //in case of a dynamic node factory additional settings need to be loaded
@@ -203,5 +207,15 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
     @Override
     public String getNodeFactoryClassName() {
         return getEntity().getNodeFactoryKey().getClassName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<ModifiableNodeCreationConfiguration> getCopyOfCreationConfig() {
+        return EntityTranslateUtil.translateNodeCreationConfiguration(
+            getEntity().getNodeFactoryKey().getNodeCreationConfigSettings(),
+            (NodeFactory<NodeModel>)getNodeFactoryInstance());
     }
 }

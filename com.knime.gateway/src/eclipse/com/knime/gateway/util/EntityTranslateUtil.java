@@ -18,11 +18,14 @@
  */
 package com.knime.gateway.util;
 
+import static org.knime.core.node.workflow.FileNativeNodeContainerPersistor.loadCreationConfig;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.io.StringReader;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -39,7 +42,13 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.exec.dataexchange.PortObjectRepository;
 import org.knime.core.node.tableview.CellLoadingError;
 import org.knime.core.node.workflow.NodeID;
@@ -186,6 +195,28 @@ public class EntityTranslateUtil {
             return new ErrorCell("Cell of type '" + type.toPrettyString()
                 + " couldn't be deserialized. Most likely an implementation problem.");
         }
+    }
+
+    /**
+     * Deserializes a {@link ModifiableNodeCreationConfiguration} from a json string.
+     *
+     * @param jsonString
+     * @param factory the node factory the config belongs to
+     * @return the config
+     */
+    public static Optional<ModifiableNodeCreationConfiguration> translateNodeCreationConfiguration(final String jsonString,
+        final NodeFactory<NodeModel> factory) {
+        if (jsonString != null) {
+            NodeSettings settings = new NodeSettings("node creation config");
+            try {
+                JSONConfig.readJSON(settings, new StringReader(jsonString));
+                return loadCreationConfig(settings, factory);
+            } catch (IOException | InvalidSettingsException ex) {
+                // should never happen
+                throw new RuntimeException("Problem reading node creation config settings", ex);
+            }
+        }
+        return Optional.empty();
     }
 
     /**

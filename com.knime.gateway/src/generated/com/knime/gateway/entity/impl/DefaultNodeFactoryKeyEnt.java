@@ -35,6 +35,7 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
 
   protected String m_className;
   protected String m_settings;
+  protected String m_nodeCreationConfigSettings;
   
   protected DefaultNodeFactoryKeyEnt() {
     //for sub-classes
@@ -52,6 +53,7 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
     }
     m_className = immutable(builder.m_className);
     m_settings = immutable(builder.m_settings);
+    m_nodeCreationConfigSettings = immutable(builder.m_nodeCreationConfigSettings);
   }
   
    /**
@@ -69,7 +71,7 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
             return false;
         }
         DefaultNodeFactoryKeyEnt ent = (DefaultNodeFactoryKeyEnt)o;
-        return Objects.equals(m_className, ent.m_className) && Objects.equals(m_settings, ent.m_settings);
+        return Objects.equals(m_className, ent.m_className) && Objects.equals(m_settings, ent.m_settings) && Objects.equals(m_nodeCreationConfigSettings, ent.m_nodeCreationConfigSettings);
     }
 
 
@@ -83,6 +85,11 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
         return m_settings;
     }
     
+  @Override
+  public String getNodeCreationConfigSettings() {
+        return m_nodeCreationConfigSettings;
+    }
+    
   
     public static class DefaultNodeFactoryKeyEntBuilder implements NodeFactoryKeyEntBuilder {
     
@@ -92,6 +99,7 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
     
         private String m_className;
         private String m_settings;
+        private String m_nodeCreationConfigSettings;
 
         @Override
         public DefaultNodeFactoryKeyEntBuilder setClassName(String className) {
@@ -105,6 +113,12 @@ public class DefaultNodeFactoryKeyEnt  implements NodeFactoryKeyEnt {
         @Override
         public DefaultNodeFactoryKeyEntBuilder setSettings(String settings) {
              m_settings = settings;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeFactoryKeyEntBuilder setNodeCreationConfigSettings(String nodeCreationConfigSettings) {
+             m_nodeCreationConfigSettings = nodeCreationConfigSettings;
              return this;
         }
 

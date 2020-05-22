@@ -793,11 +793,18 @@ public class EntityProxyAccess {
      */
     @SuppressWarnings("unchecked")
     void updateNodeOutPorts(final NodeEnt oldNode, final NodeEnt newNode) {
-        for (int i = 0; i < oldNode.getOutPorts().size(); i++) {
+        int i;
+        for (i = 0; i < Math.min(oldNode.getOutPorts().size(), newNode.getOutPorts().size()); i++) {
             if (update(oldNode.getOutPorts().get(i), newNode.getOutPorts().get(i), EntityProxyNodeOutPort.class)) {
                 //also update the node entity referenced by the port
                 getNodeOutPort(newNode.getOutPorts().get(i), null).updateNodeEnt(newNode);
             }
+        }
+        for (int j = i; j < oldNode.getOutPorts().size(); j++) {
+            update(oldNode.getOutPorts().get(i), null, EntityProxyNodeOutPort.class);
+        }
+        for (int j = i; j < newNode.getOutPorts().size(); j++) {
+            update(null, newNode.getOutPorts().get(i), EntityProxyNodeOutPort.class);
         }
     }
 
@@ -823,8 +830,15 @@ public class EntityProxyAccess {
      * @param newNode
      */
     void updateNodeInPorts(final NodeEnt oldNode, final NodeEnt newNode) {
-        for (int i = 0; i < oldNode.getInPorts().size(); i++) {
+        int i;
+        for (i = 0; i < Math.min(oldNode.getInPorts().size(), newNode.getInPorts().size()); i++) {
             update(oldNode.getInPorts().get(i), newNode.getInPorts().get(i), EntityProxyNodeInPort.class);
+        }
+        for (int j = i; j < oldNode.getInPorts().size(); j++) {
+            update(oldNode.getInPorts().get(i), null, EntityProxyNodeInPort.class);
+        }
+        for (int j = i; j < newNode.getInPorts().size(); j++) {
+            update(null, newNode.getInPorts().get(i), EntityProxyNodeInPort.class);
         }
     }
 
@@ -893,8 +907,10 @@ public class EntityProxyAccess {
             new Pair<Integer, Class<EntityProxy>>(System.identityHashCode(newEntity), (Class<EntityProxy>)proxyClass);
         EntityProxy entityProxy = m_entityProxyMap.get(oldKey);
         if (entityProxy != null) {
-            entityProxy.update(newEntity);
-            m_entityProxyMap.put(newKey, entityProxy);
+            if (newEntity != null) {
+                entityProxy.update(newEntity);
+                m_entityProxyMap.put(newKey, entityProxy);
+            }
             m_entityProxyMap.remove(oldKey);
             return true;
         }

@@ -374,6 +374,35 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
     }
     
     @Override
+    public NodeEnt replaceNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException {
+        try{
+            return doRequest(c -> {
+                try {
+                    return c.replaceNode(jobId, nodeId.toString(), toByteArray(nodeFactoryKeyEnt));
+                } catch (PermissionException | ExecutorException | IOException | TimeoutException ex) {
+                    //server errors
+                    throw new ServiceException("Internal server error.", ex);
+                } catch (ProcessingException e) {
+                    //in case the server cannot be reached (timeout, connection refused)
+                    throw new ServiceException("Server doesn't seem to be reachable.",
+                        e.getCause());
+                }
+            }, NodeEnt.class);
+        } catch (WebApplicationException ex) {
+            //executor errors
+            com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "Node", "replaceNode");
+            if (gatewayException.getExceptionName().equals("NodeNotFoundException")) {
+                throw new ServiceExceptions.NodeNotFoundException(gatewayException.getExceptionMessage());
+            }
+            if (gatewayException.getExceptionName().equals("ActionNotAllowedException")) {
+                throw new ServiceExceptions.ActionNotAllowedException(gatewayException.getExceptionMessage());
+            }
+            throw new ServiceException("Undefined service exception '" + gatewayException.getExceptionName()
+                + "' with message: " + gatewayException.getExceptionMessage());
+        }
+    }
+    
+    @Override
     public void setNodeBounds(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, BoundsEnt boundsEnt)  throws ServiceExceptions.NodeNotFoundException {
         try{
             doRequest(c -> {

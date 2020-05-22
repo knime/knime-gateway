@@ -45,6 +45,7 @@ import org.knime.core.node.workflow.NodeMessageListener;
 import org.knime.core.node.workflow.NodeProgress;
 import org.knime.core.node.workflow.NodeProgressEvent;
 import org.knime.core.node.workflow.NodeProgressListener;
+import org.knime.core.node.workflow.NodePropertyChangedEvent;
 import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeStateEvent;
@@ -386,6 +387,18 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     protected void notifyNodeProgressListeners(final NodeProgressEvent e) {
         for (NodeProgressListener l : m_progressListeners) {
             l.progressChanged(e);
+        }
+    }
+
+    /**
+     * Notifies all registered {@link NodePropertyChangedListener}s about a changed node property.
+     *
+     * @param e the new node property changed event
+     * @since 4.11
+     */
+    protected void notifyNodePropertyChangedListener(final NodePropertyChangedEvent e) {
+        for (NodePropertyChangedListener l : m_nodePropertyChangedListeners) {
+            l.nodePropertyChanged(e);
         }
     }
 

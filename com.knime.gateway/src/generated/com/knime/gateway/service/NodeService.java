@@ -175,6 +175,19 @@ public interface NodeService extends GatewayService {
     MetaNodeDialogEnt getWMetaNodeDialog(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
+     * Replaces the node with the given id and replaces it with a newly created node (supplied node factory). NOTE! The endpoint is not yet fully functional - only works with replacements of nodes with the same factory. See https://knime-com.atlassian.net/browse/SRV-1692 for follow-up.
+     *
+     * @param jobId ID of the job the workflow is requested for.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param nodeFactoryKeyEnt The node factory representing the native node replacement.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ActionNotAllowedException If the an action is not allowed because it&#39;s not applicable or it doesn&#39;t exist.
+     */
+    NodeEnt replaceNode(java.util.UUID jobId, com.knime.gateway.entity.NodeIDEnt nodeId, NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ActionNotAllowedException;
+        
+    /**
      * Sets the node&#39;s bounds for the given node-id.
      *
      * @param jobId ID of the job the workflow is requested for.

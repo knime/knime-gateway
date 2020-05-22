@@ -18,8 +18,14 @@
  */
 package com.knime.gateway.local.workflow;
 
+import static java.util.regex.Pattern.compile;
+import static org.knime.core.util.Pair.create;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+
+import org.knime.core.util.Pair;
 
 import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.NodeEnt;
@@ -42,19 +48,24 @@ class WorkflowEntChangeProcessor {
     }
 
     /**
-     * The name of the property of a workflow entity holding the connections map.
+     * Pattern to match the property of a workflow entity holding the connections map.
      */
-    private static final String CONNECTIONS_PROPERTY = "connections";
+    private static final Pattern CONNECTIONS = compile("/connections/.*");
 
     /**
-     * The name of the property of a workflow entity holding the nodes map.
+     * Pattern to match the property of a workflow entity holding the nodes map.
      */
-    private static final String NODES_PROPERTY = "nodes";
+    private static final Pattern NODES = compile("/nodes/root:[:|\\d]+");
 
     /**
-     * The name of the property of a workflow entity holding the annotations map.
+     * Pattern to match the property of a in port.
      */
-    private static final String ANNOTATIONS_PROPERTY = "workflowAnnotations";
+    private static final Pattern PORTS = compile("/nodes/root[:|\\d]*/(inPorts|outPorts)/\\d+");
+
+    /**
+     * Pattern to match the property of a workflow entity holding the annotations map.
+     */
+    private static final Pattern ANNOTATIONS = compile("/workflowAnnotations/.*");
 
     /**
      * Process the changes given by the patch and calls the respective methods of the provided
@@ -74,67 +85,75 @@ class WorkflowEntChangeProcessor {
         patch.getOps().forEach(o -> {
             switch (o.getOp()) {
                 case ADD:
-                    ADD_PROCESSORS.forEach(p -> p.process(o.getPath(), oldEnt, newEnt, l));
+                    process(ADD_PROCESSORS, o.getPath(), oldEnt, newEnt, l);
                     break;
                 case REMOVE:
-                    REMOVE_PROCESSORS.forEach(p -> p.process(o.getPath(), oldEnt, newEnt, l));
+                    process(REMOVE_PROCESSORS, o.getPath(), oldEnt, newEnt, l);
                     break;
                 case REPLACE:
-                    REPLACE_PROCESSORS.forEach(p -> p.process(o.getPath(), oldEnt, newEnt, l));
+                    process(REPLACE_PROCESSORS, o.getPath(), oldEnt, newEnt, l);
+                    break;
                 default:
                     break;
             }
         });
     }
 
-    private static List<PatchOpProcessor> ADD_PROCESSORS = Arrays.asList((p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + CONNECTIONS_PROPERTY)) {
+    private static void process(final List<Pair<Pattern, PatchOpProcessor>> processors, final String path,
+        final WorkflowEnt oldEnt, final WorkflowEnt newEnt, final WorkflowEntChangeListener l) {
+        for (Pair<Pattern, PatchOpProcessor> p : processors) {
+            if (p.getFirst().matcher(path).matches()) {
+                p.getSecond().process(path, oldEnt, newEnt, l);
+                return;
+            }
+        }
+    }
+
+    private static List<Pair<Pattern, PatchOpProcessor>> ADD_PROCESSORS =
+        Arrays.asList(create(CONNECTIONS, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             ConnectionEnt ent = newEnt.getConnections().get(path[path.length - 1]);
             l.connectionEntAdded(ent);
-        }
-    }, (p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + NODES_PROPERTY)) {
+        }), create(NODES, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             NodeEnt ent = newEnt.getNodes().get(path[path.length - 1]);
             l.nodeEntAdded(ent);
-        }
-    }, (p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + ANNOTATIONS_PROPERTY)) {
+        }), create(ANNOTATIONS, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             WorkflowAnnotationEnt ent = newEnt.getWorkflowAnnotations().get(path[path.length - 1]);
             l.annotationEntAdded(ent);
-        }
-    });
+        }), create(PORTS, (p, oldEnt, newEnt, l) -> {
+            String[] path = p.split("/");
+            NodeEnt node = newEnt.getNodes().get(path[2]);
+            l.nodePortsChanged(node);
+        }));
 
-    private static List<PatchOpProcessor> REMOVE_PROCESSORS = Arrays.asList((p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + CONNECTIONS_PROPERTY)) {
+    private static List<Pair<Pattern, PatchOpProcessor>> REMOVE_PROCESSORS =
+        Arrays.asList(create(CONNECTIONS, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             ConnectionEnt ent = oldEnt.getConnections().get(path[path.length - 1]);
             l.connectionEntRemoved(ent);
-        }
-    }, (p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + NODES_PROPERTY)) {
+        }), create(NODES, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             NodeEnt ent = oldEnt.getNodes().get(path[path.length - 1]);
             l.nodeEntRemoved(ent);
-        }
-    }, (p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + ANNOTATIONS_PROPERTY)) {
+        }), create(ANNOTATIONS, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             WorkflowAnnotationEnt ent = oldEnt.getWorkflowAnnotations().get(path[path.length - 1]);
             l.annotationEntRemoved(ent);
-        }
-    });
+        }), create(PORTS, (p, oldEnt, newEnt, l) -> {
+            String[] path = p.split("/");
+            NodeEnt node = newEnt.getNodes().get(path[2]);
+            l.nodePortsChanged(node);
+        }));
 
-    private static List<PatchOpProcessor> REPLACE_PROCESSORS = Arrays.asList((p, oldEnt, newEnt, l) -> {
-        if (p.startsWith("/" + CONNECTIONS_PROPERTY)) {
+    private static List<Pair<Pattern, PatchOpProcessor>> REPLACE_PROCESSORS =
+        Arrays.asList(create(CONNECTIONS, (p, oldEnt, newEnt, l) -> {
             String[] path = p.split("/");
             ConnectionEnt newConn = newEnt.getConnections().get(path[path.length - 2]);
             ConnectionEnt oldConn = oldEnt.getConnections().get(path[path.length - 2]);
             l.connectionEntReplaced(oldConn, newConn);
-        }
-    });
+        }));
 
     @FunctionalInterface
     interface PatchOpProcessor {
@@ -154,18 +173,21 @@ class WorkflowEntChangeProcessor {
      */
     interface WorkflowEntChangeListener {
 
-        public void nodeEntAdded(NodeEnt newNode);
+        void nodeEntAdded(NodeEnt newNode);
 
-        public void nodeEntRemoved(NodeEnt removedNode);
+        void nodeEntRemoved(NodeEnt removedNode);
 
-        public void connectionEntAdded(ConnectionEnt newConnection);
+        void connectionEntAdded(ConnectionEnt newConnection);
 
-        public void connectionEntRemoved(ConnectionEnt removedConnection);
+        void connectionEntRemoved(ConnectionEnt removedConnection);
 
-        public void connectionEntReplaced(ConnectionEnt oldConnection, ConnectionEnt newConnection);
+        void connectionEntReplaced(ConnectionEnt oldConnection, ConnectionEnt newConnection);
 
-        public void annotationEntAdded(WorkflowAnnotationEnt newAnno);
+        void annotationEntAdded(WorkflowAnnotationEnt newAnno);
 
-        public void annotationEntRemoved(WorkflowAnnotationEnt removedAnno);
+        void annotationEntRemoved(WorkflowAnnotationEnt removedAnno);
+
+        void nodePortsChanged(NodeEnt node);
+
     }
 }
