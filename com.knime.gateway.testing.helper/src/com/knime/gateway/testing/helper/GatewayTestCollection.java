@@ -56,6 +56,8 @@ public class GatewayTestCollection {
         Map<String, GatewayTestRunner> res = new HashMap<String, GatewayTestRunner>();
         res.put("testAddNode",
             (sp, rc, wl, we) -> new AddNodeTestHelper(sp, rc, wl).testAddNode());
+        res.put("testReplaceNode",
+            (sp, rc, wl, we) -> new AddNodeTestHelper(sp, rc, wl).testReplaceNode());
 
         res.put("testAddConnections",
             (sp, rc, wl, we) -> new AddPartsTestHelper(sp, rc, wl).testAddConnections());

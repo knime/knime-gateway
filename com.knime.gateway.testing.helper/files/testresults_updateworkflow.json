@@ -115,8 +115,16 @@
       "value" : "EXECUTED"
     }, {
       "op" : "replace",
+      "path" : "/nodes/root:27/outPorts/0/summary",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
       "path" : "/nodes/root:16/nodeState/state",
       "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:27/outPorts/1/summary",
+      "value" : "Rows: 20, Cols: 5"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:26/outPorts/0/summary",
@@ -188,6 +196,10 @@
     }, {
       "op" : "replace",
       "path" : "/nodes/root:25/nodeState/state",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:27/nodeState/state",
       "value" : "EXECUTED"
     }, {
       "op" : "replace",

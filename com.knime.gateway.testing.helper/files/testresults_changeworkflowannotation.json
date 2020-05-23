@@ -451,11 +451,41 @@
         "sourcePort" : 1,
         "type" : "STD"
       },
+      "root:27_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "root:27",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "root:1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "root:25_1" : {
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "root:25",
         "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "root:1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "root:27_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "root:27",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "root:1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "root:27_3" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "root:27",
+        "destPort" : 3,
         "flowVariablePortConnection" : false,
         "source" : "root:1",
         "sourcePort" : 1,
@@ -804,8 +834,8 @@
         "type" : "NativeNode",
         "uIInfo" : {
           "bounds" : {
-            "height" : 83,
-            "width" : 126,
+            "height" : 103,
+            "width" : 93,
             "x" : 704,
             "y" : 197
           },
@@ -1221,7 +1251,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 103,
-            "width" : 96,
+            "width" : 171,
             "x" : 384,
             "y" : 17
           },
@@ -1489,7 +1519,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 83,
-            "width" : 66,
+            "width" : 117,
             "x" : 484,
             "y" : 497
           },
@@ -1595,7 +1625,7 @@
         "type" : "NativeNode",
         "uIInfo" : {
           "bounds" : {
-            "height" : 83,
+            "height" : 103,
             "width" : 110,
             "x" : 904,
             "y" : 397
@@ -1634,7 +1664,7 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 20,
+            "height" : 19,
             "width" : 134,
             "x" : 733,
             "y" : 619
@@ -1685,7 +1715,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 103,
-            "width" : 82,
+            "width" : 135,
             "x" : 784,
             "y" : 557
           },
@@ -1823,7 +1853,7 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 60,
+            "height" : 57,
             "width" : 134,
             "x" : 493,
             "y" : 139
@@ -2003,9 +2033,9 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 40,
-            "width" : 166,
-            "x" : 97,
+            "height" : 38,
+            "width" : 161,
+            "x" : 100,
             "y" : 679
           },
           "defaultFontSize" : 11,
@@ -2332,8 +2362,8 @@
         "type" : "NativeNode",
         "uIInfo" : {
           "bounds" : {
-            "height" : 83,
-            "width" : 84,
+            "height" : 103,
+            "width" : 96,
             "x" : 1064,
             "y" : 477
           },
@@ -2424,6 +2454,112 @@
         },
         "webViewNames" : [ ]
       },
+      "root:27" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "First table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Second table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 3,
+          "portName" : "Additional table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Concatenate",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "width" : 134,
+            "x" : 153,
+            "y" : 259
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "dynamic\nports",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
+          "nodeCreationConfigSettings" : "{\"name\":\"node creation config\",\"value\":{\"node_creation_config\":{\"type\":\"tree\",\"value\":{\"input\":{\"type\":\"tree\",\"value\":{\"port_0\":{\"type\":\"tree\",\"value\":{\"object_class\":{\"type\":\"string\",\"value\":\"org.knime.core.node.BufferedDataTable\"}}}}},\"Concatenated tables\":{\"type\":\"tree\",\"value\":{}}}}}}"
+        },
+        "nodeID" : "root:27",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Concatenated table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 96,
+            "x" : 204,
+            "y" : 197
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "root:16" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -2503,7 +2639,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 103,
-            "width" : 82,
+            "width" : 167,
             "x" : 344,
             "y" : 757
           },
@@ -2805,11 +2941,41 @@
         "sourcePort" : 1,
         "type" : "STD"
       },
+      "root:27_1" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "root:27",
+        "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "root:1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
       "root:25_1" : {
         "bendPoints" : [ ],
         "deletable" : true,
         "dest" : "root:25",
         "destPort" : 1,
+        "flowVariablePortConnection" : false,
+        "source" : "root:1",
+        "sourcePort" : 1,
+        "type" : "STD"
+      },
+      "root:27_2" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "root:27",
+        "destPort" : 2,
+        "flowVariablePortConnection" : false,
+        "source" : "root:1",
+        "sourcePort" : 2,
+        "type" : "STD"
+      },
+      "root:27_3" : {
+        "bendPoints" : [ ],
+        "deletable" : true,
+        "dest" : "root:27",
+        "destPort" : 3,
         "flowVariablePortConnection" : false,
         "source" : "root:1",
         "sourcePort" : 1,
@@ -3158,8 +3324,8 @@
         "type" : "NativeNode",
         "uIInfo" : {
           "bounds" : {
-            "height" : 83,
-            "width" : 126,
+            "height" : 103,
+            "width" : 93,
             "x" : 704,
             "y" : 197
           },
@@ -3575,7 +3741,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 103,
-            "width" : 96,
+            "width" : 171,
             "x" : 384,
             "y" : 17
           },
@@ -3843,7 +4009,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 83,
-            "width" : 66,
+            "width" : 117,
             "x" : 484,
             "y" : 497
           },
@@ -3949,7 +4115,7 @@
         "type" : "NativeNode",
         "uIInfo" : {
           "bounds" : {
-            "height" : 83,
+            "height" : 103,
             "width" : 110,
             "x" : 904,
             "y" : 397
@@ -3988,7 +4154,7 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 20,
+            "height" : 19,
             "width" : 134,
             "x" : 733,
             "y" : 619
@@ -4039,7 +4205,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 103,
-            "width" : 82,
+            "width" : 135,
             "x" : 784,
             "y" : 557
           },
@@ -4177,7 +4343,7 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 60,
+            "height" : 57,
             "width" : 134,
             "x" : 493,
             "y" : 139
@@ -4357,9 +4523,9 @@
           "borderColor" : 16777215,
           "borderSize" : 0,
           "bounds" : {
-            "height" : 40,
-            "width" : 166,
-            "x" : 97,
+            "height" : 38,
+            "width" : 161,
+            "x" : 100,
             "y" : 679
           },
           "defaultFontSize" : 11,
@@ -4686,8 +4852,8 @@
         "type" : "NativeNode",
         "uIInfo" : {
           "bounds" : {
-            "height" : 83,
-            "width" : 84,
+            "height" : 103,
+            "width" : 96,
             "x" : 1064,
             "y" : 477
           },
@@ -4778,6 +4944,112 @@
         },
         "webViewNames" : [ ]
       },
+      "root:27" : {
+        "deletable" : true,
+        "hasDialog" : true,
+        "inPorts" : [ {
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 1,
+          "portName" : "First table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 2,
+          "portName" : "Second table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        }, {
+          "portIndex" : 3,
+          "portName" : "Additional table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeInPort"
+        } ],
+        "inactive" : false,
+        "name" : "Concatenate",
+        "nodeAnnotation" : {
+          "_default" : false,
+          "backgroundColor" : 16777215,
+          "borderColor" : 16777215,
+          "borderSize" : 0,
+          "bounds" : {
+            "height" : 40,
+            "width" : 134,
+            "x" : 153,
+            "y" : 259
+          },
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "dynamic\nports",
+          "textAlignment" : "CENTER",
+          "type" : "NodeAnnotation",
+          "version" : 20151123
+        },
+        "nodeFactoryKey" : {
+          "className" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
+          "nodeCreationConfigSettings" : "{\"name\":\"node creation config\",\"value\":{\"node_creation_config\":{\"type\":\"tree\",\"value\":{\"input\":{\"type\":\"tree\",\"value\":{\"port_0\":{\"type\":\"tree\",\"value\":{\"object_class\":{\"type\":\"string\",\"value\":\"org.knime.core.node.BufferedDataTable\"}}}}},\"Concatenated tables\":{\"type\":\"tree\",\"value\":{}}}}}}"
+        },
+        "nodeID" : "root:27",
+        "nodeMessage" : {
+          "message" : "",
+          "type" : "RESET"
+        },
+        "nodeState" : {
+          "state" : "CONFIGURED"
+        },
+        "nodeType" : "Manipulator",
+        "outPorts" : [ {
+          "inactive" : false,
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          },
+          "type" : "NodeOutPort"
+        }, {
+          "inactive" : false,
+          "portIndex" : 1,
+          "portName" : "Concatenated table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          },
+          "type" : "NodeOutPort"
+        } ],
+        "parentNodeID" : "root",
+        "progress" : { },
+        "resetable" : true,
+        "rootWorkflowID" : "PLACEHOLDER_FOR_WORKFLOW_ID",
+        "type" : "NativeNode",
+        "uIInfo" : {
+          "bounds" : {
+            "height" : 83,
+            "width" : 96,
+            "x" : 204,
+            "y" : 197
+          },
+          "dropLocation" : false,
+          "snapToGrid" : false,
+          "symbolRelative" : true
+        },
+        "webViewNames" : [ ]
+      },
       "root:16" : {
         "deletable" : true,
         "hasDialog" : true,
@@ -4857,7 +5129,7 @@
         "uIInfo" : {
           "bounds" : {
             "height" : 103,
-            "width" : 82,
+            "width" : 167,
             "x" : 344,
             "y" : 757
           },
