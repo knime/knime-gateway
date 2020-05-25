@@ -55,6 +55,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.knime.gateway.entity.MetaNodeDialogEnt;
+import com.knime.gateway.entity.NodeStateEnt.StateEnum;
 import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 
 /**
@@ -291,4 +292,18 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
     public boolean hasWizardPage() {
         return getEntity().hasWizardPage();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    boolean canExecute() {
+        // A component can be executed, if it contains at least one configured node. However, here we don't
+        // want to check that every time (we would need to 'download' the sub-workflow) and thus allow a component
+        // to be executed when it's in idle state, too.
+        // It's just a quick fix for https://knime-com.atlassian.net/browse/SRV-2889
+        // Full solution would be: https://knime-com.atlassian.net/browse/SRV-2888
+        return super.canExecute() || getEntity().getNodeState().getState().equals(StateEnum.IDLE);
+    }
+
 }
