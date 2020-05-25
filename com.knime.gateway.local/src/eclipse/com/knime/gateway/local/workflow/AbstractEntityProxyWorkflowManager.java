@@ -1581,7 +1581,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
         public void nodePortsChanged(final NodeEnt node) {
             @SuppressWarnings("rawtypes")
             AbstractEntityProxyNodeContainer nc = getAccess().getNodeContainer(node);
-            // TODO node property
+            // note: 'MetaNodePorts' node property used to inform about node port changes (dynamic ports), which works
             nc.notifyNodePropertyChangedListener(new NodePropertyChangedEvent(nc.getID(), NodeProperty.MetaNodePorts));
         }
 

@@ -170,7 +170,7 @@ public class DefaultNodeService implements NodeService {
             nodeFactory = RepositoryManager.loadNodeFactory(nodeFactoryKey.getClassName());
         } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException
                 | InvalidSettingsException ex) {
-            throw new NodeNotFoundException("No node found for factory key " + nodeFactoryKey);
+            throw new NodeNotFoundException("No node found for factory key " + nodeFactoryKey.getClassName());
         }
         if (nodeFactoryKey.getSettings() != null && !nodeFactoryKey.getSettings().isEmpty()) {
             try {
