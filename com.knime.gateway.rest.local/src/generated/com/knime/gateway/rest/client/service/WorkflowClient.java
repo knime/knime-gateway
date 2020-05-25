@@ -32,6 +32,8 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
+import org.knime.core.util.Version;
+
 import com.knime.gateway.service.ServiceException;
 import com.knime.gateway.service.WorkflowService;
 import com.knime.gateway.service.util.ServiceExceptions;
@@ -54,13 +56,14 @@ public class WorkflowClient extends AbstractGatewayClient<Workflow> implements W
      *
      * @param restAddress
      * @param jwt
+     * @param serverVersion
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws IOException
      */
-    public WorkflowClient(final URI restAddress, final String jwt)
+    public WorkflowClient(final URI restAddress, final String jwt, Version serverVersion)
         throws InstantiationException, IllegalAccessException, IOException {
-        super(restAddress, jwt);
+        super(restAddress, jwt, serverVersion);
     }
     
     @Override

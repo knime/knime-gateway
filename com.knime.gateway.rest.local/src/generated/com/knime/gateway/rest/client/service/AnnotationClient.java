@@ -29,6 +29,8 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
+import org.knime.core.util.Version;
+
 import com.knime.gateway.service.ServiceException;
 import com.knime.gateway.service.AnnotationService;
 import com.knime.gateway.service.util.ServiceExceptions;
@@ -51,13 +53,14 @@ public class AnnotationClient extends AbstractGatewayClient<Annotation> implemen
      *
      * @param restAddress
      * @param jwt
+     * @param serverVersion
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws IOException
      */
-    public AnnotationClient(final URI restAddress, final String jwt)
+    public AnnotationClient(final URI restAddress, final String jwt, Version serverVersion)
         throws InstantiationException, IllegalAccessException, IOException {
-        super(restAddress, jwt);
+        super(restAddress, jwt, serverVersion);
     }
     
     @Override

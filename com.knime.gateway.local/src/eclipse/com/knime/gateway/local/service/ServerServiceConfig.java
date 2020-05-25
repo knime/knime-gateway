@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.util.Version;
 
 /**
  * {@link ServiceConfig}-implementation to configure services that communicate with a server specified by a host name
@@ -33,16 +34,27 @@ import org.knime.core.node.util.CheckUtils;
 public class ServerServiceConfig implements ServiceConfig {
     private final String m_jwt;
     private final URI m_uri;
+    private Version m_serverVersion;
+
+    /**
+     * @param uri the server uri
+     * @param jwt a json web token for authentication, can be <code>null</code> if there is none
+     * @param serverVersion the server's version
+     * @since 4.11
+     */
+    public ServerServiceConfig(final URI uri, final String jwt, final Version serverVersion) {
+        m_serverVersion = serverVersion;
+        CheckUtils.checkArgumentNotNull(uri);
+        m_uri = uri;
+        m_jwt = jwt;
+    }
 
     /**
      * @param uri the server uri
      * @param jwt a json web token for authentication, can be <code>null</code> if there is none
      */
     public ServerServiceConfig(final URI uri, final String jwt) {
-        CheckUtils.checkArgumentNotNull(uri);
-        m_uri = uri;
-        m_jwt = jwt;
-
+        this(uri, jwt, null);
     }
 
     /**
@@ -57,6 +69,14 @@ public class ServerServiceConfig implements ServiceConfig {
      */
     public Optional<String> getJWT() {
         return Optional.ofNullable(m_jwt);
+    }
+
+    /**
+     * @return the server version or an empty optional if none available
+     * @since 4.11
+     */
+    public Optional<Version> getServerVersion() {
+        return Optional.ofNullable(m_serverVersion);
     }
 
     @Override

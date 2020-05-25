@@ -51,7 +51,7 @@ public class RestClientServiceFactory implements ServiceFactory {
             ServerServiceConfig serverServiceConfig = (ServerServiceConfig)serviceConfig;
             try {
                 return (S)ServiceInterface2RestClientMap.get(serviceInterface, serverServiceConfig.getURI(),
-                    serverServiceConfig.getJWT().orElse(null));
+                    serverServiceConfig.getJWT().orElse(null), serverServiceConfig.getServerVersion().orElse(null));
             } catch (InstantiationException | IllegalAccessException | IOException ex) {
                 throw new RuntimeException(ex);
             }

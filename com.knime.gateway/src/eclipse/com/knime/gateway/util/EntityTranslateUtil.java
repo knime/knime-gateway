@@ -204,8 +204,8 @@ public class EntityTranslateUtil {
      * @param factory the node factory the config belongs to
      * @return the config
      */
-    public static Optional<ModifiableNodeCreationConfiguration> translateNodeCreationConfiguration(final String jsonString,
-        final NodeFactory<NodeModel> factory) {
+    public static Optional<ModifiableNodeCreationConfiguration>
+        translateNodeCreationConfiguration(final String jsonString, final NodeFactory<NodeModel> factory) {
         if (jsonString != null) {
             NodeSettings settings = new NodeSettings("node creation config");
             try {

@@ -38,6 +38,8 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
+import org.knime.core.util.Version;
+
 import com.knime.gateway.service.ServiceException;
 import com.knime.gateway.service.NodeService;
 import com.knime.gateway.service.util.ServiceExceptions;
@@ -60,13 +62,14 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
      *
      * @param restAddress
      * @param jwt
+     * @param serverVersion
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws IOException
      */
-    public NodeClient(final URI restAddress, final String jwt)
+    public NodeClient(final URI restAddress, final String jwt, Version serverVersion)
         throws InstantiationException, IllegalAccessException, IOException {
-        super(restAddress, jwt);
+        super(restAddress, jwt, serverVersion);
     }
     
     @Override
@@ -387,7 +390,7 @@ public class NodeClient extends AbstractGatewayClient<Node> implements NodeServi
                     throw new ServiceException("Server doesn't seem to be reachable.",
                         e.getCause());
                 }
-            }, NodeEnt.class);
+            }, NodeEnt.class, "4.11.0", "Changing ports dynamically and configuring nodes with dynamic ports is not supported");
         } catch (WebApplicationException ex) {
             //executor errors
             com.knime.gateway.entity.GatewayExceptionEnt gatewayException = readAndParseGatewayExceptionResponse(ex, "Node", "replaceNode");

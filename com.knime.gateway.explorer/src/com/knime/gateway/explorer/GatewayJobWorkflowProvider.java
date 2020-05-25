@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.WorkflowManagerUI;
+import org.knime.core.util.Version;
 
 import com.knime.explorer.server.internal.view.actions.jobworkflow.JobWorkflowProvider;
 import com.knime.gateway.local.service.ServerServiceConfig;
@@ -38,9 +39,9 @@ public class GatewayJobWorkflowProvider implements JobWorkflowProvider {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowManagerUI getWorkflowForJob(final UUID jobId, final RemoteWorkflowContext workflowContext) {
-        return EntityProxyAccess.createWorkflowManager(
-            new ServerServiceConfig(workflowContext.getRepositoryAddress(), workflowContext.getServerAuthToken()),
-            jobId, workflowContext);
+    public WorkflowManagerUI getWorkflowForJob(final UUID jobId, final RemoteWorkflowContext workflowContext,
+        final Version serverVersion) {
+        return EntityProxyAccess.createWorkflowManager(new ServerServiceConfig(workflowContext.getRepositoryAddress(),
+            workflowContext.getServerAuthToken(), serverVersion), jobId, workflowContext);
     }
 }

@@ -30,6 +30,8 @@ import com.knime.gateway.service.AnnotationService;
 import java.io.IOException;
 import java.net.URI;
 
+import org.knime.core.util.Version;
+
 import com.knime.gateway.service.GatewayService;
 
 /**
@@ -50,24 +52,26 @@ public class ServiceInterface2RestClientMap {
      * @param clazz the service class to be mapped to the corresponding rest client implementation
      * @param restAddress the rest adress
      * @param jwt an optional json web token for authentication
+     * @param serverVersion the server's version, or <code>null</code> if not known
      * @return a new instance of the respective rest client
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws IOException
      */
-    public static AbstractGatewayClient<?> get(Class<? extends GatewayService> clazz, final URI restAddress,
-        final String jwt)  throws InstantiationException, IllegalAccessException, IOException {
+    public static AbstractGatewayClient<?> get(final Class<? extends GatewayService> clazz, final URI restAddress,
+        final String jwt, final Version serverVersion)
+        throws InstantiationException, IllegalAccessException, IOException {
         if(clazz == WizardExecutionService.class) {
-            return new WizardExecutionClient(restAddress, jwt);
+            return new WizardExecutionClient(restAddress, jwt, serverVersion);
         }        
         if(clazz == NodeService.class) {
-            return new NodeClient(restAddress, jwt);
+            return new NodeClient(restAddress, jwt, serverVersion);
         }        
         if(clazz == WorkflowService.class) {
-            return new WorkflowClient(restAddress, jwt);
+            return new WorkflowClient(restAddress, jwt, serverVersion);
         }        
         if(clazz == AnnotationService.class) {
-            return new AnnotationClient(restAddress, jwt);
+            return new AnnotationClient(restAddress, jwt, serverVersion);
         }        
         else {
             throw new IllegalArgumentException("No service mapping.");

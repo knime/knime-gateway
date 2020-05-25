@@ -19,6 +19,7 @@
 package com.knime.gateway.rest.client;
 
 import static com.knime.enterprise.server.rest.AutocloseableResponse.acr;
+import static java.lang.String.format;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -39,6 +40,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator.AuthenticationCloseable;
+import org.knime.core.util.Version;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.knime.enterprise.server.rest.AutocloseableResponse;
@@ -67,20 +69,23 @@ import com.knime.gateway.service.ServiceException;
  */
 public abstract class AbstractGatewayClient<C> extends AbstractClient {
     private C m_client;
+    private Version m_serverVersion;
 
     /**
      * Creates a new client.
      *
      * @param restAddress the server's REST address
      * @param jwt a json web token for authentication, can be <code>null</code> if not available
+     * @param serverVersion the server's version or <code>null</code> if not known
      * @throws InstantiationException if providers for the the JAX-RS client cannot be instantiated
      * @throws IllegalAccessException if providers for the the JAX-RS client cannot be instantiated
      * @throws IOException if an I/O error occurs while instantiating the JAX-RS client
      * @throws NotAuthorizedException if the current user cannot be authenticated
      */
-    public AbstractGatewayClient(final URI restAddress, final String jwt)
+    public AbstractGatewayClient(final URI restAddress, final String jwt, final Version serverVersion)
         throws InstantiationException, IllegalAccessException, IOException {
         super(restAddress);
+        m_serverVersion = serverVersion;
         @SuppressWarnings("unchecked")
         Class<C> resourceClass =
             (Class<C>)((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -107,10 +112,45 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
      * @throws WebApplicationException in case of an exception as response, e.g. not found, etc.
      */
     protected <R> R doRequest(final Function<C, Response> call, final Class<R> resultClass) {
+        return doRequest(call, resultClass, null, null);
+    }
+
+    /**
+     * Performs the client's request.
+     *
+     * Assumptions here: response content type is application/json!
+     *
+     * @param call function to call the right method on the proxy-client
+     * @param resultClass the class of the expected response entity or <code>null</code> if none
+     * @param sinceVersion the server version since the called endpoint has been introduced will throw an exception if
+     *            the current server version is smaller than the since verison. Can be <code>null</code>.
+     * @param missingMessage a error message if the endpoint is missing
+     * @return status code and the response entity (or <code>null</code> if none)
+     * @throws WebApplicationException in case of an exception as response, e.g. not found, etc.
+     * @throws MissingEndpointException if the server is too old and doesn't know about the endpoint to be called
+     * @since 4.11
+     */
+    protected <R> R doRequest(final Function<C, Response> call, final Class<R> resultClass,
+        final String sinceVersion, final String missingMessage) {
+        checkWithServerSersion(sinceVersion, missingMessage);
         if (resultClass != null) {
             return doRequestInternal(call, (res) -> res.readEntity(resultClass));
         } else {
             return null;
+        }
+    }
+
+    private void checkWithServerSersion(final String versionToCheck, final String missingMessage) {
+        if (m_serverVersion != null && versionToCheck != null) {
+            Version v = new Version(versionToCheck);
+            if (v.getMajor() > m_serverVersion.getMajor()
+                || (v.getMajor() == m_serverVersion.getMajor() && v.getMinor() > m_serverVersion.getMinor())) {
+                throw new MissingEndpointException(format(
+                    "The connected server is too old (v%1$s) and lacks features:\n%2$s"
+                        + "\nPlease consider to update the server.",
+                    new Version(m_serverVersion.getMajor(), m_serverVersion.getMinor(), m_serverVersion.getRevision()),
+                    missingMessage));
+            }
         }
    }
 

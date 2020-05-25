@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.Optional;
 
+import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.Node;
@@ -126,9 +127,15 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
         if (dialogPane == null) {
             NodeContext.pushContext(this);
             try {
+                ModifiableNodeCreationConfiguration creationConfig;
+                try {
+                    creationConfig = getCopyOfCreationConfig().orElse(null);
+                } catch (UnsupportedOperationException e) {
+                    throw new NotConfigurableException(e.getMessage(), e);
+                }
                 NodeFactory<NodeModel> nodeFactory = (NodeFactory<NodeModel>)getNodeFactoryInstance();
-                resDialogPane = Node.createDialogPane(nodeFactory, getEntity().getInPorts().size(), false,
-                    getCopyOfCreationConfig().orElse(null));
+                resDialogPane =
+                    Node.createDialogPane(nodeFactory, getEntity().getInPorts().size(), false, creationConfig);
             } finally {
                 NodeContext.removeLastContext();
             }
@@ -214,8 +221,17 @@ class EntityProxyNativeNodeContainer extends AbstractEntityProxySingleNodeContai
      */
     @Override
     public Optional<ModifiableNodeCreationConfiguration> getCopyOfCreationConfig() {
-        return EntityTranslateUtil.translateNodeCreationConfiguration(
-            getEntity().getNodeFactoryKey().getNodeCreationConfigSettings(),
-            (NodeFactory<NodeModel>)getNodeFactoryInstance());
+        NodeFactory<NodeModel> factory = (NodeFactory<NodeModel>)getNodeFactoryInstance();
+        String creationConfig = getEntity().getNodeFactoryKey().getNodeCreationConfigSettings();
+        if (factory instanceof ConfigurableNodeFactory && creationConfig == null) {
+            // happens if dynamically adding/removing ports not supported by the server interface
+            // use (failing!) endpoint call to get the custom problem message
+            try {
+                getAccess().nodeService().replaceNode(null, null, null);
+            } catch (Exception e) {
+                throw new UnsupportedOperationException(e.getMessage(), e);
+            }
+        }
+        return EntityTranslateUtil.translateNodeCreationConfiguration(creationConfig, factory);
     }
 }
