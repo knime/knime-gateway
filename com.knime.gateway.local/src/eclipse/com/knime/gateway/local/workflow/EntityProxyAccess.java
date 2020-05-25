@@ -69,7 +69,6 @@ import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeIDEnt;
 import com.knime.gateway.entity.NodeInPortEnt;
 import com.knime.gateway.entity.NodeOutPortEnt;
-import com.knime.gateway.entity.NodePortEnt;
 import com.knime.gateway.entity.PatchEnt;
 import com.knime.gateway.entity.PortObjectSpecEnt;
 import com.knime.gateway.entity.PortTypeEnt;
@@ -463,7 +462,7 @@ public class EntityProxyAccess {
         if (!node.getOutPorts().isEmpty()) {
             List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
                 .getInputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
-            return createPortObjectSpecsFromEntity(entList, node.getInPorts());
+            return createPortObjectSpecsFromEntity(entList);
         } else {
             return new PortObjectSpec[0];
         }
@@ -484,7 +483,7 @@ public class EntityProxyAccess {
         if (!node.getOutPorts().isEmpty()) {
             List<PortObjectSpecEnt> entList = service(NodeService.class, m_serviceConfig)
                 .getOutputPortSpecs(node.getRootWorkflowID(), node.getNodeID());
-            return createPortObjectSpecsFromEntity(entList, node.getOutPorts());
+            return createPortObjectSpecsFromEntity(entList);
         } else {
             return new PortObjectSpec[0];
         }
@@ -517,9 +516,7 @@ public class EntityProxyAccess {
         return ptr.getPortType(portObjectClass, ent.isOptional());
     }
 
-    private static PortObjectSpec[] createPortObjectSpecsFromEntity(final List<PortObjectSpecEnt> entList,
-        final List<? extends NodePortEnt> ports) {
-        assert ports.size() == entList.size();
+    static PortObjectSpec[] createPortObjectSpecsFromEntity(final List<PortObjectSpecEnt> entList) {
         PortObjectSpec[] res = new PortObjectSpec[entList.size()];
         for (int i = 0; i < res.length; i++) {
             PortObjectSpecEnt ent = entList.get(i);
@@ -533,11 +530,14 @@ public class EntityProxyAccess {
             }
 
             PortType ptype = getPortType(ent.getPortType());
+            PortTypeRegistry ptr = PortTypeRegistry.getInstance();
+            Class<? extends PortObjectSpec> specClass =
+                ptr.getSpecClass(ent.getClassName()).orElse(PortObjectSpec.class);
             if (ent.isProblem()) {
                 res[i] = new ProblemPortObjectSpec(ptype, ent.getRepresentation());
                 continue;
             }
-            if (DataTableSpec.class.isAssignableFrom(ptype.getPortObjectSpecClass())) {
+            if (DataTableSpec.class.isAssignableFrom(specClass)) {
                 try {
                     res[i] = DataTableSpec.load(
                         JSONConfig.readJSON(new ModelContent("model"), new StringReader(ent.getRepresentation())));
@@ -546,7 +546,7 @@ public class EntityProxyAccess {
                 }
             } else if (ptype.equals(FlowVariablePortObject.TYPE)) {
                 res[i] = FlowVariablePortObjectSpec.INSTANCE;
-            } else if (AbstractSimplePortObjectSpec.class.isAssignableFrom(ptype.getPortObjectSpecClass())) {
+            } else if (AbstractSimplePortObjectSpec.class.isAssignableFrom(specClass)) {
                 ModelContent model = new ModelContent("model");
                 try {
                     JSONConfig.readJSON(model, new StringReader(ent.getRepresentation()));
@@ -555,9 +555,7 @@ public class EntityProxyAccess {
                     throw new RuntimeException(ex);
                 }
             } else {
-                PortTypeRegistry ptr = PortTypeRegistry.getInstance();
-                Optional<PortObjectSpecSerializer<PortObjectSpec>> specSerializer =
-                    ptr.getSpecClass(ent.getClassName()).map(cl -> ptr.getSpecSerializer(cl).orElse(null));
+                Optional<PortObjectSpecSerializer<PortObjectSpec>> specSerializer = ptr.getSpecSerializer(specClass);
                 if (specSerializer.isPresent()) {
                     ByteArrayInputStream bytes =
                         new ByteArrayInputStream(Base64.decodeBase64(ent.getRepresentation().getBytes()));
