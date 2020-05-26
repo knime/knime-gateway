@@ -16,6 +16,10 @@
        <category name="knime-gateway" />
    </feature>
 
+   <bundle id="com.knime.gateway.testing.helper" version="0.0.0">
+       <category name="knime-gateway" />
+   </bundle>
+
    <category-def name="knime-gateway" label="Build artifacts from knime-gateway">
        <description>Build artifacts from knime-gateway</description>
    </category-def>
