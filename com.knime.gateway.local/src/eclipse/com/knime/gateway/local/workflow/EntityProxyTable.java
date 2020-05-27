@@ -35,6 +35,7 @@ import java.util.stream.IntStream;
 
 import javax.swing.JComponent;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTable;
@@ -50,8 +51,9 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.tableview.AsyncDataRow;
 import org.knime.core.node.tableview.AsyncTable;
-import org.knime.core.node.tableview.TableContentModel;
 import org.knime.core.node.workflow.BufferedDataTableView;
+import org.knime.workbench.ui.KNIMEUIPlugin;
+import org.knime.workbench.ui.preferences.PreferenceConstants;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -75,14 +77,14 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
     private static final NodeLogger LOGGER = NodeLogger.getLogger(EntityProxyTable.class);
 
     /**
-     * The size of the chunks to be retrieved and cached.
-     */
-    private static final int CHUNK_SIZE = TableContentModel.CACHE_SIZE;
-
-    /**
      * Number of threads to be used to download the table chunks.
      */
     private static final int NUM_CHUNK_LOADER_THREADS = 1;
+
+    /**
+     * The size of the chunks to be retrieved and cached.
+     */
+    private final int m_chunkSize;
 
     private final DataTableSpec m_spec;
 
@@ -127,6 +129,8 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
         super(portEnt, access);
         m_nodeEnt = nodeEnt;
         m_spec = spec;
+        IPreferenceStore prefStore = KNIMEUIPlugin.getDefault().getPreferenceStore();
+        m_chunkSize = prefStore.getInt(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_TABLE_VIEW_CHUNK_SIZE);
     }
 
     /**
@@ -142,7 +146,7 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
      */
     @Override
     public RowIterator iterator() {
-        return new DirectAcessDataTable(CHUNK_SIZE, this).iterator();
+        return new DirectAcessDataTable(m_chunkSize, this).iterator();
     }
 
     /**
@@ -230,7 +234,7 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
     public void setRowCountKnownCallback(final Consumer<Long> rowCountKnownCallback) {
         if (m_rowCountKnownCallback != rowCountKnownCallback) {
             m_rowCountKnownCallback = rowCountKnownCallback;
-            if (m_totalRowCount != null) {
+            if (m_rowCountKnownCallback != null && m_totalRowCount != null) {
                 //immediately inform row count callback if total row count is already known
                 m_rowCountKnownCallback.accept(m_totalRowCount);
             }
@@ -298,7 +302,7 @@ class EntityProxyTable extends AbstractEntityProxy<NodePortEnt>
                         if (chunk.getRows() != null) {
                             long size = chunk.getRows().size();
                             m_currentRowCount = Math.max(m_currentRowCount, from + size);
-                            if (size > 0 && size < CHUNK_SIZE) {
+                            if (size > 0 && size < m_chunkSize) {
                                 //definitely end of table -> row count found empirically
                                 m_totalRowCount = m_currentRowCount;
                             }

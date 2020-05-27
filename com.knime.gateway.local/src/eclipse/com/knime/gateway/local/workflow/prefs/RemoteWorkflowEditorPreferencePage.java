@@ -99,9 +99,20 @@ public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePag
                 }
             };
         addField(m_disableWorkflowEdits);
-        addField(new LabelField(parent, "If workflow edits are enabled the refresh interval must not be larger than "
+        addField(new LabelField(parent, "If workflow edits are enabled\nthe refresh interval must not be larger than "
                 + KNIMEConstants.WORKFLOW_EDITOR_CONNECTION_TIMEOUT + " ms."));
 
+        addField(new HorizontalLineField(parent));
+
+        IntegerFieldEditor tableViewChunkSize =
+            new IntegerFieldEditor(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_TABLE_VIEW_CHUNK_SIZE,
+                "Chunk size for port table view", parent);
+        tableViewChunkSize.setValidRange(1, Integer.MAX_VALUE);
+        addField(tableViewChunkSize);
+        addField(new LabelField(parent,
+            "Specifies the number of rows loaded at once from\nthe server for the table view of a port."
+                + "\nNote: only takes effect on port views opened for the first time"
+                + "\nafter opening the workflow or node re-execution."));
     }
 
     /** {@inheritDoc} */
