@@ -1,10 +1,19 @@
 package org.knime.next.ui;
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
+import org.knime.next.browserfunction.JsonRpcBrowserFunction;
+import org.knime.next.jsonrpc.EventService;
 import org.knime.next.server.KnimeNextServer;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 public class KnimeNextView extends ViewPart {
     public static final String ID = "org.knime.next.view";
@@ -24,8 +33,26 @@ public class KnimeNextView extends ViewPart {
 
         m_browser = new Browser(parent, SWT.NONE);
         m_browser.setUrl("http://localhost:4000/");
-        //m_browser.setUrl("https://hub.knime.com");
+    }
 
+    /*
+     * A setup without a server.
+     * File-serving via file system.
+     * Communication while BrowserFunctions (rpc) and script-execution (events).
+     */
+    private void serverlessSetup() {
+        new JsonRpcBrowserFunction(m_browser);
+        Bundle myBundle = FrameworkUtil.getBundle(getClass());
+        try {
+            URL url = myBundle.getEntry("webapp/index.html");
+            String path = FileLocator.toFileURL(url).getPath();
+            m_browser.setUrl("file://" + path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        EventService.MESSAGE_CONSUMER = message -> {
+            Display.getDefault().asyncExec(() -> m_browser.execute("receiveMessage('" + message + "')"));
+        };
     }
 
     @Override

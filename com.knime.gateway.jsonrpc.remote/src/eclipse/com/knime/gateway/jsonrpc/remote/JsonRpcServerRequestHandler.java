@@ -62,6 +62,10 @@ public class JsonRpcServerRequestHandler {
         }
     }
 
+    public void addService(final String name, final Object handler) {
+        m_jsonRpcMultiServer.addService(name, handler);
+    }
+
     /**
      * @return the object mapper to use for json-rpc-request deserialization and json-rpc-response serialization
      */

@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.swt;bundle-version="3.106.3",
  org.eclipse.ui.ide,
  org.knime.core.ui,
  org.eclipse.gef;bundle-version="3.11.0",
- com.knime.gateway.jsonrpc.remote;bundle-version="4.11.0"
+ com.knime.gateway.jsonrpc.remote;bundle-version="4.11.0",
+ com.github.briandilley.jsonrpc4j
 Bundle-ClassPath: .,
  lib/JerseyJettyEx.jar
 Bundle-ActivationPolicy: lazy
