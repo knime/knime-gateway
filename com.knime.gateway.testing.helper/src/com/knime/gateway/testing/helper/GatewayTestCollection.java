@@ -109,8 +109,6 @@ public class GatewayTestCollection {
             we) -> new WizardExecutionTestHelper(sp, rc, wl).testAsyncExecuteToNextPageAndGetCurrentPage());
         res.put("testExecuteToNextPageTimeout",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToNextPageTimeout());
-        res.put("testExecuteToEnd",
-            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToEnd());
         res.put("testExecuteToSecondPageWithFailure",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToSecondPageWithFailure());
         res.put("testGetCurrentPageWhileExecuting",
@@ -129,6 +127,17 @@ public class GatewayTestCollection {
         res.put("testResetToPreviousPageWhileWorkflowIsExecuting",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl)
                 .testResetToPreviousPageWhileWorkflowIsExecuting());
+        res.put("testExecuteToLastPageNode",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToLastPageNode());
+        res.put("testExecuteToLastPageNodeAndReport",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToLastPageNodeAndReport());
+        res.put("testExecuteToLastPageComponent",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToLastPageComponent());
+        res.put("testExecuteToLastPageComponentAndReport",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToLastPageComponentAndReport());
+        res.put("testExecuteToLastPageComponentAndFailureInParallelBranch",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl)
+                .testExecuteToLastPageComponentAndFailureInParallelBranch());
         res.put("testListWebResources",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testListWebResources());
         res.put("testGetWebResource",

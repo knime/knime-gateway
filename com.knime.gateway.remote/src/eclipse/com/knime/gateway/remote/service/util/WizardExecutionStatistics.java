@@ -125,12 +125,13 @@ public class WizardExecutionStatistics {
      */
     public static String getWizardExecutionState(final WorkflowManager wfm) {
         try (WorkflowLock lock = wfm.lock()) {
-            if (isHaltedAtWizardPage(wfm)) {
+            if (wfm.getNodeContainerState().isExecuted()) {
+                return "EXECUTION_FINISHED";
+            } else if (isHaltedAtWizardPage(wfm)) {
+                // should actually be 'isHaltedAtNonTerminalWizardPage(wfm)', see ticket ...
                 return "INTERACTION_REQUIRED";
             } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
                 return "EXECUTING";
-            } else if (wfm.getNodeContainerState().isExecuted()) {
-                return "EXECUTION_FINISHED";
             } else if (!wfm.isInWizardExecution() || !wfm.getWizardExecutionController().hasExecutionStarted()) {
                 return "UNDEFINED";
             } else {
@@ -139,8 +140,47 @@ public class WizardExecutionStatistics {
         }
     }
 
-    private static boolean isHaltedAtWizardPage(final WorkflowManager wfm) {
+    /**
+     * Determines whether the workflow manager is in wizard execution and halted at a wizard page.
+     *
+     * @param wfm
+     * @return <code>true</code> if halted at a wizard page otherwise <code>false</code>
+     */
+    public static boolean isHaltedAtWizardPage(final WorkflowManager wfm) {
         return wfm.isInWizardExecution() && wfm.getWizardExecutionController().hasCurrentWizardPage();
+    }
+
+    /**
+     * Determines whether the wizard execution is halted at a page that is represented by the very last node in that branch (i.e. no
+     * further execution required).
+     *
+     * @param wfm
+     * @return <code>true</code> if workflow is halted at a wizard page with no outgoing connections, otherwise
+     *         <code>false</code>
+     */
+    public static boolean isHaltedAtTerminalWizardPage(final WorkflowManager wfm) {
+        if (isHaltedAtWizardPage(wfm)) {
+            NodeID wizardPage = wfm.getWizardExecutionController().getCurrentWizardPageNodeID();
+            return wfm.getOutgoingConnectionsFor(wizardPage).isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Determines whether the wizard execution is halted at a page that is represented by a node with successors.
+     *
+     * @param wfm
+     * @return <code>true</code> if workflow is halted at a wizard page with outgoing connections, otherwise
+     *         <code>false</code>
+     */
+    private static boolean isHaltedAtNonTerminalWizardPage(final WorkflowManager wfm) {
+        if (isHaltedAtWizardPage(wfm)) {
+            NodeID wizardPage = wfm.getWizardExecutionController().getCurrentWizardPageNodeID();
+            return !wfm.getOutgoingConnectionsFor(wizardPage).isEmpty();
+        } else {
+            return false;
+        }
     }
 
     /**

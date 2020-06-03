@@ -38,6 +38,7 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
   protected WizardExecutionStateEnum m_wizardExecutionState;
   protected java.util.Map<String, NodeMessageEnt> m_nodeMessages;
   protected Boolean m_hasPreviousPage;
+  protected Boolean m_hasNextPage;
   protected Boolean m_hasReport;
   
   protected DefaultWizardPageEnt() {
@@ -55,6 +56,7 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
     m_wizardExecutionState = immutable(builder.m_wizardExecutionState);
     m_nodeMessages = immutable(builder.m_nodeMessages);
     m_hasPreviousPage = immutable(builder.m_hasPreviousPage);
+    m_hasNextPage = immutable(builder.m_hasNextPage);
     m_hasReport = immutable(builder.m_hasReport);
   }
   
@@ -73,7 +75,7 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
             return false;
         }
         DefaultWizardPageEnt ent = (DefaultWizardPageEnt)o;
-        return Objects.equals(m_wizardPageContent, ent.m_wizardPageContent) && Objects.equals(m_wizardExecutionState, ent.m_wizardExecutionState) && Objects.equals(m_nodeMessages, ent.m_nodeMessages) && Objects.equals(m_hasPreviousPage, ent.m_hasPreviousPage) && Objects.equals(m_hasReport, ent.m_hasReport);
+        return Objects.equals(m_wizardPageContent, ent.m_wizardPageContent) && Objects.equals(m_wizardExecutionState, ent.m_wizardExecutionState) && Objects.equals(m_nodeMessages, ent.m_nodeMessages) && Objects.equals(m_hasPreviousPage, ent.m_hasPreviousPage) && Objects.equals(m_hasNextPage, ent.m_hasNextPage) && Objects.equals(m_hasReport, ent.m_hasReport);
     }
 
 
@@ -98,6 +100,11 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
     }
     
   @Override
+  public Boolean hasNextPage() {
+        return m_hasNextPage;
+    }
+    
+  @Override
   public Boolean hasReport() {
         return m_hasReport;
     }
@@ -113,6 +120,7 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
         private WizardExecutionStateEnum m_wizardExecutionState;
         private java.util.Map<String, NodeMessageEnt> m_nodeMessages = new java.util.HashMap<>();
         private Boolean m_hasPreviousPage;
+        private Boolean m_hasNextPage;
         private Boolean m_hasReport;
 
         @Override
@@ -136,6 +144,12 @@ public class DefaultWizardPageEnt  implements WizardPageEnt {
         @Override
         public DefaultWizardPageEntBuilder setHasPreviousPage(Boolean hasPreviousPage) {
              m_hasPreviousPage = hasPreviousPage;
+             return this;
+        }
+
+        @Override
+        public DefaultWizardPageEntBuilder setHasNextPage(Boolean hasNextPage) {
+             m_hasNextPage = hasNextPage;
              return this;
         }
 

@@ -20,6 +20,8 @@ package com.knime.gateway.remote.service;
 
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.getWizardExecutionState;
+import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.isHaltedAtTerminalWizardPage;
+import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.isHaltedAtWizardPage;
 import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.isWfmDone;
 
 import java.io.ByteArrayOutputStream;
@@ -89,6 +91,7 @@ import com.knime.gateway.util.EntityBuilderUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class DefaultWizardExecutionService implements WizardExecutionService {
+
     private static final DefaultWizardExecutionService INSTANCE = new DefaultWizardExecutionService();
 
     private static final String ID_WEB_RES = "org.knime.js.core.webResources";
@@ -96,6 +99,13 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
     private static final String ELEM_RES = "webResource";
     private static final String ATTR_SOURCE = "relativePathSource";
     private static final String ATTR_TARGET = "relativePathTarget";
+
+    /**
+     * A flag indicating that we are on the report page. Necessary for the special case if the last node in the workflow
+     * is a wizard page and there is a report. The flag helps to distinguish those two states (i.e. last 'real' wizard
+     * page or report page).
+     */
+    private static final String REPORT_PAGE_FLAG = "reportPage";
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultWizardExecutionService.class);
 
@@ -128,29 +138,33 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageEntBuilder wizardPageBuilder = builder(WizardPageEntBuilder.class);
 
+        // set wizard execution state
         WizardExecutionStateEnum wes = WizardExecutionStateEnum.valueOf(getWizardExecutionState(wfm));
         wizardPageBuilder.setWizardExecutionState(wes);
+
+        // set page content
+        if (isHaltedAtWizardPage(wfm) && !isOnReportPage(wfm)) {
+            //otherwise jackson core isn't able to find classes outside its bundle
+            ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            WizardPageManager pageManager = WizardPageManager.of(wfm);
+            try {
+                JSONWebNodePage jsonPage = pageManager.createCurrentWizardPage();
+                ObjectMapper mapper = JSONLayoutPage.getConfiguredVerboseObjectMapper();
+                JsonNode jsonNode = mapper.convertValue(jsonPage, JsonNode.class);
+                wizardPageBuilder.setWizardPageContent(jsonNode);
+            } catch (IOException ex) {
+                String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
+                LOGGER.error(s, ex);
+                throw new IllegalStateException(s, ex);
+            } finally {
+                Thread.currentThread().setContextClassLoader(contextLoader);
+            }
+        }
+
+        // set node messages
         switch (wes) {
             case INTERACTION_REQUIRED:
-                WizardPageManager pageManager = WizardPageManager.of(wfm);
-                wizardPageBuilder.setNodeMessages(null);
-
-                //otherwise jackson core isn't able to find classes outside its bundle
-                ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                try {
-                    JSONWebNodePage jsonPage = pageManager.createCurrentWizardPage();
-                    ObjectMapper mapper = JSONLayoutPage.getConfiguredVerboseObjectMapper();
-                    JsonNode jsonNode = mapper.convertValue(jsonPage, JsonNode.class);
-                    wizardPageBuilder.setWizardPageContent(jsonNode);
-                } catch (IOException ex) {
-                    String s = "Could not send current wizard page from job '" + jobId + "': " + ex.getMessage();
-                    LOGGER.error(s, ex);
-                    throw new IllegalStateException(s, ex);
-                } finally {
-                    Thread.currentThread().setContextClassLoader(contextLoader);
-                }
-                break;
             case EXECUTING:
                 wizardPageBuilder.setNodeMessages(null);
                 break;
@@ -161,13 +175,59 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                 wizardPageBuilder.setNodeMessages(EntityBuilderUtil.buildNodeMessageEntMap(wfm));
         }
 
-        if (wfm.isInWizardExecution()) {
+        // set has-previous- and has-next-page properties (if in wizard execution)
+        WizardExecutionController wec = wfm.isInWizardExecution() ? wfm.getWizardExecutionController() : null;
+        boolean hasNextPage = false;
+        if (wec != null) {
             wizardPageBuilder.setHasPreviousPage(wfm.getWizardExecutionController().hasPreviousWizardPage());
+            switch (wes) {
+                case INTERACTION_REQUIRED:
+                    // TODO intermediate fix
+                    // see ticket ...
+                    if (WizardExecutionStatistics.isHaltedAtTerminalWizardPage(wfm)) {
+                        hasNextPage = false;
+                    } else {
+                        hasNextPage = true;
+                    }
+                    break;
+                case EXECUTING:
+                    hasNextPage = true;
+                    break;
+                case EXECUTION_FINISHED:
+                    if (wec.getProperty(REPORT_PAGE_FLAG).isPresent()) {
+                        hasNextPage = false;
+                    } else if (hasReport(wfm) && isHaltedAtTerminalWizardPage(wfm)) {
+                        // special case: execution is finished at a wizard page (i.e. the very last node is a component)
+                        // and there is a report -> there is a next page which is for the report only
+                        hasNextPage = true;
+                    } else {
+                        hasNextPage = false;
+                    }
+                    break;
+                case UNDEFINED:
+                case EXECUTION_FAILED:
+                default:
+                    hasNextPage = false;
+                    break;
+            }
+            wizardPageBuilder.setHasNextPage(hasNextPage);
         }
-        if (wfm.getNodeContainerState().isExecuted()) {
-            wizardPageBuilder.setHasReport(!wfm.findNodes(ReportingDataSetNodeModel.class, false).isEmpty());
+
+        //set has-report flag (only if we are on the very last page or not in wizard execution)
+        if (!hasNextPage) {
+            wizardPageBuilder.setHasReport(hasReport(wfm));
         }
+
         return wizardPageBuilder.build();
+    }
+
+    private static boolean hasReport(final WorkflowManager wfm) {
+        return !wfm.findNodes(ReportingDataSetNodeModel.class, false).isEmpty();
+    }
+
+    private static boolean isOnReportPage(final WorkflowManager wfm) {
+        return wfm.isInWizardExecution()
+            && wfm.getWizardExecutionController().getProperty(REPORT_PAGE_FLAG).isPresent();
     }
 
     /**
@@ -182,6 +242,17 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         WorkflowManager wfm = DefaultServiceUtil.getRootWorkflowManager(jobId);
         WizardPageManager pageManager = WizardPageManager.of(wfm);
         WizardExecutionController wec = pageManager.getWizardExecutionController();
+
+        // special case: if the workflow is executed, we are on a page
+        // (i.e. the very last node is a wizard page component) _and_ there is a report
+        // we need to memorize that we stepped from the last wizard page to the report-page
+        if (isHaltedAtTerminalWizardPage(wfm) && hasReport(wfm)) {
+            if (wec.getProperty(REPORT_PAGE_FLAG).isPresent()) {
+                throw new NoWizardPageException("Can't execute to next page. Already on the last page (report).");
+            }
+            wec.setProperty(REPORT_PAGE_FLAG, "true");
+            return getCurrentPage(jobId);
+        }
 
         String validationResult = null;
         try (WorkflowLock lock = wfm.lock()) {
@@ -277,6 +348,14 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         WizardExecutionController wec = pageManager.getWizardExecutionController();
         if (!wec.hasPreviousWizardPage()) {
             throw new NoWizardPageException("No previous wizard page");
+        }
+
+        // special case: very last node in the workflow is a wizard page and there is a report
+        // stepping back from the 'report-page' doesn't reset part of the workflow
+        // but just removes the 'reportPage'-flag
+        if (wec.getProperty(REPORT_PAGE_FLAG).isPresent()) {
+            wec.removeProperty(REPORT_PAGE_FLAG);
+            return getCurrentPage(jobId);
         }
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
             wfm.getParent().cancelExecution(wfm);

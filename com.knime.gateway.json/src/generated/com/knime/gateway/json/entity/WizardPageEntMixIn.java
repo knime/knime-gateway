@@ -71,6 +71,10 @@ public interface WizardPageEntMixIn extends WizardPageEnt {
     public Boolean hasPreviousPage();
     
     @Override
+    @JsonProperty("hasNextPage")
+    public Boolean hasNextPage();
+    
+    @Override
     @JsonProperty("hasReport")
     public Boolean hasReport();
     
@@ -109,6 +113,10 @@ public interface WizardPageEntMixIn extends WizardPageEnt {
         @Override
         @JsonProperty("hasPreviousPage")
         public WizardPageEntMixInBuilder setHasPreviousPage(final Boolean hasPreviousPage);
+        
+        @Override
+        @JsonProperty("hasNextPage")
+        public WizardPageEntMixInBuilder setHasNextPage(final Boolean hasNextPage);
         
         @Override
         @JsonProperty("hasReport")

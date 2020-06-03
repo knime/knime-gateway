@@ -22,6 +22,7 @@ import static com.jayway.jsonassert.impl.matcher.IsEmptyCollection.empty;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -32,9 +33,9 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ import com.knime.gateway.entity.WizardPageEnt;
 import com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum;
 import com.knime.gateway.entity.WizardPageInputEnt;
 import com.knime.gateway.entity.WizardPageInputEnt.WizardPageInputEntBuilder;
+import com.knime.gateway.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.service.util.ServiceExceptions.InvalidSettingsException;
 import com.knime.gateway.service.util.ServiceExceptions.NoWizardPageException;
@@ -98,6 +100,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
         assertThat("previous page expected to be false", wizardPage.hasPreviousPage(), is(false));
+        assertThat("next page expected to be true", wizardPage.hasNextPage(), is(true));
         assertThat("no no messages expected", wizardPage.getNodeMessages(), nullValue());
         assertThat("no hasReport flag is set", wizardPage.hasReport(), nullValue());
     }
@@ -111,10 +114,11 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         int rowCount = (int)(5 * Math.random()) + 1;
-        WizardPageInputEnt input = secondWizardPageInput(rowCount);
+        WizardPageInputEnt input = firstWizardPageInput(rowCount);
         WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
         assertThat("previous page expected to be true", wizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be true", wizardPage.hasNextPage(), is(true));
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
         assertThat("no node messages expected", wizardPage.getNodeMessages(), nullValue());
@@ -140,26 +144,6 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
     }
 
     /**
-     * Checks if stepping until the end with user input works as expected.
-     *
-     * @throws Exception
-     */
-    public void testExecuteToEnd() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
-        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
-
-        WizardPageInputEnt input = secondWizardPageInput((int)(5 * Math.random()) + 1);
-        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
-
-        WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
-        assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
-            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
-        assertThat("previous page expected to be true", wizardPage.hasPreviousPage(), is(true));
-        assertThat("empty list of node messages expected", wizardPage.getNodeMessages().isEmpty(), is(true));
-        assertThat("has report flag is true", wizardPage.hasReport(), is(true));
-    }
-
-    /**
      * Checks what happens if workflow fails in wizard execution.
      *
      * @throws Exception
@@ -178,12 +162,13 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
 
         //try to execute to second page
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
-        WizardPageInputEnt input = secondWizardPageInput((int)(5 * Math.random()) + 1);
+        WizardPageInputEnt input = firstWizardPageInput((int)(5 * Math.random()) + 1);
         WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
 
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.EXECUTION_FAILED));
         assertThat("previous page expected to be true", wizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", wizardPage.hasNextPage(), is(false));
         assertThat("node message key expected", wizardPage.getNodeMessages().keySet(),
             hasItem(containsString("Fail in execution")));
         assertThat("node messages expected", wizardPage.getNodeMessages().values(),
@@ -214,18 +199,20 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
                 .build();
         ns().setNodeSettings(wfId, newNodeID, newNodeSettings);
 
-        //execute to first page
+        //execute to first page (async)
         WizardPageEnt wizardPage = wes().executeToNextPage(wfId, true, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         assertNull(wizardPage.getWizardExecutionState());
         assertNull(wizardPage.getWizardPageContent());
         assertNull(wizardPage.getNodeMessages());
         assertNull(wizardPage.hasPreviousPage());
+        assertNull(wizardPage.hasNextPage());
 
         //get current page
         wizardPage = wes().getCurrentPage(wfId);
         assertThat("unexpected wizard execution state", wizardPage.getWizardExecutionState(),
             is(WizardExecutionStateEnum.EXECUTING));
         assertThat("previous page expected to be false", wizardPage.hasPreviousPage(), is(false));
+        assertThat("next page expected to be true", wizardPage.hasNextPage(), is(true));
         assertNull(wizardPage.getNodeMessages());
     }
 
@@ -242,6 +229,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         assertNull(wizardPage.getWizardPageContent());
         assertNull(wizardPage.getNodeMessages());
         assertNull(wizardPage.hasPreviousPage());
+        assertNull(wizardPage.hasNextPage());
 
         //execute entire workflow
         ns().changeAndGetNodeState(wfId, new NodeIDEnt(10), "execute");
@@ -253,6 +241,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
                 is(WizardExecutionStateEnum.EXECUTION_FINISHED));
             assertNull(wizardPage2.getWizardPageContent());
             assertNull(wizardPage2.hasPreviousPage());
+            assertNull(wizardPage2.hasNextPage());
         });
     }
 
@@ -296,7 +285,8 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             currentPage.set(wes().getCurrentPage(wfIdAsync));
             assertThat("unexpected wizard execution state", currentPage.get().getWizardExecutionState(),
-                is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
+                is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+            assertThat("no next page expected", currentPage.get().hasNextPage(), is(false));
         });
         assertThat("hasReport flag set to false", currentPage.get().hasReport(), is(false));
         String pageContentString = ObjectMapperUtil.getInstance().getObjectMapper()
@@ -359,14 +349,14 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageEnt wizardPage =
-            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, firstWizardPageInput(rowCount));
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
 
         wizardPage = wes().resetToPreviousPage(wfId, 2000l);
         checkFirstPageContents(wizardPage.getWizardPageContent());
 
         rowCount = (int)(5 * Math.random()) + 1;
-        wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, secondWizardPageInput(rowCount));
+        wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, firstWizardPageInput(rowCount));
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
     }
 
@@ -392,6 +382,176 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         //that resists the cancellation
     }
 
+    /**
+     * The very last node is an ordinary node (i.e. no page/component) and the workflow has a report.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToLastPageNodeAndReport() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+
+        WizardPageInputEnt input = firstWizardPageInput((int)(5 * Math.random()) + 1);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+
+        WizardPageEnt lastWizardPage =
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
+        assertThat("empty list of node messages expected", lastWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertThat("has report flag expected to be true", lastWizardPage.hasReport(), is(true));
+        assertNull("no page content expected", lastWizardPage.getWizardPageContent());
+    }
+
+    /**
+     * There is a component (page) at the very end of the workflow but no report available.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToLastPageComponent() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
+        // remove very last node such that a page is the last one
+        ws().deleteWorkflowParts(wfId, NodeIDEnt.getRootID(),
+            builder(WorkflowPartsEntBuilder.class).setNodeIDs(Arrays.asList(new NodeIDEnt(10))).build(), false);
+
+        // execute to very last page and check
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        int rowCount = (int)(5 * Math.random()) + 1;
+        WizardPageInputEnt input = firstWizardPageInput(rowCount);
+        WizardPageEnt lastWizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
+        assertThat("empty list of node messages expected", lastWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertThat("has report flag expected to be false", lastWizardPage.hasReport(), is(false));
+        checkSecondPageContents(lastWizardPage.getWizardPageContent(), rowCount);
+    }
+
+    /**
+     * There is a component (page) at the very end of the workflow and(!) a report available. Sort of a special case
+     * that is separately treated.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToLastPageComponentAndReport() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
+        // reconnect last node (which is a report node) such that the second wizard page is a 'terminal' node, too
+        ws().createConnection(wfId, builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(5)).setSourcePort(1)
+            .setDest(new NodeIDEnt(10)).setDestPort(1).setType(TypeEnum.STD).build());
+
+        // execute to second and check
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        int rowCount = (int)(5 * Math.random()) + 1;
+        WizardPageInputEnt input = firstWizardPageInput(rowCount);
+        WizardPageEnt secondWizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        assertThat("unexpected wizard execution state", secondWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", secondWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be true", secondWizardPage.hasNextPage(), is(true));
+        assertThat("empty list of node messages expected", secondWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertNull("has report flag expected not to be present", secondWizardPage.hasReport());
+        checkSecondPageContents(secondWizardPage.getWizardPageContent(), rowCount);
+
+        // execute to last page (which is the 'report-page')
+        WizardPageEnt lastWizardPage =
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
+        assertThat("empty list of node messages expected", lastWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertThat("has report flag expected to be true", lastWizardPage.hasReport(), is(true));
+        assertNull("no page content expected", lastWizardPage.getWizardPageContent());
+
+        //retrieve the last page again
+        lastWizardPage = wes().getCurrentPage(wfId);
+        assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
+        assertThat("empty list of node messages expected", lastWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertThat("has report flag expected to be true", lastWizardPage.hasReport(), is(true));
+        assertNull("no page content expected", lastWizardPage.getWizardPageContent());
+
+        // turn back to previous page (i.e. the 'real' wizard page)
+        secondWizardPage = wes().resetToPreviousPage(wfId, WF_EXECUTION_TIMEOUT);
+        assertThat("unexpected wizard execution state", secondWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", secondWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be true", secondWizardPage.hasNextPage(), is(true));
+        assertThat("empty list of node messages expected", secondWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertNull("has report flag expected not to be present", secondWizardPage.hasReport());
+        checkSecondPageContents(secondWizardPage.getWizardPageContent(), rowCount);
+    }
+
+    /**
+     * The very last page is neither a report nor a component (i.e. the very last node is an ordinary one)
+     *
+     * @throws Exception
+     */
+    public void testExecuteToLastPageNode() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
+        // replace very last node with a 'non-reporting' node
+        ws().deleteWorkflowParts(wfId, NodeIDEnt.getRootID(),
+            builder(WorkflowPartsEntBuilder.class).setNodeIDs(Arrays.asList(new NodeIDEnt(10))).build(), false);
+        NodeIDEnt newNodeId =
+            ns().createNode(wfId, NodeIDEnt.getRootID(), 10, 10, builder(NodeFactoryKeyEntBuilder.class)
+                .setClassName("org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory").build());
+        ws().createConnection(wfId, builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(9)).setSourcePort(1)
+            .setDest(newNodeId).setDestPort(1).setType(TypeEnum.STD).build());
+
+        // execute to last page
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        int rowCount = (int)(5 * Math.random()) + 1;
+        WizardPageInputEnt input = firstWizardPageInput(rowCount);
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        WizardPageEnt lastWizardPage =
+            wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.EXECUTION_FINISHED));
+        assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
+        assertThat("empty list of node messages expected", lastWizardPage.getNodeMessages().isEmpty(), is(true));
+        assertThat("has report flag expected to be false", lastWizardPage.hasReport(), is(false));
+        assertNull("no page content expected", lastWizardPage.getWizardPageContent());
+    }
+
+    /**
+     * The last node in the workflow is a wizard page component and there is a failing node in a parallel branch.
+     *
+     * @throws Exception
+     */
+    public void testExecuteToLastPageComponentAndFailureInParallelBranch() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflow.WIZARD_EXECUTION);
+        // remove last node (such that the wizard page component is the last one then)
+        ws().deleteWorkflowParts(wfId, NodeIDEnt.getRootID(),
+            builder(WorkflowPartsEntBuilder.class).setNodeIDs(Arrays.asList(new NodeIDEnt(10))).build(), false);
+        //add a failing node in parallel branch
+        NodeIDEnt newNodeId =
+            ns().createNode(wfId, NodeIDEnt.getRootID(), 10, 10, builder(NodeFactoryKeyEntBuilder.class)
+                .setClassName("org.knime.testing.node.failing.FailingNodeFactory").build());
+        ws().createConnection(wfId, builder(ConnectionEntBuilder.class).setSource(new NodeIDEnt(5)).setSourcePort(1)
+            .setDest(newNodeId).setDestPort(1).setType(TypeEnum.STD).build());
+
+        // execute to last page and check
+        wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        int rowCount = (int)(5 * Math.random()) + 1;
+        WizardPageInputEnt input = firstWizardPageInput(rowCount);
+        WizardPageEnt lastWizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
+        // intermediate result - should actually be 'EXECUTION_FAILED' - see ticket ...
+        assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
+            is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
+        assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
+        assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
+        // intermediate result -should actually be a non-empty list - see ticket ...
+        assertNull("no node messages expected", lastWizardPage.getNodeMessages());
+        assertThat("has report flag expected to be false", lastWizardPage.hasReport(), is(false));
+        checkSecondPageContents(lastWizardPage.getWizardPageContent(), rowCount);
+    }
+
     private static void checkSecondPageContents(final Object pageContents, final int expectedRowCount) {
         String pageContentString =
             ObjectMapperUtil.getInstance().getObjectMapper().convertValue(pageContents, JsonNode.class).toString();
@@ -414,7 +574,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         return builder(WizardPageInputEntBuilder.class).setViewValues(Collections.emptyMap()).build();
     }
 
-    private static WizardPageInputEnt secondWizardPageInput(final int rowCount) {
+    private static WizardPageInputEnt firstWizardPageInput(final int rowCount) {
         // the the integer input parameter which controls a row filter
         WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class)
             .setViewValues(Collections.singletonMap("5:0:1", "{\"integer\": " + rowCount + "}")).build();
@@ -509,7 +669,7 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
             is(com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum.INTERACTION_REQUIRED));
 
         int rowCount = (int)(5 * Math.random()) + 1;
-        WizardPageInputEnt input = secondWizardPageInput(rowCount);
+        WizardPageInputEnt input = firstWizardPageInput(rowCount);
         WizardPageEnt wizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
         executionStatistics = wes().getExecutionStatistics(wfId);
         checkSecondPageContents(wizardPage.getWizardPageContent(), rowCount);
