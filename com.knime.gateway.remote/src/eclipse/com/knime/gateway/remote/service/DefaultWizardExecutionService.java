@@ -18,10 +18,10 @@
  */
 package com.knime.gateway.remote.service;
 
+import static com.knime.enterprise.executor.ExecutorUtil.isHaltedAtTerminalWizardPage;
+import static com.knime.enterprise.executor.ExecutorUtil.isHaltedAtWizardPage;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
-import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.getWizardExecutionState;
-import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.isHaltedAtTerminalWizardPage;
-import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.isHaltedAtWizardPage;
+import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getWizardExecutionState;
 import static com.knime.gateway.remote.service.util.WizardExecutionStatistics.isWfmDone;
 
 import java.io.ByteArrayOutputStream;
@@ -182,14 +182,6 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             wizardPageBuilder.setHasPreviousPage(wfm.getWizardExecutionController().hasPreviousWizardPage());
             switch (wes) {
                 case INTERACTION_REQUIRED:
-                    // TODO intermediate fix
-                    // see ticket ...
-                    if (WizardExecutionStatistics.isHaltedAtTerminalWizardPage(wfm)) {
-                        hasNextPage = false;
-                    } else {
-                        hasNextPage = true;
-                    }
-                    break;
                 case EXECUTING:
                     hasNextPage = true;
                     break;

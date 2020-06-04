@@ -26,9 +26,11 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
+import com.knime.enterprise.executor.ExecutorUtil;
 import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.ConnectionIDEnt;
 import com.knime.gateway.entity.NodeIDEnt;
@@ -175,5 +177,38 @@ public class DefaultServiceUtil {
     public static ConnectionID entityToConnectionID(final UUID rootWorkflowID, final ConnectionIDEnt connectionID) {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
+    }
+
+    /**
+     * Determines the wizard execution state of a workflow to be be used by
+     * {@link com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum} and
+     * {@link com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum}
+     *
+     * Needs to be kept in sync with {@link ExecutorUtil#getWizardExecutionState(WorkflowManager)}.
+     * <br>
+     * However there are
+     * some differences:
+     * <ul>
+     * <li>this method returns an 'executing' state</li>
+     * <li>this method always returns a state even if workflow is not in wizard execution mode</li>
+     * </ul>
+     *
+     * @param wfm the workflow to determine the state for
+     * @return the wizard execution state string
+     */
+    public static String getWizardExecutionState(final WorkflowManager wfm) {
+        try (WorkflowLock lock = wfm.lock()) {
+            if (wfm.getNodeContainerState().isExecuted()) {
+                return "EXECUTION_FINISHED";
+            } else if (ExecutorUtil.isHaltedAtNonTerminalWizardPage(wfm)) {
+                return "INTERACTION_REQUIRED";
+            } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
+                return "EXECUTING";
+            } else if (!wfm.isInWizardExecution() || !wfm.getWizardExecutionController().hasExecutionStarted()) {
+                return "UNDEFINED";
+            } else {
+                return "EXECUTION_FAILED";
+            }
+        }
     }
 }

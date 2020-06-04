@@ -541,13 +541,12 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
         int rowCount = (int)(5 * Math.random()) + 1;
         WizardPageInputEnt input = firstWizardPageInput(rowCount);
         WizardPageEnt lastWizardPage = wes().executeToNextPage(wfId, false, WF_EXECUTION_TIMEOUT, input);
-        // intermediate result - should actually be 'EXECUTION_FAILED' - see ticket ...
         assertThat("unexpected wizard execution state", lastWizardPage.getWizardExecutionState(),
-            is(WizardExecutionStateEnum.INTERACTION_REQUIRED));
+            is(WizardExecutionStateEnum.EXECUTION_FAILED));
         assertThat("previous page expected to be true", lastWizardPage.hasPreviousPage(), is(true));
         assertThat("next page expected to be false", lastWizardPage.hasNextPage(), is(false));
-        // intermediate result -should actually be a non-empty list - see ticket ...
-        assertNull("no node messages expected", lastWizardPage.getNodeMessages());
+        assertThat("node message key expected", lastWizardPage.getNodeMessages().keySet(),
+            hasItem(containsString("Fail in execution")));
         assertThat("has report flag expected to be false", lastWizardPage.hasReport(), is(false));
         checkSecondPageContents(lastWizardPage.getWizardPageContent(), rowCount);
     }
