@@ -80,6 +80,7 @@ import org.knime.core.ui.node.workflow.NodeInPortUI;
 import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.RemoteWorkflowContext;
 import org.knime.core.ui.node.workflow.SubNodeContainerUI;
+import org.knime.core.ui.node.workflow.UndoableUI;
 import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.core.ui.node.workflow.WorkflowCopyWithOffsetUI;
 import org.knime.core.ui.node.workflow.WorkflowInPortUI;
@@ -306,9 +307,11 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public CompletableFutureEx<Void, OperationNotAllowedException> replaceNodeAsync(final NodeID id,
+    public CompletableFutureEx<UndoableUI, OperationNotAllowedException> replaceNodeAsync(final NodeID id,
         final ModifiableNodeCreationConfiguration creationConfig) {
         NodeFactoryKeyEnt nodeFactory = EntityBuilderUtil.buildNodeFactoryKeyEnt(null, creationConfig);
+        final ModifiableNodeCreationConfiguration oldNodeCreationConfig =
+            ((NativeNodeContainerUI)getNodeContainer(id)).getCopyOfCreationConfig().orElse(null);
         return futureExRefresh(() -> {
             try {
                 getAccess().nodeService().replaceNode(getEntity().getRootWorkflowID(), new NodeIDEnt(id), nodeFactory);
@@ -318,7 +321,20 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
             } catch (ActionNotAllowedException ex) {
                 throw new CompletionException(new OperationNotAllowedException(ex.getMessage(), ex));
             }
-            return null;
+            return new UndoableUI() {
+
+                @Override
+                public void undo() {
+                    // TODO not complete - removed connections need to be restored
+                    // See ticket https://knime-com.atlassian.net/browse/SRV-2998
+                    replaceNodeAsync(id, oldNodeCreationConfig);
+                }
+
+                @Override
+                public boolean canUndo() {
+                    return canReplaceNode(id);
+                }
+            };
         }, OperationNotAllowedException.class);
     }
 
