@@ -31,6 +31,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 import com.knime.enterprise.executor.JobPoolListener;
+import com.knime.enterprise.executor.genericmsg.GenericMessageIDs;
 import com.knime.enterprise.executor.genericmsg.GenericServerRequestHandler;
 import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
@@ -77,7 +78,7 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
      */
     @Override
     public String getMessageId() {
-        return "jsonrpc2.0";
+        return GenericMessageIDs.JSON_RPC_2_0;
     }
 
 
