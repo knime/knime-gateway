@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -95,6 +96,7 @@ import org.knime.core.ui.node.workflow.lazy.LazyWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.lazy.NotLoadedException;
 import org.knime.core.util.Pair;
 
+import com.google.common.base.Objects;
 import com.knime.gateway.entity.AnnotationIDEnt;
 import com.knime.gateway.entity.ConnectionEnt;
 import com.knime.gateway.entity.ConnectionIDEnt;
@@ -141,7 +143,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
 
     private UUID m_snapshotID;
 
-    private boolean m_isDisconnected = false;
+    private String m_connectionProblem = null;
 
     private final List<Runnable> m_writeProtectionChangedListeners = new ArrayList<Runnable>();
 
@@ -845,7 +847,7 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      */
     @Override
     public boolean isWriteProtected() {
-        return m_isDisconnected || isInWizardExecution();
+        return getConnectionProblem().isPresent() || isInWizardExecution();
     }
 
     /**
@@ -1490,13 +1492,37 @@ abstract class AbstractEntityProxyWorkflowManager<E extends WorkflowNodeEnt> ext
      * {@inheritDoc}
      */
     @Override
-    public void setDisconnected(final boolean disconnected) {
-        boolean changed = m_isDisconnected != disconnected;
-        m_isDisconnected = disconnected;
-        if (changed) {
-            //notify write protection changed listeners since #isWriteProtected depends on the connected-state
-            m_writeProtectionChangedListeners.forEach(l -> l.run());
+    public void setConnectionProblem(final String message) {
+        if (isRootWorkflow()) {
+            // only the root workflow keeps the connection state
+            boolean changed = !Objects.equal(m_connectionProblem, message);
+            if (changed) {
+                m_connectionProblem = message;
+
+                //notify write protection changed listeners since #isWriteProtected depends on the connected-state
+                m_writeProtectionChangedListeners.forEach(l -> l.run());
+
+            }
+        } else {
+            // propagate state to parent
+            getParent().setConnectionProblem(message);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<String> getConnectionProblem() {
+        if (isRootWorkflow()) {
+            return Optional.ofNullable(m_connectionProblem);
+        } else {
+            return getParent().getConnectionProblem();
+        }
+    }
+
+    private boolean isRootWorkflow() {
+        return NodeIDEnt.getRootID().equals(getEntity().getNodeID());
     }
 
     /**
