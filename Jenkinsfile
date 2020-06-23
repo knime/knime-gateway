@@ -21,15 +21,9 @@ properties([
 try {
     knimetools.defaultTychoBuild('com.knime.update.gateway')
 
-    /* workflowTests.runTests(
-        dependencies: [
-             repositories: ['knime-ap-repository-template', 'knime-json', 'knime-python']
-        ]
-    ) */
-
     stage('Sonarqube analysis') {
         env.lastStage = env.STAGE_NAME
-        workflowTests.runSonar()
+        workflowTests.runSonar([])
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'
