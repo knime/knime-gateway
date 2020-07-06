@@ -187,23 +187,6 @@ class EntityProxySubNodeContainer extends AbstractEntityProxySingleNodeContainer
      * {@inheritDoc}
      */
     @Override
-    public String getLayoutJSONString() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setLayoutJSONString(final String layoutJSONString) {
-        // TODO Auto-generated method stub
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Element getXMLDescription() {
         String noDescriptionAvailableText =
             "Node description for components within remotely opened workflows not available, yet.";
