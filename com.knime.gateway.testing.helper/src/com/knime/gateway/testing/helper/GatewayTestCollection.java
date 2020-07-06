@@ -119,6 +119,8 @@ public class GatewayTestCollection {
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testExecuteToNextPageWithInvalidViewValues());
         res.put("testGetCurrentPageWhileReexecuting",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testGetCurrentPageWhileReexecuting());
+        res.put("testResetToPreviousPageWhileReexecuting",
+            (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testResetToPreviousPageWhileReexecuting());
         res.put("testResetToZerothPage",
             (sp, rc, wl, we) -> new WizardExecutionTestHelper(sp, rc, wl).testResetToZerothPage());
         res.put("testResetToFirstPageAndExecuteToNextPageWithChangedInputs",

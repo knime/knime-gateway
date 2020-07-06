@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,8 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.WizardExecutionController;
 import org.knime.core.node.workflow.WorkflowLock;
@@ -350,7 +353,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
             return getCurrentPage(jobId);
         }
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
-            wfm.getParent().cancelExecution(wfm);
+            cancelAllExceptLastPage(wfm, wec.getLastWizardPageNodeID().orElse(null));
             boolean timedOut;
             try {
                 timedOut = !wfm.waitWhileInExecution(timeout, TimeUnit.MILLISECONDS);
@@ -366,6 +369,20 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         m_executionStatistics.remove(jobId);
         DefaultServiceUtil.getWorkflowProject(jobId).clearReport();
         return getCurrentPage(jobId);
+    }
+
+    private static void cancelAllExceptLastPage(final WorkflowManager wfm, final NodeID lastPage) {
+        if (lastPage == null || !wfm.getNodeContainer(lastPage).getNodeContainerState().isExecutionInProgress()) {
+            // there is either no last page or it is not executing -> cancel all executing nodes
+            wfm.getParent().cancelExecution(wfm);
+        } else {
+            // cancel all except the last page
+            for (NodeContainer nc : wfm.getNodeContainers(Collections.singleton(lastPage), null, false, true)) {
+                if (!nc.getID().equals(lastPage)) {
+                    wfm.cancelExecution(nc);
+                }
+            }
+        }
     }
 
     /**

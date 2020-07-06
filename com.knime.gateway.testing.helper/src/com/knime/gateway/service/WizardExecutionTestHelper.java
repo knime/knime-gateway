@@ -296,6 +296,29 @@ public class WizardExecutionTestHelper extends AbstractGatewayServiceTestHelper 
     }
 
     /**
+     * A re-executing page cannot be cancelled. This test makes sure that it won't.
+     *
+     * @throws Exception
+     */
+    public void testResetToPreviousPageWhileReexecuting() throws Exception {
+        UUID wfIdAsync = loadWorkflow(TestWorkflow.WIZARD_EXECUTION_LONG_REEXECUTE);
+        wes().executeToNextPage(wfIdAsync, false, WF_EXECUTION_TIMEOUT, emptyWizardPageInput());
+        WizardPageInputEnt wizardPageInput = builder(WizardPageInputEntBuilder.class)
+            .setViewValues(
+                Collections.singletonMap("5:0:2", "{\"viewValues\":{\"5:0:2\":\"{\\\"string\\\":\\\"\\\"}\"}}"))
+            .build();
+        wes().executeToNextPage(wfIdAsync, true, WF_EXECUTION_TIMEOUT, wizardPageInput);
+        wes().resetToPreviousPage(wfIdAsync, WF_EXECUTION_TIMEOUT);
+        WizardPageEnt page = wes().getCurrentPage(wfIdAsync);
+        String pageContentString = ObjectMapperUtil.getInstance().getObjectMapper()
+            .convertValue(page.getWizardPageContent(), JsonNode.class).toString();
+        assertThat("Expected page element not found", pageContentString,
+            hasJsonPath("$.webNodes.5:0:5.nodeInfo.nodeName", is("Text Output Widget")));
+        assertThat("Expected page element not found", pageContentString,
+            hasJsonPath("$.webNodes.5:0:5.viewRepresentation.text", is("some dummy text")));
+    }
+
+    /**
      * Tests that the timeout works.
      *
      * @throws Exception
