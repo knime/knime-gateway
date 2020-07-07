@@ -371,6 +371,10 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         return getCurrentPage(jobId);
     }
 
+    /*
+     * We don't want to cancel the last page because it's in its re-execution (if executing) and we need it
+     * executed in order to go back to it.
+     */
     private static void cancelAllExceptLastPage(final WorkflowManager wfm, final NodeID lastPage) {
         if (lastPage == null || !wfm.getNodeContainer(lastPage).getNodeContainerState().isExecutionInProgress()) {
             // there is either no last page or it is not executing -> cancel all executing nodes
