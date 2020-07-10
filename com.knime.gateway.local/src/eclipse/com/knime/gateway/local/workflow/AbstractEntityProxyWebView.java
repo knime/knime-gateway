@@ -22,9 +22,6 @@ import static com.knime.gateway.entity.EntityBuilderManager.builder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
 
 import org.knime.core.node.AbstractNodeView.ViewableModel;
 import org.knime.core.node.InvalidSettingsException;
@@ -34,7 +31,13 @@ import org.knime.core.node.web.ValidationError;
 import org.knime.core.node.web.WebViewContent;
 import org.knime.core.node.wizard.CSSModifiable;
 import org.knime.core.node.wizard.WizardNode;
+import org.knime.js.core.JSONViewContent;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.knime.gateway.entity.JavaObjectEnt;
 import com.knime.gateway.entity.JavaObjectEnt.JavaObjectEntBuilder;
 import com.knime.gateway.entity.NodeEnt;
@@ -204,29 +207,17 @@ public abstract class AbstractEntityProxyWebView<E extends NodeEnt> extends Abst
     /**
      * WebViewContent that just wraps the content as a string.
      */
-    protected static class StringWebViewContent implements WebViewContent {
+    @JsonSerialize(using = StringWebViewContentSerializer.class)
+    private static class StringWebViewContent extends JSONViewContent {
 
-        private String m_content;
+        private final String m_content;
 
-        private StringWebViewContent(final String content) {
+        StringWebViewContent(final String content) {
             m_content = content;
         }
 
         @Override
-        public OutputStream saveToStream() throws IOException {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            out.write(m_content.getBytes(Charset.forName("UTF-8")));
-            out.flush();
-            return out;
-        }
-
-        @Override
         public void saveToNodeSettings(final NodeSettingsWO settings) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void loadFromStream(final InputStream viewContentStream) throws IOException {
             throw new UnsupportedOperationException();
         }
 
@@ -236,11 +227,43 @@ public abstract class AbstractEntityProxyWebView<E extends NodeEnt> extends Abst
         }
 
         /**
-         * @return the content as json string
+         * {@inheritDoc}
          */
-        protected String getContent() {
-            return m_content;
+        @Override
+        public boolean equals(final Object obj) {
+            if(obj instanceof StringWebViewContent) {
+                return m_content.equals(((StringWebViewContent)obj).m_content);
+            }
+            return false;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            return m_content.hashCode();
+        }
+
+    }
+
+    private static class StringWebViewContentSerializer extends StdSerializer<StringWebViewContent> {
+        private static final long serialVersionUID = 6449229532861985350L;
+
+        public StringWebViewContentSerializer() {
+            super(StringWebViewContent.class);
+        }
+
+        @Override
+        public void serializeWithType(final StringWebViewContent value, final JsonGenerator gen, final SerializerProvider serializers,
+            final TypeSerializer typeSer) throws IOException {
+            serialize(value, gen, serializers);
+        }
+
+        @Override
+        public void serialize(final StringWebViewContent value, final JsonGenerator gen,
+            final SerializerProvider serializers) throws IOException {
+            gen.writeRawValue(value.m_content);
+        }
     }
 }

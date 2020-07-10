@@ -32,7 +32,6 @@ import org.knime.core.wizard.SubnodeViewableModel.SubnodeWizardViewCreator;
 import org.knime.js.core.JSONWebNode;
 import org.knime.js.core.JSONWebNodePage;
 import org.knime.js.core.JSONWebNodePageConfiguration;
-import org.knime.js.core.JavaScriptViewCreator;
 
 import com.knime.gateway.entity.WrappedWorkflowNodeEnt;
 
@@ -127,31 +126,7 @@ public final class WorkflowNodeEntityProxyWebView extends AbstractEntityProxyWeb
      */
     @Override
     public WizardViewCreator<WebViewContent, WebViewContent> getViewCreator() {
-        return new JavaScriptViewCreator<WebViewContent, WebViewContent>() {
-
-            {
-                setWebTemplate(SubnodeWizardViewCreator.createSubnodeWebTemplate());
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String getViewValueJSONString(final WebViewContent val) {
-                assert val instanceof StringWebViewContent;
-                return ((StringWebViewContent)val).getContent();
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String getViewRepresentationJSONString(final WebViewContent rep) {
-                assert rep instanceof StringWebViewContent;
-                return ((StringWebViewContent)rep).getContent();
-            }
-
-        };
+        return new SubnodeWizardViewCreator<WebViewContent, WebViewContent>();
     }
 
 }

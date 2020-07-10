@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="com.knime.gateway.local" version="2">
+    <resource path="src/eclipse/com/knime/gateway/local/workflow/AbstractEntityProxyWebView.java" type="com.knime.gateway.local.workflow.AbstractEntityProxyWebView$StringWebViewContent">
+        <filter id="337686583">
+            <message_arguments>
+                <message_argument value="com.knime.gateway.local.workflow.AbstractEntityProxyWebView.StringWebViewContent"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
