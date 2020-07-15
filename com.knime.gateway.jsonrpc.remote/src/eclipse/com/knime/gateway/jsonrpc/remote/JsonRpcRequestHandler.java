@@ -29,7 +29,6 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
-import com.knime.gateway.json.util.ObjectMapperUtil;
 import com.knime.gateway.jsonrpc.remote.service.util.WrapWithJsonRpcService;
 import com.knime.gateway.remote.service.DefaultServices;
 import com.knime.gateway.service.GatewayService;
@@ -48,13 +47,12 @@ public class JsonRpcRequestHandler {
     /**
      * Creates a new request handler.
      *
+     * @param mapper the object mapper to use for json de-/serialization
      * @param additionalServices additional services to be used by the handler (the simple class name is used as service
      *            name!)
      */
-    public JsonRpcRequestHandler(final Object... additionalServices) {
+    public JsonRpcRequestHandler(final ObjectMapper mapper, final Object... additionalServices) {
         //setup json-rpc server
-        ObjectMapper mapper = getObjectMapper();
-
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
         m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
 
@@ -65,13 +63,6 @@ public class JsonRpcRequestHandler {
         for (Object service : additionalServices) {
             m_jsonRpcMultiServer.addService(service.getClass().getSimpleName(), service);
         }
-    }
-
-    /**
-     * @return the object mapper to use for json-rpc-request deserialization and json-rpc-response serialization
-     */
-    protected ObjectMapper getObjectMapper() {
-        return ObjectMapperUtil.getInstance().getObjectMapper();
     }
 
     /**

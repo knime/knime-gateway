@@ -42,7 +42,7 @@ public class JsonRpcServerRequestHandler implements GenericServerRequestHandler 
      * New server request handler.
      */
     public JsonRpcServerRequestHandler() {
-        m_jsonRpcRequestHandler = new JsonRpcRequestHandler();
+        m_jsonRpcRequestHandler = new JsonRpcRequestHandler(getObjectMapper());
     }
 
     /**
