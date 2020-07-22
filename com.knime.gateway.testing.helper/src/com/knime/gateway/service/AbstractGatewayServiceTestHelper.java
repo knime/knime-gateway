@@ -107,7 +107,12 @@ public abstract class AbstractGatewayServiceTestHelper {
         /**
          * A workflow mainly to test the node executions count.
          */
-        NODE_EXECUTIONS_COUNT("/files/Test Gateway Node Executions Count.knwf", "node_executions_count");
+        NODE_EXECUTIONS_COUNT("/files/Test Gateway Node Executions Count.knwf", "node_executions_count"),
+
+        /**
+         * A workflow to test configuration via query parameters.
+         */
+        CONFIGURATION("/files/ConfigurationQueryParameter.knwf", "configuration_query_parameter");
 
 
         private final String m_url;
