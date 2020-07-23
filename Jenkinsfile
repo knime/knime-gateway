@@ -18,7 +18,7 @@ properties([
 ])
 
 try {
-    knimetools.defaultTychoBuild('com.knime.update.gateway')
+    knimetools.defaultTychoBuild('org.knime.update.gateway')
 
     stage('Sonarqube analysis') {
         env.lastStage = env.STAGE_NAME

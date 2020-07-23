@@ -6,12 +6,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.knime</groupId>
+		<groupId>org.knime</groupId>
 		<artifactId>knime-gateway</artifactId>
 		<version>${revision}${changelist}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>com.knime.update.gateway</artifactId>
+	<artifactId>org.knime.update.gateway</artifactId>
 	<packaging>eclipse-repository</packaging>
 </project>
