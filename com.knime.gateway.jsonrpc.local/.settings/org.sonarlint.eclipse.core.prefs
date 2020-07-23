@@ -1,6 +1,0 @@
-autoEnabled=true
-eclipse.preferences.version=1
-idePrefixKey=
-projectKey=com.knime\:knime-gateway
-serverId=sonar.knime.com
-sqPrefixKey=com.knime.gateway.jsonrpc.local
