@@ -38,8 +38,6 @@ import org.knime.gateway.api.service.util.ServiceExceptions.NotASubWorkflowExcep
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 
-import com.knime.enterprise.executor.ExecutorUtil;
-
 /**
  * Helper methods useful for the default service implementations.
  *
@@ -181,13 +179,12 @@ public class DefaultServiceUtil {
 
     /**
      * Determines the wizard execution state of a workflow to be be used by
-     * {@link com.knime.gateway.entity.WizardPageEnt.WizardExecutionStateEnum} and
-     * {@link com.knime.gateway.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum}
+     * {@link org.knime.gateway.api.entity.WizardPageEnt.WizardExecutionStateEnum} and
+     * {@link org.knime.gateway.api.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum}
      *
-     * Needs to be kept in sync with {@link ExecutorUtil#getWizardExecutionState(WorkflowManager)}.
-     * <br>
-     * However there are
-     * some differences:
+     * Needs to be kept in sync with
+     * <code>com.knime.enterprise.executor.ExecutorUtil#getWizardExecutionState(WorkflowManager)</code>. <br>
+     * However there are some differences:
      * <ul>
      * <li>this method returns an 'executing' state</li>
      * <li>this method always returns a state even if workflow is not in wizard execution mode</li>
@@ -200,7 +197,8 @@ public class DefaultServiceUtil {
         try (WorkflowLock lock = wfm.lock()) {
             if (wfm.getNodeContainerState().isExecuted()) {
                 return "EXECUTION_FINISHED";
-            } else if (ExecutorUtil.isHaltedAtNonTerminalWizardPage(wfm)) {
+            } else if (wfm.isInWizardExecution()
+                && wfm.getWizardExecutionController().isHaltedAtNonTerminalWizardPage()) {
                 return "INTERACTION_REQUIRED";
             } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
                 return "EXECUTING";

@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.service.util;
 
-import static com.knime.enterprise.executor.ExecutorUtil.isHaltedAtWizardPage;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getWizardExecutionState;
 
@@ -129,6 +128,10 @@ public class WizardExecutionStatistics {
         try (WorkflowLock lock = wfm.lock()) {
             return !wfm.getNodeContainerState().isExecutionInProgress() || isHaltedAtWizardPage(wfm);
         }
+    }
+
+    private static boolean isHaltedAtWizardPage(final WorkflowManager wfm) {
+        return wfm.isInWizardExecution() && wfm.getWizardExecutionController().hasCurrentWizardPage();
     }
 
     /**

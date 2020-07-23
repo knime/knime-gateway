@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.impl.service;
 
-import static com.knime.enterprise.executor.ExecutorUtil.isHaltedAtTerminalWizardPage;
-import static com.knime.enterprise.executor.ExecutorUtil.isHaltedAtWizardPage;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getWizardExecutionState;
 import static org.knime.gateway.impl.service.util.WizardExecutionStatistics.isWfmDone;
@@ -146,7 +144,8 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         wizardPageBuilder.setWizardExecutionState(wes);
 
         // set page content
-        if (isHaltedAtWizardPage(wfm) && !isOnReportPage(wfm)) {
+        if ((wfm.isInWizardExecution() && wfm.getWizardExecutionController().hasCurrentWizardPage())
+            && !isOnReportPage(wfm)) {
             //otherwise jackson core isn't able to find classes outside its bundle
             ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -191,7 +190,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
                 case EXECUTION_FINISHED:
                     if (wec.getProperty(REPORT_PAGE_FLAG).isPresent()) {
                         hasNextPage = false;
-                    } else if (hasReport(wfm) && isHaltedAtTerminalWizardPage(wfm)) {
+                    } else if (hasReport(wfm) && wec.isHaltedAtTerminalWizardPage()) {
                         // special case: execution is finished at a wizard page (i.e. the very last node is a component)
                         // and there is a report -> there is a next page which is for the report only
                         hasNextPage = true;
@@ -241,7 +240,7 @@ public class DefaultWizardExecutionService implements WizardExecutionService {
         // special case: if the workflow is executed, we are on a page
         // (i.e. the very last node is a wizard page component) _and_ there is a report
         // we need to memorize that we stepped from the last wizard page to the report-page
-        if (isHaltedAtTerminalWizardPage(wfm) && hasReport(wfm)) {
+        if (wec.isHaltedAtTerminalWizardPage() && hasReport(wfm)) {
             if (wec.getProperty(REPORT_PAGE_FLAG).isPresent()) {
                 throw new NoWizardPageException("Can't execute to next page. Already on the last page (report).");
             }
