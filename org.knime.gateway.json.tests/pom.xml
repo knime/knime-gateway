@@ -5,11 +5,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.knime</groupId>
+		<groupId>org.knime</groupId>
 		<artifactId>knime-gateway</artifactId>
 		<version>${revision}${changelist}</version>
 	</parent>
-	<artifactId>com.knime.gateway.json.tests</artifactId>
+	<artifactId>org.knime.gateway.json.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
 	<build>

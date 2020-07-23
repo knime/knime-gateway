@@ -39,44 +39,50 @@
 			<url>${knime.core.p2}</url>
 		</repository>
 		<repository>
-			<id>p2-knime-shared</id>
+			<id>p2-knime-base</id>
 			<layout>p2</layout>
-			<url>${knime.shared.p2}</url>
+			<url>${knime.base.p2}</url>
 		</repository>
+		
 		<repository>
 			<id>p2-knime-tp</id>
 			<layout>p2</layout>
 			<url>${knime.tp.p2}</url>
 		</repository>
-		<repository>
-			<id>p2-knime-base</id>
+	    <repository>
+			<id>p2-knime-shared</id>
 			<layout>p2</layout>
-			<url>${knime.base.p2}</url>
+			<url>${knime.shared.p2}</url>
 		</repository>
-		<repository>
+	    <repository>
 			<id>p2-knime-js-base</id>
 			<layout>p2</layout>
 			<url>${knime.js.base.p2}</url>
 		</repository>
-		<repository>
+	    <repository>
 			<id>p2-knime-svg</id>
 			<layout>p2</layout>
 			<url>${knime.svg.p2}</url>
 		</repository>
-		<repository>
+	    <repository>
 			<id>p2-knime-workbench</id>
 			<layout>p2</layout>
 			<url>${knime.workbench.p2}</url>
 		</repository>
-		<repository>
+	    <repository>
 			<id>p2-knime-expressions</id>
 			<layout>p2</layout>
 			<url>${knime.expressions.p2}</url>
 		</repository>
-		<repository>
-			<id>p2-knime-server-client</id>
+	    <repository>
+			<id>p2-knime-reporting</id>
 			<layout>p2</layout>
-			<url>${knime.server.client.p2}</url>
+			<url>${knime.reporting.p2}</url>
+	    </repository>
+		<repository>
+			<id>p2-knime-javasnippet</id>
+			<layout>p2</layout>
+			<url>${knime.javasnippet.p2}</url>
 		</repository>
 		<repository>
 			<id>p2-knime-json</id>
@@ -84,30 +90,11 @@
 			<url>${knime.json.p2}</url>
 		</repository>
 		<repository>
-			<id>p2-knime-javasnippet</id>
-			<layout>p2</layout>
-			<url>${knime.javasnippet.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-executor</id>
-			<layout>p2</layout>
-			<url>${knime.executor.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-reporting</id>
-			<layout>p2</layout>
-			<url>${knime.reporting.p2}</url>
-		</repository>
-		<repository>
 			<id>p2-knime-product</id>
 			<layout>p2</layout>
 			<url>${knime.product.p2}</url>
 		</repository>
-		<repository>
-			<id>p2-knime-server-api</id>
-			<layout>p2</layout>
-			<url>${knime.server.api.p2}</url>
-		</repository>
+		
 	
 		<!-- dependencies for testing only -->
 		<repository>
