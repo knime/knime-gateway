@@ -2,7 +2,7 @@
 <feature
       id="com.knime.features.gateway.jsonrpc.local"
       label="KNIME Remote Workflow Editor JSON-RPC-Connector (deprecated, don&apos;t install)"
-      version="4.11.0.qualifier"
+      version="4.12.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
