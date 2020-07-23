@@ -30,6 +30,7 @@
 		<module>org.knime.gateway.impl.tests</module>
 		<module>org.knime.gateway.testing.helper</module>
 		<module>org.knime.update.gateway</module>
+		<module>org.knime.features.gateway</module>
 	</modules>
 
 	<repositories>
