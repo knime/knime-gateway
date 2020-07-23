@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/testing"
+            deprecated="false"
+            factory-class="org.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTableNodeFactory">
+      </node>
+   </extension>
+   <extension
+         point="org.knime.core.PortType">
+      <portType
+            hidden="false"
+            name="com.knime.gateway.testing.helper.DirectAccessTablePortObject"
+            objectClass="org.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObject"
+            objectSerializer="org.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObject$PageableTablePortObjectSerializer"
+            specClass="org.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObjectSpec"
+            specSerializer="org.knime.gateway.testing.helper.node.directaccesstable.DirectAccessTablePortObjectSpec$PageableTablePortObjectSpecSerializer">
+      </portType>
+   </extension>
+
+</plugin>
