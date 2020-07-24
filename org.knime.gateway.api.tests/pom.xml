@@ -9,7 +9,7 @@
 		<artifactId>knime-gateway</artifactId>
 		<version>${revision}${changelist}</version>
 	</parent>
-	<artifactId>org.knime.gateway.tests</artifactId>
+	<artifactId>org.knime.gateway.api.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
 	<build>
