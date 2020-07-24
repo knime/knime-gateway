@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.knime.gateway" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.knime.gateway.api" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.knime.gateway" id="com.knime.gateway.entity.EntityBuilderFactory" name="EntityBuilderFactory"/>
+         <meta.schema plugin="org.knime.gateway.api" id="org.knime.gateway.entity.api.EntityBuilderFactory" name="EntityBuilderFactory"/>
       </appinfo>
       <documentation>
          Extension point to plug-in entity builders.
