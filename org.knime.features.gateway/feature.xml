@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.gateway"
       label="KNIME Gateway"
-      version="4.2.0.qualifier"
+      version="4.3.0.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>
@@ -940,7 +940,7 @@ propagated with or for interoperation with KNIME.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
- 
+
    <plugin
          id="org.knime.gateway.impl.tests"
          download-size="0"
