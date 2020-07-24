@@ -65,6 +65,7 @@ import org.knime.gateway.api.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
+import org.knime.gateway.api.service.util.ServiceExceptions;
 import org.knime.gateway.api.service.util.ServiceExceptions.ActionNotAllowedException;
 import org.knime.gateway.api.service.util.ServiceExceptions.InvalidSettingsException;
 import org.knime.gateway.api.service.util.ServiceExceptions.NodeNotFoundException;
@@ -204,7 +205,7 @@ public class ChangeNodeTestHelper extends AbstractGatewayServiceTestHelper {
         try {
             ns().setNodeSettings(longrunningWfId, new NodeIDEnt(13), settingsBuilder.build());
             fail("Expected ServiceException to be thrown");
-        } catch (IllegalStateException e) {
+        } catch (ServiceExceptions.IllegalStateException e) {
             assertThat("Unexpected exception message", e.getMessage(),
                 containsString("Cannot load settings into node; it is executing or has executing successors"));
         }

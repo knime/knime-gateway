@@ -53,7 +53,6 @@ import java.util.List;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.json.entity.util.ListEntities;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -86,8 +85,8 @@ public class JsonUtil {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static final void addMixIns(final ObjectMapper mapper) {
-        List<Class<?>> entityClasses = ListEntities.listEntityClasses();
-        List<Class<?>> entityBuilderClasses = ListEntities.listEntityBuilderClasses();
+        List<Class<?>> entityClasses = org.knime.gateway.api.entity.util.ListEntities.listEntityClasses();
+        List<Class<?>> entityBuilderClasses = org.knime.gateway.api.entity.util.ListEntities.listEntityBuilderClasses();
         List<Class<?>> entityMixInClasses = org.knime.gateway.json.entity.util.ListEntities.listEntityClasses();
         List<Class<?>> entityBuilderMixInClasses =
             org.knime.gateway.json.entity.util.ListEntities.listEntityBuilderClasses();

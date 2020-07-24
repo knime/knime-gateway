@@ -43,7 +43,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.testing.helper.node.directaccesstable;
+package com.knime.gateway.testing.helper.node.directaccesstable;
 
 import java.io.File;
 import java.io.IOException;
