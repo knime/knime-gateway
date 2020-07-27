@@ -1,5 +1,7 @@
 # KNIME Gateway API definition and related projects
 
+**IMPORTANT NOTE: though it's called API none of the interfaces or classes of these projects are meant to be public API. They can change any time.**
+
 ## Brief summary of contained projects
 
 *Note*: some projects contain auto-generated code. The code-generation tool etc. is located at 'knime-com-shared/com.knime.gateway.codegen'.
