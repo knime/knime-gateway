@@ -3,6 +3,10 @@
    <feature id="org.knime.features.gateway" version="0.0.0">
        <category name="knime-gateway" />
    </feature>
+   
+   <feature id="org.knime.features.gateway.source" version="0.0.0">
+       <category name="knime-gateway" />
+   </feature>
 
    <category-def name="knime-gateway" label="Build artifacts from knime-gateway">
        <description>Build artifacts from knime-gateway</description>
