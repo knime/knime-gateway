@@ -5,13 +5,9 @@ Bundle-SymbolicName: org.knime.gateway.impl.jsonrpc;singleton:=true
 Bundle-Version: 4.3.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Require-Bundle: org.knime.core;bundle-version="[4.0.0,5.0.0)",
- org.knime.gateway.json;bundle-version="[4.2.0,5.0.0)",
- org.knime.gateway.api;bundle-version="[4.2.0,5.0.0)",
- org.apache.commons.lang3;bundle-version="[3.2.1,4.0.0)",
- com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)",
- org.knime.gateway.impl;bundle-version="[4.2.0,5.0.0)",
- com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.11.0,3.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.knime.gateway.impl.jsonrpc
+Require-Bundle: com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)",
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.11.0,3.0.0)",
+ org.knime.gateway.api;bundle-version="[4.3.0,5.0.0)"

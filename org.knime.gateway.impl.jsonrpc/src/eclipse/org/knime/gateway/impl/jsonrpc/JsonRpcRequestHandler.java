@@ -46,17 +46,12 @@
 package org.knime.gateway.impl.jsonrpc;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.service.util.ListServices;
-import org.knime.gateway.impl.jsonrpc.service.util.WrapWithJsonRpcService;
-import org.knime.gateway.impl.service.DefaultServices;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
@@ -75,20 +70,15 @@ public class JsonRpcRequestHandler {
      * Creates a new request handler.
      *
      * @param mapper the object mapper to use for json de-/serialization
-     * @param additionalServices additional services to be used by the handler (the simple class name is used as service
-     *            name!)
+     * @param services the services to be used by the handler (map from service name to service handler)
      */
-    public JsonRpcRequestHandler(final ObjectMapper mapper, final Object... additionalServices) {
+    public JsonRpcRequestHandler(final ObjectMapper mapper, final Map<String, GatewayService> services) {
         //setup json-rpc server
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
         m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
 
-        for (Entry<String, GatewayService> entry : createWrappedServices().entrySet()) {
+        for (Entry<String, GatewayService> entry : services.entrySet()) {
             m_jsonRpcMultiServer.addService(entry.getKey(), entry.getValue());
-        }
-
-        for (Object service : additionalServices) {
-            m_jsonRpcMultiServer.addService(service.getClass().getSimpleName(), service);
         }
     }
 
@@ -107,17 +97,5 @@ public class JsonRpcRequestHandler {
             //TODO better exception handling
             throw new RuntimeException(ex);
         }
-    }
-
-    private static Map<String, GatewayService> createWrappedServices() {
-        //create all default services and wrap them with the rest wrapper services
-        List<Class<?>> serviceInterfaces = ListServices.listServiceInterfaces();
-        Map<String, GatewayService> wrappedServices = new HashMap<String, GatewayService>();
-        for (Class<?> serviceInterface : serviceInterfaces) {
-            GatewayService wrappedService = WrapWithJsonRpcService.wrap(
-                DefaultServices.getDefaultService((Class<? extends GatewayService>)serviceInterface), serviceInterface);
-            wrappedServices.put(serviceInterface.getSimpleName(), wrappedService);
-        }
-        return wrappedServices;
     }
 }

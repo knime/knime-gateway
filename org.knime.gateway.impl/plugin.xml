@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.knime.gateway.api.entity.EntityBuilderFactory">
-      <EntityBuilderFactory
-            EntityBuilderFactory="org.knime.gateway.impl.entity.DefaultEntityBuilderFactory">
-      </EntityBuilderFactory>
-   </extension>
 </plugin>

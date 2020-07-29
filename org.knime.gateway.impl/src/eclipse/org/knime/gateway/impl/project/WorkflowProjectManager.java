@@ -55,11 +55,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.impl.service.DefaultWorkflowService;
 
 /**
- * Manages workflow projects that are eventually used by the default service implementations (e.g.
- * {@link DefaultWorkflowService}).
+ * Manages workflow projects that are eventually used by the service implementations.
  *
  * @author Martin Horn, University of Konstanz
  * @noreference This class is not intended to be referenced by clients.

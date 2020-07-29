@@ -68,7 +68,7 @@ import org.knime.gateway.api.util.EntityUtil;
  */
 public class EntityUtilTest {
 
-	@Test
+    @Test
 	public void testImmutable() {
 		Object o = null;
 		assertThat("failed to return null", EntityUtil.immutable(o), is(nullValue()));

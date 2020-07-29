@@ -45,7 +45,6 @@
  */
 package org.knime.gateway.impl.project;
 
-import org.eclipse.birt.report.model.api.IllegalOperationException;
 import org.knime.core.node.workflow.WorkflowManager;
 
 /**
@@ -89,6 +88,6 @@ public interface WorkflowProject {
      * @throws IllegalStateException if report generation failed for some reason
      */
     default byte[] generateReport(final String format) {
-        throw new IllegalOperationException("Report generation not supported");
+        throw new UnsupportedOperationException("Report generation not supported");
     }
 }

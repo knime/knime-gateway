@@ -48,7 +48,10 @@ package org.knime.gateway.impl.service.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.javers.core.Javers;
@@ -57,13 +60,7 @@ import org.javers.core.diff.Diff;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.LRUCache;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.EntityBuilderManager;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.entity.PatchEnt;
-import org.knime.gateway.api.entity.WorkflowEnt;
-import org.knime.gateway.api.entity.WorkflowSnapshotEnt;
-import org.knime.gateway.api.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.impl.entity.DefaultWorkflowEnt;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Straightforward repository implementation that just keeps every single snapshot as is and sacrifices memory (and a
@@ -74,8 +71,10 @@ import org.knime.gateway.impl.entity.DefaultWorkflowEnt;
  * NOTE: not a thread-safe implementation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @param <K> the entity key
+ * @param <E> the entity type
  */
-public class SimpleRepository implements WorkflowEntRepository {
+public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepository<K, E> {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SimpleRepository.class);
 
     /* The default value of the maximum number of snapshots in memory - can be set via a system property */
@@ -84,16 +83,17 @@ public class SimpleRepository implements WorkflowEntRepository {
     private final int maxNumSnapshotsInMem = getMaxNumSnapShotsInMem();
 
     /* maps snapshotID to workflow */
-    private final LRUCache<UUID, WorkflowEnt> m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
+    private final LRUCache<UUID, E> m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
 
-    /* maps snapshotID to <workflowID, nodeID> */
-    private final LRUCache<UUID, Pair<UUID, NodeIDEnt>> m_snapshotsWorkflowMap = new LRUCache<>(maxNumSnapshotsInMem);
+    /* maps snapshotID to key */
+    private final LRUCache<UUID, K> m_snapshotsKeyMap = new LRUCache<>(maxNumSnapshotsInMem);
 
-    /* maps <workflowID, nodeID> to <snapshotID, workflow> */
-    private final Map<Pair<UUID, NodeIDEnt>, Pair<UUID, WorkflowEnt>> m_latestSnapshotPerWorkflow = new HashMap<>();
+    /* maps key to <snapshotID, entity> */
+    private final Map<K, Pair<UUID, E>> m_latestSnapshotPerEntity = new HashMap<>();
 
     private final Javers m_javers = JaversBuilder.javers().build();
 
+    // TODO move into knime-com-gateway
     private static int getMaxNumSnapShotsInMem() {
         String prop = System.getProperty("com.knime.enterprise.executor.jobview.max_num_snapshots_in_mem");
         if (prop != null) {
@@ -111,25 +111,23 @@ public class SimpleRepository implements WorkflowEntRepository {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowSnapshotEnt commit(final UUID workflowID, final NodeIDEnt nodeID, final WorkflowEnt entity) {
-        if (!(entity instanceof DefaultWorkflowEnt)) {
-            throw new IllegalArgumentException("Repository only supports default entity implementations so far!");
-        }
-        Pair<UUID, NodeIDEnt> wfKey = Pair.create(workflowID, nodeID);
-        UUID snapshotID = commitInternal(wfKey, entity);
-        return EntityBuilderManager.builder(WorkflowSnapshotEntBuilder.class).setWorkflow(entity)
-            .setSnapshotID(snapshotID).build();
+    public UUID commit(final K key, final E entity) {
+        // TODO
+//        if (!(entity instanceof DefaultWorkflowEnt)) {
+//            throw new IllegalArgumentException("Repository only supports default entity implementations so far!");
+//        }
+        return commitInternal(key, entity);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PatchEnt getChangesAndCommit(final UUID snapshotID, final WorkflowEnt entity)
-        throws IllegalArgumentException {
-        Pair<UUID, NodeIDEnt> wfKey = m_snapshotsWorkflowMap.get(snapshotID);
-        WorkflowEnt snapshot = m_snapshots.get(snapshotID);
-        if (wfKey == null || snapshot == null) {
+    public <P> Optional<P> getChangesAndCommit(final UUID snapshotID, final E entity,
+        final Function<UUID, PatchCreator<P>> patchCreator) throws IllegalArgumentException {
+        K key = m_snapshotsKeyMap.get(snapshotID);
+        E snapshot = m_snapshots.get(snapshotID);
+        if (key == null || snapshot == null) {
             throw new IllegalArgumentException("No workflow found for snapshot with ID '" + snapshotID + "'");
         }
 
@@ -137,11 +135,11 @@ public class SimpleRepository implements WorkflowEntRepository {
         if (diff.hasChanges()) {
             //try committing the current vision since there might be changes
             //compared to the latest version in the repository (not necessarily)
-            UUID newSnapshotID = commitInternal(wfKey, entity);
-            return m_javers.processChangeList(diff.getChanges(),
-                new PatchEntChangeProcessor(newSnapshotID, entity.getTypeID()));
+            UUID newSnapshotID = commitInternal(key, entity);
+            return Optional.of(m_javers.processChangeList(diff.getChanges(),
+                new PatchChangeProcessor<P>(patchCreator.apply(newSnapshotID))));
         } else {
-            return PatchEntChangeProcessor.EMPTY_PATCH;
+            return Optional.empty();
         }
     }
 
@@ -149,20 +147,20 @@ public class SimpleRepository implements WorkflowEntRepository {
      * {@inheritDoc}
      */
     @Override
-    public void disposeHistory(final UUID workflowID) {
-        //remove all snapshots (and other map entries) for the given workflow id
-        List<UUID> snapshotIDs = m_snapshotsWorkflowMap.entrySet().stream()
-            .filter(e -> e.getValue().getFirst().equals(workflowID)).map(e -> e.getKey()).collect(Collectors.toList());
+    public void disposeHistory(final Predicate<K> keyFilter) {
+        //remove all snapshots (and other map entries) for the given entity id
+        List<UUID> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
+            .map(e -> e.getKey()).collect(Collectors.toList());
         snapshotIDs.forEach(s -> {
-            m_snapshotsWorkflowMap.remove(s);
+            m_snapshotsKeyMap.remove(s);
             m_snapshots.remove(s);
         });
-        m_latestSnapshotPerWorkflow.entrySet().removeIf(e -> e.getKey().getFirst().equals(workflowID));
+        m_latestSnapshotPerEntity.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
     }
 
-    private UUID commitInternal(final Pair<UUID, NodeIDEnt> wfKey, final WorkflowEnt entity) {
-        //look for the most recent commit for the given workflow- and nodeID combination
-        Pair<UUID, WorkflowEnt> latestSnapshot = m_latestSnapshotPerWorkflow.get(wfKey);
+    private UUID commitInternal(final K key, final E entity) {
+        //look for the most recent commit for the given key
+        Pair<UUID, E> latestSnapshot = m_latestSnapshotPerEntity.get(key);
         UUID snapshotID = null;
         if (latestSnapshot != null) {
             //only commit if there is a difference to the latest commit
@@ -177,8 +175,8 @@ public class SimpleRepository implements WorkflowEntRepository {
         if (snapshotID == null) {
             snapshotID = UUID.randomUUID();
             m_snapshots.put(snapshotID, entity);
-            m_latestSnapshotPerWorkflow.put(wfKey, Pair.create(snapshotID, entity));
-            m_snapshotsWorkflowMap.put(snapshotID, wfKey);
+            m_latestSnapshotPerEntity.put(key, Pair.create(snapshotID, entity));
+            m_snapshotsKeyMap.put(snapshotID, key);
         }
         return snapshotID;
     }

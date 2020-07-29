@@ -59,9 +59,6 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.service.util.ServiceExceptions;
-import org.knime.gateway.api.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 
@@ -83,20 +80,15 @@ public class DefaultServiceUtil {
      * @param nodeID the node id to get the node/workflow for - if {@link NodeIDEnt#getRootID()} the root workflow
      *            itself will be returned
      * @return the {@link NodeContainer} instance
-     * @throws NodeNotFoundException if there is no node for the given node id
+     * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
-    public static NodeContainer getNodeContainer(final UUID rootWorkflowID, final NodeIDEnt nodeID)
-        throws NodeNotFoundException {
+    public static NodeContainer getNodeContainer(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
         WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
         if (nodeID.equals(NodeIDEnt.getRootID())) {
             return wfm;
         } else {
-            try {
-                return wfm.findNodeContainer(nodeID.toNodeID(wfm.getID()));
-            } catch (IllegalArgumentException e) {
-                throw new ServiceExceptions.NodeNotFoundException(e.getMessage());
-            }
+            return wfm.findNodeContainer(nodeID.toNodeID(wfm.getID()));
         }
     }
 
@@ -130,11 +122,11 @@ public class DefaultServiceUtil {
      * @param rootWorkflowID the root workflow id
      * @param nodeID the subnode's or metanode's node id
      * @return the {@link WorkflowManager}-instance
-     * @throws NotASubWorkflowException if the node id doesn't reference a workflow (i.e. a sub- or metanode)
-     * @throws NodeNotFoundException if there is no node for the given node id
+     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
+     * @throws IllegalArgumentException if there is no node for the given node id or the node id doesn't reference a
+     *             workflow (i.e. a sub- or metanode)
      */
-    public static WorkflowManager getWorkflowManager(final UUID rootWorkflowID, final NodeIDEnt nodeID)
-        throws NotASubWorkflowException, NodeNotFoundException {
+    public static WorkflowManager getWorkflowManager(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
         NodeContainer nodeContainer;
         if (nodeID == null || nodeID.equals(NodeIDEnt.getRootID())) {
             nodeContainer = getRootWorkflowManager(rootWorkflowID);
@@ -146,10 +138,9 @@ public class DefaultServiceUtil {
         } else if (nodeContainer instanceof WorkflowManager) {
             return (WorkflowManager)nodeContainer;
         } else {
-            throw new ServiceExceptions.NotASubWorkflowException(
-                "The node id '" + nodeID + "' doesn't reference a sub workflow.");
+            throw new IllegalStateException("The node id '" + nodeID + "' doesn't reference a sub workflow.");
         }
-   }
+    }
 
     /**
      * Gets the root workflow manager and the contained node container at the same time (see
@@ -158,11 +149,11 @@ public class DefaultServiceUtil {
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
      * @return a pair of {@link WorkflowManager} and {@link NodeContainer} instances
-     * @throws NodeNotFoundException if there is no node for the given node id
+     * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
     public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final UUID rootWorkflowID,
-        final NodeIDEnt nodeID) throws NodeNotFoundException {
+        final NodeIDEnt nodeID) {
         return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
     }
 

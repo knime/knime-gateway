@@ -48,7 +48,6 @@ package org.knime.gateway.json.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -83,20 +82,17 @@ public class JsonUtil {
      *
      * @param mapper the object mapper to add the mixins to
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static final void addMixIns(final ObjectMapper mapper) {
-        List<Class<?>> entityClasses = org.knime.gateway.api.entity.util.ListEntities.listEntityClasses();
-        List<Class<?>> entityBuilderClasses = org.knime.gateway.api.entity.util.ListEntities.listEntityBuilderClasses();
-        List<Class<?>> entityMixInClasses = org.knime.gateway.json.entity.util.ListEntities.listEntityClasses();
-        List<Class<?>> entityBuilderMixInClasses =
-            org.knime.gateway.json.entity.util.ListEntities.listEntityBuilderClasses();
+        // TODO add mixins
+    }
 
-        for (int i = 0; i < entityClasses.size(); i++) {
-            mapper.addMixIn(entityClasses.get(i), entityMixInClasses.get(i));
-            mapper.addMixIn(entityBuilderClasses.get(i), entityBuilderMixInClasses.get(i));
-        }
-
-
+    /**
+     * Adds the de-/serializer for {@link NodeIDEnt}, {@link ConnectionIDEnt} and {@link AnnotationIDEnt}.
+     *
+     * @param mapper the mapper to add the de-/serializer to
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static void addIDEntitySerializer(final ObjectMapper mapper) {
         for (Class clazz : Arrays.asList(NodeIDEnt.class, ConnectionIDEnt.class, AnnotationIDEnt.class)) {
             SimpleModule nodeIdMod = new SimpleModule();
             nodeIdMod.addSerializer(clazz, createToStringSerializer(clazz));

@@ -23,37 +23,7 @@
 						<extraRequirements>
 							<requirement>
 								<type>eclipse-feature</type>
-								<id>org.knime.features.testing.application</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-feature</type>
-								<id>org.knime.features.ext.chromium</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-feature</type>
-								<id>org.knime.features.js.core</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-feature</type>
-								<id>org.knime.features.js.views</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-feature</type>
-								<id>org.knime.features.js.quickforms</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-feature</type>
 								<id>org.knime.features.core</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-							<requirement>
-								<type>eclipse-feature</type>
-								<id>org.knime.features.reporting.runtime</id>
 								<versionRange>0.0.0</versionRange>
 							</requirement>
 						</extraRequirements>

@@ -41,93 +41,14 @@
 			<url>${knime.core.p2}</url>
 		</repository>
 		<repository>
-			<id>p2-knime-base</id>
-			<layout>p2</layout>
-			<url>${knime.base.p2}</url>
-		</repository>
-		
-		<repository>
 			<id>p2-knime-tp</id>
 			<layout>p2</layout>
 			<url>${knime.tp.p2}</url>
 		</repository>
-	    <repository>
+				<repository>
 			<id>p2-knime-shared</id>
 			<layout>p2</layout>
 			<url>${knime.shared.p2}</url>
-		</repository>
-	    <repository>
-			<id>p2-knime-js-base</id>
-			<layout>p2</layout>
-			<url>${knime.js.base.p2}</url>
-		</repository>
-	    <repository>
-			<id>p2-knime-svg</id>
-			<layout>p2</layout>
-			<url>${knime.svg.p2}</url>
-		</repository>
-	    <repository>
-			<id>p2-knime-workbench</id>
-			<layout>p2</layout>
-			<url>${knime.workbench.p2}</url>
-		</repository>
-	    <repository>
-			<id>p2-knime-expressions</id>
-			<layout>p2</layout>
-			<url>${knime.expressions.p2}</url>
-		</repository>
-	    <repository>
-			<id>p2-knime-reporting</id>
-			<layout>p2</layout>
-			<url>${knime.reporting.p2}</url>
-	    </repository>
-		<repository>
-			<id>p2-knime-javasnippet</id>
-			<layout>p2</layout>
-			<url>${knime.javasnippet.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-json</id>
-			<layout>p2</layout>
-			<url>${knime.json.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-product</id>
-			<layout>p2</layout>
-			<url>${knime.product.p2}</url>
-		</repository>
-		
-	
-		<!-- dependencies for testing only -->
-		<repository>
-			<id>p2-knime-distance</id>
-			<layout>p2</layout>
-			<url>${knime.distance.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-weka</id>
-			<layout>p2</layout>
-			<url>${knime.weka.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-dev</id>
-			<layout>p2</layout>
-			<url>${knime.dev.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-chromium</id>
-			<layout>p2</layout>
-			<url>${knime.chromium.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-js-core</id>
-			<layout>p2</layout>
-			<url>${knime.js.core.p2}</url>
-		</repository>
-		<repository>
-			<id>p2-knime-stats</id>
-			<layout>p2</layout>
-			<url>${knime.stats.p2}</url>
 		</repository>
 	</repositories>
 
