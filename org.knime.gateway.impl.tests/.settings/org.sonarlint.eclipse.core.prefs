@@ -1,6 +1,6 @@
 autoEnabled=true
 eclipse.preferences.version=1
-idePrefixKey=
+idePrefixKey=src/org/knime/gateway/impl/tests
 projectKey=org.knime\:knime-gateway
 serverId=sonar.knime.com
-sqPrefixKey=org.knime.gateway.impl.tests
+sqPrefixKey=org.knime.gateway.impl.tests/src/org/knime/gateway/impl/testing

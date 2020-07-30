@@ -3,4 +3,4 @@ eclipse.preferences.version=1
 idePrefixKey=
 projectKey=org.knime\:knime-gateway
 serverId=sonar.knime.com
-sqPrefixKey=org.knime.gateway.testing.helper
+sqPrefixKey=

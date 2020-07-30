@@ -12,4 +12,5 @@ Require-Bundle: org.knime.core;bundle-version="[4.0.0,5.0.0)",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.knime.gateway.impl.project,
- org.knime.gateway.impl.service.util
+ org.knime.gateway.impl.service.util,
+ org.knime.gateway.impl.webui.entity
