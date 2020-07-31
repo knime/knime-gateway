@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -42,61 +43,51 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Jul 30, 2020 (hornm): created
  */
-package org.knime.gateway.api.entity;
+package org.knime.gateway.impl.webui.service;
 
-import java.util.Collections;
-import java.util.List;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.impl.webui.entity.util.EntityBuilderUtil.buildWorkflowEnt;
 
-import org.knime.gateway.api.util.ExtPointUtil;
+import java.util.UUID;
+
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
+import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * Manages entity builders (i.e. {@link GatewayEntityBuilder}s) and gives access to they implementations (that are
- * injected via the {@link EntityBuilderFactory} extension point).
+ * TODO
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class EntityBuilderManager {
+public class DefaultWorkflowService implements WorkflowService {
+    private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
-    private static List<EntityBuilderFactory> BUILDER_FACTORIES;
-
-    private EntityBuilderManager() {
-        //utility class
+    /**
+     * Returns the singleton instance for this service.
+     *
+     * @return the singleton instance
+     */
+    public static DefaultWorkflowService getInstance() {
+       return INSTANCE;
     }
 
     /**
-     * Delivers implementations for entity builder interfaces (see {@link GatewayEntityBuilder}). Implementations are
-     * injected via {@link EntityBuilderFactory} extension point.
-     *
-     * @param builderInterface the builder interface the implementation is requested for
-     * @return an implementation of the requested builder interface (it returns a new instance with every method call)
+     * {@inheritDoc}
      */
-    public static <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B
-        builder(final Class<B> builderInterface) {
-        if (BUILDER_FACTORIES == null) {
-            BUILDER_FACTORIES = createBuilderFactories();
-        }
-        B res = null;
-        for (EntityBuilderFactory fac : BUILDER_FACTORIES) {
-            res = fac.createEntityBuilder(builderInterface).orElse(null);
-            if(res!= null) {
-                return res;
-            }
-        }
-        throw new IllegalStateException(
-            "Failed to create builder instance of of class '" + builderInterface.getSimpleName() + "'");
-    }
-
-    private static List<EntityBuilderFactory> createBuilderFactories() {
-
-        List<EntityBuilderFactory> instances = ExtPointUtil
-            .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
-        if (instances.isEmpty()) {
-            throw new IllegalStateException("No entity builder factory registered.");
-        } else if (instances.size() > 1) {
-            Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
-        }
-        return instances;
+    @Override
+    public WorkflowSnapshotEnt getWorkflow(final UUID projectId, final NodeIDEnt workflowId)
+        throws NotASubWorkflowException, NodeNotFoundException {
+        WorkflowManager wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
+        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotID(UUID.randomUUID())
+            .setWorkflow(buildWorkflowEnt(wfm, projectId)).build();
     }
 
 }

@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt.DefaultAnnotationEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -41,27 +40,29 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEnt
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
+    property = "type",
     visible = true,
-    defaultImpl = DefaultWorkflowEnt.class)
+    defaultImpl = DefaultAnnotationEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
+    @Type(value = DefaultAnnotationEnt.class, name="Annotation")
+,
+  @Type(value = DefaultNodeAnnotationEnt.class, name = "NodeAnnotation")
 })
-@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowEntMixIn extends WorkflowEnt {
+public interface AnnotationEntMixIn extends AnnotationEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("nodes")
-    public java.util.Map<String, NodeEnt> getNodes();
+    @JsonProperty("type")
+    public String getType();
     
     @Override
-    @JsonProperty("connections")
-    public java.util.Map<String, ConnectionEnt> getConnections();
+    @JsonProperty("text")
+    public String getText();
     
 
     /**
@@ -72,24 +73,26 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultWorkflowEntBuilder.class)
+        property = "type",
+        defaultImpl = DefaultAnnotationEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
+        @Type(value = DefaultAnnotationEnt.DefaultAnnotationEntBuilder.class, name="Annotation")
+        ,
+      @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name = "NodeAnnotation")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
+    public static interface AnnotationEntMixInBuilder extends AnnotationEntBuilder {
     
         @Override
-        public WorkflowEntMixIn build();
+        public AnnotationEntMixIn build();
     
         @Override
-        @JsonProperty("nodes")
-        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
+        @JsonProperty("type")
+        public AnnotationEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
+        @JsonProperty("text")
+        public AnnotationEntMixInBuilder setText(final String text);
         
     }
 

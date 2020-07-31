@@ -8,6 +8,7 @@ Export-Package: org.knime.gateway.api.entity,
  org.knime.gateway.api.service,
  org.knime.gateway.api.util,
  org.knime.gateway.api.webui.entity,
+ org.knime.gateway.api.webui.entity.util,
  org.knime.gateway.api.webui.service,
  org.knime.gateway.api.webui.service.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

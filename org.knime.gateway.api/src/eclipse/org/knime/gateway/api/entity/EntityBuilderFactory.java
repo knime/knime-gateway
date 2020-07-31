@@ -45,6 +45,8 @@
  */
 package org.knime.gateway.api.entity;
 
+import java.util.Optional;
+
 /**
  * Interface to be implemented by plugins that make use of the entity builder factory extension point.
  * Delivers concrete implementations for given entity builder interfaces (see also {@link EntityBuilderManager}).
@@ -72,10 +74,12 @@ public interface EntityBuilderFactory {
 
     /**
      * Creates an instance for the demanded entity builder interface.
-
+     *
      * @param builderInterface
-     * @return an instance of the requested builder interface
+     * @return an instance of the requested builder interface or an empty optional if it cannot be created by this
+     *         entity builder factory
      */
-    <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> B createEntityBuilder(Class<B> builderInterface);
+    <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> Optional<B>
+        createEntityBuilder(Class<B> builderInterface);
 
 }

@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -27,47 +25,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The structure of a workflow.
+ * node message
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowEnt extends GatewayEntity {
+public interface NodeMessageEnt extends GatewayEntity {
 
 
   /**
-   * The node map.
-   * @return nodes 
+   * Get type
+   * @return type 
    **/
-  public java.util.Map<String, NodeEnt> getNodes();
+  public String getType();
 
   /**
-   * The list of connections.
-   * @return connections 
+   * Get message
+   * @return message , never <code>null</code>
    **/
-  public java.util.Map<String, ConnectionEnt> getConnections();
+  public String getMessage();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
+    public interface NodeMessageEntBuilder extends GatewayEntityBuilder<NodeMessageEnt> {
 
         /**
-         * The node map.
+   		 * Set type
          * 
-         * @param nodes the property value,  
+         * @param type the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        NodeMessageEntBuilder setType(String type);
         
         /**
-         * The list of connections.
+   		 * Set message
          * 
-         * @param connections the property value,  
+         * @param message the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        NodeMessageEntBuilder setMessage(String message);
         
         
         /**
@@ -77,7 +75,7 @@ public interface WorkflowEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowEnt build();
+        NodeMessageEnt build();
     
     }
 

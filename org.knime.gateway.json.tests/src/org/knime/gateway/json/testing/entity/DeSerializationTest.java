@@ -45,9 +45,16 @@
  */
 package org.knime.gateway.json.testing.entity;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.knime.gateway.api.webui.entity.NodeMessageEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder;
+import org.knime.gateway.json.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -61,14 +68,14 @@ public class DeSerializationTest {
      */
     @Test
     public void testDeserializationWithUnknownProperty() throws JsonProcessingException {
-        // TODO
-//        XYEnt entity = new DefaultXYEntBuilder().setX(10).setY(50).build();
-//        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
-//        ObjectNode jsonNode = mapper.valueToTree(entity).deepCopy();
-//        jsonNode.put("testProp", "test123");
-//
-//        XYEnt newEntity = mapper.treeToValue(jsonNode, entity.getClass());
-//        assertThat("Unexpected problem serializing entity from json with unknown property", newEntity, is(entity));
+        NodeMessageEnt entity = new DefaultNodeMessageEntBuilder().setMessage("test").build();
+        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        ObjectNode jsonNode = mapper.valueToTree(entity).deepCopy();
+        jsonNode.put("testProp", "test123");
+
+        NodeMessageEnt newEntity = mapper.treeToValue(jsonNode, entity.getClass());
+        MatcherAssert.assertThat("Unexpected problem serializing entity from json with unknown property", newEntity,
+            Matchers.is(entity));
     }
 
 }

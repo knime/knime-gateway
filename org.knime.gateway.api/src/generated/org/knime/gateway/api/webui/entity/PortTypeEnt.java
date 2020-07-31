@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -27,47 +25,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The structure of a workflow.
+ * The type of a port.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowEnt extends GatewayEntity {
+public interface PortTypeEnt extends GatewayEntity {
 
 
   /**
-   * The node map.
-   * @return nodes 
+   * Port type class name (for coloring, connection checks).
+   * @return portObjectClassName , never <code>null</code>
    **/
-  public java.util.Map<String, NodeEnt> getNodes();
+  public String getPortObjectClassName();
 
   /**
-   * The list of connections.
-   * @return connections 
+   * Whether the port is optional, only applies to input ports.
+   * @return optional , never <code>null</code>
    **/
-  public java.util.Map<String, ConnectionEnt> getConnections();
+  public Boolean isOptional();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
+    public interface PortTypeEntBuilder extends GatewayEntityBuilder<PortTypeEnt> {
 
         /**
-         * The node map.
+         * Port type class name (for coloring, connection checks).
          * 
-         * @param nodes the property value,  
+         * @param portObjectClassName the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        PortTypeEntBuilder setPortObjectClassName(String portObjectClassName);
         
         /**
-         * The list of connections.
+         * Whether the port is optional, only applies to input ports.
          * 
-         * @param connections the property value,  
+         * @param optional the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        PortTypeEntBuilder setOptional(Boolean optional);
         
         
         /**
@@ -77,7 +75,7 @@ public interface WorkflowEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowEnt build();
+        PortTypeEnt build();
     
     }
 

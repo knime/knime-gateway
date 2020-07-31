@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -27,47 +25,74 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The structure of a workflow.
+ * NodeStateEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowEnt extends GatewayEntity {
+public interface NodeStateEnt extends GatewayEntity {
+
+  /**
+   * Gets or Sets state
+   */
+  public enum StateEnum {
+    IDLE("IDLE"),
+    
+    CONFIGURED("CONFIGURED"),
+    
+    UNCONFIGURED_MARKEDFOREXEC("UNCONFIGURED_MARKEDFOREXEC"),
+    
+    CONFIGURED_MARKEDFOREXEC("CONFIGURED_MARKEDFOREXEC"),
+    
+    EXECUTED_MARKEDFOREXEC("EXECUTED_MARKEDFOREXEC"),
+    
+    CONFIGURED_QUEUED("CONFIGURED_QUEUED"),
+    
+    EXECUTED_QUEUED("EXECUTED_QUEUED"),
+    
+    PREEXECUTE("PREEXECUTE"),
+    
+    EXECUTING("EXECUTING"),
+    
+    EXECUTINGREMOTELY("EXECUTINGREMOTELY"),
+    
+    POSTEXECUTE("POSTEXECUTE"),
+    
+    EXECUTED("EXECUTED");
+
+    private String value;
+
+    StateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * The node map.
-   * @return nodes 
+   * Get state
+   * @return state , never <code>null</code>
    **/
-  public java.util.Map<String, NodeEnt> getNodes();
-
-  /**
-   * The list of connections.
-   * @return connections 
-   **/
-  public java.util.Map<String, ConnectionEnt> getConnections();
+  public StateEnum getState();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
+    public interface NodeStateEntBuilder extends GatewayEntityBuilder<NodeStateEnt> {
 
         /**
-         * The node map.
+   		 * Set state
          * 
-         * @param nodes the property value,  
+         * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
-        
-        /**
-         * The list of connections.
-         * 
-         * @param connections the property value,  
-         * @return this entity builder for chaining
-         */
-        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        NodeStateEntBuilder setState(StateEnum state);
         
         
         /**
@@ -77,7 +102,7 @@ public interface WorkflowEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowEnt build();
+        NodeStateEnt build();
     
     }
 

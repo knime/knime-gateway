@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.ConnectionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt.DefaultConnectionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,25 +41,37 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEnt
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowEnt.class)
+    defaultImpl = DefaultConnectionEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
+    @Type(value = DefaultConnectionEnt.class, name="Connection")
 })
-@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonDeserialize(builder=DefaultConnectionEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowEntMixIn extends WorkflowEnt {
+public interface ConnectionEntMixIn extends ConnectionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("nodes")
-    public java.util.Map<String, NodeEnt> getNodes();
+    @JsonProperty("type")
+    public String getType();
     
     @Override
-    @JsonProperty("connections")
-    public java.util.Map<String, ConnectionEnt> getConnections();
+    @JsonProperty("dest")
+    public org.knime.gateway.api.entity.NodeIDEnt getDest();
+    
+    @Override
+    @JsonProperty("destPort")
+    public Integer getDestPort();
+    
+    @Override
+    @JsonProperty("source")
+    public org.knime.gateway.api.entity.NodeIDEnt getSource();
+    
+    @Override
+    @JsonProperty("sourcePort")
+    public Integer getSourcePort();
     
 
     /**
@@ -73,23 +83,35 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowEntBuilder.class)
+        defaultImpl = DefaultConnectionEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
+        @Type(value = DefaultConnectionEnt.DefaultConnectionEntBuilder.class, name="Connection")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
+    public static interface ConnectionEntMixInBuilder extends ConnectionEntBuilder {
     
         @Override
-        public WorkflowEntMixIn build();
+        public ConnectionEntMixIn build();
     
         @Override
-        @JsonProperty("nodes")
-        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
+        @JsonProperty("type")
+        public ConnectionEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
+        @JsonProperty("dest")
+        public ConnectionEntMixInBuilder setDest(final org.knime.gateway.api.entity.NodeIDEnt dest);
+        
+        @Override
+        @JsonProperty("destPort")
+        public ConnectionEntMixInBuilder setDestPort(final Integer destPort);
+        
+        @Override
+        @JsonProperty("source")
+        public ConnectionEntMixInBuilder setSource(final org.knime.gateway.api.entity.NodeIDEnt source);
+        
+        @Override
+        @JsonProperty("sourcePort")
+        public ConnectionEntMixInBuilder setSourcePort(final Integer sourcePort);
         
     }
 

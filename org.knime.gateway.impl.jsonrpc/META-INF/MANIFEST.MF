@@ -7,7 +7,8 @@ Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: org.knime.gateway.impl.jsonrpc
+Export-Package: org.knime.gateway.impl.jsonrpc,
+ org.knime.gateway.impl.webui.jsonrpc.service.util
 Require-Bundle: com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.11.0,3.0.0)",
  org.knime.gateway.api;bundle-version="[4.3.0,5.0.0)"

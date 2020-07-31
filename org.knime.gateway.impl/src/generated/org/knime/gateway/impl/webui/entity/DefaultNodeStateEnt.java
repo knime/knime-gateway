@@ -22,35 +22,34 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 
 /**
- * The structure of a workflow.
+ * DefaultNodeStateEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowEnt  implements WorkflowEnt {
+public class DefaultNodeStateEnt  implements NodeStateEnt {
 
-  protected java.util.Map<String, NodeEnt> m_nodes;
-  protected java.util.Map<String, ConnectionEnt> m_connections;
+  protected StateEnum m_state;
   
-  protected DefaultWorkflowEnt() {
+  protected DefaultNodeStateEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "Workflow";
+    return "NodeState";
   }
   
-  private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
+  private DefaultNodeStateEnt(DefaultNodeStateEntBuilder builder) {
     
-    m_nodes = immutable(builder.m_nodes);
-    m_connections = immutable(builder.m_connections);
+    if(builder.m_state == null) {
+        throw new IllegalArgumentException("state must not be null.");
+    }
+    m_state = immutable(builder.m_state);
   }
   
    /**
@@ -67,47 +66,38 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections);
+        DefaultNodeStateEnt ent = (DefaultNodeStateEnt)o;
+        return Objects.equals(m_state, ent.m_state);
     }
 
 
   @Override
-  public java.util.Map<String, NodeEnt> getNodes() {
-        return m_nodes;
-    }
-    
-  @Override
-  public java.util.Map<String, ConnectionEnt> getConnections() {
-        return m_connections;
+  public StateEnum getState() {
+        return m_state;
     }
     
   
-    public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
+    public static class DefaultNodeStateEntBuilder implements NodeStateEntBuilder {
     
-        public DefaultWorkflowEntBuilder(){
+        public DefaultNodeStateEntBuilder(){
             
         }
     
-        private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
-        private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
+        private StateEnum m_state;
 
         @Override
-        public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
-             m_nodes = nodes;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
-             m_connections = connections;
+        public DefaultNodeStateEntBuilder setState(StateEnum state) {
+             if(state == null) {
+                 throw new IllegalArgumentException("state must not be null.");
+             }
+             m_state = state;
              return this;
         }
 
         
         @Override
-        public DefaultWorkflowEnt build() {
-            return new DefaultWorkflowEnt(this);
+        public DefaultNodeStateEnt build() {
+            return new DefaultNodeStateEnt(this);
         }
     
     }

@@ -22,35 +22,36 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.AnnotationEnt;
 
 /**
- * The structure of a workflow.
+ * A text annotation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowEnt  implements WorkflowEnt {
+public class DefaultAnnotationEnt  implements AnnotationEnt {
 
-  protected java.util.Map<String, NodeEnt> m_nodes;
-  protected java.util.Map<String, ConnectionEnt> m_connections;
+  protected String m_type;
+  protected String m_text;
   
-  protected DefaultWorkflowEnt() {
+  protected DefaultAnnotationEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "Workflow";
+    return "Annotation";
   }
   
-  private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
+  private DefaultAnnotationEnt(DefaultAnnotationEntBuilder builder) {
     
-    m_nodes = immutable(builder.m_nodes);
-    m_connections = immutable(builder.m_connections);
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
+    m_type = immutable(builder.m_type);
+    m_text = immutable(builder.m_text);
   }
   
    /**
@@ -67,47 +68,50 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections);
+        DefaultAnnotationEnt ent = (DefaultAnnotationEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_text, ent.m_text);
     }
 
 
   @Override
-  public java.util.Map<String, NodeEnt> getNodes() {
-        return m_nodes;
+  public String getType() {
+        return m_type;
     }
     
   @Override
-  public java.util.Map<String, ConnectionEnt> getConnections() {
-        return m_connections;
+  public String getText() {
+        return m_text;
     }
     
   
-    public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
+    public static class DefaultAnnotationEntBuilder implements AnnotationEntBuilder {
     
-        public DefaultWorkflowEntBuilder(){
+        public DefaultAnnotationEntBuilder(){
             
         }
     
-        private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
-        private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
+        private String m_type;
+        private String m_text;
 
         @Override
-        public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
-             m_nodes = nodes;
+        public DefaultAnnotationEntBuilder setType(String type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
+             m_type = type;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
-             m_connections = connections;
+        public DefaultAnnotationEntBuilder setText(String text) {
+             m_text = text;
              return this;
         }
 
         
         @Override
-        public DefaultWorkflowEnt build() {
-            return new DefaultWorkflowEnt(this);
+        public DefaultAnnotationEnt build() {
+            return new DefaultAnnotationEnt(this);
         }
     
     }

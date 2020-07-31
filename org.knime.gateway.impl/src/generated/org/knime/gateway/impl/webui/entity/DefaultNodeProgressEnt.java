@@ -22,35 +22,34 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
+import java.math.BigDecimal;
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.NodeProgressEnt;
 
 /**
- * The structure of a workflow.
+ * Represents the node&#39;s progress.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowEnt  implements WorkflowEnt {
+public class DefaultNodeProgressEnt  implements NodeProgressEnt {
 
-  protected java.util.Map<String, NodeEnt> m_nodes;
-  protected java.util.Map<String, ConnectionEnt> m_connections;
+  protected BigDecimal m_progress;
+  protected String m_message;
   
-  protected DefaultWorkflowEnt() {
+  protected DefaultNodeProgressEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "Workflow";
+    return "NodeProgress";
   }
   
-  private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
+  private DefaultNodeProgressEnt(DefaultNodeProgressEntBuilder builder) {
     
-    m_nodes = immutable(builder.m_nodes);
-    m_connections = immutable(builder.m_connections);
+    m_progress = immutable(builder.m_progress);
+    m_message = immutable(builder.m_message);
   }
   
    /**
@@ -67,47 +66,47 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections);
+        DefaultNodeProgressEnt ent = (DefaultNodeProgressEnt)o;
+        return Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_message, ent.m_message);
     }
 
 
   @Override
-  public java.util.Map<String, NodeEnt> getNodes() {
-        return m_nodes;
+  public BigDecimal getProgress() {
+        return m_progress;
     }
     
   @Override
-  public java.util.Map<String, ConnectionEnt> getConnections() {
-        return m_connections;
+  public String getMessage() {
+        return m_message;
     }
     
   
-    public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
+    public static class DefaultNodeProgressEntBuilder implements NodeProgressEntBuilder {
     
-        public DefaultWorkflowEntBuilder(){
+        public DefaultNodeProgressEntBuilder(){
             
         }
     
-        private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
-        private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
+        private BigDecimal m_progress;
+        private String m_message;
 
         @Override
-        public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
-             m_nodes = nodes;
+        public DefaultNodeProgressEntBuilder setProgress(BigDecimal progress) {
+             m_progress = progress;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
-             m_connections = connections;
+        public DefaultNodeProgressEntBuilder setMessage(String message) {
+             m_message = message;
              return this;
         }
 
         
         @Override
-        public DefaultWorkflowEnt build() {
-            return new DefaultWorkflowEnt(this);
+        public DefaultNodeProgressEnt build() {
+            return new DefaultNodeProgressEnt(this);
         }
     
     }

@@ -18,8 +18,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeProgressEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeProgressEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,25 +42,25 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEnt
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowEnt.class)
+    defaultImpl = DefaultNodeProgressEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
+    @Type(value = DefaultNodeProgressEnt.class, name="NodeProgress")
 })
-@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeProgressEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowEntMixIn extends WorkflowEnt {
+public interface NodeProgressEntMixIn extends NodeProgressEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("nodes")
-    public java.util.Map<String, NodeEnt> getNodes();
+    @JsonProperty("progress")
+    public BigDecimal getProgress();
     
     @Override
-    @JsonProperty("connections")
-    public java.util.Map<String, ConnectionEnt> getConnections();
+    @JsonProperty("message")
+    public String getMessage();
     
 
     /**
@@ -73,23 +72,23 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowEntBuilder.class)
+        defaultImpl = DefaultNodeProgressEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
+        @Type(value = DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder.class, name="NodeProgress")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
+    public static interface NodeProgressEntMixInBuilder extends NodeProgressEntBuilder {
     
         @Override
-        public WorkflowEntMixIn build();
+        public NodeProgressEntMixIn build();
     
         @Override
-        @JsonProperty("nodes")
-        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
+        @JsonProperty("progress")
+        public NodeProgressEntMixInBuilder setProgress(final BigDecimal progress);
         
         @Override
-        @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
+        @JsonProperty("message")
+        public NodeProgressEntMixInBuilder setMessage(final String message);
         
     }
 

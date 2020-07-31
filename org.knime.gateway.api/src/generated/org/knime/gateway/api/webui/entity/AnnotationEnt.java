@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -27,47 +25,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The structure of a workflow.
+ * A text annotation.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowEnt extends GatewayEntity {
+public interface AnnotationEnt extends GatewayEntity {
 
 
   /**
-   * The node map.
-   * @return nodes 
+   * Discriminator for inheritance. Must be the base name of this type/schema.
+   * @return type , never <code>null</code>
    **/
-  public java.util.Map<String, NodeEnt> getNodes();
+  public String getType();
 
   /**
-   * The list of connections.
-   * @return connections 
+   * Get text
+   * @return text 
    **/
-  public java.util.Map<String, ConnectionEnt> getConnections();
+  public String getText();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
+    public interface AnnotationEntBuilder extends GatewayEntityBuilder<AnnotationEnt> {
 
         /**
-         * The node map.
+         * Discriminator for inheritance. Must be the base name of this type/schema.
          * 
-         * @param nodes the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        AnnotationEntBuilder setType(String type);
         
         /**
-         * The list of connections.
+   		 * Set text
          * 
-         * @param connections the property value,  
+         * @param text the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        AnnotationEntBuilder setText(String text);
         
         
         /**
@@ -77,7 +75,7 @@ public interface WorkflowEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowEnt build();
+        AnnotationEnt build();
     
     }
 

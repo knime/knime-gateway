@@ -48,6 +48,7 @@ package org.knime.gateway.json.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -80,10 +81,21 @@ public class JsonUtil {
      * Adds entity and entity builder mixin classes to the passed mapper in order to add jackson-annotations to the
      * respective entity (and entity builder) interface for de-/serialization.
      *
+     * Only the mixins for the web-ui entities are added.
+     *
      * @param mapper the object mapper to add the mixins to
      */
-    public static final void addMixIns(final ObjectMapper mapper) {
-        // TODO add mixins
+    public static final void addJavaUIMixIns(final ObjectMapper mapper) {
+        List<Class<?>> entityClasses = org.knime.gateway.api.webui.entity.util.ListEntities.listEntityClasses();
+        List<Class<?>> entityBuilderClasses = org.knime.gateway.api.webui.entity.util.ListEntities.listEntityBuilderClasses();
+        List<Class<?>> entityMixInClasses = org.knime.gateway.json.webui.entity.util.ListEntities.listEntityClasses();
+        List<Class<?>> entityBuilderMixInClasses =
+            org.knime.gateway.json.webui.entity.util.ListEntities.listEntityBuilderClasses();
+
+        for (int i = 0; i < entityClasses.size(); i++) {
+            mapper.addMixIn(entityClasses.get(i), entityMixInClasses.get(i));
+            mapper.addMixIn(entityBuilderClasses.get(i), entityBuilderMixInClasses.get(i));
+        }
     }
 
     /**

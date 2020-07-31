@@ -18,8 +18,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
+import java.math.BigDecimal;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -27,47 +26,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The structure of a workflow.
+ * Represents the node&#39;s progress.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowEnt extends GatewayEntity {
+public interface NodeProgressEnt extends GatewayEntity {
 
 
   /**
-   * The node map.
-   * @return nodes 
+   * The actual progress, a value between 0 and 1.
+   * @return progress 
    **/
-  public java.util.Map<String, NodeEnt> getNodes();
+  public BigDecimal getProgress();
 
   /**
-   * The list of connections.
-   * @return connections 
+   * A progress message.
+   * @return message 
    **/
-  public java.util.Map<String, ConnectionEnt> getConnections();
+  public String getMessage();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
+    public interface NodeProgressEntBuilder extends GatewayEntityBuilder<NodeProgressEnt> {
 
         /**
-         * The node map.
+         * The actual progress, a value between 0 and 1.
          * 
-         * @param nodes the property value,  
+         * @param progress the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        NodeProgressEntBuilder setProgress(BigDecimal progress);
         
         /**
-         * The list of connections.
+         * A progress message.
          * 
-         * @param connections the property value,  
+         * @param message the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        NodeProgressEntBuilder setMessage(String message);
         
         
         /**
@@ -77,7 +76,7 @@ public interface WorkflowEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowEnt build();
+        NodeProgressEnt build();
     
     }
 

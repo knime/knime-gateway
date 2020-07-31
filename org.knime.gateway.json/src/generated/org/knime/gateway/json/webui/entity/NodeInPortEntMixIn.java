@@ -18,8 +18,8 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeInPortEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,25 +43,33 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEnt
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowEnt.class)
+    defaultImpl = DefaultNodeInPortEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
+    @Type(value = DefaultNodeInPortEnt.class, name="NodeInPort")
 })
-@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeInPortEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowEntMixIn extends WorkflowEnt {
+public interface NodeInPortEntMixIn extends NodeInPortEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("nodes")
-    public java.util.Map<String, NodeEnt> getNodes();
+    @JsonProperty("type")
+    public String getType();
     
     @Override
-    @JsonProperty("connections")
-    public java.util.Map<String, ConnectionEnt> getConnections();
+    @JsonProperty("portIndex")
+    public Integer getPortIndex();
+    
+    @Override
+    @JsonProperty("portType")
+    public PortTypeEnt getPortType();
+    
+    @Override
+    @JsonProperty("portName")
+    public String getPortName();
     
 
     /**
@@ -73,23 +81,31 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowEntBuilder.class)
+        defaultImpl = DefaultNodeInPortEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
+        @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name="NodeInPort")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
+    public static interface NodeInPortEntMixInBuilder extends NodeInPortEntBuilder {
     
         @Override
-        public WorkflowEntMixIn build();
+        public NodeInPortEntMixIn build();
     
         @Override
-        @JsonProperty("nodes")
-        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
+        @JsonProperty("type")
+        public NodeInPortEntMixInBuilder setType(final String type);
         
         @Override
-        @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
+        @JsonProperty("portIndex")
+        public NodeInPortEntMixInBuilder setPortIndex(final Integer portIndex);
+        
+        @Override
+        @JsonProperty("portType")
+        public NodeInPortEntMixInBuilder setPortType(final PortTypeEnt portType);
+        
+        @Override
+        @JsonProperty("portName")
+        public NodeInPortEntMixInBuilder setPortName(final String portName);
         
     }
 
