@@ -21,10 +21,9 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeMessageEnt;
 import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeProgressEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -38,12 +37,69 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NativeNodeEnt extends NodeEnt {
 
+  /**
+   * The type of the node.
+   */
+  public enum TypeEnum {
+    SOURCE("Source"),
+    
+    SINK("Sink"),
+    
+    LEARNER("Learner"),
+    
+    PREDICTOR("Predictor"),
+    
+    MANIPULATOR("Manipulator"),
+    
+    VISUALIZER("Visualizer"),
+    
+    WIDGET("Widget"),
+    
+    LOOPSTART("LoopStart"),
+    
+    LOOPEND("LoopEnd"),
+    
+    SCOPESTART("ScopeStart"),
+    
+    SCOPEEND("ScopeEnd"),
+    
+    QUICKFORM("QuickForm"),
+    
+    CONFIGURATION("Configuration"),
+    
+    OTHER("Other"),
+    
+    MISSING("Missing"),
+    
+    UNKNOWN("Unknown"),
+    
+    SUBNODE("Subnode"),
+    
+    VIRTUALIN("VirtualIn"),
+    
+    VIRTUALOUT("VirtualOut"),
+    
+    CONTAINER("Container");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
-   * Whether this node is inactive, e.g. due to inactive connections
-   * @return inactive 
+   * The type of the node.
+   * @return type 
    **/
-  public Boolean isInactive();
+  public TypeEnum getType();
 
 
     /**
@@ -54,10 +110,10 @@ public interface NativeNodeEnt extends NodeEnt {
         /**
          * Discriminator for inheritance. Must be the base name of this type/schema.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param objectType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setType(String type);
+        NativeNodeEntBuilder setObjectType(String objectType);
         
         /**
          * The node&#39;s name.
@@ -68,60 +124,20 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setName(String name);
         
         /**
-         * The ID of the node.
+         * The id of the node.
          * 
-         * @param nodeID the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeID(org.knime.gateway.api.entity.NodeIDEnt nodeID);
+        NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * The type of the node.
+   		 * Set state
          * 
-         * @param nodeType the property value, NOT <code>null</code>! 
+         * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeType(NodeTypeEnum nodeType);
-        
-        /**
-         * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
-         * 
-         * @param parentNodeID the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setParentNodeID(org.knime.gateway.api.entity.NodeIDEnt parentNodeID);
-        
-        /**
-         * The id of the root workflow this node is contained in or represents.
-         * 
-         * @param rootWorkflowID the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
-        
-        /**
-   		 * Set nodeMessage
-         * 
-         * @param nodeMessage the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
-        
-        /**
-   		 * Set nodeState
-         * 
-         * @param nodeState the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setNodeState(NodeStateEnt nodeState);
-        
-        /**
-   		 * Set progress
-         * 
-         * @param progress the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setProgress(NodeProgressEnt progress);
+        NativeNodeEntBuilder setState(NodeStateEnt state);
         
         /**
          * The list of inputs.
@@ -140,20 +156,28 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
         
         /**
-   		 * Set nodeAnnotation
+   		 * Set annotation
          * 
-         * @param nodeAnnotation the property value,  
+         * @param annotation the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
+        NativeNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
         
         /**
-         * Whether this node is inactive, e.g. due to inactive connections
+   		 * Set position
          * 
-         * @param inactive the property value,  
+         * @param position the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInactive(Boolean inactive);
+        NativeNodeEntBuilder setPosition(XYEnt position);
+        
+        /**
+         * The type of the node.
+         * 
+         * @param type the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setType(TypeEnum type);
         
         
         /**

@@ -42,7 +42,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type",
+    property = "objectType",
     visible = true,
     defaultImpl = DefaultNodePortEnt.class)
 @JsonSubTypes({
@@ -61,8 +61,8 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("objectType")
+    public String getObjectType();
     
     @Override
     @JsonProperty("portIndex")
@@ -85,7 +85,7 @@ public interface NodePortEntMixIn extends NodePortEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type",
+        property = "objectType",
         defaultImpl = DefaultNodePortEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodePortEnt.DefaultNodePortEntBuilder.class, name="NodePort")
@@ -101,8 +101,8 @@ public interface NodePortEntMixIn extends NodePortEnt {
         public NodePortEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodePortEntMixInBuilder setType(final String type);
+        @JsonProperty("objectType")
+        public NodePortEntMixInBuilder setObjectType(final String objectType);
         
         @Override
         @JsonProperty("portIndex")

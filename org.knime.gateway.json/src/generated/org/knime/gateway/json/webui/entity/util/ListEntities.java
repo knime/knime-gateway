@@ -26,15 +26,14 @@ import org.knime.gateway.json.webui.entity.NativeNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeInPortEntMixIn;
-import org.knime.gateway.json.webui.entity.NodeMessageEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeOutPortEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
-import org.knime.gateway.json.webui.entity.NodeProgressEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeStateEntMixIn;
 import org.knime.gateway.json.webui.entity.PortTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
+import org.knime.gateway.json.webui.entity.XYEntMixIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,15 +65,14 @@ public class ListEntities {
         res.add(NodeAnnotationEntMixIn.class);
         res.add(NodeEntMixIn.class);
         res.add(NodeInPortEntMixIn.class);
-        res.add(NodeMessageEntMixIn.class);
         res.add(NodeOutPortEntMixIn.class);
         res.add(NodePortEntMixIn.class);
-        res.add(NodeProgressEntMixIn.class);
         res.add(NodeStateEntMixIn.class);
         res.add(PortTypeEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
         res.add(WorkflowNodeEntMixIn.class);
         res.add(WorkflowSnapshotEntMixIn.class);
+        res.add(XYEntMixIn.class);
         return res;
     }
     
@@ -92,15 +90,14 @@ public class ListEntities {
         res.add(NodeAnnotationEntMixIn.NodeAnnotationEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
         res.add(NodeInPortEntMixIn.NodeInPortEntMixInBuilder.class);
-        res.add(NodeMessageEntMixIn.NodeMessageEntMixInBuilder.class);
         res.add(NodeOutPortEntMixIn.NodeOutPortEntMixInBuilder.class);
         res.add(NodePortEntMixIn.NodePortEntMixInBuilder.class);
-        res.add(NodeProgressEntMixIn.NodeProgressEntMixInBuilder.class);
         res.add(NodeStateEntMixIn.NodeStateEntMixInBuilder.class);
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
         res.add(WorkflowNodeEntMixIn.WorkflowNodeEntMixInBuilder.class);
         res.add(WorkflowSnapshotEntMixIn.WorkflowSnapshotEntMixInBuilder.class);
+        res.add(XYEntMixIn.XYEntMixInBuilder.class);
         return res;
     }
 }

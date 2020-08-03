@@ -87,7 +87,7 @@ public class DefaultWorkflowService implements WorkflowService {
         throws NotASubWorkflowException, NodeNotFoundException {
         WorkflowManager wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
         return builder(WorkflowSnapshotEntBuilder.class).setSnapshotID(UUID.randomUUID())
-            .setWorkflow(buildWorkflowEnt(wfm, projectId)).build();
+            .setWorkflow(buildWorkflowEnt(wfm)).build();
     }
 
 }

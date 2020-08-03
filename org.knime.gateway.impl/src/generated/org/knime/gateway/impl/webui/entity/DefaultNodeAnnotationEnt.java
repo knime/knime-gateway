@@ -47,10 +47,10 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
   
   private DefaultNodeAnnotationEnt(DefaultNodeAnnotationEntBuilder builder) {
     super();
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_objectType == null) {
+        throw new IllegalArgumentException("objectType must not be null.");
     }
-    m_type = immutable(builder.m_type);
+    m_objectType = immutable(builder.m_objectType);
     m_text = immutable(builder.m_text);
     m__default = immutable(builder.m__default);
   }
@@ -70,7 +70,7 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
             return false;
         }
         DefaultNodeAnnotationEnt ent = (DefaultNodeAnnotationEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_text, ent.m_text) && Objects.equals(m__default, ent.m__default);
+        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_text, ent.m_text) && Objects.equals(m__default, ent.m__default);
     }
 
 
@@ -86,16 +86,16 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
             super();
         }
     
-        private String m_type;
+        private String m_objectType;
         private String m_text;
         private Boolean m__default;
 
         @Override
-        public DefaultNodeAnnotationEntBuilder setType(String type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNodeAnnotationEntBuilder setObjectType(String objectType) {
+             if(objectType == null) {
+                 throw new IllegalArgumentException("objectType must not be null.");
              }
-             m_type = type;
+             m_objectType = objectType;
              return this;
         }
 

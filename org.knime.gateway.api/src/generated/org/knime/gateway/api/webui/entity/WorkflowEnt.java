@@ -36,6 +36,12 @@ public interface WorkflowEnt extends GatewayEntity {
 
 
   /**
+   * Get name
+   * @return name 
+   **/
+  public String getName();
+
+  /**
    * The node map.
    * @return nodes 
    **/
@@ -53,6 +59,14 @@ public interface WorkflowEnt extends GatewayEntity {
      */
     public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
 
+        /**
+   		 * Set name
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setName(String name);
+        
         /**
          * The node map.
          * 

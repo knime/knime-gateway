@@ -40,7 +40,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type",
+    property = "objectType",
     visible = true,
     defaultImpl = DefaultAnnotationEnt.class)
 @JsonSubTypes({
@@ -57,8 +57,8 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("objectType")
+    public String getObjectType();
     
     @Override
     @JsonProperty("text")
@@ -73,7 +73,7 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type",
+        property = "objectType",
         defaultImpl = DefaultAnnotationEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultAnnotationEnt.DefaultAnnotationEntBuilder.class, name="Annotation")
@@ -87,8 +87,8 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
         public AnnotationEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public AnnotationEntMixInBuilder setType(final String type);
+        @JsonProperty("objectType")
+        public AnnotationEntMixInBuilder setObjectType(final String objectType);
         
         @Override
         @JsonProperty("text")

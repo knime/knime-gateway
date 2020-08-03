@@ -20,10 +20,9 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeMessageEnt;
 import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeProgressEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,40 +63,20 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("objectType")
+    public String getObjectType();
     
     @Override
     @JsonProperty("name")
     public String getName();
     
     @Override
-    @JsonProperty("nodeID")
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeID();
+    @JsonProperty("id")
+    public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("nodeType")
-    public NodeTypeEnum getNodeType();
-    
-    @Override
-    @JsonProperty("parentNodeID")
-    public org.knime.gateway.api.entity.NodeIDEnt getParentNodeID();
-    
-    @Override
-    @JsonProperty("rootWorkflowID")
-    public java.util.UUID getRootWorkflowID();
-    
-    @Override
-    @JsonProperty("nodeMessage")
-    public NodeMessageEnt getNodeMessage();
-    
-    @Override
-    @JsonProperty("nodeState")
-    public NodeStateEnt getNodeState();
-    
-    @Override
-    @JsonProperty("progress")
-    public NodeProgressEnt getProgress();
+    @JsonProperty("state")
+    public NodeStateEnt getState();
     
     @Override
     @JsonProperty("inPorts")
@@ -108,8 +87,12 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public java.util.List<NodeOutPortEnt> getOutPorts();
     
     @Override
-    @JsonProperty("nodeAnnotation")
-    public NodeAnnotationEnt getNodeAnnotation();
+    @JsonProperty("annotation")
+    public NodeAnnotationEnt getAnnotation();
+    
+    @Override
+    @JsonProperty("position")
+    public XYEnt getPosition();
     
     @Override
     @JsonProperty("workflowOutgoingPortNodeStates")
@@ -138,40 +121,20 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public WorkflowNodeEntMixInBuilder setType(final String type);
+        @JsonProperty("objectType")
+        public WorkflowNodeEntMixInBuilder setObjectType(final String objectType);
         
         @Override
         @JsonProperty("name")
         public WorkflowNodeEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("nodeID")
-        public WorkflowNodeEntMixInBuilder setNodeID(final org.knime.gateway.api.entity.NodeIDEnt nodeID);
+        @JsonProperty("id")
+        public WorkflowNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
         @Override
-        @JsonProperty("nodeType")
-        public WorkflowNodeEntMixInBuilder setNodeType(final NodeTypeEnum nodeType);
-        
-        @Override
-        @JsonProperty("parentNodeID")
-        public WorkflowNodeEntMixInBuilder setParentNodeID(final org.knime.gateway.api.entity.NodeIDEnt parentNodeID);
-        
-        @Override
-        @JsonProperty("rootWorkflowID")
-        public WorkflowNodeEntMixInBuilder setRootWorkflowID(final java.util.UUID rootWorkflowID);
-        
-        @Override
-        @JsonProperty("nodeMessage")
-        public WorkflowNodeEntMixInBuilder setNodeMessage(final NodeMessageEnt nodeMessage);
-        
-        @Override
-        @JsonProperty("nodeState")
-        public WorkflowNodeEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
-        
-        @Override
-        @JsonProperty("progress")
-        public WorkflowNodeEntMixInBuilder setProgress(final NodeProgressEnt progress);
+        @JsonProperty("state")
+        public WorkflowNodeEntMixInBuilder setState(final NodeStateEnt state);
         
         @Override
         @JsonProperty("inPorts")
@@ -182,8 +145,12 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
         
         @Override
-        @JsonProperty("nodeAnnotation")
-        public WorkflowNodeEntMixInBuilder setNodeAnnotation(final NodeAnnotationEnt nodeAnnotation);
+        @JsonProperty("annotation")
+        public WorkflowNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
+        
+        @Override
+        @JsonProperty("position")
+        public WorkflowNodeEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
         @JsonProperty("workflowOutgoingPortNodeStates")

@@ -55,8 +55,8 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("objectType")
+    public String getObjectType();
     
     @Override
     @JsonProperty("text")
@@ -87,8 +87,8 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         public NodeAnnotationEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeAnnotationEntMixInBuilder setType(final String type);
+        @JsonProperty("objectType")
+        public NodeAnnotationEntMixInBuilder setObjectType(final String objectType);
         
         @Override
         @JsonProperty("text")

@@ -56,6 +56,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("name")
+    public String getName();
+    
+    @Override
     @JsonProperty("nodes")
     public java.util.Map<String, NodeEnt> getNodes();
     
@@ -83,6 +87,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         public WorkflowEntMixIn build();
     
+        @Override
+        @JsonProperty("name")
+        public WorkflowEntMixInBuilder setName(final String name);
+        
         @Override
         @JsonProperty("nodes")
         public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);

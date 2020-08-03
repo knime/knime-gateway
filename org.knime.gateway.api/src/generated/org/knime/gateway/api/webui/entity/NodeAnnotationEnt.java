@@ -48,10 +48,10 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
          * Discriminator for inheritance. Must be the base name of this type/schema.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param objectType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeAnnotationEntBuilder setType(String type);
+        NodeAnnotationEntBuilder setObjectType(String objectType);
         
         /**
    		 * Set text

@@ -18,7 +18,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeProgressEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeProgressEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder;
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.impl.webui.entity.DefaultXYEnt;
+import org.knime.gateway.impl.webui.entity.DefaultXYEnt.DefaultXYEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -42,25 +41,25 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeProgressEnt.DefaultNodePro
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeProgressEnt.class)
+    defaultImpl = DefaultXYEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeProgressEnt.class, name="NodeProgress")
+    @Type(value = DefaultXYEnt.class, name="XY")
 })
-@JsonDeserialize(builder=DefaultNodeProgressEntBuilder.class)
+@JsonDeserialize(builder=DefaultXYEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeProgressEntMixIn extends NodeProgressEnt {
+public interface XYEntMixIn extends XYEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("progress")
-    public BigDecimal getProgress();
+    @JsonProperty("x")
+    public Integer getX();
     
     @Override
-    @JsonProperty("message")
-    public String getMessage();
+    @JsonProperty("y")
+    public Integer getY();
     
 
     /**
@@ -72,23 +71,23 @@ public interface NodeProgressEntMixIn extends NodeProgressEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeProgressEntBuilder.class)
+        defaultImpl = DefaultXYEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder.class, name="NodeProgress")
+        @Type(value = DefaultXYEnt.DefaultXYEntBuilder.class, name="XY")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeProgressEntMixInBuilder extends NodeProgressEntBuilder {
+    public static interface XYEntMixInBuilder extends XYEntBuilder {
     
         @Override
-        public NodeProgressEntMixIn build();
+        public XYEntMixIn build();
     
         @Override
-        @JsonProperty("progress")
-        public NodeProgressEntMixInBuilder setProgress(final BigDecimal progress);
+        @JsonProperty("x")
+        public XYEntMixInBuilder setX(final Integer x);
         
         @Override
-        @JsonProperty("message")
-        public NodeProgressEntMixInBuilder setMessage(final String message);
+        @JsonProperty("y")
+        public XYEntMixInBuilder setY(final Integer y);
         
     }
 

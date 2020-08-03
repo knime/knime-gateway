@@ -47,10 +47,10 @@ public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPo
   
   private DefaultNodeInPortEnt(DefaultNodeInPortEntBuilder builder) {
     super();
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_objectType == null) {
+        throw new IllegalArgumentException("objectType must not be null.");
     }
-    m_type = immutable(builder.m_type);
+    m_objectType = immutable(builder.m_objectType);
     if(builder.m_portIndex == null) {
         throw new IllegalArgumentException("portIndex must not be null.");
     }
@@ -77,7 +77,7 @@ public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPo
             return false;
         }
         DefaultNodeInPortEnt ent = (DefaultNodeInPortEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName);
+        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName);
     }
 
 
@@ -88,17 +88,17 @@ public class DefaultNodeInPortEnt extends DefaultNodePortEnt implements NodeInPo
             super();
         }
     
-        private String m_type;
+        private String m_objectType;
         private Integer m_portIndex;
         private PortTypeEnt m_portType;
         private String m_portName;
 
         @Override
-        public DefaultNodeInPortEntBuilder setType(String type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNodeInPortEntBuilder setObjectType(String objectType) {
+             if(objectType == null) {
+                 throw new IllegalArgumentException("objectType must not be null.");
              }
-             m_type = type;
+             m_objectType = objectType;
              return this;
         }
 

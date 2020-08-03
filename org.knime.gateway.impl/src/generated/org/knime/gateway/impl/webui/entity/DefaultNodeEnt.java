@@ -24,10 +24,9 @@ import java.util.Objects;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeMessageEnt;
 import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeProgressEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.webui.entity.NodeEnt;
 
@@ -39,18 +38,14 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultNodeEnt  implements NodeEnt {
 
-  protected String m_type;
+  protected String m_objectType;
   protected String m_name;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeID;
-  protected NodeTypeEnum m_nodeType;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_parentNodeID;
-  protected java.util.UUID m_rootWorkflowID;
-  protected NodeMessageEnt m_nodeMessage;
-  protected NodeStateEnt m_nodeState;
-  protected NodeProgressEnt m_progress;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_id;
+  protected NodeStateEnt m_state;
   protected java.util.List<NodeInPortEnt> m_inPorts;
   protected java.util.List<NodeOutPortEnt> m_outPorts;
-  protected NodeAnnotationEnt m_nodeAnnotation;
+  protected NodeAnnotationEnt m_annotation;
+  protected XYEnt m_position;
   
   protected DefaultNodeEnt() {
     //for sub-classes
@@ -63,36 +58,29 @@ public class DefaultNodeEnt  implements NodeEnt {
   
   private DefaultNodeEnt(DefaultNodeEntBuilder builder) {
     
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_objectType == null) {
+        throw new IllegalArgumentException("objectType must not be null.");
     }
-    m_type = immutable(builder.m_type);
+    m_objectType = immutable(builder.m_objectType);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
-    if(builder.m_nodeID == null) {
-        throw new IllegalArgumentException("nodeID must not be null.");
+    if(builder.m_id == null) {
+        throw new IllegalArgumentException("id must not be null.");
     }
-    m_nodeID = immutable(builder.m_nodeID);
-    if(builder.m_nodeType == null) {
-        throw new IllegalArgumentException("nodeType must not be null.");
+    m_id = immutable(builder.m_id);
+    if(builder.m_state == null) {
+        throw new IllegalArgumentException("state must not be null.");
     }
-    m_nodeType = immutable(builder.m_nodeType);
-    m_parentNodeID = immutable(builder.m_parentNodeID);
-    if(builder.m_rootWorkflowID == null) {
-        throw new IllegalArgumentException("rootWorkflowID must not be null.");
-    }
-    m_rootWorkflowID = immutable(builder.m_rootWorkflowID);
-    m_nodeMessage = immutable(builder.m_nodeMessage);
-    if(builder.m_nodeState == null) {
-        throw new IllegalArgumentException("nodeState must not be null.");
-    }
-    m_nodeState = immutable(builder.m_nodeState);
-    m_progress = immutable(builder.m_progress);
+    m_state = immutable(builder.m_state);
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
-    m_nodeAnnotation = immutable(builder.m_nodeAnnotation);
+    m_annotation = immutable(builder.m_annotation);
+    if(builder.m_position == null) {
+        throw new IllegalArgumentException("position must not be null.");
+    }
+    m_position = immutable(builder.m_position);
   }
   
    /**
@@ -110,13 +98,13 @@ public class DefaultNodeEnt  implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeID, ent.m_nodeID) && Objects.equals(m_nodeType, ent.m_nodeType) && Objects.equals(m_parentNodeID, ent.m_parentNodeID) && Objects.equals(m_rootWorkflowID, ent.m_rootWorkflowID) && Objects.equals(m_nodeMessage, ent.m_nodeMessage) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation);
+        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position);
     }
 
 
   @Override
-  public String getType() {
-        return m_type;
+  public String getObjectType() {
+        return m_objectType;
     }
     
   @Override
@@ -125,38 +113,13 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeID() {
-        return m_nodeID;
+  public org.knime.gateway.api.entity.NodeIDEnt getId() {
+        return m_id;
     }
     
   @Override
-  public NodeTypeEnum getNodeType() {
-        return m_nodeType;
-    }
-    
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getParentNodeID() {
-        return m_parentNodeID;
-    }
-    
-  @Override
-  public java.util.UUID getRootWorkflowID() {
-        return m_rootWorkflowID;
-    }
-    
-  @Override
-  public NodeMessageEnt getNodeMessage() {
-        return m_nodeMessage;
-    }
-    
-  @Override
-  public NodeStateEnt getNodeState() {
-        return m_nodeState;
-    }
-    
-  @Override
-  public NodeProgressEnt getProgress() {
-        return m_progress;
+  public NodeStateEnt getState() {
+        return m_state;
     }
     
   @Override
@@ -170,8 +133,13 @@ public class DefaultNodeEnt  implements NodeEnt {
     }
     
   @Override
-  public NodeAnnotationEnt getNodeAnnotation() {
-        return m_nodeAnnotation;
+  public NodeAnnotationEnt getAnnotation() {
+        return m_annotation;
+    }
+    
+  @Override
+  public XYEnt getPosition() {
+        return m_position;
     }
     
   
@@ -181,25 +149,21 @@ public class DefaultNodeEnt  implements NodeEnt {
             
         }
     
-        private String m_type;
+        private String m_objectType;
         private String m_name;
-        private org.knime.gateway.api.entity.NodeIDEnt m_nodeID;
-        private NodeTypeEnum m_nodeType;
-        private org.knime.gateway.api.entity.NodeIDEnt m_parentNodeID;
-        private java.util.UUID m_rootWorkflowID;
-        private NodeMessageEnt m_nodeMessage;
-        private NodeStateEnt m_nodeState;
-        private NodeProgressEnt m_progress;
+        private org.knime.gateway.api.entity.NodeIDEnt m_id;
+        private NodeStateEnt m_state;
         private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
-        private NodeAnnotationEnt m_nodeAnnotation;
+        private NodeAnnotationEnt m_annotation;
+        private XYEnt m_position;
 
         @Override
-        public DefaultNodeEntBuilder setType(String type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNodeEntBuilder setObjectType(String objectType) {
+             if(objectType == null) {
+                 throw new IllegalArgumentException("objectType must not be null.");
              }
-             m_type = type;
+             m_objectType = objectType;
              return this;
         }
 
@@ -213,56 +177,20 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setNodeID(org.knime.gateway.api.entity.NodeIDEnt nodeID) {
-             if(nodeID == null) {
-                 throw new IllegalArgumentException("nodeID must not be null.");
+        public DefaultNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("id must not be null.");
              }
-             m_nodeID = nodeID;
+             m_id = id;
              return this;
         }
 
         @Override
-        public DefaultNodeEntBuilder setNodeType(NodeTypeEnum nodeType) {
-             if(nodeType == null) {
-                 throw new IllegalArgumentException("nodeType must not be null.");
+        public DefaultNodeEntBuilder setState(NodeStateEnt state) {
+             if(state == null) {
+                 throw new IllegalArgumentException("state must not be null.");
              }
-             m_nodeType = nodeType;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setParentNodeID(org.knime.gateway.api.entity.NodeIDEnt parentNodeID) {
-             m_parentNodeID = parentNodeID;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID) {
-             if(rootWorkflowID == null) {
-                 throw new IllegalArgumentException("rootWorkflowID must not be null.");
-             }
-             m_rootWorkflowID = rootWorkflowID;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage) {
-             m_nodeMessage = nodeMessage;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setNodeState(NodeStateEnt nodeState) {
-             if(nodeState == null) {
-                 throw new IllegalArgumentException("nodeState must not be null.");
-             }
-             m_nodeState = nodeState;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setProgress(NodeProgressEnt progress) {
-             m_progress = progress;
+             m_state = state;
              return this;
         }
 
@@ -279,8 +207,17 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation) {
-             m_nodeAnnotation = nodeAnnotation;
+        public DefaultNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation) {
+             m_annotation = annotation;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeEntBuilder setPosition(XYEnt position) {
+             if(position == null) {
+                 throw new IllegalArgumentException("position must not be null.");
+             }
+             m_position = position;
              return this;
         }
 

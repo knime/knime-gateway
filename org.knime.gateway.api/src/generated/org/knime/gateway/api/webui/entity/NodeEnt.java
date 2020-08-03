@@ -20,10 +20,9 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeMessageEnt;
 import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeProgressEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -38,71 +37,12 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeEnt extends GatewayEntity {
 
-  /**
-   * The type of the node.
-   */
-  public enum NodeTypeEnum {
-    SOURCE("Source"),
-    
-    SINK("Sink"),
-    
-    LEARNER("Learner"),
-    
-    PREDICTOR("Predictor"),
-    
-    MANIPULATOR("Manipulator"),
-    
-    VISUALIZER("Visualizer"),
-    
-    WIDGET("Widget"),
-    
-    META("Meta"),
-    
-    LOOPSTART("LoopStart"),
-    
-    LOOPEND("LoopEnd"),
-    
-    SCOPESTART("ScopeStart"),
-    
-    SCOPEEND("ScopeEnd"),
-    
-    QUICKFORM("QuickForm"),
-    
-    CONFIGURATION("Configuration"),
-    
-    OTHER("Other"),
-    
-    MISSING("Missing"),
-    
-    UNKNOWN("Unknown"),
-    
-    SUBNODE("Subnode"),
-    
-    VIRTUALIN("VirtualIn"),
-    
-    VIRTUALOUT("VirtualOut"),
-    
-    CONTAINER("Container");
-
-    private String value;
-
-    NodeTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
 
   /**
    * Discriminator for inheritance. Must be the base name of this type/schema.
-   * @return type , never <code>null</code>
+   * @return objectType , never <code>null</code>
    **/
-  public String getType();
+  public String getObjectType();
 
   /**
    * The node&#39;s name.
@@ -111,46 +51,16 @@ public interface NodeEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * The ID of the node.
-   * @return nodeID , never <code>null</code>
+   * The id of the node.
+   * @return id , never <code>null</code>
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeID();
+  public org.knime.gateway.api.entity.NodeIDEnt getId();
 
   /**
-   * The type of the node.
-   * @return nodeType , never <code>null</code>
+   * Get state
+   * @return state , never <code>null</code>
    **/
-  public NodeTypeEnum getNodeType();
-
-  /**
-   * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
-   * @return parentNodeID 
-   **/
-  public org.knime.gateway.api.entity.NodeIDEnt getParentNodeID();
-
-  /**
-   * The id of the root workflow this node is contained in or represents.
-   * @return rootWorkflowID , never <code>null</code>
-   **/
-  public java.util.UUID getRootWorkflowID();
-
-  /**
-   * Get nodeMessage
-   * @return nodeMessage 
-   **/
-  public NodeMessageEnt getNodeMessage();
-
-  /**
-   * Get nodeState
-   * @return nodeState , never <code>null</code>
-   **/
-  public NodeStateEnt getNodeState();
-
-  /**
-   * Get progress
-   * @return progress 
-   **/
-  public NodeProgressEnt getProgress();
+  public NodeStateEnt getState();
 
   /**
    * The list of inputs.
@@ -165,10 +75,16 @@ public interface NodeEnt extends GatewayEntity {
   public java.util.List<NodeOutPortEnt> getOutPorts();
 
   /**
-   * Get nodeAnnotation
-   * @return nodeAnnotation 
+   * Get annotation
+   * @return annotation 
    **/
-  public NodeAnnotationEnt getNodeAnnotation();
+  public NodeAnnotationEnt getAnnotation();
+
+  /**
+   * Get position
+   * @return position , never <code>null</code>
+   **/
+  public XYEnt getPosition();
 
 
     /**
@@ -179,10 +95,10 @@ public interface NodeEnt extends GatewayEntity {
         /**
          * Discriminator for inheritance. Must be the base name of this type/schema.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param objectType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setType(String type);
+        NodeEntBuilder setObjectType(String objectType);
         
         /**
          * The node&#39;s name.
@@ -193,60 +109,20 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setName(String name);
         
         /**
-         * The ID of the node.
+         * The id of the node.
          * 
-         * @param nodeID the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setNodeID(org.knime.gateway.api.entity.NodeIDEnt nodeID);
+        NodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * The type of the node.
+   		 * Set state
          * 
-         * @param nodeType the property value, NOT <code>null</code>! 
+         * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setNodeType(NodeTypeEnum nodeType);
-        
-        /**
-         * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
-         * 
-         * @param parentNodeID the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setParentNodeID(org.knime.gateway.api.entity.NodeIDEnt parentNodeID);
-        
-        /**
-         * The id of the root workflow this node is contained in or represents.
-         * 
-         * @param rootWorkflowID the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
-        
-        /**
-   		 * Set nodeMessage
-         * 
-         * @param nodeMessage the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
-        
-        /**
-   		 * Set nodeState
-         * 
-         * @param nodeState the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setNodeState(NodeStateEnt nodeState);
-        
-        /**
-   		 * Set progress
-         * 
-         * @param progress the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setProgress(NodeProgressEnt progress);
+        NodeEntBuilder setState(NodeStateEnt state);
         
         /**
          * The list of inputs.
@@ -265,12 +141,20 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
         
         /**
-   		 * Set nodeAnnotation
+   		 * Set annotation
          * 
-         * @param nodeAnnotation the property value,  
+         * @param annotation the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
+        NodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setPosition(XYEnt position);
         
         
         /**

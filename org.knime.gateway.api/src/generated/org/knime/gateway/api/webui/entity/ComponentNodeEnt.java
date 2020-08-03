@@ -20,11 +20,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeMessageEnt;
 import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeProgressEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -38,6 +37,43 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ComponentNodeEnt extends WorkflowNodeEnt {
 
+  /**
+   * The type of the component.
+   */
+  public enum TypeEnum {
+    SOURCE("Source"),
+    
+    SINK("Sink"),
+    
+    LEARNER("Learner"),
+    
+    PREDICTOR("Predictor"),
+    
+    MANIPULATOR("Manipulator"),
+    
+    VISUALIZER("Visualizer"),
+    
+    SUBNODE("Subnode");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * The type of the component.
+   * @return type 
+   **/
+  public TypeEnum getType();
 
 
     /**
@@ -48,10 +84,10 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         /**
          * Discriminator for inheritance. Must be the base name of this type/schema.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param objectType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setType(String type);
+        ComponentNodeEntBuilder setObjectType(String objectType);
         
         /**
          * The node&#39;s name.
@@ -62,60 +98,20 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         ComponentNodeEntBuilder setName(String name);
         
         /**
-         * The ID of the node.
+         * The id of the node.
          * 
-         * @param nodeID the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setNodeID(org.knime.gateway.api.entity.NodeIDEnt nodeID);
+        ComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * The type of the node.
+   		 * Set state
          * 
-         * @param nodeType the property value, NOT <code>null</code>! 
+         * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setNodeType(NodeTypeEnum nodeType);
-        
-        /**
-         * The parent node id of the node or \&quot;root\&quot; if it&#39;s the root node/workflow.
-         * 
-         * @param parentNodeID the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setParentNodeID(org.knime.gateway.api.entity.NodeIDEnt parentNodeID);
-        
-        /**
-         * The id of the root workflow this node is contained in or represents.
-         * 
-         * @param rootWorkflowID the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setRootWorkflowID(java.util.UUID rootWorkflowID);
-        
-        /**
-   		 * Set nodeMessage
-         * 
-         * @param nodeMessage the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setNodeMessage(NodeMessageEnt nodeMessage);
-        
-        /**
-   		 * Set nodeState
-         * 
-         * @param nodeState the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setNodeState(NodeStateEnt nodeState);
-        
-        /**
-   		 * Set progress
-         * 
-         * @param progress the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setProgress(NodeProgressEnt progress);
+        ComponentNodeEntBuilder setState(NodeStateEnt state);
         
         /**
          * The list of inputs.
@@ -134,12 +130,20 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         ComponentNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
         
         /**
-   		 * Set nodeAnnotation
+   		 * Set annotation
          * 
-         * @param nodeAnnotation the property value,  
+         * @param annotation the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setNodeAnnotation(NodeAnnotationEnt nodeAnnotation);
+        ComponentNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setPosition(XYEnt position);
         
         /**
          * The state of the inner node connected to a particular outport. TODO Should actually be part of a specialization of NodeOutPort (i.e. WorkflowOutPort) but doesn&#39;t work with inheritance and generics in Java.
@@ -148,6 +152,14 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
+        
+        /**
+         * The type of the component.
+         * 
+         * @param type the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setType(TypeEnum type);
         
         
         /**

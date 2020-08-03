@@ -25,47 +25,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * node message
+ * XYEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeMessageEnt extends GatewayEntity {
+public interface XYEnt extends GatewayEntity {
 
 
   /**
-   * Get type
-   * @return type 
+   * Get x
+   * @return x 
    **/
-  public String getType();
+  public Integer getX();
 
   /**
-   * Get message
-   * @return message , never <code>null</code>
+   * Get y
+   * @return y 
    **/
-  public String getMessage();
+  public Integer getY();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodeMessageEntBuilder extends GatewayEntityBuilder<NodeMessageEnt> {
+    public interface XYEntBuilder extends GatewayEntityBuilder<XYEnt> {
 
         /**
-   		 * Set type
+   		 * Set x
          * 
-         * @param type the property value,  
+         * @param x the property value,  
          * @return this entity builder for chaining
          */
-        NodeMessageEntBuilder setType(String type);
+        XYEntBuilder setX(Integer x);
         
         /**
-   		 * Set message
+   		 * Set y
          * 
-         * @param message the property value, NOT <code>null</code>! 
+         * @param y the property value,  
          * @return this entity builder for chaining
          */
-        NodeMessageEntBuilder setMessage(String message);
+        XYEntBuilder setY(Integer y);
         
         
         /**
@@ -75,7 +75,7 @@ public interface NodeMessageEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeMessageEnt build();
+        XYEnt build();
     
     }
 

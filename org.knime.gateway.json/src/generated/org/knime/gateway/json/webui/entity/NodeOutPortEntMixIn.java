@@ -56,8 +56,8 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public String getType();
+    @JsonProperty("objectType")
+    public String getObjectType();
     
     @Override
     @JsonProperty("portIndex")
@@ -100,8 +100,8 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
         public NodeOutPortEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeOutPortEntMixInBuilder setType(final String type);
+        @JsonProperty("objectType")
+        public NodeOutPortEntMixInBuilder setObjectType(final String objectType);
         
         @Override
         @JsonProperty("portIndex")

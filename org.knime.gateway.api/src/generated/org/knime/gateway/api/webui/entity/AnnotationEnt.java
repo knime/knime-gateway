@@ -35,9 +35,9 @@ public interface AnnotationEnt extends GatewayEntity {
 
   /**
    * Discriminator for inheritance. Must be the base name of this type/schema.
-   * @return type , never <code>null</code>
+   * @return objectType , never <code>null</code>
    **/
-  public String getType();
+  public String getObjectType();
 
   /**
    * Get text
@@ -54,10 +54,10 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
          * Discriminator for inheritance. Must be the base name of this type/schema.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param objectType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AnnotationEntBuilder setType(String type);
+        AnnotationEntBuilder setObjectType(String objectType);
         
         /**
    		 * Set text

@@ -35,6 +35,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultWorkflowEnt  implements WorkflowEnt {
 
+  protected String m_name;
   protected java.util.Map<String, NodeEnt> m_nodes;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   
@@ -49,6 +50,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   
   private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
     
+    m_name = immutable(builder.m_name);
     m_nodes = immutable(builder.m_nodes);
     m_connections = immutable(builder.m_connections);
   }
@@ -68,10 +70,15 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections);
     }
 
 
+  @Override
+  public String getName() {
+        return m_name;
+    }
+    
   @Override
   public java.util.Map<String, NodeEnt> getNodes() {
         return m_nodes;
@@ -89,8 +96,15 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             
         }
     
+        private String m_name;
         private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
+
+        @Override
+        public DefaultWorkflowEntBuilder setName(String name) {
+             m_name = name;
+             return this;
+        }
 
         @Override
         public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {

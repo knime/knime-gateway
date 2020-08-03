@@ -23,35 +23,32 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 
-import org.knime.gateway.api.webui.entity.NodeMessageEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
- * node message
+ * DefaultXYEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeMessageEnt  implements NodeMessageEnt {
+public class DefaultXYEnt  implements XYEnt {
 
-  protected String m_type;
-  protected String m_message;
+  protected Integer m_x;
+  protected Integer m_y;
   
-  protected DefaultNodeMessageEnt() {
+  protected DefaultXYEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "NodeMessage";
+    return "XY";
   }
   
-  private DefaultNodeMessageEnt(DefaultNodeMessageEntBuilder builder) {
+  private DefaultXYEnt(DefaultXYEntBuilder builder) {
     
-    m_type = immutable(builder.m_type);
-    if(builder.m_message == null) {
-        throw new IllegalArgumentException("message must not be null.");
-    }
-    m_message = immutable(builder.m_message);
+    m_x = immutable(builder.m_x);
+    m_y = immutable(builder.m_y);
   }
   
    /**
@@ -68,50 +65,47 @@ public class DefaultNodeMessageEnt  implements NodeMessageEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNodeMessageEnt ent = (DefaultNodeMessageEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_message, ent.m_message);
+        DefaultXYEnt ent = (DefaultXYEnt)o;
+        return Objects.equals(m_x, ent.m_x) && Objects.equals(m_y, ent.m_y);
     }
 
 
   @Override
-  public String getType() {
-        return m_type;
+  public Integer getX() {
+        return m_x;
     }
     
   @Override
-  public String getMessage() {
-        return m_message;
+  public Integer getY() {
+        return m_y;
     }
     
   
-    public static class DefaultNodeMessageEntBuilder implements NodeMessageEntBuilder {
+    public static class DefaultXYEntBuilder implements XYEntBuilder {
     
-        public DefaultNodeMessageEntBuilder(){
+        public DefaultXYEntBuilder(){
             
         }
     
-        private String m_type;
-        private String m_message;
+        private Integer m_x;
+        private Integer m_y;
 
         @Override
-        public DefaultNodeMessageEntBuilder setType(String type) {
-             m_type = type;
+        public DefaultXYEntBuilder setX(Integer x) {
+             m_x = x;
              return this;
         }
 
         @Override
-        public DefaultNodeMessageEntBuilder setMessage(String message) {
-             if(message == null) {
-                 throw new IllegalArgumentException("message must not be null.");
-             }
-             m_message = message;
+        public DefaultXYEntBuilder setY(Integer y) {
+             m_y = y;
              return this;
         }
 
         
         @Override
-        public DefaultNodeMessageEnt build() {
-            return new DefaultNodeMessageEnt(this);
+        public DefaultXYEnt build() {
+            return new DefaultXYEnt(this);
         }
     
     }

@@ -34,7 +34,7 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultNodePortEnt  implements NodePortEnt {
 
-  protected String m_type;
+  protected String m_objectType;
   protected Integer m_portIndex;
   protected PortTypeEnt m_portType;
   protected String m_portName;
@@ -50,10 +50,10 @@ public class DefaultNodePortEnt  implements NodePortEnt {
   
   private DefaultNodePortEnt(DefaultNodePortEntBuilder builder) {
     
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_objectType == null) {
+        throw new IllegalArgumentException("objectType must not be null.");
     }
-    m_type = immutable(builder.m_type);
+    m_objectType = immutable(builder.m_objectType);
     if(builder.m_portIndex == null) {
         throw new IllegalArgumentException("portIndex must not be null.");
     }
@@ -80,13 +80,13 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName);
+        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName);
     }
 
 
   @Override
-  public String getType() {
-        return m_type;
+  public String getObjectType() {
+        return m_objectType;
     }
     
   @Override
@@ -111,17 +111,17 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             
         }
     
-        private String m_type;
+        private String m_objectType;
         private Integer m_portIndex;
         private PortTypeEnt m_portType;
         private String m_portName;
 
         @Override
-        public DefaultNodePortEntBuilder setType(String type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNodePortEntBuilder setObjectType(String objectType) {
+             if(objectType == null) {
+                 throw new IllegalArgumentException("objectType must not be null.");
              }
-             m_type = type;
+             m_objectType = objectType;
              return this;
         }
 

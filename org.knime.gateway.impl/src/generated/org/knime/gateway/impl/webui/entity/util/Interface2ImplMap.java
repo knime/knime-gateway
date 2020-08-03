@@ -34,14 +34,10 @@ import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeInPortEnt.NodeInPortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeMessageEnt.NodeMessageEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeMessageEnt;
 import org.knime.gateway.api.webui.entity.NodeOutPortEnt.NodeOutPortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeOutPortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeProgressEnt.NodeProgressEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeProgressEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
@@ -52,6 +48,8 @@ import org.knime.gateway.api.webui.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
+import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultXYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -98,17 +96,11 @@ public class Interface2ImplMap {
         if(clazz == NodeInPortEntBuilder.class) {
             return (B)new DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder();
         }        
-        if(clazz == NodeMessageEntBuilder.class) {
-            return (B)new DefaultNodeMessageEnt.DefaultNodeMessageEntBuilder();
-        }        
         if(clazz == NodeOutPortEntBuilder.class) {
             return (B)new DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder();
         }        
         if(clazz == NodePortEntBuilder.class) {
             return (B)new DefaultNodePortEnt.DefaultNodePortEntBuilder();
-        }        
-        if(clazz == NodeProgressEntBuilder.class) {
-            return (B)new DefaultNodeProgressEnt.DefaultNodeProgressEntBuilder();
         }        
         if(clazz == NodeStateEntBuilder.class) {
             return (B)new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();
@@ -124,6 +116,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return (B)new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();
+        }        
+        if(clazz == XYEntBuilder.class) {
+            return (B)new DefaultXYEnt.DefaultXYEntBuilder();
         }        
         else {
             return null;
