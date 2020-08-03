@@ -1,0 +1,1469 @@
+{
+  "workflowent_root" : {
+    "connections" : {
+      "root:11_1" : {
+        "dest" : "root:11",
+        "destPort" : 1,
+        "source" : "root:2",
+        "sourcePort" : 1
+      },
+      "root:12_1" : {
+        "dest" : "root:12",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 2
+      },
+      "root:10_1" : {
+        "dest" : "root:10",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:16_1" : {
+        "dest" : "root:16",
+        "destPort" : 1,
+        "source" : "root:15",
+        "sourcePort" : 1
+      },
+      "root:13_1" : {
+        "dest" : "root:13",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 0
+      },
+      "root:14_1" : {
+        "dest" : "root:14",
+        "destPort" : 1,
+        "source" : "root:13",
+        "sourcePort" : 1
+      },
+      "root:4_0" : {
+        "dest" : "root:4",
+        "destPort" : 0,
+        "source" : "root:1",
+        "sourcePort" : 0
+      },
+      "root:2_1" : {
+        "dest" : "root:2",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:5_1" : {
+        "dest" : "root:5",
+        "destPort" : 1,
+        "source" : "root:6",
+        "sourcePort" : 1
+      },
+      "root:6_0" : {
+        "dest" : "root:6",
+        "destPort" : 0,
+        "source" : "root:2",
+        "sourcePort" : 1
+      },
+      "root:4_1" : {
+        "dest" : "root:4",
+        "destPort" : 1,
+        "source" : "root:6",
+        "sourcePort" : 0
+      },
+      "root:9_1" : {
+        "dest" : "root:9",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 2
+      },
+      "root:8_1" : {
+        "dest" : "root:8",
+        "destPort" : 1,
+        "source" : "root:9",
+        "sourcePort" : 1
+      },
+      "root:19_1" : {
+        "dest" : "root:19",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:18_1" : {
+        "dest" : "root:18",
+        "destPort" : 1,
+        "source" : "root:16",
+        "sourcePort" : 1
+      },
+      "root:20_3" : {
+        "dest" : "root:20",
+        "destPort" : 3,
+        "source" : "root:19",
+        "sourcePort" : 1
+      },
+      "root:22_1" : {
+        "dest" : "root:22",
+        "destPort" : 1,
+        "source" : "root:10",
+        "sourcePort" : 1
+      },
+      "root:22_2" : {
+        "dest" : "root:22",
+        "destPort" : 2,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:23_1" : {
+        "dest" : "root:23",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 2
+      },
+      "root:20_1" : {
+        "dest" : "root:20",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:20_2" : {
+        "dest" : "root:20",
+        "destPort" : 2,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:21_1" : {
+        "dest" : "root:21",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:26_1" : {
+        "dest" : "root:26",
+        "destPort" : 1,
+        "source" : "root:25",
+        "sourcePort" : 3
+      },
+      "root:26_2" : {
+        "dest" : "root:26",
+        "destPort" : 2,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:27_1" : {
+        "dest" : "root:27",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:25_1" : {
+        "dest" : "root:25",
+        "destPort" : 1,
+        "source" : "root:1",
+        "sourcePort" : 1
+      },
+      "root:27_2" : {
+        "dest" : "root:27",
+        "destPort" : 2,
+        "source" : "root:1",
+        "sourcePort" : 2
+      },
+      "root:27_3" : {
+        "dest" : "root:27",
+        "destPort" : 3,
+        "source" : "root:1",
+        "sourcePort" : 1
+      }
+    },
+    "name" : "workflow",
+    "nodes" : {
+      "root:1" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:1",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "name" : "Data Generator",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Random data with cluster ID",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 2,
+          "portName" : "Cluster centers",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 204,
+          "y" : 337
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Source"
+      },
+      "root:19" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:19",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Input Table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Numeric Distances",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Distance Measure",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 684,
+          "y" : 757
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:2" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "node annotation"
+        },
+        "id" : "root:2",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Table to be filtered",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Column Filter",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Filtered table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 337
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:4" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:4",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Input to display",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Interactive Table (local)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 704,
+          "y" : 197
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Visualizer"
+      },
+      "root:5" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "a non-executing node"
+        },
+        "id" : "root:5",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Input data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Decision Tree Learner",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Decision Tree Model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.pmml.PMMLPortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 704,
+          "y" : 357
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "type" : "Learner"
+      },
+      "root:6" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:6",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Inport 0",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Metanode",
+        "objectType" : "WorkflowNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Connected to: Filtered",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Connected to: Filtered Out",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 257
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "workflowOutgoingPortNodeStates" : [ {
+          "state" : "CONFIGURED"
+        }, {
+          "state" : "CONFIGURED"
+        } ]
+      },
+      "root:20" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "check for simple port spec\n(distance measure)"
+        },
+        "id" : "root:20",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Query table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 2,
+          "portName" : "Reference table (neighbors)",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 3,
+          "portName" : "Distance Measure",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.distance.DistanceMeasurePortObject"
+          }
+        } ],
+        "name" : "Similarity Search",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Input 1 + columns/rows with neighbor information",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 864,
+          "y" : 757
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:21" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "optional\nin-ports"
+        },
+        "id" : "root:21",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "First table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 2,
+          "portName" : "Optional second table to concatenate",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 3,
+          "portName" : "Optional third table to concatenate",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 4,
+          "portName" : "Optional fourth table to concatenate",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Concatenate (Optional in) (deprecated)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Concatenated table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 384,
+          "y" : 17
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:10" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "a node created\nvia a node set factory"
+        },
+        "id" : "root:10",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Training data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "J48 (3.7)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Trained model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 157
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Learner"
+      },
+      "root:13" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "Node 13"
+        },
+        "id" : "root:13",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Input",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "name" : "Active Branch Inverter",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Output",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 684,
+          "y" : 557
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:8" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:8",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Display data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Box Plot (local)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Robust Statistics",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 497
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "type" : "Visualizer"
+      },
+      "root:25" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:25",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "PCA Compute (deprecated)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Covariance matrix",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 2,
+          "portName" : "Spectral decomposition",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 3,
+          "portName" : "Projection model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 904,
+          "y" : 397
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:14" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "inactive branch"
+        },
+        "id" : "root:14",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Variables input",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "name" : "Variable to Table Row (deprecated)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Variable table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 784,
+          "y" : 557
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "type" : "Other"
+      },
+      "root:9" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:9",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Wrapped Metanode",
+        "objectType" : "ComponentNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 497
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "type" : "Subnode",
+        "workflowOutgoingPortNodeStates" : [ ]
+      },
+      "root:22" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "Check a \n'generic'\nport type spec"
+        },
+        "id" : "root:22",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Weka model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 2,
+          "portName" : "Test data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Weka Predictor (3.7)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Classified Test data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 544,
+          "y" : 77
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Predictor"
+      },
+      "root:11" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:11",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Any input table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Fail in execution",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Copy of input",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 377
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Other"
+      },
+      "root:23" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "with JS view inside\n(i.e. with composite view)"
+        },
+        "id" : "root:23",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Wrapped Metanode",
+        "objectType" : "ComponentNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 164,
+          "y" : 617
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "type" : "Subnode",
+        "workflowOutgoingPortNodeStates" : [ ]
+      },
+      "root:12" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:12",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Wrapped Metanode Failing",
+        "objectType" : "ComponentNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Port 1",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 617
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "type" : "Subnode",
+        "workflowOutgoingPortNodeStates" : [ ]
+      },
+      "root:18" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "checking flow\nvariables (string)"
+        },
+        "id" : "root:18",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Input variables (optional)",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "name" : "String Manipulation (Variable)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Appended variables",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 464,
+          "y" : 757
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:26" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "test of another\nport object spec"
+        },
+        "id" : "root:26",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "PCA model",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.base.node.mine.pca.PCAModelPortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 2,
+          "portName" : "Table to transform",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "PCA Apply (deprecated)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Projected data",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 1064,
+          "y" : 477
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:15" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:15",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "name" : "Table Creator",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Manually created table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 224,
+          "y" : 757
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Source"
+      },
+      "root:27" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : "dynamic\nports"
+        },
+        "id" : "root:27",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "First table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 2,
+          "portName" : "Second table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 3,
+          "portName" : "Additional table to concatenate",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Concatenate",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Concatenated table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "position" : {
+          "x" : 204,
+          "y" : 197
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Manipulator"
+      },
+      "root:16" : {
+        "annotation" : {
+          "objectType" : "NodeAnnotation",
+          "text" : ""
+        },
+        "id" : "root:16",
+        "inPorts" : [ {
+          "objectType" : "NodeInPort",
+          "portIndex" : 0,
+          "portName" : "Variable Inport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "objectType" : "NodeInPort",
+          "portIndex" : 1,
+          "portName" : "Parameters table",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.BufferedDataTable"
+          }
+        } ],
+        "name" : "Table Row to Variable (deprecated)",
+        "objectType" : "NativeNode",
+        "outPorts" : [ {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 0,
+          "portName" : "Variable Outport",
+          "portType" : {
+            "optional" : true,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        }, {
+          "inactive" : false,
+          "objectType" : "NodeOutPort",
+          "portIndex" : 1,
+          "portName" : "Variables Output",
+          "portType" : {
+            "optional" : false,
+            "portObjectClassName" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+          }
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 757
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "type" : "Other"
+      }
+    }
+  }
+}

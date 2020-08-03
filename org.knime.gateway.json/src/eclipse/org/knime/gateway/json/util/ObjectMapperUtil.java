@@ -39,7 +39,7 @@ public final class ObjectMapperUtil {
 
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        JsonUtil.addJavaUIMixIns(mapper);
+        JsonUtil.addWebUIMixIns(mapper);
         JsonUtil.addIDEntitySerializer(mapper);
     }
 

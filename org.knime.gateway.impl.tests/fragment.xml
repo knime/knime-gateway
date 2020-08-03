@@ -4,7 +4,7 @@
    <extension
          point="org.knime.testing.TestcaseCollector">
       <TestcaseCollector
-            TestcaseCollector="org.knime.gateway.impl.tests.GatewayImplTestcaseCollector">
+            TestcaseCollector="org.knime.gateway.impl.webui.tests.GatewayImplTestcaseCollector">
       </TestcaseCollector>
    </extension>
 

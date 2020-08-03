@@ -44,54 +44,74 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 30, 2020 (hornm): created
+ *   Aug 3, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.testing.helper;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.webui.entity.util.EntityBuilderUtil.buildWorkflowEnt;
-
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.core.util.LockFailedException;
+import org.knime.gateway.impl.project.WorkflowProject;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 
 /**
- * TODO
+ * Loads a workflow locally.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultWorkflowService implements WorkflowService {
-    private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
+public class LocalWorkflowLoader implements WorkflowLoader {
 
-    /**
-     * Returns the singleton instance for this service.
-     *
-     * @return the singleton instance
-     */
-    public static DefaultWorkflowService getInstance() {
-       return INSTANCE;
-    }
-
-    private DefaultWorkflowService() {
-        // singleton
-    }
+    private Set<UUID> m_loadedWorkflows = new HashSet<>();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final UUID projectId, final NodeIDEnt workflowId)
-        throws NotASubWorkflowException, NodeNotFoundException {
-        WorkflowManager wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotID(UUID.randomUUID())
-            .setWorkflow(buildWorkflowEnt(wfm)).build();
+    public UUID loadWorkflow(final TestWorkflow workflow) throws Exception {
+        final UUID uuid = UUID.randomUUID();
+        WorkflowProjectManager.addWorkflowProject(uuid, new WorkflowProject() {
+
+            @Override
+            public WorkflowManager openProject() {
+                try {
+                    WorkflowManager wfm = GatewayServiceTestHelper.loadWorkflow(workflow.getUrlFolder());
+                    wfm.setName(workflow.getName());
+                    m_loadedWorkflows.add(uuid);
+                    return wfm;
+                } catch (IOException | InvalidSettingsException | CanceledExecutionException
+                        | UnsupportedWorkflowVersionException | LockFailedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public String getName() {
+                return workflow.getName();
+            }
+
+            @Override
+            public String getID() {
+                return uuid.toString();
+            }
+        });
+        return uuid;
     }
 
+    /**
+     * Disposes all loaded workflows.
+     */
+    public void disposeWorkflows() {
+        m_loadedWorkflows.forEach(uuid -> {
+            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(uuid).get();
+            GatewayServiceTestHelper.cancelAndCloseLoadedWorkflow(wfm);
+            WorkflowProjectManager.removeWorkflowProject(uuid);
+        });
+    }
 }

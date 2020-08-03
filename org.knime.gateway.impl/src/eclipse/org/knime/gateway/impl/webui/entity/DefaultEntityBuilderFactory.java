@@ -68,7 +68,7 @@ public class DefaultEntityBuilderFactory implements EntityBuilderFactory {
     @Override
     public <E extends GatewayEntity, B extends GatewayEntityBuilder<E>> Optional<B>
         createEntityBuilder(final Class<B> builderInterface) {
-        return Optional.of(Interface2ImplMap.create(builderInterface));
+        return Optional.ofNullable(Interface2ImplMap.create(builderInterface));
     }
 
 }

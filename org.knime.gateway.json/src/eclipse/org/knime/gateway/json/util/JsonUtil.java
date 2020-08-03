@@ -85,7 +85,7 @@ public class JsonUtil {
      *
      * @param mapper the object mapper to add the mixins to
      */
-    public static final void addJavaUIMixIns(final ObjectMapper mapper) {
+    public static final void addWebUIMixIns(final ObjectMapper mapper) {
         List<Class<?>> entityClasses = org.knime.gateway.api.webui.entity.util.ListEntities.listEntityClasses();
         List<Class<?>> entityBuilderClasses = org.knime.gateway.api.webui.entity.util.ListEntities.listEntityBuilderClasses();
         List<Class<?>> entityMixInClasses = org.knime.gateway.json.webui.entity.util.ListEntities.listEntityClasses();

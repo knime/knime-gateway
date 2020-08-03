@@ -44,54 +44,42 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 30, 2020 (hornm): created
+ *   Aug 3, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
-
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.webui.entity.util.EntityBuilderUtil.buildWorkflowEnt;
+package org.knime.gateway.testing.helper.webui;
 
 import java.util.UUID;
 
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
- * TODO
+ * Test for the endpoints to view/render a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultWorkflowService implements WorkflowService {
-    private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
+public class ViewWorkflowTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
-     * Returns the singleton instance for this service.
+     * @param entityResultChecker
+     * @param workflowLoader
+     */
+    protected ViewWorkflowTestHelper(final ResultChecker entityResultChecker, final WorkflowLoader workflowLoader) {
+        super("viewworkflow", entityResultChecker, workflowLoader);
+    }
+
+    /**
+     * Tests to get the workflow.
      *
-     * @return the singleton instance
+     * @throws Exception
      */
-    public static DefaultWorkflowService getInstance() {
-       return INSTANCE;
-    }
-
-    private DefaultWorkflowService() {
-        // singleton
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public WorkflowSnapshotEnt getWorkflow(final UUID projectId, final NodeIDEnt workflowId)
-        throws NotASubWorkflowException, NodeNotFoundException {
-        WorkflowManager wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotID(UUID.randomUUID())
-            .setWorkflow(buildWorkflowEnt(wfm)).build();
+    public void testGetWorkflow() throws Exception {
+        UUID wfId = loadWorkflow(TestWorkflowCollection.GENERAL);
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        cr(workflow, "workflowent_root");
     }
 
 }

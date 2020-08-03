@@ -44,21 +44,33 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 30, 2020 (hornm): created
+ *   Aug 3, 2020 (hornm): created
  */
-package org.knime.gateway.impl.tests;
+package org.knime.gateway.testing.helper;
 
-import org.junit.Test;
+import java.io.File;
+import java.net.URL;
 
 /**
- * Placeholder test.
+ * Represents a test workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DummyTest {
+public interface TestWorkflow {
 
-    @Test
-    public void test() {
+    /**
+     * @return url of the workflow file
+     */
+    public URL getUrlZipFile();
 
-    }
+    /**
+     * @return the file of the workflow folder
+     */
+    File getUrlFolder();
+
+    /**
+     * @return name of the loaded workflow
+     */
+    String getName();
+
 }

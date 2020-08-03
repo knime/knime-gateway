@@ -43,7 +43,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.tests;
+package org.knime.gateway.impl.webui.tests;
 
 import org.knime.testing.core.AbstractTestcaseCollector;
 
