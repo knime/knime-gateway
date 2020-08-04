@@ -75,6 +75,9 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         throw new IllegalArgumentException("position must not be null.");
     }
     m_position = immutable(builder.m_position);
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = immutable(builder.m_type);
   }
   
@@ -184,6 +187,9 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
 
         @Override
         public DefaultNativeNodeEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }

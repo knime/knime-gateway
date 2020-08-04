@@ -16,7 +16,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.webui.entity.util;
+package org.knime.gateway.api.webui.util;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 

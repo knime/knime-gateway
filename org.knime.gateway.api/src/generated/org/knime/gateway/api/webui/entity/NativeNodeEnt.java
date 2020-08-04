@@ -97,7 +97,7 @@ public interface NativeNodeEnt extends NodeEnt {
 
   /**
    * The type of the node.
-   * @return type 
+   * @return type , never <code>null</code>
    **/
   public TypeEnum getType();
 
@@ -174,7 +174,7 @@ public interface NativeNodeEnt extends NodeEnt {
         /**
          * The type of the node.
          * 
-         * @param type the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setType(TypeEnum type);

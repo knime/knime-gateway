@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<component id="org.knime.gateway.impl" version="2">
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/util/EntityBuilderUtil.java" type="org.knime.gateway.impl.webui.entity.util.EntityBuilderUtil">
+<component id="org.knime.gateway.api" version="2">
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/EntityBuilderUtil.java" type="org.knime.gateway.api.webui.util.EntityBuilderUtil">
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="Node"/>
+                <message_argument value="EntityBuilderUtil"/>
+                <message_argument value="getFactory()"/>
+            </message_arguments>
+        </filter>
         <filter id="640712815">
             <message_arguments>
                 <message_argument value="NodeContainer"/>

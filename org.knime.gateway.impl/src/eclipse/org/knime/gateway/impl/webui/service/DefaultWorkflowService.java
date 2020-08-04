@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.webui.entity.util.EntityBuilderUtil.buildWorkflowEnt;
+import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEnt;
 
 import java.util.UUID;
 
