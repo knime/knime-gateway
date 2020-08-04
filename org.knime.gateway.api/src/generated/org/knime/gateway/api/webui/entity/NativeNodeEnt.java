@@ -20,9 +20,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -108,14 +106,6 @@ public interface NativeNodeEnt extends NodeEnt {
     public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
 
         /**
-         * Discriminator for inheritance. Must be the base name of this type/schema.
-         * 
-         * @param objectType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setObjectType(String objectType);
-        
-        /**
          * The node&#39;s name.
          * 
          * @param name the property value, NOT <code>null</code>! 
@@ -132,20 +122,12 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-   		 * Set state
-         * 
-         * @param state the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setState(NodeStateEnt state);
-        
-        /**
          * The list of inputs.
          * 
          * @param inPorts the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts);
+        NativeNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -153,7 +135,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param outPorts the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
+        NativeNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
         
         /**
    		 * Set annotation
@@ -170,6 +152,14 @@ public interface NativeNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setPosition(XYEnt position);
+        
+        /**
+         * Whether it&#39;s a native node, component or a metanode.
+         * 
+         * @param propertyClass the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
         
         /**
          * The type of the node.

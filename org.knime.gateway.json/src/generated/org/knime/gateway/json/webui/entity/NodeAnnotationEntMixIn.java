@@ -55,15 +55,11 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("objectType")
-    public String getObjectType();
-    
-    @Override
     @JsonProperty("text")
     public String getText();
     
     @Override
-    @JsonProperty("_default")
+    @JsonProperty("default")
     public Boolean isDefault();
     
 
@@ -87,15 +83,11 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         public NodeAnnotationEntMixIn build();
     
         @Override
-        @JsonProperty("objectType")
-        public NodeAnnotationEntMixInBuilder setObjectType(final String objectType);
-        
-        @Override
         @JsonProperty("text")
         public NodeAnnotationEntMixInBuilder setText(final String text);
         
         @Override
-        @JsonProperty("_default")
+        @JsonProperty("default")
         public NodeAnnotationEntMixInBuilder setDefault(final Boolean _default);
         
     }

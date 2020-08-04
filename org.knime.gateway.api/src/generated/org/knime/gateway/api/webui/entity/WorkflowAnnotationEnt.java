@@ -18,33 +18,34 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A single port of a node.
+ * A workflow annotation.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodePortEnt extends GatewayEntity {
+public interface WorkflowAnnotationEnt extends AnnotationEnt {
 
   /**
-   * Gets or Sets type
+   * Gets or Sets textAlign
    */
-  public enum TypeEnum {
-    TABLE("table"),
+  public enum TextAlignEnum {
+    LEFT("left"),
     
-    FLOWVARIABLE("flowVariable"),
+    CENTER("center"),
     
-    OTHER("other");
+    RIGHT("right");
 
     private String value;
 
-    TypeEnum(String value) {
+    TextAlignEnum(String value) {
       this.value = value;
     }
 
@@ -57,94 +58,102 @@ public interface NodePortEnt extends GatewayEntity {
 
 
   /**
-   * The index starting at 0.
-   * @return index , never <code>null</code>
+   * Get textAlign
+   * @return textAlign 
    **/
-  public Integer getIndex();
+  public TextAlignEnum getTextAlign();
 
   /**
-   * Get type
-   * @return type , never <code>null</code>
+   * Get defaultFontSize
+   * @return defaultFontSize 
    **/
-  public TypeEnum getType();
+  public Integer getDefaultFontSize();
 
   /**
-   * The color of the port in case of type &#39;other&#39;.
-   * @return color 
+   * Get borderWidth
+   * @return borderWidth 
    **/
-  public String getColor();
+  public Integer getBorderWidth();
 
   /**
-   * Get connectedVia
-   * @return connectedVia 
+   * Get borderColor
+   * @return borderColor 
    **/
-  public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
+  public String getBorderColor();
 
   /**
-   * Get optional
-   * @return optional 
+   * Get backgroundColor
+   * @return backgroundColor 
    **/
-  public Boolean isOptional();
+  public String getBackgroundColor();
 
   /**
-   * Get inactive
-   * @return inactive 
+   * Get bounds
+   * @return bounds 
    **/
-  public Boolean isInactive();
+  public BoundsEnt getBounds();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodePortEntBuilder extends GatewayEntityBuilder<NodePortEnt> {
+    public interface WorkflowAnnotationEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationEnt> {
 
         /**
-         * The index starting at 0.
+   		 * Set text
          * 
-         * @param index the property value, NOT <code>null</code>! 
+         * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setIndex(Integer index);
+        WorkflowAnnotationEntBuilder setText(String text);
         
         /**
-   		 * Set type
+   		 * Set textAlign
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param textAlign the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setType(TypeEnum type);
+        WorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
         
         /**
-         * The color of the port in case of type &#39;other&#39;.
+   		 * Set defaultFontSize
          * 
-         * @param color the property value,  
+         * @param defaultFontSize the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setColor(String color);
+        WorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
         
         /**
-   		 * Set connectedVia
+   		 * Set borderWidth
          * 
-         * @param connectedVia the property value,  
+         * @param borderWidth the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
+        WorkflowAnnotationEntBuilder setBorderWidth(Integer borderWidth);
         
         /**
-   		 * Set optional
+   		 * Set borderColor
          * 
-         * @param optional the property value,  
+         * @param borderColor the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setOptional(Boolean optional);
+        WorkflowAnnotationEntBuilder setBorderColor(String borderColor);
         
         /**
-   		 * Set inactive
+   		 * Set backgroundColor
          * 
-         * @param inactive the property value,  
+         * @param backgroundColor the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setInactive(Boolean inactive);
+        WorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor);
+        
+        /**
+   		 * Set bounds
+         * 
+         * @param bounds the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds);
         
         
         /**
@@ -154,7 +163,7 @@ public interface NodePortEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodePortEnt build();
+        WorkflowAnnotationEnt build();
     
     }
 

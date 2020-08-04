@@ -18,59 +18,82 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * An input port of a node.
+ * BoundsEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeInPortEnt extends NodePortEnt {
+public interface BoundsEnt extends GatewayEntity {
 
+
+  /**
+   * Get x
+   * @return x 
+   **/
+  public Integer getX();
+
+  /**
+   * Get y
+   * @return y 
+   **/
+  public Integer getY();
+
+  /**
+   * Get width
+   * @return width 
+   **/
+  public Integer getWidth();
+
+  /**
+   * Get height
+   * @return height 
+   **/
+  public Integer getHeight();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodeInPortEntBuilder extends GatewayEntityBuilder<NodeInPortEnt> {
+    public interface BoundsEntBuilder extends GatewayEntityBuilder<BoundsEnt> {
 
         /**
-         * Discriminator for inheritance. Must be the base name of this type/schema.
+   		 * Set x
          * 
-         * @param objectType the property value, NOT <code>null</code>! 
+         * @param x the property value,  
          * @return this entity builder for chaining
          */
-        NodeInPortEntBuilder setObjectType(String objectType);
+        BoundsEntBuilder setX(Integer x);
         
         /**
-         * The index starting at 0.
+   		 * Set y
          * 
-         * @param portIndex the property value, NOT <code>null</code>! 
+         * @param y the property value,  
          * @return this entity builder for chaining
          */
-        NodeInPortEntBuilder setPortIndex(Integer portIndex);
+        BoundsEntBuilder setY(Integer y);
         
         /**
-   		 * Set portType
+   		 * Set width
          * 
-         * @param portType the property value, NOT <code>null</code>! 
+         * @param width the property value,  
          * @return this entity builder for chaining
          */
-        NodeInPortEntBuilder setPortType(PortTypeEnt portType);
+        BoundsEntBuilder setWidth(Integer width);
         
         /**
-         * The name of the port.
+   		 * Set height
          * 
-         * @param portName the property value,  
+         * @param height the property value,  
          * @return this entity builder for chaining
          */
-        NodeInPortEntBuilder setPortName(String portName);
+        BoundsEntBuilder setHeight(Integer height);
         
         
         /**
@@ -80,7 +103,7 @@ public interface NodeInPortEnt extends NodePortEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeInPortEnt build();
+        BoundsEnt build();
     
     }
 

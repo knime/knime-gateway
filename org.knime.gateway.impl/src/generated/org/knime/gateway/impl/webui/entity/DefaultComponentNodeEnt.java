@@ -23,9 +23,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
 
@@ -52,10 +50,6 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
   
   private DefaultComponentNodeEnt(DefaultComponentNodeEntBuilder builder) {
     super();
-    if(builder.m_objectType == null) {
-        throw new IllegalArgumentException("objectType must not be null.");
-    }
-    m_objectType = immutable(builder.m_objectType);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
@@ -64,10 +58,6 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
-    if(builder.m_state == null) {
-        throw new IllegalArgumentException("state must not be null.");
-    }
-    m_state = immutable(builder.m_state);
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
     m_annotation = immutable(builder.m_annotation);
@@ -75,7 +65,10 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         throw new IllegalArgumentException("position must not be null.");
     }
     m_position = immutable(builder.m_position);
-    m_workflowOutgoingPortNodeStates = immutable(builder.m_workflowOutgoingPortNodeStates);
+    if(builder.m_propertyClass == null) {
+        throw new IllegalArgumentException("propertyClass must not be null.");
+    }
+    m_propertyClass = immutable(builder.m_propertyClass);
     m_type = immutable(builder.m_type);
   }
   
@@ -94,7 +87,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_workflowOutgoingPortNodeStates, ent.m_workflowOutgoingPortNodeStates) && Objects.equals(m_type, ent.m_type);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_type, ent.m_type);
     }
 
 
@@ -110,25 +103,14 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
             super();
         }
     
-        private String m_objectType;
         private String m_name;
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
-        private NodeStateEnt m_state;
-        private java.util.List<NodeInPortEnt> m_inPorts = new java.util.ArrayList<>();
-        private java.util.List<NodeOutPortEnt> m_outPorts = new java.util.ArrayList<>();
+        private java.util.List<NodePortEnt> m_inPorts = new java.util.ArrayList<>();
+        private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
-        private java.util.List<NodeStateEnt> m_workflowOutgoingPortNodeStates = new java.util.ArrayList<>();
+        private PropertyClassEnum m_propertyClass;
         private TypeEnum m_type;
-
-        @Override
-        public DefaultComponentNodeEntBuilder setObjectType(String objectType) {
-             if(objectType == null) {
-                 throw new IllegalArgumentException("objectType must not be null.");
-             }
-             m_objectType = objectType;
-             return this;
-        }
 
         @Override
         public DefaultComponentNodeEntBuilder setName(String name) {
@@ -149,22 +131,13 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setState(NodeStateEnt state) {
-             if(state == null) {
-                 throw new IllegalArgumentException("state must not be null.");
-             }
-             m_state = state;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts) {
+        public DefaultComponentNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts) {
+        public DefaultComponentNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
              m_outPorts = outPorts;
              return this;
         }
@@ -185,8 +158,11 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates) {
-             m_workflowOutgoingPortNodeStates = workflowOutgoingPortNodeStates;
+        public DefaultComponentNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass) {
+             if(propertyClass == null) {
+                 throw new IllegalArgumentException("propertyClass must not be null.");
+             }
+             m_propertyClass = propertyClass;
              return this;
         }
 

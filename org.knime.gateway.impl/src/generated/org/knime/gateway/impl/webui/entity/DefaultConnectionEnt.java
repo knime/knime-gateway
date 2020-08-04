@@ -33,11 +33,11 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultConnectionEnt  implements ConnectionEnt {
 
-  protected String m_type;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_dest;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_destNode;
   protected Integer m_destPort;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_source;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
   protected Integer m_sourcePort;
+  protected Boolean m_flowVariableConnection;
   
   protected DefaultConnectionEnt() {
     //for sub-classes
@@ -50,23 +50,23 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
   
   private DefaultConnectionEnt(DefaultConnectionEntBuilder builder) {
     
-    m_type = immutable(builder.m_type);
-    if(builder.m_dest == null) {
-        throw new IllegalArgumentException("dest must not be null.");
+    if(builder.m_destNode == null) {
+        throw new IllegalArgumentException("destNode must not be null.");
     }
-    m_dest = immutable(builder.m_dest);
+    m_destNode = immutable(builder.m_destNode);
     if(builder.m_destPort == null) {
         throw new IllegalArgumentException("destPort must not be null.");
     }
     m_destPort = immutable(builder.m_destPort);
-    if(builder.m_source == null) {
-        throw new IllegalArgumentException("source must not be null.");
+    if(builder.m_sourceNode == null) {
+        throw new IllegalArgumentException("sourceNode must not be null.");
     }
-    m_source = immutable(builder.m_source);
+    m_sourceNode = immutable(builder.m_sourceNode);
     if(builder.m_sourcePort == null) {
         throw new IllegalArgumentException("sourcePort must not be null.");
     }
     m_sourcePort = immutable(builder.m_sourcePort);
+    m_flowVariableConnection = immutable(builder.m_flowVariableConnection);
   }
   
    /**
@@ -84,18 +84,13 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
             return false;
         }
         DefaultConnectionEnt ent = (DefaultConnectionEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_dest, ent.m_dest) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_source, ent.m_source) && Objects.equals(m_sourcePort, ent.m_sourcePort);
+        return Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection);
     }
 
 
   @Override
-  public String getType() {
-        return m_type;
-    }
-    
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getDest() {
-        return m_dest;
+  public org.knime.gateway.api.entity.NodeIDEnt getDestNode() {
+        return m_destNode;
     }
     
   @Override
@@ -104,13 +99,18 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     }
     
   @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getSource() {
-        return m_source;
+  public org.knime.gateway.api.entity.NodeIDEnt getSourceNode() {
+        return m_sourceNode;
     }
     
   @Override
   public Integer getSourcePort() {
         return m_sourcePort;
+    }
+    
+  @Override
+  public Boolean isFlowVariableConnection() {
+        return m_flowVariableConnection;
     }
     
   
@@ -120,24 +120,18 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
             
         }
     
-        private String m_type;
-        private org.knime.gateway.api.entity.NodeIDEnt m_dest;
+        private org.knime.gateway.api.entity.NodeIDEnt m_destNode;
         private Integer m_destPort;
-        private org.knime.gateway.api.entity.NodeIDEnt m_source;
+        private org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
         private Integer m_sourcePort;
+        private Boolean m_flowVariableConnection;
 
         @Override
-        public DefaultConnectionEntBuilder setType(String type) {
-             m_type = type;
-             return this;
-        }
-
-        @Override
-        public DefaultConnectionEntBuilder setDest(org.knime.gateway.api.entity.NodeIDEnt dest) {
-             if(dest == null) {
-                 throw new IllegalArgumentException("dest must not be null.");
+        public DefaultConnectionEntBuilder setDestNode(org.knime.gateway.api.entity.NodeIDEnt destNode) {
+             if(destNode == null) {
+                 throw new IllegalArgumentException("destNode must not be null.");
              }
-             m_dest = dest;
+             m_destNode = destNode;
              return this;
         }
 
@@ -151,11 +145,11 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
         }
 
         @Override
-        public DefaultConnectionEntBuilder setSource(org.knime.gateway.api.entity.NodeIDEnt source) {
-             if(source == null) {
-                 throw new IllegalArgumentException("source must not be null.");
+        public DefaultConnectionEntBuilder setSourceNode(org.knime.gateway.api.entity.NodeIDEnt sourceNode) {
+             if(sourceNode == null) {
+                 throw new IllegalArgumentException("sourceNode must not be null.");
              }
-             m_source = source;
+             m_sourceNode = sourceNode;
              return this;
         }
 
@@ -165,6 +159,12 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
                  throw new IllegalArgumentException("sourcePort must not be null.");
              }
              m_sourcePort = sourcePort;
+             return this;
+        }
+
+        @Override
+        public DefaultConnectionEntBuilder setFlowVariableConnection(Boolean flowVariableConnection) {
+             m_flowVariableConnection = flowVariableConnection;
              return this;
         }
 

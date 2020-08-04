@@ -19,9 +19,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -63,10 +61,6 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("objectType")
-    public String getObjectType();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -75,16 +69,12 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("state")
-    public NodeStateEnt getState();
-    
-    @Override
     @JsonProperty("inPorts")
-    public java.util.List<NodeInPortEnt> getInPorts();
+    public java.util.List<NodePortEnt> getInPorts();
     
     @Override
     @JsonProperty("outPorts")
-    public java.util.List<NodeOutPortEnt> getOutPorts();
+    public java.util.List<NodePortEnt> getOutPorts();
     
     @Override
     @JsonProperty("annotation")
@@ -95,8 +85,8 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public XYEnt getPosition();
     
     @Override
-    @JsonProperty("workflowOutgoingPortNodeStates")
-    public java.util.List<NodeStateEnt> getWorkflowOutgoingPortNodeStates();
+    @JsonProperty("class")
+    public PropertyClassEnum getPropertyClass();
     
 
     /**
@@ -121,10 +111,6 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixIn build();
     
         @Override
-        @JsonProperty("objectType")
-        public WorkflowNodeEntMixInBuilder setObjectType(final String objectType);
-        
-        @Override
         @JsonProperty("name")
         public WorkflowNodeEntMixInBuilder setName(final String name);
         
@@ -133,16 +119,12 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
         @Override
-        @JsonProperty("state")
-        public WorkflowNodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
         @JsonProperty("inPorts")
-        public WorkflowNodeEntMixInBuilder setInPorts(final java.util.List<NodeInPortEnt> inPorts);
+        public WorkflowNodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public WorkflowNodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
+        public WorkflowNodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
         
         @Override
         @JsonProperty("annotation")
@@ -153,8 +135,8 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
-        @JsonProperty("workflowOutgoingPortNodeStates")
-        public WorkflowNodeEntMixInBuilder setWorkflowOutgoingPortNodeStates(final java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
+        @JsonProperty("class")
+        public WorkflowNodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
         
     }
 

@@ -19,9 +19,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -82,14 +80,6 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
     public interface ComponentNodeEntBuilder extends GatewayEntityBuilder<ComponentNodeEnt> {
 
         /**
-         * Discriminator for inheritance. Must be the base name of this type/schema.
-         * 
-         * @param objectType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setObjectType(String objectType);
-        
-        /**
          * The node&#39;s name.
          * 
          * @param name the property value, NOT <code>null</code>! 
@@ -106,20 +96,12 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         ComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-   		 * Set state
-         * 
-         * @param state the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setState(NodeStateEnt state);
-        
-        /**
          * The list of inputs.
          * 
          * @param inPorts the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts);
+        ComponentNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -127,7 +109,7 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
          * @param outPorts the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
+        ComponentNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
         
         /**
    		 * Set annotation
@@ -146,12 +128,12 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         ComponentNodeEntBuilder setPosition(XYEnt position);
         
         /**
-         * The state of the inner node connected to a particular outport. TODO Should actually be part of a specialization of NodeOutPort (i.e. WorkflowOutPort) but doesn&#39;t work with inheritance and generics in Java.
+         * Whether it&#39;s a native node, component or a metanode.
          * 
-         * @param workflowOutgoingPortNodeStates the property value,  
+         * @param propertyClass the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setWorkflowOutgoingPortNodeStates(java.util.List<NodeStateEnt> workflowOutgoingPortNodeStates);
+        ComponentNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
         
         /**
          * The type of the component.

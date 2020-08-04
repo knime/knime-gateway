@@ -54,24 +54,24 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public String getType();
-    
-    @Override
-    @JsonProperty("dest")
-    public org.knime.gateway.api.entity.NodeIDEnt getDest();
+    @JsonProperty("destNode")
+    public org.knime.gateway.api.entity.NodeIDEnt getDestNode();
     
     @Override
     @JsonProperty("destPort")
     public Integer getDestPort();
     
     @Override
-    @JsonProperty("source")
-    public org.knime.gateway.api.entity.NodeIDEnt getSource();
+    @JsonProperty("sourceNode")
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNode();
     
     @Override
     @JsonProperty("sourcePort")
     public Integer getSourcePort();
+    
+    @Override
+    @JsonProperty("flowVariableConnection")
+    public Boolean isFlowVariableConnection();
     
 
     /**
@@ -94,24 +94,24 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
         public ConnectionEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public ConnectionEntMixInBuilder setType(final String type);
-        
-        @Override
-        @JsonProperty("dest")
-        public ConnectionEntMixInBuilder setDest(final org.knime.gateway.api.entity.NodeIDEnt dest);
+        @JsonProperty("destNode")
+        public ConnectionEntMixInBuilder setDestNode(final org.knime.gateway.api.entity.NodeIDEnt destNode);
         
         @Override
         @JsonProperty("destPort")
         public ConnectionEntMixInBuilder setDestPort(final Integer destPort);
         
         @Override
-        @JsonProperty("source")
-        public ConnectionEntMixInBuilder setSource(final org.knime.gateway.api.entity.NodeIDEnt source);
+        @JsonProperty("sourceNode")
+        public ConnectionEntMixInBuilder setSourceNode(final org.knime.gateway.api.entity.NodeIDEnt sourceNode);
         
         @Override
         @JsonProperty("sourcePort")
         public ConnectionEntMixInBuilder setSourcePort(final Integer sourcePort);
+        
+        @Override
+        @JsonProperty("flowVariableConnection")
+        public ConnectionEntMixInBuilder setFlowVariableConnection(final Boolean flowVariableConnection);
         
     }
 

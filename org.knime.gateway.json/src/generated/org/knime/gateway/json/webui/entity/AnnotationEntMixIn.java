@@ -31,6 +31,7 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt.DefaultAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -40,13 +41,15 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "objectType",
+    property = "",
     visible = true,
     defaultImpl = DefaultAnnotationEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultAnnotationEnt.class, name="Annotation")
 ,
   @Type(value = DefaultNodeAnnotationEnt.class, name = "NodeAnnotation")
+,
+  @Type(value = DefaultWorkflowAnnotationEnt.class, name = "WorkflowAnnotation")
 })
 @JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -56,10 +59,6 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     @JsonIgnore
     public String getTypeID();
 
-    @Override
-    @JsonProperty("objectType")
-    public String getObjectType();
-    
     @Override
     @JsonProperty("text")
     public String getText();
@@ -73,12 +72,14 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "objectType",
+        property = "",
         defaultImpl = DefaultAnnotationEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultAnnotationEnt.DefaultAnnotationEntBuilder.class, name="Annotation")
         ,
       @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name = "NodeAnnotation")
+        ,
+      @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name = "WorkflowAnnotation")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface AnnotationEntMixInBuilder extends AnnotationEntBuilder {
@@ -86,10 +87,6 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
         @Override
         public AnnotationEntMixIn build();
     
-        @Override
-        @JsonProperty("objectType")
-        public AnnotationEntMixInBuilder setObjectType(final String objectType);
-        
         @Override
         @JsonProperty("text")
         public AnnotationEntMixInBuilder setText(final String text);

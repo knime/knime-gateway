@@ -46,17 +46,9 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
     public interface NodeAnnotationEntBuilder extends GatewayEntityBuilder<NodeAnnotationEnt> {
 
         /**
-         * Discriminator for inheritance. Must be the base name of this type/schema.
-         * 
-         * @param objectType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeAnnotationEntBuilder setObjectType(String objectType);
-        
-        /**
    		 * Set text
          * 
-         * @param text the property value,  
+         * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setText(String text);

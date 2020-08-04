@@ -21,23 +21,33 @@ package org.knime.gateway.api.webui.util;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
@@ -48,14 +58,12 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt.NodeInPortEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt.NodeOutPortEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeEnt.PropertyClassEnum;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.TextAlignEnum;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
@@ -66,7 +74,7 @@ import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
  *
- * @author Martin Horn, University of Konstanz
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class EntityBuilderUtil {
 
@@ -87,12 +95,52 @@ public final class EntityBuilderUtil {
                 .collect(Collectors.toMap(n -> n.getId().toString(), n -> n));
         Map<String, ConnectionEnt> connections =
             wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
-                Collectors.toMap(c -> new ConnectionIDEnt(c.getDest(), c.getDestPort()).toString(), c -> c));
+                Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c));
+        Map<String, WorkflowAnnotationEnt> annotations =
+            wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
+                .collect(Collectors.toMap(wa -> new AnnotationIDEnt(wa.getFirst()).toString(), Pair::getSecond));
         return builder(WorkflowEntBuilder.class)
             .setName(wfm.getName())
             .setNodes(nodes)
             .setConnections(connections)
+            .setWorkflowAnnotations(annotations)
             .build();
+    }
+
+    private static Pair<WorkflowAnnotationID, WorkflowAnnotationEnt>
+        buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
+        BoundsEnt bounds = builder(BoundsEntBuilder.class)
+                .setX(wa.getX())
+                .setY(wa.getY())
+                .setWidth(wa.getWidth())
+                .setHeight(wa.getHeight())
+                .build();
+        TextAlignEnum textAlign;
+        switch (wa.getAlignment()) {
+            case LEFT:
+                textAlign = TextAlignEnum.LEFT;
+                break;
+            case CENTER:
+                textAlign = TextAlignEnum.CENTER;
+                break;
+            case RIGHT:
+            default:
+                textAlign = TextAlignEnum.RIGHT;
+                break;
+        }
+        return Pair.create(wa.getID(), builder(WorkflowAnnotationEntBuilder.class)
+                .setTextAlign(textAlign)
+                .setBackgroundColor(hexStringColor(wa.getBgColor()))
+                .setBorderColor(hexStringColor(wa.getBorderColor()))
+                .setBorderWidth(wa.getBorderSize())
+                .setDefaultFontSize(wa.getDefaultFontSize())
+                .setBounds(bounds)
+                .setText(wa.getText())
+                .build());
+    }
+
+    private static String hexStringColor(final int color) {
+        return "#" + Integer.toHexString(color).substring(0, 6);
     }
 
     /**
@@ -122,21 +170,13 @@ public final class EntityBuilderUtil {
      * @return the newly created entity
      */
     public static WorkflowNodeEnt buildWorkflowNodeEnt(final WorkflowManager wm) {
-        //retrieve states of nodes connected to the workflow outports
-        List<NodeStateEnt> outNodeStates = new ArrayList<>();
-        for (int i = 0; i < wm.getNrOutPorts(); i++) {
-            outNodeStates.add(buildNodeStateEnt(wm.getOutPort(i).getNodeContainerState().toString()));
-        }
-
         return builder(WorkflowNodeEntBuilder.class).setName(wm.getName())
                 .setId(new NodeIDEnt(wm.getID()))
-                .setState(buildNodeStateEnt(wm.getNodeContainerState().toString()))
-                .setOutPorts(buildNodeOutPortEnts(wm))
+                .setOutPorts(buildNodePortEnts(wm, false))
                 .setAnnotation(buildNodeAnnotationEnt(wm))
-                .setInPorts(buildNodeInPortEnts(wm))
-                .setWorkflowOutgoingPortNodeStates(outNodeStates)
+                .setInPorts(buildNodePortEnts(wm, true))
                 .setPosition(buildXYEnt(wm.getUIInformation().getBounds()[0], wm.getUIInformation().getBounds()[1]))
-                .setObjectType("WorkflowNode").build();
+                .setPropertyClass(PropertyClassEnum.METANODE).build();
     }
 
     /**
@@ -150,73 +190,79 @@ public final class EntityBuilderUtil {
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())
                 .setId(new NodeIDEnt(nc.getID()))
                 .setType(org.knime.gateway.api.webui.entity.ComponentNodeEnt.TypeEnum.valueOf(type))
-                .setState(buildNodeStateEnt((nc.getNodeContainerState().toString())))
-                .setOutPorts(buildNodeOutPortEnts(nc))
+                .setOutPorts(buildNodePortEnts(nc, false))
                 .setAnnotation(buildNodeAnnotationEnt(nc))
-                .setInPorts(buildNodeInPortEnts(nc))
+                .setInPorts(buildNodePortEnts(nc, true))
                 .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
-                .setObjectType("ComponentNode").build();
+                .setPropertyClass(PropertyClassEnum.COMPONENT).build();
     }
 
-    private static PortTypeEnt buildPortTypeEnt(final PortType portType) {
-        return builder(PortTypeEntBuilder.class)
-            .setOptional(portType.isOptional())
-            .setPortObjectClassName(portType.getPortObjectClass().getCanonicalName()).build();
-    }
-
-    private static List<NodeInPortEnt> buildNodeInPortEnts(final NodeContainer nc) {
-        List<NodeInPortEnt> inPorts = new ArrayList<>(nc.getNrInPorts());
-        for (int i = 0; i < nc.getNrInPorts(); i++) {
-            inPorts.add(buildNodeInPortEnt(nc.getInPort(i)));
+    private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts) {
+        List<NodePortEnt> res = new ArrayList<>();
+        if (inPorts) {
+            for (int i = 0; i < nc.getNrInPorts(); i++) {
+                ConnectionContainer connection = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
+                NodeInPort inPort = nc.getInPort(i);
+                res.add(buildNodePortEnt(inPort.getPortType(), i, inPort.getPortType().isOptional(), null,
+                    connection == null ? Collections.emptyList() : Arrays.asList(connection)));
+            }
+        } else {
+            for (int i = 0; i < nc.getNrOutPorts(); i++) {
+                Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
+                NodeOutPort outPort = nc.getOutPort(i);
+                res.add(buildNodePortEnt(outPort.getPortType(), i, null,
+                    outPort.isInactive() ? outPort.isInactive() : null, connections));
+            }
         }
-        return inPorts;
+        return res;
     }
 
-    private static NodeInPortEnt buildNodeInPortEnt(final NodeInPort inPort) {
-        PortTypeEnt pType = buildPortTypeEnt(inPort.getPortType());
-        return builder(NodeInPortEntBuilder.class)
-                .setPortIndex(inPort.getPortIndex())
-                .setPortName(inPort.getPortName())
-                .setPortType(pType)
-                .setObjectType("NodeInPort").build();
-    }
-
-    private static List<NodeOutPortEnt> buildNodeOutPortEnts(final NodeContainer nc) {
-        List<NodeOutPortEnt> outPorts = new ArrayList<>(nc.getNrOutPorts());
-        for (int i = 0; i < nc.getNrOutPorts(); i++) {
-            outPorts.add(buildNodeOutPortEnt(nc.getOutPort(i)));
+    private static NodePortEnt buildNodePortEnt(final PortType ptype, final int portIdx, final Boolean isOptional,
+        final Boolean isInactive, final Collection<ConnectionContainer> connections) {
+        org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum type;
+        String color;
+        if (BufferedDataTable.TYPE.equals(ptype)) {
+            type = org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.TABLE;
+            color = null;
+        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
+            type = org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.FLOWVARIABLE;
+            color = null;
+        } else {
+            type = org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.OTHER;
+            color = hexStringColor(ptype.getColor());
         }
-        return outPorts;
+        return builder(NodePortEntBuilder.class)
+                .setIndex(portIdx)
+                .setOptional(isOptional)
+                .setInactive(isInactive)
+                .setColor(color)
+                .setConnectedVia(connections.stream().map(EntityBuilderUtil::buildConnectionIDEnt)
+                    .collect(Collectors.toList()))
+                .setType(type).build();
     }
 
-    private static NodeOutPortEnt buildNodeOutPortEnt(final NodeOutPort outPort) {
-        PortTypeEnt pType = buildPortTypeEnt(outPort.getPortType());
-        return builder(NodeOutPortEntBuilder.class)
-                .setPortIndex(outPort.getPortIndex())
-                .setPortName(outPort.getPortName())
-                .setPortType(pType)
-                .setInactive(outPort.isInactive())
-                .setSummary(outPort.getPortSummary())
-                .setObjectType("NodeOutPort").build();
+    private static ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c) {
+        return new ConnectionIDEnt(new NodeIDEnt(c.getDest()), c.getDestPort());
     }
 
     private static NodeAnnotationEnt buildNodeAnnotationEnt(final NodeContainer nc) {
         NodeAnnotation na = nc.getNodeAnnotation();
+        if (na.getData().isDefault()) {
+            return null;
+        }
         return builder(NodeAnnotationEntBuilder.class)
-            .setText(na.getText())
-            .setObjectType("NodeAnnotation").build();
+            .setText(na.getText()).build();
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc) {
         return builder(NativeNodeEntBuilder.class).setName(nc.getName())
             .setId(new NodeIDEnt(nc.getID()))
             .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()))
-            .setState(buildNodeStateEnt(nc.getNodeContainerState().toString()))
-            .setOutPorts(buildNodeOutPortEnts(nc))
+            .setOutPorts(buildNodePortEnts(nc, false))
             .setAnnotation(buildNodeAnnotationEnt(nc))
-            .setInPorts(buildNodeInPortEnts(nc))
+            .setInPorts(buildNodePortEnts(nc, true))
             .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
-            .setObjectType("NativeNode").build();
+            .setPropertyClass(NodeEnt.PropertyClassEnum.NODE).build();
     }
 
     private static XYEnt buildXYEnt(final int x, final int y) {
@@ -224,33 +270,11 @@ public final class EntityBuilderUtil {
     }
 
     private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc) {
-        return builder(ConnectionEntBuilder.class).setDest(new NodeIDEnt(cc.getDest()))
+        return builder(ConnectionEntBuilder.class).setDestNode(new NodeIDEnt(cc.getDest()))
             .setDestPort(cc.getDestPort())
-            .setSource(new NodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())
+            .setSourceNode(new NodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())
+            .setFlowVariableConnection(
+                cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null)
             .build();
-    }
-
-    /**
-     * Creates a new connection entity from the given parameters. All other connection-properties remain empty.
-     *
-     * @param source
-     * @param sourcePort
-     * @param dest
-     * @param destPort
-     * @return a new connection entity
-     */
-    public static ConnectionEnt buildConnectionEnt(final NodeID source, final int sourcePort, final NodeID dest,
-        final int destPort) {
-        return builder(ConnectionEntBuilder.class)
-                .setSource(new NodeIDEnt(source))
-                .setSourcePort(sourcePort)
-                .setDest(new NodeIDEnt(dest))
-                .setDestPort(destPort).build();
-    }
-
-    private static NodeStateEnt buildNodeStateEnt(final String state) {
-        return builder(NodeStateEntBuilder.class)
-                .setState(NodeStateEnt.StateEnum.valueOf(state))
-                .build();
     }
 }

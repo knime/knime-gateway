@@ -33,7 +33,6 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultAnnotationEnt  implements AnnotationEnt {
 
-  protected String m_objectType;
   protected String m_text;
   
   protected DefaultAnnotationEnt() {
@@ -47,10 +46,9 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
   
   private DefaultAnnotationEnt(DefaultAnnotationEntBuilder builder) {
     
-    if(builder.m_objectType == null) {
-        throw new IllegalArgumentException("objectType must not be null.");
+    if(builder.m_text == null) {
+        throw new IllegalArgumentException("text must not be null.");
     }
-    m_objectType = immutable(builder.m_objectType);
     m_text = immutable(builder.m_text);
   }
   
@@ -69,15 +67,10 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
             return false;
         }
         DefaultAnnotationEnt ent = (DefaultAnnotationEnt)o;
-        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_text, ent.m_text);
+        return Objects.equals(m_text, ent.m_text);
     }
 
 
-  @Override
-  public String getObjectType() {
-        return m_objectType;
-    }
-    
   @Override
   public String getText() {
         return m_text;
@@ -90,20 +83,13 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
             
         }
     
-        private String m_objectType;
         private String m_text;
 
         @Override
-        public DefaultAnnotationEntBuilder setObjectType(String objectType) {
-             if(objectType == null) {
-                 throw new IllegalArgumentException("objectType must not be null.");
-             }
-             m_objectType = objectType;
-             return this;
-        }
-
-        @Override
         public DefaultAnnotationEntBuilder setText(String text) {
+             if(text == null) {
+                 throw new IllegalArgumentException("text must not be null.");
+             }
              m_text = text;
              return this;
         }

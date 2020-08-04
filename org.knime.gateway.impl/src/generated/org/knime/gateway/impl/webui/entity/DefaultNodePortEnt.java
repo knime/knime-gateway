@@ -22,7 +22,6 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
@@ -34,10 +33,12 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultNodePortEnt  implements NodePortEnt {
 
-  protected String m_objectType;
-  protected Integer m_portIndex;
-  protected PortTypeEnt m_portType;
-  protected String m_portName;
+  protected Integer m_index;
+  protected TypeEnum m_type;
+  protected String m_color;
+  protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
+  protected Boolean m_optional;
+  protected Boolean m_inactive;
   
   protected DefaultNodePortEnt() {
     //for sub-classes
@@ -50,19 +51,18 @@ public class DefaultNodePortEnt  implements NodePortEnt {
   
   private DefaultNodePortEnt(DefaultNodePortEntBuilder builder) {
     
-    if(builder.m_objectType == null) {
-        throw new IllegalArgumentException("objectType must not be null.");
+    if(builder.m_index == null) {
+        throw new IllegalArgumentException("index must not be null.");
     }
-    m_objectType = immutable(builder.m_objectType);
-    if(builder.m_portIndex == null) {
-        throw new IllegalArgumentException("portIndex must not be null.");
+    m_index = immutable(builder.m_index);
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
     }
-    m_portIndex = immutable(builder.m_portIndex);
-    if(builder.m_portType == null) {
-        throw new IllegalArgumentException("portType must not be null.");
-    }
-    m_portType = immutable(builder.m_portType);
-    m_portName = immutable(builder.m_portName);
+    m_type = immutable(builder.m_type);
+    m_color = immutable(builder.m_color);
+    m_connectedVia = immutable(builder.m_connectedVia);
+    m_optional = immutable(builder.m_optional);
+    m_inactive = immutable(builder.m_inactive);
   }
   
    /**
@@ -80,28 +80,38 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_objectType, ent.m_objectType) && Objects.equals(m_portIndex, ent.m_portIndex) && Objects.equals(m_portType, ent.m_portType) && Objects.equals(m_portName, ent.m_portName);
+        return Objects.equals(m_index, ent.m_index) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_inactive, ent.m_inactive);
     }
 
 
   @Override
-  public String getObjectType() {
-        return m_objectType;
+  public Integer getIndex() {
+        return m_index;
     }
     
   @Override
-  public Integer getPortIndex() {
-        return m_portIndex;
+  public TypeEnum getType() {
+        return m_type;
     }
     
   @Override
-  public PortTypeEnt getPortType() {
-        return m_portType;
+  public String getColor() {
+        return m_color;
     }
     
   @Override
-  public String getPortName() {
-        return m_portName;
+  public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
+        return m_connectedVia;
+    }
+    
+  @Override
+  public Boolean isOptional() {
+        return m_optional;
+    }
+    
+  @Override
+  public Boolean isInactive() {
+        return m_inactive;
     }
     
   
@@ -111,41 +121,52 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             
         }
     
-        private String m_objectType;
-        private Integer m_portIndex;
-        private PortTypeEnt m_portType;
-        private String m_portName;
+        private Integer m_index;
+        private TypeEnum m_type;
+        private String m_color;
+        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia = new java.util.ArrayList<>();
+        private Boolean m_optional;
+        private Boolean m_inactive;
 
         @Override
-        public DefaultNodePortEntBuilder setObjectType(String objectType) {
-             if(objectType == null) {
-                 throw new IllegalArgumentException("objectType must not be null.");
+        public DefaultNodePortEntBuilder setIndex(Integer index) {
+             if(index == null) {
+                 throw new IllegalArgumentException("index must not be null.");
              }
-             m_objectType = objectType;
+             m_index = index;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setPortIndex(Integer portIndex) {
-             if(portIndex == null) {
-                 throw new IllegalArgumentException("portIndex must not be null.");
+        public DefaultNodePortEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
              }
-             m_portIndex = portIndex;
+             m_type = type;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setPortType(PortTypeEnt portType) {
-             if(portType == null) {
-                 throw new IllegalArgumentException("portType must not be null.");
-             }
-             m_portType = portType;
+        public DefaultNodePortEntBuilder setColor(String color) {
+             m_color = color;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setPortName(String portName) {
-             m_portName = portName;
+        public DefaultNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
+             m_connectedVia = connectedVia;
+             return this;
+        }
+
+        @Override
+        public DefaultNodePortEntBuilder setOptional(Boolean optional) {
+             m_optional = optional;
+             return this;
+        }
+
+        @Override
+        public DefaultNodePortEntBuilder setInactive(Boolean inactive) {
+             m_inactive = inactive;
              return this;
         }
 

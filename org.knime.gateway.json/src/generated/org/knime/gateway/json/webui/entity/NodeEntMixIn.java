@@ -19,9 +19,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,7 +45,7 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "objectType",
+    property = "",
     visible = true,
     defaultImpl = DefaultNodeEnt.class)
 @JsonSubTypes({
@@ -68,10 +66,6 @@ public interface NodeEntMixIn extends NodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("objectType")
-    public String getObjectType();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -80,16 +74,12 @@ public interface NodeEntMixIn extends NodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("state")
-    public NodeStateEnt getState();
-    
-    @Override
     @JsonProperty("inPorts")
-    public java.util.List<NodeInPortEnt> getInPorts();
+    public java.util.List<NodePortEnt> getInPorts();
     
     @Override
     @JsonProperty("outPorts")
-    public java.util.List<NodeOutPortEnt> getOutPorts();
+    public java.util.List<NodePortEnt> getOutPorts();
     
     @Override
     @JsonProperty("annotation")
@@ -98,6 +88,10 @@ public interface NodeEntMixIn extends NodeEnt {
     @Override
     @JsonProperty("position")
     public XYEnt getPosition();
+    
+    @Override
+    @JsonProperty("class")
+    public PropertyClassEnum getPropertyClass();
     
 
     /**
@@ -108,7 +102,7 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "objectType",
+        property = "",
         defaultImpl = DefaultNodeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
@@ -126,10 +120,6 @@ public interface NodeEntMixIn extends NodeEnt {
         public NodeEntMixIn build();
     
         @Override
-        @JsonProperty("objectType")
-        public NodeEntMixInBuilder setObjectType(final String objectType);
-        
-        @Override
         @JsonProperty("name")
         public NodeEntMixInBuilder setName(final String name);
         
@@ -138,16 +128,12 @@ public interface NodeEntMixIn extends NodeEnt {
         public NodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
         @Override
-        @JsonProperty("state")
-        public NodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
         @JsonProperty("inPorts")
-        public NodeEntMixInBuilder setInPorts(final java.util.List<NodeInPortEnt> inPorts);
+        public NodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public NodeEntMixInBuilder setOutPorts(final java.util.List<NodeOutPortEnt> outPorts);
+        public NodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
         
         @Override
         @JsonProperty("annotation")
@@ -156,6 +142,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("position")
         public NodeEntMixInBuilder setPosition(final XYEnt position);
+        
+        @Override
+        @JsonProperty("class")
+        public NodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
         
     }
 

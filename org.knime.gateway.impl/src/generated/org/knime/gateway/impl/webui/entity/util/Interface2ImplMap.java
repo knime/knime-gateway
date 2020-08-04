@@ -20,6 +20,8 @@ package org.knime.gateway.impl.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
@@ -32,16 +34,10 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBui
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt.NodeInPortEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt.NodeOutPortEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeOutPortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
@@ -75,6 +71,9 @@ public class Interface2ImplMap {
         if(clazz == AnnotationEntBuilder.class) {
             return (B)new DefaultAnnotationEnt.DefaultAnnotationEntBuilder();
         }        
+        if(clazz == BoundsEntBuilder.class) {
+            return (B)new DefaultBoundsEnt.DefaultBoundsEntBuilder();
+        }        
         if(clazz == ComponentNodeEntBuilder.class) {
             return (B)new DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder();
         }        
@@ -93,20 +92,11 @@ public class Interface2ImplMap {
         if(clazz == NodeEntBuilder.class) {
             return (B)new DefaultNodeEnt.DefaultNodeEntBuilder();
         }        
-        if(clazz == NodeInPortEntBuilder.class) {
-            return (B)new DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder();
-        }        
-        if(clazz == NodeOutPortEntBuilder.class) {
-            return (B)new DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder();
-        }        
         if(clazz == NodePortEntBuilder.class) {
             return (B)new DefaultNodePortEnt.DefaultNodePortEntBuilder();
         }        
-        if(clazz == NodeStateEntBuilder.class) {
-            return (B)new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();
-        }        
-        if(clazz == PortTypeEntBuilder.class) {
-            return (B)new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();
+        if(clazz == WorkflowAnnotationEntBuilder.class) {
+            return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();
         }        
         if(clazz == WorkflowEntBuilder.class) {
             return (B)new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();

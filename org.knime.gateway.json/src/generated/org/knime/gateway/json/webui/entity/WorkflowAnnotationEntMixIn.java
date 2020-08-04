@@ -18,8 +18,8 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeOutPortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,41 +43,45 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeOutPortEnt.DefaultNodeOutP
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeOutPortEnt.class)
+    defaultImpl = DefaultWorkflowAnnotationEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeOutPortEnt.class, name="NodeOutPort")
+    @Type(value = DefaultWorkflowAnnotationEnt.class, name="WorkflowAnnotation")
 })
-@JsonDeserialize(builder=DefaultNodeOutPortEntBuilder.class)
+@JsonDeserialize(builder=DefaultWorkflowAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
+public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("objectType")
-    public String getObjectType();
+    @JsonProperty("text")
+    public String getText();
     
     @Override
-    @JsonProperty("portIndex")
-    public Integer getPortIndex();
+    @JsonProperty("textAlign")
+    public TextAlignEnum getTextAlign();
     
     @Override
-    @JsonProperty("portType")
-    public PortTypeEnt getPortType();
+    @JsonProperty("defaultFontSize")
+    public Integer getDefaultFontSize();
     
     @Override
-    @JsonProperty("portName")
-    public String getPortName();
+    @JsonProperty("borderWidth")
+    public Integer getBorderWidth();
     
     @Override
-    @JsonProperty("summary")
-    public String getSummary();
+    @JsonProperty("borderColor")
+    public String getBorderColor();
     
     @Override
-    @JsonProperty("inactive")
-    public Boolean isInactive();
+    @JsonProperty("backgroundColor")
+    public String getBackgroundColor();
+    
+    @Override
+    @JsonProperty("bounds")
+    public BoundsEnt getBounds();
     
 
     /**
@@ -89,39 +93,43 @@ public interface NodeOutPortEntMixIn extends NodeOutPortEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeOutPortEntBuilder.class)
+        defaultImpl = DefaultWorkflowAnnotationEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeOutPortEnt.DefaultNodeOutPortEntBuilder.class, name="NodeOutPort")
+        @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name="WorkflowAnnotation")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeOutPortEntMixInBuilder extends NodeOutPortEntBuilder {
+    public static interface WorkflowAnnotationEntMixInBuilder extends WorkflowAnnotationEntBuilder {
     
         @Override
-        public NodeOutPortEntMixIn build();
+        public WorkflowAnnotationEntMixIn build();
     
         @Override
-        @JsonProperty("objectType")
-        public NodeOutPortEntMixInBuilder setObjectType(final String objectType);
+        @JsonProperty("text")
+        public WorkflowAnnotationEntMixInBuilder setText(final String text);
         
         @Override
-        @JsonProperty("portIndex")
-        public NodeOutPortEntMixInBuilder setPortIndex(final Integer portIndex);
+        @JsonProperty("textAlign")
+        public WorkflowAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
         
         @Override
-        @JsonProperty("portType")
-        public NodeOutPortEntMixInBuilder setPortType(final PortTypeEnt portType);
+        @JsonProperty("defaultFontSize")
+        public WorkflowAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
         
         @Override
-        @JsonProperty("portName")
-        public NodeOutPortEntMixInBuilder setPortName(final String portName);
+        @JsonProperty("borderWidth")
+        public WorkflowAnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
         
         @Override
-        @JsonProperty("summary")
-        public NodeOutPortEntMixInBuilder setSummary(final String summary);
+        @JsonProperty("borderColor")
+        public WorkflowAnnotationEntMixInBuilder setBorderColor(final String borderColor);
         
         @Override
-        @JsonProperty("inactive")
-        public NodeOutPortEntMixInBuilder setInactive(final Boolean inactive);
+        @JsonProperty("backgroundColor")
+        public WorkflowAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
+        
+        @Override
+        @JsonProperty("bounds")
+        public WorkflowAnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
         
     }
 

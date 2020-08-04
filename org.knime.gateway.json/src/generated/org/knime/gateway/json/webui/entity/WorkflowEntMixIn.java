@@ -20,6 +20,7 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +68,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonProperty("connections")
     public java.util.Map<String, ConnectionEnt> getConnections();
     
+    @Override
+    @JsonProperty("workflowAnnotations")
+    public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -98,6 +103,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("connections")
         public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
+        
+        @Override
+        @JsonProperty("workflowAnnotations")
+        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
         
     }
 

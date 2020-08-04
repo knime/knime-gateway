@@ -54,11 +54,11 @@ public interface GatewayExceptionEntMixIn extends GatewayExceptionEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("exceptionName")
+    @JsonProperty("exception-name")
     public String getExceptionName();
     
     @Override
-    @JsonProperty("exceptionMessage")
+    @JsonProperty("exception-message")
     public String getExceptionMessage();
     
 
@@ -82,11 +82,11 @@ public interface GatewayExceptionEntMixIn extends GatewayExceptionEnt {
         public GatewayExceptionEntMixIn build();
     
         @Override
-        @JsonProperty("exceptionName")
+        @JsonProperty("exception-name")
         public GatewayExceptionEntMixInBuilder setExceptionName(final String exceptionName);
         
         @Override
-        @JsonProperty("exceptionMessage")
+        @JsonProperty("exception-message")
         public GatewayExceptionEntMixInBuilder setExceptionMessage(final String exceptionMessage);
         
     }

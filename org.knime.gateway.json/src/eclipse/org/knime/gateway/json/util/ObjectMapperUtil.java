@@ -1,5 +1,6 @@
 package org.knime.gateway.json.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -38,6 +39,8 @@ public final class ObjectMapperUtil {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        mapper.setSerializationInclusion(Include.NON_NULL);
 
         JsonUtil.addWebUIMixIns(mapper);
         JsonUtil.addIDEntitySerializer(mapper);

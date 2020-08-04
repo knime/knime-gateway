@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt.DefaultBoundsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,33 +41,33 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeInPortEnt.DefaultNodeInPor
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeInPortEnt.class)
+    defaultImpl = DefaultBoundsEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeInPortEnt.class, name="NodeInPort")
+    @Type(value = DefaultBoundsEnt.class, name="Bounds")
 })
-@JsonDeserialize(builder=DefaultNodeInPortEntBuilder.class)
+@JsonDeserialize(builder=DefaultBoundsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeInPortEntMixIn extends NodeInPortEnt {
+public interface BoundsEntMixIn extends BoundsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("objectType")
-    public String getObjectType();
+    @JsonProperty("x")
+    public Integer getX();
     
     @Override
-    @JsonProperty("portIndex")
-    public Integer getPortIndex();
+    @JsonProperty("y")
+    public Integer getY();
     
     @Override
-    @JsonProperty("portType")
-    public PortTypeEnt getPortType();
+    @JsonProperty("width")
+    public Integer getWidth();
     
     @Override
-    @JsonProperty("portName")
-    public String getPortName();
+    @JsonProperty("height")
+    public Integer getHeight();
     
 
     /**
@@ -81,31 +79,31 @@ public interface NodeInPortEntMixIn extends NodeInPortEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeInPortEntBuilder.class)
+        defaultImpl = DefaultBoundsEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeInPortEnt.DefaultNodeInPortEntBuilder.class, name="NodeInPort")
+        @Type(value = DefaultBoundsEnt.DefaultBoundsEntBuilder.class, name="Bounds")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeInPortEntMixInBuilder extends NodeInPortEntBuilder {
+    public static interface BoundsEntMixInBuilder extends BoundsEntBuilder {
     
         @Override
-        public NodeInPortEntMixIn build();
+        public BoundsEntMixIn build();
     
         @Override
-        @JsonProperty("objectType")
-        public NodeInPortEntMixInBuilder setObjectType(final String objectType);
+        @JsonProperty("x")
+        public BoundsEntMixInBuilder setX(final Integer x);
         
         @Override
-        @JsonProperty("portIndex")
-        public NodeInPortEntMixInBuilder setPortIndex(final Integer portIndex);
+        @JsonProperty("y")
+        public BoundsEntMixInBuilder setY(final Integer y);
         
         @Override
-        @JsonProperty("portType")
-        public NodeInPortEntMixInBuilder setPortType(final PortTypeEnt portType);
+        @JsonProperty("width")
+        public BoundsEntMixInBuilder setWidth(final Integer width);
         
         @Override
-        @JsonProperty("portName")
-        public NodeInPortEntMixInBuilder setPortName(final String portName);
+        @JsonProperty("height")
+        public BoundsEntMixInBuilder setHeight(final Integer height);
         
     }
 

@@ -20,6 +20,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -53,6 +54,12 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public java.util.Map<String, ConnectionEnt> getConnections();
 
+  /**
+   * List of all workflow annotations. TODO could be moved to an extra UI service in order to not pollute the WorkflowEnt too much and separate UI logics.
+   * @return workflowAnnotations 
+   **/
+  public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
+
 
     /**
      * The builder for the entity.
@@ -82,6 +89,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        
+        /**
+         * List of all workflow annotations. TODO could be moved to an extra UI service in order to not pollute the WorkflowEnt too much and separate UI logics.
+         * 
+         * @param workflowAnnotations the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
         
         
         /**

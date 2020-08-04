@@ -19,9 +19,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeInPortEnt;
-import org.knime.gateway.api.webui.entity.NodeOutPortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -37,12 +35,29 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeEnt extends GatewayEntity {
 
-
   /**
-   * Discriminator for inheritance. Must be the base name of this type/schema.
-   * @return objectType , never <code>null</code>
-   **/
-  public String getObjectType();
+   * Whether it&#39;s a native node, component or a metanode.
+   */
+  public enum PropertyClassEnum {
+    NODE("node"),
+    
+    COMPONENT("component"),
+    
+    METANODE("metanode");
+
+    private String value;
+
+    PropertyClassEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * The node&#39;s name.
@@ -57,22 +72,16 @@ public interface NodeEnt extends GatewayEntity {
   public org.knime.gateway.api.entity.NodeIDEnt getId();
 
   /**
-   * Get state
-   * @return state , never <code>null</code>
-   **/
-  public NodeStateEnt getState();
-
-  /**
    * The list of inputs.
    * @return inPorts 
    **/
-  public java.util.List<NodeInPortEnt> getInPorts();
+  public java.util.List<NodePortEnt> getInPorts();
 
   /**
    * The list of outputs.
    * @return outPorts 
    **/
-  public java.util.List<NodeOutPortEnt> getOutPorts();
+  public java.util.List<NodePortEnt> getOutPorts();
 
   /**
    * Get annotation
@@ -86,20 +95,18 @@ public interface NodeEnt extends GatewayEntity {
    **/
   public XYEnt getPosition();
 
+  /**
+   * Whether it&#39;s a native node, component or a metanode.
+   * @return propertyClass , never <code>null</code>
+   **/
+  public PropertyClassEnum getPropertyClass();
+
 
     /**
      * The builder for the entity.
      */
     public interface NodeEntBuilder extends GatewayEntityBuilder<NodeEnt> {
 
-        /**
-         * Discriminator for inheritance. Must be the base name of this type/schema.
-         * 
-         * @param objectType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setObjectType(String objectType);
-        
         /**
          * The node&#39;s name.
          * 
@@ -117,20 +124,12 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-   		 * Set state
-         * 
-         * @param state the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setState(NodeStateEnt state);
-        
-        /**
          * The list of inputs.
          * 
          * @param inPorts the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setInPorts(java.util.List<NodeInPortEnt> inPorts);
+        NodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -138,7 +137,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param outPorts the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setOutPorts(java.util.List<NodeOutPortEnt> outPorts);
+        NodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
         
         /**
    		 * Set annotation
@@ -155,6 +154,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setPosition(XYEnt position);
+        
+        /**
+         * Whether it&#39;s a native node, component or a metanode.
+         * 
+         * @param propertyClass the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
         
         
         /**
