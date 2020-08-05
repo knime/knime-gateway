@@ -89,9 +89,9 @@ public class JsonRpcRequestHandler {
      * @return a jsonrpc response
      */
     public byte[] handle(final byte[] jsonRpcRequest) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            m_jsonRpcMultiServer.handleRequest(new ByteArrayInputStream(jsonRpcRequest), out);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ByteArrayInputStream in = new ByteArrayInputStream(jsonRpcRequest)) {
+            m_jsonRpcMultiServer.handleRequest(in, out);
             return out.toByteArray();
         } catch (IOException ex) {
             //TODO better exception handling
