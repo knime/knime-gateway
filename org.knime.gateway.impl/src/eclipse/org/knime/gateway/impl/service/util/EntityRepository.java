@@ -92,8 +92,7 @@ public interface EntityRepository<K, E extends GatewayEntity> {
      * @return the object representing the changes (e.g. a patch) or an empty optional if there are no changes
      * @throws IllegalArgumentException if there is not change history for the given snapshotID combination
      */
-    <P> Optional<P> getChangesAndCommit(UUID snapshotID, E entity,
-        Function<UUID, PatchCreator<P>> patchCreator) throws IllegalArgumentException;
+    <P> Optional<P> getChangesAndCommit(UUID snapshotID, E entity, Function<UUID, PatchCreator<P>> patchCreator);
 
     /**
      * Disposes the whole history of entities with a certain key. A subsequent

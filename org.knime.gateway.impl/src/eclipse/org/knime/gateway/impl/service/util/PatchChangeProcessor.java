@@ -78,7 +78,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  */
 class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
-    private final Map<String, GatewayEntity> m_newObjects = new HashMap<String, GatewayEntity>();
+    private final Map<String, GatewayEntity> m_newObjects = new HashMap<>();
 
     private final PatchCreator<P> m_patchCreator;
 
@@ -88,30 +88,37 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
     @Override
     public void onCommit(final CommitMetadata commitMetadata) {
+        //
     }
 
     @Override
     public void onAffectedObject(final GlobalId globalId) {
+        //
     }
 
     @Override
     public void beforeChangeList() {
+        //
     }
 
     @Override
     public void afterChangeList() {
+        //
     }
 
     @Override
     public void beforeChange(final Change change) {
+        //
     }
 
     @Override
     public void afterChange(final Change change) {
+        //
     }
 
     @Override
     public void onPropertyChange(final PropertyChange propertyChange) {
+        //
     }
 
     @Override
@@ -119,57 +126,63 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         GlobalId globalId = valueChange.getAffectedGlobalId();
         String path = "";
         if (globalId instanceof ValueObjectId) {
-            path = "/" + ((ValueObjectId)globalId).getFragment().replaceAll("m_", "");
+            path = "/" + ((ValueObjectId)globalId).getFragment().replace("m_", ""); //NOSONAR
             path += "/" + valueChange.getPropertyName().replace("m_", "");
         }
         if (globalId instanceof UnboundedValueObjectId) {
-            path = "/" + valueChange.getPropertyName().replace("m_", "");
+            path = "/" + valueChange.getPropertyName().replace("m_", ""); //NOSONAR
         }
         m_patchCreator.replaced(path, valueChange.getRight());
     }
 
     @Override
     public void onReferenceChange(final ReferenceChange referenceChange) {
+        //
     }
 
     @Override
     public void onNewObject(final NewObject newObject) {
-        Object newObj = newObject.getAffectedObject().get();
+        Object newObj = newObject.getAffectedObject()
+            .orElseThrow(() -> new IllegalStateException("Object expected to be present."));
         // these are all objects that are newly added to a map
         // the respective patch operation will be added in the onMapChange- or onListChange-methods
         if (m_patchCreator.isNewObjectValid(newObj)) {
             ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
-            String path = "/" + globalId.getFragment().replaceAll("m_", "");
-            m_newObjects.put(path, (GatewayEntity)newObject.getAffectedObject().get());
+            String path = "/" + globalId.getFragment().replace("m_", ""); //NOSONAR
+            m_newObjects.put(path, (GatewayEntity)newObj);
         }
     }
 
     @Override
     public void onObjectRemoved(final ObjectRemoved objectRemoved) {
+        //
     }
 
     @Override
     public void onContainerChange(final ContainerChange containerChange) {
+        //
     }
 
     @Override
     public void onSetChange(final SetChange setChange) {
+        //
     }
 
     @Override
     public void onArrayChange(final ArrayChange arrayChange) {
+        //
     }
 
     @Override
     public void onListChange(final ListChange listChange) {
         for (ValueRemoved vr : listChange.getValueRemovedChanges()) {
             ValueObjectId val = (ValueObjectId)vr.getValue();
-            String path = "/" + val.getFragment().replaceAll("m_", "");
+            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
             m_patchCreator.removed(path);
         }
         for (ValueAdded va : listChange.getValueAddedChanges()) {
             ValueObjectId val = (ValueObjectId)va.getValue();
-            String path = "/" + val.getFragment().replaceAll("m_", "");
+            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
             //NOTE: setValue relies on the fact the #onNewObject has been called before, with the right object
             m_patchCreator.added(path, m_newObjects.get(path));
         }
@@ -179,12 +192,12 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
     public void onMapChange(final MapChange mapChange) {
         for (EntryRemoved er : mapChange.getEntryRemovedChanges()) {
             ValueObjectId val = (ValueObjectId)er.getValue();
-            String path = "/" + val.getFragment().replaceAll("m_", "");
+            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
             m_patchCreator.removed(path);
         }
         for (EntryAdded ea : mapChange.getEntryAddedChanges()) {
             ValueObjectId val = (ValueObjectId)ea.getValue();
-            String path = "/" + val.getFragment().replaceAll("m_", "");
+            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
             //NOTE: setValue relies on the fact the #onNewObject has been called before, with the right object
             m_patchCreator.added(path, m_newObjects.get(path));
         }

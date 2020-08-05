@@ -94,7 +94,7 @@ public final class NodeIDEnt {
     }
 
     private static int[] extractNodeIDs(final String s) {
-        int index = s.indexOf(":");
+        int index = s.indexOf(':');
         if (index >= 0) {
             String[] split = s.substring(index + 1).split(":");
             int[] ids = new int[split.length];

@@ -64,14 +64,14 @@ import org.knime.core.node.workflow.WorkflowManager;
  */
 public final class WorkflowProjectManager {
 
-    private static Map<UUID, WorkflowProject> WORKFLOW_PROJECT_MAP = new HashMap<UUID, WorkflowProject>();
+    private static final Map<UUID, WorkflowProject> WORKFLOW_PROJECT_MAP = new HashMap<>();
 
-    private static List<Consumer<UUID>> WORKFLOW_REMOVED_LISTENERS = new ArrayList<Consumer<UUID>>();
+    private static final List<Consumer<UUID>> WORKFLOW_REMOVED_LISTENERS = new ArrayList<>();
 
     /**
      * Maps of already opened/loaded workflow projects.
      */
-    private static Map<UUID, WorkflowManager> CACHED_WORKFLOWS_MAP = new HashMap<UUID, WorkflowManager>();
+    private static final Map<UUID, WorkflowManager> CACHED_WORKFLOWS_MAP = new HashMap<>();
 
     private WorkflowProjectManager() {
         //~ static utility class

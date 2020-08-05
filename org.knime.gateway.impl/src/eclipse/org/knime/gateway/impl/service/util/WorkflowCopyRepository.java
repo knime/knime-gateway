@@ -47,7 +47,6 @@ package org.knime.gateway.impl.service.util;
 
 import java.util.UUID;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.LRUCache;
 
@@ -59,28 +58,28 @@ import org.knime.core.util.LRUCache;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WorkflowCopyRepository {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowCopyRepository.class);
 
-    /* The default value of the maximum number of copies of workflow-parts in memory - can be set via a system property */
+    /* The default value of the maximum number of copies of workflow-parts in memory */
     private static final int DEFAULT_MAX_NUM_COPIES_IN_MEM = 500;
 
-    private final int maxNumCopiesInMem = getMaxNumCopiesInMem();
+    private final LRUCache<UUID, WorkflowPersistor> m_workflowCopyMap;
 
-    private static int getMaxNumCopiesInMem() {
-        String prop = System.getProperty("com.knime.enterprise.executor.jobview.max_num_workflow_copies_in_mem");
-        if (prop != null) {
-            try {
-                return Integer.parseInt(prop);
-            } catch (NumberFormatException e) {
-                LOGGER.warn("Couldn't parse value for system property"
-                    + " 'com.knime.enterprise.executor.jobview.max_num_workflow_copies_in_mem'");
-            }
-        }
-        return DEFAULT_MAX_NUM_COPIES_IN_MEM;
+    /**
+     * Creates a new instance with the maximum number of copies in memory initialized to the default value.
+     */
+    public WorkflowCopyRepository() {
+        this(DEFAULT_MAX_NUM_COPIES_IN_MEM);
     }
 
-    private final LRUCache<UUID, WorkflowPersistor> m_workflowCopyMap =
-        new LRUCache<UUID, WorkflowPersistor>(maxNumCopiesInMem);
+    /**
+     * Creates a new instance
+     *
+     * @param maxNumCopiesInMem the maximum number of workflow copies kept in memory. If exceeded, the least recently
+     *            used copies will be removed.
+     */
+    public WorkflowCopyRepository(final int maxNumCopiesInMem) {
+        m_workflowCopyMap = new LRUCache<>(maxNumCopiesInMem);
+    }
 
     /**
      * Adds a new copy to the repo.

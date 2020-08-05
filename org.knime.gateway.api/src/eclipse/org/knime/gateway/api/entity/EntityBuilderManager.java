@@ -88,13 +88,14 @@ public final class EntityBuilderManager {
     }
 
     private static List<EntityBuilderFactory> createBuilderFactories() {
-
         List<EntityBuilderFactory> instances = ExtPointUtil
             .collectExecutableExtensions(EntityBuilderFactory.EXT_POINT_ID, EntityBuilderFactory.EXT_POINT_ATTR);
         if (instances.isEmpty()) {
             throw new IllegalStateException("No entity builder factory registered.");
         } else if (instances.size() > 1) {
             Collections.sort(instances, (o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+        } else {
+            //
         }
         return instances;
     }

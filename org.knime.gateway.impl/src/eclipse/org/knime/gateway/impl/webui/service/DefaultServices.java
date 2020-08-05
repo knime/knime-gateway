@@ -29,7 +29,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultServices {
+public final class DefaultServices {
 
     private DefaultServices() {
         //utility class

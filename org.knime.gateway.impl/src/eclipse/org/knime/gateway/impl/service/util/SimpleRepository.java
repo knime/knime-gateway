@@ -48,6 +48,7 @@ package org.knime.gateway.impl.service.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -57,7 +58,6 @@ import java.util.stream.Collectors;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.util.LRUCache;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.GatewayEntity;
@@ -75,36 +75,37 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @param <E> the entity type
  */
 public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepository<K, E> {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(SimpleRepository.class);
 
-    /* The default value of the maximum number of snapshots in memory - can be set via a system property */
+    /* The default value of the maximum number of snapshots in memory */
     private static final int DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM = 500;
 
-    private final int maxNumSnapshotsInMem = getMaxNumSnapShotsInMem();
-
     /* maps snapshotID to workflow */
-    private final LRUCache<UUID, E> m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
+    private final LRUCache<UUID, E> m_snapshots;
 
     /* maps snapshotID to key */
-    private final LRUCache<UUID, K> m_snapshotsKeyMap = new LRUCache<>(maxNumSnapshotsInMem);
+    private final LRUCache<UUID, K> m_snapshotsKeyMap;
 
     /* maps key to <snapshotID, entity> */
     private final Map<K, Pair<UUID, E>> m_latestSnapshotPerEntity = new HashMap<>();
 
     private final Javers m_javers = JaversBuilder.javers().build();
 
-    // TODO move into knime-com-gateway
-    private static int getMaxNumSnapShotsInMem() {
-        String prop = System.getProperty("com.knime.enterprise.executor.jobview.max_num_snapshots_in_mem");
-        if (prop != null) {
-            try {
-                return Integer.parseInt(prop);
-            } catch (NumberFormatException e) {
-                LOGGER.warn("Couldn't parse value for system property"
-                    + " 'com.knime.enterprise.executor.jobview.max_num_snapshots_in_mem'");
-            }
-        }
-        return DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM;
+    /**
+     * Creates a new instance. The maximum number of snapshots kept in memory is initalized with the default value.
+     */
+    public SimpleRepository() {
+        this(DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param maxNumSnapshotsInMem the maximum number of snapshots (i.e. history) kept in memory. If full, the least
+     *            recently used will be removed.
+     */
+    public SimpleRepository(final int maxNumSnapshotsInMem) {
+        m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
+        m_snapshotsKeyMap = new LRUCache<>(maxNumSnapshotsInMem);
     }
 
     /**
@@ -112,10 +113,6 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
      */
     @Override
     public UUID commit(final K key, final E entity) {
-        // TODO
-//        if (!(entity instanceof DefaultWorkflowEnt)) {
-//            throw new IllegalArgumentException("Repository only supports default entity implementations so far!");
-//        }
         return commitInternal(key, entity);
     }
 
@@ -124,7 +121,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
      */
     @Override
     public <P> Optional<P> getChangesAndCommit(final UUID snapshotID, final E entity,
-        final Function<UUID, PatchCreator<P>> patchCreator) throws IllegalArgumentException {
+        final Function<UUID, PatchCreator<P>> patchCreator) {
         K key = m_snapshotsKeyMap.get(snapshotID);
         E snapshot = m_snapshots.get(snapshotID);
         if (key == null || snapshot == null) {
@@ -150,7 +147,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     public void disposeHistory(final Predicate<K> keyFilter) {
         //remove all snapshots (and other map entries) for the given entity id
         List<UUID> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
-            .map(e -> e.getKey()).collect(Collectors.toList());
+            .map(Entry::getKey).collect(Collectors.toList());
         snapshotIDs.forEach(s -> {
             m_snapshotsKeyMap.remove(s);
             m_snapshots.remove(s);
@@ -160,7 +157,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
 
     private UUID commitInternal(final K key, final E entity) {
         //look for the most recent commit for the given key
-        Pair<UUID, E> latestSnapshot = m_latestSnapshotPerEntity.get(key);
+        Pair<UUID, E> latestSnapshot = m_latestSnapshotPerEntity.get(key); //NOSONAR
         UUID snapshotID = null;
         if (latestSnapshot != null) {
             //only commit if there is a difference to the latest commit

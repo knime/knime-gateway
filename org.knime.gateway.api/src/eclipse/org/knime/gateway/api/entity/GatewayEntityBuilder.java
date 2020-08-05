@@ -49,9 +49,13 @@ package org.knime.gateway.api.entity;
  * Since entities are immutable, a respective builder is required to created instances.
  *
  * @author Martin Horn, University of Konstanz
+ * @param <E> the entity type this builder can create
  */
 public interface GatewayEntityBuilder<E extends GatewayEntity> {
 
+    /**
+     * @return a new instance of the gateway entity
+     */
     E build();
 
 }

@@ -108,7 +108,7 @@ public final class EntityUtil {
      * @return the new list of {@link AnnotationIDEnt}s
      */
     public static List<AnnotationIDEnt> createAnnotationIDEntList(final int[][] nodeIds, final int... indices) {
-        List<AnnotationIDEnt> res = new ArrayList<AnnotationIDEnt>();
+        List<AnnotationIDEnt> res = new ArrayList<>();
         if (nodeIds.length != indices.length) {
             throw new IllegalArgumentException("array of node ids and indices must be of same length");
         }

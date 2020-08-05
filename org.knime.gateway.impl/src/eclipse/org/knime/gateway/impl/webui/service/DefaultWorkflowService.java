@@ -63,11 +63,11 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * TODO
+ * The default workflow service implementation for the web-ui.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultWorkflowService implements WorkflowService {
+public final class DefaultWorkflowService implements WorkflowService {
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
     /**

@@ -78,7 +78,7 @@ public class ExtPointUtil {
      */
     public static <C> List<C> collectExecutableExtensions(final String extPointID, final String extPointAttr) {
 
-        List<C> instances = new ArrayList<C>();
+        List<C> instances = new ArrayList<>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint(extPointID);
