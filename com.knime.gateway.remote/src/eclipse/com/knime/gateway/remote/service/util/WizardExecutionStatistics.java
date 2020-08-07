@@ -48,7 +48,6 @@
  */
 package com.knime.gateway.remote.service.util;
 
-import static com.knime.enterprise.executor.ExecutorUtil.isHaltedAtWizardPage;
 import static com.knime.gateway.entity.EntityBuilderManager.builder;
 import static com.knime.gateway.remote.service.util.DefaultServiceUtil.getWizardExecutionState;
 
@@ -74,6 +73,7 @@ import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WebResourceController;
+import org.knime.core.node.workflow.WizardExecutionController;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -129,6 +129,16 @@ public class WizardExecutionStatistics {
     public static boolean isWfmDone(final WorkflowManager wfm) {
         try (WorkflowLock lock = wfm.lock()) {
             return !wfm.getNodeContainerState().isExecutionInProgress() || isHaltedAtWizardPage(wfm);
+        }
+    }
+
+    private static boolean isHaltedAtWizardPage(final WorkflowManager wfm) {
+        if (wfm.isInWizardExecution()) {
+            WizardExecutionController wec = wfm.getWizardExecutionController();
+            return wec.hasCurrentWizardPage() && !wfm.getNodeContainer(wec.getCurrentWizardPageNodeID())
+                .getNodeContainerState().isExecutionInProgress();
+        } else {
+            return false;
         }
     }
 
