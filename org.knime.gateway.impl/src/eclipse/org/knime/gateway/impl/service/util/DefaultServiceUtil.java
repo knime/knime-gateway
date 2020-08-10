@@ -211,7 +211,7 @@ public class DefaultServiceUtil {
      * @param wfm the workflow to determine the state for
      * @return the wizard execution state string
      */
-    public static String getWizardExecutionState(final WorkflowManager wfm) {
+    public static String getWizardExecutionState(final WorkflowManager wfm) { //NOSONAR
         try (WorkflowLock lock = wfm.lock()) {
             if (wfm.getNodeContainerState().isExecuted()) {
                 return "EXECUTION_FINISHED";

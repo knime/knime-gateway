@@ -37,7 +37,8 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
         try {
             return GatewayServiceTestHelper.resolveToURL(m_url, TestWorkflowCollection.class);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            // should never happen
+            throw new RuntimeException(ex); // NOSONAR
         }
     }
 
@@ -49,7 +50,8 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
         try {
             return GatewayServiceTestHelper.resolveToFile(m_url.substring(0, m_url.length() - 5), TestWorkflowCollection.class);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            // should never happen
+            throw new RuntimeException(ex); // NOSONAR
         }
     }
 

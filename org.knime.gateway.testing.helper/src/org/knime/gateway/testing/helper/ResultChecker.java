@@ -125,16 +125,10 @@ public class ResultChecker {
      *             by the given key)
      */
     public void checkObject(final String testName, final Object obj, final String resultKey) {
-        JsonNode objAsJson;
-        try {
-            objAsJson = objectToJson(obj);
-        } catch (JsonProcessingException ex) {
-            // should not happen
-            Assert.fail("Problem turning an entity into a string for comparison");
-            return;
-        }
+        JsonNode objAsJson = objectToJson(obj);
         if (m_rewriteTestResults) {
-            Map<String, JsonNode> resultMap = m_resultMaps.computeIfAbsent(testName, k -> new HashMap<String, JsonNode>());
+            Map<String, JsonNode> resultMap =
+                m_resultMaps.computeIfAbsent(testName, k -> new HashMap<String, JsonNode>());
             resultMap.put(resultKey, objAsJson);
             //result map will be written to file in the writeTestResultsToFiles()-method
         } else {
@@ -150,7 +144,7 @@ public class ResultChecker {
                 // TODO alternatively https://github.com/skyscreamer/JSONassert could be used
                 // here eventually or the JsonNode-object itself for comparison
                 Assert.assertEquals(expectedResultAsString, objAsString);
-            } catch (JsonProcessingException ex) {
+            } catch (JsonProcessingException ex) { //NOSONAR
                 Assert.fail("Problem comparing objects");
             }
         }
@@ -163,7 +157,7 @@ public class ResultChecker {
      * @return
      */
     private Map<String, JsonNode> getResultMap(final String testName) {
-        return m_resultMaps.computeIfAbsent(testName, k -> readResultMap(k));
+        return m_resultMaps.computeIfAbsent(testName, this::readResultMap);
     }
 
     /**
@@ -175,7 +169,8 @@ public class ResultChecker {
             return m_objectMapper.readValue(json, new TypeReference<Map<String, JsonNode>>() {
             });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            // should never happen
+            throw new RuntimeException(e); // NOSONAR
         }
     }
 
@@ -188,9 +183,8 @@ public class ResultChecker {
      *
      * @param obj the object to get the json string from
      * @return the json representation
-     * @throws JsonProcessingException
      */
-    private final JsonNode objectToJson(final Object obj) throws JsonProcessingException {
+    private final JsonNode objectToJson(final Object obj) {
         return m_objectMapper.valueToTree(obj);
     }
 
@@ -217,9 +211,7 @@ public class ResultChecker {
         public List<BeanPropertyWriter> orderProperties(final SerializationConfig config,
             final BeanDescription beanDesc, final List<BeanPropertyWriter> beanProperties) {
             //order properties alphabetically
-            beanProperties.sort((b1, b2) -> {
-                return b1.getName().compareTo(b2.getName());
-            });
+            beanProperties.sort((b1, b2) -> b1.getName().compareTo(b2.getName()));
             return super.orderProperties(config, beanDesc, beanProperties);
         }
     }
@@ -240,7 +232,7 @@ public class ResultChecker {
          */
         @Override
         public void serialize(final T value, final JsonGenerator gen, final SerializerProvider serializers)
-            throws IOException, JsonProcessingException {
+            throws IOException {
             String name = gen.getOutputContext().getCurrentName();
             if (name == null || !m_propertyExceptions.alternativeSerialization(name, gen, value)) {
                 m_defaultSerializer.serialize(value, gen, serializers);

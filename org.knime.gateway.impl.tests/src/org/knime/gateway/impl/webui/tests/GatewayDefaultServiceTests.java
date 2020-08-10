@@ -45,8 +45,6 @@
  */
 package org.knime.gateway.impl.webui.tests;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,7 +69,7 @@ import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
  * Runs all tests provided by {@link GatewayTestCollection} on the default service implementations, e.g.
  * {@link DefaultWorkflowService}.
  *
- * TODO consider using dynamic tests with JUnit 5.
+ * TODO consider using dynamic tests with JUnit 5 //NOSONAR
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -86,7 +84,7 @@ public class GatewayDefaultServiceTests {
 
     private final WorkflowExecutor m_workflowExecutor;
 
-    private static ResultChecker RESULT_CHECKER;
+    private static ResultChecker resultChecker;
 
     /**
      * If manually set to true, the expected test results (i.e. the retrieved workflow etc.) will be updated and written
@@ -104,24 +102,22 @@ public class GatewayDefaultServiceTests {
 
     /**
      * @param gatewayTestName the test to run, the test names stemming from {@link #testNames()}
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws URISyntaxException
-     * @throws IOException
      */
-    public GatewayDefaultServiceTests(final String gatewayTestName)
-        throws InstantiationException, IllegalAccessException, URISyntaxException, IOException {
+    public GatewayDefaultServiceTests(final String gatewayTestName) {
         m_workflowLoader = new LocalWorkflowLoader();
         m_workflowExecutor = new WorkflowExecutor() {
 
             @Override
             public void executeWorkflowAsync(final UUID wfId) throws Exception {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId).get().executeAll();
+                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
             }
 
             @Override
             public void executeWorkflow(final UUID wfId) throws Exception {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId).get().executeAllAndWaitUntilDone();
+                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
+                    .executeAllAndWaitUntilDone();
             }
         };
         m_gatewayTestName = gatewayTestName;
@@ -134,9 +130,7 @@ public class GatewayDefaultServiceTests {
      */
     @Test
     public void test() throws Exception {
-        //TODO disabled for now due to dependency problems in build system
-        //GATEWAY_TESTS.get(m_gatewayTestName).runGatewayTest(RESULT_CHECKER, m_workflowLoader,
-        //    m_workflowExecutor);
+        GATEWAY_TESTS.get(m_gatewayTestName).runGatewayTest(resultChecker, m_workflowLoader, m_workflowExecutor);
     }
 
     /**
@@ -161,7 +155,7 @@ public class GatewayDefaultServiceTests {
      */
     @BeforeClass
     public static void initResultChecker() {
-        RESULT_CHECKER = WebUIGatewayServiceTestHelper.createResultChecker(REWRITE_TEST_RESULTS);
+        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker(REWRITE_TEST_RESULTS);
     }
 
     /**
@@ -170,7 +164,7 @@ public class GatewayDefaultServiceTests {
     @AfterClass
     public static void finishResultChecker() {
         if (REWRITE_TEST_RESULTS) {
-            RESULT_CHECKER.writeTestResultsToFiles();
+            resultChecker.writeTestResultsToFiles();
         }
     }
 }

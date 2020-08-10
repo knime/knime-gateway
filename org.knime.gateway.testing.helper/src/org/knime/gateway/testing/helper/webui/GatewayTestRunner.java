@@ -36,6 +36,6 @@ public interface GatewayTestRunner {
      * @throws Exception
      */
     void runGatewayTest(final ResultChecker entityResultChecker, final WorkflowLoader workflowLoader,
-        final WorkflowExecutor workflowExecutor) throws Exception;
+        final WorkflowExecutor workflowExecutor) throws Exception; //NOSONAR
 
 }

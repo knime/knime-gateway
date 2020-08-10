@@ -49,8 +49,11 @@
 package org.knime.gateway.testing.helper.webui;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
@@ -102,6 +105,14 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
             }
         });
 
+        /**
+         * Canonical sorting of the connectedVia-list.
+         */
+        pe.addException(NodePortEnt.class, "connectedVia", (v, gen, e) ->
+            gen.writeString("[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
+                .map(l -> l.toString()).collect(Collectors.joining(", ")) + " ]")
+        );
+
         ObjectMapper objectMapper = new ObjectMapper();
         JsonUtil.addWebUIMixIns(objectMapper);
         JsonUtil.addIDEntitySerializer(objectMapper);
@@ -111,7 +122,8 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
             return new ResultChecker(rewriteTestResults, pe, objectMapper,
                 resolveToFile("/files", WebUIGatewayServiceTestHelper.class));
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            // should never happen
+            throw new RuntimeException(ex); //NOSONAR
         }
     }
 
