@@ -60,12 +60,6 @@ public interface NodeEnt extends GatewayEntity {
 
 
   /**
-   * The node&#39;s name.
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
    * The id of the node.
    * @return id , never <code>null</code>
    **/
@@ -107,14 +101,6 @@ public interface NodeEnt extends GatewayEntity {
      */
     public interface NodeEntBuilder extends GatewayEntityBuilder<NodeEnt> {
 
-        /**
-         * The node&#39;s name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setName(String name);
-        
         /**
          * The id of the node.
          * 

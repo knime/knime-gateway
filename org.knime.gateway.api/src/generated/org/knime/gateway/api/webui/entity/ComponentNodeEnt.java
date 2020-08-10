@@ -68,6 +68,12 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
 
 
   /**
+   * Get name
+   * @return name 
+   **/
+  public String getName();
+
+  /**
    * The type of the component.
    * @return type 
    **/
@@ -79,14 +85,6 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
      */
     public interface ComponentNodeEntBuilder extends GatewayEntityBuilder<ComponentNodeEnt> {
 
-        /**
-         * The node&#39;s name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setName(String name);
-        
         /**
          * The id of the node.
          * 
@@ -134,6 +132,14 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
+        
+        /**
+   		 * Set name
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setName(String name);
         
         /**
          * The type of the component.

@@ -37,7 +37,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEnt {
 
-  protected TypeEnum m_type;
+  protected String m_templateId;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -50,10 +50,6 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
   
   private DefaultNativeNodeEnt(DefaultNativeNodeEntBuilder builder) {
     super();
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
     }
@@ -69,10 +65,10 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         throw new IllegalArgumentException("propertyClass must not be null.");
     }
     m_propertyClass = immutable(builder.m_propertyClass);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_templateId == null) {
+        throw new IllegalArgumentException("templateId must not be null.");
     }
-    m_type = immutable(builder.m_type);
+    m_templateId = immutable(builder.m_templateId);
   }
   
    /**
@@ -90,13 +86,13 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_type, ent.m_type);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_templateId, ent.m_templateId);
     }
 
 
   @Override
-  public TypeEnum getType() {
-        return m_type;
+  public String getTemplateId() {
+        return m_templateId;
     }
     
   
@@ -106,23 +102,13 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
             super();
         }
     
-        private String m_name;
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
         private java.util.List<NodePortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private PropertyClassEnum m_propertyClass;
-        private TypeEnum m_type;
-
-        @Override
-        public DefaultNativeNodeEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
-             }
-             m_name = name;
-             return this;
-        }
+        private String m_templateId;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -170,11 +156,11 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setType(TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNativeNodeEntBuilder setTemplateId(String templateId) {
+             if(templateId == null) {
+                 throw new IllegalArgumentException("templateId must not be null.");
              }
-             m_type = type;
+             m_templateId = templateId;
              return this;
         }
 

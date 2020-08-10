@@ -20,6 +20,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -47,6 +48,12 @@ public interface WorkflowEnt extends GatewayEntity {
    * @return nodes 
    **/
   public java.util.Map<String, NodeEnt> getNodes();
+
+  /**
+   * A map from ids to node templates.
+   * @return nodeTemplates 
+   **/
+  public java.util.Map<String, NodeTemplateEnt> getNodeTemplates();
 
   /**
    * The list of connections.
@@ -81,6 +88,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        
+        /**
+         * A map from ids to node templates.
+         * 
+         * @param nodeTemplates the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates);
         
         /**
          * The list of connections.

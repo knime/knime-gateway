@@ -20,16 +20,28 @@ package org.knime.gateway.api.webui.util;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ConnectionContainer;
@@ -42,6 +54,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -54,13 +67,15 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
-import org.knime.gateway.api.webui.entity.NativeNodeEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.PropertyClassEnum;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
@@ -90,9 +105,17 @@ public final class EntityBuilderUtil {
      */
     public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm) {
         Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
-        Map<String, NodeEnt> nodes = nodeContainers.stream()
-                .map(EntityBuilderUtil::buildNodeEnt)
-                .collect(Collectors.toMap(n -> n.getId().toString(), n -> n));
+
+        Map<String, NodeEnt> nodes = new HashMap<>();
+        Map<String, NodeTemplateEnt> templates = new HashMap<>();
+        for (NodeContainer nc : nodeContainers) {
+            NodeEnt nodeEnt = buildNodeEnt(nc);
+            nodes.put(nodeEnt.getId().toString(), nodeEnt);
+            if (nc instanceof NativeNodeContainer) {
+                String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
+                templates.computeIfAbsent(templateId, id -> buildNodeTemplateEnt((NativeNodeContainer)nc));
+            }
+        }
         Map<String, ConnectionEnt> connections =
             wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
                 Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c));
@@ -102,6 +125,7 @@ public final class EntityBuilderUtil {
         return builder(WorkflowEntBuilder.class)
             .setName(wfm.getName())
             .setNodes(nodes)
+            .setNodeTemplates(templates)
             .setConnections(connections)
             .setWorkflowAnnotations(annotations)
             .build();
@@ -255,14 +279,50 @@ public final class EntityBuilderUtil {
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc) {
-        return builder(NativeNodeEntBuilder.class).setName(nc.getName())
+        return builder(NativeNodeEntBuilder.class)
             .setId(new NodeIDEnt(nc.getID()))
-            .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()))
             .setOutPorts(buildNodePortEnts(nc, false))
             .setAnnotation(buildNodeAnnotationEnt(nc))
             .setInPorts(buildNodePortEnts(nc, true))
             .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
-            .setPropertyClass(NodeEnt.PropertyClassEnum.NODE).build();
+            .setPropertyClass(NodeEnt.PropertyClassEnum.NODE)
+            .setTemplateId(createTemplateId(nc.getNode().getFactory())).build();
+    }
+
+    private static NodeTemplateEnt buildNodeTemplateEnt(final NativeNodeContainer nc) {
+        return builder(NodeTemplateEntBuilder.class)
+                .setName(nc.getName())
+                .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()))
+                .setIcon(createIconDataURL(nc.getNode().getFactory()))
+                .build();
+    }
+
+    private static String createTemplateId(final NodeFactory<NodeModel> nodeFactory) {
+        String configHash = "";
+        if (nodeFactory instanceof DynamicNodeFactory) {
+            final NodeSettings settings = new NodeSettings("");
+            nodeFactory.saveAdditionalFactorySettings(settings);
+            configHash = ConfigUtils.contentBasedHashString(settings);
+        }
+        return nodeFactory.getClass().getCanonicalName() + configHash;
+    }
+
+    private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
+        URL url = nodeFactory.getIcon();
+        if (url != null) {
+            try (InputStream in = url.openStream()) {
+                byte[] iconData = Base64.encodeBase64(IOUtils.toByteArray(in));
+                String dataUrlPrefix = "data:image/png;base64,";
+                return dataUrlPrefix + new String(iconData, StandardCharsets.UTF_8);
+            } catch (IOException ex) {
+                NodeLogger.getLogger(EntityBuilderUtil.class)
+                    .error(String.format("Icon for node '%s' couldn't be read", nodeFactory.getNodeName()), ex);
+                return null;
+            }
+        } else {
+            return null;
+        }
+
     }
 
     private static XYEnt buildXYEnt(final int x, final int y) {

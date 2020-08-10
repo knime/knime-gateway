@@ -18,10 +18,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -45,13 +41,13 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEnt
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowEnt.class)
+    defaultImpl = DefaultNodeTemplateEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowEnt.class, name="Workflow")
+    @Type(value = DefaultNodeTemplateEnt.class, name="NodeTemplate")
 })
-@JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeTemplateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowEntMixIn extends WorkflowEnt {
+public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
 
     @Override
     @JsonIgnore
@@ -62,20 +58,12 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public String getName();
     
     @Override
-    @JsonProperty("nodes")
-    public java.util.Map<String, NodeEnt> getNodes();
+    @JsonProperty("type")
+    public TypeEnum getType();
     
     @Override
-    @JsonProperty("nodeTemplates")
-    public java.util.Map<String, NodeTemplateEnt> getNodeTemplates();
-    
-    @Override
-    @JsonProperty("connections")
-    public java.util.Map<String, ConnectionEnt> getConnections();
-    
-    @Override
-    @JsonProperty("workflowAnnotations")
-    public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
+    @JsonProperty("icon")
+    public String getIcon();
     
 
     /**
@@ -87,35 +75,27 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowEntBuilder.class)
+        defaultImpl = DefaultNodeTemplateEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowEnt.DefaultWorkflowEntBuilder.class, name="Workflow")
+        @Type(value = DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder.class, name="NodeTemplate")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
+    public static interface NodeTemplateEntMixInBuilder extends NodeTemplateEntBuilder {
     
         @Override
-        public WorkflowEntMixIn build();
+        public NodeTemplateEntMixIn build();
     
         @Override
         @JsonProperty("name")
-        public WorkflowEntMixInBuilder setName(final String name);
+        public NodeTemplateEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("nodes")
-        public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, NodeEnt> nodes);
+        @JsonProperty("type")
+        public NodeTemplateEntMixInBuilder setType(final TypeEnum type);
         
         @Override
-        @JsonProperty("nodeTemplates")
-        public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NodeTemplateEnt> nodeTemplates);
-        
-        @Override
-        @JsonProperty("connections")
-        public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
-        
-        @Override
-        @JsonProperty("workflowAnnotations")
-        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
+        @JsonProperty("icon")
+        public NodeTemplateEntMixInBuilder setIcon(final String icon);
         
     }
 

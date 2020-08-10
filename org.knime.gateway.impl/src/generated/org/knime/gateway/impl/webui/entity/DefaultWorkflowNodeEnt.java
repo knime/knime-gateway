@@ -37,6 +37,7 @@ import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNodeEnt {
 
+  protected String m_name;
   
   protected DefaultWorkflowNodeEnt() {
     //for sub-classes
@@ -49,10 +50,6 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
   
   private DefaultWorkflowNodeEnt(DefaultWorkflowNodeEntBuilder builder) {
     super();
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
     }
@@ -68,6 +65,10 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         throw new IllegalArgumentException("propertyClass must not be null.");
     }
     m_propertyClass = immutable(builder.m_propertyClass);
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
+    }
+    m_name = immutable(builder.m_name);
   }
   
    /**
@@ -85,10 +86,15 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
             return false;
         }
         DefaultWorkflowNodeEnt ent = (DefaultWorkflowNodeEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_name, ent.m_name);
     }
 
 
+  @Override
+  public String getName() {
+        return m_name;
+    }
+    
   
     public static class DefaultWorkflowNodeEntBuilder implements WorkflowNodeEntBuilder {
     
@@ -96,22 +102,13 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
             super();
         }
     
-        private String m_name;
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
         private java.util.List<NodePortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private PropertyClassEnum m_propertyClass;
-
-        @Override
-        public DefaultWorkflowNodeEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
-             }
-             m_name = name;
-             return this;
-        }
+        private String m_name;
 
         @Override
         public DefaultWorkflowNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -155,6 +152,15 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
                  throw new IllegalArgumentException("propertyClass must not be null.");
              }
              m_propertyClass = propertyClass;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowNodeEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
+             }
+             m_name = name;
              return this;
         }
 

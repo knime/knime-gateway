@@ -61,10 +61,6 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("id")
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
@@ -87,6 +83,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     @Override
     @JsonProperty("class")
     public PropertyClassEnum getPropertyClass();
+    
+    @Override
+    @JsonProperty("name")
+    public String getName();
     
 
     /**
@@ -111,10 +111,6 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public WorkflowNodeEntMixInBuilder setName(final String name);
-        
-        @Override
         @JsonProperty("id")
         public WorkflowNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
@@ -137,6 +133,10 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         @Override
         @JsonProperty("class")
         public WorkflowNodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
+        
+        @Override
+        @JsonProperty("name")
+        public WorkflowNodeEntMixInBuilder setName(final String name);
         
     }
 

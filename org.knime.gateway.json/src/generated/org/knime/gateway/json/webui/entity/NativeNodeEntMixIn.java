@@ -58,10 +58,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("id")
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
@@ -86,8 +82,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public PropertyClassEnum getPropertyClass();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
+    @JsonProperty("templateId")
+    public String getTemplateId();
     
 
     /**
@@ -109,10 +105,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         public NativeNodeEntMixIn build();
     
-        @Override
-        @JsonProperty("name")
-        public NativeNodeEntMixInBuilder setName(final String name);
-        
         @Override
         @JsonProperty("id")
         public NativeNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
@@ -138,8 +130,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         public NativeNodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
         
         @Override
-        @JsonProperty("type")
-        public NativeNodeEntMixInBuilder setType(final TypeEnum type);
+        @JsonProperty("templateId")
+        public NativeNodeEntMixInBuilder setTemplateId(final String templateId);
         
     }
 

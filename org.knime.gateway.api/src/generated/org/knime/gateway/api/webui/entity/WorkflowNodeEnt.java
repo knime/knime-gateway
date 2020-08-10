@@ -36,20 +36,18 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 public interface WorkflowNodeEnt extends NodeEnt {
 
 
+  /**
+   * Get name
+   * @return name , never <code>null</code>
+   **/
+  public String getName();
+
 
     /**
      * The builder for the entity.
      */
     public interface WorkflowNodeEntBuilder extends GatewayEntityBuilder<WorkflowNodeEnt> {
 
-        /**
-         * The node&#39;s name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowNodeEntBuilder setName(String name);
-        
         /**
          * The id of the node.
          * 
@@ -97,6 +95,14 @@ public interface WorkflowNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         WorkflowNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
+        
+        /**
+   		 * Set name
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowNodeEntBuilder setName(String name);
         
         
         /**

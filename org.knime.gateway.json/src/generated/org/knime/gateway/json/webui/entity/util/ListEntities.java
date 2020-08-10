@@ -27,6 +27,7 @@ import org.knime.gateway.json.webui.entity.NativeNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
+import org.knime.gateway.json.webui.entity.NodeTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowNodeEntMixIn;
@@ -64,6 +65,7 @@ public class ListEntities {
         res.add(NodeAnnotationEntMixIn.class);
         res.add(NodeEntMixIn.class);
         res.add(NodePortEntMixIn.class);
+        res.add(NodeTemplateEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
         res.add(WorkflowNodeEntMixIn.class);
@@ -87,6 +89,7 @@ public class ListEntities {
         res.add(NodeAnnotationEntMixIn.NodeAnnotationEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
         res.add(NodePortEntMixIn.NodePortEntMixInBuilder.class);
+        res.add(NodeTemplateEntMixIn.NodeTemplateEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
         res.add(WorkflowNodeEntMixIn.WorkflowNodeEntMixInBuilder.class);

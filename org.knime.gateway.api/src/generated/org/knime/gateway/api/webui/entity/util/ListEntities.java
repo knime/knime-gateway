@@ -27,6 +27,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
@@ -65,6 +66,7 @@ public class ListEntities {
         res.add(NodeAnnotationEnt.class);
         res.add(NodeEnt.class);
         res.add(NodePortEnt.class);
+        res.add(NodeTemplateEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowEnt.class);
         res.add(WorkflowNodeEnt.class);
@@ -88,6 +90,7 @@ public class ListEntities {
         res.add(NodeAnnotationEnt.NodeAnnotationEntBuilder.class);
         res.add(NodeEnt.NodeEntBuilder.class);
         res.add(NodePortEnt.NodePortEntBuilder.class);
+        res.add(NodeTemplateEnt.NodeTemplateEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
         res.add(WorkflowNodeEnt.WorkflowNodeEntBuilder.class);

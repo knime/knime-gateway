@@ -35,69 +35,12 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NativeNodeEnt extends NodeEnt {
 
-  /**
-   * The type of the node.
-   */
-  public enum TypeEnum {
-    SOURCE("Source"),
-    
-    SINK("Sink"),
-    
-    LEARNER("Learner"),
-    
-    PREDICTOR("Predictor"),
-    
-    MANIPULATOR("Manipulator"),
-    
-    VISUALIZER("Visualizer"),
-    
-    WIDGET("Widget"),
-    
-    LOOPSTART("LoopStart"),
-    
-    LOOPEND("LoopEnd"),
-    
-    SCOPESTART("ScopeStart"),
-    
-    SCOPEEND("ScopeEnd"),
-    
-    QUICKFORM("QuickForm"),
-    
-    CONFIGURATION("Configuration"),
-    
-    OTHER("Other"),
-    
-    MISSING("Missing"),
-    
-    UNKNOWN("Unknown"),
-    
-    SUBNODE("Subnode"),
-    
-    VIRTUALIN("VirtualIn"),
-    
-    VIRTUALOUT("VirtualOut"),
-    
-    CONTAINER("Container");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
 
   /**
-   * The type of the node.
-   * @return type , never <code>null</code>
+   * The id of the node template this node is an instance of.
+   * @return templateId , never <code>null</code>
    **/
-  public TypeEnum getType();
+  public String getTemplateId();
 
 
     /**
@@ -105,14 +48,6 @@ public interface NativeNodeEnt extends NodeEnt {
      */
     public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
 
-        /**
-         * The node&#39;s name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setName(String name);
-        
         /**
          * The id of the node.
          * 
@@ -162,12 +97,12 @@ public interface NativeNodeEnt extends NodeEnt {
         NativeNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
         
         /**
-         * The type of the node.
+         * The id of the node template this node is an instance of.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param templateId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setType(TypeEnum type);
+        NativeNodeEntBuilder setTemplateId(String templateId);
         
         
         /**

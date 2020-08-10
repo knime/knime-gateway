@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -38,6 +39,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
 
   protected String m_name;
   protected java.util.Map<String, NodeEnt> m_nodes;
+  protected java.util.Map<String, NodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations;
   
@@ -54,6 +56,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     
     m_name = immutable(builder.m_name);
     m_nodes = immutable(builder.m_nodes);
+    m_nodeTemplates = immutable(builder.m_nodeTemplates);
     m_connections = immutable(builder.m_connections);
     m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
   }
@@ -73,7 +76,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations);
     }
 
 
@@ -85,6 +88,11 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   @Override
   public java.util.Map<String, NodeEnt> getNodes() {
         return m_nodes;
+    }
+    
+  @Override
+  public java.util.Map<String, NodeTemplateEnt> getNodeTemplates() {
+        return m_nodeTemplates;
     }
     
   @Override
@@ -106,6 +114,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     
         private String m_name;
         private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
+        private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.HashMap<>();
 
@@ -118,6 +127,12 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
              m_nodes = nodes;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates) {
+             m_nodeTemplates = nodeTemplates;
              return this;
         }
 

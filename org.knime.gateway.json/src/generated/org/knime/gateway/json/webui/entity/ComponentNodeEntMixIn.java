@@ -58,10 +58,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("id")
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
@@ -84,6 +80,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @Override
     @JsonProperty("class")
     public PropertyClassEnum getPropertyClass();
+    
+    @Override
+    @JsonProperty("name")
+    public String getName();
     
     @Override
     @JsonProperty("type")
@@ -110,10 +110,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         public ComponentNodeEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public ComponentNodeEntMixInBuilder setName(final String name);
-        
-        @Override
         @JsonProperty("id")
         public ComponentNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
@@ -136,6 +132,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("class")
         public ComponentNodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
+        
+        @Override
+        @JsonProperty("name")
+        public ComponentNodeEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("type")

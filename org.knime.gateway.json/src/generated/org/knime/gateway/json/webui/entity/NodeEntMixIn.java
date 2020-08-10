@@ -66,10 +66,6 @@ public interface NodeEntMixIn extends NodeEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("id")
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
@@ -119,10 +115,6 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         public NodeEntMixIn build();
     
-        @Override
-        @JsonProperty("name")
-        public NodeEntMixInBuilder setName(final String name);
-        
         @Override
         @JsonProperty("id")
         public NodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
