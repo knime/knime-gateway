@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 /**
  * Compares objects to a representation stored to files.
@@ -201,6 +202,16 @@ public class ResultChecker {
         @Override
         public JsonSerializer<?> modifySerializer(final SerializationConfig config, final BeanDescription beanDesc,
             final JsonSerializer<?> serializer) {
+            return new PropertyExceptionSerializer(serializer);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        @Override
+        public JsonSerializer<?> modifyCollectionSerializer(final SerializationConfig config,
+            final CollectionType valueType, final BeanDescription beanDesc, final JsonSerializer<?> serializer) {
             return new PropertyExceptionSerializer(serializer);
         }
 
