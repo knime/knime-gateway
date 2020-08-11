@@ -57,6 +57,18 @@ public interface NodePortEnt extends GatewayEntity {
 
 
   /**
+   * A descriptive name for the port (taken from the node description)
+   * @return name 
+   **/
+  public String getName();
+
+  /**
+   * Additional port info if the port carries data (i.e. if the respective node is executed and the port is active).
+   * @return info 
+   **/
+  public String getInfo();
+
+  /**
    * The index starting at 0.
    * @return index , never <code>null</code>
    **/
@@ -98,6 +110,22 @@ public interface NodePortEnt extends GatewayEntity {
      */
     public interface NodePortEntBuilder extends GatewayEntityBuilder<NodePortEnt> {
 
+        /**
+         * A descriptive name for the port (taken from the node description)
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setName(String name);
+        
+        /**
+         * Additional port info if the port carries data (i.e. if the respective node is executed and the port is active).
+         * 
+         * @param info the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setInfo(String info);
+        
         /**
          * The index starting at 0.
          * 

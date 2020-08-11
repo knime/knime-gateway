@@ -19,6 +19,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -33,12 +34,6 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 public interface NodeAnnotationEnt extends AnnotationEnt {
 
 
-  /**
-   * Default node annotation.
-   * @return _default 
-   **/
-  public Boolean isDefault();
-
 
     /**
      * The builder for the entity.
@@ -48,18 +43,50 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set text
          * 
-         * @param text the property value, NOT <code>null</code>! 
+         * @param text the property value,  
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setText(String text);
         
         /**
-         * Default node annotation.
+   		 * Set backgroundColor
          * 
-         * @param _default the property value,  
+         * @param backgroundColor the property value,  
          * @return this entity builder for chaining
          */
-        NodeAnnotationEntBuilder setDefault(Boolean _default);
+        NodeAnnotationEntBuilder setBackgroundColor(String backgroundColor);
+        
+        /**
+   		 * Set textAlign
+         * 
+         * @param textAlign the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
+        
+        /**
+   		 * Set borderWidth
+         * 
+         * @param borderWidth the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeAnnotationEntBuilder setBorderWidth(Integer borderWidth);
+        
+        /**
+   		 * Set borderColor
+         * 
+         * @param borderColor the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeAnnotationEntBuilder setBorderColor(String borderColor);
+        
+        /**
+         * Defines ranges of different styles within the annotation.
+         * 
+         * @param styleRanges the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
         
         
         /**

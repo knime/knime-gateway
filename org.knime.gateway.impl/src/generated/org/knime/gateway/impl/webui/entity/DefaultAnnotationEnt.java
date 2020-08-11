@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 
@@ -36,6 +37,11 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 public class DefaultAnnotationEnt  implements AnnotationEnt {
 
   protected String m_text;
+  protected String m_backgroundColor;
+  protected TextAlignEnum m_textAlign;
+  protected Integer m_borderWidth;
+  protected String m_borderColor;
+  protected java.util.List<StyleRangeEnt> m_styleRanges;
   
   protected DefaultAnnotationEnt() {
     //for sub-classes
@@ -48,10 +54,15 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
   
   private DefaultAnnotationEnt(DefaultAnnotationEntBuilder builder) {
     
-    if(builder.m_text == null) {
-        throw new IllegalArgumentException("text must not be null.");
-    }
     m_text = immutable(builder.m_text);
+    m_backgroundColor = immutable(builder.m_backgroundColor);
+    m_textAlign = immutable(builder.m_textAlign);
+    m_borderWidth = immutable(builder.m_borderWidth);
+    m_borderColor = immutable(builder.m_borderColor);
+    if(builder.m_styleRanges == null) {
+        throw new IllegalArgumentException("styleRanges must not be null.");
+    }
+    m_styleRanges = immutable(builder.m_styleRanges);
   }
   
    /**
@@ -69,7 +80,7 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
             return false;
         }
         DefaultAnnotationEnt ent = (DefaultAnnotationEnt)o;
-        return Objects.equals(m_text, ent.m_text);
+        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_styleRanges, ent.m_styleRanges);
     }
 
 
@@ -81,6 +92,11 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_text)
+               .append(m_backgroundColor)
+               .append(m_textAlign)
+               .append(m_borderWidth)
+               .append(m_borderColor)
+               .append(m_styleRanges)
                .toHashCode();
    }
   
@@ -91,6 +107,31 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
         return m_text;
   }
     
+  @Override
+  public String getBackgroundColor() {
+        return m_backgroundColor;
+  }
+    
+  @Override
+  public TextAlignEnum getTextAlign() {
+        return m_textAlign;
+  }
+    
+  @Override
+  public Integer getBorderWidth() {
+        return m_borderWidth;
+  }
+    
+  @Override
+  public String getBorderColor() {
+        return m_borderColor;
+  }
+    
+  @Override
+  public java.util.List<StyleRangeEnt> getStyleRanges() {
+        return m_styleRanges;
+  }
+    
   
     public static class DefaultAnnotationEntBuilder implements AnnotationEntBuilder {
     
@@ -99,13 +140,48 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
         }
     
         private String m_text;
+        private String m_backgroundColor;
+        private TextAlignEnum m_textAlign;
+        private Integer m_borderWidth;
+        private String m_borderColor;
+        private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
 
         @Override
         public DefaultAnnotationEntBuilder setText(String text) {
-             if(text == null) {
-                 throw new IllegalArgumentException("text must not be null.");
-             }
              m_text = text;
+             return this;
+        }
+
+        @Override
+        public DefaultAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
+             m_backgroundColor = backgroundColor;
+             return this;
+        }
+
+        @Override
+        public DefaultAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
+             m_textAlign = textAlign;
+             return this;
+        }
+
+        @Override
+        public DefaultAnnotationEntBuilder setBorderWidth(Integer borderWidth) {
+             m_borderWidth = borderWidth;
+             return this;
+        }
+
+        @Override
+        public DefaultAnnotationEntBuilder setBorderColor(String borderColor) {
+             m_borderColor = borderColor;
+             return this;
+        }
+
+        @Override
+        public DefaultAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
+             if(styleRanges == null) {
+                 throw new IllegalArgumentException("styleRanges must not be null.");
+             }
+             m_styleRanges = styleRanges;
              return this;
         }
 

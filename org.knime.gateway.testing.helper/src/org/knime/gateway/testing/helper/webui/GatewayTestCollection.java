@@ -42,7 +42,7 @@ public class GatewayTestCollection {
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
         Map<String, GatewayTestRunner> res = new HashMap<>();
         res.put("testGetWorkflow",
-            (rc, wl, we) -> new ViewWorkflowTestHelper(rc, wl).testGetWorkflow());
+            (rc, wl, we) -> new ViewWorkflowTestHelper(rc, wl, we).testGetWorkflow());
         return res;
     }
 }

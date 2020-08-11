@@ -34,10 +34,14 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBui
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.NodeExecutionStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
@@ -94,11 +98,17 @@ public class Interface2ImplMap {
         if(clazz == NodeEntBuilder.class) {
             return (B)new DefaultNodeEnt.DefaultNodeEntBuilder();
         }        
+        if(clazz == NodeExecutionStateEntBuilder.class) {
+            return (B)new DefaultNodeExecutionStateEnt.DefaultNodeExecutionStateEntBuilder();
+        }        
         if(clazz == NodePortEntBuilder.class) {
             return (B)new DefaultNodePortEnt.DefaultNodePortEntBuilder();
         }        
         if(clazz == NodeTemplateEntBuilder.class) {
             return (B)new DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder();
+        }        
+        if(clazz == StyleRangeEntBuilder.class) {
+            return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();

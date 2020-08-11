@@ -54,6 +54,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
@@ -66,9 +67,11 @@ public class ViewWorkflowTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * @param entityResultChecker
      * @param workflowLoader
+     * @param workflowExecutor
      */
-    protected ViewWorkflowTestHelper(final ResultChecker entityResultChecker, final WorkflowLoader workflowLoader) {
-        super("viewworkflow", entityResultChecker, workflowLoader);
+    protected ViewWorkflowTestHelper(final ResultChecker entityResultChecker, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor) {
+        super("viewworkflow", entityResultChecker, workflowLoader, workflowExecutor);
     }
 
     /**
@@ -78,8 +81,15 @@ public class ViewWorkflowTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testGetWorkflow() throws Exception {
         UUID wfId = loadWorkflow(TestWorkflowCollection.GENERAL);
+
+        // check un-executed
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
         cr(workflow, "workflowent_root");
+
+        //check executed
+        executeWorkflow(wfId);
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        cr(workflow, "worklfowent_root_executed");
     }
 
 }

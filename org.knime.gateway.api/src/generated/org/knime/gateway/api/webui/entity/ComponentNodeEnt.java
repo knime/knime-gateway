@@ -19,6 +19,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -49,9 +50,7 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
     
     MANIPULATOR("Manipulator"),
     
-    VISUALIZER("Visualizer"),
-    
-    SUBNODE("Subnode");
+    VISUALIZER("Visualizer");
 
     private String value;
 
@@ -78,6 +77,12 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
    * @return type 
    **/
   public TypeEnum getType();
+
+  /**
+   * Get state
+   * @return state 
+   **/
+  public NodeExecutionStateEnt getState();
 
 
     /**
@@ -148,6 +153,14 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setType(TypeEnum type);
+        
+        /**
+   		 * Set state
+         * 
+         * @param state the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setState(NodeExecutionStateEnt state);
         
         
         /**

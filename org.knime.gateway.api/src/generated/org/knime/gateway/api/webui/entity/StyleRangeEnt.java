@@ -18,90 +18,110 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AnnotationEnt;
-import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A workflow annotation.
+ * Defines the style of a range (e.g. within a workflow annotation).
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowAnnotationEnt extends AnnotationEnt {
+public interface StyleRangeEnt extends GatewayEntity {
 
 
   /**
-   * Get bounds
-   * @return bounds , never <code>null</code>
+   * Style range start.
+   * @return start , never <code>null</code>
    **/
-  public BoundsEnt getBounds();
+  public Integer getStart();
+
+  /**
+   * Style range length.
+   * @return length , never <code>null</code>
+   **/
+  public Integer getLength();
+
+  /**
+   * Get bold
+   * @return bold 
+   **/
+  public Boolean isBold();
+
+  /**
+   * Get italic
+   * @return italic 
+   **/
+  public Boolean isItalic();
+
+  /**
+   * Style range font size.
+   * @return fontSize , never <code>null</code>
+   **/
+  public Integer getFontSize();
+
+  /**
+   * Style range foreground color.
+   * @return color 
+   **/
+  public String getColor();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowAnnotationEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationEnt> {
+    public interface StyleRangeEntBuilder extends GatewayEntityBuilder<StyleRangeEnt> {
 
         /**
-   		 * Set text
+         * Style range start.
          * 
-         * @param text the property value,  
+         * @param start the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setText(String text);
+        StyleRangeEntBuilder setStart(Integer start);
         
         /**
-   		 * Set backgroundColor
+         * Style range length.
          * 
-         * @param backgroundColor the property value,  
+         * @param length the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor);
+        StyleRangeEntBuilder setLength(Integer length);
         
         /**
-   		 * Set textAlign
+   		 * Set bold
          * 
-         * @param textAlign the property value,  
+         * @param bold the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
+        StyleRangeEntBuilder setBold(Boolean bold);
         
         /**
-   		 * Set borderWidth
+   		 * Set italic
          * 
-         * @param borderWidth the property value,  
+         * @param italic the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setBorderWidth(Integer borderWidth);
+        StyleRangeEntBuilder setItalic(Boolean italic);
         
         /**
-   		 * Set borderColor
+         * Style range font size.
          * 
-         * @param borderColor the property value,  
+         * @param fontSize the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setBorderColor(String borderColor);
+        StyleRangeEntBuilder setFontSize(Integer fontSize);
         
         /**
-         * Defines ranges of different styles within the annotation.
+         * Style range foreground color.
          * 
-         * @param styleRanges the property value, NOT <code>null</code>! 
+         * @param color the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
-        
-        /**
-   		 * Set bounds
-         * 
-         * @param bounds the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds);
+        StyleRangeEntBuilder setColor(String color);
         
         
         /**
@@ -111,7 +131,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowAnnotationEnt build();
+        StyleRangeEnt build();
     
     }
 

@@ -18,8 +18,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
-import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,41 +41,41 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt.DefaultNodeA
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeAnnotationEnt.class)
+    defaultImpl = DefaultStyleRangeEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeAnnotationEnt.class, name="NodeAnnotation")
+    @Type(value = DefaultStyleRangeEnt.class, name="StyleRange")
 })
-@JsonDeserialize(builder=DefaultNodeAnnotationEntBuilder.class)
+@JsonDeserialize(builder=DefaultStyleRangeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
+public interface StyleRangeEntMixIn extends StyleRangeEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("text")
-    public String getText();
+    @JsonProperty("start")
+    public Integer getStart();
     
     @Override
-    @JsonProperty("backgroundColor")
-    public String getBackgroundColor();
+    @JsonProperty("length")
+    public Integer getLength();
     
     @Override
-    @JsonProperty("textAlign")
-    public TextAlignEnum getTextAlign();
+    @JsonProperty("bold")
+    public Boolean isBold();
     
     @Override
-    @JsonProperty("borderWidth")
-    public Integer getBorderWidth();
+    @JsonProperty("italic")
+    public Boolean isItalic();
     
     @Override
-    @JsonProperty("borderColor")
-    public String getBorderColor();
+    @JsonProperty("fontSize")
+    public Integer getFontSize();
     
     @Override
-    @JsonProperty("styleRanges")
-    public java.util.List<StyleRangeEnt> getStyleRanges();
+    @JsonProperty("color")
+    public String getColor();
     
 
     /**
@@ -89,39 +87,39 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeAnnotationEntBuilder.class)
+        defaultImpl = DefaultStyleRangeEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name="NodeAnnotation")
+        @Type(value = DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder.class, name="StyleRange")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeAnnotationEntMixInBuilder extends NodeAnnotationEntBuilder {
+    public static interface StyleRangeEntMixInBuilder extends StyleRangeEntBuilder {
     
         @Override
-        public NodeAnnotationEntMixIn build();
+        public StyleRangeEntMixIn build();
     
         @Override
-        @JsonProperty("text")
-        public NodeAnnotationEntMixInBuilder setText(final String text);
+        @JsonProperty("start")
+        public StyleRangeEntMixInBuilder setStart(final Integer start);
         
         @Override
-        @JsonProperty("backgroundColor")
-        public NodeAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
+        @JsonProperty("length")
+        public StyleRangeEntMixInBuilder setLength(final Integer length);
         
         @Override
-        @JsonProperty("textAlign")
-        public NodeAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
+        @JsonProperty("bold")
+        public StyleRangeEntMixInBuilder setBold(final Boolean bold);
         
         @Override
-        @JsonProperty("borderWidth")
-        public NodeAnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
+        @JsonProperty("italic")
+        public StyleRangeEntMixInBuilder setItalic(final Boolean italic);
         
         @Override
-        @JsonProperty("borderColor")
-        public NodeAnnotationEntMixInBuilder setBorderColor(final String borderColor);
+        @JsonProperty("fontSize")
+        public StyleRangeEntMixInBuilder setFontSize(final Integer fontSize);
         
         @Override
-        @JsonProperty("styleRanges")
-        public NodeAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
+        @JsonProperty("color")
+        public StyleRangeEntMixInBuilder setColor(final String color);
         
     }
 

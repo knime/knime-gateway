@@ -22,6 +22,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -41,15 +42,22 @@ import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.AnnotationData.StyleRange;
+import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeInPort;
+import org.knime.core.node.workflow.NodeMessage;
+import org.knime.core.node.workflow.NodeMessage.Type;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -59,6 +67,7 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
@@ -71,13 +80,17 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.PropertyClassEnum;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.NodeExecutionStateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.StateEnum;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
@@ -152,19 +165,44 @@ public final class EntityBuilderUtil {
                 textAlign = TextAlignEnum.RIGHT;
                 break;
         }
+
+        List<StyleRangeEnt> styleRanges;
+        if (wa.getStyleRanges().length == 0) {
+            // create one style range covering the entire text with the default font size set
+            styleRanges = Collections.singletonList(builder(StyleRangeEntBuilder.class)
+                .setFontSize(wa.getDefaultFontSize()).setStart(0).setLength(wa.getText().length()).build());
+        } else {
+            styleRanges = Arrays.stream(wa.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt)
+                .collect(Collectors.toList());
+        }
         return Pair.create(wa.getID(), builder(WorkflowAnnotationEntBuilder.class)
                 .setTextAlign(textAlign)
                 .setBackgroundColor(hexStringColor(wa.getBgColor()))
                 .setBorderColor(hexStringColor(wa.getBorderColor()))
                 .setBorderWidth(wa.getBorderSize())
-                .setDefaultFontSize(wa.getDefaultFontSize())
                 .setBounds(bounds)
                 .setText(wa.getText())
+                .setStyleRanges(styleRanges)
                 .build());
     }
 
+    private static StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {
+        StyleRangeEntBuilder builder = builder(StyleRangeEntBuilder.class)
+                .setFontSize(sr.getFontSize())
+                .setColor(hexStringColor(sr.getFgColor()))
+                .setLength(sr.getLength())
+                .setStart(sr.getStart());
+        if ((sr.getFontStyle() & StyleRange.BOLD) != 0) {
+            builder.setBold(Boolean.TRUE);
+        }
+        if ((sr.getFontStyle() & StyleRange.ITALIC) != 0) {
+            builder.setItalic(Boolean.TRUE);
+        }
+        return builder.build();
+    }
+
     private static String hexStringColor(final int color) {
-        return "#" + Integer.toHexString(color).substring(0, 6);
+        return String.format("#%06X", (0xFFFFFF & color));
     }
 
     /**
@@ -197,7 +235,7 @@ public final class EntityBuilderUtil {
         return builder(WorkflowNodeEntBuilder.class).setName(wm.getName())
                 .setId(new NodeIDEnt(wm.getID()))
                 .setOutPorts(buildNodePortEnts(wm, false))
-                .setAnnotation(buildNodeAnnotationEnt(wm))
+                .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))
                 .setInPorts(buildNodePortEnts(wm, true))
                 .setPosition(buildXYEnt(wm.getUIInformation().getBounds()[0], wm.getUIInformation().getBounds()[1]))
                 .setPropertyClass(PropertyClassEnum.METANODE).build();
@@ -210,14 +248,16 @@ public final class EntityBuilderUtil {
      * @return the newly created entity
      */
     public static ComponentNodeEnt buildComponentNodeEnt(final SubNodeContainer nc) {
-        String type = nc.getType().toString().toUpperCase();
+        String type = nc.getMetadata().getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())
                 .setId(new NodeIDEnt(nc.getID()))
-                .setType(org.knime.gateway.api.webui.entity.ComponentNodeEnt.TypeEnum.valueOf(type))
+                .setType(type == null ? null : org.knime.gateway.api.webui.entity.ComponentNodeEnt.TypeEnum.valueOf(
+                    type))
                 .setOutPorts(buildNodePortEnts(nc, false))
-                .setAnnotation(buildNodeAnnotationEnt(nc))
+                .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))
                 .setInPorts(buildNodePortEnts(nc, true))
                 .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
+                .setState(buildNodeExecutionStateEnt(nc))
                 .setPropertyClass(PropertyClassEnum.COMPONENT).build();
     }
 
@@ -227,66 +267,136 @@ public final class EntityBuilderUtil {
             for (int i = 0; i < nc.getNrInPorts(); i++) {
                 ConnectionContainer connection = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
                 NodeInPort inPort = nc.getInPort(i);
-                res.add(buildNodePortEnt(inPort.getPortType(), i, inPort.getPortType().isOptional(), null,
+                res.add(buildNodePortEnt(inPort.getPortType(), inPort.getPortName(), null, i,
+                    inPort.getPortType().isOptional(), null,
                     connection == null ? Collections.emptyList() : Arrays.asList(connection)));
             }
         } else {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
-                res.add(buildNodePortEnt(outPort.getPortType(), i, null,
-                    outPort.isInactive() ? outPort.isInactive() : null, connections));
+                res.add(buildNodePortEnt(outPort.getPortType(), outPort.getPortName(), outPort.getPortSummary(), i,
+                    null, outPort.isInactive() ? outPort.isInactive() : null, connections));
             }
         }
         return res;
     }
 
-    private static NodePortEnt buildNodePortEnt(final PortType ptype, final int portIdx, final Boolean isOptional,
-        final Boolean isInactive, final Collection<ConnectionContainer> connections) {
-        org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum type;
-        String color;
-        if (BufferedDataTable.TYPE.equals(ptype)) {
-            type = org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.TABLE;
-            color = null;
-        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
-            type = org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.FLOWVARIABLE;
-            color = null;
-        } else {
-            type = org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.OTHER;
-            color = hexStringColor(ptype.getColor());
-        }
-        return builder(NodePortEntBuilder.class)
+    private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
+        final int portIdx, final Boolean isOptional, final Boolean isInactive,
+        final Collection<ConnectionContainer> connections) {
+        NodePortEntBuilder builder = builder(NodePortEntBuilder.class)
                 .setIndex(portIdx)
                 .setOptional(isOptional)
                 .setInactive(isInactive)
-                .setColor(color)
                 .setConnectedVia(connections.stream().map(EntityBuilderUtil::buildConnectionIDEnt)
                     .collect(Collectors.toList()))
-                .setType(type).build();
+                .setName(name)
+                .setInfo(info);
+        if (BufferedDataTable.TYPE.equals(ptype)) {
+            builder.setType(org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.TABLE);
+        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
+            builder.setType(org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.FLOWVARIABLE);
+        } else {
+            builder.setType(org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.OTHER);
+            builder.setColor(hexStringColor(ptype.getColor()));
+        }
+        return builder.build();
     }
 
     private static ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c) {
         return new ConnectionIDEnt(new NodeIDEnt(c.getDest()), c.getDestPort());
     }
 
-    private static NodeAnnotationEnt buildNodeAnnotationEnt(final NodeContainer nc) {
-        NodeAnnotation na = nc.getNodeAnnotation();
+    private static NodeAnnotationEnt buildNodeAnnotationEnt(final NodeAnnotation na) {
         if (na.getData().isDefault()) {
             return null;
         }
+        TextAlignEnum textAlign;
+        switch (na.getAlignment()) {
+            case LEFT:
+                textAlign = TextAlignEnum.LEFT;
+                break;
+            case CENTER:
+                textAlign = TextAlignEnum.CENTER;
+                break;
+            case RIGHT:
+            default:
+                textAlign = TextAlignEnum.RIGHT;
+                break;
+        }
+
+        List<StyleRangeEnt> styleRanges;
+        if (na.getStyleRanges().length == 0) {
+            // create one style range covering the entire text with the default font size set
+            styleRanges = Collections.singletonList(builder(StyleRangeEntBuilder.class)
+                .setFontSize(na.getDefaultFontSize()).setStart(0).setLength(na.getText().length()).build());
+        } else {
+            styleRanges = Arrays.stream(na.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt)
+                .collect(Collectors.toList());
+        }
         return builder(NodeAnnotationEntBuilder.class)
-            .setText(na.getText()).build();
+                .setTextAlign(textAlign)
+                .setBackgroundColor(hexStringColor(na.getBgColor()))
+                .setBorderColor(hexStringColor(na.getBorderColor()))
+                .setBorderWidth(na.getBorderSize())
+                .setText(na.getText())
+                .setStyleRanges(styleRanges)
+                .build();
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc) {
         return builder(NativeNodeEntBuilder.class)
             .setId(new NodeIDEnt(nc.getID()))
             .setOutPorts(buildNodePortEnts(nc, false))
-            .setAnnotation(buildNodeAnnotationEnt(nc))
+            .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))
             .setInPorts(buildNodePortEnts(nc, true))
             .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
             .setPropertyClass(NodeEnt.PropertyClassEnum.NODE)
+            .setState(buildNodeExecutionStateEnt(nc))
             .setTemplateId(createTemplateId(nc.getNode().getFactory())).build();
+    }
+
+    private static NodeExecutionStateEnt buildNodeExecutionStateEnt(final SingleNodeContainer nc) {
+        if (nc.isInactive()) {
+            return null;
+        }
+        NodeContainerState ncState = nc.getNodeContainerState();
+        NodeExecutionStateEntBuilder builder =
+            builder(NodeExecutionStateEntBuilder.class).setState(getStateEnum(ncState));
+        NodeMessage nodeMessage = nc.getNodeMessage();
+        if (nodeMessage.getMessageType() == Type.ERROR) {
+            builder.setError(nodeMessage.getMessage());
+        } else if (nodeMessage.getMessageType() == Type.WARNING) {
+            builder.setWarning(nodeMessage.getMessage());
+        } else {
+            //
+        }
+        if (ncState.isExecutionInProgress()) {
+            NodeProgressMonitor progressMonitor = nc.getProgressMonitor();
+            Double progress = progressMonitor.getProgress();
+            builder.setProgress(progress == null ? null : BigDecimal.valueOf(progress));
+            builder.setProgressMessage(progressMonitor.getMessage());
+        }
+        return builder.build();
+    }
+
+    private static StateEnum getStateEnum(final NodeContainerState ncState) { // NOSONAR
+        if (ncState.isConfigured()) {
+            return StateEnum.CONFIGURED;
+        } else if (ncState.isExecuted()) {
+            return StateEnum.EXECUTED;
+        } else if (ncState.isExecutionInProgress() || ncState.isExecutingRemotely()) {
+            return StateEnum.EXECUTING;
+        } else if (ncState.isIdle()) {
+            return StateEnum.IDLE;
+        } else if (ncState.isWaitingToBeExecuted()) {
+            return StateEnum.QUEUED;
+        } else if (ncState.isHalted()) {
+            return StateEnum.HALTED;
+        } else {
+            throw new IllegalStateException("Node container state cannot be mapped!");
+        }
     }
 
     private static NodeTemplateEnt buildNodeTemplateEnt(final NativeNodeContainer nc) {

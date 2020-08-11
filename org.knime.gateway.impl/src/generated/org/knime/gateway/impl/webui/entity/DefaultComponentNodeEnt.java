@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
@@ -41,6 +42,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
 
   protected String m_name;
   protected TypeEnum m_type;
+  protected NodeExecutionStateEnt m_state;
   
   protected DefaultComponentNodeEnt() {
     //for sub-classes
@@ -73,6 +75,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
     }
     m_name = immutable(builder.m_name);
     m_type = immutable(builder.m_type);
+    m_state = immutable(builder.m_state);
   }
   
    /**
@@ -90,7 +93,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_state, ent.m_state);
     }
 
 
@@ -109,6 +112,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
                .append(m_propertyClass)
                .append(m_name)
                .append(m_type)
+               .append(m_state)
                .toHashCode();
    }
   
@@ -122,6 +126,11 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
   @Override
   public TypeEnum getType() {
         return m_type;
+  }
+    
+  @Override
+  public NodeExecutionStateEnt getState() {
+        return m_state;
   }
     
   
@@ -139,6 +148,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         private PropertyClassEnum m_propertyClass;
         private String m_name;
         private TypeEnum m_type;
+        private NodeExecutionStateEnt m_state;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -197,6 +207,12 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         @Override
         public DefaultComponentNodeEntBuilder setType(TypeEnum type) {
              m_type = type;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentNodeEntBuilder setState(NodeExecutionStateEnt state) {
+             m_state = state;
              return this;
         }
 

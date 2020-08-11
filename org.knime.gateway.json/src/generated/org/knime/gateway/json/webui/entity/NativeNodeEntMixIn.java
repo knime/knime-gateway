@@ -19,6 +19,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
@@ -85,6 +86,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonProperty("templateId")
     public String getTemplateId();
     
+    @Override
+    @JsonProperty("state")
+    public NodeExecutionStateEnt getState();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -132,6 +137,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("templateId")
         public NativeNodeEntMixInBuilder setTemplateId(final String templateId);
+        
+        @Override
+        @JsonProperty("state")
+        public NativeNodeEntMixInBuilder setState(final NodeExecutionStateEnt state);
         
     }
 

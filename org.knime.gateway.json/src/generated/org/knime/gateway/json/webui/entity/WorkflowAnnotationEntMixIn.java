@@ -19,6 +19,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,12 +61,12 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     public String getText();
     
     @Override
-    @JsonProperty("textAlign")
-    public TextAlignEnum getTextAlign();
+    @JsonProperty("backgroundColor")
+    public String getBackgroundColor();
     
     @Override
-    @JsonProperty("defaultFontSize")
-    public Integer getDefaultFontSize();
+    @JsonProperty("textAlign")
+    public TextAlignEnum getTextAlign();
     
     @Override
     @JsonProperty("borderWidth")
@@ -76,8 +77,8 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     public String getBorderColor();
     
     @Override
-    @JsonProperty("backgroundColor")
-    public String getBackgroundColor();
+    @JsonProperty("styleRanges")
+    public java.util.List<StyleRangeEnt> getStyleRanges();
     
     @Override
     @JsonProperty("bounds")
@@ -108,12 +109,12 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         public WorkflowAnnotationEntMixInBuilder setText(final String text);
         
         @Override
-        @JsonProperty("textAlign")
-        public WorkflowAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
+        @JsonProperty("backgroundColor")
+        public WorkflowAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
         
         @Override
-        @JsonProperty("defaultFontSize")
-        public WorkflowAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
+        @JsonProperty("textAlign")
+        public WorkflowAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
         
         @Override
         @JsonProperty("borderWidth")
@@ -124,8 +125,8 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         public WorkflowAnnotationEntMixInBuilder setBorderColor(final String borderColor);
         
         @Override
-        @JsonProperty("backgroundColor")
-        public WorkflowAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
+        @JsonProperty("styleRanges")
+        public WorkflowAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
         
         @Override
         @JsonProperty("bounds")

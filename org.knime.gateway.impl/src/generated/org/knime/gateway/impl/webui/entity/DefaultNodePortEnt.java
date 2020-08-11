@@ -35,6 +35,8 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultNodePortEnt  implements NodePortEnt {
 
+  protected String m_name;
+  protected String m_info;
   protected Integer m_index;
   protected TypeEnum m_type;
   protected String m_color;
@@ -53,6 +55,8 @@ public class DefaultNodePortEnt  implements NodePortEnt {
   
   private DefaultNodePortEnt(DefaultNodePortEntBuilder builder) {
     
+    m_name = immutable(builder.m_name);
+    m_info = immutable(builder.m_info);
     if(builder.m_index == null) {
         throw new IllegalArgumentException("index must not be null.");
     }
@@ -82,7 +86,7 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_index, ent.m_index) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_inactive, ent.m_inactive);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_inactive, ent.m_inactive);
     }
 
 
@@ -93,6 +97,8 @@ public class DefaultNodePortEnt  implements NodePortEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
+               .append(m_name)
+               .append(m_info)
                .append(m_index)
                .append(m_type)
                .append(m_color)
@@ -104,6 +110,16 @@ public class DefaultNodePortEnt  implements NodePortEnt {
   
 	
 	
+  @Override
+  public String getName() {
+        return m_name;
+  }
+    
+  @Override
+  public String getInfo() {
+        return m_info;
+  }
+    
   @Override
   public Integer getIndex() {
         return m_index;
@@ -141,12 +157,26 @@ public class DefaultNodePortEnt  implements NodePortEnt {
             
         }
     
+        private String m_name;
+        private String m_info;
         private Integer m_index;
         private TypeEnum m_type;
         private String m_color;
         private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia = new java.util.ArrayList<>();
         private Boolean m_optional;
         private Boolean m_inactive;
+
+        @Override
+        public DefaultNodePortEntBuilder setName(String name) {
+             m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultNodePortEntBuilder setInfo(String info) {
+             m_info = info;
+             return this;
+        }
 
         @Override
         public DefaultNodePortEntBuilder setIndex(Integer index) {

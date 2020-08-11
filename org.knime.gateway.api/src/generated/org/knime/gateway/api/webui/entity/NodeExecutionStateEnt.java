@@ -18,10 +18,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import java.math.BigDecimal;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -29,89 +26,118 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The structure of a workflow.
+ * Encapsulates properties around a node&#39;s execution state.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowEnt extends GatewayEntity {
+public interface NodeExecutionStateEnt extends GatewayEntity {
+
+  /**
+   * Different execution states of a node. It is not given, if the node is inactive.
+   */
+  public enum StateEnum {
+    IDLE("IDLE"),
+    
+    CONFIGURED("CONFIGURED"),
+    
+    EXECUTED("EXECUTED"),
+    
+    EXECUTING("EXECUTING"),
+    
+    QUEUED("QUEUED"),
+    
+    HALTED("HALTED");
+
+    private String value;
+
+    StateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * Get name
-   * @return name 
+   * Different execution states of a node. It is not given, if the node is inactive.
+   * @return state 
    **/
-  public String getName();
+  public StateEnum getState();
 
   /**
-   * The node map.
-   * @return nodes 
+   * Get progress
+   * @return progress 
    **/
-  public java.util.Map<String, NodeEnt> getNodes();
+  public BigDecimal getProgress();
 
   /**
-   * A map from ids to node templates.
-   * @return nodeTemplates 
+   * Get progressMessage
+   * @return progressMessage 
    **/
-  public java.util.Map<String, NodeTemplateEnt> getNodeTemplates();
+  public String getProgressMessage();
 
   /**
-   * The list of connections.
-   * @return connections 
+   * Get error
+   * @return error 
    **/
-  public java.util.Map<String, ConnectionEnt> getConnections();
+  public String getError();
 
   /**
-   * List of all workflow annotations.
-   * @return workflowAnnotations 
+   * Get warning
+   * @return warning 
    **/
-  public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
+  public String getWarning();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
+    public interface NodeExecutionStateEntBuilder extends GatewayEntityBuilder<NodeExecutionStateEnt> {
 
         /**
-   		 * Set name
+         * Different execution states of a node. It is not given, if the node is inactive.
          * 
-         * @param name the property value,  
+         * @param state the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setName(String name);
+        NodeExecutionStateEntBuilder setState(StateEnum state);
         
         /**
-         * The node map.
+   		 * Set progress
          * 
-         * @param nodes the property value,  
+         * @param progress the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
+        NodeExecutionStateEntBuilder setProgress(BigDecimal progress);
         
         /**
-         * A map from ids to node templates.
+   		 * Set progressMessage
          * 
-         * @param nodeTemplates the property value,  
+         * @param progressMessage the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates);
+        NodeExecutionStateEntBuilder setProgressMessage(String progressMessage);
         
         /**
-         * The list of connections.
+   		 * Set error
          * 
-         * @param connections the property value,  
+         * @param error the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
+        NodeExecutionStateEntBuilder setError(String error);
         
         /**
-         * List of all workflow annotations.
+   		 * Set warning
          * 
-         * @param workflowAnnotations the property value,  
+         * @param warning the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
+        NodeExecutionStateEntBuilder setWarning(String warning);
         
         
         /**
@@ -121,7 +147,7 @@ public interface WorkflowEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowEnt build();
+        NodeExecutionStateEnt build();
     
     }
 

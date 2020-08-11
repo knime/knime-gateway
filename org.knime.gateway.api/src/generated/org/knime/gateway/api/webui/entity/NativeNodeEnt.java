@@ -20,6 +20,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -41,6 +42,12 @@ public interface NativeNodeEnt extends NodeEnt {
    * @return templateId , never <code>null</code>
    **/
   public String getTemplateId();
+
+  /**
+   * Get state
+   * @return state 
+   **/
+  public NodeExecutionStateEnt getState();
 
 
     /**
@@ -103,6 +110,14 @@ public interface NativeNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setTemplateId(String templateId);
+        
+        /**
+   		 * Set state
+         * 
+         * @param state the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setState(NodeExecutionStateEnt state);
         
         
         /**

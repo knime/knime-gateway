@@ -54,6 +54,14 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("name")
+    public String getName();
+    
+    @Override
+    @JsonProperty("info")
+    public String getInfo();
+    
+    @Override
     @JsonProperty("index")
     public Integer getIndex();
     
@@ -97,6 +105,14 @@ public interface NodePortEntMixIn extends NodePortEnt {
         @Override
         public NodePortEntMixIn build();
     
+        @Override
+        @JsonProperty("name")
+        public NodePortEntMixInBuilder setName(final String name);
+        
+        @Override
+        @JsonProperty("info")
+        public NodePortEntMixInBuilder setInfo(final String info);
+        
         @Override
         @JsonProperty("index")
         public NodePortEntMixInBuilder setIndex(final Integer index);

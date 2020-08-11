@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
@@ -40,6 +41,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEnt {
 
   protected String m_templateId;
+  protected NodeExecutionStateEnt m_state;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -71,6 +73,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         throw new IllegalArgumentException("templateId must not be null.");
     }
     m_templateId = immutable(builder.m_templateId);
+    m_state = immutable(builder.m_state);
   }
   
    /**
@@ -88,7 +91,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_templateId, ent.m_templateId);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state);
     }
 
 
@@ -106,6 +109,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
                .append(m_position)
                .append(m_propertyClass)
                .append(m_templateId)
+               .append(m_state)
                .toHashCode();
    }
   
@@ -114,6 +118,11 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
   @Override
   public String getTemplateId() {
         return m_templateId;
+  }
+    
+  @Override
+  public NodeExecutionStateEnt getState() {
+        return m_state;
   }
     
   
@@ -130,6 +139,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         private XYEnt m_position;
         private PropertyClassEnum m_propertyClass;
         private String m_templateId;
+        private NodeExecutionStateEnt m_state;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -182,6 +192,12 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
                  throw new IllegalArgumentException("templateId must not be null.");
              }
              m_templateId = templateId;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeEntBuilder setState(NodeExecutionStateEnt state) {
+             m_state = state;
              return this;
         }
 

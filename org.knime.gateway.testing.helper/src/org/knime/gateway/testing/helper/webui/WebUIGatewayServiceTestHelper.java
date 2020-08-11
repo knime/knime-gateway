@@ -63,6 +63,7 @@ import org.knime.gateway.json.util.JsonUtil;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ResultChecker.PropertyExceptions;
+import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -135,6 +136,17 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     protected WebUIGatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
         final WorkflowLoader workflowLoader) {
         super(testName, entityResultChecker, workflowLoader);
+    }
+
+    /**
+     * @param testName
+     * @param entityResultChecker
+     * @param workflowLoader
+     * @param workflowExecutor
+     */
+    protected WebUIGatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        super(testName, entityResultChecker, workflowLoader, workflowExecutor);
     }
 
     /**

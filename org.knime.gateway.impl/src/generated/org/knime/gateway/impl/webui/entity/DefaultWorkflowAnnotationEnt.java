@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -37,11 +38,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implements WorkflowAnnotationEnt {
 
-  protected TextAlignEnum m_textAlign;
-  protected Integer m_defaultFontSize;
-  protected Integer m_borderWidth;
-  protected String m_borderColor;
-  protected String m_backgroundColor;
   protected BoundsEnt m_bounds;
   
   protected DefaultWorkflowAnnotationEnt() {
@@ -55,15 +51,18 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
   
   private DefaultWorkflowAnnotationEnt(DefaultWorkflowAnnotationEntBuilder builder) {
     super();
-    if(builder.m_text == null) {
-        throw new IllegalArgumentException("text must not be null.");
-    }
     m_text = immutable(builder.m_text);
+    m_backgroundColor = immutable(builder.m_backgroundColor);
     m_textAlign = immutable(builder.m_textAlign);
-    m_defaultFontSize = immutable(builder.m_defaultFontSize);
     m_borderWidth = immutable(builder.m_borderWidth);
     m_borderColor = immutable(builder.m_borderColor);
-    m_backgroundColor = immutable(builder.m_backgroundColor);
+    if(builder.m_styleRanges == null) {
+        throw new IllegalArgumentException("styleRanges must not be null.");
+    }
+    m_styleRanges = immutable(builder.m_styleRanges);
+    if(builder.m_bounds == null) {
+        throw new IllegalArgumentException("bounds must not be null.");
+    }
     m_bounds = immutable(builder.m_bounds);
   }
   
@@ -82,7 +81,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
             return false;
         }
         DefaultWorkflowAnnotationEnt ent = (DefaultWorkflowAnnotationEnt)o;
-        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_bounds, ent.m_bounds);
+        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_styleRanges, ent.m_styleRanges) && Objects.equals(m_bounds, ent.m_bounds);
     }
 
 
@@ -94,42 +93,17 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_text)
+               .append(m_backgroundColor)
                .append(m_textAlign)
-               .append(m_defaultFontSize)
                .append(m_borderWidth)
                .append(m_borderColor)
-               .append(m_backgroundColor)
+               .append(m_styleRanges)
                .append(m_bounds)
                .toHashCode();
    }
   
 	
 	
-  @Override
-  public TextAlignEnum getTextAlign() {
-        return m_textAlign;
-  }
-    
-  @Override
-  public Integer getDefaultFontSize() {
-        return m_defaultFontSize;
-  }
-    
-  @Override
-  public Integer getBorderWidth() {
-        return m_borderWidth;
-  }
-    
-  @Override
-  public String getBorderColor() {
-        return m_borderColor;
-  }
-    
-  @Override
-  public String getBackgroundColor() {
-        return m_backgroundColor;
-  }
-    
   @Override
   public BoundsEnt getBounds() {
         return m_bounds;
@@ -143,31 +117,28 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         }
     
         private String m_text;
+        private String m_backgroundColor;
         private TextAlignEnum m_textAlign;
-        private Integer m_defaultFontSize;
         private Integer m_borderWidth;
         private String m_borderColor;
-        private String m_backgroundColor;
+        private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
         private BoundsEnt m_bounds;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setText(String text) {
-             if(text == null) {
-                 throw new IllegalArgumentException("text must not be null.");
-             }
              m_text = text;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
+             m_backgroundColor = backgroundColor;
              return this;
         }
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
              m_textAlign = textAlign;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
-             m_defaultFontSize = defaultFontSize;
              return this;
         }
 
@@ -184,13 +155,19 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         }
 
         @Override
-        public DefaultWorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
-             m_backgroundColor = backgroundColor;
+        public DefaultWorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
+             if(styleRanges == null) {
+                 throw new IllegalArgumentException("styleRanges must not be null.");
+             }
+             m_styleRanges = styleRanges;
              return this;
         }
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds) {
+             if(bounds == null) {
+                 throw new IllegalArgumentException("bounds must not be null.");
+             }
              m_bounds = bounds;
              return this;
         }

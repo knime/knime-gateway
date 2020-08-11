@@ -18,6 +18,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +64,26 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     @JsonProperty("text")
     public String getText();
     
+    @Override
+    @JsonProperty("backgroundColor")
+    public String getBackgroundColor();
+    
+    @Override
+    @JsonProperty("textAlign")
+    public TextAlignEnum getTextAlign();
+    
+    @Override
+    @JsonProperty("borderWidth")
+    public Integer getBorderWidth();
+    
+    @Override
+    @JsonProperty("borderColor")
+    public String getBorderColor();
+    
+    @Override
+    @JsonProperty("styleRanges")
+    public java.util.List<StyleRangeEnt> getStyleRanges();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -90,6 +111,26 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
         @Override
         @JsonProperty("text")
         public AnnotationEntMixInBuilder setText(final String text);
+        
+        @Override
+        @JsonProperty("backgroundColor")
+        public AnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
+        
+        @Override
+        @JsonProperty("textAlign")
+        public AnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
+        
+        @Override
+        @JsonProperty("borderWidth")
+        public AnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
+        
+        @Override
+        @JsonProperty("borderColor")
+        public AnnotationEntMixInBuilder setBorderColor(final String borderColor);
+        
+        @Override
+        @JsonProperty("styleRanges")
+        public AnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
         
     }
 

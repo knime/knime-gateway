@@ -18,8 +18,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
-import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt.DefaultNodeExecutionStateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -43,41 +42,37 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt.DefaultNodeA
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeAnnotationEnt.class)
+    defaultImpl = DefaultNodeExecutionStateEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeAnnotationEnt.class, name="NodeAnnotation")
+    @Type(value = DefaultNodeExecutionStateEnt.class, name="NodeExecutionState")
 })
-@JsonDeserialize(builder=DefaultNodeAnnotationEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeExecutionStateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
+public interface NodeExecutionStateEntMixIn extends NodeExecutionStateEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("text")
-    public String getText();
+    @JsonProperty("state")
+    public StateEnum getState();
     
     @Override
-    @JsonProperty("backgroundColor")
-    public String getBackgroundColor();
+    @JsonProperty("progress")
+    public BigDecimal getProgress();
     
     @Override
-    @JsonProperty("textAlign")
-    public TextAlignEnum getTextAlign();
+    @JsonProperty("progressMessage")
+    public String getProgressMessage();
     
     @Override
-    @JsonProperty("borderWidth")
-    public Integer getBorderWidth();
+    @JsonProperty("error")
+    public String getError();
     
     @Override
-    @JsonProperty("borderColor")
-    public String getBorderColor();
-    
-    @Override
-    @JsonProperty("styleRanges")
-    public java.util.List<StyleRangeEnt> getStyleRanges();
+    @JsonProperty("warning")
+    public String getWarning();
     
 
     /**
@@ -89,39 +84,35 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeAnnotationEntBuilder.class)
+        defaultImpl = DefaultNodeExecutionStateEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder.class, name="NodeAnnotation")
+        @Type(value = DefaultNodeExecutionStateEnt.DefaultNodeExecutionStateEntBuilder.class, name="NodeExecutionState")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeAnnotationEntMixInBuilder extends NodeAnnotationEntBuilder {
+    public static interface NodeExecutionStateEntMixInBuilder extends NodeExecutionStateEntBuilder {
     
         @Override
-        public NodeAnnotationEntMixIn build();
+        public NodeExecutionStateEntMixIn build();
     
         @Override
-        @JsonProperty("text")
-        public NodeAnnotationEntMixInBuilder setText(final String text);
+        @JsonProperty("state")
+        public NodeExecutionStateEntMixInBuilder setState(final StateEnum state);
         
         @Override
-        @JsonProperty("backgroundColor")
-        public NodeAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
+        @JsonProperty("progress")
+        public NodeExecutionStateEntMixInBuilder setProgress(final BigDecimal progress);
         
         @Override
-        @JsonProperty("textAlign")
-        public NodeAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
+        @JsonProperty("progressMessage")
+        public NodeExecutionStateEntMixInBuilder setProgressMessage(final String progressMessage);
         
         @Override
-        @JsonProperty("borderWidth")
-        public NodeAnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
+        @JsonProperty("error")
+        public NodeExecutionStateEntMixInBuilder setError(final String error);
         
         @Override
-        @JsonProperty("borderColor")
-        public NodeAnnotationEntMixInBuilder setBorderColor(final String borderColor);
-        
-        @Override
-        @JsonProperty("styleRanges")
-        public NodeAnnotationEntMixInBuilder setStyleRanges(final java.util.List<StyleRangeEnt> styleRanges);
+        @JsonProperty("warning")
+        public NodeExecutionStateEntMixInBuilder setWarning(final String warning);
         
     }
 
