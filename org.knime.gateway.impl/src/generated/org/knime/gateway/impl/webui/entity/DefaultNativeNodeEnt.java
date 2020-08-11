@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -90,10 +92,29 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_id)
+               .append(m_inPorts)
+               .append(m_outPorts)
+               .append(m_annotation)
+               .append(m_position)
+               .append(m_propertyClass)
+               .append(m_templateId)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public String getTemplateId() {
         return m_templateId;
-    }
+  }
     
   
     public static class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {

@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -92,15 +94,35 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_id)
+               .append(m_inPorts)
+               .append(m_outPorts)
+               .append(m_annotation)
+               .append(m_position)
+               .append(m_propertyClass)
+               .append(m_name)
+               .append(m_type)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public String getName() {
         return m_name;
-    }
+  }
     
   @Override
   public TypeEnum getType() {
         return m_type;
-    }
+  }
     
   
     public static class DefaultComponentNodeEntBuilder implements ComponentNodeEntBuilder {

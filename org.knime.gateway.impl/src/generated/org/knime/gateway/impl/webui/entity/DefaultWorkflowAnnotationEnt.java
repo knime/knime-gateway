@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 
@@ -84,35 +86,54 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_text)
+               .append(m_textAlign)
+               .append(m_defaultFontSize)
+               .append(m_borderWidth)
+               .append(m_borderColor)
+               .append(m_backgroundColor)
+               .append(m_bounds)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public TextAlignEnum getTextAlign() {
         return m_textAlign;
-    }
+  }
     
   @Override
   public Integer getDefaultFontSize() {
         return m_defaultFontSize;
-    }
+  }
     
   @Override
   public Integer getBorderWidth() {
         return m_borderWidth;
-    }
+  }
     
   @Override
   public String getBorderColor() {
         return m_borderColor;
-    }
+  }
     
   @Override
   public String getBackgroundColor() {
         return m_backgroundColor;
-    }
+  }
     
   @Override
   public BoundsEnt getBounds() {
         return m_bounds;
-    }
+  }
     
   
     public static class DefaultWorkflowAnnotationEntBuilder implements WorkflowAnnotationEntBuilder {

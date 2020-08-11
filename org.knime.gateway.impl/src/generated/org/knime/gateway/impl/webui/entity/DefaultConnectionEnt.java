@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 
@@ -88,30 +90,47 @@ public class DefaultConnectionEnt  implements ConnectionEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_destNode)
+               .append(m_destPort)
+               .append(m_sourceNode)
+               .append(m_sourcePort)
+               .append(m_flowVariableConnection)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getDestNode() {
         return m_destNode;
-    }
+  }
     
   @Override
   public Integer getDestPort() {
         return m_destPort;
-    }
+  }
     
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getSourceNode() {
         return m_sourceNode;
-    }
+  }
     
   @Override
   public Integer getSourcePort() {
         return m_sourcePort;
-    }
+  }
     
   @Override
   public Boolean isFlowVariableConnection() {
         return m_flowVariableConnection;
-    }
+  }
     
   
     public static class DefaultConnectionEntBuilder implements ConnectionEntBuilder {

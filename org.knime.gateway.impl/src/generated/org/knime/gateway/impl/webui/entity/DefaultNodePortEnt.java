@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
@@ -84,35 +86,53 @@ public class DefaultNodePortEnt  implements NodePortEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_index)
+               .append(m_type)
+               .append(m_color)
+               .append(m_connectedVia)
+               .append(m_optional)
+               .append(m_inactive)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public Integer getIndex() {
         return m_index;
-    }
+  }
     
   @Override
   public TypeEnum getType() {
         return m_type;
-    }
+  }
     
   @Override
   public String getColor() {
         return m_color;
-    }
+  }
     
   @Override
   public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
         return m_connectedVia;
-    }
+  }
     
   @Override
   public Boolean isOptional() {
         return m_optional;
-    }
+  }
     
   @Override
   public Boolean isInactive() {
         return m_inactive;
-    }
+  }
     
   
     public static class DefaultNodePortEntBuilder implements NodePortEntBuilder {

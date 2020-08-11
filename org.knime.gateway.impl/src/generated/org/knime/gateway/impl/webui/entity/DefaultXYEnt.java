@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -70,15 +72,29 @@ public class DefaultXYEnt  implements XYEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_x)
+               .append(m_y)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public Integer getX() {
         return m_x;
-    }
+  }
     
   @Override
   public Integer getY() {
         return m_y;
-    }
+  }
     
   
     public static class DefaultXYEntBuilder implements XYEntBuilder {

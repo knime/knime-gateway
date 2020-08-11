@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 
@@ -74,25 +76,41 @@ public class DefaultBoundsEnt  implements BoundsEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_x)
+               .append(m_y)
+               .append(m_width)
+               .append(m_height)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public Integer getX() {
         return m_x;
-    }
+  }
     
   @Override
   public Integer getY() {
         return m_y;
-    }
+  }
     
   @Override
   public Integer getWidth() {
         return m_width;
-    }
+  }
     
   @Override
   public Integer getHeight() {
         return m_height;
-    }
+  }
     
   
     public static class DefaultBoundsEntBuilder implements BoundsEntBuilder {

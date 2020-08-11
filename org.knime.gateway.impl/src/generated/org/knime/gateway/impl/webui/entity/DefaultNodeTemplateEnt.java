@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
@@ -78,20 +80,35 @@ public class DefaultNodeTemplateEnt  implements NodeTemplateEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_name)
+               .append(m_type)
+               .append(m_icon)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public String getName() {
         return m_name;
-    }
+  }
     
   @Override
   public TypeEnum getType() {
         return m_type;
-    }
+  }
     
   @Override
   public String getIcon() {
         return m_icon;
-    }
+  }
     
   
     public static class DefaultNodeTemplateEntBuilder implements NodeTemplateEntBuilder {

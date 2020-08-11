@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -80,30 +82,47 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_name)
+               .append(m_nodes)
+               .append(m_nodeTemplates)
+               .append(m_connections)
+               .append(m_workflowAnnotations)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public String getName() {
         return m_name;
-    }
+  }
     
   @Override
   public java.util.Map<String, NodeEnt> getNodes() {
         return m_nodes;
-    }
+  }
     
   @Override
   public java.util.Map<String, NodeTemplateEnt> getNodeTemplates() {
         return m_nodeTemplates;
-    }
+  }
     
   @Override
   public java.util.Map<String, ConnectionEnt> getConnections() {
         return m_connections;
-    }
+  }
     
   @Override
   public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations() {
         return m_workflowAnnotations;
-    }
+  }
     
   
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {

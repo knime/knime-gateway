@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 
@@ -71,10 +73,23 @@ public class DefaultAnnotationEnt  implements AnnotationEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_text)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public String getText() {
         return m_text;
-    }
+  }
     
   
     public static class DefaultAnnotationEntBuilder implements AnnotationEntBuilder {

@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 
 import org.knime.gateway.api.webui.entity.GatewayExceptionEnt;
 
@@ -70,15 +72,29 @@ public class DefaultGatewayExceptionEnt  implements GatewayExceptionEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_exceptionName)
+               .append(m_exceptionMessage)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public String getExceptionName() {
         return m_exceptionName;
-    }
+  }
     
   @Override
   public String getExceptionMessage() {
         return m_exceptionMessage;
-    }
+  }
     
   
     public static class DefaultGatewayExceptionEntBuilder implements GatewayExceptionEntBuilder {

@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
@@ -77,15 +79,29 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_workflow)
+               .append(m_snapshotID)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public WorkflowEnt getWorkflow() {
         return m_workflow;
-    }
+  }
     
   @Override
   public java.util.UUID getSnapshotID() {
         return m_snapshotID;
-    }
+  }
     
   
     public static class DefaultWorkflowSnapshotEntBuilder implements WorkflowSnapshotEntBuilder {

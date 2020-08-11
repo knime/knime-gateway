@@ -22,6 +22,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -73,10 +75,24 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
     }
 
 
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_text)
+               .append(m__default)
+               .toHashCode();
+   }
+  
+	
+	
   @Override
   public Boolean isDefault() {
         return m__default;
-    }
+  }
     
   
     public static class DefaultNodeAnnotationEntBuilder implements NodeAnnotationEntBuilder {
