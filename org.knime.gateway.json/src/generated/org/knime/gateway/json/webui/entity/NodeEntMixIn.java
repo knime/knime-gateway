@@ -86,8 +86,8 @@ public interface NodeEntMixIn extends NodeEnt {
     public XYEnt getPosition();
     
     @Override
-    @JsonProperty("class")
-    public PropertyClassEnum getPropertyClass();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
 
     /**
@@ -136,8 +136,8 @@ public interface NodeEntMixIn extends NodeEnt {
         public NodeEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
-        @JsonProperty("class")
-        public NodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
+        @JsonProperty("kind")
+        public NodeEntMixInBuilder setKind(final KindEnum kind);
         
     }
 

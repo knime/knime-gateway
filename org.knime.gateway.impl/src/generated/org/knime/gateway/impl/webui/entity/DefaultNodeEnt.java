@@ -43,7 +43,7 @@ public class DefaultNodeEnt  implements NodeEnt {
   protected java.util.List<NodePortEnt> m_outPorts;
   protected NodeAnnotationEnt m_annotation;
   protected XYEnt m_position;
-  protected PropertyClassEnum m_propertyClass;
+  protected KindEnum m_kind;
   
   protected DefaultNodeEnt() {
     //for sub-classes
@@ -60,17 +60,23 @@ public class DefaultNodeEnt  implements NodeEnt {
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
+    if(builder.m_inPorts == null) {
+        throw new IllegalArgumentException("inPorts must not be null.");
+    }
     m_inPorts = immutable(builder.m_inPorts);
+    if(builder.m_outPorts == null) {
+        throw new IllegalArgumentException("outPorts must not be null.");
+    }
     m_outPorts = immutable(builder.m_outPorts);
     m_annotation = immutable(builder.m_annotation);
     if(builder.m_position == null) {
         throw new IllegalArgumentException("position must not be null.");
     }
     m_position = immutable(builder.m_position);
-    if(builder.m_propertyClass == null) {
-        throw new IllegalArgumentException("propertyClass must not be null.");
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
     }
-    m_propertyClass = immutable(builder.m_propertyClass);
+    m_kind = immutable(builder.m_kind);
   }
   
    /**
@@ -88,7 +94,7 @@ public class DefaultNodeEnt  implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind);
     }
 
 
@@ -104,7 +110,7 @@ public class DefaultNodeEnt  implements NodeEnt {
                .append(m_outPorts)
                .append(m_annotation)
                .append(m_position)
-               .append(m_propertyClass)
+               .append(m_kind)
                .toHashCode();
    }
   
@@ -136,8 +142,8 @@ public class DefaultNodeEnt  implements NodeEnt {
   }
     
   @Override
-  public PropertyClassEnum getPropertyClass() {
-        return m_propertyClass;
+  public KindEnum getKind() {
+        return m_kind;
   }
     
   
@@ -152,7 +158,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
-        private PropertyClassEnum m_propertyClass;
+        private KindEnum m_kind;
 
         @Override
         public DefaultNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -165,12 +171,18 @@ public class DefaultNodeEnt  implements NodeEnt {
 
         @Override
         public DefaultNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+             if(inPorts == null) {
+                 throw new IllegalArgumentException("inPorts must not be null.");
+             }
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
         public DefaultNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+             if(outPorts == null) {
+                 throw new IllegalArgumentException("outPorts must not be null.");
+             }
              m_outPorts = outPorts;
              return this;
         }
@@ -191,11 +203,11 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass) {
-             if(propertyClass == null) {
-                 throw new IllegalArgumentException("propertyClass must not be null.");
+        public DefaultNodeEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
              }
-             m_propertyClass = propertyClass;
+             m_kind = kind;
              return this;
         }
 

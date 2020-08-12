@@ -56,17 +56,23 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
+    if(builder.m_inPorts == null) {
+        throw new IllegalArgumentException("inPorts must not be null.");
+    }
     m_inPorts = immutable(builder.m_inPorts);
+    if(builder.m_outPorts == null) {
+        throw new IllegalArgumentException("outPorts must not be null.");
+    }
     m_outPorts = immutable(builder.m_outPorts);
     m_annotation = immutable(builder.m_annotation);
     if(builder.m_position == null) {
         throw new IllegalArgumentException("position must not be null.");
     }
     m_position = immutable(builder.m_position);
-    if(builder.m_propertyClass == null) {
-        throw new IllegalArgumentException("propertyClass must not be null.");
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
     }
-    m_propertyClass = immutable(builder.m_propertyClass);
+    m_kind = immutable(builder.m_kind);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
@@ -88,7 +94,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
             return false;
         }
         DefaultWorkflowNodeEnt ent = (DefaultWorkflowNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_name, ent.m_name);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name);
     }
 
 
@@ -104,7 +110,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
                .append(m_outPorts)
                .append(m_annotation)
                .append(m_position)
-               .append(m_propertyClass)
+               .append(m_kind)
                .append(m_name)
                .toHashCode();
    }
@@ -128,7 +134,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
-        private PropertyClassEnum m_propertyClass;
+        private KindEnum m_kind;
         private String m_name;
 
         @Override
@@ -142,12 +148,18 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
 
         @Override
         public DefaultWorkflowNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+             if(inPorts == null) {
+                 throw new IllegalArgumentException("inPorts must not be null.");
+             }
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
         public DefaultWorkflowNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+             if(outPorts == null) {
+                 throw new IllegalArgumentException("outPorts must not be null.");
+             }
              m_outPorts = outPorts;
              return this;
         }
@@ -168,11 +180,11 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass) {
-             if(propertyClass == null) {
-                 throw new IllegalArgumentException("propertyClass must not be null.");
+        public DefaultWorkflowNodeEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
              }
-             m_propertyClass = propertyClass;
+             m_kind = kind;
              return this;
         }
 

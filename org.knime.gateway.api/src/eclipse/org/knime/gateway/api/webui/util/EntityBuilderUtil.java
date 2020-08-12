@@ -79,7 +79,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt.PropertyClassEnum;
+import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.NodeExecutionStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.StateEnum;
@@ -238,7 +238,7 @@ public final class EntityBuilderUtil {
                 .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))
                 .setInPorts(buildNodePortEnts(wm, true))
                 .setPosition(buildXYEnt(wm.getUIInformation().getBounds()[0], wm.getUIInformation().getBounds()[1]))
-                .setPropertyClass(PropertyClassEnum.METANODE).build();
+                .setKind(KindEnum.METANODE).build();
     }
 
     /**
@@ -258,7 +258,7 @@ public final class EntityBuilderUtil {
                 .setInPorts(buildNodePortEnts(nc, true))
                 .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
                 .setState(buildNodeExecutionStateEnt(nc))
-                .setPropertyClass(PropertyClassEnum.COMPONENT).build();
+                .setKind(KindEnum.COMPONENT).build();
     }
 
     private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts) {
@@ -352,7 +352,7 @@ public final class EntityBuilderUtil {
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))
             .setInPorts(buildNodePortEnts(nc, true))
             .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
-            .setPropertyClass(NodeEnt.PropertyClassEnum.NODE)
+            .setKind(KindEnum.NODE)
             .setState(buildNodeExecutionStateEnt(nc))
             .setTemplateId(createTemplateId(nc.getNode().getFactory())).build();
     }

@@ -81,8 +81,8 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
     public XYEnt getPosition();
     
     @Override
-    @JsonProperty("class")
-    public PropertyClassEnum getPropertyClass();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
     @Override
     @JsonProperty("name")
@@ -131,8 +131,8 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         public WorkflowNodeEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
-        @JsonProperty("class")
-        public WorkflowNodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
+        @JsonProperty("kind")
+        public WorkflowNodeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("name")

@@ -58,17 +58,23 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
+    if(builder.m_inPorts == null) {
+        throw new IllegalArgumentException("inPorts must not be null.");
+    }
     m_inPorts = immutable(builder.m_inPorts);
+    if(builder.m_outPorts == null) {
+        throw new IllegalArgumentException("outPorts must not be null.");
+    }
     m_outPorts = immutable(builder.m_outPorts);
     m_annotation = immutable(builder.m_annotation);
     if(builder.m_position == null) {
         throw new IllegalArgumentException("position must not be null.");
     }
     m_position = immutable(builder.m_position);
-    if(builder.m_propertyClass == null) {
-        throw new IllegalArgumentException("propertyClass must not be null.");
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
     }
-    m_propertyClass = immutable(builder.m_propertyClass);
+    m_kind = immutable(builder.m_kind);
     if(builder.m_templateId == null) {
         throw new IllegalArgumentException("templateId must not be null.");
     }
@@ -91,7 +97,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_propertyClass, ent.m_propertyClass) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state);
     }
 
 
@@ -107,7 +113,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
                .append(m_outPorts)
                .append(m_annotation)
                .append(m_position)
-               .append(m_propertyClass)
+               .append(m_kind)
                .append(m_templateId)
                .append(m_state)
                .toHashCode();
@@ -137,7 +143,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
-        private PropertyClassEnum m_propertyClass;
+        private KindEnum m_kind;
         private String m_templateId;
         private NodeExecutionStateEnt m_state;
 
@@ -152,12 +158,18 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
 
         @Override
         public DefaultNativeNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+             if(inPorts == null) {
+                 throw new IllegalArgumentException("inPorts must not be null.");
+             }
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
         public DefaultNativeNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+             if(outPorts == null) {
+                 throw new IllegalArgumentException("outPorts must not be null.");
+             }
              m_outPorts = outPorts;
              return this;
         }
@@ -178,11 +190,11 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass) {
-             if(propertyClass == null) {
-                 throw new IllegalArgumentException("propertyClass must not be null.");
+        public DefaultNativeNodeEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
              }
-             m_propertyClass = propertyClass;
+             m_kind = kind;
              return this;
         }
 

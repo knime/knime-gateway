@@ -101,7 +101,7 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         /**
          * The list of inputs.
          * 
-         * @param inPorts the property value,  
+         * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
@@ -109,7 +109,7 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         /**
          * The list of outputs.
          * 
-         * @param outPorts the property value,  
+         * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
@@ -133,10 +133,10 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
         /**
          * Whether it&#39;s a native node, component or a metanode.
          * 
-         * @param propertyClass the property value, NOT <code>null</code>! 
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
+        ComponentNodeEntBuilder setKind(KindEnum kind);
         
         /**
    		 * Set name

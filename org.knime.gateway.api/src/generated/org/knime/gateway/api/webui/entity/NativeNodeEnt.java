@@ -66,7 +66,7 @@ public interface NativeNodeEnt extends NodeEnt {
         /**
          * The list of inputs.
          * 
-         * @param inPorts the property value,  
+         * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
@@ -74,7 +74,7 @@ public interface NativeNodeEnt extends NodeEnt {
         /**
          * The list of outputs.
          * 
-         * @param outPorts the property value,  
+         * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
@@ -98,10 +98,10 @@ public interface NativeNodeEnt extends NodeEnt {
         /**
          * Whether it&#39;s a native node, component or a metanode.
          * 
-         * @param propertyClass the property value, NOT <code>null</code>! 
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
+        NativeNodeEntBuilder setKind(KindEnum kind);
         
         /**
          * The id of the node template this node is an instance of.

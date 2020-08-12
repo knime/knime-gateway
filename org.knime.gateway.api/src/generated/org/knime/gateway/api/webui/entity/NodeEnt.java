@@ -38,7 +38,7 @@ public interface NodeEnt extends GatewayEntity {
   /**
    * Whether it&#39;s a native node, component or a metanode.
    */
-  public enum PropertyClassEnum {
+  public enum KindEnum {
     NODE("node"),
     
     COMPONENT("component"),
@@ -47,7 +47,7 @@ public interface NodeEnt extends GatewayEntity {
 
     private String value;
 
-    PropertyClassEnum(String value) {
+    KindEnum(String value) {
       this.value = value;
     }
 
@@ -67,13 +67,13 @@ public interface NodeEnt extends GatewayEntity {
 
   /**
    * The list of inputs.
-   * @return inPorts 
+   * @return inPorts , never <code>null</code>
    **/
   public java.util.List<NodePortEnt> getInPorts();
 
   /**
    * The list of outputs.
-   * @return outPorts 
+   * @return outPorts , never <code>null</code>
    **/
   public java.util.List<NodePortEnt> getOutPorts();
 
@@ -91,9 +91,9 @@ public interface NodeEnt extends GatewayEntity {
 
   /**
    * Whether it&#39;s a native node, component or a metanode.
-   * @return propertyClass , never <code>null</code>
+   * @return kind , never <code>null</code>
    **/
-  public PropertyClassEnum getPropertyClass();
+  public KindEnum getKind();
 
 
     /**
@@ -112,7 +112,7 @@ public interface NodeEnt extends GatewayEntity {
         /**
          * The list of inputs.
          * 
-         * @param inPorts the property value,  
+         * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
@@ -120,7 +120,7 @@ public interface NodeEnt extends GatewayEntity {
         /**
          * The list of outputs.
          * 
-         * @param outPorts the property value,  
+         * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
@@ -144,10 +144,10 @@ public interface NodeEnt extends GatewayEntity {
         /**
          * Whether it&#39;s a native node, component or a metanode.
          * 
-         * @param propertyClass the property value, NOT <code>null</code>! 
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setPropertyClass(PropertyClassEnum propertyClass);
+        NodeEntBuilder setKind(KindEnum kind);
         
         
         /**

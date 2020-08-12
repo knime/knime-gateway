@@ -79,8 +79,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public XYEnt getPosition();
     
     @Override
-    @JsonProperty("class")
-    public PropertyClassEnum getPropertyClass();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
     @Override
     @JsonProperty("templateId")
@@ -131,8 +131,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         public NativeNodeEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
-        @JsonProperty("class")
-        public NativeNodeEntMixInBuilder setPropertyClass(final PropertyClassEnum propertyClass);
+        @JsonProperty("kind")
+        public NativeNodeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("templateId")

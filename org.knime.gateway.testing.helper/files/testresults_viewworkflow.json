@@ -274,7 +274,6 @@
     },
     "nodes" : {
       "root:1" : {
-        "class" : "node",
         "id" : "root:1",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -283,6 +282,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[ root:13_1, root:4_0 ]",
           "index" : 0,
@@ -324,7 +324,6 @@
           "text" : "node annotation",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:2",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -339,6 +338,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -362,7 +362,6 @@
         "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
       },
       "root:19" : {
-        "class" : "node",
         "id" : "root:19",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -377,6 +376,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -401,7 +401,6 @@
         "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
       },
       "root:4" : {
-        "class" : "node",
         "id" : "root:4",
         "inPorts" : [ {
           "connectedVia" : "[ root:4_0 ]",
@@ -416,6 +415,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -445,7 +445,6 @@
           "text" : "a non-executing node",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:5",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -460,6 +459,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -483,7 +483,6 @@
         "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
       },
       "root:6" : {
-        "class" : "metanode",
         "id" : "root:6",
         "inPorts" : [ {
           "connectedVia" : "[ root:6_0 ]",
@@ -492,6 +491,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "metanode",
         "name" : "Metanode",
         "outPorts" : [ {
           "connectedVia" : "[ root:4_1 ]",
@@ -524,7 +524,6 @@
           "text" : "check for simple port spec\n(distance measure)",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:20",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -552,6 +551,7 @@
           "optional" : true,
           "type" : "other"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -587,7 +587,6 @@
           "text" : "a node created\nvia a node set factory",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:10",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -602,6 +601,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -638,7 +638,6 @@
           "text" : "optional\nin-ports",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:21",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -671,6 +670,7 @@
           "optional" : true,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -694,7 +694,6 @@
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
       },
       "root:8" : {
-        "class" : "node",
         "id" : "root:8",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -709,6 +708,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -744,7 +744,6 @@
           "text" : "Node 13",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:13",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -759,6 +758,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -795,7 +795,6 @@
           "text" : "",
           "textAlign" : "center"
         },
-        "class" : "component",
         "id" : "root:9",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -810,6 +809,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "component",
         "name" : "Wrapped Metanode",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
@@ -845,7 +845,6 @@
           "text" : "inactive branch",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:14",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -860,6 +859,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "inactive" : true,
@@ -882,7 +882,6 @@
         "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
       },
       "root:25" : {
-        "class" : "node",
         "id" : "root:25",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -897,6 +896,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -933,7 +933,6 @@
         "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
       },
       "root:11" : {
-        "class" : "node",
         "id" : "root:11",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -948,6 +947,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -982,7 +982,6 @@
           "text" : "Check a \n'generic'\nport type spec",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:22",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1004,6 +1003,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1039,7 +1039,6 @@
           "text" : "",
           "textAlign" : "center"
         },
-        "class" : "component",
         "id" : "root:12",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1054,6 +1053,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "component",
         "name" : "Wrapped Metanode Failing",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1088,7 +1088,6 @@
           "text" : "with JS view inside\n(i.e. with composite view)",
           "textAlign" : "center"
         },
-        "class" : "component",
         "id" : "root:23",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1103,6 +1102,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "component",
         "name" : "Wrapped Metanode",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1138,7 +1138,6 @@
           "text" : "checking flow\nvariables (string)",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:18",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1153,6 +1152,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1176,7 +1176,6 @@
         "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
       },
       "root:15" : {
-        "class" : "node",
         "id" : "root:15",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1185,6 +1184,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1220,7 +1220,6 @@
           "text" : "test of another\nport object spec",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:26",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1242,6 +1241,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1265,7 +1265,6 @@
         "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
       },
       "root:16" : {
-        "class" : "node",
         "id" : "root:16",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1280,6 +1279,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1315,7 +1315,6 @@
           "text" : "dynamic\nports",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:27",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1342,6 +1341,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1679,7 +1679,6 @@
     },
     "nodes" : {
       "root:1" : {
-        "class" : "node",
         "id" : "root:1",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1688,6 +1687,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[ root:13_1, root:4_0 ]",
           "index" : 0,
@@ -1726,7 +1726,6 @@
           "text" : "node annotation",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:2",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1741,6 +1740,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1762,7 +1762,6 @@
         "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
       },
       "root:19" : {
-        "class" : "node",
         "id" : "root:19",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1777,6 +1776,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1799,7 +1799,6 @@
         "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
       },
       "root:4" : {
-        "class" : "node",
         "id" : "root:4",
         "inPorts" : [ {
           "connectedVia" : "[ root:4_0 ]",
@@ -1814,6 +1813,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1842,7 +1842,6 @@
           "text" : "a non-executing node",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:5",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1857,6 +1856,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1880,7 +1880,6 @@
         "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
       },
       "root:6" : {
-        "class" : "metanode",
         "id" : "root:6",
         "inPorts" : [ {
           "connectedVia" : "[ root:6_0 ]",
@@ -1889,6 +1888,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "metanode",
         "name" : "Metanode",
         "outPorts" : [ {
           "connectedVia" : "[ root:4_1 ]",
@@ -1919,7 +1919,6 @@
           "text" : "check for simple port spec\n(distance measure)",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:20",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1947,6 +1946,7 @@
           "optional" : true,
           "type" : "other"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1980,7 +1980,6 @@
           "text" : "a node created\nvia a node set factory",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:10",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -1995,6 +1994,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2029,7 +2029,6 @@
           "text" : "optional\nin-ports",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:21",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2062,6 +2061,7 @@
           "optional" : true,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2083,7 +2083,6 @@
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
       },
       "root:8" : {
-        "class" : "node",
         "id" : "root:8",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2098,6 +2097,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2131,7 +2131,6 @@
           "text" : "Node 13",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:13",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2146,6 +2145,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2179,7 +2179,6 @@
           "text" : "",
           "textAlign" : "center"
         },
-        "class" : "component",
         "id" : "root:9",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2194,6 +2193,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "component",
         "name" : "Wrapped Metanode",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2228,7 +2228,6 @@
           "text" : "inactive branch",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:14",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2243,6 +2242,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2265,7 +2265,6 @@
         "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
       },
       "root:25" : {
-        "class" : "node",
         "id" : "root:25",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2280,6 +2279,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2312,7 +2312,6 @@
         "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
       },
       "root:11" : {
-        "class" : "node",
         "id" : "root:11",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2327,6 +2326,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2360,7 +2360,6 @@
           "text" : "Check a \n'generic'\nport type spec",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:22",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2382,6 +2381,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2415,7 +2415,6 @@
           "text" : "",
           "textAlign" : "center"
         },
-        "class" : "component",
         "id" : "root:12",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2430,6 +2429,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "component",
         "name" : "Wrapped Metanode Failing",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2464,7 +2464,6 @@
           "text" : "with JS view inside\n(i.e. with composite view)",
           "textAlign" : "center"
         },
-        "class" : "component",
         "id" : "root:23",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2479,6 +2478,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "component",
         "name" : "Wrapped Metanode",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2513,7 +2513,6 @@
           "text" : "checking flow\nvariables (string)",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:18",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2528,6 +2527,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2549,7 +2549,6 @@
         "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
       },
       "root:15" : {
-        "class" : "node",
         "id" : "root:15",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2558,6 +2557,7 @@
           "optional" : true,
           "type" : "flowVariable"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2591,7 +2591,6 @@
           "text" : "test of another\nport object spec",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:26",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2613,6 +2612,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2634,7 +2634,6 @@
         "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
       },
       "root:16" : {
-        "class" : "node",
         "id" : "root:16",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2649,6 +2648,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2682,7 +2682,6 @@
           "text" : "dynamic\nports",
           "textAlign" : "center"
         },
-        "class" : "node",
         "id" : "root:27",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2709,6 +2708,7 @@
           "optional" : false,
           "type" : "table"
         } ],
+        "kind" : "node",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
