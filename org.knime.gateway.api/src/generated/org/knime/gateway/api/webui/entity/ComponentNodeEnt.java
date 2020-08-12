@@ -84,6 +84,12 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
    **/
   public NodeExecutionStateEnt getState();
 
+  /**
+   * The icon encoded in a data-url. Not available if no icon is set.
+   * @return icon 
+   **/
+  public String getIcon();
+
 
     /**
      * The builder for the entity.
@@ -161,6 +167,14 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setState(NodeExecutionStateEnt state);
+        
+        /**
+         * The icon encoded in a data-url. Not available if no icon is set.
+         * 
+         * @param icon the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setIcon(String icon);
         
         
         /**

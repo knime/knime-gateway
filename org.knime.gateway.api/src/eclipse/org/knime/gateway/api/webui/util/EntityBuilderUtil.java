@@ -258,6 +258,7 @@ public final class EntityBuilderUtil {
                 .setInPorts(buildNodePortEnts(nc, true))
                 .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
                 .setState(buildNodeExecutionStateEnt(nc))
+                .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))
                 .setKind(KindEnum.COMPONENT).build();
     }
 
@@ -269,7 +270,7 @@ public final class EntityBuilderUtil {
                 NodeInPort inPort = nc.getInPort(i);
                 res.add(buildNodePortEnt(inPort.getPortType(), inPort.getPortName(), null, i,
                     inPort.getPortType().isOptional(), null,
-                    connection == null ? Collections.emptyList() : Arrays.asList(connection)));
+                    connection == null ? Collections.emptyList() : Collections.singletonList(connection)));
             }
         } else {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
@@ -421,9 +422,7 @@ public final class EntityBuilderUtil {
         URL url = nodeFactory.getIcon();
         if (url != null) {
             try (InputStream in = url.openStream()) {
-                byte[] iconData = Base64.encodeBase64(IOUtils.toByteArray(in));
-                String dataUrlPrefix = "data:image/png;base64,";
-                return dataUrlPrefix + new String(iconData, StandardCharsets.UTF_8);
+                return createIconDataURL(IOUtils.toByteArray(in));
             } catch (IOException ex) {
                 NodeLogger.getLogger(EntityBuilderUtil.class)
                     .error(String.format("Icon for node '%s' couldn't be read", nodeFactory.getNodeName()), ex);
@@ -432,7 +431,15 @@ public final class EntityBuilderUtil {
         } else {
             return null;
         }
+    }
 
+    private static String createIconDataURL(final byte[] iconData) {
+        if (iconData != null) {
+            String dataUrlPrefix = "data:image/png;base64,";
+            return dataUrlPrefix + new String(Base64.encodeBase64(iconData), StandardCharsets.UTF_8);
+        } else {
+            return null;
+        }
     }
 
     private static XYEnt buildXYEnt(final int x, final int y) {

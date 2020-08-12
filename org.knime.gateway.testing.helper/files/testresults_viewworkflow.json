@@ -795,6 +795,7 @@
           "text" : "",
           "textAlign" : "center"
         },
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
         "id" : "root:9",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -810,7 +811,7 @@
           "type" : "table"
         } ],
         "kind" : "component",
-        "name" : "Wrapped Metanode",
+        "name" : "Component with icon and type",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -830,7 +831,8 @@
         },
         "state" : {
           "state" : "EXECUTED"
-        }
+        },
+        "type" : "Visualizer"
       },
       "root:14" : {
         "annotation" : {
@@ -1054,7 +1056,7 @@
           "type" : "table"
         } ],
         "kind" : "component",
-        "name" : "Wrapped Metanode Failing",
+        "name" : "Component Failing",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -1103,7 +1105,7 @@
           "type" : "table"
         } ],
         "kind" : "component",
-        "name" : "Wrapped Metanode",
+        "name" : "Component",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2179,6 +2181,7 @@
           "text" : "",
           "textAlign" : "center"
         },
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
         "id" : "root:9",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -2194,7 +2197,7 @@
           "type" : "table"
         } ],
         "kind" : "component",
-        "name" : "Wrapped Metanode",
+        "name" : "Component with icon and type",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2213,7 +2216,8 @@
         "state" : {
           "state" : "IDLE",
           "warning" : "Component Input 0:9:0:8: Component does not have input data, execute upstream nodes first"
-        }
+        },
+        "type" : "Visualizer"
       },
       "root:14" : {
         "annotation" : {
@@ -2430,7 +2434,7 @@
           "type" : "table"
         } ],
         "kind" : "component",
-        "name" : "Wrapped Metanode Failing",
+        "name" : "Component Failing",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2479,7 +2483,7 @@
           "type" : "table"
         } ],
         "kind" : "component",
-        "name" : "Wrapped Metanode",
+        "name" : "Component",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,

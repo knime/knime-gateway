@@ -94,6 +94,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @JsonProperty("state")
     public NodeExecutionStateEnt getState();
     
+    @Override
+    @JsonProperty("icon")
+    public String getIcon();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -149,6 +153,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("state")
         public ComponentNodeEntMixInBuilder setState(final NodeExecutionStateEnt state);
+        
+        @Override
+        @JsonProperty("icon")
+        public ComponentNodeEntMixInBuilder setIcon(final String icon);
         
     }
 

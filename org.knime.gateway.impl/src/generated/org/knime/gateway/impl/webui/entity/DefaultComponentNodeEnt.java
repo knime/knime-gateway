@@ -43,6 +43,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
   protected String m_name;
   protected TypeEnum m_type;
   protected NodeExecutionStateEnt m_state;
+  protected String m_icon;
   
   protected DefaultComponentNodeEnt() {
     //for sub-classes
@@ -82,6 +83,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
     m_name = immutable(builder.m_name);
     m_type = immutable(builder.m_type);
     m_state = immutable(builder.m_state);
+    m_icon = immutable(builder.m_icon);
   }
   
    /**
@@ -99,7 +101,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_state, ent.m_state);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_icon, ent.m_icon);
     }
 
 
@@ -119,6 +121,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
                .append(m_name)
                .append(m_type)
                .append(m_state)
+               .append(m_icon)
                .toHashCode();
    }
   
@@ -139,6 +142,11 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         return m_state;
   }
     
+  @Override
+  public String getIcon() {
+        return m_icon;
+  }
+    
   
     public static class DefaultComponentNodeEntBuilder implements ComponentNodeEntBuilder {
     
@@ -155,6 +163,7 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         private String m_name;
         private TypeEnum m_type;
         private NodeExecutionStateEnt m_state;
+        private String m_icon;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -225,6 +234,12 @@ public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements C
         @Override
         public DefaultComponentNodeEntBuilder setState(NodeExecutionStateEnt state) {
              m_state = state;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentNodeEntBuilder setIcon(String icon) {
+             m_icon = icon;
              return this;
         }
 
