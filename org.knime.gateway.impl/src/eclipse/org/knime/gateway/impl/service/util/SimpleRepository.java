@@ -91,7 +91,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     private final Javers m_javers = JaversBuilder.javers().build();
 
     /**
-     * Creates a new instance. The maximum number of snapshots kept in memory is initalized with the default value.
+     * Creates a new instance. The maximum number of snapshots kept in memory is initialized with the default value.
      */
     public SimpleRepository() {
         this(DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM);

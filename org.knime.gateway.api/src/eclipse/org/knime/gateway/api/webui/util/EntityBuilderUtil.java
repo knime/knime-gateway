@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
@@ -115,9 +116,10 @@ public final class EntityBuilderUtil {
      * Builds a new {@link WorkflowEnt}.
      *
      * @param wfm the workflow manager to create the entity from
+     * @param projectId the project id of the workflow (if its the top-level project workflow) or <code>null</code>
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm) {
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final UUID projectId) {
         Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
         Map<String, NodeEnt> nodes = new HashMap<>();
@@ -142,6 +144,7 @@ public final class EntityBuilderUtil {
             .setNodeTemplates(templates)
             .setConnections(connections)
             .setWorkflowAnnotations(annotations)
+            .setProjectId(wfm.isProject() ? projectId : null)
             .build();
     }
 

@@ -54,13 +54,17 @@ import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEn
 import java.util.UUID;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.EntityRepository;
+import org.knime.gateway.impl.service.util.SimpleRepository;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -70,17 +74,23 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 public final class DefaultWorkflowService implements WorkflowService {
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
+    private final EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> m_entityRepo;
+
     /**
      * Returns the singleton instance for this service.
      *
      * @return the singleton instance
      */
     public static DefaultWorkflowService getInstance() {
-       return INSTANCE;
+        return INSTANCE;
     }
 
     private DefaultWorkflowService() {
-        // singleton
+        m_entityRepo = new SimpleRepository<>(1); // TODO number of snapshots in mem!
+    }
+
+    EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> getEntityRepository() {
+        return m_entityRepo;
     }
 
     /**
@@ -89,9 +99,17 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public WorkflowSnapshotEnt getWorkflow(final UUID projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException {
-        WorkflowManager wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotID(UUID.randomUUID())
-            .setWorkflow(buildWorkflowEnt(wfm)).build();
+        WorkflowManager wfm;
+        try {
+            wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
+        } catch (IllegalArgumentException ex) {
+            throw new NodeNotFoundException(ex.getMessage(), ex);
+        } catch (IllegalStateException ex) {
+            throw new NotASubWorkflowException(ex.getMessage(), ex);
+        }
+        WorkflowEnt ent = buildWorkflowEnt(wfm, projectId);
+        UUID snapshotId = m_entityRepo.commit(Pair.create(projectId, workflowId), ent);
+        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(ent).build();
     }
 
 }

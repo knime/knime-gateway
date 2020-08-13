@@ -53,7 +53,6 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
@@ -125,6 +124,7 @@ public class DefaultServiceUtil {
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      * @throws IllegalArgumentException if there is no node for the given node id or the node id doesn't reference a
      *             workflow (i.e. a sub- or metanode)
+     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      */
     public static WorkflowManager getWorkflowManager(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
         NodeContainer nodeContainer;
@@ -133,13 +133,18 @@ public class DefaultServiceUtil {
         } else {
             nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         }
+        WorkflowManager wfm;
         if (nodeContainer instanceof SubNodeContainer) {
-            return ((SubNodeContainer)nodeContainer).getWorkflowManager();
+            wfm = ((SubNodeContainer)nodeContainer).getWorkflowManager();
         } else if (nodeContainer instanceof WorkflowManager) {
-            return (WorkflowManager)nodeContainer;
+            wfm = (WorkflowManager)nodeContainer;
         } else {
             throw new IllegalStateException("The node id '" + nodeID + "' doesn't reference a sub workflow.");
         }
+        if (wfm.isEncrypted()) {
+            throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
+        }
+        return wfm;
     }
 
     /**
@@ -193,38 +198,5 @@ public class DefaultServiceUtil {
     public static ConnectionID entityToConnectionID(final UUID rootWorkflowID, final ConnectionIDEnt connectionID) {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
-    }
-
-    /**
-     * Determines the wizard execution state of a workflow to be be used by
-     * {@link org.knime.gateway.api.entity.WizardPageEnt.WizardExecutionStateEnum} and
-     * {@link org.knime.gateway.api.entity.ExecutionStatisticsEnt.WizardExecutionStateEnum}
-     *
-     * Needs to be kept in sync with
-     * <code>com.knime.enterprise.executor.ExecutorUtil#getWizardExecutionState(WorkflowManager)</code>. <br>
-     * However there are some differences:
-     * <ul>
-     * <li>this method returns an 'executing' state</li>
-     * <li>this method always returns a state even if workflow is not in wizard execution mode</li>
-     * </ul>
-     *
-     * @param wfm the workflow to determine the state for
-     * @return the wizard execution state string
-     */
-    public static String getWizardExecutionState(final WorkflowManager wfm) { //NOSONAR
-        try (WorkflowLock lock = wfm.lock()) {
-            if (wfm.getNodeContainerState().isExecuted()) {
-                return "EXECUTION_FINISHED";
-            } else if (wfm.isInWizardExecution()
-                && wfm.getWizardExecutionController().isHaltedAtNonTerminalWizardPage()) {
-                return "INTERACTION_REQUIRED";
-            } else if (wfm.getNodeContainerState().isExecutionInProgress()) {
-                return "EXECUTING";
-            } else if (!wfm.isInWizardExecution() || !wfm.getWizardExecutionController().hasExecutionStarted()) {
-                return "UNDEFINED";
-            } else {
-                return "EXECUTION_FAILED";
-            }
-        }
     }
 }

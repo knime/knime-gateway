@@ -20,6 +20,7 @@ package org.knime.gateway.impl.webui.service;
 import java.util.NoSuchElementException;
 
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -46,6 +47,8 @@ public final class DefaultServices {
     public static <S extends GatewayService> S getDefaultService(final Class<S> serviceInterface) {
         if (serviceInterface.equals(WorkflowService.class)) {
             return (S)DefaultWorkflowService.getInstance();
+        } else if (serviceInterface.equals(EventService.class)) {
+            return (S)DefaultEventService.getInstance();
         } else {
             throw new NoSuchElementException(
                 "No default service implementation found for " + serviceInterface.getSimpleName());
