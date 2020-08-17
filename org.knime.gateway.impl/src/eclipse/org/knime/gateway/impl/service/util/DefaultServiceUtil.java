@@ -122,9 +122,9 @@ public class DefaultServiceUtil {
      * @param nodeID the subnode's or metanode's node id
      * @return the {@link WorkflowManager}-instance
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
-     * @throws IllegalArgumentException if there is no node for the given node id or the node id doesn't reference a
-     *             workflow (i.e. a sub- or metanode)
+     * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
+     *             or the workflow is encrypted
      */
     public static WorkflowManager getWorkflowManager(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
         NodeContainer nodeContainer;

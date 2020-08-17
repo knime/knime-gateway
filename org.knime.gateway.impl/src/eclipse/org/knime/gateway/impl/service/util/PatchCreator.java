@@ -70,6 +70,14 @@ public interface PatchCreator<P> {
     boolean isNewObjectValid(final Object newObj);
 
     /**
+     * Called when a new object has been added to a list of a map (before {@link #added(String, Object)} is called).
+     *
+     * @param newObj the new object to be added
+     * @return if <code>true</code> the new object will bee added, otherwise it will be ignored
+     */
+    boolean isNewCollectionObjectValid(final Object newObj);
+
+    /**
      * Object has been removed
      *
      * @param path path to the property removed

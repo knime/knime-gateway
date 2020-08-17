@@ -47,7 +47,6 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 
 /**
@@ -63,13 +62,13 @@ public interface EventService extends GatewayService {
      *
      * @param eventTypeEnt 
      *
-     * @return the result
+     * 
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    EventEnt addEventListener(EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException;
+    void addEventListener(EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException;
         
     /**
-     * Unregisters event listeners. (Likely) NOT necessary for web-APIs (e.g. http or web sockets) because in that case a connection-loss (server sent events or web socket) indicates the &#39;un-registration&#39;.
+     * Unregisters event listeners.
      *
      * @param eventTypeEnt 
      *

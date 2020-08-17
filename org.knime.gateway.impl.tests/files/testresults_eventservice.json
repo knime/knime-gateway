@@ -1,0 +1,268 @@
+{
+  "node_removed" : {
+    "ops" : [ {
+      "op" : "remove",
+      "path" : "/nodes/root:16/outPorts/1/connectedVia/0"
+    }, {
+      "op" : "remove",
+      "path" : "/nodes/root:18"
+    }, {
+      "op" : "remove",
+      "path" : "/nodeTemplates/org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
+    }, {
+      "op" : "remove",
+      "path" : "/connections/root:18_1"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "workflow_annotation_removed" : {
+    "ops" : [ {
+      "op" : "remove",
+      "path" : "/workflowAnnotations/root_0"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "node_executed_2" : {
+    "ops" : [ {
+      "op" : "replace",
+      "path" : "/nodes/root:1/state/state",
+      "value" : "EXECUTING"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "node_added" : {
+    "ops" : [ {
+      "op" : "add",
+      "path" : "/nodes/root:28",
+      "value" : {
+        "id" : "root:28",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "First table to concatenate",
+          "optional" : false,
+          "type" : "table"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Second table to concatenate",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Concatenated table",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 40,
+          "y" : 50
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
+      }
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "node_executed_1" : {
+    "ops" : [ {
+      "op" : "replace",
+      "path" : "/nodes/root:8/state/state",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/outPorts/0/info",
+      "value" : "Variables connection"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/outPorts/2/info",
+      "value" : "Rows: 4, Cols: 4"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/outPorts/1/info",
+      "value" : "Rows: 8, Cols: 5"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/state/state",
+      "value" : "EXECUTED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:12/state/state",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:12/state/warning"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/state/state",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/state/warning"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:9/state/state",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:9/state/warning"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "ports_added" : {
+    "ops" : [ {
+      "op" : "add",
+      "path" : "/nodes/root:28/inPorts/3",
+      "value" : {
+        "connectedVia" : "[  ]",
+        "index" : 3,
+        "name" : "Additional table to concatenate",
+        "optional" : false,
+        "type" : "table"
+      }
+    }, {
+      "op" : "add",
+      "path" : "/nodes/root:28/inPorts/4",
+      "value" : {
+        "connectedVia" : "[  ]",
+        "index" : 4,
+        "name" : "Additional table to concatenate",
+        "optional" : false,
+        "type" : "table"
+      }
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "connection_added" : {
+    "ops" : [ {
+      "op" : "add",
+      "path" : "/nodes/root:14/inPorts/1/connectedVia/0"
+    }, {
+      "op" : "add",
+      "path" : "/connections/root:14_1",
+      "value" : {
+        "destNode" : "root:14",
+        "destPort" : 1,
+        "flowVariableConnection" : true,
+        "sourceNode" : "root:13",
+        "sourcePort" : 1
+      }
+    }, {
+      "op" : "add",
+      "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "workflow_annotation_added" : {
+    "ops" : [ {
+      "op" : "add",
+      "path" : "/workflowAnnotations/root_2",
+      "value" : {
+        "backgroundColor" : "#000000",
+        "borderColor" : "#000000",
+        "borderWidth" : 0,
+        "bounds" : {
+          "height" : 0,
+          "width" : 0,
+          "x" : 0,
+          "y" : 0
+        },
+        "styleRanges" : [ {
+          "fontSize" : -1,
+          "length" : 0,
+          "start" : 0
+        } ],
+        "text" : "",
+        "textAlign" : "left"
+      }
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "node_annotation_added" : {
+    "ops" : [ {
+      "op" : "add",
+      "path" : "/nodes/root:1/annotation",
+      "value" : {
+        "backgroundColor" : "#000000",
+        "borderColor" : "#000000",
+        "borderWidth" : 0,
+        "styleRanges" : [ {
+          "fontSize" : -1,
+          "length" : 13,
+          "start" : 0
+        } ],
+        "text" : "new anno text",
+        "textAlign" : "left"
+      }
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "workflow_annotation_changed" : {
+    "ops" : [ {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/root_1/styleRanges/0/length",
+      "value" : 0
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/root_1/styleRanges/0/fontSize",
+      "value" : -1
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/root_1/text",
+      "value" : ""
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/root_1/backgroundColor",
+      "value" : "#000000"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/root_1/borderWidth",
+      "value" : 0
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/root_1/borderColor",
+      "value" : "#000000"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "connection_removed" : {
+    "ops" : [ {
+      "op" : "remove",
+      "path" : "/nodes/root:14/inPorts/1/connectedVia/0"
+    }, {
+      "op" : "remove",
+      "path" : "/connections/root:14_1"
+    }, {
+      "op" : "remove",
+      "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
+    } ],
+    "targetTypeId" : "Workflow"
+  },
+  "node_annotation_changed" : {
+    "ops" : [ {
+      "op" : "replace",
+      "path" : "/nodes/root:1/annotation/styleRanges/0/length",
+      "value" : 16
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/annotation/text",
+      "value" : "yet another text"
+    } ],
+    "targetTypeId" : "Workflow"
+  }
+}

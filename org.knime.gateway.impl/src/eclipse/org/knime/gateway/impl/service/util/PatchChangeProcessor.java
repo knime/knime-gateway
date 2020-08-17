@@ -144,12 +144,20 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
     public void onNewObject(final NewObject newObject) {
         Object newObj = newObject.getAffectedObject()
             .orElseThrow(() -> new IllegalStateException("Object expected to be present."));
-        // these are all objects that are newly added to a map
-        // the respective patch operation will be added in the onMapChange- or onListChange-methods
-        if (m_patchCreator.isNewObjectValid(newObj)) {
+        // These are all objects that are newly added to a map or list.
+        // The respective patch operation will be added in the onMapChange- or onListChange-methods.
+        // It needs to be done this way because all sub-objects of an object added to a list or map
+        // are arriving here, too, and we don't want to create an extra patch-operation for each.
+        if (m_patchCreator.isNewCollectionObjectValid(newObj)) {
             ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
             String path = "/" + globalId.getFragment().replace("m_", ""); //NOSONAR
             m_newObjects.put(path, (GatewayEntity)newObj);
+        } else if(m_patchCreator.isNewObjectValid(newObj)) {
+            ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
+            String path = "/" + globalId.getFragment().replace("m_", ""); //NOSONAR
+            m_patchCreator.added(path, newObj);
+        } else {
+            //
         }
     }
 
@@ -183,7 +191,7 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         for (ValueAdded va : listChange.getValueAddedChanges()) {
             ValueObjectId val = (ValueObjectId)va.getValue();
             String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
-            //NOTE: setValue relies on the fact the #onNewObject has been called before, with the right object
+            //NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
             m_patchCreator.added(path, m_newObjects.get(path));
         }
     }
@@ -198,7 +206,7 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         for (EntryAdded ea : mapChange.getEntryAddedChanges()) {
             ValueObjectId val = (ValueObjectId)ea.getValue();
             String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
-            //NOTE: setValue relies on the fact the #onNewObject has been called before, with the right object
+            //NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
             m_patchCreator.added(path, m_newObjects.get(path));
         }
     }

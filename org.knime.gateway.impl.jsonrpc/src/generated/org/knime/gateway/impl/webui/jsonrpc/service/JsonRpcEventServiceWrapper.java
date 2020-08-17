@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -81,8 +80,8 @@ public class JsonRpcEventServiceWrapper implements EventService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public EventEnt addEventListener(@JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException {
-        return m_service.addEventListener(eventTypeEnt);    
+    public void addEventListener(@JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException {
+        m_service.addEventListener(eventTypeEnt);    
     }
 
 	/**

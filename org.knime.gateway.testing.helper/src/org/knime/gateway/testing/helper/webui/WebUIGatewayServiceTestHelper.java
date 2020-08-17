@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.json.util.JsonUtil;
@@ -82,17 +82,30 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @return the new result checker instance
      */
     public static ResultChecker createResultChecker(final boolean rewriteTestResults) {
+        return createResultChecker(rewriteTestResults, WebUIGatewayServiceTestHelper.class);
+    }
+
+    /**
+     * Helps to create an {@link ResultChecker}-instance.
+     *
+     * @param rewriteTestResults whether to overwrite the result-snapshots
+     * @param testClass the class of the test to determine the plugin to write the test results into (in the
+     *            /files-folder of the respective plugin)
+     * @return the new result checker instance
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static ResultChecker createResultChecker(final boolean rewriteTestResults, final Class<?> testClass) {
         PropertyExceptions pe = new PropertyExceptions();
 
         /**
-         * Name of the field that holds the root workflow id (e.g. in NodeEnt). Since the id changes with every run it
-         * cannot be compared.
+         * Name of the field that holds the workflow's project id (if the workflow is a project). Since the id changes
+         * with every run it cannot be compared.
          */
-        pe.addException(DefaultNodeEnt.class, "rootWorkflowID",
-            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_WORKFLOW_ID"));
+        pe.addException(DefaultWorkflowEnt.class, "projectId",
+            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_PROJECT_ID"));
 
         /** Same as above but for the snapshot id. */
-        pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotID",
+        pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotId",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
 
         /**
@@ -111,7 +124,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
          */
         pe.addException(NodePortEnt.class, "connectedVia", (v, gen, e) ->
             gen.writeString("[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
-                .map(l -> l.toString()).collect(Collectors.joining(", ")) + " ]")
+                .map(Object::toString).collect(Collectors.joining(", ")) + " ]")
         );
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -121,7 +134,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         try {
             return new ResultChecker(rewriteTestResults, pe, objectMapper,
-                resolveToFile("/files", WebUIGatewayServiceTestHelper.class));
+                resolveToFile("/files", testClass));
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); //NOSONAR

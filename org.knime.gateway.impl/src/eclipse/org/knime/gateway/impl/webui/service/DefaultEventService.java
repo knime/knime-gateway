@@ -61,11 +61,13 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
@@ -114,6 +116,11 @@ public final class DefaultEventService implements EventService {
 
     private final List<BiConsumer<String, EventEnt>> m_eventConsumer = new ArrayList<>();
 
+    /*
+     * For testing purposes only.
+     */
+    private boolean m_callEventConsumerOnError = false;
+
     private DefaultEventService() {
         // singleton
     }
@@ -123,35 +130,29 @@ public final class DefaultEventService implements EventService {
      */
     @SuppressWarnings("resource")
     @Override
-    public EventEnt addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
+    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
             WorkflowKey key = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
             WorkflowManager wfm = getWorkflowManager(wfEventType.getProjectId(), wfEventType.getWorkflowId());
 
-            // create very first changed event to be returned directly (and thus catch up with the most recent
+            // create very first changed event to be send first (and thus catch up with the most recent
             // workflow version)
-            UUID snapshotId = wfEventType.getSnapshotId();
-            PatchEntCreator patchEntCreator = new PatchEntCreator(snapshotId);
-            synchronized (m_patchEntCreators.containsKey(key) ? m_patchEntCreators.get(key) : patchEntCreator) {
-                // synchronized to make sure that no other event is sent before this 'catch-up'-event below is returned
-                // (only for events registered on the same workflow)
-                // TODO improve?
-
-                WorkflowChangedEventEnt workflowChangedEvent = createWorkflowChangedEvent(patchEntCreator, wfm);
-
-                // initialize WorkflowChangesListener (if not already)
-                m_workflowChangesListeners.computeIfAbsent(key, k -> {
-                    m_patchEntCreators.put(key, new PatchEntCreator(workflowChangedEvent.getSnapshotId()));
-                    Consumer<WorkflowManager> callback = createWorkflowChangesCallback(key);
-                    return new WorkflowChangesListener(wfm, callback);
-                });
-
-                assert workflowChangedEvent == null
-                    || m_patchEntCreators.get(key).getSnapshotId().equals(workflowChangedEvent.getSnapshotId());
-
-                return workflowChangedEvent;
+            PatchEntCreator patchEntCreator = new PatchEntCreator(wfEventType.getSnapshotId());
+            WorkflowChangedEventEnt workflowChangedEvent =
+                createWorkflowChangedEvent(patchEntCreator, wfm, key.m_projectId);
+            if (workflowChangedEvent != null) {
+                sendEvent(workflowChangedEvent);
             }
+
+            // initialize WorkflowChangesListener (if not already)
+            m_workflowChangesListeners.computeIfAbsent(key, k -> {
+                UUID latestSnapshotId =
+                    workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
+                m_patchEntCreators.put(key, new PatchEntCreator(latestSnapshotId));
+                Consumer<WorkflowManager> callback = createWorkflowChangesCallback(key);
+                return new WorkflowChangesListener(wfm, callback);
+            });
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -182,6 +183,11 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.add(eventConsumer);
     }
 
+    void addEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer) {
+        addEventConsumer(eventConsumer);
+        m_callEventConsumerOnError = true;
+    }
+
     /**
      * Removes a previously registered event consumer.
      *
@@ -193,18 +199,30 @@ public final class DefaultEventService implements EventService {
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey key) {
         return wfm -> {
-            synchronized (m_patchEntCreators.get(key)) {
-                WorkflowChangedEventEnt event = createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm);
-                if (event != null) {
-                    sendEvent("WorkflowChangedEvent", event);
-                }
+            assertPatchEntCreatorAvaible(key);
+            WorkflowChangedEventEnt event =
+                createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm, key.m_projectId);
+            if (event != null) {
+                sendEvent(event);
             }
         };
     }
 
+    private void assertPatchEntCreatorAvaible(final WorkflowKey key) {
+        if (m_patchEntCreators.get(key) == null) {
+            String message =
+                "Workflow change events available but no one is interested. Most likely an implementation error.";
+            NodeLogger.getLogger(getClass()).error(message);
+            if (m_callEventConsumerOnError) {
+                sendEvent(message, null);
+            }
+            throw new IllegalStateException(message);
+        }
+    }
+
     private static WorkflowChangedEventEnt createWorkflowChangedEvent(final PatchEntCreator patchEntCreator,
-        final WorkflowManager wfm) {
-        patchEntCreator.createPatch(buildWorkflowEnt(wfm, null));
+        final WorkflowManager wfm, final UUID projectId) {
+        patchEntCreator.createPatch(buildWorkflowEnt(wfm, projectId));
         if (patchEntCreator.getPatch() == null) {
             return null;
         }
@@ -213,7 +231,11 @@ public final class DefaultEventService implements EventService {
             .setPreviousSnapshotId(patchEntCreator.getPreviousSnapshotId()).build();
     }
 
-    private void sendEvent(final String name, final WorkflowChangedEventEnt event) {
+    private void sendEvent(final WorkflowChangedEventEnt event) {
+        sendEvent("WorkflowChangedEvent", event);
+    }
+
+    private void sendEvent(final String name, final EventEnt event) {
         m_eventConsumer.forEach(c -> c.accept(name, event));
     }
 
@@ -236,9 +258,9 @@ public final class DefaultEventService implements EventService {
         public void createPatch(final WorkflowEnt ent) {
             m_ops.clear();
             m_targetTypeID = ent.getTypeID();
-            m_previousSnapshotId = m_snapshotId;
             m_patch = DefaultWorkflowService.getInstance().getEntityRepository()
-                .getChangesAndCommit(m_previousSnapshotId, ent, id -> {
+                .getChangesAndCommit(m_snapshotId, ent, id -> {
+                    m_previousSnapshotId = m_snapshotId;
                     m_snapshotId = id;
                     return this;
                 }).orElse(null);
@@ -262,10 +284,15 @@ public final class DefaultEventService implements EventService {
         }
 
         @Override
-        public boolean isNewObjectValid(final Object newObj) {
+        public boolean isNewCollectionObjectValid(final Object newObj) {
             return newObj instanceof NodeEnt //NOSONAR
                 || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt
                 || newObj instanceof NodePortEnt;
+        }
+
+        @Override
+        public boolean isNewObjectValid(final Object newObj) {
+            return newObj instanceof NodeAnnotationEnt;
         }
 
         @Override

@@ -1367,6 +1367,7 @@
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
       }
     },
+    "projectId" : "PLACEHOLDER_FOR_PROJECT_ID",
     "workflowAnnotations" : {
       "root_1" : {
         "backgroundColor" : "#FFFFFF",
@@ -2734,6 +2735,7 @@
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
       }
     },
+    "projectId" : "PLACEHOLDER_FOR_PROJECT_ID",
     "workflowAnnotations" : {
       "root_1" : {
         "backgroundColor" : "#FFFFFF",

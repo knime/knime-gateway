@@ -49,40 +49,51 @@ package org.knime.gateway.impl.service.util;
 import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeMessageListener;
 import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformationListener;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 
 /**
- * A summarizes all kind of workflow changes and allows one to register one single listener to all of them.
+ * Summarizes all kind of workflow changes and allows one to register one single listener to all of them.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz
  */
 public class WorkflowChangesListener implements Closeable {
 
-    private WorkflowManager m_wfm;
+    private final WorkflowManager m_wfm;
 
-    private WorkflowListener m_workflowListener;
+    private final WorkflowListener m_workflowListener;
 
-    private Map<NodeID, NodeStateChangeListener> m_nodeStateChangeListeners = new HashMap<>();
+    private final Map<NodeID, NodeStateChangeListener> m_nodeStateChangeListeners = new HashMap<>();
 
-    private Map<NodeID, NodeProgressListener> m_progressListeners = new HashMap<>();
+    private final Map<NodeID, NodeProgressListener> m_progressListeners = new HashMap<>();
 
-    private Map<NodeID, NodeUIInformationListener> m_nodeUIListeners = new HashMap<>();
+    private final Map<NodeID, NodeUIInformationListener> m_nodeUIListeners = new HashMap<>();
 
-    private AtomicBoolean m_isCallbackWaiting = new AtomicBoolean(false);
+    private final Map<NodeID, NodeMessageListener> m_nodeMessageListeners = new HashMap<>();
 
-    private AtomicBoolean m_isCallbackInProgress = new AtomicBoolean(false);
+    private final Map<WorkflowAnnotationID, NodeUIInformationListener> m_workflowAnnotationListeners = new HashMap<>();
 
-    private Consumer<WorkflowManager> m_callback;
+    private final AtomicBoolean m_isCallbackWaiting = new AtomicBoolean(false);
+
+    private final AtomicBoolean m_isCallbackInProgress = new AtomicBoolean(false);
+
+    private final Consumer<WorkflowManager> m_callback;
+
+    private final ExecutorService m_executorService;
 
     /**
      * @param wfm the workflow manager to listen to
@@ -90,23 +101,31 @@ public class WorkflowChangesListener implements Closeable {
      */
     public WorkflowChangesListener(final WorkflowManager wfm, final Consumer<WorkflowManager> callback) {
         m_wfm = wfm;
+        m_executorService = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
+            t.setDaemon(true);
+            return t;
+        });
         m_callback = callback;
-        startListening();
+        m_workflowListener = startListening();
     }
 
-    private void startListening() {
-        m_workflowListener = e -> {
+    private WorkflowListener startListening() {
+        WorkflowListener workflowListener = e -> {
             //TODO filter out workflow dirty event?
             if (e.getType() == Type.NODE_ADDED) {
                 registerNode(m_wfm.getNodeContainer(e.getID()));
+            } else if (e.getType() == Type.ANNOTATION_ADDED) {
+                registerWorkflowAnnotation((WorkflowAnnotation)e.getNewValue());
+            } else {
+                //
             }
-            //TODO unregister node?
             callback();
         };
-        m_wfm.addListener(m_workflowListener);
-        m_wfm.getNodeContainers().forEach(nc -> {
-            registerNode(nc);
-        });
+        m_wfm.addListener(workflowListener);
+        m_wfm.getNodeContainers().forEach(this::registerNode);
+        m_wfm.getWorkflowAnnotations().forEach(this::registerWorkflowAnnotation);
+        return workflowListener;
     }
 
     private void registerNode(final NodeContainer nc) {
@@ -119,13 +138,24 @@ public class WorkflowChangesListener implements Closeable {
         NodeUIInformationListener uil = e -> callback();
         m_nodeUIListeners.put(nc.getID(), uil);
         nc.addUIInformationListener(uil);
-        //TODO node message listener?
+        nc.getNodeAnnotation().addUIInformationListener(uil);
+        NodeMessageListener nml = e -> callback();
+        m_nodeMessageListeners.put(nc.getID(), nml);
+        nc.addNodeMessageListener(nml);
+    }
+
+    private void registerWorkflowAnnotation(final WorkflowAnnotation wa) {
+        NodeUIInformationListener l = e -> callback();
+        m_workflowAnnotationListeners.put(wa.getID(), l);
+        wa.addUIInformationListener(l);
     }
 
     private void deregisterNode(final NodeContainer nc) {
         nc.removeNodeStateChangeListener(m_nodeStateChangeListeners.get(nc.getID()));
         nc.getProgressMonitor().removeProgressListener(m_progressListeners.get(nc.getID()));
         nc.removeUIInformationListener(m_nodeUIListeners.get(nc.getID()));
+        nc.getNodeAnnotation().removeUIInformationListener(m_nodeUIListeners.get(nc.getID()));
+        nc.removeNodeMessageListener(m_nodeMessageListeners.get(nc.getID()));
     }
 
     private synchronized void callback() {
@@ -133,8 +163,7 @@ public class WorkflowChangesListener implements Closeable {
             m_isCallbackWaiting.set(true);
         } else {
             m_isCallbackInProgress.set(true);
-            //TODO
-            new Thread(() -> {
+            m_executorService.execute(() -> {
                 try {
                     do {
                         m_isCallbackWaiting.set(false);
@@ -143,21 +172,26 @@ public class WorkflowChangesListener implements Closeable {
                 } finally {
                     m_isCallbackInProgress.set(false);
                 }
-            }).start();
+            });
         }
     }
 
     private void stopListening() {
         m_wfm.removeListener(m_workflowListener);
-        m_workflowListener = null;
         m_wfm.getNodeContainers().forEach(this::deregisterNode);
+        m_wfm.getWorkflowAnnotations()
+            .forEach(wa -> wa.removeUIInformationListener(m_workflowAnnotationListeners.get(wa.getID())));
+        m_nodeMessageListeners.clear();
+        m_nodeStateChangeListeners.clear();
+        m_nodeUIListeners.clear();
+        m_progressListeners.clear();
+        m_workflowAnnotationListeners.clear();
     }
 
     @Override
     public void close() {
         stopListening();
-        m_progressListeners = null;
-        m_nodeStateChangeListeners = null;
+        m_executorService.shutdown();
     }
 
 }

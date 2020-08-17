@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEn
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.SimpleRepository;
@@ -86,7 +87,9 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     private DefaultWorkflowService() {
-        m_entityRepo = new SimpleRepository<>(1); // TODO number of snapshots in mem!
+        m_entityRepo = new SimpleRepository<>(1);
+        WorkflowProjectManager
+            .addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(k -> k.getFirst().equals(uuid)));
     }
 
     EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> getEntityRepository() {

@@ -62,6 +62,7 @@ import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.Pair;
@@ -120,32 +121,34 @@ public final class EntityBuilderUtil {
      * @return the newly created entity
      */
     public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final UUID projectId) {
-        Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
+        try (WorkflowLock lock = wfm.lock()) {
+            Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
-        Map<String, NodeEnt> nodes = new HashMap<>();
-        Map<String, NodeTemplateEnt> templates = new HashMap<>();
-        for (NodeContainer nc : nodeContainers) {
-            NodeEnt nodeEnt = buildNodeEnt(nc);
-            nodes.put(nodeEnt.getId().toString(), nodeEnt);
-            if (nc instanceof NativeNodeContainer) {
-                String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
-                templates.computeIfAbsent(templateId, id -> buildNodeTemplateEnt((NativeNodeContainer)nc));
+            Map<String, NodeEnt> nodes = new HashMap<>();
+            Map<String, NodeTemplateEnt> templates = new HashMap<>();
+            for (NodeContainer nc : nodeContainers) {
+                NodeEnt nodeEnt = buildNodeEnt(nc);
+                nodes.put(nodeEnt.getId().toString(), nodeEnt);
+                if (nc instanceof NativeNodeContainer) {
+                    String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
+                    templates.computeIfAbsent(templateId, id -> buildNodeTemplateEnt((NativeNodeContainer)nc));
+                }
             }
+            Map<String, ConnectionEnt> connections =
+                wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
+                    Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
+            Map<String, WorkflowAnnotationEnt> annotations =
+                wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
+                    .collect(Collectors.toMap(wa -> new AnnotationIDEnt(wa.getFirst()).toString(), Pair::getSecond));
+            return builder(WorkflowEntBuilder.class)
+                .setName(wfm.getName())
+                .setNodes(nodes)
+                .setNodeTemplates(templates)
+                .setConnections(connections)
+                .setWorkflowAnnotations(annotations)
+                .setProjectId(wfm.isProject() ? projectId : null)
+                .build();
         }
-        Map<String, ConnectionEnt> connections =
-            wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
-                Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
-        Map<String, WorkflowAnnotationEnt> annotations =
-            wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
-                .collect(Collectors.toMap(wa -> new AnnotationIDEnt(wa.getFirst()).toString(), Pair::getSecond));
-        return builder(WorkflowEntBuilder.class)
-            .setName(wfm.getName())
-            .setNodes(nodes)
-            .setNodeTemplates(templates)
-            .setConnections(connections)
-            .setWorkflowAnnotations(annotations)
-            .setProjectId(wfm.isProject() ? projectId : null)
-            .build();
     }
 
     private static Pair<WorkflowAnnotationID, WorkflowAnnotationEnt>

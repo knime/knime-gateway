@@ -43,7 +43,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.webui.tests;
+package org.knime.gateway.impl.webui.service;
 
 import java.util.Map;
 import java.util.UUID;
@@ -57,7 +57,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
