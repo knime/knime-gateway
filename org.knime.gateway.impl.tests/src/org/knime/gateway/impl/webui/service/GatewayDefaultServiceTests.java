@@ -46,7 +46,6 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -107,13 +106,13 @@ public class GatewayDefaultServiceTests {
         m_workflowExecutor = new WorkflowExecutor() {
 
             @Override
-            public void executeWorkflowAsync(final UUID wfId) throws Exception {
+            public void executeWorkflowAsync(final String wfId) throws Exception {
                 WorkflowProjectManager.openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
             }
 
             @Override
-            public void executeWorkflow(final UUID wfId) throws Exception {
+            public void executeWorkflow(final String wfId) throws Exception {
                 WorkflowProjectManager.openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
                     .executeAllAndWaitUntilDone();

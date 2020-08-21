@@ -121,17 +121,17 @@ public class GatewayServiceTestHelper {
      * @return the workflow's id
      * @throws Exception if loading fails
      */
-    protected final UUID loadWorkflow(final TestWorkflow workflow) throws Exception {
+    protected String loadWorkflow(final TestWorkflow workflow) throws Exception {
         return m_workflowLoader.loadWorkflow(workflow);
     }
 
     /**
-     * See {@link WorkflowExecutor#executeWorkflow(UUID)}.
+     * See {@link WorkflowExecutor#executeWorkflow(String)}.
      *
      * @param wfId id of the workflow to execute
      * @throws Exception
      */
-    protected final void executeWorkflow(final UUID wfId) throws Exception {
+    protected final void executeWorkflow(final String wfId) throws Exception {
         m_workflowExecutor.executeWorkflow(wfId);
     }
 
@@ -141,7 +141,7 @@ public class GatewayServiceTestHelper {
      * @param wfId
      * @throws Exception
      */
-    protected final void executeWorkflowAsync(final UUID wfId) throws Exception {
+    protected final void executeWorkflowAsync(final String wfId) throws Exception {
         m_workflowExecutor.executeWorkflowAsync(wfId);
     }
 

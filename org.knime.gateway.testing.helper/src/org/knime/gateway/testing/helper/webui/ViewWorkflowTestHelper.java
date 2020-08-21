@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import java.util.UUID;
-
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -80,7 +78,7 @@ public class ViewWorkflowTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetWorkflow() throws Exception {
-        UUID wfId = loadWorkflow(TestWorkflowCollection.GENERAL);
+        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL);
 
         // check un-executed
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();

@@ -66,7 +66,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 public class DefaultWorkflowEnt  implements WorkflowEnt {
 
   protected String m_name;
-  protected java.util.UUID m_projectId;
+  protected String m_projectId;
   protected java.util.Map<String, NodeEnt> m_nodes;
   protected java.util.Map<String, NodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, ConnectionEnt> m_connections;
@@ -134,7 +134,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   }
     
   @Override
-  public java.util.UUID getProjectId() {
+  public String getProjectId() {
         return m_projectId;
   }
     
@@ -166,7 +166,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
     
         private String m_name;
-        private java.util.UUID m_projectId;
+        private String m_projectId;
         private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
@@ -179,7 +179,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setProjectId(java.util.UUID projectId) {
+        public DefaultWorkflowEntBuilder setProjectId(String projectId) {
              m_projectId = projectId;
              return this;
         }

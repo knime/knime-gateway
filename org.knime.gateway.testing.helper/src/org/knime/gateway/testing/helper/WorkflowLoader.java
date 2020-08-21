@@ -17,8 +17,6 @@
  */
 package org.knime.gateway.testing.helper;
 
-import java.util.UUID;
-
 /**
  * Loads workflows into memory that are later (directly or indirectly) accessed from the gateway's
  * WorkflowProjectManager.
@@ -36,6 +34,6 @@ public interface WorkflowLoader {
 	 * @return the unique identifier of the loaded workflow
 	 * @throws Exception if the loading fails
 	 */
-	UUID loadWorkflow(TestWorkflow workflow) throws Exception;
+	String loadWorkflow(TestWorkflow workflow) throws Exception;
 
 }

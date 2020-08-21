@@ -89,7 +89,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("projectId")
-    public java.util.UUID getProjectId();
+    public String getProjectId();
     
     @Override
     @JsonProperty("nodes")
@@ -133,7 +133,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("projectId")
-        public WorkflowEntMixInBuilder setProjectId(final java.util.UUID projectId);
+        public WorkflowEntMixInBuilder setProjectId(final String projectId);
         
         @Override
         @JsonProperty("nodes")

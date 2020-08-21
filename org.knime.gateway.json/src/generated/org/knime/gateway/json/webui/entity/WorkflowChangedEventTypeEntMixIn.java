@@ -86,7 +86,7 @@ public interface WorkflowChangedEventTypeEntMixIn extends WorkflowChangedEventTy
     
     @Override
     @JsonProperty("projectId")
-    public java.util.UUID getProjectId();
+    public String getProjectId();
     
     @Override
     @JsonProperty("workflowId")
@@ -122,7 +122,7 @@ public interface WorkflowChangedEventTypeEntMixIn extends WorkflowChangedEventTy
         
         @Override
         @JsonProperty("projectId")
-        public WorkflowChangedEventTypeEntMixInBuilder setProjectId(final java.util.UUID projectId);
+        public WorkflowChangedEventTypeEntMixInBuilder setProjectId(final String projectId);
         
         @Override
         @JsonProperty("workflowId")

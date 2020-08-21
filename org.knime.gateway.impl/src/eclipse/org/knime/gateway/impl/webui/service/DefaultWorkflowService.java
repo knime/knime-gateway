@@ -75,7 +75,7 @@ import org.knime.gateway.impl.service.util.SimpleRepository;
 public final class DefaultWorkflowService implements WorkflowService {
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
-    private final EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> m_entityRepo;
+    private final EntityRepository<Pair<String, NodeIDEnt>, WorkflowEnt> m_entityRepo;
 
     /**
      * Returns the singleton instance for this service.
@@ -92,7 +92,7 @@ public final class DefaultWorkflowService implements WorkflowService {
             .addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(k -> k.getFirst().equals(uuid)));
     }
 
-    EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> getEntityRepository() {
+    EntityRepository<Pair<String, NodeIDEnt>, WorkflowEnt> getEntityRepository() {
         return m_entityRepo;
     }
 
@@ -100,7 +100,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final UUID projectId, final NodeIDEnt workflowId)
+    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException {
         WorkflowManager wfm;
         try {
@@ -110,9 +110,12 @@ public final class DefaultWorkflowService implements WorkflowService {
         } catch (IllegalStateException ex) {
             throw new NotASubWorkflowException(ex.getMessage(), ex);
         }
-        WorkflowEnt ent = buildWorkflowEnt(wfm, projectId);
-        UUID snapshotId = m_entityRepo.commit(Pair.create(projectId, workflowId), ent);
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(ent).build();
+        return buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm, projectId), workflowId);
+    }
+
+    WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final NodeIDEnt workflowId) {
+        UUID snapshotId = m_entityRepo.commit(Pair.create(workflow.getProjectId(), workflowId), workflow);
+        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
     }
 
 }

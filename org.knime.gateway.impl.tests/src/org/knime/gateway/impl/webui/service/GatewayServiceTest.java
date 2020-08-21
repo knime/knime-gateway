@@ -132,7 +132,7 @@ public class GatewayServiceTest {
         InvalidSettingsException, CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
         UUID uuid = UUID.randomUUID();
         WorkflowProject workflowProject = mock(WorkflowProject.class);
-        WorkflowProjectManager.addWorkflowProject(uuid, workflowProject);
+        WorkflowProjectManager.addWorkflowProject(uuid.toString(), workflowProject);
         WorkflowManager wfm = GatewayServiceTestHelper.loadWorkflow(wf.getUrlFolder());
         m_loadedWorkflows.add(wfm);
         when(workflowProject.openProject()).thenReturn(wfm);

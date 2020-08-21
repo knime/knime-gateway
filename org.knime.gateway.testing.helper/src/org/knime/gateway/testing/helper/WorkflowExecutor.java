@@ -32,7 +32,7 @@ public interface WorkflowExecutor {
      * @param wfId the id of the workflow to execute
      * @throws Exception
      */
-	void executeWorkflow(UUID wfId) throws Exception;
+	void executeWorkflow(String wfId) throws Exception;
 
 	/**
 	 * Triggers the workflow execution and returns immediately.
@@ -40,6 +40,6 @@ public interface WorkflowExecutor {
 	 * @param wfId the id of the workflow to execute
 	 * @throws Exception
 	 */
-	void executeWorkflowAsync(UUID wfId) throws Exception;
+	void executeWorkflowAsync(String wfId) throws Exception;
 
 }

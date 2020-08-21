@@ -74,9 +74,9 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * {@inheritDoc}
      */
     @Override
-    public UUID loadWorkflow(final TestWorkflow workflow) throws Exception {
+    public String loadWorkflow(final TestWorkflow workflow) throws Exception {
         final UUID uuid = UUID.randomUUID();
-        WorkflowProjectManager.addWorkflowProject(uuid, new WorkflowProject() {
+        WorkflowProjectManager.addWorkflowProject(uuid.toString(), new WorkflowProject() {
 
             @Override
             public WorkflowManager openProject() {
@@ -101,7 +101,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
                 return uuid.toString();
             }
         });
-        return uuid;
+        return uuid.toString();
     }
 
     /**
@@ -111,10 +111,10 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void disposeWorkflows() throws InterruptedException {
         for (UUID uuid : m_loadedWorkflows) {
-            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(uuid).orElse(null);
+            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(uuid.toString()).orElse(null);
             if (wfm != null) {
                 GatewayServiceTestHelper.cancelAndCloseLoadedWorkflow(wfm);
-                WorkflowProjectManager.removeWorkflowProject(uuid);
+                WorkflowProjectManager.removeWorkflowProject(uuid.toString());
             }
         }
     }

@@ -73,7 +73,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * The project id if this workflow is the top-level project workflow. Otherwise not given.
    * @return projectId 
    **/
-  public java.util.UUID getProjectId();
+  public String getProjectId();
 
   /**
    * The node map.
@@ -119,7 +119,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param projectId the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setProjectId(java.util.UUID projectId);
+        WorkflowEntBuilder setProjectId(String projectId);
         
         /**
          * The node map.

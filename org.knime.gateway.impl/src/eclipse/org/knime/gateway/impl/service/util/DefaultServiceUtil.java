@@ -82,7 +82,7 @@ public class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
-    public static NodeContainer getNodeContainer(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
+    public static NodeContainer getNodeContainer(final String rootWorkflowID, final NodeIDEnt nodeID) {
         WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
         if (nodeID.equals(NodeIDEnt.getRootID())) {
             return wfm;
@@ -98,7 +98,7 @@ public class DefaultServiceUtil {
      * @return the {@link WorkflowManager} instance
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      */
-    public static WorkflowManager getRootWorkflowManager(final UUID rootWorkflowID) throws NoSuchElementException {
+    public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) throws NoSuchElementException {
         return WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
     }
@@ -110,7 +110,7 @@ public class DefaultServiceUtil {
      * @return the {@link WorkflowProject} instance
      * @throws NoSuchElementException if there is no workflow project for the id registered
      */
-    public static WorkflowProject getWorkflowProject(final UUID workflowProjectID) throws NoSuchElementException {
+    public static WorkflowProject getWorkflowProject(final String workflowProjectID) throws NoSuchElementException {
         return WorkflowProjectManager.getWorkflowProject(workflowProjectID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + workflowProjectID + "\" not found."));
     }
@@ -126,7 +126,7 @@ public class DefaultServiceUtil {
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static WorkflowManager getWorkflowManager(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
+    public static WorkflowManager getWorkflowManager(final String rootWorkflowID, final NodeIDEnt nodeID) {
         NodeContainer nodeContainer;
         if (nodeID == null || nodeID.equals(NodeIDEnt.getRootID())) {
             nodeContainer = getRootWorkflowManager(rootWorkflowID);
@@ -157,7 +157,7 @@ public class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
-    public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final UUID rootWorkflowID,
+    public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final String rootWorkflowID,
         final NodeIDEnt nodeID) {
         return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
     }
@@ -170,7 +170,7 @@ public class DefaultServiceUtil {
      *
      * @return the {@link NodeID} instance
      */
-    public static NodeID entityToNodeID(final UUID rootWorkflowID, final NodeIDEnt nodeID) {
+    public static NodeID entityToNodeID(final String rootWorkflowID, final NodeIDEnt nodeID) {
         return nodeID.toNodeID(getRootWorkflowManager(rootWorkflowID).getID());
     }
 
@@ -182,7 +182,7 @@ public class DefaultServiceUtil {
      * @param annotationID the annotation id entity to convert
      * @return the {@link WorkflowAnnotationID} instance
      */
-    public static WorkflowAnnotationID entityToAnnotationID(final UUID rootWorkflowID,
+    public static WorkflowAnnotationID entityToAnnotationID(final String rootWorkflowID,
         final AnnotationIDEnt annotationID) {
         NodeID nodeID = entityToNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
         return new WorkflowAnnotationID(nodeID, annotationID.getIndex());
@@ -195,7 +195,7 @@ public class DefaultServiceUtil {
      * @param connectionID the id entity to convert
      * @return the {@link ConnectionID} instance
      */
-    public static ConnectionID entityToConnectionID(final UUID rootWorkflowID, final ConnectionIDEnt connectionID) {
+    public static ConnectionID entityToConnectionID(final String rootWorkflowID, final ConnectionIDEnt connectionID) {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
     }

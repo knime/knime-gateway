@@ -221,7 +221,7 @@ public final class DefaultEventService implements EventService {
     }
 
     private static WorkflowChangedEventEnt createWorkflowChangedEvent(final PatchEntCreator patchEntCreator,
-        final WorkflowManager wfm, final UUID projectId) {
+        final WorkflowManager wfm, final String projectId) {
         patchEntCreator.createPatch(buildWorkflowEnt(wfm, projectId));
         if (patchEntCreator.getPatch() == null) {
             return null;
@@ -313,11 +313,11 @@ public final class DefaultEventService implements EventService {
 
     private static class WorkflowKey {
 
-        private UUID m_projectId;
+        private String m_projectId;
 
         private NodeIDEnt m_workfowId;
 
-        public WorkflowKey(final UUID projectId, final NodeIDEnt workfowId) {
+        public WorkflowKey(final String projectId, final NodeIDEnt workfowId) {
             m_projectId = projectId;
             m_workfowId = workfowId;
         }

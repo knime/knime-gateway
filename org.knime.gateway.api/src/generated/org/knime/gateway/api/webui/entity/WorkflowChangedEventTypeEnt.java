@@ -63,7 +63,7 @@ public interface WorkflowChangedEventTypeEnt extends EventTypeEnt {
    * The workflow project id to get the change-events for.
    * @return projectId , never <code>null</code>
    **/
-  public java.util.UUID getProjectId();
+  public String getProjectId();
 
   /**
    * The top-level (root) or sub-workflow to get the change-events for.
@@ -97,7 +97,7 @@ public interface WorkflowChangedEventTypeEnt extends EventTypeEnt {
          * @param projectId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowChangedEventTypeEntBuilder setProjectId(java.util.UUID projectId);
+        WorkflowChangedEventTypeEntBuilder setProjectId(String projectId);
         
         /**
          * The top-level (root) or sub-workflow to get the change-events for.
