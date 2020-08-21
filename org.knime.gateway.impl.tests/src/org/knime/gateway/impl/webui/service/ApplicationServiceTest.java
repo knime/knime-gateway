@@ -43,34 +43,55 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Aug 21, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.service;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.junit.Test;
+import org.knime.gateway.impl.webui.AppState;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+
 /**
- * Represents the state of the Web UI Application which is, e.g., persisted in the back-end.
- *
- * Maybe to be moved into knime.core eventually.
+ * Tests for the {@link DefaultApplicationService}-implementation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface AppState {
+public class ApplicationServiceTest extends GatewayServiceTest {
 
     /**
-     * List of ids of the loaded workflow projects.
-     *
-     * @return id list
+     * New test.
      */
-    List<String> getLoadedWorkflowProjectIds();
+    public ApplicationServiceTest() {
+        super("applicationservice");
+    }
 
     /**
-     * List of ids of the active workflow projects (e.g. those that are visible in an opened tab).
+     * Test to get the app state.
      *
-     * @return id list
+     * @throws Exception
      */
-    List<String> getActiveWorkflowProjectIds();
+    @Test
+    public void testGetAppState() throws Exception {
+        String workflowProjectId = "the_workflow_project_id";
+        loadWorkflow(TestWorkflowCollection.GENERAL, workflowProjectId);
+        DefaultApplicationService appService = DefaultApplicationService.getInstance();
+        cr(appService.getState(), "empty_appstate");
 
+        appService.updateAppState(new AppState() {
+
+            @Override
+            public List<String> getLoadedWorkflowProjectIds() {
+                return Collections.singletonList(workflowProjectId);
+            }
+
+            @Override
+            public List<String> getActiveWorkflowProjectIds() {
+                return Collections.singletonList(workflowProjectId);
+            }
+
+        });
+        cr(appService.getState(), "appstate");
+    }
 }

@@ -131,13 +131,33 @@ public class GatewayServiceTest {
     protected Pair<UUID, WorkflowManager> loadWorkflow(final TestWorkflow wf) throws IOException,
         InvalidSettingsException, CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
         UUID uuid = UUID.randomUUID();
+        return Pair.create(uuid, loadWorkflow(wf, uuid.toString()));
+    }
+
+
+    /**
+     * Helper to load workflows for testing.
+     *
+     * @param wf the test workflow to load
+     * @param workflowProjectId a custom workflow project id of the loaded workflow
+     * @return the workflow id (to be provided to the default service implementations which in turn access the workflow
+     *         via the {@link WorkflowProjectManager}) and the workflow manager instance.
+     * @throws IOException
+     * @throws InvalidSettingsException
+     * @throws CanceledExecutionException
+     * @throws UnsupportedWorkflowVersionException
+     * @throws LockFailedException
+     */
+    protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String workflowProjectId) throws IOException,
+        InvalidSettingsException, CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
         WorkflowProject workflowProject = mock(WorkflowProject.class);
-        WorkflowProjectManager.addWorkflowProject(uuid.toString(), workflowProject);
+        WorkflowProjectManager.addWorkflowProject(workflowProjectId, workflowProject);
         WorkflowManager wfm = GatewayServiceTestHelper.loadWorkflow(wf.getUrlFolder());
         m_loadedWorkflows.add(wfm);
         when(workflowProject.openProject()).thenReturn(wfm);
-        when(workflowProject.getID()).thenReturn(uuid.toString());
-        return Pair.create(uuid, wfm);
+        when(workflowProject.getID()).thenReturn(workflowProjectId);
+        when(workflowProject.getName()).thenReturn(wfm.getName());
+        return wfm;
     }
 
     /**
