@@ -42,37 +42,27 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.api.webui.service;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Operations and infos on the general application.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+public interface ApplicationService extends GatewayService {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Provides information on the global application state, such as opened workflows etc.
+     *
+     *
+     * @return the result
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
-    }
+    AppStateEnt getState() ;
+        
 }

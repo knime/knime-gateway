@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,39 +41,36 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Aug 21, 2020 (hornm): created
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Represents the state of the Web UI Application which is, e.g., persisted in the back-end.
+ *
+ * Maybe to be moved moved into knime.core eventually.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+public interface AppState {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * List of ids of the loaded workflow projects.
+     *
+     * @return id list
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
-    }
+    List<String> getLoadedWorkflowProjectIds();
+
+    /**
+     * List of ids of the active workflow projects (e.g. those that are visible in an opened tab).
+     *
+     * @return id list
+     */
+    List<String> getActiveWorkflowProjectIds();
+
 }

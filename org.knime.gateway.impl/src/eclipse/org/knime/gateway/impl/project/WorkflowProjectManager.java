@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.WorkflowManager;
 
 /**

@@ -42,37 +42,69 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
- *
+ * Represents the global application state. 
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+public interface AppStateEnt extends GatewayEntity {
 
-    private ListServices() {
-        //utility class
-    }
+
+  /**
+   * List of all loaded workflows.
+   * @return workflowProjects 
+   **/
+  public java.util.List<WorkflowProjectEnt> getWorkflowProjects();
+
+  /**
+   * Get activeWorkflows
+   * @return activeWorkflows 
+   **/
+  public java.util.List<WorkflowSnapshotEnt> getActiveWorkflows();
+
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * The builder for the entity.
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public interface AppStateEntBuilder extends GatewayEntityBuilder<AppStateEnt> {
+
+        /**
+         * List of all loaded workflows.
+         * 
+         * @param workflowProjects the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setWorkflowProjects(java.util.List<WorkflowProjectEnt> workflowProjects);
+        
+        /**
+   		 * Set activeWorkflows
+         * 
+         * @param activeWorkflows the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setActiveWorkflows(java.util.List<WorkflowSnapshotEnt> activeWorkflows);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        AppStateEnt build();
+    
     }
+
 }

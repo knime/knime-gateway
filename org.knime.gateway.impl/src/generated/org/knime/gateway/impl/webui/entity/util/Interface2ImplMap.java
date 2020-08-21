@@ -46,6 +46,8 @@ package org.knime.gateway.impl.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
+import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
@@ -86,6 +88,8 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -114,6 +118,9 @@ public class Interface2ImplMap {
     public static <B extends GatewayEntityBuilder> B create(final Class<B> clazz) {
         if(clazz == AnnotationEntBuilder.class) {
             return (B)new DefaultAnnotationEnt.DefaultAnnotationEntBuilder();
+        }        
+        if(clazz == AppStateEntBuilder.class) {
+            return (B)new DefaultAppStateEnt.DefaultAppStateEntBuilder();
         }        
         if(clazz == BoundsEntBuilder.class) {
             return (B)new DefaultBoundsEnt.DefaultBoundsEntBuilder();
@@ -174,6 +181,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowNodeEntBuilder.class) {
             return (B)new DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder();
+        }        
+        if(clazz == WorkflowProjectEntBuilder.class) {
+            return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return (B)new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();

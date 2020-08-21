@@ -44,9 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -56,12 +53,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -73,47 +67,25 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeEnt.class)
+    defaultImpl = DefaultWorkflowProjectEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeEnt.class, name="Node")
-,
-  @Type(value = DefaultWorkflowNodeEnt.class, name = "WorkflowNode")
-,
-  @Type(value = DefaultComponentNodeEnt.class, name = "ComponentNode")
-,
-  @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
+    @Type(value = DefaultWorkflowProjectEnt.class, name="WorkflowProject")
 })
-@JsonDeserialize(builder=DefaultNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultWorkflowProjectEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeEntMixIn extends NodeEnt {
+public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
+    @JsonProperty("projectId")
+    public String getProjectId();
     
     @Override
-    @JsonProperty("inPorts")
-    public java.util.List<NodePortEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<NodePortEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
+    @JsonProperty("name")
+    public String getName();
     
 
     /**
@@ -125,45 +97,23 @@ public interface NodeEntMixIn extends NodeEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeEntBuilder.class)
+        defaultImpl = DefaultWorkflowProjectEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
-        ,
-      @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name = "WorkflowNode")
-        ,
-      @Type(value = DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder.class, name = "ComponentNode")
-        ,
-      @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
+        @Type(value = DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder.class, name="WorkflowProject")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeEntMixInBuilder extends NodeEntBuilder {
+    public static interface WorkflowProjectEntMixInBuilder extends WorkflowProjectEntBuilder {
     
         @Override
-        public NodeEntMixIn build();
+        public WorkflowProjectEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public NodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        @JsonProperty("projectId")
+        public WorkflowProjectEntMixInBuilder setProjectId(final String projectId);
         
         @Override
-        @JsonProperty("inPorts")
-        public NodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public NodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
-        
-        @Override
-        @JsonProperty("annotation")
-        public NodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
-        @Override
-        @JsonProperty("position")
-        public NodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public NodeEntMixInBuilder setKind(final KindEnum kind);
+        @JsonProperty("name")
+        public WorkflowProjectEntMixInBuilder setName(final String name);
         
     }
 

@@ -42,37 +42,42 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.entity.AppStateEnt;
+
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
+import com.googlecode.jsonrpc4j.JsonRpcService;
+
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 import org.knime.gateway.api.webui.service.ApplicationService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+@JsonRpcService(value = "ApplicationService")
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
+public class JsonRpcApplicationServiceWrapper implements ApplicationService {
 
-    private ListServices() {
-        //utility class
+    private final ApplicationService m_service;
+    
+    public JsonRpcApplicationServiceWrapper(ApplicationService service) {
+        m_service = service;
     }
 
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+	/**
+     * {@inheritDoc}
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    @Override
+    @JsonRpcMethod(value = "getState")
+    public AppStateEnt getState()  {
+        return m_service.getState();    
     }
+
 }

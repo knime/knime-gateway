@@ -42,37 +42,67 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
- *
+ * Represents an entire workflow (including sub-workflows etc.) loaded in memory.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+public interface WorkflowProjectEnt extends GatewayEntity {
 
-    private ListServices() {
-        //utility class
-    }
+
+  /**
+   * Get projectId
+   * @return projectId , never <code>null</code>
+   **/
+  public String getProjectId();
+
+  /**
+   * Get name
+   * @return name , never <code>null</code>
+   **/
+  public String getName();
+
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * The builder for the entity.
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public interface WorkflowProjectEntBuilder extends GatewayEntityBuilder<WorkflowProjectEnt> {
+
+        /**
+   		 * Set projectId
+         * 
+         * @param projectId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowProjectEntBuilder setProjectId(String projectId);
+        
+        /**
+   		 * Set name
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowProjectEntBuilder setName(String name);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        WorkflowProjectEnt build();
+    
     }
+
 }

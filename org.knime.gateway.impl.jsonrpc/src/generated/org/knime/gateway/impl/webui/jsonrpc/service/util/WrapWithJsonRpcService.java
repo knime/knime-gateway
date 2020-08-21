@@ -49,6 +49,8 @@ import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcEventServiceWrapper;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcWorkflowServiceWrapper;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcApplicationServiceWrapper;
+import org.knime.gateway.api.webui.service.ApplicationService;
 
 import org.knime.gateway.api.service.GatewayService;
 
@@ -82,6 +84,9 @@ public class WrapWithJsonRpcService {
             }
             if(serviceInterface == WorkflowService.class) {
                 return JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+            }
+            if(serviceInterface == ApplicationService.class) {
+                return JsonRpcApplicationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException ex) {

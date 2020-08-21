@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
+import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
@@ -65,6 +66,7 @@ import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowNodeEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
 
@@ -91,6 +93,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AnnotationEntMixIn.class);
+        res.add(AppStateEntMixIn.class);
         res.add(BoundsEntMixIn.class);
         res.add(ComponentNodeEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
@@ -111,6 +114,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
         res.add(WorkflowNodeEntMixIn.class);
+        res.add(WorkflowProjectEntMixIn.class);
         res.add(WorkflowSnapshotEntMixIn.class);
         res.add(XYEntMixIn.class);
         return res;
@@ -123,6 +127,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
+        res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);
         res.add(ComponentNodeEntMixIn.ComponentNodeEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
@@ -143,6 +148,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEntMixIn.WorkflowChangedEventTypeEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
         res.add(WorkflowNodeEntMixIn.WorkflowNodeEntMixInBuilder.class);
+        res.add(WorkflowProjectEntMixIn.WorkflowProjectEntMixInBuilder.class);
         res.add(WorkflowSnapshotEntMixIn.WorkflowSnapshotEntMixInBuilder.class);
         res.add(XYEntMixIn.XYEntMixInBuilder.class);
         return res;

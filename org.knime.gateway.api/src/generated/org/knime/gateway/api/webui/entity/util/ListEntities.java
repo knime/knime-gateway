@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
@@ -65,6 +66,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -92,6 +94,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AnnotationEnt.class);
+        res.add(AppStateEnt.class);
         res.add(BoundsEnt.class);
         res.add(ComponentNodeEnt.class);
         res.add(ConnectionEnt.class);
@@ -112,6 +115,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEnt.class);
         res.add(WorkflowEnt.class);
         res.add(WorkflowNodeEnt.class);
+        res.add(WorkflowProjectEnt.class);
         res.add(WorkflowSnapshotEnt.class);
         res.add(XYEnt.class);
         return res;
@@ -124,6 +128,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
+        res.add(AppStateEnt.AppStateEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
@@ -144,6 +149,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
         res.add(WorkflowNodeEnt.WorkflowNodeEntBuilder.class);
+        res.add(WorkflowProjectEnt.WorkflowProjectEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);
         res.add(XYEnt.XYEntBuilder.class);
         return res;
