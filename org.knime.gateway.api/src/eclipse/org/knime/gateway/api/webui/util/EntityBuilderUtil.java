@@ -132,7 +132,7 @@ public final class EntityBuilderUtil {
         }
         Map<String, ConnectionEnt> connections =
             wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
-                Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c));
+                Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
         Map<String, WorkflowAnnotationEnt> annotations =
             wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
                 .collect(Collectors.toMap(wa -> new AnnotationIDEnt(wa.getFirst()).toString(), Pair::getSecond));
@@ -440,8 +440,8 @@ public final class EntityBuilderUtil {
      * Otherwise an exception is thrown.
      */
     private static void ensureBundleURL(final Class<? extends NodeFactory> factoryClass, final URL url) {
-        String bundleRoot = FrameworkUtil.getBundle(factoryClass).getResource("/").toString();
-        if (!url.toString().startsWith(bundleRoot.substring(0, bundleRoot.length() - 1))) {
+        String bundleRoot = FrameworkUtil.getBundle(factoryClass).getResource("/").toExternalForm();
+        if (!url.toExternalForm().startsWith(bundleRoot.substring(0, bundleRoot.length() - 1))) {
             throw new IllegalStateException("An icon URL references a file outside of the node's bundle. Icon URL: "
                 + url + "; bundle root URL: " + bundleRoot);
         }
