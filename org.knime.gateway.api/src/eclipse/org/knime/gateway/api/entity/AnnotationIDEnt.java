@@ -89,7 +89,7 @@ public final class AnnotationIDEnt {
     public AnnotationIDEnt(final String s) {
         String[] split = s.split("_");
         m_nodeId = new NodeIDEnt(split[0]);
-        m_index = Integer.valueOf(split[1]);
+        m_index = Integer.parseInt(split[1]);
     }
 
     @Override

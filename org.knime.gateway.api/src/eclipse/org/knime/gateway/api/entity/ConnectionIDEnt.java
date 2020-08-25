@@ -86,7 +86,7 @@ public final class ConnectionIDEnt {
     public ConnectionIDEnt(final String s) {
         String[] split = s.split("_");
         m_destNodeID = new NodeIDEnt(split[0]);
-        m_destPortIdx = Integer.valueOf(split[1]);
+        m_destPortIdx = Integer.parseInt(split[1]);
     }
 
     /**

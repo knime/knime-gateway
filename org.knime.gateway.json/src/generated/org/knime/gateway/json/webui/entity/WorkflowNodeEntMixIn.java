@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -49,8 +48,6 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
     defaultImpl = DefaultWorkflowNodeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultWorkflowNodeEnt.class, name="WorkflowNode")
-,
-  @Type(value = DefaultComponentNodeEnt.class, name = "ComponentNode")
 })
 @JsonDeserialize(builder=DefaultWorkflowNodeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -101,8 +98,6 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         defaultImpl = DefaultWorkflowNodeEntBuilder.class)
     @JsonSubTypes({
         @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name="WorkflowNode")
-        ,
-      @Type(value = DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder.class, name = "ComponentNode")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowNodeEntMixInBuilder extends WorkflowNodeEntBuilder {

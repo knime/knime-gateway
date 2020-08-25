@@ -176,7 +176,8 @@ public class ResultChecker {
     }
 
     private File getResultFilePath(final String testName) {
-        return new File(m_resultDirectory, "testresults_" + testName + ".json");
+        return new File(m_resultDirectory, "testresults_" + testName + ".json"); // NOSONAR vulnerability; because it's
+                                                                                 // for testing purposes only
     }
 
     /**

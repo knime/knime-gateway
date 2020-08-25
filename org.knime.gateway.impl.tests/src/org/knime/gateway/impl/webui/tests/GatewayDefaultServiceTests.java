@@ -135,9 +135,10 @@ public class GatewayDefaultServiceTests {
 
     /**
      * Removes the project where necessary.
+     * @throws InterruptedException
      */
     @After
-    public void disposeWorkflows() {
+    public void disposeWorkflows() throws InterruptedException {
         m_workflowLoader.disposeWorkflows();
     }
 

@@ -106,12 +106,14 @@ public class LocalWorkflowLoader implements WorkflowLoader {
 
     /**
      * Disposes all loaded workflows.
+     *
+     * @throws InterruptedException
      */
-    public void disposeWorkflows() {
-        m_loadedWorkflows.forEach(uuid -> {
+    public void disposeWorkflows() throws InterruptedException {
+        for (UUID uuid : m_loadedWorkflows) {
             WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(uuid).get();
             GatewayServiceTestHelper.cancelAndCloseLoadedWorkflow(wfm);
             WorkflowProjectManager.removeWorkflowProject(uuid);
-        });
+        }
     }
 }

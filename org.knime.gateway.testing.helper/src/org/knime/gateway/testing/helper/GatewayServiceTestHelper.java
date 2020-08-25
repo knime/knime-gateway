@@ -167,7 +167,7 @@ public class GatewayServiceTestHelper {
      */
     public static File resolveToFile(final String path, final Class<?> clazz) throws IOException {
         URL url = FileLocator.toFileURL(resolveToURL(path, clazz));
-        return new File(url.getPath());
+        return new File(url.getPath()); // NOSONAR vulnerability, because it's for testing purposes only
     }
 
     /**
@@ -238,15 +238,12 @@ public class GatewayServiceTestHelper {
      * Cancels and closes the passed workflow manager.
      *
      * @param wfm workflow manager to cancel and close
+     * @throws InterruptedException
      */
-    public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) {
+    public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
         wfm.getParent().cancelExecution(wfm);
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
-            try {
-                wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         }
         wfm.getParent().removeProject(wfm.getID());
     }

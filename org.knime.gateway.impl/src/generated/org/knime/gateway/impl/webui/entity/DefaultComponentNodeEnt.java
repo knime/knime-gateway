@@ -28,7 +28,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 
@@ -38,7 +38,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultComponentNodeEnt extends DefaultWorkflowNodeEnt implements ComponentNodeEnt {
+public class DefaultComponentNodeEnt extends DefaultNodeEnt implements ComponentNodeEnt {
 
   protected String m_name;
   protected TypeEnum m_type;

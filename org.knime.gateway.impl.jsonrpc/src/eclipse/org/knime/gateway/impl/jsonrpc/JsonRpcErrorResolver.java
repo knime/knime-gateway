@@ -70,7 +70,7 @@ public class JsonRpcErrorResolver implements ErrorResolver {
     public JsonError resolveError(final Throwable thrownException, final Method method,
         final List<JsonNode> arguments) {
         JsonRpcError resolver = getResolverForException(thrownException, method);
-        if (notFoundResolver(resolver)) {
+        if (resolver == null) {
             return null;
         }
 
@@ -88,10 +88,6 @@ public class JsonRpcErrorResolver implements ErrorResolver {
             }
         }
         return null;
-    }
-
-    private boolean notFoundResolver(final JsonRpcError resolver) {
-        return resolver == null;
     }
 
     private boolean hasErrorMessage(final JsonRpcError em) {

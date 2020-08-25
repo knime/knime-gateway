@@ -99,7 +99,7 @@ public final class NodeIDEnt {
             String[] split = s.substring(index + 1).split(":");
             int[] ids = new int[split.length];
             for (int i = 0; i < split.length; i++) {
-                ids[i] = Integer.valueOf(split[i]);
+                ids[i] = Integer.parseInt(split[i]);
             }
             return ids;
         } else {
@@ -155,11 +155,11 @@ public final class NodeIDEnt {
      */
     @Override
     public String toString() {
-        String id = ROOT_MARKER;
+        StringBuilder sb = new StringBuilder(ROOT_MARKER);
         for (int i : m_ids) {
-            id += ":" + i;
+            sb.append(":" + i);
         }
-        return id;
+        return sb.toString();
     }
 
     private String toStringWithoutRoot() {

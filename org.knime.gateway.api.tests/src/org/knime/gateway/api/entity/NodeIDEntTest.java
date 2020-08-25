@@ -50,7 +50,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
  * Tests {@link NodeIDEnt}.
@@ -75,7 +74,7 @@ public class NodeIDEntTest {
         assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4")), is(NodeID.fromString("3:4")));
 
         //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4")), is(new NodeIDEnt(4)));
+        assertThat(new NodeIDEnt(NodeID.fromString("3:4")), is(new NodeIDEnt(4))); // NOSONAR
         assertThat(new NodeIDEnt(new NodeID(2)), is(NodeIDEnt.getRootID()));
     }
 

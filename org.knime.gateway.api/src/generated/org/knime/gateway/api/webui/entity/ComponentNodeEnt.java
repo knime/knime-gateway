@@ -19,9 +19,9 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -34,7 +34,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeEnt extends WorkflowNodeEnt {
+public interface ComponentNodeEnt extends NodeEnt {
 
   /**
    * The type of the component.
@@ -68,7 +68,7 @@ public interface ComponentNodeEnt extends WorkflowNodeEnt {
 
   /**
    * Get name
-   * @return name 
+   * @return name , never <code>null</code>
    **/
   public String getName();
 
