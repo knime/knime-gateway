@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="FILENAME_Internals">
+<entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+<entry key="EnabledStatus" type="xboolean" value="true"/>
+</config>
+<entry key="FILENAME" type="xstring" value="/Users/bichmann/Projects/Replicate_Workflow/test-datasets/GRIAFFLKY_snpeff.vcf"/>
+<config key="FILE_EXTENSION_Internals">
+<entry key="SettingsModelID" type="xstring" value="SMN_string_disact"/>
+<entry key="EnabledStatus" type="xboolean" value="true"/>
+</config>
+<entry key="FILE_EXTENSION" type="xstring" value=""/>
+<entry key="FILE_EXTENSION_BOOL" type="xboolean" value="false"/>
+</config>
+<config key="variables">
+<config key="FILENAME">
+<entry key="used_variable" type="xstring" isnull="true" value=""/>
+<entry key="exposed_variable" type="xstring" value="input_vcf"/>
+</config>
+</config>
+<config key="nodeAnnotation">
+<entry key="text" type="xstring" value="Missing"/>
+<entry key="bgcolor" type="xint" value="16777215"/>
+<entry key="x-coordinate" type="xint" value="593"/>
+<entry key="y-coordinate" type="xint" value="1019"/>
+<entry key="width" type="xint" value="134"/>
+<entry key="height" type="xint" value="19"/>
+<entry key="alignment" type="xstring" value="CENTER"/>
+<entry key="borderSize" type="xint" value="0"/>
+<entry key="borderColor" type="xint" value="16777215"/>
+<entry key="defFontSize" type="xint" value="13"/>
+<entry key="annotation-version" type="xint" value="20151123"/>
+<config key="styles"/>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="IDLE"/>
+<config key="nodecontainer_message">
+<entry key="type" type="xstring" value="WARNING"/>
+<entry key="message" type="xstring" value="Node can't be executed - Node &quot;Input File&quot; not available from extension &quot;Generic Workflow Nodes for KNIME&quot; (provided by &quot;Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team&quot;; plugin &quot;missing.genericworkflownodes.knime&quot; is not installed)"/>
+</config>
+<entry key="factory" type="xstring" value="missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
+<entry key="node-name" type="xstring" value="Input File"/>
+<entry key="node-bundle-name" type="xstring" value="GenericKnimeNodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="missing.genericworkflownodes.knime"/>
+<entry key="node-bundle-vendor" type="xstring" value="Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team"/>
+<entry key="node-bundle-version" type="xstring" value="1.0.0.202001261443"/>
+<entry key="node-feature-name" type="xstring" value="Generic Workflow Nodes for KNIME"/>
+<entry key="node-feature-symbolic-name" type="xstring" value="missing.genericworkflownodes.knime.feature.feature.group"/>
+<entry key="node-feature-vendor" type="xstring" value="Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team"/>
+<entry key="node-feature-version" type="xstring" value="1.0.0.202001261443"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="MISSING Input File"/>
+<entry key="hasContent" type="xboolean" value="false"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports"/>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+</config>
+</config>

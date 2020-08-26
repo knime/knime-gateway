@@ -103,6 +103,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     public String getBorderColor();
     
     @Override
+    @JsonProperty("defaultFontSize")
+    public Integer getDefaultFontSize();
+    
+    @Override
     @JsonProperty("styleRanges")
     public java.util.List<StyleRangeEnt> getStyleRanges();
     
@@ -149,6 +153,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         @Override
         @JsonProperty("borderColor")
         public WorkflowAnnotationEntMixInBuilder setBorderColor(final String borderColor);
+        
+        @Override
+        @JsonProperty("defaultFontSize")
+        public WorkflowAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
         
         @Override
         @JsonProperty("styleRanges")

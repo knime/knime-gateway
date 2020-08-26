@@ -75,7 +75,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
     @Test
     public void testGetAppState() throws Exception {
         String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.GENERAL, workflowProjectId);
+        loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, workflowProjectId);
         DefaultApplicationService appService = DefaultApplicationService.getInstance();
         cr(appService.getState(), "empty_appstate");
 

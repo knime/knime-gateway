@@ -62,7 +62,6 @@ import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry.LoadResultEntryType;
 import org.knime.core.node.workflow.WorkflowPersistor.WorkflowLoadResult;
 import org.knime.core.util.LoadVersion;
 import org.knime.core.util.LockFailedException;
@@ -224,11 +223,6 @@ public class GatewayServiceTestHelper {
         };
 
         WorkflowLoadResult loadRes = WorkflowManager.loadProject(workflowDir, new ExecutionMonitor(), loadHelper);
-        if ((loadRes.getType() == LoadResultEntryType.Error)
-            || ((loadRes.getType() == LoadResultEntryType.DataLoadError) && loadRes.getGUIMustReportDataLoadErrors())) {
-            throw new RuntimeException(loadRes.getFilteredError("", LoadResultEntryType.Error));
-        }
-
         WorkflowManager wfm = loadRes.getWorkflowManager();
 
         return wfm;

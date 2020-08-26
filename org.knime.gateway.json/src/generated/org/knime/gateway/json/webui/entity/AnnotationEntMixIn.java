@@ -107,6 +107,10 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     public String getBorderColor();
     
     @Override
+    @JsonProperty("defaultFontSize")
+    public Integer getDefaultFontSize();
+    
+    @Override
     @JsonProperty("styleRanges")
     public java.util.List<StyleRangeEnt> getStyleRanges();
     
@@ -153,6 +157,10 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
         @Override
         @JsonProperty("borderColor")
         public AnnotationEntMixInBuilder setBorderColor(final String borderColor);
+        
+        @Override
+        @JsonProperty("defaultFontSize")
+        public AnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
         
         @Override
         @JsonProperty("styleRanges")

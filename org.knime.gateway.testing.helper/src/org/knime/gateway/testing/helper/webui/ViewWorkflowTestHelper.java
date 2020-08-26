@@ -78,7 +78,7 @@ public class ViewWorkflowTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetWorkflow() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL);
+        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // check un-executed
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();

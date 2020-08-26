@@ -82,6 +82,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
     m_textAlign = immutable(builder.m_textAlign);
     m_borderWidth = immutable(builder.m_borderWidth);
     m_borderColor = immutable(builder.m_borderColor);
+    m_defaultFontSize = immutable(builder.m_defaultFontSize);
     if(builder.m_styleRanges == null) {
         throw new IllegalArgumentException("styleRanges must not be null.");
     }
@@ -107,7 +108,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
             return false;
         }
         DefaultWorkflowAnnotationEnt ent = (DefaultWorkflowAnnotationEnt)o;
-        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_styleRanges, ent.m_styleRanges) && Objects.equals(m_bounds, ent.m_bounds);
+        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_styleRanges, ent.m_styleRanges) && Objects.equals(m_bounds, ent.m_bounds);
     }
 
 
@@ -123,6 +124,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
                .append(m_textAlign)
                .append(m_borderWidth)
                .append(m_borderColor)
+               .append(m_defaultFontSize)
                .append(m_styleRanges)
                .append(m_bounds)
                .toHashCode();
@@ -147,6 +149,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         private TextAlignEnum m_textAlign;
         private Integer m_borderWidth;
         private String m_borderColor;
+        private Integer m_defaultFontSize;
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
         private BoundsEnt m_bounds;
 
@@ -177,6 +180,12 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBorderColor(String borderColor) {
              m_borderColor = borderColor;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
+             m_defaultFontSize = defaultFontSize;
              return this;
         }
 

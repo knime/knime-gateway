@@ -80,6 +80,7 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
     m_textAlign = immutable(builder.m_textAlign);
     m_borderWidth = immutable(builder.m_borderWidth);
     m_borderColor = immutable(builder.m_borderColor);
+    m_defaultFontSize = immutable(builder.m_defaultFontSize);
     if(builder.m_styleRanges == null) {
         throw new IllegalArgumentException("styleRanges must not be null.");
     }
@@ -101,7 +102,7 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
             return false;
         }
         DefaultNodeAnnotationEnt ent = (DefaultNodeAnnotationEnt)o;
-        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_styleRanges, ent.m_styleRanges);
+        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_styleRanges, ent.m_styleRanges);
     }
 
 
@@ -117,6 +118,7 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
                .append(m_textAlign)
                .append(m_borderWidth)
                .append(m_borderColor)
+               .append(m_defaultFontSize)
                .append(m_styleRanges)
                .toHashCode();
    }
@@ -135,6 +137,7 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
         private TextAlignEnum m_textAlign;
         private Integer m_borderWidth;
         private String m_borderColor;
+        private Integer m_defaultFontSize;
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
 
         @Override
@@ -164,6 +167,12 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
         @Override
         public DefaultNodeAnnotationEntBuilder setBorderColor(String borderColor) {
              m_borderColor = borderColor;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
+             m_defaultFontSize = defaultFontSize;
              return this;
         }
 

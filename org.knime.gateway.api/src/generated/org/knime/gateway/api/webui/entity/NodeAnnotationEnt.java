@@ -107,6 +107,14 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setBorderColor(String borderColor);
         
         /**
+         * The default font size parts of the text where no style range is defined.
+         * 
+         * @param defaultFontSize the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
+        
+        /**
          * Defines ranges of different styles within the annotation.
          * 
          * @param styleRanges the property value, NOT <code>null</code>! 

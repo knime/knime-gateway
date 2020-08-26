@@ -114,6 +114,14 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         WorkflowAnnotationEntBuilder setBorderColor(String borderColor);
         
         /**
+         * The default font size parts of the text where no style range is defined.
+         * 
+         * @param defaultFontSize the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
+        
+        /**
          * Defines ranges of different styles within the annotation.
          * 
          * @param styleRanges the property value, NOT <code>null</code>! 

@@ -70,7 +70,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   protected java.util.Map<String, NodeEnt> m_nodes;
   protected java.util.Map<String, NodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, ConnectionEnt> m_connections;
-  protected java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations;
+  protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
   
   protected DefaultWorkflowEnt() {
     //for sub-classes
@@ -83,11 +83,29 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   
   private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
     
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
+    }
     m_name = immutable(builder.m_name);
+    if(builder.m_projectId == null) {
+        throw new IllegalArgumentException("projectId must not be null.");
+    }
     m_projectId = immutable(builder.m_projectId);
+    if(builder.m_nodes == null) {
+        throw new IllegalArgumentException("nodes must not be null.");
+    }
     m_nodes = immutable(builder.m_nodes);
+    if(builder.m_nodeTemplates == null) {
+        throw new IllegalArgumentException("nodeTemplates must not be null.");
+    }
     m_nodeTemplates = immutable(builder.m_nodeTemplates);
+    if(builder.m_connections == null) {
+        throw new IllegalArgumentException("connections must not be null.");
+    }
     m_connections = immutable(builder.m_connections);
+    if(builder.m_workflowAnnotations == null) {
+        throw new IllegalArgumentException("workflowAnnotations must not be null.");
+    }
     m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
   }
   
@@ -154,7 +172,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   }
     
   @Override
-  public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations() {
+  public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
         return m_workflowAnnotations;
   }
     
@@ -170,40 +188,58 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
-        private java.util.Map<String, WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.HashMap<>();
+        private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
 
         @Override
         public DefaultWorkflowEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
+             }
              m_name = name;
              return this;
         }
 
         @Override
         public DefaultWorkflowEntBuilder setProjectId(String projectId) {
+             if(projectId == null) {
+                 throw new IllegalArgumentException("projectId must not be null.");
+             }
              m_projectId = projectId;
              return this;
         }
 
         @Override
         public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
+             if(nodes == null) {
+                 throw new IllegalArgumentException("nodes must not be null.");
+             }
              m_nodes = nodes;
              return this;
         }
 
         @Override
         public DefaultWorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates) {
+             if(nodeTemplates == null) {
+                 throw new IllegalArgumentException("nodeTemplates must not be null.");
+             }
              m_nodeTemplates = nodeTemplates;
              return this;
         }
 
         @Override
         public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
+             if(connections == null) {
+                 throw new IllegalArgumentException("connections must not be null.");
+             }
              m_connections = connections;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations) {
+        public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations) {
+             if(workflowAnnotations == null) {
+                 throw new IllegalArgumentException("workflowAnnotations must not be null.");
+             }
              m_workflowAnnotations = workflowAnnotations;
              return this;
         }

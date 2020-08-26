@@ -111,7 +111,7 @@ public class EventServiceTest extends GatewayServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testWorkflowChangedEvents() throws Exception {
-        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL);
+        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
         DefaultEventService es = DefaultEventService.getInstance();
@@ -125,7 +125,6 @@ public class EventServiceTest extends GatewayServiceTest {
         es.addEventListener(eventType);
 
         // add event consumer to receive and check the change events
-        @SuppressWarnings("unchecked")
         BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
         es.addEventConsumer(eventConsumerMock);
 
@@ -149,7 +148,7 @@ public class EventServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testWorkflowChangedEventsRemovedListeners() throws Exception {
-        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL);
+        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
         DefaultEventService es = DefaultEventService.getInstance();
@@ -182,7 +181,8 @@ public class EventServiceTest extends GatewayServiceTest {
             newTest(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed_1", "node_executed_2"),
             newTest(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(14), 1)),
                 "connection_removed"),
-            newTest(w -> w.removeNode(w.getID().createChild(18)), "node_removed"), newTest(w -> {
+            newTest(w -> w.removeNode(w.getID().createChild(18)), "node_removed"),
+            newTest(w -> {
                 try {
                     NodeID id = w.createAndAddNode(NodeFactoryExtensionManager.getInstance()
                         .createNodeFactory("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory")
@@ -201,16 +201,19 @@ public class EventServiceTest extends GatewayServiceTest {
             newTest(w -> {
                 AnnotationData newAnno = new AnnotationData();
                 w.getWorkflowAnnotations().iterator().next().copyFrom(newAnno, false);
-            }, "workflow_annotation_changed"), newTest(w -> {
+            }, "workflow_annotation_changed"),
+            newTest(w -> {
                 AnnotationData newAnno = new AnnotationData();
                 newAnno.setText("new anno text");
                 w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
-            }, "node_annotation_added"), newTest(w -> {
+            }, "node_annotation_added"),
+            newTest(w -> {
                 AnnotationData newAnno = new AnnotationData();
                 newAnno.setText("yet another text");
                 w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
-            }, "node_annotation_changed"), newTest(w -> {
-                NativeNodeContainer oldNC = (NativeNodeContainer)w.getNodeContainer(w.getID().createChild(28));
+            }, "node_annotation_changed"),
+            newTest(w -> {
+                NativeNodeContainer oldNC = (NativeNodeContainer)w.getNodeContainer(w.getID().createChild(184));
                 ModifiableNodeCreationConfiguration creationConfig = oldNC.getNode().getCopyOfCreationConfig().get();
                 creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
                 creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);

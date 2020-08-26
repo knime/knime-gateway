@@ -12,9 +12,9 @@ import java.net.URL;
 public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.TestWorkflow {
 
     /**
-     * The main workflow the tests are based on.
+     * The main workflow the web-ui tests are based on.
      */
-    GENERAL("/files/Test Gateway Workflow.knwf", "workflow");
+    GENERAL_WEB_UI("/files/Test Gateway Workflow.knwf", "workflow");
 
     private final String m_url;
 

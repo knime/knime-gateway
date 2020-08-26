@@ -57,15 +57,13 @@ import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.ConfigUtils;
-import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
@@ -108,6 +106,15 @@ import org.osgi.framework.FrameworkUtil;
  */
 public final class EntityBuilderUtil {
 
+    /*
+     * The node position in the java-ui refers to the upper left corner of the 'node figure' which also includes
+     * the (not always visble) implicit flow variables ports. I.e. the position does NOT match with the upper left
+     * corner of the node background image. However, this is used as reference point in the web-ui. Thus, we need
+     * to correct the position in y direction by some pixels.
+     * (the value is chosen according to org.knime.workbench.editor2.figures.AbstractPortFigure.getPortSizeNode())
+     */
+    private static final int NODE_Y_POS_CORRECTION = 9;
+
     private EntityBuilderUtil() {
         //utility class
     }
@@ -136,9 +143,9 @@ public final class EntityBuilderUtil {
             Map<String, ConnectionEnt> connections =
                 wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
                     Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
-            Map<String, WorkflowAnnotationEnt> annotations =
+            List<WorkflowAnnotationEnt> annotations =
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
-                    .collect(Collectors.toMap(wa -> new AnnotationIDEnt(wa.getFirst()).toString(), Pair::getSecond));
+                    .collect(Collectors.toList());
             return builder(WorkflowEntBuilder.class)
                 .setName(wfm.getName())
                 .setNodes(nodes)
@@ -150,8 +157,7 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static Pair<WorkflowAnnotationID, WorkflowAnnotationEnt>
-        buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
+    private static WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
         BoundsEnt bounds = builder(BoundsEntBuilder.class)
                 .setX(wa.getX())
                 .setY(wa.getY())
@@ -172,16 +178,9 @@ public final class EntityBuilderUtil {
                 break;
         }
 
-        List<StyleRangeEnt> styleRanges;
-        if (wa.getStyleRanges().length == 0) {
-            // create one style range covering the entire text with the default font size set
-            styleRanges = Collections.singletonList(builder(StyleRangeEntBuilder.class)
-                .setFontSize(wa.getDefaultFontSize()).setStart(0).setLength(wa.getText().length()).build());
-        } else {
-            styleRanges = Arrays.stream(wa.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt)
-                .collect(Collectors.toList());
-        }
-        return Pair.create(wa.getID(), builder(WorkflowAnnotationEntBuilder.class)
+        List<StyleRangeEnt> styleRanges =
+            Arrays.stream(wa.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt).collect(Collectors.toList());
+        return builder(WorkflowAnnotationEntBuilder.class)
                 .setTextAlign(textAlign)
                 .setBackgroundColor(hexStringColor(wa.getBgColor()))
                 .setBorderColor(hexStringColor(wa.getBorderColor()))
@@ -189,7 +188,8 @@ public final class EntityBuilderUtil {
                 .setBounds(bounds)
                 .setText(wa.getText())
                 .setStyleRanges(styleRanges)
-                .build());
+                .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? wa.getDefaultFontSize() : null)
+                .build();
     }
 
     private static StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {
@@ -243,7 +243,7 @@ public final class EntityBuilderUtil {
                 .setOutPorts(buildNodePortEnts(wm, false))
                 .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))
                 .setInPorts(buildNodePortEnts(wm, true))
-                .setPosition(buildXYEnt(wm.getUIInformation().getBounds()[0], wm.getUIInformation().getBounds()[1]))
+                .setPosition(buildXYEnt(wm.getUIInformation()))
                 .setKind(KindEnum.METANODE).build();
     }
 
@@ -262,7 +262,7 @@ public final class EntityBuilderUtil {
                 .setOutPorts(buildNodePortEnts(nc, false))
                 .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))
                 .setInPorts(buildNodePortEnts(nc, true))
-                .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
+                .setPosition(buildXYEnt(nc.getUIInformation()))
                 .setState(buildNodeExecutionStateEnt(nc))
                 .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))
                 .setKind(KindEnum.COMPONENT).build();
@@ -333,15 +333,8 @@ public final class EntityBuilderUtil {
                 break;
         }
 
-        List<StyleRangeEnt> styleRanges;
-        if (na.getStyleRanges().length == 0) {
-            // create one style range covering the entire text with the default font size set
-            styleRanges = Collections.singletonList(builder(StyleRangeEntBuilder.class)
-                .setFontSize(na.getDefaultFontSize()).setStart(0).setLength(na.getText().length()).build());
-        } else {
-            styleRanges = Arrays.stream(na.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt)
-                .collect(Collectors.toList());
-        }
+        List<StyleRangeEnt> styleRanges =
+            Arrays.stream(na.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt).collect(Collectors.toList());
         return builder(NodeAnnotationEntBuilder.class)
                 .setTextAlign(textAlign)
                 .setBackgroundColor(hexStringColor(na.getBgColor()))
@@ -349,6 +342,7 @@ public final class EntityBuilderUtil {
                 .setBorderWidth(na.getBorderSize())
                 .setText(na.getText())
                 .setStyleRanges(styleRanges)
+                .setDefaultFontSize(na.getDefaultFontSize() > 0 ? na.getDefaultFontSize() : null)
                 .build();
     }
 
@@ -358,7 +352,7 @@ public final class EntityBuilderUtil {
             .setOutPorts(buildNodePortEnts(nc, false))
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))
             .setInPorts(buildNodePortEnts(nc, true))
-            .setPosition(buildXYEnt(nc.getUIInformation().getBounds()[0], nc.getUIInformation().getBounds()[1]))
+            .setPosition(buildXYEnt(nc.getUIInformation()))
             .setKind(KindEnum.NODE)
             .setState(buildNodeExecutionStateEnt(nc))
             .setTemplateId(createTemplateId(nc.getNode().getFactory())).build();
@@ -461,8 +455,9 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static XYEnt buildXYEnt(final int x, final int y) {
-        return builder(XYEntBuilder.class).setX(x).setY(y).build();
+    private static XYEnt buildXYEnt(final NodeUIInformation uiInfo) {
+        int[] bounds = uiInfo.getBounds();
+        return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
     }
 
     private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc) {

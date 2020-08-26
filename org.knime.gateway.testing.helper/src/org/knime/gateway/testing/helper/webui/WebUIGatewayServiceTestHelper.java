@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -118,6 +119,9 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
                 gen.writeString(e.getName());
             }
         });
+
+        pe.addException(NodeExecutionStateEnt.class, "warning",
+            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_WARNING_MESSAGE"));
 
         /**
          * Canonical sorting of the connectedVia-list.

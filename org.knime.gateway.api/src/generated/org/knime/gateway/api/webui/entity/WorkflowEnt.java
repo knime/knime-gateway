@@ -65,39 +65,39 @@ public interface WorkflowEnt extends GatewayEntity {
 
   /**
    * Get name
-   * @return name 
+   * @return name , never <code>null</code>
    **/
   public String getName();
 
   /**
    * The project id if this workflow is the top-level project workflow. Otherwise not given.
-   * @return projectId 
+   * @return projectId , never <code>null</code>
    **/
   public String getProjectId();
 
   /**
    * The node map.
-   * @return nodes 
+   * @return nodes , never <code>null</code>
    **/
   public java.util.Map<String, NodeEnt> getNodes();
 
   /**
    * A map from ids to node templates.
-   * @return nodeTemplates 
+   * @return nodeTemplates , never <code>null</code>
    **/
   public java.util.Map<String, NodeTemplateEnt> getNodeTemplates();
 
   /**
    * The list of connections.
-   * @return connections 
+   * @return connections , never <code>null</code>
    **/
   public java.util.Map<String, ConnectionEnt> getConnections();
 
   /**
-   * List of all workflow annotations.
-   * @return workflowAnnotations 
+   * List of all workflow annotations. The list order determines the z-order. Annotations at the end of the list are rendered on top.
+   * @return workflowAnnotations , never <code>null</code>
    **/
-  public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
+  public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
 
 
     /**
@@ -108,7 +108,7 @@ public interface WorkflowEnt extends GatewayEntity {
         /**
    		 * Set name
          * 
-         * @param name the property value,  
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setName(String name);
@@ -116,7 +116,7 @@ public interface WorkflowEnt extends GatewayEntity {
         /**
          * The project id if this workflow is the top-level project workflow. Otherwise not given.
          * 
-         * @param projectId the property value,  
+         * @param projectId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setProjectId(String projectId);
@@ -124,7 +124,7 @@ public interface WorkflowEnt extends GatewayEntity {
         /**
          * The node map.
          * 
-         * @param nodes the property value,  
+         * @param nodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
@@ -132,7 +132,7 @@ public interface WorkflowEnt extends GatewayEntity {
         /**
          * A map from ids to node templates.
          * 
-         * @param nodeTemplates the property value,  
+         * @param nodeTemplates the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates);
@@ -140,18 +140,18 @@ public interface WorkflowEnt extends GatewayEntity {
         /**
          * The list of connections.
          * 
-         * @param connections the property value,  
+         * @param connections the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
         
         /**
-         * List of all workflow annotations.
+         * List of all workflow annotations. The list order determines the z-order. Annotations at the end of the list are rendered on top.
          * 
-         * @param workflowAnnotations the property value,  
+         * @param workflowAnnotations the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setWorkflowAnnotations(java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
+        WorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
         
         
         /**

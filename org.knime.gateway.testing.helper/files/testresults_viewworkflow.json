@@ -270,6 +270,11 @@
         "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkIwNzVGQUE0NUM3MTFFNUFDNkJBNzc0MkI4RTNBMkQiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkIwNzVGQTk0NUM3MTFFNUFDNkJBNzc0MkI4RTNBMkQiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpiMjZmMjcxNS1kZmZiLTRlYTgtYWJjMi0xZDk4N2YzMzE1NzIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+y0Ox5wAAAI1JREFUeNpiZGBg+M9AAWABEf//k2cGIyMjAxMDhWAYGMBIaSzAADsQs1FiAD5X3AXiZ0h8Qaj6VcSGwSwglgRiYyg/FEqvxuUCELsJi43lUD7I5u/oCfA/DsyApAnmDZDmDnwpGCTagCbmAhVPg9LGMAMYSQjod1D6BxBLkRNT5WhhAUlI5OZEGAAIMACB0S5sgw1IUgAAAABJRU5ErkJggg==",
         "name" : "Table Row to Variable (deprecated)",
         "type" : "Other"
+      },
+      "org.knime.core.node.missing.MissingNodeFactory" : {
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAG7AAABuwE67OPiAAAACXZwQWcAAAAQAAAAEABcxq3DAAACVUlEQVQ4y6WSz0tUYRSGn/Pd795xmiatRdAomWEghX+AbXPlskVJixbCaO4D6R+I1iKiUKt2thBXEgglBCVRtBApiH6ASCPNOHPvOHrvd7/7tRizwTZB7/qc55z3vEecc/yPNMCz0dGp7sHBORUEnpfLoXwf5fuI5x0XOmvJjCEzBhNFtra5OT3+6tVjDVAcGpq7MjKiu33/n6ZWm019emBgEWgDtt+/V1eHh4n29/8qFuCkyVyhwKfVVa7PzKAAvr5+TbO+x36jgQ0Cestl0nyeJAyJwxAplbgwMUEcxxw0GrTqe3xeXwdoA4xAXKuShCGXJifRxSID5TKHnkdWKnHx9m2Cnh76p6ZI6nVMfQ8jHUc0QFKrohLLztoafWNjKK259uBB+5AiOOf4trSEbTQgbmE6U0gBW/0JVthdWCAJQy6Pj6O0bifgHFuPHiEbG4gI+5UmaScgEdh++YKiztMdBOwYw4WxMbyuLgCSWo3m8jKFSoW93V0i7UiOLKjfG+jUoKKIrK+Pofl5DtKUqFKh2WiQBAH9i4u0tOaMCHklxxv8AQjktObS7CxZoUBSq/H25k3e3LtHGseo3l7OPXxIzjl84QRA2oFn1vJjcpL4yxe+37nDjQ8fGF1Z4eP0NK2tLQ7v3ycVwclRDyDOOW5psePFQOUPFedEKCjF+TQl7xyecyQiVH0fk2VURWjmLE/COFtKndeO0Ymp5G2uJBCKYMWRIviiUIAFjLMcAC2XEZ5NyZpijlPo9YO77+Lk6fPI6s4X7lTnO6tIzMCpYOLYwv/oFyCODyf2jBu2AAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA5LTExLTE1VDE3OjAyOjM0LTA3OjAwtueOEgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMC0wMi0yMFQyMzoyNjoyNC0wNzowMC7DUNYAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTAtMDEtMTFUMDk6MjQ6NDYtMDc6MDCPDs7OAAAAZ3RFWHRMaWNlbnNlAGh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzMuMC8gb3IgaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvTEdQTC8yLjEvW488YwAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOS0wMy0xOVQxMDo1Mjo1MS0wNjowMH9o/QYAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAAAE3RFWHRTb3VyY2UAT3h5Z2VuIEljb25z7Biu6AAAACd0RVh0U291cmNlX1VSTABodHRwOi8vd3d3Lm94eWdlbi1pY29ucy5vcmcv7zeqywAAAABJRU5ErkJggg==",
+        "name" : "MISSING Input File",
+        "type" : "Missing"
       }
     },
     "nodes" : {
@@ -304,7 +309,7 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 337
+          "y" : 346
         },
         "state" : {
           "state" : "EXECUTED"
@@ -316,11 +321,8 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 15,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "node annotation",
           "textAlign" : "center"
         },
@@ -354,7 +356,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 337
+          "y" : 346
         },
         "state" : {
           "state" : "EXECUTED"
@@ -393,7 +395,7 @@
         } ],
         "position" : {
           "x" : 684,
-          "y" : 757
+          "y" : 766
         },
         "state" : {
           "state" : "EXECUTED"
@@ -425,7 +427,7 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 197
+          "y" : 206
         },
         "state" : {
           "state" : "EXECUTED"
@@ -437,11 +439,8 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 20,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "a non-executing node",
           "textAlign" : "center"
         },
@@ -474,11 +473,11 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 357
+          "y" : 366
         },
         "state" : {
           "state" : "IDLE",
-          "warning" : "Class column \"Cluster Membership\" not found or incompatible"
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
         },
         "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
       },
@@ -508,19 +507,51 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 257
+          "y" : 266
         }
+      },
+      "root:182" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 13,
+          "styleRanges" : [ ],
+          "text" : "🤷🏻‍♂️ 🤨",
+          "textAlign" : "center"
+        },
+        "id" : "root:182",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 763,
+          "y" : 966
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "templateId" : "org.knime.core.node.missing.MissingNodeFactory"
       },
       "root:20" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 45,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "check for simple port spec\n(distance measure)",
           "textAlign" : "center"
         },
@@ -567,74 +598,20 @@
         } ],
         "position" : {
           "x" : 864,
-          "y" : 757
+          "y" : 766
         },
         "state" : {
           "state" : "EXECUTED"
         },
         "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
       },
-      "root:10" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 37,
-            "start" : 0
-          } ],
-          "text" : "a node created\nvia a node set factory",
-          "textAlign" : "center"
-        },
-        "id" : "root:10",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:10_1 ]",
-          "index" : 1,
-          "name" : "Training data",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "info" : "Variables connection",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "color" : "#9B9B9B",
-          "connectedVia" : "[ root:22_1 ]",
-          "index" : 1,
-          "info" : "J48",
-          "name" : "Trained model",
-          "type" : "other"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 157
-        },
-        "state" : {
-          "state" : "EXECUTED"
-        },
-        "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
-      },
       "root:21" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 17,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "optional\nin-ports",
           "textAlign" : "center"
         },
@@ -686,65 +663,25 @@
         } ],
         "position" : {
           "x" : 384,
-          "y" : 17
+          "y" : 26
         },
         "state" : {
           "state" : "EXECUTED"
         },
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
       },
-      "root:8" : {
-        "id" : "root:8",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:8_1 ]",
-          "index" : 1,
-          "name" : "Display data",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "info" : "Variables connection",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "info" : "Rows: 7, Cols: 14",
-          "name" : "Robust Statistics",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 484,
-          "y" : 497
-        },
-        "state" : {
-          "state" : "EXECUTED"
-        },
-        "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
-      },
-      "root:13" : {
+      "root:183" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 7,
-            "start" : 0
-          } ],
-          "text" : "Node 13",
+          "defaultFontSize" : 13,
+          "styleRanges" : [ ],
+          "text" : "Component",
           "textAlign" : "center"
         },
-        "id" : "root:13",
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwUlEQVR4nGOQlpYy1tBQfwqk/2PD6uqqj0Fq/HtcWQL63beEzfR5GDjBff7///8ZQJgBqPlJU1Pj/0ePHv5/8uQJCgaJgeSUlZXu+3e75sWtCfmRcTDuf8g075dwA0C2gBTiAiA5NUul/6EzvN+ANCdtj/of2Oe2BsUAkG24AEjOrcbuf+rO6P/p+2OBBnk98elykcAw4P6z+/8Pnt///+aDmygGHDi5/3/U0sD/mYfi/seuDvnr1+GcA9OMYkDx4jyw8+KWhvw/c+0MWPP3H9/+5y7M+J9+IPZ/2q6Y/8BA3IOsGSUMmlfV/U/fG/sf5M/4pUH/j108+n/dwbX/U7dEgm0Pm+372afNWQ/DABUV5YegkD53+cz//MWZ/1N3x/zPBNoYvzIUaFA42MC4tSH//LpcKtE1w1xgrKam8gjkEg17lf/+fW5g54ICDOSiVCD2n+Bxx6/blQOrAegCXs2OKiFTvO6k7YoC2x421/etT5uTMTbNWA2AGiIbNMnjVPB070fAgGsGiZ3kkOY6L6G2+bKS/kMQBrFBYlgNwIZBGh64ev1/7B8IxiA2SIxoA0C2wjTDMEiMfgZQ7AVcgQgAUT6awwoY0YUAAAAASUVORK5CYII=",
+        "id" : "root:183",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -752,136 +689,45 @@
           "optional" : true,
           "type" : "flowVariable"
         }, {
-          "connectedVia" : "[ root:13_1 ]",
-          "index" : 1,
-          "name" : "Input",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
           "connectedVia" : "[  ]",
-          "index" : 0,
-          "info" : "Variables connection",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:14_1 ]",
-          "inactive" : true,
           "index" : 1,
-          "info" : "Inactive Port Object",
-          "name" : "Output",
-          "type" : "flowVariable"
-        } ],
-        "position" : {
-          "x" : 684,
-          "y" : 557
-        },
-        "state" : {
-          "state" : "EXECUTED"
-        },
-        "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
-      },
-      "root:9" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#000000",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : -1,
-            "length" : 0,
-            "start" : 0
-          } ],
-          "text" : "",
-          "textAlign" : "center"
-        },
-        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
-        "id" : "root:9",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:9_1 ]",
-          "index" : 1,
-          "name" : "Port 1",
+          "name" : "myPort 1",
           "optional" : false,
           "type" : "table"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Inport 2",
+          "optional" : false,
+          "type" : "flowVariable"
         } ],
         "kind" : "component",
-        "name" : "Component with icon and type",
+        "name" : "Streaming Component",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
-          "info" : "Variables connection",
           "name" : "Variable Outport",
           "type" : "flowVariable"
         }, {
-          "connectedVia" : "[ root:8_1 ]",
+          "connectedVia" : "[  ]",
           "index" : 1,
-          "info" : "Rows: 4, Cols: 16",
-          "name" : "Port 1",
+          "name" : "Outport 1",
           "type" : "table"
+        }, {
+          "color" : "#9B9B9B",
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Outport 2",
+          "type" : "other"
         } ],
         "position" : {
-          "x" : 344,
-          "y" : 497
+          "x" : 924,
+          "y" : 966
         },
         "state" : {
-          "state" : "EXECUTED"
+          "state" : "IDLE"
         },
-        "type" : "Visualizer"
-      },
-      "root:14" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 15,
-            "start" : 0
-          } ],
-          "text" : "inactive branch",
-          "textAlign" : "center"
-        },
-        "id" : "root:14",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:14_1 ]",
-          "index" : 1,
-          "name" : "Variables input",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "inactive" : true,
-          "index" : 0,
-          "info" : "Inactive Port Object",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "inactive" : true,
-          "index" : 1,
-          "info" : "Inactive Port Object",
-          "name" : "Variable table",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 784,
-          "y" : 557
-        },
-        "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
+        "type" : "Sink"
       },
       "root:25" : {
         "id" : "root:25",
@@ -927,60 +773,20 @@
         } ],
         "position" : {
           "x" : 904,
-          "y" : 397
+          "y" : 406
         },
         "state" : {
           "state" : "EXECUTED"
         },
         "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
       },
-      "root:11" : {
-        "id" : "root:11",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:11_1 ]",
-          "index" : 1,
-          "name" : "Any input table",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "name" : "Copy of input",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 484,
-          "y" : 377
-        },
-        "state" : {
-          "error" : "Execute failed: This node fails on each execution.",
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
-      },
       "root:22" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 33,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "Check a \n'generic'\nport type spec",
           "textAlign" : "center"
         },
@@ -1021,72 +827,20 @@
         } ],
         "position" : {
           "x" : 544,
-          "y" : 77
+          "y" : 86
         },
         "state" : {
           "state" : "EXECUTED"
         },
         "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
       },
-      "root:12" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#000000",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : -1,
-            "length" : 0,
-            "start" : 0
-          } ],
-          "text" : "",
-          "textAlign" : "center"
-        },
-        "id" : "root:12",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:12_1 ]",
-          "index" : 1,
-          "name" : "Port 1",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "component",
-        "name" : "Component Failing",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "name" : "Port 1",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 617
-        },
-        "state" : {
-          "error" : "Execute failed: \nFail in execution 0:12:0:10: This node fails on each execution.",
-          "state" : "CONFIGURED"
-        }
-      },
       "root:23" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 46,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "with JS view inside\n(i.e. with composite view)",
           "textAlign" : "center"
         },
@@ -1121,104 +875,19 @@
         } ],
         "position" : {
           "x" : 164,
-          "y" : 617
+          "y" : 626
         },
         "state" : {
           "state" : "EXECUTED"
         }
-      },
-      "root:18" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 32,
-            "start" : 0
-          } ],
-          "text" : "checking flow\nvariables (string)",
-          "textAlign" : "center"
-        },
-        "id" : "root:18",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:18_1 ]",
-          "index" : 1,
-          "name" : "Input variables (optional)",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "info" : "Variables connection",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "info" : "Variables connection",
-          "name" : "Appended variables",
-          "type" : "flowVariable"
-        } ],
-        "position" : {
-          "x" : 464,
-          "y" : 757
-        },
-        "state" : {
-          "state" : "EXECUTED"
-        },
-        "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
-      },
-      "root:15" : {
-        "id" : "root:15",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "info" : "Variables connection",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:16_1 ]",
-          "index" : 1,
-          "info" : "Rows: 1, Cols: 3",
-          "name" : "Manually created table",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 224,
-          "y" : 757
-        },
-        "state" : {
-          "state" : "EXECUTED"
-        },
-        "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
       },
       "root:26" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 32,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "test of another\nport object spec",
           "textAlign" : "center"
         },
@@ -1259,61 +928,20 @@
         } ],
         "position" : {
           "x" : 1064,
-          "y" : 477
+          "y" : 486
         },
         "state" : {
           "state" : "EXECUTED"
         },
         "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
       },
-      "root:16" : {
-        "id" : "root:16",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:16_1 ]",
-          "index" : 1,
-          "name" : "Parameters table",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "info" : "Variables connection",
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:18_1 ]",
-          "index" : 1,
-          "info" : "Variables connection",
-          "name" : "Variables Output",
-          "type" : "flowVariable"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 757
-        },
-        "state" : {
-          "state" : "EXECUTED"
-        },
-        "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
-      },
       "root:27" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 13,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "dynamic\nports",
           "textAlign" : "center"
         },
@@ -1359,53 +987,709 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 197
+          "y" : 206
         },
         "state" : {
           "state" : "EXECUTED"
         },
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
+      },
+      "root:10" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "a node created\nvia a node set factory",
+          "textAlign" : "center"
+        },
+        "id" : "root:10",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:10_1 ]",
+          "index" : 1,
+          "name" : "Training data",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "color" : "#9B9B9B",
+          "connectedVia" : "[ root:22_1 ]",
+          "index" : 1,
+          "info" : "J48",
+          "name" : "Trained model",
+          "type" : "other"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 166
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
+      },
+      "root:172" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 13,
+          "styleRanges" : [ ],
+          "text" : "Missing",
+          "textAlign" : "center"
+        },
+        "id" : "root:172",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 644,
+          "y" : 966
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "templateId" : "org.knime.core.node.missing.MissingNodeFactory"
+      },
+      "root:8" : {
+        "id" : "root:8",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:8_1 ]",
+          "index" : 1,
+          "name" : "Display data",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "info" : "Rows: 7, Cols: 14",
+          "name" : "Robust Statistics",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 506
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
+      },
+      "root:13" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "Node 13",
+          "textAlign" : "center"
+        },
+        "id" : "root:13",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:13_1 ]",
+          "index" : 1,
+          "name" : "Input",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:14_1 ]",
+          "inactive" : true,
+          "index" : 1,
+          "info" : "Inactive Port Object",
+          "name" : "Output",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 684,
+          "y" : 566
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
+      },
+      "root:9" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#000000",
+          "borderWidth" : 0,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlign" : "center"
+        },
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
+        "id" : "root:9",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:9_1 ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "component",
+        "name" : "Component with icon and type",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:8_1 ]",
+          "index" : 1,
+          "info" : "Rows: 4, Cols: 16",
+          "name" : "Port 1",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 506
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "type" : "Visualizer"
+      },
+      "root:14" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "inactive branch",
+          "textAlign" : "center"
+        },
+        "id" : "root:14",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:14_1 ]",
+          "index" : 1,
+          "name" : "Variables input",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "inactive" : true,
+          "index" : 0,
+          "info" : "Inactive Port Object",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "inactive" : true,
+          "index" : 1,
+          "info" : "Inactive Port Object",
+          "name" : "Variable table",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 784,
+          "y" : 566
+        },
+        "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
+      },
+      "root:11" : {
+        "id" : "root:11",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:11_1 ]",
+          "index" : 1,
+          "name" : "Any input table",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Copy of input",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 386
+        },
+        "state" : {
+          "error" : "Execute failed: This node fails on each execution.",
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
+      },
+      "root:12" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#000000",
+          "borderWidth" : 0,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlign" : "center"
+        },
+        "id" : "root:12",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:12_1 ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "component",
+        "name" : "Component Failing",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 626
+        },
+        "state" : {
+          "error" : "Execute failed: \nFail in execution 0:12:0:10: This node fails on each execution.",
+          "state" : "CONFIGURED"
+        }
+      },
+      "root:18" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "checking flow\nvariables (string)",
+          "textAlign" : "center"
+        },
+        "id" : "root:18",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:18_1 ]",
+          "index" : 1,
+          "name" : "Input variables (optional)",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "info" : "Variables connection",
+          "name" : "Appended variables",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 464,
+          "y" : 766
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
+      },
+      "root:15" : {
+        "id" : "root:15",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:16_1 ]",
+          "index" : 1,
+          "info" : "Rows: 1, Cols: 3",
+          "name" : "Manually created table",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 224,
+          "y" : 766
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
+      },
+      "root:16" : {
+        "id" : "root:16",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:16_1 ]",
+          "index" : 1,
+          "name" : "Parameters table",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "info" : "Variables connection",
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:18_1 ]",
+          "index" : 1,
+          "info" : "Variables connection",
+          "name" : "Variables Output",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 766
+        },
+        "state" : {
+          "state" : "EXECUTED"
+        },
+        "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
       }
     },
     "projectId" : "PLACEHOLDER_FOR_PROJECT_ID",
-    "workflowAnnotations" : {
-      "root_1" : {
-        "backgroundColor" : "#FFFFFF",
-        "borderColor" : "#EF2929",
-        "borderWidth" : 10,
-        "bounds" : {
-          "height" : 140,
-          "width" : 250,
-          "x" : 880,
-          "y" : 20
-        },
-        "styleRanges" : [ {
-          "fontSize" : 11,
-          "length" : 33,
-          "start" : 0
-        } ],
-        "text" : "this is a red workflow annotation",
-        "textAlign" : "left"
+    "workflowAnnotations" : [ {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 20,
+        "y" : 20
       },
-      "root_0" : {
-        "backgroundColor" : "#FFFFFF",
-        "borderColor" : "#FFD800",
-        "borderWidth" : 10,
-        "bounds" : {
-          "height" : 140,
-          "width" : 250,
-          "x" : 20,
-          "y" : 20
-        },
-        "styleRanges" : [ {
-          "fontSize" : 11,
-          "length" : 29,
-          "start" : 0
-        } ],
-        "text" : "this is a workflow annotation",
-        "textAlign" : "left"
-      }
-    }
+      "defaultFontSize" : 11,
+      "styleRanges" : [ ],
+      "text" : "this is a workflow annotation",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#EF2929",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 880,
+        "y" : 20
+      },
+      "defaultFontSize" : 11,
+      "styleRanges" : [ ],
+      "text" : "this is a red workflow annotation",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 80,
+        "y" : 880
+      },
+      "styleRanges" : [ ],
+      "text" : "",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 81,
+        "width" : 101,
+        "x" : 340,
+        "y" : 880
+      },
+      "defaultFontSize" : 11,
+      "styleRanges" : [ {
+        "color" : "#000000",
+        "fontSize" : 11,
+        "length" : 1,
+        "start" : 1
+      } ],
+      "text" : "<= an empty\nworkflow\nannotation",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#F3F3F3",
+      "borderColor" : "#CC0000",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 341,
+        "width" : 421,
+        "x" : 1120,
+        "y" : 700
+      },
+      "defaultFontSize" : 11,
+      "styleRanges" : [ {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 8,
+        "start" : 0
+      }, {
+        "color" : "#CC0000",
+        "fontSize" : 16,
+        "length" : 5,
+        "start" : 8
+      }, {
+        "bold" : true,
+        "color" : "#73D216",
+        "fontSize" : 24,
+        "length" : 11,
+        "start" : 13
+      }, {
+        "color" : "#000000",
+        "fontSize" : 9,
+        "length" : 7,
+        "start" : 24
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 12,
+        "start" : 31
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 6,
+        "start" : 43
+      }, {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "italic" : true,
+        "length" : 1,
+        "start" : 49
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 2,
+        "start" : 50
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "italic" : true,
+        "length" : 7,
+        "start" : 52
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 3,
+        "start" : 59
+      }, {
+        "color" : "#73D216",
+        "fontSize" : 16,
+        "length" : 1,
+        "start" : 62
+      }, {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 202,
+        "start" : 63
+      }, {
+        "color" : "#CC0000",
+        "fontSize" : 16,
+        "length" : 5,
+        "start" : 265
+      }, {
+        "bold" : true,
+        "color" : "#4E9A06",
+        "fontSize" : 24,
+        "length" : 11,
+        "start" : 270
+      }, {
+        "color" : "#000000",
+        "fontSize" : 9,
+        "length" : 7,
+        "start" : 281
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 13,
+        "start" : 288
+      }, {
+        "color" : "#3465A4",
+        "fontSize" : 20,
+        "length" : 2,
+        "start" : 301
+      }, {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 23,
+        "start" : 303
+      } ],
+      "text" : "normal16red16greenbold24normal9bolditalic13\n﷽\n\nabcde👮🏻‍♂️f\n\n\nabc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc \n\nnormal16red16greenbold24normal9bolditalic13\n﷽\n---\nעברית היא שפה שמית.",
+      "textAlign" : "center"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 61,
+        "width" : 161,
+        "x" : 1220,
+        "y" : 380
+      },
+      "defaultFontSize" : 13,
+      "styleRanges" : [ {
+        "color" : "#000000",
+        "fontSize" : 13,
+        "length" : 5,
+        "start" : 11
+      } ],
+      "text" : "Annotation front",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#EFF0EE",
+      "borderColor" : "#CC0000",
+      "borderWidth" : 4,
+      "bounds" : {
+        "height" : 61,
+        "width" : 161,
+        "x" : 1360,
+        "y" : 400
+      },
+      "defaultFontSize" : 13,
+      "styleRanges" : [ {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "length" : 4,
+        "start" : 11
+      }, {
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 3,
+        "start" : 16
+      }, {
+        "color" : "#000000",
+        "fontSize" : 8,
+        "length" : 3,
+        "start" : 20
+      }, {
+        "color" : "#EF2929",
+        "fontSize" : 13,
+        "length" : 3,
+        "start" : 24
+      } ],
+      "text" : "Annotation back\nfoo and bar",
+      "textAlign" : "center"
+    } ]
   },
   "workflowent_root" : {
     "connections" : {
@@ -1678,6 +1962,11 @@
         "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkIwNzVGQUE0NUM3MTFFNUFDNkJBNzc0MkI4RTNBMkQiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkIwNzVGQTk0NUM3MTFFNUFDNkJBNzc0MkI4RTNBMkQiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpiMjZmMjcxNS1kZmZiLTRlYTgtYWJjMi0xZDk4N2YzMzE1NzIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+y0Ox5wAAAI1JREFUeNpiZGBg+M9AAWABEf//k2cGIyMjAxMDhWAYGMBIaSzAADsQs1FiAD5X3AXiZ0h8Qaj6VcSGwSwglgRiYyg/FEqvxuUCELsJi43lUD7I5u/oCfA/DsyApAnmDZDmDnwpGCTagCbmAhVPg9LGMAMYSQjod1D6BxBLkRNT5WhhAUlI5OZEGAAIMACB0S5sgw1IUgAAAABJRU5ErkJggg==",
         "name" : "Table Row to Variable (deprecated)",
         "type" : "Other"
+      },
+      "org.knime.core.node.missing.MissingNodeFactory" : {
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAG7AAABuwE67OPiAAAACXZwQWcAAAAQAAAAEABcxq3DAAACVUlEQVQ4y6WSz0tUYRSGn/Pd795xmiatRdAomWEghX+AbXPlskVJixbCaO4D6R+I1iKiUKt2thBXEgglBCVRtBApiH6ASCPNOHPvOHrvd7/7tRizwTZB7/qc55z3vEecc/yPNMCz0dGp7sHBORUEnpfLoXwf5fuI5x0XOmvJjCEzBhNFtra5OT3+6tVjDVAcGpq7MjKiu33/n6ZWm019emBgEWgDtt+/V1eHh4n29/8qFuCkyVyhwKfVVa7PzKAAvr5+TbO+x36jgQ0Cestl0nyeJAyJwxAplbgwMUEcxxw0GrTqe3xeXwdoA4xAXKuShCGXJifRxSID5TKHnkdWKnHx9m2Cnh76p6ZI6nVMfQ8jHUc0QFKrohLLztoafWNjKK259uBB+5AiOOf4trSEbTQgbmE6U0gBW/0JVthdWCAJQy6Pj6O0bifgHFuPHiEbG4gI+5UmaScgEdh++YKiztMdBOwYw4WxMbyuLgCSWo3m8jKFSoW93V0i7UiOLKjfG+jUoKKIrK+Pofl5DtKUqFKh2WiQBAH9i4u0tOaMCHklxxv8AQjktObS7CxZoUBSq/H25k3e3LtHGseo3l7OPXxIzjl84QRA2oFn1vJjcpL4yxe+37nDjQ8fGF1Z4eP0NK2tLQ7v3ycVwclRDyDOOW5psePFQOUPFedEKCjF+TQl7xyecyQiVH0fk2VURWjmLE/COFtKndeO0Ymp5G2uJBCKYMWRIviiUIAFjLMcAC2XEZ5NyZpijlPo9YO77+Lk6fPI6s4X7lTnO6tIzMCpYOLYwv/oFyCODyf2jBu2AAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA5LTExLTE1VDE3OjAyOjM0LTA3OjAwtueOEgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMC0wMi0yMFQyMzoyNjoyNC0wNzowMC7DUNYAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTAtMDEtMTFUMDk6MjQ6NDYtMDc6MDCPDs7OAAAAZ3RFWHRMaWNlbnNlAGh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzMuMC8gb3IgaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvTEdQTC8yLjEvW488YwAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOS0wMy0xOVQxMDo1Mjo1MS0wNjowMH9o/QYAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAAAE3RFWHRTb3VyY2UAT3h5Z2VuIEljb25z7Biu6AAAACd0RVh0U291cmNlX1VSTABodHRwOi8vd3d3Lm94eWdlbi1pY29ucy5vcmcv7zeqywAAAABJRU5ErkJggg==",
+        "name" : "MISSING Input File",
+        "type" : "Missing"
       }
     },
     "nodes" : {
@@ -1709,7 +1998,7 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 337
+          "y" : 346
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -1721,11 +2010,8 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 15,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "node annotation",
           "textAlign" : "center"
         },
@@ -1757,7 +2043,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 337
+          "y" : 346
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -1794,7 +2080,7 @@
         } ],
         "position" : {
           "x" : 684,
-          "y" : 757
+          "y" : 766
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -1825,7 +2111,7 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 197
+          "y" : 206
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -1837,11 +2123,8 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 20,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "a non-executing node",
           "textAlign" : "center"
         },
@@ -1874,11 +2157,11 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 357
+          "y" : 366
         },
         "state" : {
           "state" : "IDLE",
-          "warning" : "Class column \"Cluster Membership\" not found or incompatible"
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
         },
         "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
       },
@@ -1906,19 +2189,51 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 257
+          "y" : 266
         }
+      },
+      "root:182" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 13,
+          "styleRanges" : [ ],
+          "text" : "🤷🏻‍♂️ 🤨",
+          "textAlign" : "center"
+        },
+        "id" : "root:182",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 763,
+          "y" : 966
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "templateId" : "org.knime.core.node.missing.MissingNodeFactory"
       },
       "root:20" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 45,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "check for simple port spec\n(distance measure)",
           "textAlign" : "center"
         },
@@ -1963,72 +2278,20 @@
         } ],
         "position" : {
           "x" : 864,
-          "y" : 757
+          "y" : 766
         },
         "state" : {
           "state" : "CONFIGURED"
         },
         "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
       },
-      "root:10" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 37,
-            "start" : 0
-          } ],
-          "text" : "a node created\nvia a node set factory",
-          "textAlign" : "center"
-        },
-        "id" : "root:10",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:10_1 ]",
-          "index" : 1,
-          "name" : "Training data",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "color" : "#9B9B9B",
-          "connectedVia" : "[ root:22_1 ]",
-          "index" : 1,
-          "name" : "Trained model",
-          "type" : "other"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 157
-        },
-        "state" : {
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
-      },
       "root:21" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 17,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "optional\nin-ports",
           "textAlign" : "center"
         },
@@ -2078,15 +2341,25 @@
         } ],
         "position" : {
           "x" : 384,
-          "y" : 17
+          "y" : 26
         },
         "state" : {
           "state" : "CONFIGURED"
         },
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
       },
-      "root:8" : {
-        "id" : "root:8",
+      "root:183" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 13,
+          "styleRanges" : [ ],
+          "text" : "Component",
+          "textAlign" : "center"
+        },
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwUlEQVR4nGOQlpYy1tBQfwqk/2PD6uqqj0Fq/HtcWQL63beEzfR5GDjBff7///8ZQJgBqPlJU1Pj/0ePHv5/8uQJCgaJgeSUlZXu+3e75sWtCfmRcTDuf8g075dwA0C2gBTiAiA5NUul/6EzvN+ANCdtj/of2Oe2BsUAkG24AEjOrcbuf+rO6P/p+2OBBnk98elykcAw4P6z+/8Pnt///+aDmygGHDi5/3/U0sD/mYfi/seuDvnr1+GcA9OMYkDx4jyw8+KWhvw/c+0MWPP3H9/+5y7M+J9+IPZ/2q6Y/8BA3IOsGSUMmlfV/U/fG/sf5M/4pUH/j108+n/dwbX/U7dEgm0Pm+372afNWQ/DABUV5YegkD53+cz//MWZ/1N3x/zPBNoYvzIUaFA42MC4tSH//LpcKtE1w1xgrKam8gjkEg17lf/+fW5g54ICDOSiVCD2n+Bxx6/blQOrAegCXs2OKiFTvO6k7YoC2x421/etT5uTMTbNWA2AGiIbNMnjVPB070fAgGsGiZ3kkOY6L6G2+bKS/kMQBrFBYlgNwIZBGh64ev1/7B8IxiA2SIxoA0C2wjTDMEiMfgZQ7AVcgQgAUT6awwoY0YUAAAAASUVORK5CYII=",
+        "id" : "root:183",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2094,13 +2367,20 @@
           "optional" : true,
           "type" : "flowVariable"
         }, {
-          "connectedVia" : "[ root:8_1 ]",
+          "connectedVia" : "[  ]",
           "index" : 1,
-          "name" : "Display data",
+          "name" : "myPort 1",
           "optional" : false,
           "type" : "table"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Inport 2",
+          "optional" : false,
+          "type" : "flowVariable"
         } ],
-        "kind" : "node",
+        "kind" : "component",
+        "name" : "Streaming Component",
         "outPorts" : [ {
           "connectedVia" : "[  ]",
           "index" : 0,
@@ -2109,165 +2389,23 @@
         }, {
           "connectedVia" : "[  ]",
           "index" : 1,
-          "name" : "Robust Statistics",
+          "name" : "Outport 1",
           "type" : "table"
+        }, {
+          "color" : "#9B9B9B",
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Outport 2",
+          "type" : "other"
         } ],
         "position" : {
-          "x" : 484,
-          "y" : 497
+          "x" : 924,
+          "y" : 966
         },
         "state" : {
           "state" : "IDLE"
         },
-        "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
-      },
-      "root:13" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 7,
-            "start" : 0
-          } ],
-          "text" : "Node 13",
-          "textAlign" : "center"
-        },
-        "id" : "root:13",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:13_1 ]",
-          "index" : 1,
-          "name" : "Input",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:14_1 ]",
-          "index" : 1,
-          "name" : "Output",
-          "type" : "flowVariable"
-        } ],
-        "position" : {
-          "x" : 684,
-          "y" : 557
-        },
-        "state" : {
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
-      },
-      "root:9" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#000000",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : -1,
-            "length" : 0,
-            "start" : 0
-          } ],
-          "text" : "",
-          "textAlign" : "center"
-        },
-        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
-        "id" : "root:9",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:9_1 ]",
-          "index" : 1,
-          "name" : "Port 1",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "component",
-        "name" : "Component with icon and type",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:8_1 ]",
-          "index" : 1,
-          "name" : "Port 1",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 497
-        },
-        "state" : {
-          "state" : "IDLE",
-          "warning" : "Component Input 0:9:0:8: Component does not have input data, execute upstream nodes first"
-        },
-        "type" : "Visualizer"
-      },
-      "root:14" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 15,
-            "start" : 0
-          } ],
-          "text" : "inactive branch",
-          "textAlign" : "center"
-        },
-        "id" : "root:14",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:14_1 ]",
-          "index" : 1,
-          "name" : "Variables input",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "name" : "Variable table",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 784,
-          "y" : 557
-        },
-        "state" : {
-          "state" : "IDLE",
-          "warning" : "No variables selected"
-        },
-        "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
+        "type" : "Sink"
       },
       "root:25" : {
         "id" : "root:25",
@@ -2309,59 +2447,20 @@
         } ],
         "position" : {
           "x" : 904,
-          "y" : 397
+          "y" : 406
         },
         "state" : {
           "state" : "CONFIGURED"
         },
         "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
       },
-      "root:11" : {
-        "id" : "root:11",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:11_1 ]",
-          "index" : 1,
-          "name" : "Any input table",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "name" : "Copy of input",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 484,
-          "y" : 377
-        },
-        "state" : {
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
-      },
       "root:22" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 33,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "Check a \n'generic'\nport type spec",
           "textAlign" : "center"
         },
@@ -2400,72 +2499,20 @@
         } ],
         "position" : {
           "x" : 544,
-          "y" : 77
+          "y" : 86
         },
         "state" : {
           "state" : "CONFIGURED"
         },
         "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
       },
-      "root:12" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#000000",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : -1,
-            "length" : 0,
-            "start" : 0
-          } ],
-          "text" : "",
-          "textAlign" : "center"
-        },
-        "id" : "root:12",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:12_1 ]",
-          "index" : 1,
-          "name" : "Port 1",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "component",
-        "name" : "Component Failing",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "name" : "Port 1",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 617
-        },
-        "state" : {
-          "state" : "IDLE",
-          "warning" : "Component Input 0:12:0:8: Component does not have input data, execute upstream nodes first"
-        }
-      },
       "root:23" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 46,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "with JS view inside\n(i.e. with composite view)",
           "textAlign" : "center"
         },
@@ -2498,101 +2545,20 @@
         } ],
         "position" : {
           "x" : 164,
-          "y" : 617
+          "y" : 626
         },
         "state" : {
           "state" : "IDLE",
-          "warning" : "Component Input 0:23:0:8: Component does not have input data, execute upstream nodes first"
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
         }
-      },
-      "root:18" : {
-        "annotation" : {
-          "backgroundColor" : "#FFFFFF",
-          "borderColor" : "#FFFFFF",
-          "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 32,
-            "start" : 0
-          } ],
-          "text" : "checking flow\nvariables (string)",
-          "textAlign" : "center"
-        },
-        "id" : "root:18",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:18_1 ]",
-          "index" : 1,
-          "name" : "Input variables (optional)",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[  ]",
-          "index" : 1,
-          "name" : "Appended variables",
-          "type" : "flowVariable"
-        } ],
-        "position" : {
-          "x" : 464,
-          "y" : 757
-        },
-        "state" : {
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
-      },
-      "root:15" : {
-        "id" : "root:15",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:16_1 ]",
-          "index" : 1,
-          "name" : "Manually created table",
-          "type" : "table"
-        } ],
-        "position" : {
-          "x" : 224,
-          "y" : 757
-        },
-        "state" : {
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
       },
       "root:26" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 32,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "test of another\nport object spec",
           "textAlign" : "center"
         },
@@ -2631,59 +2597,20 @@
         } ],
         "position" : {
           "x" : 1064,
-          "y" : 477
+          "y" : 486
         },
         "state" : {
           "state" : "CONFIGURED"
         },
         "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
       },
-      "root:16" : {
-        "id" : "root:16",
-        "inPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Inport",
-          "optional" : true,
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:16_1 ]",
-          "index" : 1,
-          "name" : "Parameters table",
-          "optional" : false,
-          "type" : "table"
-        } ],
-        "kind" : "node",
-        "outPorts" : [ {
-          "connectedVia" : "[  ]",
-          "index" : 0,
-          "name" : "Variable Outport",
-          "type" : "flowVariable"
-        }, {
-          "connectedVia" : "[ root:18_1 ]",
-          "index" : 1,
-          "name" : "Variables Output",
-          "type" : "flowVariable"
-        } ],
-        "position" : {
-          "x" : 344,
-          "y" : 757
-        },
-        "state" : {
-          "state" : "CONFIGURED"
-        },
-        "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
-      },
       "root:27" : {
         "annotation" : {
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "styleRanges" : [ {
-            "fontSize" : 11,
-            "length" : 13,
-            "start" : 0
-          } ],
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
           "text" : "dynamic\nports",
           "textAlign" : "center"
         },
@@ -2727,52 +2654,693 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 197
+          "y" : 206
         },
         "state" : {
           "state" : "CONFIGURED"
         },
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
+      },
+      "root:10" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "a node created\nvia a node set factory",
+          "textAlign" : "center"
+        },
+        "id" : "root:10",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:10_1 ]",
+          "index" : 1,
+          "name" : "Training data",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "color" : "#9B9B9B",
+          "connectedVia" : "[ root:22_1 ]",
+          "index" : 1,
+          "name" : "Trained model",
+          "type" : "other"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 166
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
+      },
+      "root:172" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 13,
+          "styleRanges" : [ ],
+          "text" : "Missing",
+          "textAlign" : "center"
+        },
+        "id" : "root:172",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 644,
+          "y" : 966
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "templateId" : "org.knime.core.node.missing.MissingNodeFactory"
+      },
+      "root:8" : {
+        "id" : "root:8",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:8_1 ]",
+          "index" : 1,
+          "name" : "Display data",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Robust Statistics",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 506
+        },
+        "state" : {
+          "state" : "IDLE"
+        },
+        "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
+      },
+      "root:13" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "Node 13",
+          "textAlign" : "center"
+        },
+        "id" : "root:13",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:13_1 ]",
+          "index" : 1,
+          "name" : "Input",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:14_1 ]",
+          "index" : 1,
+          "name" : "Output",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 684,
+          "y" : 566
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
+      },
+      "root:9" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#000000",
+          "borderWidth" : 0,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlign" : "center"
+        },
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
+        "id" : "root:9",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:9_1 ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "component",
+        "name" : "Component with icon and type",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:8_1 ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 506
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "type" : "Visualizer"
+      },
+      "root:14" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "inactive branch",
+          "textAlign" : "center"
+        },
+        "id" : "root:14",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:14_1 ]",
+          "index" : 1,
+          "name" : "Variables input",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Variable table",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 784,
+          "y" : 566
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
+      },
+      "root:11" : {
+        "id" : "root:11",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:11_1 ]",
+          "index" : 1,
+          "name" : "Any input table",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Copy of input",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 484,
+          "y" : 386
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
+      },
+      "root:12" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#000000",
+          "borderWidth" : 0,
+          "styleRanges" : [ ],
+          "text" : "",
+          "textAlign" : "center"
+        },
+        "id" : "root:12",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:12_1 ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "component",
+        "name" : "Component Failing",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Port 1",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 626
+        },
+        "state" : {
+          "state" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        }
+      },
+      "root:18" : {
+        "annotation" : {
+          "backgroundColor" : "#FFFFFF",
+          "borderColor" : "#FFFFFF",
+          "borderWidth" : 0,
+          "defaultFontSize" : 11,
+          "styleRanges" : [ ],
+          "text" : "checking flow\nvariables (string)",
+          "textAlign" : "center"
+        },
+        "id" : "root:18",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:18_1 ]",
+          "index" : 1,
+          "name" : "Input variables (optional)",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 1,
+          "name" : "Appended variables",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 464,
+          "y" : 766
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
+      },
+      "root:15" : {
+        "id" : "root:15",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:16_1 ]",
+          "index" : 1,
+          "name" : "Manually created table",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 224,
+          "y" : 766
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
+      },
+      "root:16" : {
+        "id" : "root:16",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:16_1 ]",
+          "index" : 1,
+          "name" : "Parameters table",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:18_1 ]",
+          "index" : 1,
+          "name" : "Variables Output",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 344,
+          "y" : 766
+        },
+        "state" : {
+          "state" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
       }
     },
     "projectId" : "PLACEHOLDER_FOR_PROJECT_ID",
-    "workflowAnnotations" : {
-      "root_1" : {
-        "backgroundColor" : "#FFFFFF",
-        "borderColor" : "#EF2929",
-        "borderWidth" : 10,
-        "bounds" : {
-          "height" : 140,
-          "width" : 250,
-          "x" : 880,
-          "y" : 20
-        },
-        "styleRanges" : [ {
-          "fontSize" : 11,
-          "length" : 33,
-          "start" : 0
-        } ],
-        "text" : "this is a red workflow annotation",
-        "textAlign" : "left"
+    "workflowAnnotations" : [ {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 20,
+        "y" : 20
       },
-      "root_0" : {
-        "backgroundColor" : "#FFFFFF",
-        "borderColor" : "#FFD800",
-        "borderWidth" : 10,
-        "bounds" : {
-          "height" : 140,
-          "width" : 250,
-          "x" : 20,
-          "y" : 20
-        },
-        "styleRanges" : [ {
-          "fontSize" : 11,
-          "length" : 29,
-          "start" : 0
-        } ],
-        "text" : "this is a workflow annotation",
-        "textAlign" : "left"
-      }
-    }
+      "defaultFontSize" : 11,
+      "styleRanges" : [ ],
+      "text" : "this is a workflow annotation",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#EF2929",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 880,
+        "y" : 20
+      },
+      "defaultFontSize" : 11,
+      "styleRanges" : [ ],
+      "text" : "this is a red workflow annotation",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 80,
+        "y" : 880
+      },
+      "styleRanges" : [ ],
+      "text" : "",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 81,
+        "width" : 101,
+        "x" : 340,
+        "y" : 880
+      },
+      "defaultFontSize" : 11,
+      "styleRanges" : [ {
+        "color" : "#000000",
+        "fontSize" : 11,
+        "length" : 1,
+        "start" : 1
+      } ],
+      "text" : "<= an empty\nworkflow\nannotation",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#F3F3F3",
+      "borderColor" : "#CC0000",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 341,
+        "width" : 421,
+        "x" : 1120,
+        "y" : 700
+      },
+      "defaultFontSize" : 11,
+      "styleRanges" : [ {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 8,
+        "start" : 0
+      }, {
+        "color" : "#CC0000",
+        "fontSize" : 16,
+        "length" : 5,
+        "start" : 8
+      }, {
+        "bold" : true,
+        "color" : "#73D216",
+        "fontSize" : 24,
+        "length" : 11,
+        "start" : 13
+      }, {
+        "color" : "#000000",
+        "fontSize" : 9,
+        "length" : 7,
+        "start" : 24
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 12,
+        "start" : 31
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 6,
+        "start" : 43
+      }, {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "italic" : true,
+        "length" : 1,
+        "start" : 49
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 2,
+        "start" : 50
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "italic" : true,
+        "length" : 7,
+        "start" : 52
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 3,
+        "start" : 59
+      }, {
+        "color" : "#73D216",
+        "fontSize" : 16,
+        "length" : 1,
+        "start" : 62
+      }, {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 202,
+        "start" : 63
+      }, {
+        "color" : "#CC0000",
+        "fontSize" : 16,
+        "length" : 5,
+        "start" : 265
+      }, {
+        "bold" : true,
+        "color" : "#4E9A06",
+        "fontSize" : 24,
+        "length" : 11,
+        "start" : 270
+      }, {
+        "color" : "#000000",
+        "fontSize" : 9,
+        "length" : 7,
+        "start" : 281
+      }, {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 13,
+        "start" : 288
+      }, {
+        "color" : "#3465A4",
+        "fontSize" : 20,
+        "length" : 2,
+        "start" : 301
+      }, {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 23,
+        "start" : 303
+      } ],
+      "text" : "normal16red16greenbold24normal9bolditalic13\n﷽\n\nabcde👮🏻‍♂️f\n\n\nabc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc \n\nnormal16red16greenbold24normal9bolditalic13\n﷽\n---\nעברית היא שפה שמית.",
+      "textAlign" : "center"
+    }, {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 61,
+        "width" : 161,
+        "x" : 1220,
+        "y" : 380
+      },
+      "defaultFontSize" : 13,
+      "styleRanges" : [ {
+        "color" : "#000000",
+        "fontSize" : 13,
+        "length" : 5,
+        "start" : 11
+      } ],
+      "text" : "Annotation front",
+      "textAlign" : "left"
+    }, {
+      "backgroundColor" : "#EFF0EE",
+      "borderColor" : "#CC0000",
+      "borderWidth" : 4,
+      "bounds" : {
+        "height" : 61,
+        "width" : 161,
+        "x" : 1360,
+        "y" : 400
+      },
+      "defaultFontSize" : 13,
+      "styleRanges" : [ {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "length" : 4,
+        "start" : 11
+      }, {
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 3,
+        "start" : 16
+      }, {
+        "color" : "#000000",
+        "fontSize" : 8,
+        "length" : 3,
+        "start" : 20
+      }, {
+        "color" : "#EF2929",
+        "fontSize" : 13,
+        "length" : 3,
+        "start" : 24
+      } ],
+      "text" : "Annotation back\nfoo and bar",
+      "textAlign" : "center"
+    } ]
   }
 }

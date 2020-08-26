@@ -105,7 +105,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("workflowAnnotations")
-    public java.util.Map<String, WorkflowAnnotationEnt> getWorkflowAnnotations();
+    public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
     
 
     /**
@@ -149,7 +149,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("workflowAnnotations")
-        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.Map<String, WorkflowAnnotationEnt> workflowAnnotations);
+        public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
         
     }
 
