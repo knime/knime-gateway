@@ -60,7 +60,10 @@ import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import org.knime.core.util.LRUCache;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
  * Straightforward repository implementation that just keeps every single snapshot as is and sacrifices memory (and a
@@ -88,7 +91,8 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     /* maps key to <snapshotID, entity> */
     private final Map<K, Pair<UUID, E>> m_latestSnapshotPerEntity = new HashMap<>();
 
-    private final Javers m_javers = JaversBuilder.javers().build();
+    private final Javers m_javers = JaversBuilder.javers().registerValue(NodeIDEnt.class)
+        .registerValue(ConnectionIDEnt.class).registerValue(AnnotationIDEnt.class).build();
 
     /**
      * Creates a new instance. The maximum number of snapshots kept in memory is initialized with the default value.

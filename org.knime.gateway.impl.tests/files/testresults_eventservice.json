@@ -18,6 +18,10 @@
   "workflow_annotation_removed" : {
     "ops" : [ {
       "op" : "replace",
+      "path" : "/workflowAnnotations/6/id",
+      "value" : "root_7"
+    }, {
+      "op" : "replace",
       "path" : "/workflowAnnotations/6/text",
       "value" : ""
     }, {
@@ -53,6 +57,30 @@
       "path" : "/workflowAnnotations/6/styleRanges/3"
     }, {
       "op" : "replace",
+      "path" : "/workflowAnnotations/5/styleRanges/0/length",
+      "value" : 4
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/5/styleRanges/0/bold",
+      "value" : true
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/5/bounds/x",
+      "value" : 1360
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/5/bounds/y",
+      "value" : 400
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/0/bounds/x",
+      "value" : 880
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/5/id",
+      "value" : "root_6"
+    }, {
+      "op" : "replace",
       "path" : "/workflowAnnotations/5/text",
       "value" : "Annotation back\nfoo and bar"
     }, {
@@ -73,13 +101,36 @@
       "value" : "#CC0000"
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/5/styleRanges/1"
+      "path" : "/workflowAnnotations/5/styleRanges/1",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 3,
+        "start" : 16
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/5/styleRanges/2"
+      "path" : "/workflowAnnotations/5/styleRanges/2",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 8,
+        "length" : 3,
+        "start" : 20
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/5/styleRanges/3"
+      "path" : "/workflowAnnotations/5/styleRanges/3",
+      "value" : {
+        "color" : "#EF2929",
+        "fontSize" : 13,
+        "length" : 3,
+        "start" : 24
+      }
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/4/id",
+      "value" : "root_5"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/4/text",
@@ -153,8 +204,8 @@
       "path" : "/workflowAnnotations/4/styleRanges/17"
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/5/id/index",
-      "value" : 6
+      "path" : "/workflowAnnotations/3/id",
+      "value" : "root_4"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/3/text",
@@ -173,55 +224,173 @@
       "value" : "#CC0000"
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/1"
+      "path" : "/workflowAnnotations/3/styleRanges/1",
+      "value" : {
+        "color" : "#CC0000",
+        "fontSize" : 16,
+        "length" : 5,
+        "start" : 8
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/2"
+      "path" : "/workflowAnnotations/3/styleRanges/2",
+      "value" : {
+        "bold" : true,
+        "color" : "#73D216",
+        "fontSize" : 24,
+        "length" : 11,
+        "start" : 13
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/3"
+      "path" : "/workflowAnnotations/3/styleRanges/3",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 9,
+        "length" : 7,
+        "start" : 24
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/4"
+      "path" : "/workflowAnnotations/3/styleRanges/4",
+      "value" : {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 12,
+        "start" : 31
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/5"
+      "path" : "/workflowAnnotations/3/styleRanges/5",
+      "value" : {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 6,
+        "start" : 43
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/6"
+      "path" : "/workflowAnnotations/3/styleRanges/6",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "italic" : true,
+        "length" : 1,
+        "start" : 49
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/7"
+      "path" : "/workflowAnnotations/3/styleRanges/7",
+      "value" : {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 2,
+        "start" : 50
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/8"
+      "path" : "/workflowAnnotations/3/styleRanges/8",
+      "value" : {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "italic" : true,
+        "length" : 7,
+        "start" : 52
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/9"
+      "path" : "/workflowAnnotations/3/styleRanges/9",
+      "value" : {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 3,
+        "start" : 59
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/10"
+      "path" : "/workflowAnnotations/3/styleRanges/10",
+      "value" : {
+        "color" : "#73D216",
+        "fontSize" : 16,
+        "length" : 1,
+        "start" : 62
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/11"
+      "path" : "/workflowAnnotations/3/styleRanges/11",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 202,
+        "start" : 63
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/12"
+      "path" : "/workflowAnnotations/3/styleRanges/12",
+      "value" : {
+        "color" : "#CC0000",
+        "fontSize" : 16,
+        "length" : 5,
+        "start" : 265
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/13"
+      "path" : "/workflowAnnotations/3/styleRanges/13",
+      "value" : {
+        "bold" : true,
+        "color" : "#4E9A06",
+        "fontSize" : 24,
+        "length" : 11,
+        "start" : 270
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/14"
+      "path" : "/workflowAnnotations/3/styleRanges/14",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 9,
+        "length" : 7,
+        "start" : 281
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/15"
+      "path" : "/workflowAnnotations/3/styleRanges/15",
+      "value" : {
+        "bold" : true,
+        "color" : "#000000",
+        "fontSize" : 13,
+        "italic" : true,
+        "length" : 13,
+        "start" : 288
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/16"
+      "path" : "/workflowAnnotations/3/styleRanges/16",
+      "value" : {
+        "color" : "#3465A4",
+        "fontSize" : 20,
+        "length" : 2,
+        "start" : 301
+      }
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/3/styleRanges/17"
+      "path" : "/workflowAnnotations/3/styleRanges/17",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 16,
+        "length" : 23,
+        "start" : 303
+      }
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/2/id",
+      "value" : "root_3"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/2/text",
@@ -232,7 +401,17 @@
       "value" : 11
     }, {
       "op" : "add",
-      "path" : "/workflowAnnotations/2/styleRanges/0"
+      "path" : "/workflowAnnotations/2/styleRanges/0",
+      "value" : {
+        "color" : "#000000",
+        "fontSize" : 11,
+        "length" : 1,
+        "start" : 1
+      }
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/1/id",
+      "value" : "root_2"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/1/text",
@@ -244,6 +423,10 @@
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/1/defaultFontSize"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/0/id",
+      "value" : "root_1"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/0/text",
@@ -294,10 +477,6 @@
       "value" : 13
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/1/id/index",
-      "value" : 2
-    }, {
-      "op" : "replace",
       "path" : "/workflowAnnotations/6/bounds/x",
       "value" : 0
     }, {
@@ -327,46 +506,6 @@
       "op" : "replace",
       "path" : "/workflowAnnotations/3/styleRanges/0/fontSize",
       "value" : 16
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/styleRanges/0/length",
-      "value" : 4
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/styleRanges/0/bold",
-      "value" : true
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/bounds/x",
-      "value" : 1360
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/bounds/y",
-      "value" : 400
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/0/bounds/x",
-      "value" : 880
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/3/id/index",
-      "value" : 4
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/0/id/index",
-      "value" : 1
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/4/id/index",
-      "value" : 5
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/2/id/index",
-      "value" : 3
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/6/id/index",
-      "value" : 7
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/1/bounds/x",
@@ -454,8 +593,22 @@
   "node_executed_1" : {
     "ops" : [ {
       "op" : "replace",
+      "path" : "/nodes/root:12/state/state",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:12/state/warning"
+    }, {
+      "op" : "replace",
       "path" : "/nodes/root:8/state/state",
       "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/state/state",
+      "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/state/warning"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:1/outPorts/0/info",
@@ -470,29 +623,15 @@
       "value" : "Rows: 8, Cols: 5"
     }, {
       "op" : "replace",
-      "path" : "/nodes/root:1/state/state",
-      "value" : "EXECUTED"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/root:12/state/state",
-      "value" : "CONFIGURED"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/root:12/state/warning"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/root:23/state/state",
-      "value" : "CONFIGURED"
-    }, {
-      "op" : "replace",
-      "path" : "/nodes/root:23/state/warning"
-    }, {
-      "op" : "replace",
       "path" : "/nodes/root:9/state/state",
       "value" : "CONFIGURED"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:9/state/warning"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/state/state",
+      "value" : "EXECUTED"
     } ],
     "targetTypeId" : "Workflow"
   },
@@ -523,7 +662,12 @@
   "connection_added" : {
     "ops" : [ {
       "op" : "add",
-      "path" : "/nodes/root:14/inPorts/1/connectedVia/0"
+      "path" : "/nodes/root:13/outPorts/1/connectedVia/0",
+      "value" : "root:14_1"
+    }, {
+      "op" : "add",
+      "path" : "/nodes/root:14/inPorts/1/connectedVia/0",
+      "value" : "root:14_1"
     }, {
       "op" : "add",
       "path" : "/connections/root:14_1",
@@ -534,9 +678,6 @@
         "sourceNode" : "root:13",
         "sourcePort" : 1
       }
-    }, {
-      "op" : "add",
-      "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
     } ],
     "targetTypeId" : "Workflow"
   },
@@ -603,13 +744,13 @@
   "connection_removed" : {
     "ops" : [ {
       "op" : "remove",
+      "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
+    }, {
+      "op" : "remove",
       "path" : "/nodes/root:14/inPorts/1/connectedVia/0"
     }, {
       "op" : "remove",
       "path" : "/connections/root:14_1"
-    }, {
-      "op" : "remove",
-      "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
     } ],
     "targetTypeId" : "Workflow"
   },

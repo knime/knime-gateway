@@ -123,16 +123,19 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
     @Override
     public void onValueChange(final ValueChange valueChange) {
-        GlobalId globalId = valueChange.getAffectedGlobalId();
+        m_patchCreator.replaced(getPath(valueChange.getAffectedGlobalId(), valueChange.getPropertyName()),
+            valueChange.getRight());
+    }
+
+    private static String getPath(final GlobalId globalId, final String propertyName) {
         String path = "";
         if (globalId instanceof ValueObjectId) {
             path = "/" + ((ValueObjectId)globalId).getFragment().replace("m_", ""); //NOSONAR
-            path += "/" + valueChange.getPropertyName().replace("m_", "");
         }
-        if (globalId instanceof UnboundedValueObjectId) {
-            path = "/" + valueChange.getPropertyName().replace("m_", ""); //NOSONAR
+        if ((propertyName != null && globalId instanceof UnboundedValueObjectId) || propertyName != null) {
+            path += "/" + propertyName.replace("m_", ""); //NOSONAR
         }
-        m_patchCreator.replaced(path, valueChange.getRight());
+        return path;
     }
 
     @Override
@@ -149,12 +152,10 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         // It needs to be done this way because all sub-objects of an object added to a list or map
         // are arriving here, too, and we don't want to create an extra patch-operation for each.
         if (m_patchCreator.isNewCollectionObjectValid(newObj)) {
-            ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
-            String path = "/" + globalId.getFragment().replace("m_", ""); //NOSONAR
+            String path = getPath(newObject.getAffectedGlobalId(), null);
             m_newObjects.put(path, (GatewayEntity)newObj);
         } else if(m_patchCreator.isNewObjectValid(newObj)) {
-            ValueObjectId globalId = (ValueObjectId)newObject.getAffectedGlobalId();
-            String path = "/" + globalId.getFragment().replace("m_", ""); //NOSONAR
+            String path = getPath(newObject.getAffectedGlobalId(), null);
             m_patchCreator.added(path, newObj);
         } else {
             //
@@ -183,16 +184,18 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
     @Override
     public void onListChange(final ListChange listChange) {
+        String path = getPath(listChange.getAffectedGlobalId(), listChange.getPropertyName());
         for (ValueRemoved vr : listChange.getValueRemovedChanges()) {
-            ValueObjectId val = (ValueObjectId)vr.getValue();
-            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
-            m_patchCreator.removed(path);
+            m_patchCreator.removed(path + "/" + vr.getIndex());
         }
         for (ValueAdded va : listChange.getValueAddedChanges()) {
-            ValueObjectId val = (ValueObjectId)va.getValue();
-            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
+            Object val = va.getValue();
+            String elementPath = path + "/" + va.getIndex(); // NOSONAR
             //NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
-            m_patchCreator.added(path, m_newObjects.get(path));
+            if (val instanceof ValueObjectId) {
+                val = m_newObjects.get(elementPath);
+            }
+            m_patchCreator.added(elementPath, val);
         }
     }
 

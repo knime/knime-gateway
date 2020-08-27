@@ -73,6 +73,7 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
+import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -287,7 +288,7 @@ public final class DefaultEventService implements EventService {
         public boolean isNewCollectionObjectValid(final Object newObj) {
             return newObj instanceof NodeEnt //NOSONAR
                 || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt
-                || newObj instanceof NodePortEnt;
+                || newObj instanceof NodePortEnt || newObj instanceof StyleRangeEnt;
         }
 
         @Override
