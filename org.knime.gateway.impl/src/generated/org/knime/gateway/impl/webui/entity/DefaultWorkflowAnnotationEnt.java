@@ -65,6 +65,7 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implements WorkflowAnnotationEnt {
 
   protected BoundsEnt m_bounds;
+  protected org.knime.gateway.api.entity.AnnotationIDEnt m_id;
   
   protected DefaultWorkflowAnnotationEnt() {
     //for sub-classes
@@ -91,6 +92,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         throw new IllegalArgumentException("bounds must not be null.");
     }
     m_bounds = immutable(builder.m_bounds);
+    m_id = immutable(builder.m_id);
   }
   
    /**
@@ -108,7 +110,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
             return false;
         }
         DefaultWorkflowAnnotationEnt ent = (DefaultWorkflowAnnotationEnt)o;
-        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_styleRanges, ent.m_styleRanges) && Objects.equals(m_bounds, ent.m_bounds);
+        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_borderWidth, ent.m_borderWidth) && Objects.equals(m_borderColor, ent.m_borderColor) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_styleRanges, ent.m_styleRanges) && Objects.equals(m_bounds, ent.m_bounds) && Objects.equals(m_id, ent.m_id);
     }
 
 
@@ -127,6 +129,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
                .append(m_defaultFontSize)
                .append(m_styleRanges)
                .append(m_bounds)
+               .append(m_id)
                .toHashCode();
    }
   
@@ -135,6 +138,11 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
   @Override
   public BoundsEnt getBounds() {
         return m_bounds;
+  }
+    
+  @Override
+  public org.knime.gateway.api.entity.AnnotationIDEnt getId() {
+        return m_id;
   }
     
   
@@ -152,6 +160,7 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         private Integer m_defaultFontSize;
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
         private BoundsEnt m_bounds;
+        private org.knime.gateway.api.entity.AnnotationIDEnt m_id;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setText(String text) {
@@ -204,6 +213,12 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
                  throw new IllegalArgumentException("bounds must not be null.");
              }
              m_bounds = bounds;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowAnnotationEntBuilder setId(org.knime.gateway.api.entity.AnnotationIDEnt id) {
+             m_id = id;
              return this;
         }
 

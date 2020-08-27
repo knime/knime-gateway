@@ -68,6 +68,7 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
@@ -184,6 +185,7 @@ public final class EntityBuilderUtil {
         List<StyleRangeEnt> styleRanges =
             Arrays.stream(wa.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt).collect(Collectors.toList());
         return builder(WorkflowAnnotationEntBuilder.class)
+                .setId(new AnnotationIDEnt(wa.getID()))
                 .setTextAlign(textAlign)
                 .setBackgroundColor(hexStringColor(wa.getBgColor()))
                 .setBorderColor(hexStringColor(wa.getBorderColor()))

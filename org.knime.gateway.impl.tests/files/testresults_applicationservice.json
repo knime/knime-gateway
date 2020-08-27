@@ -1435,6 +1435,7 @@
             "y" : 20
           },
           "defaultFontSize" : 11,
+          "id" : "root_0",
           "styleRanges" : [ ],
           "text" : "this is a workflow annotation",
           "textAlign" : "left"
@@ -1449,6 +1450,7 @@
             "y" : 20
           },
           "defaultFontSize" : 11,
+          "id" : "root_1",
           "styleRanges" : [ ],
           "text" : "this is a red workflow annotation",
           "textAlign" : "left"
@@ -1462,6 +1464,7 @@
             "x" : 80,
             "y" : 880
           },
+          "id" : "root_2",
           "styleRanges" : [ ],
           "text" : "",
           "textAlign" : "left"
@@ -1476,6 +1479,7 @@
             "y" : 880
           },
           "defaultFontSize" : 11,
+          "id" : "root_3",
           "styleRanges" : [ {
             "color" : "#000000",
             "fontSize" : 11,
@@ -1495,6 +1499,7 @@
             "y" : 700
           },
           "defaultFontSize" : 11,
+          "id" : "root_4",
           "styleRanges" : [ {
             "color" : "#000000",
             "fontSize" : 16,
@@ -1611,6 +1616,7 @@
             "y" : 380
           },
           "defaultFontSize" : 13,
+          "id" : "root_5",
           "styleRanges" : [ {
             "color" : "#000000",
             "fontSize" : 13,
@@ -1630,6 +1636,7 @@
             "y" : 400
           },
           "defaultFontSize" : 13,
+          "id" : "root_6",
           "styleRanges" : [ {
             "bold" : true,
             "color" : "#000000",

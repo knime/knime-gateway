@@ -67,6 +67,12 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
    **/
   public BoundsEnt getBounds();
 
+  /**
+   * A unique identifier for the workflow annotation.
+   * @return id 
+   **/
+  public org.knime.gateway.api.entity.AnnotationIDEnt getId();
+
 
     /**
      * The builder for the entity.
@@ -136,6 +142,14 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBounds(BoundsEnt bounds);
+        
+        /**
+         * A unique identifier for the workflow annotation.
+         * 
+         * @param id the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setId(org.knime.gateway.api.entity.AnnotationIDEnt id);
         
         
         /**

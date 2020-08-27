@@ -114,6 +114,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     @JsonProperty("bounds")
     public BoundsEnt getBounds();
     
+    @Override
+    @JsonProperty("id")
+    public org.knime.gateway.api.entity.AnnotationIDEnt getId();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -165,6 +169,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         @Override
         @JsonProperty("bounds")
         public WorkflowAnnotationEntMixInBuilder setBounds(final BoundsEnt bounds);
+        
+        @Override
+        @JsonProperty("id")
+        public WorkflowAnnotationEntMixInBuilder setId(final org.knime.gateway.api.entity.AnnotationIDEnt id);
         
     }
 

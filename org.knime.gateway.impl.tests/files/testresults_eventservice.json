@@ -153,6 +153,10 @@
       "path" : "/workflowAnnotations/4/styleRanges/17"
     }, {
       "op" : "replace",
+      "path" : "/workflowAnnotations/5/id/index",
+      "value" : 6
+    }, {
+      "op" : "replace",
       "path" : "/workflowAnnotations/3/text",
       "value" : "normal16red16greenbold24normal9bolditalic13\n﷽\n\nabcde👮🏻‍♂️f\n\n\nabc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc \n\nnormal16red16greenbold24normal9bolditalic13\n﷽\n---\nעברית היא שפה שמית."
     }, {
@@ -290,6 +294,10 @@
       "value" : 13
     }, {
       "op" : "replace",
+      "path" : "/workflowAnnotations/1/id/index",
+      "value" : 2
+    }, {
+      "op" : "replace",
       "path" : "/workflowAnnotations/6/bounds/x",
       "value" : 0
     }, {
@@ -339,6 +347,26 @@
       "op" : "replace",
       "path" : "/workflowAnnotations/0/bounds/x",
       "value" : 880
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/3/id/index",
+      "value" : 4
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/0/id/index",
+      "value" : 1
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/4/id/index",
+      "value" : 5
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/2/id/index",
+      "value" : 3
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/6/id/index",
+      "value" : 7
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/1/bounds/x",
@@ -526,6 +554,7 @@
           "x" : 0,
           "y" : 0
         },
+        "id" : "root_7",
         "styleRanges" : [ ],
         "text" : "",
         "textAlign" : "left"
