@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
@@ -40,10 +41,12 @@ import org.apache.commons.io.IOUtils;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
@@ -64,6 +67,7 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.ConfigUtils;
+import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
@@ -401,21 +405,32 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeTemplateEnt buildNodeTemplateEnt(final NativeNodeContainer nc) {
-        return builder(NodeTemplateEntBuilder.class)
-                .setName(nc.getName())
-                .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()))
-                .setIcon(createIconDataURL(nc.getNode().getFactory()))
-                .build();
+        NodeTemplateEntBuilder builder = builder(NodeTemplateEntBuilder.class)
+            .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()));
+        if(nc.getType() != NodeType.Missing) {
+            builder.setName(nc.getName())
+                .setIcon(createIconDataURL(nc.getNode().getFactory()));
+        } else {
+            NodeFactory<? extends NodeModel> factory = nc.getNode().getFactory();
+            NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)factory).getNodeAndBundleInfo();
+            builder.setName(nodeInfo.getNodeName().orElse("Unknown Name (MISSING)"));
+        }
+        return builder.build();
     }
 
-    private static String createTemplateId(final NodeFactory<NodeModel> nodeFactory) {
+    private static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
         String configHash = "";
         if (nodeFactory instanceof DynamicNodeFactory) {
             final NodeSettings settings = new NodeSettings("");
             nodeFactory.saveAdditionalFactorySettings(settings);
             configHash = ConfigUtils.contentBasedHashString(settings);
         }
-        return nodeFactory.getClass().getCanonicalName() + configHash;
+        if (nodeFactory instanceof MissingNodeFactory) {
+            NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)nodeFactory).getNodeAndBundleInfo();
+            return nodeInfo.getFactoryClass().orElse("unknown_missing_node_factory_" + UUID.randomUUID()) + configHash;
+        } else {
+            return nodeFactory.getClass().getCanonicalName() + configHash;
+        }
     }
 
     private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
