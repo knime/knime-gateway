@@ -82,8 +82,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("workflowProjects")
-    public java.util.List<WorkflowProjectEnt> getWorkflowProjects();
+    @JsonProperty("openedWorkflows")
+    public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
     
     @Override
     @JsonProperty("activeWorkflows")
@@ -110,8 +110,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
         public AppStateEntMixIn build();
     
         @Override
-        @JsonProperty("workflowProjects")
-        public AppStateEntMixInBuilder setWorkflowProjects(final java.util.List<WorkflowProjectEnt> workflowProjects);
+        @JsonProperty("openedWorkflows")
+        public AppStateEntMixInBuilder setOpenedWorkflows(final java.util.List<WorkflowProjectEnt> openedWorkflows);
         
         @Override
         @JsonProperty("activeWorkflows")

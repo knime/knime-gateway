@@ -107,7 +107,7 @@ public final class DefaultApplicationService implements ApplicationService {
                 EntityBuilderUtil.buildWorkflowEnt(wp.openProject(), wp.getID()), NodeIDEnt.getRootID()))
             .collect(toList());
 
-        return builder(AppStateEntBuilder.class).setWorkflowProjects(projects).setActiveWorkflows(activeWorkflows)
+        return builder(AppStateEntBuilder.class).setOpenedWorkflows(projects).setActiveWorkflows(activeWorkflows)
             .build();
     }
 

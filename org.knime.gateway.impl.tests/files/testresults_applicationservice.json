@@ -1658,13 +1658,13 @@
         } ]
       }
     } ],
-    "workflowProjects" : [ {
+    "openedWorkflows" : [ {
       "name" : "Test Gateway Workflow",
       "projectId" : "the_workflow_project_id"
     } ]
   },
   "empty_appstate" : {
     "activeWorkflows" : [ ],
-    "workflowProjects" : [ ]
+    "openedWorkflows" : [ ]
   }
 }

@@ -63,7 +63,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultAppStateEnt  implements AppStateEnt {
 
-  protected java.util.List<WorkflowProjectEnt> m_workflowProjects;
+  protected java.util.List<WorkflowProjectEnt> m_openedWorkflows;
   protected java.util.List<WorkflowSnapshotEnt> m_activeWorkflows;
   
   protected DefaultAppStateEnt() {
@@ -77,7 +77,7 @@ public class DefaultAppStateEnt  implements AppStateEnt {
   
   private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
     
-    m_workflowProjects = immutable(builder.m_workflowProjects);
+    m_openedWorkflows = immutable(builder.m_openedWorkflows);
     m_activeWorkflows = immutable(builder.m_activeWorkflows);
   }
   
@@ -96,7 +96,7 @@ public class DefaultAppStateEnt  implements AppStateEnt {
             return false;
         }
         DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_workflowProjects, ent.m_workflowProjects) && Objects.equals(m_activeWorkflows, ent.m_activeWorkflows);
+        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows) && Objects.equals(m_activeWorkflows, ent.m_activeWorkflows);
     }
 
 
@@ -107,7 +107,7 @@ public class DefaultAppStateEnt  implements AppStateEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_workflowProjects)
+               .append(m_openedWorkflows)
                .append(m_activeWorkflows)
                .toHashCode();
    }
@@ -115,8 +115,8 @@ public class DefaultAppStateEnt  implements AppStateEnt {
 	
 	
   @Override
-  public java.util.List<WorkflowProjectEnt> getWorkflowProjects() {
-        return m_workflowProjects;
+  public java.util.List<WorkflowProjectEnt> getOpenedWorkflows() {
+        return m_openedWorkflows;
   }
     
   @Override
@@ -131,12 +131,12 @@ public class DefaultAppStateEnt  implements AppStateEnt {
             
         }
     
-        private java.util.List<WorkflowProjectEnt> m_workflowProjects = new java.util.ArrayList<>();
+        private java.util.List<WorkflowProjectEnt> m_openedWorkflows = new java.util.ArrayList<>();
         private java.util.List<WorkflowSnapshotEnt> m_activeWorkflows = new java.util.ArrayList<>();
 
         @Override
-        public DefaultAppStateEntBuilder setWorkflowProjects(java.util.List<WorkflowProjectEnt> workflowProjects) {
-             m_workflowProjects = workflowProjects;
+        public DefaultAppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows) {
+             m_openedWorkflows = openedWorkflows;
              return this;
         }
 
