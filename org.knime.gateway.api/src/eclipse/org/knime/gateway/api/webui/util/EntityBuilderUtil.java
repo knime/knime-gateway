@@ -101,7 +101,6 @@ import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
@@ -436,8 +435,7 @@ public final class EntityBuilderUtil {
     private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
         URL url = nodeFactory.getIcon();
         if (url != null) {
-            ensureBundleURL(nodeFactory.getClass(), url);
-            try (InputStream in = url.openStream()) { // NOSONAR - URL checked above to avoid abuse
+            try (InputStream in = url.openStream()) {
                 return createIconDataURL(IOUtils.toByteArray(in));
             } catch (IOException ex) {
                 NodeLogger.getLogger(EntityBuilderUtil.class)
@@ -446,18 +444,6 @@ public final class EntityBuilderUtil {
             }
         } else {
             return null;
-        }
-    }
-
-    /*
-     * Makes sure that the provided url points to a file in the bundle the factory class is part of.
-     * Otherwise an exception is thrown.
-     */
-    private static void ensureBundleURL(final Class<? extends NodeFactory> factoryClass, final URL url) {
-        String bundleRoot = FrameworkUtil.getBundle(factoryClass).getResource("/").toExternalForm();
-        if (!url.toExternalForm().startsWith(bundleRoot.substring(0, bundleRoot.length() - 1))) {
-            throw new IllegalStateException("An icon URL references a file outside of the node's bundle. Icon URL: "
-                + url + "; bundle root URL: " + bundleRoot);
         }
     }
 
