@@ -59,22 +59,12 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.junit.Test;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
-import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
-import org.knime.core.node.workflow.AnnotationData;
-import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -86,6 +76,8 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.WorkflowTransformations;
+import org.knime.gateway.testing.helper.WorkflowTransformations.WorkflowTransformation;
 import org.mockito.ArgumentCaptor;
 
 /**
@@ -129,7 +121,8 @@ public class EventServiceTest extends GatewayServiceTest {
         es.addEventConsumer(eventConsumerMock);
 
         WorkflowManager wfm = idAndWfm.getSecond();
-        checkWorkflowChangeEvents(wfm, eventConsumerMock, wf.getSnapshotId(), createWorkflowChangeTests());
+        checkWorkflowChangeEvents(wfm, eventConsumerMock, wf.getSnapshotId(),
+            WorkflowTransformations.createWorkflowTransformations());
 
         // remove event listener and check successful removal
         reset(eventConsumerMock);
@@ -170,67 +163,23 @@ public class EventServiceTest extends GatewayServiceTest {
 
         WorkflowManager wfm = idAndWfm.getSecond();
         // carry out the workflow changes
-        createWorkflowChangeTests().forEach(t -> t.m_workflowManipulator.accept(wfm));
+        WorkflowTransformations.createWorkflowTransformations().forEach(t -> t.apply(wfm));
 
         // check that there weren't any events
         verify(eventConsumerMock, times(0)).accept(any(), any());
     }
 
-    private static List<WorkflowChangeTest> createWorkflowChangeTests() {
-        return Arrays.asList(
-            newTest(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed_1", "node_executed_2"),
-            newTest(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(14), 1)),
-                "connection_removed"),
-            newTest(w -> w.removeNode(w.getID().createChild(18)), "node_removed"),
-            newTest(w -> {
-                try {
-                    NodeID id = w.createAndAddNode(NodeFactoryExtensionManager.getInstance()
-                        .createNodeFactory("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory")
-                        .get());
-                    w.getNodeContainer(id)
-                        .setUIInformation(NodeUIInformation.builder().setNodeLocation(40, 50, 10, 10).build());
-                } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException ex) {
-                    throw new IllegalStateException(ex);
-                }
-            }, "node_added"),
-            newTest(w -> w.addConnection(w.getID().createChild(13), 1, w.getID().createChild(14), 1),
-                "connection_added"),
-            newTest(w -> w.addWorkflowAnnotation(new WorkflowAnnotation()), "workflow_annotation_added"),
-            newTest(w -> w.removeAnnotation(w.getWorkflowAnnotations().iterator().next()),
-                "workflow_annotation_removed"),
-            newTest(w -> {
-                AnnotationData newAnno = new AnnotationData();
-                w.getWorkflowAnnotations().iterator().next().copyFrom(newAnno, false);
-            }, "workflow_annotation_changed"),
-            newTest(w -> {
-                AnnotationData newAnno = new AnnotationData();
-                newAnno.setText("new anno text");
-                w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
-            }, "node_annotation_added"),
-            newTest(w -> {
-                AnnotationData newAnno = new AnnotationData();
-                newAnno.setText("yet another text");
-                w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
-            }, "node_annotation_changed"),
-            newTest(w -> {
-                NativeNodeContainer oldNC = (NativeNodeContainer)w.getNodeContainer(w.getID().createChild(184));
-                ModifiableNodeCreationConfiguration creationConfig = oldNC.getNode().getCopyOfCreationConfig().get();
-                creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
-                creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
-                w.replaceNode(oldNC.getID(), creationConfig);
-            }, "ports_added"));
-    }
 
     @SuppressWarnings("unchecked")
     private void checkWorkflowChangeEvents(final WorkflowManager wfm,
         final BiConsumer<String, EventEnt> eventConsumerMock, final UUID initialSnapshotId,
-        final List<WorkflowChangeTest> wfChangeTests) throws InterruptedException {
+        final List<WorkflowTransformation> wfTransformations) throws InterruptedException {
         boolean isVeryFirstPatch = true;
-        for (WorkflowChangeTest test : wfChangeTests) {
-            test.m_workflowManipulator.accept(wfm);
+        for (WorkflowTransformation workflowTransformation : wfTransformations) {
+            workflowTransformation.apply(wfm);
             wfm.waitWhileInExecution(10, TimeUnit.SECONDS);
 
-            int numPatches = test.m_patchIds.length;
+            int numPatches = workflowTransformation.getChangeNames().length;
 
             // wait for all events to arrive
             await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
@@ -247,25 +196,11 @@ public class EventServiceTest extends GatewayServiceTest {
                         is(initialSnapshotId));
                     isVeryFirstPatch = false;
                 }
-                cr(events.get(numPatches - i - 1).getPatch(), test.m_patchIds[i]);
+                cr(events.get(numPatches - i - 1).getPatch(), workflowTransformation.getChangeNames()[i]);
             }
 
             reset(eventConsumerMock);
         }
     }
 
-    static WorkflowChangeTest newTest(final Consumer<WorkflowManager> workflowManipulator, final String... patchIds) {
-        WorkflowChangeTest t = new WorkflowChangeTest();
-        t.m_patchIds = patchIds;
-        t.m_workflowManipulator = workflowManipulator;
-        return t;
-    }
-
-    private static class WorkflowChangeTest {
-
-        String[] m_patchIds;
-
-        Consumer<WorkflowManager> m_workflowManipulator;
-
-    }
 }
