@@ -44,106 +44,63 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Native node extension of a node.
+ * The state for a metanode.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends NodeEnt {
+public interface MetaNodeStateEnt extends GatewayEntity {
+
+  /**
+   * Gets or Sets executionState
+   */
+  public enum ExecutionStateEnum {
+    IDLE("IDLE"),
+    
+    EXECUTING("EXECUTING"),
+    
+    EXECUTED("EXECUTED");
+
+    private String value;
+
+    ExecutionStateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * The id of the node template this node is an instance of.
-   * @return templateId , never <code>null</code>
+   * Get executionState
+   * @return executionState 
    **/
-  public String getTemplateId();
-
-  /**
-   * Get state
-   * @return state 
-   **/
-  public NodeStateEnt getState();
+  public ExecutionStateEnum getExecutionState();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
+    public interface MetaNodeStateEntBuilder extends GatewayEntityBuilder<MetaNodeStateEnt> {
 
         /**
-         * The id of the node.
+   		 * Set executionState
          * 
-         * @param id the property value, NOT <code>null</code>! 
+         * @param executionState the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        /**
-         * The list of inputs.
-         * 
-         * @param inPorts the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
-        
-        /**
-         * The list of outputs.
-         * 
-         * @param outPorts the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
-        
-        /**
-   		 * Set annotation
-         * 
-         * @param annotation the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
-        
-        /**
-   		 * Set position
-         * 
-         * @param position the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setPosition(XYEnt position);
-        
-        /**
-         * Whether it&#39;s a native node, component or a metanode.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * The id of the node template this node is an instance of.
-         * 
-         * @param templateId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setTemplateId(String templateId);
-        
-        /**
-   		 * Set state
-         * 
-         * @param state the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setState(NodeStateEnt state);
+        MetaNodeStateEntBuilder setExecutionState(ExecutionStateEnum executionState);
         
         
         /**
@@ -153,7 +110,7 @@ public interface NativeNodeEnt extends NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NativeNodeEnt build();
+        MetaNodeStateEnt build();
     
     }
 

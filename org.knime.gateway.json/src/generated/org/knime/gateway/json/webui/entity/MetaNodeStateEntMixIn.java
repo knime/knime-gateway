@@ -44,11 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,9 +53,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt.DefaultMetaNodeStateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -72,57 +67,21 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt.DefaultCompon
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultComponentNodeEnt.class)
+    defaultImpl = DefaultMetaNodeStateEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultComponentNodeEnt.class, name="ComponentNode")
+    @Type(value = DefaultMetaNodeStateEnt.class, name="MetaNodeState")
 })
-@JsonDeserialize(builder=DefaultComponentNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultMetaNodeStateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
+public interface MetaNodeStateEntMixIn extends MetaNodeStateEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
-    
-    @Override
-    @JsonProperty("inPorts")
-    public java.util.List<NodePortEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<NodePortEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("state")
-    public NodeStateEnt getState();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
+    @JsonProperty("executionState")
+    public ExecutionStateEnum getExecutionState();
     
 
     /**
@@ -134,55 +93,19 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultComponentNodeEntBuilder.class)
+        defaultImpl = DefaultMetaNodeStateEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder.class, name="ComponentNode")
+        @Type(value = DefaultMetaNodeStateEnt.DefaultMetaNodeStateEntBuilder.class, name="MetaNodeState")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentNodeEntMixInBuilder extends ComponentNodeEntBuilder {
+    public static interface MetaNodeStateEntMixInBuilder extends MetaNodeStateEntBuilder {
     
         @Override
-        public ComponentNodeEntMixIn build();
+        public MetaNodeStateEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public ComponentNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        @Override
-        @JsonProperty("inPorts")
-        public ComponentNodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public ComponentNodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
-        
-        @Override
-        @JsonProperty("annotation")
-        public ComponentNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
-        @Override
-        @JsonProperty("position")
-        public ComponentNodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public ComponentNodeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("name")
-        public ComponentNodeEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("type")
-        public ComponentNodeEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("state")
-        public ComponentNodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
-        @JsonProperty("icon")
-        public ComponentNodeEntMixInBuilder setIcon(final String icon);
+        @JsonProperty("executionState")
+        public MetaNodeStateEntMixInBuilder setExecutionState(final ExecutionStateEnum executionState);
         
     }
 

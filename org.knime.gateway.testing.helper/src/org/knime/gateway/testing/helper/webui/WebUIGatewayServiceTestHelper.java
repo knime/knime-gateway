@@ -53,9 +53,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
@@ -112,7 +112,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * The name-field of a workflow varies if the test is executed as part of an it-test or unit-test.
          */
-        pe.addException(WorkflowNodeEnt.class, "name", (v, gen, e) -> {
+        pe.addException(MetaNodeEnt.class, "name", (v, gen, e) -> {
             if (e.getId().equals(NodeIDEnt.getRootID())) {
                 gen.writeString("PLACEHOLDER_FOR_NAME");
             } else {
@@ -120,7 +120,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
             }
         });
 
-        pe.addException(NodeExecutionStateEnt.class, "warning",
+        pe.addException(NodeStateEnt.class, "warning",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_WARNING_MESSAGE"));
 
         /**

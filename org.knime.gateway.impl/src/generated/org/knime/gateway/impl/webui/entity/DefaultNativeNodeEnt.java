@@ -51,8 +51,8 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -67,7 +67,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEnt {
 
   protected String m_templateId;
-  protected NodeExecutionStateEnt m_state;
+  protected NodeStateEnt m_state;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -153,7 +153,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
   }
     
   @Override
-  public NodeExecutionStateEnt getState() {
+  public NodeStateEnt getState() {
         return m_state;
   }
     
@@ -171,7 +171,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         private XYEnt m_position;
         private KindEnum m_kind;
         private String m_templateId;
-        private NodeExecutionStateEnt m_state;
+        private NodeStateEnt m_state;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -234,7 +234,7 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setState(NodeExecutionStateEnt state) {
+        public DefaultNativeNodeEntBuilder setState(NodeStateEnt state) {
              m_state = state;
              return this;
         }

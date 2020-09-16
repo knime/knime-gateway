@@ -315,7 +315,7 @@
               "y" : 343
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
           },
@@ -360,7 +360,7 @@
               "y" : 343
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
           },
@@ -397,7 +397,7 @@
               "y" : 763
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
           },
@@ -428,7 +428,7 @@
               "y" : 203
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.viz.table.TableNodeFactory"
           },
@@ -474,7 +474,7 @@
               "y" : 363
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             },
             "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
@@ -494,16 +494,21 @@
               "connectedVia" : "[ root:4_1 ]",
               "index" : 0,
               "name" : "Connected to: Filtered",
+              "nodeState" : "CONFIGURED",
               "type" : "table"
             }, {
               "connectedVia" : "[ root:5_1 ]",
               "index" : 1,
               "name" : "Connected to: Filtered Out",
+              "nodeState" : "CONFIGURED",
               "type" : "table"
             } ],
             "position" : {
               "x" : 484,
               "y" : 263
+            },
+            "state" : {
+              "executionState" : "IDLE"
             }
           },
           "root:182" : {
@@ -536,7 +541,7 @@
               "y" : 963
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             },
             "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory"
@@ -595,7 +600,7 @@
               "y" : 763
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
           },
@@ -658,7 +663,7 @@
               "y" : 23
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
           },
@@ -717,7 +722,7 @@
               "y" : 963
             },
             "state" : {
-              "state" : "IDLE"
+              "executionState" : "IDLE"
             },
             "type" : "Sink"
           },
@@ -764,7 +769,7 @@
               "y" : 403
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
           },
@@ -816,7 +821,7 @@
               "y" : 83
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
           },
@@ -862,7 +867,7 @@
               "y" : 623
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             }
           },
@@ -914,7 +919,7 @@
               "y" : 483
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
           },
@@ -971,7 +976,7 @@
               "y" : 203
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
           },
@@ -1017,7 +1022,7 @@
               "y" : 163
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
           },
@@ -1051,7 +1056,7 @@
               "y" : 963
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             },
             "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"
@@ -1088,7 +1093,7 @@
               "y" : 503
             },
             "state" : {
-              "state" : "IDLE"
+              "executionState" : "IDLE"
             },
             "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
           },
@@ -1133,7 +1138,7 @@
               "y" : 563
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
           },
@@ -1179,7 +1184,7 @@
               "y" : 503
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             },
             "type" : "Visualizer"
@@ -1225,7 +1230,7 @@
               "y" : 563
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             },
             "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
@@ -1262,7 +1267,7 @@
               "y" : 383
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
           },
@@ -1307,7 +1312,7 @@
               "y" : 623
             },
             "state" : {
-              "state" : "IDLE",
+              "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
             }
           },
@@ -1352,7 +1357,7 @@
               "y" : 763
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
           },
@@ -1382,7 +1387,7 @@
               "y" : 763
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
           },
@@ -1418,7 +1423,7 @@
               "y" : 763
             },
             "state" : {
-              "state" : "CONFIGURED"
+              "executionState" : "CONFIGURED"
             },
             "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
           }

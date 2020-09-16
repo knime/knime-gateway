@@ -60,16 +60,22 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 import org.knime.gateway.api.webui.entity.GatewayExceptionEnt.GatewayExceptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultGatewayExceptionEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.NodeExecutionStateEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
@@ -86,8 +92,6 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowCh
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
@@ -140,6 +144,15 @@ public class Interface2ImplMap {
         if(clazz == GatewayExceptionEntBuilder.class) {
             return (B)new DefaultGatewayExceptionEnt.DefaultGatewayExceptionEntBuilder();
         }        
+        if(clazz == MetaNodeEntBuilder.class) {
+            return (B)new DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder();
+        }        
+        if(clazz == MetaNodePortEntBuilder.class) {
+            return (B)new DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder();
+        }        
+        if(clazz == MetaNodeStateEntBuilder.class) {
+            return (B)new DefaultMetaNodeStateEnt.DefaultMetaNodeStateEntBuilder();
+        }        
         if(clazz == NativeNodeEntBuilder.class) {
             return (B)new DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder();
         }        
@@ -149,11 +162,11 @@ public class Interface2ImplMap {
         if(clazz == NodeEntBuilder.class) {
             return (B)new DefaultNodeEnt.DefaultNodeEntBuilder();
         }        
-        if(clazz == NodeExecutionStateEntBuilder.class) {
-            return (B)new DefaultNodeExecutionStateEnt.DefaultNodeExecutionStateEntBuilder();
-        }        
         if(clazz == NodePortEntBuilder.class) {
             return (B)new DefaultNodePortEnt.DefaultNodePortEntBuilder();
+        }        
+        if(clazz == NodeStateEntBuilder.class) {
+            return (B)new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();
         }        
         if(clazz == NodeTemplateEntBuilder.class) {
             return (B)new DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder();
@@ -178,9 +191,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowEntBuilder.class) {
             return (B)new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();
-        }        
-        if(clazz == WorkflowNodeEntBuilder.class) {
-            return (B)new DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder();
         }        
         if(clazz == WorkflowProjectEntBuilder.class) {
             return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();

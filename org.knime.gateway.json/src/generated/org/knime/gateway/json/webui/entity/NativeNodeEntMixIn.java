@@ -45,8 +45,8 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -114,7 +114,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     
     @Override
     @JsonProperty("state")
-    public NodeExecutionStateEnt getState();
+    public NodeStateEnt getState();
     
 
     /**
@@ -166,7 +166,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         
         @Override
         @JsonProperty("state")
-        public NativeNodeEntMixInBuilder setState(final NodeExecutionStateEnt state);
+        public NativeNodeEntMixInBuilder setState(final NodeStateEnt state);
         
     }
 

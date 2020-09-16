@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import java.math.BigDecimal;
+import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,9 +54,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt.DefaultNodeExecutionStateEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -68,37 +68,53 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionStateEnt.DefaultN
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultNodeExecutionStateEnt.class)
+    defaultImpl = DefaultMetaNodePortEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultNodeExecutionStateEnt.class, name="NodeExecutionState")
+    @Type(value = DefaultMetaNodePortEnt.class, name="MetaNodePort")
 })
-@JsonDeserialize(builder=DefaultNodeExecutionStateEntBuilder.class)
+@JsonDeserialize(builder=DefaultMetaNodePortEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeExecutionStateEntMixIn extends NodeExecutionStateEnt {
+public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("state")
-    public StateEnum getState();
+    @JsonProperty("name")
+    public String getName();
     
     @Override
-    @JsonProperty("progress")
-    public BigDecimal getProgress();
+    @JsonProperty("info")
+    public String getInfo();
     
     @Override
-    @JsonProperty("progressMessage")
-    public String getProgressMessage();
+    @JsonProperty("index")
+    public Integer getIndex();
     
     @Override
-    @JsonProperty("error")
-    public String getError();
+    @JsonProperty("type")
+    public TypeEnum getType();
     
     @Override
-    @JsonProperty("warning")
-    public String getWarning();
+    @JsonProperty("color")
+    public String getColor();
+    
+    @Override
+    @JsonProperty("connectedVia")
+    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
+    
+    @Override
+    @JsonProperty("optional")
+    public Boolean isOptional();
+    
+    @Override
+    @JsonProperty("inactive")
+    public Boolean isInactive();
+    
+    @Override
+    @JsonProperty("nodeState")
+    public NodeStateEnum getNodeState();
     
 
     /**
@@ -110,35 +126,51 @@ public interface NodeExecutionStateEntMixIn extends NodeExecutionStateEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultNodeExecutionStateEntBuilder.class)
+        defaultImpl = DefaultMetaNodePortEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultNodeExecutionStateEnt.DefaultNodeExecutionStateEntBuilder.class, name="NodeExecutionState")
+        @Type(value = DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder.class, name="MetaNodePort")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeExecutionStateEntMixInBuilder extends NodeExecutionStateEntBuilder {
+    public static interface MetaNodePortEntMixInBuilder extends MetaNodePortEntBuilder {
     
         @Override
-        public NodeExecutionStateEntMixIn build();
+        public MetaNodePortEntMixIn build();
     
         @Override
-        @JsonProperty("state")
-        public NodeExecutionStateEntMixInBuilder setState(final StateEnum state);
+        @JsonProperty("name")
+        public MetaNodePortEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("progress")
-        public NodeExecutionStateEntMixInBuilder setProgress(final BigDecimal progress);
+        @JsonProperty("info")
+        public MetaNodePortEntMixInBuilder setInfo(final String info);
         
         @Override
-        @JsonProperty("progressMessage")
-        public NodeExecutionStateEntMixInBuilder setProgressMessage(final String progressMessage);
+        @JsonProperty("index")
+        public MetaNodePortEntMixInBuilder setIndex(final Integer index);
         
         @Override
-        @JsonProperty("error")
-        public NodeExecutionStateEntMixInBuilder setError(final String error);
+        @JsonProperty("type")
+        public MetaNodePortEntMixInBuilder setType(final TypeEnum type);
         
         @Override
-        @JsonProperty("warning")
-        public NodeExecutionStateEntMixInBuilder setWarning(final String warning);
+        @JsonProperty("color")
+        public MetaNodePortEntMixInBuilder setColor(final String color);
+        
+        @Override
+        @JsonProperty("connectedVia")
+        public MetaNodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
+        
+        @Override
+        @JsonProperty("optional")
+        public MetaNodePortEntMixInBuilder setOptional(final Boolean optional);
+        
+        @Override
+        @JsonProperty("inactive")
+        public MetaNodePortEntMixInBuilder setInactive(final Boolean inactive);
+        
+        @Override
+        @JsonProperty("nodeState")
+        public MetaNodePortEntMixInBuilder setNodeState(final NodeStateEnum nodeState);
         
     }
 

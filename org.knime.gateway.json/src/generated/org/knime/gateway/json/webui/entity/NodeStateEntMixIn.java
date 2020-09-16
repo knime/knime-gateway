@@ -44,10 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.NodeEntMixIn;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,9 +54,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt.DefaultNodeStateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -71,45 +68,37 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt.DefaultWorkflo
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowNodeEnt.class)
+    defaultImpl = DefaultNodeStateEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowNodeEnt.class, name="WorkflowNode")
+    @Type(value = DefaultNodeStateEnt.class, name="NodeState")
 })
-@JsonDeserialize(builder=DefaultWorkflowNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeStateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
+public interface NodeStateEntMixIn extends NodeStateEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
+    @JsonProperty("executionState")
+    public ExecutionStateEnum getExecutionState();
     
     @Override
-    @JsonProperty("inPorts")
-    public java.util.List<NodePortEnt> getInPorts();
+    @JsonProperty("progress")
+    public BigDecimal getProgress();
     
     @Override
-    @JsonProperty("outPorts")
-    public java.util.List<NodePortEnt> getOutPorts();
+    @JsonProperty("progressMessage")
+    public String getProgressMessage();
     
     @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
+    @JsonProperty("error")
+    public String getError();
     
     @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("warning")
+    public String getWarning();
     
 
     /**
@@ -121,43 +110,35 @@ public interface WorkflowNodeEntMixIn extends WorkflowNodeEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowNodeEntBuilder.class)
+        defaultImpl = DefaultNodeStateEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name="WorkflowNode")
+        @Type(value = DefaultNodeStateEnt.DefaultNodeStateEntBuilder.class, name="NodeState")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowNodeEntMixInBuilder extends WorkflowNodeEntBuilder {
+    public static interface NodeStateEntMixInBuilder extends NodeStateEntBuilder {
     
         @Override
-        public WorkflowNodeEntMixIn build();
+        public NodeStateEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public WorkflowNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        @JsonProperty("executionState")
+        public NodeStateEntMixInBuilder setExecutionState(final ExecutionStateEnum executionState);
         
         @Override
-        @JsonProperty("inPorts")
-        public WorkflowNodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
+        @JsonProperty("progress")
+        public NodeStateEntMixInBuilder setProgress(final BigDecimal progress);
         
         @Override
-        @JsonProperty("outPorts")
-        public WorkflowNodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
+        @JsonProperty("progressMessage")
+        public NodeStateEntMixInBuilder setProgressMessage(final String progressMessage);
         
         @Override
-        @JsonProperty("annotation")
-        public WorkflowNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
+        @JsonProperty("error")
+        public NodeStateEntMixInBuilder setError(final String error);
         
         @Override
-        @JsonProperty("position")
-        public WorkflowNodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public WorkflowNodeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("name")
-        public WorkflowNodeEntMixInBuilder setName(final String name);
+        @JsonProperty("warning")
+        public NodeStateEntMixInBuilder setWarning(final String warning);
         
     }
 

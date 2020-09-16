@@ -59,8 +59,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
 
 /**
@@ -77,9 +77,9 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
 @JsonSubTypes({
     @Type(value = DefaultNodeEnt.class, name="Node")
 ,
-  @Type(value = DefaultWorkflowNodeEnt.class, name = "WorkflowNode")
-,
   @Type(value = DefaultComponentNodeEnt.class, name = "ComponentNode")
+,
+  @Type(value = DefaultMetaNodeEnt.class, name = "MetaNode")
 ,
   @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
 })
@@ -129,9 +129,9 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonSubTypes({
         @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
         ,
-      @Type(value = DefaultWorkflowNodeEnt.DefaultWorkflowNodeEntBuilder.class, name = "WorkflowNode")
-        ,
       @Type(value = DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder.class, name = "ComponentNode")
+        ,
+      @Type(value = DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder.class, name = "MetaNode")
         ,
       @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
     })

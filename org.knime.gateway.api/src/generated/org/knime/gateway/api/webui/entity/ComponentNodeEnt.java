@@ -46,8 +46,8 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -108,7 +108,7 @@ public interface ComponentNodeEnt extends NodeEnt {
    * Get state
    * @return state 
    **/
-  public NodeExecutionStateEnt getState();
+  public NodeStateEnt getState();
 
   /**
    * The icon encoded in a data-url. Not available if no icon is set.
@@ -192,7 +192,7 @@ public interface ComponentNodeEnt extends NodeEnt {
          * @param state the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setState(NodeExecutionStateEnt state);
+        ComponentNodeEntBuilder setState(NodeStateEnt state);
         
         /**
          * The icon encoded in a data-url. Not available if no icon is set.

@@ -18,6 +18,7 @@
  */
 package org.knime.gateway.api.webui.util;
 
+import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
@@ -78,17 +79,23 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt.NodeStateEnum;
+import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.NodeExecutionStateEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt.StateEnum;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
+import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.TypeEnum;
@@ -98,8 +105,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt.WorkflowNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 
@@ -229,7 +234,7 @@ public final class EntityBuilderUtil {
         if (nc instanceof NativeNodeContainer) {
             return buildNativeNodeEnt((NativeNodeContainer) nc);
         } else if (nc instanceof WorkflowManager) {
-            return buildWorkflowNodeEnt((WorkflowManager) nc);
+            return buildMetaNodeEnt((WorkflowManager) nc);
         } else if (nc instanceof SubNodeContainer) {
             return buildComponentNodeEnt((SubNodeContainer) nc);
         } else {
@@ -239,19 +244,56 @@ public final class EntityBuilderUtil {
     }
 
     /**
-     * Builds a new {@link WorkflowNodeEnt}.
+     * Builds a new {@link MetaNodeEnt}.
      *
      * @param wm the workflow manager to build the node entity from
      * @return the newly created entity
      */
-    public static WorkflowNodeEnt buildWorkflowNodeEnt(final WorkflowManager wm) {
-        return builder(WorkflowNodeEntBuilder.class).setName(wm.getName())
+    public static MetaNodeEnt buildMetaNodeEnt(final WorkflowManager wm) {
+        return builder(MetaNodeEntBuilder.class).setName(wm.getName())
                 .setId(new NodeIDEnt(wm.getID()))
-                .setOutPorts(buildNodePortEnts(wm, false))
+                .setOutPorts(buildMetaNodePortEnts(wm, false))
                 .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))
-                .setInPorts(buildNodePortEnts(wm, true))
+                .setInPorts(buildMetaNodePortEnts(wm, true))
                 .setPosition(buildXYEnt(wm.getUIInformation()))
+                .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))
                 .setKind(KindEnum.METANODE).build();
+    }
+
+    private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
+        org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum executionState;
+        if (state.isConfigured() || state.isIdle() || state.isWaitingToBeExecuted()) {
+            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.IDLE;
+        } else if (state.isExecuted() || state.isHalted()) {
+            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.EXECUTED;
+        } else if (state.isExecutingRemotely() || state.isExecutionInProgress()) {
+            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.EXECUTING;
+        } else {
+            throw new IllegalStateException("Node container state cannot be mapped!");
+        }
+        return builder(MetaNodeStateEntBuilder.class).setExecutionState(executionState).build();
+    }
+
+    private static List<NodePortEnt> buildMetaNodePortEnts(final WorkflowManager wm, final boolean inPorts) {
+        return buildNodePortEnts(wm, inPorts).stream().map(np -> { // NOSONAR
+            NodeStateEnum nodeState;
+            if (!inPorts) {
+                nodeState = getNodeStateEnumForMetaNodePort(wm.getOutPort(np.getIndex()).getNodeState());
+            } else {
+                nodeState = null;
+            }
+            return builder(MetaNodePortEntBuilder.class)
+                .setColor(np.getColor())
+                .setConnectedVia(np.getConnectedVia())
+                .setInactive(np.isInactive())
+                .setIndex(np.getIndex())
+                .setInfo(np.getInfo())
+                .setName(np.getName())
+                .setOptional(np.isOptional())
+                .setType(np.getType())
+                .setNodeState(nodeState)
+                .build();
+        }).collect(toList());
     }
 
     /**
@@ -270,7 +312,7 @@ public final class EntityBuilderUtil {
                 .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))
                 .setInPorts(buildNodePortEnts(nc, true))
                 .setPosition(buildXYEnt(nc.getUIInformation()))
-                .setState(buildNodeExecutionStateEnt(nc))
+                .setState(buildNodeStateEnt(nc))
                 .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))
                 .setKind(KindEnum.COMPONENT).build();
     }
@@ -361,17 +403,17 @@ public final class EntityBuilderUtil {
             .setInPorts(buildNodePortEnts(nc, true))
             .setPosition(buildXYEnt(nc.getUIInformation()))
             .setKind(KindEnum.NODE)
-            .setState(buildNodeExecutionStateEnt(nc))
+            .setState(buildNodeStateEnt(nc))
             .setTemplateId(createTemplateId(nc.getNode().getFactory())).build();
     }
 
-    private static NodeExecutionStateEnt buildNodeExecutionStateEnt(final SingleNodeContainer nc) {
+    private static NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {
         if (nc.isInactive()) {
             return null;
         }
         NodeContainerState ncState = nc.getNodeContainerState();
-        NodeExecutionStateEntBuilder builder =
-            builder(NodeExecutionStateEntBuilder.class).setState(getStateEnum(ncState));
+        NodeStateEntBuilder builder =
+            builder(NodeStateEntBuilder.class).setExecutionState(getNodeExecutionStateEnum(ncState));
         NodeMessage nodeMessage = nc.getNodeMessage();
         if (nodeMessage.getMessageType() == Type.ERROR) {
             builder.setError(nodeMessage.getMessage());
@@ -389,19 +431,39 @@ public final class EntityBuilderUtil {
         return builder.build();
     }
 
-    private static StateEnum getStateEnum(final NodeContainerState ncState) { // NOSONAR
+
+
+    private static ExecutionStateEnum getNodeExecutionStateEnum(final NodeContainerState ncState) { // NOSONAR
         if (ncState.isConfigured()) {
-            return StateEnum.CONFIGURED;
+            return ExecutionStateEnum.CONFIGURED;
         } else if (ncState.isExecuted()) {
-            return StateEnum.EXECUTED;
+            return ExecutionStateEnum.EXECUTED;
         } else if (ncState.isExecutionInProgress() || ncState.isExecutingRemotely()) {
-            return StateEnum.EXECUTING;
+            return ExecutionStateEnum.EXECUTING;
         } else if (ncState.isIdle()) {
-            return StateEnum.IDLE;
+            return ExecutionStateEnum.IDLE;
         } else if (ncState.isWaitingToBeExecuted()) {
-            return StateEnum.QUEUED;
+            return ExecutionStateEnum.QUEUED;
         } else if (ncState.isHalted()) {
-            return StateEnum.HALTED;
+            return ExecutionStateEnum.HALTED;
+        } else {
+            throw new IllegalStateException("Node container state cannot be mapped!");
+        }
+    }
+
+    private static NodeStateEnum getNodeStateEnumForMetaNodePort(final NodeContainerState ncState) { // NOSONAR
+        if (ncState.isConfigured()) {
+            return NodeStateEnum.CONFIGURED;
+        } else if (ncState.isExecuted()) {
+            return NodeStateEnum.EXECUTED;
+        } else if (ncState.isExecutionInProgress() || ncState.isExecutingRemotely()) {
+            return NodeStateEnum.EXECUTING;
+        } else if (ncState.isIdle()) {
+            return NodeStateEnum.IDLE;
+        } else if (ncState.isWaitingToBeExecuted()) {
+            return NodeStateEnum.QUEUED;
+        } else if (ncState.isHalted()) {
+            return NodeStateEnum.HALTED;
         } else {
             throw new IllegalStateException("Node container state cannot be mapped!");
         }

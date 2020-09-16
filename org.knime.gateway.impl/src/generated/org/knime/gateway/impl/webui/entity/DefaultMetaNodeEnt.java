@@ -50,12 +50,13 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 
 /**
  * A node containing (referencing) a workflow (also referred to it as metanode)
@@ -63,20 +64,21 @@ import org.knime.gateway.api.webui.entity.WorkflowNodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNodeEnt {
+public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
 
   protected String m_name;
+  protected MetaNodeStateEnt m_state;
   
-  protected DefaultWorkflowNodeEnt() {
+  protected DefaultMetaNodeEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WorkflowNode";
+    return "MetaNode";
   }
   
-  private DefaultWorkflowNodeEnt(DefaultWorkflowNodeEntBuilder builder) {
+  private DefaultMetaNodeEnt(DefaultMetaNodeEntBuilder builder) {
     super();
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
@@ -103,6 +105,10 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
+    if(builder.m_state == null) {
+        throw new IllegalArgumentException("state must not be null.");
+    }
+    m_state = immutable(builder.m_state);
   }
   
    /**
@@ -119,8 +125,8 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowNodeEnt ent = (DefaultWorkflowNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name);
+        DefaultMetaNodeEnt ent = (DefaultMetaNodeEnt)o;
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state);
     }
 
 
@@ -138,6 +144,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
                .append(m_position)
                .append(m_kind)
                .append(m_name)
+               .append(m_state)
                .toHashCode();
    }
   
@@ -148,10 +155,15 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         return m_name;
   }
     
-  
-    public static class DefaultWorkflowNodeEntBuilder implements WorkflowNodeEntBuilder {
+  @Override
+  public MetaNodeStateEnt getState() {
+        return m_state;
+  }
     
-        public DefaultWorkflowNodeEntBuilder(){
+  
+    public static class DefaultMetaNodeEntBuilder implements MetaNodeEntBuilder {
+    
+        public DefaultMetaNodeEntBuilder(){
             super();
         }
     
@@ -162,9 +174,10 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         private XYEnt m_position;
         private KindEnum m_kind;
         private String m_name;
+        private MetaNodeStateEnt m_state;
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
+        public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
              if(id == null) {
                  throw new IllegalArgumentException("id must not be null.");
              }
@@ -173,7 +186,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+        public DefaultMetaNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
              if(inPorts == null) {
                  throw new IllegalArgumentException("inPorts must not be null.");
              }
@@ -182,7 +195,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+        public DefaultMetaNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
              if(outPorts == null) {
                  throw new IllegalArgumentException("outPorts must not be null.");
              }
@@ -191,13 +204,13 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation) {
+        public DefaultMetaNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation) {
              m_annotation = annotation;
              return this;
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setPosition(XYEnt position) {
+        public DefaultMetaNodeEntBuilder setPosition(XYEnt position) {
              if(position == null) {
                  throw new IllegalArgumentException("position must not be null.");
              }
@@ -206,7 +219,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setKind(KindEnum kind) {
+        public DefaultMetaNodeEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -215,7 +228,7 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
         }
 
         @Override
-        public DefaultWorkflowNodeEntBuilder setName(String name) {
+        public DefaultMetaNodeEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("name must not be null.");
              }
@@ -223,10 +236,19 @@ public class DefaultWorkflowNodeEnt extends DefaultNodeEnt implements WorkflowNo
              return this;
         }
 
+        @Override
+        public DefaultMetaNodeEntBuilder setState(MetaNodeStateEnt state) {
+             if(state == null) {
+                 throw new IllegalArgumentException("state must not be null.");
+             }
+             m_state = state;
+             return this;
+        }
+
         
         @Override
-        public DefaultWorkflowNodeEnt build() {
-            return new DefaultWorkflowNodeEnt(this);
+        public DefaultMetaNodeEnt build() {
+            return new DefaultMetaNodeEnt(this);
         }
     
     }

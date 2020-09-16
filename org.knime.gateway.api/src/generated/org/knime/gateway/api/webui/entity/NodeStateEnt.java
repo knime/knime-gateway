@@ -44,91 +44,126 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
+import java.math.BigDecimal;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A node containing (referencing) a workflow (also referred to it as metanode)
+ * Encapsulates properties around a node&#39;s execution state.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowNodeEnt extends NodeEnt {
+public interface NodeStateEnt extends GatewayEntity {
+
+  /**
+   * Different execution states of a node. It is not given, if the node is inactive.
+   */
+  public enum ExecutionStateEnum {
+    IDLE("IDLE"),
+    
+    CONFIGURED("CONFIGURED"),
+    
+    EXECUTED("EXECUTED"),
+    
+    EXECUTING("EXECUTING"),
+    
+    QUEUED("QUEUED"),
+    
+    HALTED("HALTED");
+
+    private String value;
+
+    ExecutionStateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * Get name
-   * @return name , never <code>null</code>
+   * Different execution states of a node. It is not given, if the node is inactive.
+   * @return executionState 
    **/
-  public String getName();
+  public ExecutionStateEnum getExecutionState();
+
+  /**
+   * Get progress
+   * @return progress 
+   **/
+  public BigDecimal getProgress();
+
+  /**
+   * Get progressMessage
+   * @return progressMessage 
+   **/
+  public String getProgressMessage();
+
+  /**
+   * Get error
+   * @return error 
+   **/
+  public String getError();
+
+  /**
+   * Get warning
+   * @return warning 
+   **/
+  public String getWarning();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowNodeEntBuilder extends GatewayEntityBuilder<WorkflowNodeEnt> {
+    public interface NodeStateEntBuilder extends GatewayEntityBuilder<NodeStateEnt> {
 
         /**
-         * The id of the node.
+         * Different execution states of a node. It is not given, if the node is inactive.
          * 
-         * @param id the property value, NOT <code>null</code>! 
+         * @param executionState the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        NodeStateEntBuilder setExecutionState(ExecutionStateEnum executionState);
         
         /**
-         * The list of inputs.
+   		 * Set progress
          * 
-         * @param inPorts the property value, NOT <code>null</code>! 
+         * @param progress the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
+        NodeStateEntBuilder setProgress(BigDecimal progress);
         
         /**
-         * The list of outputs.
+   		 * Set progressMessage
          * 
-         * @param outPorts the property value, NOT <code>null</code>! 
+         * @param progressMessage the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
+        NodeStateEntBuilder setProgressMessage(String progressMessage);
         
         /**
-   		 * Set annotation
+   		 * Set error
          * 
-         * @param annotation the property value,  
+         * @param error the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
+        NodeStateEntBuilder setError(String error);
         
         /**
-   		 * Set position
+   		 * Set warning
          * 
-         * @param position the property value, NOT <code>null</code>! 
+         * @param warning the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowNodeEntBuilder setPosition(XYEnt position);
-        
-        /**
-         * Whether it&#39;s a native node, component or a metanode.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowNodeEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set name
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowNodeEntBuilder setName(String name);
+        NodeStateEntBuilder setWarning(String warning);
         
         
         /**
@@ -138,7 +173,7 @@ public interface WorkflowNodeEnt extends NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowNodeEnt build();
+        NodeStateEnt build();
     
     }
 

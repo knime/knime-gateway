@@ -44,126 +44,106 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import java.math.BigDecimal;
+import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Encapsulates properties around a node&#39;s execution state.
+ * A node containing (referencing) a workflow (also referred to it as metanode)
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeExecutionStateEnt extends GatewayEntity {
-
-  /**
-   * Different execution states of a node. It is not given, if the node is inactive.
-   */
-  public enum StateEnum {
-    IDLE("IDLE"),
-    
-    CONFIGURED("CONFIGURED"),
-    
-    EXECUTED("EXECUTED"),
-    
-    EXECUTING("EXECUTING"),
-    
-    QUEUED("QUEUED"),
-    
-    HALTED("HALTED");
-
-    private String value;
-
-    StateEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface MetaNodeEnt extends NodeEnt {
 
 
   /**
-   * Different execution states of a node. It is not given, if the node is inactive.
-   * @return state 
+   * Get name
+   * @return name , never <code>null</code>
    **/
-  public StateEnum getState();
+  public String getName();
 
   /**
-   * Get progress
-   * @return progress 
+   * Get state
+   * @return state , never <code>null</code>
    **/
-  public BigDecimal getProgress();
-
-  /**
-   * Get progressMessage
-   * @return progressMessage 
-   **/
-  public String getProgressMessage();
-
-  /**
-   * Get error
-   * @return error 
-   **/
-  public String getError();
-
-  /**
-   * Get warning
-   * @return warning 
-   **/
-  public String getWarning();
+  public MetaNodeStateEnt getState();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodeExecutionStateEntBuilder extends GatewayEntityBuilder<NodeExecutionStateEnt> {
+    public interface MetaNodeEntBuilder extends GatewayEntityBuilder<MetaNodeEnt> {
 
         /**
-         * Different execution states of a node. It is not given, if the node is inactive.
+         * The id of the node.
          * 
-         * @param state the property value,  
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeExecutionStateEntBuilder setState(StateEnum state);
+        MetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-   		 * Set progress
+         * The list of inputs.
          * 
-         * @param progress the property value,  
+         * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeExecutionStateEntBuilder setProgress(BigDecimal progress);
+        MetaNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
         
         /**
-   		 * Set progressMessage
+         * The list of outputs.
          * 
-         * @param progressMessage the property value,  
+         * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeExecutionStateEntBuilder setProgressMessage(String progressMessage);
+        MetaNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
         
         /**
-   		 * Set error
+   		 * Set annotation
          * 
-         * @param error the property value,  
+         * @param annotation the property value,  
          * @return this entity builder for chaining
          */
-        NodeExecutionStateEntBuilder setError(String error);
+        MetaNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
         
         /**
-   		 * Set warning
+   		 * Set position
          * 
-         * @param warning the property value,  
+         * @param position the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeExecutionStateEntBuilder setWarning(String warning);
+        MetaNodeEntBuilder setPosition(XYEnt position);
+        
+        /**
+         * Whether it&#39;s a native node, component or a metanode.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set name
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setName(String name);
+        
+        /**
+   		 * Set state
+         * 
+         * @param state the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setState(MetaNodeStateEnt state);
         
         
         /**
@@ -173,7 +153,7 @@ public interface NodeExecutionStateEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeExecutionStateEnt build();
+        MetaNodeEnt build();
     
     }
 

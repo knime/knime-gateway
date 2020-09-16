@@ -44,106 +44,133 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
 
 /**
- * Native node extension of a node.
+ * Extension of a node port with extra properties as required to characterise a metanode port.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends NodeEnt {
+public interface MetaNodePortEnt extends NodePortEnt {
+
+  /**
+   * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
+   */
+  public enum NodeStateEnum {
+    IDLE("IDLE"),
+    
+    CONFIGURED("CONFIGURED"),
+    
+    EXECUTED("EXECUTED"),
+    
+    EXECUTING("EXECUTING"),
+    
+    QUEUED("QUEUED"),
+    
+    HALTED("HALTED");
+
+    private String value;
+
+    NodeStateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * The id of the node template this node is an instance of.
-   * @return templateId , never <code>null</code>
+   * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
+   * @return nodeState 
    **/
-  public String getTemplateId();
-
-  /**
-   * Get state
-   * @return state 
-   **/
-  public NodeStateEnt getState();
+  public NodeStateEnum getNodeState();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
+    public interface MetaNodePortEntBuilder extends GatewayEntityBuilder<MetaNodePortEnt> {
 
         /**
-         * The id of the node.
+         * A descriptive name for the port (taken from the node description)
          * 
-         * @param id the property value, NOT <code>null</code>! 
+         * @param name the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        MetaNodePortEntBuilder setName(String name);
         
         /**
-         * The list of inputs.
+         * Additional port info if the port carries data (i.e. if the respective node is executed and the port is active).
          * 
-         * @param inPorts the property value, NOT <code>null</code>! 
+         * @param info the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
+        MetaNodePortEntBuilder setInfo(String info);
         
         /**
-         * The list of outputs.
+         * The index starting at 0.
          * 
-         * @param outPorts the property value, NOT <code>null</code>! 
+         * @param index the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
+        MetaNodePortEntBuilder setIndex(Integer index);
         
         /**
-   		 * Set annotation
+   		 * Set type
          * 
-         * @param annotation the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
+        MetaNodePortEntBuilder setType(TypeEnum type);
         
         /**
-   		 * Set position
+         * The color of the port in case of type &#39;other&#39;.
          * 
-         * @param position the property value, NOT <code>null</code>! 
+         * @param color the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setPosition(XYEnt position);
+        MetaNodePortEntBuilder setColor(String color);
         
         /**
-         * Whether it&#39;s a native node, component or a metanode.
+   		 * Set connectedVia
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param connectedVia the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setKind(KindEnum kind);
+        MetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
         
         /**
-         * The id of the node template this node is an instance of.
+   		 * Set optional
          * 
-         * @param templateId the property value, NOT <code>null</code>! 
+         * @param optional the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setTemplateId(String templateId);
+        MetaNodePortEntBuilder setOptional(Boolean optional);
         
         /**
-   		 * Set state
+   		 * Set inactive
          * 
-         * @param state the property value,  
+         * @param inactive the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setState(NodeStateEnt state);
+        MetaNodePortEntBuilder setInactive(Boolean inactive);
+        
+        /**
+         * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
+         * 
+         * @param nodeState the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setNodeState(NodeStateEnum nodeState);
         
         
         /**
@@ -153,7 +180,7 @@ public interface NativeNodeEnt extends NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NativeNodeEnt build();
+        MetaNodePortEnt build();
     
     }
 

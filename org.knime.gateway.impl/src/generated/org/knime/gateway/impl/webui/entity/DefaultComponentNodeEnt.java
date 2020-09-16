@@ -51,8 +51,8 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -68,7 +68,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
 
   protected String m_name;
   protected TypeEnum m_type;
-  protected NodeExecutionStateEnt m_state;
+  protected NodeStateEnt m_state;
   protected String m_icon;
   
   protected DefaultComponentNodeEnt() {
@@ -164,7 +164,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
   }
     
   @Override
-  public NodeExecutionStateEnt getState() {
+  public NodeStateEnt getState() {
         return m_state;
   }
     
@@ -188,7 +188,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         private KindEnum m_kind;
         private String m_name;
         private TypeEnum m_type;
-        private NodeExecutionStateEnt m_state;
+        private NodeStateEnt m_state;
         private String m_icon;
 
         @Override
@@ -258,7 +258,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setState(NodeExecutionStateEnt state) {
+        public DefaultComponentNodeEntBuilder setState(NodeStateEnt state) {
              m_state = state;
              return this;
         }

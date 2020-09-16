@@ -52,7 +52,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.math.BigDecimal;
 
-import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 
 /**
  * Encapsulates properties around a node&#39;s execution state.
@@ -60,26 +60,26 @@ import org.knime.gateway.api.webui.entity.NodeExecutionStateEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeExecutionStateEnt  implements NodeExecutionStateEnt {
+public class DefaultNodeStateEnt  implements NodeStateEnt {
 
-  protected StateEnum m_state;
+  protected ExecutionStateEnum m_executionState;
   protected BigDecimal m_progress;
   protected String m_progressMessage;
   protected String m_error;
   protected String m_warning;
   
-  protected DefaultNodeExecutionStateEnt() {
+  protected DefaultNodeStateEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "NodeExecutionState";
+    return "NodeState";
   }
   
-  private DefaultNodeExecutionStateEnt(DefaultNodeExecutionStateEntBuilder builder) {
+  private DefaultNodeStateEnt(DefaultNodeStateEntBuilder builder) {
     
-    m_state = immutable(builder.m_state);
+    m_executionState = immutable(builder.m_executionState);
     m_progress = immutable(builder.m_progress);
     m_progressMessage = immutable(builder.m_progressMessage);
     m_error = immutable(builder.m_error);
@@ -100,8 +100,8 @@ public class DefaultNodeExecutionStateEnt  implements NodeExecutionStateEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNodeExecutionStateEnt ent = (DefaultNodeExecutionStateEnt)o;
-        return Objects.equals(m_state, ent.m_state) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_progressMessage, ent.m_progressMessage) && Objects.equals(m_error, ent.m_error) && Objects.equals(m_warning, ent.m_warning);
+        DefaultNodeStateEnt ent = (DefaultNodeStateEnt)o;
+        return Objects.equals(m_executionState, ent.m_executionState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_progressMessage, ent.m_progressMessage) && Objects.equals(m_error, ent.m_error) && Objects.equals(m_warning, ent.m_warning);
     }
 
 
@@ -112,7 +112,7 @@ public class DefaultNodeExecutionStateEnt  implements NodeExecutionStateEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_state)
+               .append(m_executionState)
                .append(m_progress)
                .append(m_progressMessage)
                .append(m_error)
@@ -123,8 +123,8 @@ public class DefaultNodeExecutionStateEnt  implements NodeExecutionStateEnt {
 	
 	
   @Override
-  public StateEnum getState() {
-        return m_state;
+  public ExecutionStateEnum getExecutionState() {
+        return m_executionState;
   }
     
   @Override
@@ -148,52 +148,52 @@ public class DefaultNodeExecutionStateEnt  implements NodeExecutionStateEnt {
   }
     
   
-    public static class DefaultNodeExecutionStateEntBuilder implements NodeExecutionStateEntBuilder {
+    public static class DefaultNodeStateEntBuilder implements NodeStateEntBuilder {
     
-        public DefaultNodeExecutionStateEntBuilder(){
+        public DefaultNodeStateEntBuilder(){
             
         }
     
-        private StateEnum m_state;
+        private ExecutionStateEnum m_executionState;
         private BigDecimal m_progress;
         private String m_progressMessage;
         private String m_error;
         private String m_warning;
 
         @Override
-        public DefaultNodeExecutionStateEntBuilder setState(StateEnum state) {
-             m_state = state;
+        public DefaultNodeStateEntBuilder setExecutionState(ExecutionStateEnum executionState) {
+             m_executionState = executionState;
              return this;
         }
 
         @Override
-        public DefaultNodeExecutionStateEntBuilder setProgress(BigDecimal progress) {
+        public DefaultNodeStateEntBuilder setProgress(BigDecimal progress) {
              m_progress = progress;
              return this;
         }
 
         @Override
-        public DefaultNodeExecutionStateEntBuilder setProgressMessage(String progressMessage) {
+        public DefaultNodeStateEntBuilder setProgressMessage(String progressMessage) {
              m_progressMessage = progressMessage;
              return this;
         }
 
         @Override
-        public DefaultNodeExecutionStateEntBuilder setError(String error) {
+        public DefaultNodeStateEntBuilder setError(String error) {
              m_error = error;
              return this;
         }
 
         @Override
-        public DefaultNodeExecutionStateEntBuilder setWarning(String warning) {
+        public DefaultNodeStateEntBuilder setWarning(String warning) {
              m_warning = warning;
              return this;
         }
 
         
         @Override
-        public DefaultNodeExecutionStateEnt build() {
-            return new DefaultNodeExecutionStateEnt(this);
+        public DefaultNodeStateEnt build() {
+            return new DefaultNodeStateEnt(this);
         }
     
     }

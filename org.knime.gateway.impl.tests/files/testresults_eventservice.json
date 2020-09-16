@@ -536,7 +536,7 @@
   "node_executed_2" : {
     "ops" : [ {
       "op" : "replace",
-      "path" : "/nodes/root:1/state/state",
+      "path" : "/nodes/root:1/state/executionState",
       "value" : "EXECUTING"
     } ],
     "targetTypeId" : "Workflow"
@@ -583,7 +583,7 @@
           "y" : 56
         },
         "state" : {
-          "state" : "IDLE"
+          "executionState" : "IDLE"
         },
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
       }
@@ -593,18 +593,18 @@
   "node_executed_1" : {
     "ops" : [ {
       "op" : "replace",
-      "path" : "/nodes/root:12/state/state",
+      "path" : "/nodes/root:12/state/executionState",
       "value" : "CONFIGURED"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:12/state/warning"
     }, {
       "op" : "replace",
-      "path" : "/nodes/root:8/state/state",
+      "path" : "/nodes/root:8/state/executionState",
       "value" : "CONFIGURED"
     }, {
       "op" : "replace",
-      "path" : "/nodes/root:23/state/state",
+      "path" : "/nodes/root:23/state/executionState",
       "value" : "CONFIGURED"
     }, {
       "op" : "replace",
@@ -623,14 +623,14 @@
       "value" : "Rows: 8, Cols: 5"
     }, {
       "op" : "replace",
-      "path" : "/nodes/root:9/state/state",
+      "path" : "/nodes/root:9/state/executionState",
       "value" : "CONFIGURED"
     }, {
       "op" : "replace",
       "path" : "/nodes/root:9/state/warning"
     }, {
       "op" : "replace",
-      "path" : "/nodes/root:1/state/state",
+      "path" : "/nodes/root:1/state/executionState",
       "value" : "EXECUTED"
     } ],
     "targetTypeId" : "Workflow"
