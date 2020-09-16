@@ -85,31 +85,31 @@ public interface AnnotationEnt extends GatewayEntity {
 
   /**
    * Get text
-   * @return text 
+   * @return text , never <code>null</code>
    **/
   public String getText();
 
   /**
    * Get backgroundColor
-   * @return backgroundColor 
+   * @return backgroundColor , never <code>null</code>
    **/
   public String getBackgroundColor();
 
   /**
    * Get textAlign
-   * @return textAlign 
+   * @return textAlign , never <code>null</code>
    **/
   public TextAlignEnum getTextAlign();
 
   /**
    * Get borderWidth
-   * @return borderWidth 
+   * @return borderWidth , never <code>null</code>
    **/
   public Integer getBorderWidth();
 
   /**
    * Get borderColor
-   * @return borderColor 
+   * @return borderColor , never <code>null</code>
    **/
   public String getBorderColor();
 
@@ -134,7 +134,7 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
    		 * Set text
          * 
-         * @param text the property value,  
+         * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setText(String text);
@@ -142,7 +142,7 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
    		 * Set backgroundColor
          * 
-         * @param backgroundColor the property value,  
+         * @param backgroundColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setBackgroundColor(String backgroundColor);
@@ -150,7 +150,7 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
    		 * Set textAlign
          * 
-         * @param textAlign the property value,  
+         * @param textAlign the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
@@ -158,7 +158,7 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
    		 * Set borderWidth
          * 
-         * @param borderWidth the property value,  
+         * @param borderWidth the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setBorderWidth(Integer borderWidth);
@@ -166,7 +166,7 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
    		 * Set borderColor
          * 
-         * @param borderColor the property value,  
+         * @param borderColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setBorderColor(String borderColor);

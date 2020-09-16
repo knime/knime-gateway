@@ -69,7 +69,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set text
          * 
-         * @param text the property value,  
+         * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setText(String text);
@@ -77,7 +77,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set backgroundColor
          * 
-         * @param backgroundColor the property value,  
+         * @param backgroundColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setBackgroundColor(String backgroundColor);
@@ -85,7 +85,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set textAlign
          * 
-         * @param textAlign the property value,  
+         * @param textAlign the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
@@ -93,7 +93,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set borderWidth
          * 
-         * @param borderWidth the property value,  
+         * @param borderWidth the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setBorderWidth(Integer borderWidth);
@@ -101,7 +101,7 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set borderColor
          * 
-         * @param borderColor the property value,  
+         * @param borderColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setBorderColor(String borderColor);

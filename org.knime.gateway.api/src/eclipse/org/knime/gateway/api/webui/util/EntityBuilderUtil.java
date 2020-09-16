@@ -112,12 +112,14 @@ public final class EntityBuilderUtil {
 
     /*
      * The node position in the java-ui refers to the upper left corner of the 'node figure' which also includes
-     * the (not always visble) implicit flow variables ports. I.e. the position does NOT match with the upper left
+     * the (not always visible) implicit flow variables ports. I.e. the position does NOT match with the upper left
      * corner of the node background image. However, this is used as reference point in the web-ui. Thus, we need
      * to correct the position in y direction by some pixels.
      * (the value is chosen according to org.knime.workbench.editor2.figures.AbstractPortFigure.getPortSizeNode())
+     *
+     * NOTE: the current value has been 'experimentally' determined
      */
-    private static final int NODE_Y_POS_CORRECTION = 9;
+    private static final int NODE_Y_POS_CORRECTION = 6;
 
     private EntityBuilderUtil() {
         //utility class

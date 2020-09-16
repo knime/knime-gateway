@@ -312,7 +312,7 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 346
+          "y" : 343
         },
         "state" : {
           "state" : "EXECUTED"
@@ -359,7 +359,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 346
+          "y" : 343
         },
         "state" : {
           "state" : "EXECUTED"
@@ -398,7 +398,7 @@
         } ],
         "position" : {
           "x" : 684,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "EXECUTED"
@@ -430,7 +430,7 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 206
+          "y" : 203
         },
         "state" : {
           "state" : "EXECUTED"
@@ -476,7 +476,7 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 366
+          "y" : 363
         },
         "state" : {
           "state" : "IDLE",
@@ -510,7 +510,7 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 266
+          "y" : 263
         }
       },
       "root:182" : {
@@ -540,7 +540,7 @@
         } ],
         "position" : {
           "x" : 763,
-          "y" : 966
+          "y" : 963
         },
         "state" : {
           "state" : "IDLE",
@@ -601,7 +601,7 @@
         } ],
         "position" : {
           "x" : 864,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "EXECUTED"
@@ -666,7 +666,7 @@
         } ],
         "position" : {
           "x" : 384,
-          "y" : 26
+          "y" : 23
         },
         "state" : {
           "state" : "EXECUTED"
@@ -725,7 +725,7 @@
         } ],
         "position" : {
           "x" : 924,
-          "y" : 966
+          "y" : 963
         },
         "state" : {
           "state" : "IDLE"
@@ -776,7 +776,7 @@
         } ],
         "position" : {
           "x" : 904,
-          "y" : 406
+          "y" : 403
         },
         "state" : {
           "state" : "EXECUTED"
@@ -830,7 +830,7 @@
         } ],
         "position" : {
           "x" : 544,
-          "y" : 86
+          "y" : 83
         },
         "state" : {
           "state" : "EXECUTED"
@@ -878,7 +878,7 @@
         } ],
         "position" : {
           "x" : 164,
-          "y" : 626
+          "y" : 623
         },
         "state" : {
           "state" : "EXECUTED"
@@ -931,7 +931,7 @@
         } ],
         "position" : {
           "x" : 1064,
-          "y" : 486
+          "y" : 483
         },
         "state" : {
           "state" : "EXECUTED"
@@ -990,7 +990,7 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 206
+          "y" : 203
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1038,7 +1038,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 166
+          "y" : 163
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1072,7 +1072,7 @@
         } ],
         "position" : {
           "x" : 644,
-          "y" : 966
+          "y" : 963
         },
         "state" : {
           "state" : "IDLE",
@@ -1111,7 +1111,7 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 506
+          "y" : 503
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1159,7 +1159,7 @@
         } ],
         "position" : {
           "x" : 684,
-          "y" : 566
+          "y" : 563
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1207,7 +1207,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 506
+          "y" : 503
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1256,7 +1256,7 @@
         } ],
         "position" : {
           "x" : 784,
-          "y" : 566
+          "y" : 563
         },
         "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
       },
@@ -1289,7 +1289,7 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 386
+          "y" : 383
         },
         "state" : {
           "error" : "Execute failed: This node fails on each execution.",
@@ -1335,7 +1335,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 626
+          "y" : 623
         },
         "state" : {
           "error" : "Execute failed: \nFail in execution 0:12:0:10: This node fails on each execution.",
@@ -1382,7 +1382,7 @@
         } ],
         "position" : {
           "x" : 464,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1414,7 +1414,7 @@
         } ],
         "position" : {
           "x" : 224,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "EXECUTED"
@@ -1452,7 +1452,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "EXECUTED"
@@ -2011,7 +2011,7 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 346
+          "y" : 343
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2056,7 +2056,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 346
+          "y" : 343
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2093,7 +2093,7 @@
         } ],
         "position" : {
           "x" : 684,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2124,7 +2124,7 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 206
+          "y" : 203
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2170,7 +2170,7 @@
         } ],
         "position" : {
           "x" : 704,
-          "y" : 366
+          "y" : 363
         },
         "state" : {
           "state" : "IDLE",
@@ -2202,7 +2202,7 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 266
+          "y" : 263
         }
       },
       "root:182" : {
@@ -2232,7 +2232,7 @@
         } ],
         "position" : {
           "x" : 763,
-          "y" : 966
+          "y" : 963
         },
         "state" : {
           "state" : "IDLE",
@@ -2291,7 +2291,7 @@
         } ],
         "position" : {
           "x" : 864,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2354,7 +2354,7 @@
         } ],
         "position" : {
           "x" : 384,
-          "y" : 26
+          "y" : 23
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2413,7 +2413,7 @@
         } ],
         "position" : {
           "x" : 924,
-          "y" : 966
+          "y" : 963
         },
         "state" : {
           "state" : "IDLE"
@@ -2460,7 +2460,7 @@
         } ],
         "position" : {
           "x" : 904,
-          "y" : 406
+          "y" : 403
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2512,7 +2512,7 @@
         } ],
         "position" : {
           "x" : 544,
-          "y" : 86
+          "y" : 83
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2558,7 +2558,7 @@
         } ],
         "position" : {
           "x" : 164,
-          "y" : 626
+          "y" : 623
         },
         "state" : {
           "state" : "IDLE",
@@ -2610,7 +2610,7 @@
         } ],
         "position" : {
           "x" : 1064,
-          "y" : 486
+          "y" : 483
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2667,7 +2667,7 @@
         } ],
         "position" : {
           "x" : 204,
-          "y" : 206
+          "y" : 203
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2713,7 +2713,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 166
+          "y" : 163
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2747,7 +2747,7 @@
         } ],
         "position" : {
           "x" : 644,
-          "y" : 966
+          "y" : 963
         },
         "state" : {
           "state" : "IDLE",
@@ -2784,7 +2784,7 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 506
+          "y" : 503
         },
         "state" : {
           "state" : "IDLE"
@@ -2829,7 +2829,7 @@
         } ],
         "position" : {
           "x" : 684,
-          "y" : 566
+          "y" : 563
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -2875,7 +2875,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 506
+          "y" : 503
         },
         "state" : {
           "state" : "IDLE",
@@ -2921,7 +2921,7 @@
         } ],
         "position" : {
           "x" : 784,
-          "y" : 566
+          "y" : 563
         },
         "state" : {
           "state" : "IDLE",
@@ -2958,7 +2958,7 @@
         } ],
         "position" : {
           "x" : 484,
-          "y" : 386
+          "y" : 383
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -3003,7 +3003,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 626
+          "y" : 623
         },
         "state" : {
           "state" : "IDLE",
@@ -3048,7 +3048,7 @@
         } ],
         "position" : {
           "x" : 464,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -3078,7 +3078,7 @@
         } ],
         "position" : {
           "x" : 224,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "CONFIGURED"
@@ -3114,7 +3114,7 @@
         } ],
         "position" : {
           "x" : 344,
-          "y" : 766
+          "y" : 763
         },
         "state" : {
           "state" : "CONFIGURED"

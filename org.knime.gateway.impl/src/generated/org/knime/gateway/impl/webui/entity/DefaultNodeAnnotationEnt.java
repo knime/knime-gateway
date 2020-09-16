@@ -75,10 +75,25 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
   
   private DefaultNodeAnnotationEnt(DefaultNodeAnnotationEntBuilder builder) {
     super();
+    if(builder.m_text == null) {
+        throw new IllegalArgumentException("text must not be null.");
+    }
     m_text = immutable(builder.m_text);
+    if(builder.m_backgroundColor == null) {
+        throw new IllegalArgumentException("backgroundColor must not be null.");
+    }
     m_backgroundColor = immutable(builder.m_backgroundColor);
+    if(builder.m_textAlign == null) {
+        throw new IllegalArgumentException("textAlign must not be null.");
+    }
     m_textAlign = immutable(builder.m_textAlign);
+    if(builder.m_borderWidth == null) {
+        throw new IllegalArgumentException("borderWidth must not be null.");
+    }
     m_borderWidth = immutable(builder.m_borderWidth);
+    if(builder.m_borderColor == null) {
+        throw new IllegalArgumentException("borderColor must not be null.");
+    }
     m_borderColor = immutable(builder.m_borderColor);
     m_defaultFontSize = immutable(builder.m_defaultFontSize);
     if(builder.m_styleRanges == null) {
@@ -142,30 +157,45 @@ public class DefaultNodeAnnotationEnt extends DefaultAnnotationEnt implements No
 
         @Override
         public DefaultNodeAnnotationEntBuilder setText(String text) {
+             if(text == null) {
+                 throw new IllegalArgumentException("text must not be null.");
+             }
              m_text = text;
              return this;
         }
 
         @Override
         public DefaultNodeAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
+             if(backgroundColor == null) {
+                 throw new IllegalArgumentException("backgroundColor must not be null.");
+             }
              m_backgroundColor = backgroundColor;
              return this;
         }
 
         @Override
         public DefaultNodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
+             if(textAlign == null) {
+                 throw new IllegalArgumentException("textAlign must not be null.");
+             }
              m_textAlign = textAlign;
              return this;
         }
 
         @Override
         public DefaultNodeAnnotationEntBuilder setBorderWidth(Integer borderWidth) {
+             if(borderWidth == null) {
+                 throw new IllegalArgumentException("borderWidth must not be null.");
+             }
              m_borderWidth = borderWidth;
              return this;
         }
 
         @Override
         public DefaultNodeAnnotationEntBuilder setBorderColor(String borderColor) {
+             if(borderColor == null) {
+                 throw new IllegalArgumentException("borderColor must not be null.");
+             }
              m_borderColor = borderColor;
              return this;
         }

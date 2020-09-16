@@ -69,7 +69,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
 
   /**
    * A unique identifier for the workflow annotation.
-   * @return id 
+   * @return id , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.AnnotationIDEnt getId();
 
@@ -82,7 +82,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set text
          * 
-         * @param text the property value,  
+         * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setText(String text);
@@ -90,7 +90,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set backgroundColor
          * 
-         * @param backgroundColor the property value,  
+         * @param backgroundColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor);
@@ -98,7 +98,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set textAlign
          * 
-         * @param textAlign the property value,  
+         * @param textAlign the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
@@ -106,7 +106,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set borderWidth
          * 
-         * @param borderWidth the property value,  
+         * @param borderWidth the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBorderWidth(Integer borderWidth);
@@ -114,7 +114,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         /**
    		 * Set borderColor
          * 
-         * @param borderColor the property value,  
+         * @param borderColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBorderColor(String borderColor);
@@ -146,7 +146,7 @@ public interface WorkflowAnnotationEnt extends AnnotationEnt {
         /**
          * A unique identifier for the workflow annotation.
          * 
-         * @param id the property value,  
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setId(org.knime.gateway.api.entity.AnnotationIDEnt id);

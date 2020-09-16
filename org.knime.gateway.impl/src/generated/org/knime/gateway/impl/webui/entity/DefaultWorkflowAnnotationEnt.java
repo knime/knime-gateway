@@ -78,10 +78,25 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
   
   private DefaultWorkflowAnnotationEnt(DefaultWorkflowAnnotationEntBuilder builder) {
     super();
+    if(builder.m_text == null) {
+        throw new IllegalArgumentException("text must not be null.");
+    }
     m_text = immutable(builder.m_text);
+    if(builder.m_backgroundColor == null) {
+        throw new IllegalArgumentException("backgroundColor must not be null.");
+    }
     m_backgroundColor = immutable(builder.m_backgroundColor);
+    if(builder.m_textAlign == null) {
+        throw new IllegalArgumentException("textAlign must not be null.");
+    }
     m_textAlign = immutable(builder.m_textAlign);
+    if(builder.m_borderWidth == null) {
+        throw new IllegalArgumentException("borderWidth must not be null.");
+    }
     m_borderWidth = immutable(builder.m_borderWidth);
+    if(builder.m_borderColor == null) {
+        throw new IllegalArgumentException("borderColor must not be null.");
+    }
     m_borderColor = immutable(builder.m_borderColor);
     m_defaultFontSize = immutable(builder.m_defaultFontSize);
     if(builder.m_styleRanges == null) {
@@ -92,6 +107,9 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
         throw new IllegalArgumentException("bounds must not be null.");
     }
     m_bounds = immutable(builder.m_bounds);
+    if(builder.m_id == null) {
+        throw new IllegalArgumentException("id must not be null.");
+    }
     m_id = immutable(builder.m_id);
   }
   
@@ -164,30 +182,45 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setText(String text) {
+             if(text == null) {
+                 throw new IllegalArgumentException("text must not be null.");
+             }
              m_text = text;
              return this;
         }
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
+             if(backgroundColor == null) {
+                 throw new IllegalArgumentException("backgroundColor must not be null.");
+             }
              m_backgroundColor = backgroundColor;
              return this;
         }
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
+             if(textAlign == null) {
+                 throw new IllegalArgumentException("textAlign must not be null.");
+             }
              m_textAlign = textAlign;
              return this;
         }
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBorderWidth(Integer borderWidth) {
+             if(borderWidth == null) {
+                 throw new IllegalArgumentException("borderWidth must not be null.");
+             }
              m_borderWidth = borderWidth;
              return this;
         }
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBorderColor(String borderColor) {
+             if(borderColor == null) {
+                 throw new IllegalArgumentException("borderColor must not be null.");
+             }
              m_borderColor = borderColor;
              return this;
         }
@@ -218,6 +251,9 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setId(org.knime.gateway.api.entity.AnnotationIDEnt id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("id must not be null.");
+             }
              m_id = id;
              return this;
         }
