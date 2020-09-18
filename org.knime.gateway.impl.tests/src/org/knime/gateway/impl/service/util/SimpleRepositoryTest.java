@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,69 +41,29 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.service.util;
+
+import java.util.UUID;
+
+import org.knime.core.util.Pair;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 /**
- * Summarizes auto-generated exceptions that can occur in the executor.
+ * Tests for {@link EntityRepository} and it's {@link SimpleRepository}-implementation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public final class ServiceExceptions {
+public class SimpleRepositoryTest extends AbstractEntityRepositoryTest {
 
-   /**
-    * The requested node was not found.
-    */
-    public static class NodeNotFoundException extends Exception {
-        public NodeNotFoundException(String message) {
-            super(message);
-        }
-        
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> createRepo() {
+        return new SimpleRepository<>();
     }
-
-   /**
-    * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-    */
-    public static class NotASubWorkflowException extends Exception {
-        public NotASubWorkflowException(String message) {
-            super(message);
-        }
-        
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the request is invalid for a reason.
-    */
-    public static class InvalidRequestException extends Exception {
-        public InvalidRequestException(String message) {
-            super(message);
-        }
-        
-        public InvalidRequestException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the an operation is not allowed, e.g., because it&#39;s not applicable.
-    */
-    public static class OperationNotAllowedException extends Exception {
-        public OperationNotAllowedException(String message) {
-            super(message);
-        }
-        
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-    
 }

@@ -22,6 +22,7 @@ import java.util.NoSuchElementException;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -48,6 +49,8 @@ public final class DefaultServices {
     public static <S extends GatewayService> S getDefaultService(final Class<S> serviceInterface) {
         if (serviceInterface.equals(WorkflowService.class)) {
             return (S)DefaultWorkflowService.getInstance();
+        } else if (serviceInterface.equals(NodeService.class)) {
+            return (S)DefaultNodeService.getInstance();
         } else if (serviceInterface.equals(EventService.class)) {
             return (S)DefaultEventService.getInstance();
         } else if(serviceInterface.equals(ApplicationService.class)) {

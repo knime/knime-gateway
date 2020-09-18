@@ -44,14 +44,14 @@
  */
 package org.knime.gateway.api.webui.service.util;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import org.knime.gateway.api.service.GatewayService;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.WorkflowService;
 
 
 /**
@@ -72,6 +72,7 @@ public class ListServices {
      */
     public static List<Class<? extends GatewayService>> listServiceInterfaces() {
         List<Class<? extends GatewayService>> res = new ArrayList<>();
+        res.add(NodeService.class);
         res.add(EventService.class);
         res.add(WorkflowService.class);
         res.add(ApplicationService.class);

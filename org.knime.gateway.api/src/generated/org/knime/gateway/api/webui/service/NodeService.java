@@ -42,60 +42,31 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-
-package org.knime.gateway.impl.webui.jsonrpc.service.util;
-
-import java.lang.reflect.InvocationTargetException;
+package org.knime.gateway.api.webui.service;
 
 import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcApplicationServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcEventServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcNodeServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcWorkflowServiceWrapper;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 
 /**
- * Wraps the given gateway service with the appropriate json rpc service.
+ * Operations on individual nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class WrapWithJsonRpcService {
-
-    private WrapWithJsonRpcService() {
-        //utility class
-    }
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface NodeService extends GatewayService {
 
     /**
-     * Wraps a service instance with a JsonRpc-wrapper (that brings the json-rpc annotations).
+     * Changes the node&#39;s state for the given node-id.
      *
-     * @param service the service to be wrapped
-     * @param serviceInterface the service interface to select the right wrapper
+     * @param projectId ID of the workflow-project.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
-     * @return the service wrapper
+     * 
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    @SuppressWarnings("unchecked")
-    public static <S extends GatewayService> S wrap(final S service, final Class<S> serviceInterface) {
-        try {
-            if(serviceInterface == NodeService.class) {
-                return (S)JsonRpcNodeServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-            if(serviceInterface == EventService.class) {
-                return (S)JsonRpcEventServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-            if(serviceInterface == WorkflowService.class) {
-                return (S)JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-            if(serviceInterface == ApplicationService.class) {
-                return (S)JsonRpcApplicationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException ex) {
-            throw new RuntimeException(ex);
-        }
-        throw new IllegalArgumentException("No wrapper available!");
-    }
+    void changeNodeState(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+        
 }

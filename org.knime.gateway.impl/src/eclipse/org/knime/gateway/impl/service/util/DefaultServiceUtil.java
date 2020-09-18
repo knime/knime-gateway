@@ -46,8 +46,8 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
@@ -62,11 +62,12 @@ import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 
 /**
- * Helper methods useful for the default service implementations.
+ * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
+ * java-ui, web-ui and webportal).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultServiceUtil {
+public final class DefaultServiceUtil {
 
     private DefaultServiceUtil() {
         //utility class
@@ -98,7 +99,7 @@ public class DefaultServiceUtil {
      * @return the {@link WorkflowManager} instance
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      */
-    public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) throws NoSuchElementException {
+    public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) {
         return WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
     }
@@ -110,7 +111,7 @@ public class DefaultServiceUtil {
      * @return the {@link WorkflowProject} instance
      * @throws NoSuchElementException if there is no workflow project for the id registered
      */
-    public static WorkflowProject getWorkflowProject(final String workflowProjectID) throws NoSuchElementException {
+    public static WorkflowProject getWorkflowProject(final String workflowProjectID) {
         return WorkflowProjectManager.getWorkflowProject(workflowProjectID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + workflowProjectID + "\" not found."));
     }
@@ -149,7 +150,7 @@ public class DefaultServiceUtil {
 
     /**
      * Gets the root workflow manager and the contained node container at the same time (see
-     * {@link #getNodeContainer(UUID, NodeIDEnt)} and {@link #getRootWorkflowManager(UUID)}).
+     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link #getRootWorkflowManager(String)}).
      *
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
@@ -199,4 +200,47 @@ public class DefaultServiceUtil {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
     }
+
+    /**
+     * Executes, resets or cancels a node.
+     *
+     * @param rootWfm the root/project workflow which contains the node whose state shall be changed
+     * @param nodeId the id of the node to change the state for; possibly {@link NodeIDEnt#getRootID()} to change the
+     *            state of the root workflow
+     * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
+     *
+     * @return the {@link NodeID} of the node the status was supposed to be changed
+     *
+     * @throws NoSuchElementException if there is no workflow for the given root workflow id
+     * @throws IllegalArgumentException if the is no node for the given node id
+     * @throws IllegalStateException if the state transition is not possible, e.g., because there are executing
+     *             successors or the provided action is unknown
+     */
+    public static NodeID changeNodeState(final WorkflowManager rootWfm, final NodeIDEnt nodeId, final String action) {
+        NodeID nodeID;
+        WorkflowManager wfm;
+        if (nodeId.equals(NodeIDEnt.getRootID())) {
+            nodeID = rootWfm.getID();
+            wfm = rootWfm.getParent();
+        } else {
+            nodeID = nodeId.toNodeID(rootWfm.getID());
+            NodeContainer nc = rootWfm.findNodeContainer(nodeID);
+            wfm = nc.getParent();
+        }
+
+        if (StringUtils.isBlank(action)) {
+            //if there is no action (null or empty)
+        } else if (action.equals("reset")) {
+            wfm.resetAndConfigureNode(nodeID);
+        } else if (action.equals("cancel")) {
+            wfm.cancelExecution(wfm.getNodeContainer(nodeID));
+        } else if (action.equals("execute")) {
+            wfm.executeUpToHere(nodeID);
+        } else {
+            throw new IllegalStateException("Unknown action '" + action + "'");
+        }
+
+        return nodeID;
+    }
+
 }

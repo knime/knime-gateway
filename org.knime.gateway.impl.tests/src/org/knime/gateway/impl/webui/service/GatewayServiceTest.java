@@ -85,7 +85,7 @@ public class GatewayServiceTest {
 
     private static ResultChecker entityResultChecker;
 
-    private String m_testName;
+    private final String m_testName;
 
     /**
      * Initializes/instantiates the result checker.

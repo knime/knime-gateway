@@ -56,8 +56,10 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
+import org.knime.gateway.impl.webui.service.DefaultNodeService;
 import org.knime.gateway.json.util.JsonUtil;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -170,6 +172,15 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected WorkflowService ws() {
         return m_serviceProvider.getWorkflowService();
+    }
+
+    /**
+     * A shortcut to get the node service instance.
+     *
+     * @return a node service instance
+     */
+    protected NodeService ns() {
+        return DefaultNodeService.getInstance();
     }
 
 }

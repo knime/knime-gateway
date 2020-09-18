@@ -42,60 +42,47 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
+package org.knime.gateway.impl.webui.jsonrpc.service;
 
-package org.knime.gateway.impl.webui.jsonrpc.service.util;
 
-import java.lang.reflect.InvocationTargetException;
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
+import com.googlecode.jsonrpc4j.JsonRpcService;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcApplicationServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcEventServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcNodeServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcWorkflowServiceWrapper;
 
 /**
- * Wraps the given gateway service with the appropriate json rpc service.
+ * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@JsonRpcService(value = "NodeService")
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class WrapWithJsonRpcService {
+public class JsonRpcNodeServiceWrapper implements NodeService {
 
-    private WrapWithJsonRpcService() {
-        //utility class
+    private final NodeService m_service;
+    
+    public JsonRpcNodeServiceWrapper(NodeService service) {
+        m_service = service;
     }
 
-    /**
-     * Wraps a service instance with a JsonRpc-wrapper (that brings the json-rpc annotations).
-     *
-     * @param service the service to be wrapped
-     * @param serviceInterface the service interface to select the right wrapper
-     *
-     * @return the service wrapper
+	/**
+     * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public static <S extends GatewayService> S wrap(final S service, final Class<S> serviceInterface) {
-        try {
-            if(serviceInterface == NodeService.class) {
-                return (S)JsonRpcNodeServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-            if(serviceInterface == EventService.class) {
-                return (S)JsonRpcEventServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-            if(serviceInterface == WorkflowService.class) {
-                return (S)JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-            if(serviceInterface == ApplicationService.class) {
-                return (S)JsonRpcApplicationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
-            }
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException ex) {
-            throw new RuntimeException(ex);
-        }
-        throw new IllegalArgumentException("No wrapper available!");
+    @Override
+    @JsonRpcMethod(value = "changeNodeState")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+    })
+    public void changeNodeState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+        m_service.changeNodeState(projectId, nodeId, action);    
     }
+
 }

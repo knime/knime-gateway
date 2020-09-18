@@ -238,7 +238,10 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.forEach(c -> c.accept(name, event));
     }
 
-    private static class PatchEntCreator implements PatchCreator<PatchEnt> {
+    /**
+     * Creates {@link PatchEnt}s.
+     */
+    public static class PatchEntCreator implements PatchCreator<PatchEnt> {
 
         private String m_snapshotId;
 
@@ -250,11 +253,14 @@ public final class DefaultEventService implements EventService {
 
         private String m_targetTypeID;
 
+        /**
+         * @param initialSnapshotId
+         */
         public PatchEntCreator(final String initialSnapshotId) {
             m_snapshotId = initialSnapshotId;
         }
 
-        public void createPatch(final WorkflowEnt ent) {
+        private void createPatch(final WorkflowEnt ent) {
             m_ops.clear();
             m_targetTypeID = ent.getTypeID();
             m_patch = DefaultWorkflowService.getInstance().getEntityRepository()
@@ -265,15 +271,15 @@ public final class DefaultEventService implements EventService {
                 }).orElse(null);
         }
 
-        public PatchEnt getPatch() {
+        private PatchEnt getPatch() {
             return m_patch;
         }
 
-        public String getSnapshotId() {
+        private String getSnapshotId() {
             return m_snapshotId;
         }
 
-        public String getPreviousSnapshotId() {
+        private String getPreviousSnapshotId() {
             return m_previousSnapshotId;
         }
 
