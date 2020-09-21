@@ -74,15 +74,15 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "changeNodeState")
+    @JsonRpcMethod(value = "changeNodeStates")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public void changeNodeState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
-        m_service.changeNodeState(projectId, nodeId, action);    
+    public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+        m_service.changeNodeStates(projectId, nodeIds, action);    
     }
 
 }

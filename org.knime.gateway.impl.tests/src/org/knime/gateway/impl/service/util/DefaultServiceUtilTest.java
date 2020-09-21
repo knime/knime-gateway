@@ -76,7 +76,7 @@ public class DefaultServiceUtilTest {
 
     /**
      * Tests
-     * {@link DefaultServiceUtil#changeNodeState(org.knime.core.node.workflow.WorkflowManager, org.knime.gateway.api.entity.NodeIDEnt, String)}
+     * {@link DefaultServiceUtil#changeNodeStates(WorkflowManager, String, NodeIDEnt...)}
      */
     @Test
     public void testChangeNodeState() {
@@ -92,12 +92,12 @@ public class DefaultServiceUtilTest {
 
         // action for a node
         NodeIDEnt nodeIDEnt = new NodeIDEnt(1);
-        NodeID resNodeID = DefaultServiceUtil.changeNodeState(wfm, nodeIDEnt, "execute");
+        NodeID resNodeID = DefaultServiceUtil.changeNodeStates(wfm, "execute", nodeIDEnt)[0];
         assertThat(resNodeID, is(nodeID));
         verify(parent).executeUpToHere(nodeID);
-        DefaultServiceUtil.changeNodeState(wfm, nodeIDEnt, "reset");
+        DefaultServiceUtil.changeNodeStates(wfm, "reset", nodeIDEnt);
         verify(parent).resetAndConfigureNode(nodeID);
-        DefaultServiceUtil.changeNodeState(wfm, nodeIDEnt, "cancel");
+        DefaultServiceUtil.changeNodeStates(wfm, "cancel", nodeIDEnt);
         verify(parent).cancelExecution(any());
         verify(wfm, times(3)).findNodeContainer(nodeID);
         verify(nc, times(3)).getParent();
@@ -106,7 +106,7 @@ public class DefaultServiceUtilTest {
 
         // no action given
         clearInvocations(wfm, parent);
-        DefaultServiceUtil.changeNodeState(wfm, nodeIDEnt, "");
+        DefaultServiceUtil.changeNodeStates(wfm, "", nodeIDEnt);
         verify(wfm).findNodeContainer(nodeID);
         verify(parent, never()).executeUpToHere(nodeID);
         verify(parent, never()).resetAndConfigureNode(nodeID);
@@ -115,7 +115,7 @@ public class DefaultServiceUtilTest {
         // execute the root workflow
         clearInvocations(wfm, parent, nc);
         nodeIDEnt = NodeIDEnt.getRootID();
-        resNodeID = DefaultServiceUtil.changeNodeState(wfm, nodeIDEnt, "execute");
+        resNodeID = DefaultServiceUtil.changeNodeStates(wfm, "execute", nodeIDEnt)[0];
         assertThat(resNodeID, is(new NodeID(0)));
         verify(parent).executeUpToHere(eq(new NodeID(0)));
         verify(wfm).getParent();
@@ -124,7 +124,14 @@ public class DefaultServiceUtilTest {
 
         // check exception if action is nonsense
         Assert.assertThrows("exception expected", IllegalStateException.class,
-            () -> DefaultServiceUtil.changeNodeState(wfm, new NodeIDEnt(1), "blub"));
+            () -> DefaultServiceUtil.changeNodeStates(wfm, "blub", new NodeIDEnt(1)));
+
+        // check exception if node id's don't refere to nodes on the same workflow level
+        Assert.assertThrows("exception expected", IllegalArgumentException.class,
+            () -> DefaultServiceUtil.changeNodeStates(wfm, "execute", new NodeIDEnt(1, 2), new NodeIDEnt(1)));
+
+        // no ids in no ids out
+        assertThat(DefaultServiceUtil.changeNodeStates(wfm, "execute").length, is(0));
 
     }
 

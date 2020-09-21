@@ -46,6 +46,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.List;
+
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
@@ -77,15 +79,15 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action)
+    public void changeNodeStates(final String projectId, final List<NodeIDEnt> nodeIds, final String action)
         throws NodeNotFoundException, OperationNotAllowedException {
         try {
-            DefaultServiceUtil.changeNodeState(DefaultServiceUtil.getRootWorkflowManager(projectId), nodeId, action);
+            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getRootWorkflowManager(projectId), action,
+                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         } catch (IllegalStateException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
     }
-
 }

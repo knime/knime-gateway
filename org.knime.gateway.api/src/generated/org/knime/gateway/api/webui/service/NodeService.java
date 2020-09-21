@@ -57,16 +57,16 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 public interface NodeService extends GatewayService {
 
     /**
-     * Changes the node&#39;s state for the given node-id.
+     * Changes the node state of multiple nodes represented by a list of node-id.
      *
      * @param projectId ID of the workflow-project.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level.
      * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
      * 
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void changeNodeState(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+    void changeNodeStates(String projectId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
         
 }

@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
@@ -92,18 +93,18 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         NativeNodeEnt nodeEnt =
             (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.CONFIGURED));
-        ns().changeNodeState(wfId, new NodeIDEnt(1), "execute");
+        ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "execute");
         nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.EXECUTING));
 
         // test node not found exception
         assertThrows(NodeNotFoundException.class, () -> {
-            ns().changeNodeState(wfId, new NodeIDEnt(83747273), "execute");
+            ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(83747273)), "execute");
         });
 
         // test operation not allow exception
         assertThrows(OperationNotAllowedException.class, () -> {
-            ns().changeNodeState(wfId, new NodeIDEnt(1), "blub");
+            ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "blub");
         });
     }
 

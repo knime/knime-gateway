@@ -45,6 +45,7 @@
  */
 package org.knime.gateway.impl.service.util;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -205,42 +206,65 @@ public final class DefaultServiceUtil {
      * Executes, resets or cancels a node.
      *
      * @param rootWfm the root/project workflow which contains the node whose state shall be changed
-     * @param nodeId the id of the node to change the state for; possibly {@link NodeIDEnt#getRootID()} to change the
-     *            state of the root workflow
      * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
+     * @param nodeIdEnts the ids of the nodes to change the state for; possibly {@link NodeIDEnt#getRootID()} to change
+     *            the state of the root workflow. All ids must reference nodes on the same workflow level (i.e. all must
+     *            have the same prefix).
      *
-     * @return the {@link NodeID} of the node the status was supposed to be changed
+     * @return the {@link NodeID}s of the nodes the status was supposed to be changed
      *
      * @throws NoSuchElementException if there is no workflow for the given root workflow id
-     * @throws IllegalArgumentException if the is no node for the given node id
+     * @throws IllegalArgumentException if the is no node for one of the given node ids or the given node ids don't
+     *             refer to the same workflow level (i.e. don't have the exact same prefix)
      * @throws IllegalStateException if the state transition is not possible, e.g., because there are executing
      *             successors or the provided action is unknown
      */
-    public static NodeID changeNodeState(final WorkflowManager rootWfm, final NodeIDEnt nodeId, final String action) {
-        NodeID nodeID;
+    public static NodeID[] changeNodeStates(final WorkflowManager rootWfm, final String action,
+        final NodeIDEnt... nodeIdEnts) {
+        if (nodeIdEnts.length == 0) {
+            return new NodeID[0];
+        }
+        NodeID[] nodeIDs;
         WorkflowManager wfm;
-        if (nodeId.equals(NodeIDEnt.getRootID())) {
-            nodeID = rootWfm.getID();
+        NodeID rootID = rootWfm.getID();
+        if (Arrays.stream(nodeIdEnts).anyMatch(nodeId -> nodeId.equals(NodeIDEnt.getRootID()))) {
+            nodeIDs = new NodeID[]{rootID};
             wfm = rootWfm.getParent();
         } else {
-            nodeID = nodeId.toNodeID(rootWfm.getID());
-            NodeContainer nc = rootWfm.findNodeContainer(nodeID);
+            nodeIDs = new NodeID[nodeIdEnts.length];
+            nodeIDs[0] = nodeIdEnts[0].toNodeID(rootID);
+            NodeID prefix = nodeIDs[0].getPrefix();
+            for (int i = 1; i < nodeIDs.length; i++) {
+                nodeIDs[i] = nodeIdEnts[i].toNodeID(rootID);
+                if (!nodeIDs[i].hasSamePrefix(prefix)) {
+                    throw new IllegalArgumentException("Node ids don't have the same prefix.");
+                }
+            }
+            NodeContainer nc = rootWfm.findNodeContainer(nodeIDs[0]);
             wfm = nc.getParent();
         }
 
+        doChangeNodeState(wfm, action, nodeIDs);
+
+        return nodeIDs;
+    }
+
+    private static void doChangeNodeState(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
         if (StringUtils.isBlank(action)) {
             //if there is no action (null or empty)
         } else if (action.equals("reset")) {
-            wfm.resetAndConfigureNode(nodeID);
+            for (NodeID nodeID : nodeIDs) {
+                wfm.resetAndConfigureNode(nodeID);
+            }
         } else if (action.equals("cancel")) {
-            wfm.cancelExecution(wfm.getNodeContainer(nodeID));
+            for (NodeID nodeID : nodeIDs) {
+                wfm.cancelExecution(wfm.getNodeContainer(nodeID));
+            }
         } else if (action.equals("execute")) {
-            wfm.executeUpToHere(nodeID);
+            wfm.executeUpToHere(nodeIDs);
         } else {
             throw new IllegalStateException("Unknown action '" + action + "'");
         }
-
-        return nodeID;
     }
 
 }
