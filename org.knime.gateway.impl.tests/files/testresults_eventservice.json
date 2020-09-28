@@ -104,7 +104,7 @@
       "path" : "/workflowAnnotations/5/styleRanges/1",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 3,
         "start" : 16
@@ -114,7 +114,7 @@
       "path" : "/workflowAnnotations/5/styleRanges/2",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 8,
+        "fontSize" : 11,
         "length" : 3,
         "start" : 20
       }
@@ -123,7 +123,7 @@
       "path" : "/workflowAnnotations/5/styleRanges/3",
       "value" : {
         "color" : "#EF2929",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 3,
         "start" : 24
       }
@@ -150,7 +150,7 @@
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/4/defaultFontSize",
-      "value" : 13
+      "value" : 17
     }, {
       "op" : "remove",
       "path" : "/workflowAnnotations/4/styleRanges/1"
@@ -227,7 +227,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/1",
       "value" : {
         "color" : "#CC0000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 5,
         "start" : 8
       }
@@ -237,7 +237,7 @@
       "value" : {
         "bold" : true,
         "color" : "#73D216",
-        "fontSize" : 24,
+        "fontSize" : 32,
         "length" : 11,
         "start" : 13
       }
@@ -246,7 +246,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/3",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 9,
+        "fontSize" : 12,
         "length" : 7,
         "start" : 24
       }
@@ -256,7 +256,7 @@
       "value" : {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 12,
         "start" : 31
@@ -267,7 +267,7 @@
       "value" : {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 6,
         "start" : 43
       }
@@ -276,7 +276,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/6",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "italic" : true,
         "length" : 1,
         "start" : 49
@@ -287,7 +287,7 @@
       "value" : {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 2,
         "start" : 50
       }
@@ -297,7 +297,7 @@
       "value" : {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "italic" : true,
         "length" : 7,
         "start" : 52
@@ -308,7 +308,7 @@
       "value" : {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 3,
         "start" : 59
       }
@@ -317,7 +317,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/10",
       "value" : {
         "color" : "#73D216",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 1,
         "start" : 62
       }
@@ -326,7 +326,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/11",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 202,
         "start" : 63
       }
@@ -335,7 +335,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/12",
       "value" : {
         "color" : "#CC0000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 5,
         "start" : 265
       }
@@ -345,7 +345,7 @@
       "value" : {
         "bold" : true,
         "color" : "#4E9A06",
-        "fontSize" : 24,
+        "fontSize" : 32,
         "length" : 11,
         "start" : 270
       }
@@ -354,7 +354,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/14",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 9,
+        "fontSize" : 12,
         "length" : 7,
         "start" : 281
       }
@@ -364,7 +364,7 @@
       "value" : {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 13,
         "start" : 288
@@ -374,7 +374,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/16",
       "value" : {
         "color" : "#3465A4",
-        "fontSize" : 20,
+        "fontSize" : 27,
         "length" : 2,
         "start" : 301
       }
@@ -383,7 +383,7 @@
       "path" : "/workflowAnnotations/3/styleRanges/17",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 23,
         "start" : 303
       }
@@ -398,13 +398,13 @@
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/2/defaultFontSize",
-      "value" : 11
+      "value" : 15
     }, {
       "op" : "add",
       "path" : "/workflowAnnotations/2/styleRanges/0",
       "value" : {
         "color" : "#000000",
-        "fontSize" : 11,
+        "fontSize" : 15,
         "length" : 1,
         "start" : 1
       }
@@ -474,7 +474,7 @@
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/4/styleRanges/0/fontSize",
-      "value" : 13
+      "value" : 17
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/6/bounds/x",
@@ -505,7 +505,7 @@
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/3/styleRanges/0/fontSize",
-      "value" : 16
+      "value" : 21
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/1/bounds/x",

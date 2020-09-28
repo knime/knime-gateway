@@ -111,17 +111,17 @@
         "x" : 233,
         "y" : 293
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root:6_0",
       "styleRanges" : [ {
         "color" : "#EF2929",
-        "fontSize" : 11,
+        "fontSize" : 15,
         "length" : 13,
         "start" : 25
       }, {
         "bold" : true,
         "color" : "#EF2929",
-        "fontSize" : 11,
+        "fontSize" : 15,
         "length" : 15,
         "start" : 38
       } ],
@@ -137,7 +137,7 @@
         "x" : 840,
         "y" : 200
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root:6_1",
       "styleRanges" : [ ],
       "text" : "<- this output bar has a custom position and size",
@@ -472,7 +472,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "node annotation",
           "textAlign" : "center"
@@ -590,7 +590,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "a non-executing node",
           "textAlign" : "center"
@@ -671,7 +671,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 13,
+          "defaultFontSize" : 17,
           "styleRanges" : [ ],
           "text" : "🤷🏻‍♂️ 🤨",
           "textAlign" : "center"
@@ -706,7 +706,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "check for simple port spec\n(distance measure)",
           "textAlign" : "center"
@@ -766,7 +766,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "optional\nin-ports",
           "textAlign" : "center"
@@ -831,7 +831,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 13,
+          "defaultFontSize" : 17,
           "styleRanges" : [ ],
           "text" : "Component",
           "textAlign" : "center"
@@ -941,7 +941,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "Check a \n'generic'\nport type spec",
           "textAlign" : "center"
@@ -995,7 +995,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "with JS view inside\n(i.e. with composite view)",
           "textAlign" : "center"
@@ -1042,7 +1042,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "test of another\nport object spec",
           "textAlign" : "center"
@@ -1096,7 +1096,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "dynamic\nports",
           "textAlign" : "center"
@@ -1155,7 +1155,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "a node created\nvia a node set factory",
           "textAlign" : "center"
@@ -1203,7 +1203,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 13,
+          "defaultFontSize" : 17,
           "styleRanges" : [ ],
           "text" : "Missing",
           "textAlign" : "center"
@@ -1276,7 +1276,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "Node 13",
           "textAlign" : "center"
@@ -1372,7 +1372,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "inactive branch",
           "textAlign" : "center"
@@ -1500,7 +1500,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "checking flow\nvariables (string)",
           "textAlign" : "center"
@@ -1623,7 +1623,7 @@
         "x" : 20,
         "y" : 20
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_0",
       "styleRanges" : [ ],
       "text" : "this is a workflow annotation",
@@ -1638,7 +1638,7 @@
         "x" : 880,
         "y" : 20
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_1",
       "styleRanges" : [ ],
       "text" : "this is a red workflow annotation",
@@ -1667,11 +1667,11 @@
         "x" : 340,
         "y" : 880
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_3",
       "styleRanges" : [ {
         "color" : "#000000",
-        "fontSize" : 11,
+        "fontSize" : 15,
         "length" : 1,
         "start" : 1
       } ],
@@ -1687,108 +1687,108 @@
         "x" : 1120,
         "y" : 700
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_4",
       "styleRanges" : [ {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 8,
         "start" : 0
       }, {
         "color" : "#CC0000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 5,
         "start" : 8
       }, {
         "bold" : true,
         "color" : "#73D216",
-        "fontSize" : 24,
+        "fontSize" : 32,
         "length" : 11,
         "start" : 13
       }, {
         "color" : "#000000",
-        "fontSize" : 9,
+        "fontSize" : 12,
         "length" : 7,
         "start" : 24
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 12,
         "start" : 31
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 6,
         "start" : 43
       }, {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "italic" : true,
         "length" : 1,
         "start" : 49
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 2,
         "start" : 50
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "italic" : true,
         "length" : 7,
         "start" : 52
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 3,
         "start" : 59
       }, {
         "color" : "#73D216",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 1,
         "start" : 62
       }, {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 202,
         "start" : 63
       }, {
         "color" : "#CC0000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 5,
         "start" : 265
       }, {
         "bold" : true,
         "color" : "#4E9A06",
-        "fontSize" : 24,
+        "fontSize" : 32,
         "length" : 11,
         "start" : 270
       }, {
         "color" : "#000000",
-        "fontSize" : 9,
+        "fontSize" : 12,
         "length" : 7,
         "start" : 281
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 13,
         "start" : 288
       }, {
         "color" : "#3465A4",
-        "fontSize" : 20,
+        "fontSize" : 27,
         "length" : 2,
         "start" : 301
       }, {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 23,
         "start" : 303
       } ],
@@ -1804,11 +1804,11 @@
         "x" : 1220,
         "y" : 380
       },
-      "defaultFontSize" : 13,
+      "defaultFontSize" : 17,
       "id" : "root_5",
       "styleRanges" : [ {
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 5,
         "start" : 11
       } ],
@@ -1824,28 +1824,28 @@
         "x" : 1360,
         "y" : 400
       },
-      "defaultFontSize" : 13,
+      "defaultFontSize" : 17,
       "id" : "root_6",
       "styleRanges" : [ {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 4,
         "start" : 11
       }, {
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 3,
         "start" : 16
       }, {
         "color" : "#000000",
-        "fontSize" : 8,
+        "fontSize" : 11,
         "length" : 3,
         "start" : 20
       }, {
         "color" : "#EF2929",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 3,
         "start" : 24
       } ],
@@ -2321,7 +2321,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "node annotation",
           "textAlign" : "center"
@@ -2434,7 +2434,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "a non-executing node",
           "textAlign" : "center"
@@ -2513,7 +2513,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 13,
+          "defaultFontSize" : 17,
           "styleRanges" : [ ],
           "text" : "🤷🏻‍♂️ 🤨",
           "textAlign" : "center"
@@ -2548,7 +2548,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "check for simple port spec\n(distance measure)",
           "textAlign" : "center"
@@ -2606,7 +2606,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "optional\nin-ports",
           "textAlign" : "center"
@@ -2669,7 +2669,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 13,
+          "defaultFontSize" : 17,
           "styleRanges" : [ ],
           "text" : "Component",
           "textAlign" : "center"
@@ -2775,7 +2775,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "Check a \n'generic'\nport type spec",
           "textAlign" : "center"
@@ -2827,7 +2827,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "with JS view inside\n(i.e. with composite view)",
           "textAlign" : "center"
@@ -2873,7 +2873,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "test of another\nport object spec",
           "textAlign" : "center"
@@ -2925,7 +2925,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "dynamic\nports",
           "textAlign" : "center"
@@ -2982,7 +2982,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "a node created\nvia a node set factory",
           "textAlign" : "center"
@@ -3028,7 +3028,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 13,
+          "defaultFontSize" : 17,
           "styleRanges" : [ ],
           "text" : "Missing",
           "textAlign" : "center"
@@ -3099,7 +3099,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "Node 13",
           "textAlign" : "center"
@@ -3191,7 +3191,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "inactive branch",
           "textAlign" : "center"
@@ -3318,7 +3318,7 @@
           "backgroundColor" : "#FFFFFF",
           "borderColor" : "#FFFFFF",
           "borderWidth" : 0,
-          "defaultFontSize" : 11,
+          "defaultFontSize" : 15,
           "styleRanges" : [ ],
           "text" : "checking flow\nvariables (string)",
           "textAlign" : "center"
@@ -3435,7 +3435,7 @@
         "x" : 20,
         "y" : 20
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_0",
       "styleRanges" : [ ],
       "text" : "this is a workflow annotation",
@@ -3450,7 +3450,7 @@
         "x" : 880,
         "y" : 20
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_1",
       "styleRanges" : [ ],
       "text" : "this is a red workflow annotation",
@@ -3479,11 +3479,11 @@
         "x" : 340,
         "y" : 880
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_3",
       "styleRanges" : [ {
         "color" : "#000000",
-        "fontSize" : 11,
+        "fontSize" : 15,
         "length" : 1,
         "start" : 1
       } ],
@@ -3499,108 +3499,108 @@
         "x" : 1120,
         "y" : 700
       },
-      "defaultFontSize" : 11,
+      "defaultFontSize" : 15,
       "id" : "root_4",
       "styleRanges" : [ {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 8,
         "start" : 0
       }, {
         "color" : "#CC0000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 5,
         "start" : 8
       }, {
         "bold" : true,
         "color" : "#73D216",
-        "fontSize" : 24,
+        "fontSize" : 32,
         "length" : 11,
         "start" : 13
       }, {
         "color" : "#000000",
-        "fontSize" : 9,
+        "fontSize" : 12,
         "length" : 7,
         "start" : 24
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 12,
         "start" : 31
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 6,
         "start" : 43
       }, {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "italic" : true,
         "length" : 1,
         "start" : 49
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 2,
         "start" : 50
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "italic" : true,
         "length" : 7,
         "start" : 52
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 3,
         "start" : 59
       }, {
         "color" : "#73D216",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 1,
         "start" : 62
       }, {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 202,
         "start" : 63
       }, {
         "color" : "#CC0000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 5,
         "start" : 265
       }, {
         "bold" : true,
         "color" : "#4E9A06",
-        "fontSize" : 24,
+        "fontSize" : 32,
         "length" : 11,
         "start" : 270
       }, {
         "color" : "#000000",
-        "fontSize" : 9,
+        "fontSize" : 12,
         "length" : 7,
         "start" : 281
       }, {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 13,
         "start" : 288
       }, {
         "color" : "#3465A4",
-        "fontSize" : 20,
+        "fontSize" : 27,
         "length" : 2,
         "start" : 301
       }, {
         "color" : "#000000",
-        "fontSize" : 16,
+        "fontSize" : 21,
         "length" : 23,
         "start" : 303
       } ],
@@ -3616,11 +3616,11 @@
         "x" : 1220,
         "y" : 380
       },
-      "defaultFontSize" : 13,
+      "defaultFontSize" : 17,
       "id" : "root_5",
       "styleRanges" : [ {
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 5,
         "start" : 11
       } ],
@@ -3636,28 +3636,28 @@
         "x" : 1360,
         "y" : 400
       },
-      "defaultFontSize" : 13,
+      "defaultFontSize" : 17,
       "id" : "root_6",
       "styleRanges" : [ {
         "bold" : true,
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 4,
         "start" : 11
       }, {
         "color" : "#000000",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "italic" : true,
         "length" : 3,
         "start" : 16
       }, {
         "color" : "#000000",
-        "fontSize" : 8,
+        "fontSize" : 11,
         "length" : 3,
         "start" : 20
       }, {
         "color" : "#EF2929",
-        "fontSize" : 13,
+        "fontSize" : 17,
         "length" : 3,
         "start" : 24
       } ],

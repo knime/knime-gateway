@@ -114,7 +114,7 @@ public interface AnnotationEnt extends GatewayEntity {
   public String getBorderColor();
 
   /**
-   * The default font size parts of the text where no style range is defined.
+   * The default font size (in px) for parts of the text where no style range is defined.
    * @return defaultFontSize 
    **/
   public Integer getDefaultFontSize();
@@ -172,7 +172,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setBorderColor(String borderColor);
         
         /**
-         * The default font size parts of the text where no style range is defined.
+         * The default font size (in px) for parts of the text where no style range is defined.
          * 
          * @param defaultFontSize the property value,  
          * @return this entity builder for chaining

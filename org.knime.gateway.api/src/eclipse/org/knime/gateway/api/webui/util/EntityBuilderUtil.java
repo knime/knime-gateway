@@ -298,13 +298,17 @@ public final class EntityBuilderUtil {
                 .setBounds(bounds)
                 .setText(wa.getText())
                 .setStyleRanges(styleRanges)
-                .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? wa.getDefaultFontSize() : null)
+                .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? convertFromPtToPx(wa.getDefaultFontSize()) : null)
                 .build();
+    }
+
+    private static Integer convertFromPtToPx(final int size) {
+        return (int) Math.round(size + size / 3.0);
     }
 
     private static StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {
         StyleRangeEntBuilder builder = builder(StyleRangeEntBuilder.class)
-                .setFontSize(sr.getFontSize())
+                .setFontSize(convertFromPtToPx(sr.getFontSize()))
                 .setColor(hexStringColor(sr.getFgColor()))
                 .setLength(sr.getLength())
                 .setStart(sr.getStart());
@@ -489,7 +493,7 @@ public final class EntityBuilderUtil {
                 .setBorderWidth(na.getBorderSize())
                 .setText(na.getText())
                 .setStyleRanges(styleRanges)
-                .setDefaultFontSize(na.getDefaultFontSize() > 0 ? na.getDefaultFontSize() : null)
+                .setDefaultFontSize(na.getDefaultFontSize() > 0 ? convertFromPtToPx(na.getDefaultFontSize()) : null)
                 .build();
     }
 

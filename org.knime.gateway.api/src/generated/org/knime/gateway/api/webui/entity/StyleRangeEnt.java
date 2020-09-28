@@ -84,7 +84,7 @@ public interface StyleRangeEnt extends GatewayEntity {
   public Boolean isItalic();
 
   /**
-   * Style range font size.
+   * Style range font size in px.
    * @return fontSize , never <code>null</code>
    **/
   public Integer getFontSize();
@@ -134,7 +134,7 @@ public interface StyleRangeEnt extends GatewayEntity {
         StyleRangeEntBuilder setItalic(Boolean italic);
         
         /**
-         * Style range font size.
+         * Style range font size in px.
          * 
          * @param fontSize the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
