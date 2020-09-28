@@ -47,9 +47,11 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.util.Pair;
 import org.knime.gateway.impl.webui.AppState;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
@@ -82,13 +84,13 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         appService.updateAppState(new AppState() {
 
             @Override
-            public List<String> getLoadedWorkflowProjectIds() {
-                return Collections.singletonList(workflowProjectId);
+            public Set<String> getLoadedWorkflowProjectIds() {
+                return Collections.singleton(workflowProjectId);
             }
 
             @Override
-            public List<String> getActiveWorkflowProjectIds() {
-                return Collections.singletonList(workflowProjectId);
+            public Set<Pair<String, NodeID>> getActiveWorkflowIds() {
+                return Collections.singleton(Pair.create(workflowProjectId, new NodeID(0)));
             }
 
         });

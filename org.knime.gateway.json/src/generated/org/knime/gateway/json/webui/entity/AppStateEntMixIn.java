@@ -45,7 +45,6 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -85,10 +84,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("openedWorkflows")
     public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
     
-    @Override
-    @JsonProperty("activeWorkflows")
-    public java.util.List<WorkflowSnapshotEnt> getActiveWorkflows();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -112,10 +107,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("openedWorkflows")
         public AppStateEntMixInBuilder setOpenedWorkflows(final java.util.List<WorkflowProjectEnt> openedWorkflows);
-        
-        @Override
-        @JsonProperty("activeWorkflows")
-        public AppStateEntMixInBuilder setActiveWorkflows(final java.util.List<WorkflowSnapshotEnt> activeWorkflows);
         
     }
 

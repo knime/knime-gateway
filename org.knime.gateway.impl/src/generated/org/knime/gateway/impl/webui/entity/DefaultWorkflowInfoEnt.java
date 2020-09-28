@@ -50,32 +50,35 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
 /**
- * Represents the global application state. 
+ * DefaultWorkflowInfoEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAppStateEnt  implements AppStateEnt {
+public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
 
-  protected java.util.List<WorkflowProjectEnt> m_openedWorkflows;
+  protected String m_name;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_containerId;
+  protected ContainerTypeEnum m_containerType;
   
-  protected DefaultAppStateEnt() {
+  protected DefaultWorkflowInfoEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "AppState";
+    return "WorkflowInfo";
   }
   
-  private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
+  private DefaultWorkflowInfoEnt(DefaultWorkflowInfoEntBuilder builder) {
     
-    m_openedWorkflows = immutable(builder.m_openedWorkflows);
+    m_name = immutable(builder.m_name);
+    m_containerId = immutable(builder.m_containerId);
+    m_containerType = immutable(builder.m_containerType);
   }
   
    /**
@@ -92,8 +95,8 @@ public class DefaultAppStateEnt  implements AppStateEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows);
+        DefaultWorkflowInfoEnt ent = (DefaultWorkflowInfoEnt)o;
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_containerId, ent.m_containerId) && Objects.equals(m_containerType, ent.m_containerType);
     }
 
 
@@ -104,36 +107,62 @@ public class DefaultAppStateEnt  implements AppStateEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_openedWorkflows)
+               .append(m_name)
+               .append(m_containerId)
+               .append(m_containerType)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public java.util.List<WorkflowProjectEnt> getOpenedWorkflows() {
-        return m_openedWorkflows;
+  public String getName() {
+        return m_name;
+  }
+    
+  @Override
+  public org.knime.gateway.api.entity.NodeIDEnt getContainerId() {
+        return m_containerId;
+  }
+    
+  @Override
+  public ContainerTypeEnum getContainerType() {
+        return m_containerType;
   }
     
   
-    public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
+    public static class DefaultWorkflowInfoEntBuilder implements WorkflowInfoEntBuilder {
     
-        public DefaultAppStateEntBuilder(){
+        public DefaultWorkflowInfoEntBuilder(){
             
         }
     
-        private java.util.List<WorkflowProjectEnt> m_openedWorkflows = new java.util.ArrayList<>();
+        private String m_name;
+        private org.knime.gateway.api.entity.NodeIDEnt m_containerId;
+        private ContainerTypeEnum m_containerType;
 
         @Override
-        public DefaultAppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows) {
-             m_openedWorkflows = openedWorkflows;
+        public DefaultWorkflowInfoEntBuilder setName(String name) {
+             m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowInfoEntBuilder setContainerId(org.knime.gateway.api.entity.NodeIDEnt containerId) {
+             m_containerId = containerId;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType) {
+             m_containerType = containerType;
              return this;
         }
 
         
         @Override
-        public DefaultAppStateEnt build() {
-            return new DefaultAppStateEnt(this);
+        public DefaultWorkflowInfoEnt build() {
+            return new DefaultWorkflowInfoEnt(this);
         }
     
     }

@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -67,12 +66,6 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
 
-  /**
-   * List of all active workflows, i.e. those that are visible atm. The entire workflow representation is provided for those.
-   * @return activeWorkflows 
-   **/
-  public java.util.List<WorkflowSnapshotEnt> getActiveWorkflows();
-
 
     /**
      * The builder for the entity.
@@ -86,14 +79,6 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows);
-        
-        /**
-         * List of all active workflows, i.e. those that are visible atm. The entire workflow representation is provided for those.
-         * 
-         * @param activeWorkflows the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setActiveWorkflows(java.util.List<WorkflowSnapshotEnt> activeWorkflows);
         
         
         /**

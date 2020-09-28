@@ -56,6 +56,7 @@ import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
@@ -85,6 +86,8 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.NodeStateEnum;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -105,6 +108,9 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 
@@ -134,10 +140,9 @@ public final class EntityBuilderUtil {
      * Builds a new {@link WorkflowEnt}.
      *
      * @param wfm the workflow manager to create the entity from
-     * @param projectId the project id of the workflow (if its the top-level project workflow) or <code>null</code>
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final String projectId) {
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm) {
         try (WorkflowLock lock = wfm.lock()) {
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
@@ -158,13 +163,106 @@ public final class EntityBuilderUtil {
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
                     .collect(Collectors.toList());
             return builder(WorkflowEntBuilder.class)
-                .setName(wfm.getName())
+                .setInfo(buildWorkflowInfoEnt(wfm))
                 .setNodes(nodes)
                 .setNodeTemplates(templates)
                 .setConnections(connections)
                 .setWorkflowAnnotations(annotations)
-                .setProjectId(wfm.isProject() ? projectId : null)
+                .setParents(buildParentWorkflowInfoEnts(wfm))
+                .setMetaInPorts(buildMetaPortsEnt(wfm, true))
+                .setMetaOutPorts(buildMetaPortsEnt(wfm, false))
                 .build();
+        }
+    }
+
+    private static MetaPortsEnt buildMetaPortsEnt(final WorkflowManager wfm, final boolean incoming) {
+        if (wfm.isProject() || wfm.getDirectNCParent() instanceof SubNodeContainer) {
+            // no meta ports for workflow projects and component workflows
+            return null;
+        }
+        MetaPortsEntBuilder builder = builder(MetaPortsEntBuilder.class);
+
+        List<NodePortEnt> ports = new ArrayList<>();
+        if (incoming) {
+            int nrPorts = wfm.getNrWorkflowIncomingPorts();
+            for (int i = 0; i < nrPorts; i++) {
+                Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
+                NodeOutPort port = wfm.getWorkflowIncomingPort(i);
+                ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
+                    port.isInactive() ? Boolean.TRUE : null, connections));
+            }
+        } else {
+            int nrPorts = wfm.getNrWorkflowOutgoingPorts();
+            for (int i = 0; i < nrPorts; i++) {
+                ConnectionContainer connection = wfm.getIncomingConnectionFor(wfm.getID(), i);
+                NodeInPort port = wfm.getWorkflowOutgoingPort(i);
+                ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null,
+                    Collections.singleton(connection)));
+            }
+        }
+        builder.setPorts(ports);
+        NodeUIInformation barUIInfo = incoming ? wfm.getInPortsBarUIInfo() : wfm.getOutPortsBarUIInfo();
+        if (barUIInfo != null) {
+            builder.setXPos(barUIInfo.getBounds()[0]);
+        }
+        return builder.build();
+    }
+
+    private static WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm) {
+        return builder(WorkflowInfoEntBuilder.class)
+                .setName(wfm.getName())
+                .setContainerId(getContainerId(wfm))
+                .setContainerType(getContainerType(wfm)).build();
+    }
+
+    private static NodeIDEnt getContainerId(final WorkflowManager wfm) {
+        if (wfm.isProject()) {
+            return null;
+        }
+
+        NodeContainerParent ncParent = wfm.getDirectNCParent();
+        if (ncParent instanceof SubNodeContainer) {
+            // it's a component's workflow
+            return new NodeIDEnt(((SubNodeContainer)ncParent).getID());
+        } else {
+            return new NodeIDEnt(wfm.getID());
+        }
+    }
+
+    private static ContainerTypeEnum getContainerType(final WorkflowManager wfm) {
+        if (wfm.isProject()) {
+            return ContainerTypeEnum.PROJECT;
+        }
+        NodeContainerParent parent = wfm.getDirectNCParent();
+        if (parent instanceof SubNodeContainer) {
+            return ContainerTypeEnum.COMPONENT;
+        } else if (parent instanceof WorkflowManager) {
+            return ContainerTypeEnum.METANODE;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    private static List<WorkflowInfoEnt> buildParentWorkflowInfoEnts(final WorkflowManager wfm) {
+        if (wfm.isProject()) {
+            return null; // NOSONAR
+        }
+        List<WorkflowInfoEnt> parents = new ArrayList<>();
+        WorkflowManager parent = wfm;
+        do {
+            parent = getWorkflowParent(parent);
+            parents.add(buildWorkflowInfoEnt(parent));
+        } while (!parent.isProject());
+        Collections.reverse(parents);
+        return parents;
+    }
+
+    private static WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
+        NodeContainerParent parent = wfm.getDirectNCParent();
+        if (parent instanceof SubNodeContainer) {
+            return ((SubNodeContainer)parent).getParent();
+        } else {
+            return (WorkflowManager)parent;
         }
     }
 

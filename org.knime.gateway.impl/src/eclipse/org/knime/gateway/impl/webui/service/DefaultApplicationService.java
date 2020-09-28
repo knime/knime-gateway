@@ -50,18 +50,21 @@ package org.knime.gateway.impl.webui.service;
 
 import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEnt;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.AppState;
@@ -97,22 +100,28 @@ public final class DefaultApplicationService implements ApplicationService {
         if (m_appState == null) {
             return builder(AppStateEntBuilder.class).build();
         }
-
+        final Set<Pair<String, NodeID>> activeWorkflowIds = m_appState.getActiveWorkflowIds();
         List<WorkflowProjectEnt> projects = m_appState.getLoadedWorkflowProjectIds().stream()
             .map(id -> WorkflowProjectManager.getWorkflowProject(id).orElse(null)).filter(Objects::nonNull)
-            .map(DefaultApplicationService::buildWorkflowProjectEnt).collect(toList());
-        List<WorkflowSnapshotEnt> activeWorkflows = m_appState.getActiveWorkflowProjectIds().stream()
-            .map(id -> WorkflowProjectManager.getWorkflowProject(id).orElse(null)).filter(Objects::nonNull)
-            .map(wp -> DefaultWorkflowService.getInstance().buildWorkflowSnapshotEnt(
-                EntityBuilderUtil.buildWorkflowEnt(wp.openProject(), wp.getID()), NodeIDEnt.getRootID()))
-            .collect(toList());
-
-        return builder(AppStateEntBuilder.class).setOpenedWorkflows(projects).setActiveWorkflows(activeWorkflows)
-            .build();
+            .map(wp -> buildWorkflowProjectEnt(wp, activeWorkflowIds)).collect(toList());
+        return builder(AppStateEntBuilder.class).setOpenedWorkflows(projects).build();
     }
 
-    private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp) {
-        return builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID()).build();
+    private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
+        final Set<Pair<String, NodeID>> activeWorkflowProjectIds) {
+        final WorkflowProjectEntBuilder builder =
+            builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
+
+        // optionally set an active workflow for this workflow project
+        activeWorkflowProjectIds.stream().filter(p -> p.getFirst().equals(wp.getID())).findFirst().ifPresent(p -> {
+            WorkflowManager wfm = wp.openProject();
+            if (!wfm.getID().equals(p.getSecond())) {
+                wfm = (WorkflowManager)wfm.findNodeContainer(p.getSecond());
+            }
+            builder.setActiveWorkflow(DefaultWorkflowService.getInstance()
+                .buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm), wp.getID(), new NodeIDEnt(wfm.getID())));
+        });
+        return builder.build();
     }
 
     /**

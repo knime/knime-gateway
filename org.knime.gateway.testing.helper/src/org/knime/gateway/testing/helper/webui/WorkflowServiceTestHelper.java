@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,84 +41,61 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Aug 3, 2020 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.testing.helper.webui;
 
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.WorkflowExecutor;
+import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
- * Represents an entire workflow project.
- * 
+ * Test for the endpoints to view/render a workflow.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowProjectEnt extends GatewayEntity {
-
-
-  /**
-   * Get projectId
-   * @return projectId , never <code>null</code>
-   **/
-  public String getProjectId();
-
-  /**
-   * Get name
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * Get activeWorkflow
-   * @return activeWorkflow 
-   **/
-  public WorkflowSnapshotEnt getActiveWorkflow();
-
+public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
-     * The builder for the entity.
+     * @param entityResultChecker
+     * @param workflowLoader
+     * @param workflowExecutor
      */
-    public interface WorkflowProjectEntBuilder extends GatewayEntityBuilder<WorkflowProjectEnt> {
+    protected WorkflowServiceTestHelper(final ResultChecker entityResultChecker, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor) {
+        super("workflowservice", entityResultChecker, workflowLoader, workflowExecutor);
+    }
 
-        /**
-   		 * Set projectId
-         * 
-         * @param projectId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowProjectEntBuilder setProjectId(String projectId);
-        
-        /**
-   		 * Set name
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowProjectEntBuilder setName(String name);
-        
-        /**
-   		 * Set activeWorkflow
-         * 
-         * @param activeWorkflow the property value,  
-         * @return this entity builder for chaining
-         */
-        WorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowProjectEnt build();
-    
+    /**
+     * Tests to get the workflow.
+     *
+     * @throws Exception
+     */
+    public void testGetWorkflow() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+
+        // check un-executed
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        cr(workflow, "workflowent_root");
+
+        // get a metanode's workflow
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
+        cr(workflow, "workflowent_6");
+
+        // get a component's workflow
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(23)).getWorkflow();
+        cr(workflow, "workflowent_23");
+
+        //check executed
+        executeWorkflow(wfId);
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        cr(workflow, "worklfowent_root_executed");
     }
 
 }

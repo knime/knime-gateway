@@ -48,7 +48,10 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.List;
+import java.util.Set;
+
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.util.Pair;
 
 /**
  * Represents the state of the Web UI Application which is, e.g., persisted in the back-end.
@@ -64,13 +67,14 @@ public interface AppState {
      *
      * @return id list
      */
-    List<String> getLoadedWorkflowProjectIds();
+    Set<String> getLoadedWorkflowProjectIds();
 
     /**
-     * List of ids of the active workflow projects (e.g. those that are visible in an opened tab).
+     * List of active workflow referenced by a pair of the project-id and the workflow's node id (which is null if it's
+     * the root workflow).
      *
      * @return id list
      */
-    List<String> getActiveWorkflowProjectIds();
+    Set<Pair<String, NodeID>> getActiveWorkflowIds();
 
 }

@@ -45,9 +45,11 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -84,12 +86,8 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("projectId")
-    public String getProjectId();
+    @JsonProperty("info")
+    public WorkflowInfoEnt getInfo();
     
     @Override
     @JsonProperty("nodes")
@@ -106,6 +104,18 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @Override
     @JsonProperty("workflowAnnotations")
     public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
+    
+    @Override
+    @JsonProperty("parents")
+    public java.util.List<WorkflowInfoEnt> getParents();
+    
+    @Override
+    @JsonProperty("metaInPorts")
+    public MetaPortsEnt getMetaInPorts();
+    
+    @Override
+    @JsonProperty("metaOutPorts")
+    public MetaPortsEnt getMetaOutPorts();
     
 
     /**
@@ -128,12 +138,8 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         public WorkflowEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public WorkflowEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("projectId")
-        public WorkflowEntMixInBuilder setProjectId(final String projectId);
+        @JsonProperty("info")
+        public WorkflowEntMixInBuilder setInfo(final WorkflowInfoEnt info);
         
         @Override
         @JsonProperty("nodes")
@@ -150,6 +156,18 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("workflowAnnotations")
         public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        
+        @Override
+        @JsonProperty("parents")
+        public WorkflowEntMixInBuilder setParents(final java.util.List<WorkflowInfoEnt> parents);
+        
+        @Override
+        @JsonProperty("metaInPorts")
+        public WorkflowEntMixInBuilder setMetaInPorts(final MetaPortsEnt metaInPorts);
+        
+        @Override
+        @JsonProperty("metaOutPorts")
+        public WorkflowEntMixInBuilder setMetaOutPorts(final MetaPortsEnt metaOutPorts);
         
     }
 

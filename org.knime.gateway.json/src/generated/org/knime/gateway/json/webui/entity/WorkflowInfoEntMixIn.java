@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,9 +53,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -68,29 +67,29 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt.DefaultWork
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "",
     visible = true,
-    defaultImpl = DefaultWorkflowProjectEnt.class)
+    defaultImpl = DefaultWorkflowInfoEnt.class)
 @JsonSubTypes({
-    @Type(value = DefaultWorkflowProjectEnt.class, name="WorkflowProject")
+    @Type(value = DefaultWorkflowInfoEnt.class, name="WorkflowInfo")
 })
-@JsonDeserialize(builder=DefaultWorkflowProjectEntBuilder.class)
+@JsonDeserialize(builder=DefaultWorkflowInfoEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
+public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("projectId")
-    public String getProjectId();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
     @Override
-    @JsonProperty("activeWorkflow")
-    public WorkflowSnapshotEnt getActiveWorkflow();
+    @JsonProperty("containerId")
+    public org.knime.gateway.api.entity.NodeIDEnt getContainerId();
+    
+    @Override
+    @JsonProperty("containerType")
+    public ContainerTypeEnum getContainerType();
     
 
     /**
@@ -102,27 +101,27 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "",
-        defaultImpl = DefaultWorkflowProjectEntBuilder.class)
+        defaultImpl = DefaultWorkflowInfoEntBuilder.class)
     @JsonSubTypes({
-        @Type(value = DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder.class, name="WorkflowProject")
+        @Type(value = DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder.class, name="WorkflowInfo")
     })
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowProjectEntMixInBuilder extends WorkflowProjectEntBuilder {
+    public static interface WorkflowInfoEntMixInBuilder extends WorkflowInfoEntBuilder {
     
         @Override
-        public WorkflowProjectEntMixIn build();
+        public WorkflowInfoEntMixIn build();
     
-        @Override
-        @JsonProperty("projectId")
-        public WorkflowProjectEntMixInBuilder setProjectId(final String projectId);
-        
         @Override
         @JsonProperty("name")
-        public WorkflowProjectEntMixInBuilder setName(final String name);
+        public WorkflowInfoEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("activeWorkflow")
-        public WorkflowProjectEntMixInBuilder setActiveWorkflow(final WorkflowSnapshotEnt activeWorkflow);
+        @JsonProperty("containerId")
+        public WorkflowInfoEntMixInBuilder setContainerId(final org.knime.gateway.api.entity.NodeIDEnt containerId);
+        
+        @Override
+        @JsonProperty("containerType")
+        public WorkflowInfoEntMixInBuilder setContainerType(final ContainerTypeEnum containerType);
         
     }
 

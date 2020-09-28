@@ -140,8 +140,7 @@ public final class DefaultEventService implements EventService {
             // create very first changed event to be send first (and thus catch up with the most recent
             // workflow version)
             PatchEntCreator patchEntCreator = new PatchEntCreator(wfEventType.getSnapshotId());
-            WorkflowChangedEventEnt workflowChangedEvent =
-                createWorkflowChangedEvent(patchEntCreator, wfm, key.m_projectId);
+            WorkflowChangedEventEnt workflowChangedEvent = createWorkflowChangedEvent(patchEntCreator, wfm);
             if (workflowChangedEvent != null) {
                 sendEvent(workflowChangedEvent);
             }
@@ -202,7 +201,7 @@ public final class DefaultEventService implements EventService {
         return wfm -> {
             assertPatchEntCreatorAvaible(key);
             WorkflowChangedEventEnt event =
-                createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm, key.m_projectId);
+                createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm);
             if (event != null) {
                 sendEvent(event);
             }
@@ -222,8 +221,8 @@ public final class DefaultEventService implements EventService {
     }
 
     private static WorkflowChangedEventEnt createWorkflowChangedEvent(final PatchEntCreator patchEntCreator,
-        final WorkflowManager wfm, final String projectId) {
-        patchEntCreator.createPatch(buildWorkflowEnt(wfm, projectId));
+        final WorkflowManager wfm) {
+        patchEntCreator.createPatch(buildWorkflowEnt(wfm));
         if (patchEntCreator.getPatch() == null) {
             return null;
         }

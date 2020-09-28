@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,53 +40,70 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Aug 3, 2020 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.testing.helper.webui;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.testing.helper.ResultChecker;
-import org.knime.gateway.testing.helper.TestWorkflowCollection;
-import org.knime.gateway.testing.helper.WorkflowExecutor;
-import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Test for the endpoints to view/render a workflow.
- *
+ * Describes the ports(-bar) leading into or leaving a metanode&#39;s workflow.   Is not given if there aren&#39;t any metanode inputs/outputs or if it&#39;s not a metanode&#39;s workflow (but a component&#39;s workflow or the root).
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class ViewWorkflowTestHelper extends WebUIGatewayServiceTestHelper {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface MetaPortsEnt extends GatewayEntity {
+
+
+  /**
+   * The horizontal position of the ports(-bar).
+   * @return xPos 
+   **/
+  public Integer getXPos();
+
+  /**
+   * Get ports
+   * @return ports 
+   **/
+  public java.util.List<NodePortEnt> getPorts();
+
 
     /**
-     * @param entityResultChecker
-     * @param workflowLoader
-     * @param workflowExecutor
+     * The builder for the entity.
      */
-    protected ViewWorkflowTestHelper(final ResultChecker entityResultChecker, final WorkflowLoader workflowLoader,
-        final WorkflowExecutor workflowExecutor) {
-        super("viewworkflow", entityResultChecker, workflowLoader, workflowExecutor);
-    }
+    public interface MetaPortsEntBuilder extends GatewayEntityBuilder<MetaPortsEnt> {
 
-    /**
-     * Tests to get the workflow.
-     *
-     * @throws Exception
-     */
-    public void testGetWorkflow() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-
-        // check un-executed
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
-        cr(workflow, "workflowent_root");
-
-        //check executed
-        executeWorkflow(wfId);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
-        cr(workflow, "worklfowent_root_executed");
+        /**
+         * The horizontal position of the ports(-bar).
+         * 
+         * @param xPos the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaPortsEntBuilder setXPos(Integer xPos);
+        
+        /**
+   		 * Set ports
+         * 
+         * @param ports the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaPortsEntBuilder setPorts(java.util.List<NodePortEnt> ports);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        MetaPortsEnt build();
+    
     }
 
 }

@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.GatewayExceptionEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
@@ -68,6 +69,7 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -106,6 +108,7 @@ public class ListEntities {
         res.add(MetaNodeEnt.class);
         res.add(MetaNodePortEnt.class);
         res.add(MetaNodeStateEnt.class);
+        res.add(MetaPortsEnt.class);
         res.add(NativeNodeEnt.class);
         res.add(NodeAnnotationEnt.class);
         res.add(NodeEnt.class);
@@ -119,6 +122,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventEnt.class);
         res.add(WorkflowChangedEventTypeEnt.class);
         res.add(WorkflowEnt.class);
+        res.add(WorkflowInfoEnt.class);
         res.add(WorkflowProjectEnt.class);
         res.add(WorkflowSnapshotEnt.class);
         res.add(XYEnt.class);
@@ -142,6 +146,7 @@ public class ListEntities {
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
         res.add(MetaNodeStateEnt.MetaNodeStateEntBuilder.class);
+        res.add(MetaPortsEnt.MetaPortsEntBuilder.class);
         res.add(NativeNodeEnt.NativeNodeEntBuilder.class);
         res.add(NodeAnnotationEnt.NodeAnnotationEntBuilder.class);
         res.add(NodeEnt.NodeEntBuilder.class);
@@ -155,6 +160,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder.class);
         res.add(WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
+        res.add(WorkflowInfoEnt.WorkflowInfoEntBuilder.class);
         res.add(WorkflowProjectEnt.WorkflowProjectEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);
         res.add(XYEnt.XYEntBuilder.class);

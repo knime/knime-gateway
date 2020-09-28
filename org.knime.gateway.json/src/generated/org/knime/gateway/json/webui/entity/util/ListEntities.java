@@ -55,6 +55,7 @@ import org.knime.gateway.json.webui.entity.GatewayExceptionEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeStateEntMixIn;
+import org.knime.gateway.json.webui.entity.MetaPortsEntMixIn;
 import org.knime.gateway.json.webui.entity.NativeNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
@@ -68,6 +69,7 @@ import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
@@ -105,6 +107,7 @@ public class ListEntities {
         res.add(MetaNodeEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
         res.add(MetaNodeStateEntMixIn.class);
+        res.add(MetaPortsEntMixIn.class);
         res.add(NativeNodeEntMixIn.class);
         res.add(NodeAnnotationEntMixIn.class);
         res.add(NodeEntMixIn.class);
@@ -118,6 +121,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventEntMixIn.class);
         res.add(WorkflowChangedEventTypeEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
+        res.add(WorkflowInfoEntMixIn.class);
         res.add(WorkflowProjectEntMixIn.class);
         res.add(WorkflowSnapshotEntMixIn.class);
         res.add(XYEntMixIn.class);
@@ -141,6 +145,7 @@ public class ListEntities {
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);
         res.add(MetaNodeStateEntMixIn.MetaNodeStateEntMixInBuilder.class);
+        res.add(MetaPortsEntMixIn.MetaPortsEntMixInBuilder.class);
         res.add(NativeNodeEntMixIn.NativeNodeEntMixInBuilder.class);
         res.add(NodeAnnotationEntMixIn.NodeAnnotationEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
@@ -154,6 +159,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventEntMixIn.WorkflowChangedEventEntMixInBuilder.class);
         res.add(WorkflowChangedEventTypeEntMixIn.WorkflowChangedEventTypeEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
+        res.add(WorkflowInfoEntMixIn.WorkflowInfoEntMixInBuilder.class);
         res.add(WorkflowProjectEntMixIn.WorkflowProjectEntMixInBuilder.class);
         res.add(WorkflowSnapshotEntMixIn.WorkflowSnapshotEntMixInBuilder.class);
         res.add(XYEntMixIn.XYEntMixInBuilder.class);

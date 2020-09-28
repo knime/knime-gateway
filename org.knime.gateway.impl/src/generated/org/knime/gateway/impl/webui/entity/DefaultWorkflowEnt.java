@@ -51,9 +51,11 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
@@ -65,12 +67,14 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultWorkflowEnt  implements WorkflowEnt {
 
-  protected String m_name;
-  protected String m_projectId;
+  protected WorkflowInfoEnt m_info;
   protected java.util.Map<String, NodeEnt> m_nodes;
   protected java.util.Map<String, NodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
+  protected java.util.List<WorkflowInfoEnt> m_parents;
+  protected MetaPortsEnt m_metaInPorts;
+  protected MetaPortsEnt m_metaOutPorts;
   
   protected DefaultWorkflowEnt() {
     //for sub-classes
@@ -83,14 +87,10 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   
   private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
     
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
+    if(builder.m_info == null) {
+        throw new IllegalArgumentException("info must not be null.");
     }
-    m_name = immutable(builder.m_name);
-    if(builder.m_projectId == null) {
-        throw new IllegalArgumentException("projectId must not be null.");
-    }
-    m_projectId = immutable(builder.m_projectId);
+    m_info = immutable(builder.m_info);
     if(builder.m_nodes == null) {
         throw new IllegalArgumentException("nodes must not be null.");
     }
@@ -107,6 +107,9 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         throw new IllegalArgumentException("workflowAnnotations must not be null.");
     }
     m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
+    m_parents = immutable(builder.m_parents);
+    m_metaInPorts = immutable(builder.m_metaInPorts);
+    m_metaOutPorts = immutable(builder.m_metaOutPorts);
   }
   
    /**
@@ -124,7 +127,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations);
+        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts);
     }
 
 
@@ -135,25 +138,22 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_projectId)
+               .append(m_info)
                .append(m_nodes)
                .append(m_nodeTemplates)
                .append(m_connections)
                .append(m_workflowAnnotations)
+               .append(m_parents)
+               .append(m_metaInPorts)
+               .append(m_metaOutPorts)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getName() {
-        return m_name;
-  }
-    
-  @Override
-  public String getProjectId() {
-        return m_projectId;
+  public WorkflowInfoEnt getInfo() {
+        return m_info;
   }
     
   @Override
@@ -176,6 +176,21 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         return m_workflowAnnotations;
   }
     
+  @Override
+  public java.util.List<WorkflowInfoEnt> getParents() {
+        return m_parents;
+  }
+    
+  @Override
+  public MetaPortsEnt getMetaInPorts() {
+        return m_metaInPorts;
+  }
+    
+  @Override
+  public MetaPortsEnt getMetaOutPorts() {
+        return m_metaOutPorts;
+  }
+    
   
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
     
@@ -183,28 +198,21 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             
         }
     
-        private String m_name;
-        private String m_projectId;
+        private WorkflowInfoEnt m_info;
         private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
+        private java.util.List<WorkflowInfoEnt> m_parents = new java.util.ArrayList<>();
+        private MetaPortsEnt m_metaInPorts;
+        private MetaPortsEnt m_metaOutPorts;
 
         @Override
-        public DefaultWorkflowEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+        public DefaultWorkflowEntBuilder setInfo(WorkflowInfoEnt info) {
+             if(info == null) {
+                 throw new IllegalArgumentException("info must not be null.");
              }
-             m_name = name;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowEntBuilder setProjectId(String projectId) {
-             if(projectId == null) {
-                 throw new IllegalArgumentException("projectId must not be null.");
-             }
-             m_projectId = projectId;
+             m_info = info;
              return this;
         }
 
@@ -241,6 +249,24 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
                  throw new IllegalArgumentException("workflowAnnotations must not be null.");
              }
              m_workflowAnnotations = workflowAnnotations;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setParents(java.util.List<WorkflowInfoEnt> parents) {
+             m_parents = parents;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setMetaInPorts(MetaPortsEnt metaInPorts) {
+             m_metaInPorts = metaInPorts;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setMetaOutPorts(MetaPortsEnt metaOutPorts) {
+             m_metaOutPorts = metaOutPorts;
              return this;
         }
 

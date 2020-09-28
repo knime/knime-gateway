@@ -50,32 +50,34 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 
 /**
- * Represents the global application state. 
+ * Describes the ports(-bar) leading into or leaving a metanode&#39;s workflow.   Is not given if there aren&#39;t any metanode inputs/outputs or if it&#39;s not a metanode&#39;s workflow (but a component&#39;s workflow or the root).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAppStateEnt  implements AppStateEnt {
+public class DefaultMetaPortsEnt  implements MetaPortsEnt {
 
-  protected java.util.List<WorkflowProjectEnt> m_openedWorkflows;
+  protected Integer m_xPos;
+  protected java.util.List<NodePortEnt> m_ports;
   
-  protected DefaultAppStateEnt() {
+  protected DefaultMetaPortsEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "AppState";
+    return "MetaPorts";
   }
   
-  private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
+  private DefaultMetaPortsEnt(DefaultMetaPortsEntBuilder builder) {
     
-    m_openedWorkflows = immutable(builder.m_openedWorkflows);
+    m_xPos = immutable(builder.m_xPos);
+    m_ports = immutable(builder.m_ports);
   }
   
    /**
@@ -92,8 +94,8 @@ public class DefaultAppStateEnt  implements AppStateEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows);
+        DefaultMetaPortsEnt ent = (DefaultMetaPortsEnt)o;
+        return Objects.equals(m_xPos, ent.m_xPos) && Objects.equals(m_ports, ent.m_ports);
     }
 
 
@@ -104,36 +106,49 @@ public class DefaultAppStateEnt  implements AppStateEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_openedWorkflows)
+               .append(m_xPos)
+               .append(m_ports)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public java.util.List<WorkflowProjectEnt> getOpenedWorkflows() {
-        return m_openedWorkflows;
+  public Integer getXPos() {
+        return m_xPos;
+  }
+    
+  @Override
+  public java.util.List<NodePortEnt> getPorts() {
+        return m_ports;
   }
     
   
-    public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
+    public static class DefaultMetaPortsEntBuilder implements MetaPortsEntBuilder {
     
-        public DefaultAppStateEntBuilder(){
+        public DefaultMetaPortsEntBuilder(){
             
         }
     
-        private java.util.List<WorkflowProjectEnt> m_openedWorkflows = new java.util.ArrayList<>();
+        private Integer m_xPos;
+        private java.util.List<NodePortEnt> m_ports = new java.util.ArrayList<>();
 
         @Override
-        public DefaultAppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows) {
-             m_openedWorkflows = openedWorkflows;
+        public DefaultMetaPortsEntBuilder setXPos(Integer xPos) {
+             m_xPos = xPos;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaPortsEntBuilder setPorts(java.util.List<NodePortEnt> ports) {
+             m_ports = ports;
              return this;
         }
 
         
         @Override
-        public DefaultAppStateEnt build() {
-            return new DefaultAppStateEnt(this);
+        public DefaultMetaPortsEnt build() {
+            return new DefaultMetaPortsEnt(this);
         }
     
     }

@@ -50,11 +50,12 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
 /**
- * Represents an entire workflow (including sub-workflows etc.) loaded in memory.
+ * Represents an entire workflow project.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,6 +64,7 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
 
   protected String m_projectId;
   protected String m_name;
+  protected WorkflowSnapshotEnt m_activeWorkflow;
   
   protected DefaultWorkflowProjectEnt() {
     //for sub-classes
@@ -83,6 +85,7 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
+    m_activeWorkflow = immutable(builder.m_activeWorkflow);
   }
   
    /**
@@ -100,7 +103,7 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
             return false;
         }
         DefaultWorkflowProjectEnt ent = (DefaultWorkflowProjectEnt)o;
-        return Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_name, ent.m_name);
+        return Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_activeWorkflow, ent.m_activeWorkflow);
     }
 
 
@@ -113,6 +116,7 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
        return new HashCodeBuilder()
                .append(m_projectId)
                .append(m_name)
+               .append(m_activeWorkflow)
                .toHashCode();
    }
   
@@ -128,6 +132,11 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
         return m_name;
   }
     
+  @Override
+  public WorkflowSnapshotEnt getActiveWorkflow() {
+        return m_activeWorkflow;
+  }
+    
   
     public static class DefaultWorkflowProjectEntBuilder implements WorkflowProjectEntBuilder {
     
@@ -137,6 +146,7 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
     
         private String m_projectId;
         private String m_name;
+        private WorkflowSnapshotEnt m_activeWorkflow;
 
         @Override
         public DefaultWorkflowProjectEntBuilder setProjectId(String projectId) {
@@ -153,6 +163,12 @@ public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
                  throw new IllegalArgumentException("name must not be null.");
              }
              m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow) {
+             m_activeWorkflow = activeWorkflow;
              return this;
         }
 

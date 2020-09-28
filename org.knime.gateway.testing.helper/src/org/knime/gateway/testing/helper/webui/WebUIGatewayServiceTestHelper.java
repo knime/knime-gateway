@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.json.util.JsonUtil;
@@ -97,13 +96,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ResultChecker createResultChecker(final boolean rewriteTestResults, final Class<?> testClass) {
         PropertyExceptions pe = new PropertyExceptions();
-
-        /**
-         * Name of the field that holds the workflow's project id (if the workflow is a project). Since the id changes
-         * with every run it cannot be compared.
-         */
-        pe.addException(DefaultWorkflowEnt.class, "projectId",
-            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_PROJECT_ID"));
 
         /** Same as above but for the snapshot id. */
         pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotId",

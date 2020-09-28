@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -52,61 +51,84 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents an entire workflow project.
+ * WorkflowInfoEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowProjectEnt extends GatewayEntity {
-
+public interface WorkflowInfoEnt extends GatewayEntity {
 
   /**
-   * Get projectId
-   * @return projectId , never <code>null</code>
-   **/
-  public String getProjectId();
+   * Whether the workflow is contained in a component, metanode or is the project workflow (i.e. top-level) itself.
+   */
+  public enum ContainerTypeEnum {
+    COMPONENT("component"),
+    
+    METANODE("metanode"),
+    
+    PROJECT("project");
+
+    private String value;
+
+    ContainerTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Get name
-   * @return name , never <code>null</code>
+   * @return name 
    **/
   public String getName();
 
   /**
-   * Get activeWorkflow
-   * @return activeWorkflow 
+   * The id of the metanode or component this workflow is contained in. Not given if this is the root workflow
+   * @return containerId 
    **/
-  public WorkflowSnapshotEnt getActiveWorkflow();
+  public org.knime.gateway.api.entity.NodeIDEnt getContainerId();
+
+  /**
+   * Whether the workflow is contained in a component, metanode or is the project workflow (i.e. top-level) itself.
+   * @return containerType 
+   **/
+  public ContainerTypeEnum getContainerType();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowProjectEntBuilder extends GatewayEntityBuilder<WorkflowProjectEnt> {
+    public interface WorkflowInfoEntBuilder extends GatewayEntityBuilder<WorkflowInfoEnt> {
 
-        /**
-   		 * Set projectId
-         * 
-         * @param projectId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowProjectEntBuilder setProjectId(String projectId);
-        
         /**
    		 * Set name
          * 
-         * @param name the property value, NOT <code>null</code>! 
+         * @param name the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setName(String name);
+        WorkflowInfoEntBuilder setName(String name);
         
         /**
-   		 * Set activeWorkflow
+         * The id of the metanode or component this workflow is contained in. Not given if this is the root workflow
          * 
-         * @param activeWorkflow the property value,  
+         * @param containerId the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow);
+        WorkflowInfoEntBuilder setContainerId(org.knime.gateway.api.entity.NodeIDEnt containerId);
+        
+        /**
+         * Whether the workflow is contained in a component, metanode or is the project workflow (i.e. top-level) itself.
+         * 
+         * @param containerType the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType);
         
         
         /**
@@ -116,7 +138,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowProjectEnt build();
+        WorkflowInfoEnt build();
     
     }
 

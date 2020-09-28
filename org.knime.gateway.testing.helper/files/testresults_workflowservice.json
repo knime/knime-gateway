@@ -1,4 +1,133 @@
 {
+  "workflowent_6" : {
+    "connections" : {
+      "root:6_1" : {
+        "destNode" : "root:6",
+        "destPort" : 1,
+        "sourceNode" : "root:6:3",
+        "sourcePort" : 2
+      },
+      "root:6:3_1" : {
+        "destNode" : "root:6:3",
+        "destPort" : 1,
+        "sourceNode" : "root:6",
+        "sourcePort" : 0
+      },
+      "root:6_0" : {
+        "destNode" : "root:6",
+        "destPort" : 0,
+        "sourceNode" : "root:6:3",
+        "sourcePort" : 1
+      }
+    },
+    "info" : {
+      "containerId" : "root:6",
+      "containerType" : "metanode",
+      "name" : "Metanode"
+    },
+    "metaInPorts" : {
+      "ports" : [ {
+        "connectedVia" : "[ root:6:3_1 ]",
+        "index" : 0,
+        "name" : "Connected to: Filtered table",
+        "type" : "table"
+      } ]
+    },
+    "metaOutPorts" : {
+      "ports" : [ {
+        "connectedVia" : "[ root:6_0 ]",
+        "index" : 0,
+        "name" : "Inport 0",
+        "type" : "table"
+      }, {
+        "connectedVia" : "[ root:6_1 ]",
+        "index" : 1,
+        "name" : "Inport 1",
+        "type" : "table"
+      } ]
+    },
+    "nodeTemplates" : {
+      "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory" : {
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzA3QTY5QUExNjhEMTFFNUJEOTVBMUI1OTFFQzZGQkIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzA3QTY5QTkxNjhEMTFFNUJEOTVBMUI1OTFFQzZGQkIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDplYjRlYWE5NS1mMzM5LTQzZTctYmY1Yy0yNzFmOThkY2ZiMmIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+3KzYuwAAAHZJREFUeNrUU9EKACEIc9GH3325XVhhETJ8u4FBtXSaiqqKtw99ecRgBwfHGybpgnmH4fiKOogenf0KCTAkrwDApiqUd41oDtbbqAaMMlQ2jaNGK/2SDL6C1kQNtn1WgZ7N8uMiFmaYou6lhilqb2qYoq9uAgwAcxJd484pDhYAAAAASUVORK5CYII=",
+        "name" : "Row Splitter",
+        "type" : "Manipulator"
+      }
+    },
+    "nodes" : {
+      "root:6:3" : {
+        "id" : "root:6:3",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:6:3_1 ]",
+          "index" : 1,
+          "name" : "To be filtered",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:6_0 ]",
+          "index" : 1,
+          "name" : "Filtered",
+          "type" : "table"
+        }, {
+          "connectedVia" : "[ root:6_1 ]",
+          "index" : 2,
+          "name" : "Filtered Out",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 150,
+          "y" : 126
+        },
+        "state" : {
+          "executionState" : "CONFIGURED"
+        },
+        "templateId" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory"
+      }
+    },
+    "parents" : [ {
+      "containerType" : "project",
+      "name" : "workflow"
+    } ],
+    "workflowAnnotations" : [ {
+      "backgroundColor" : "#FFFFFF",
+      "borderColor" : "#FFD800",
+      "borderWidth" : 10,
+      "bounds" : {
+        "height" : 140,
+        "width" : 250,
+        "x" : 233,
+        "y" : 293
+      },
+      "defaultFontSize" : 11,
+      "id" : "root:6_0",
+      "styleRanges" : [ {
+        "color" : "#EF2929",
+        "fontSize" : 11,
+        "length" : 13,
+        "start" : 25
+      }, {
+        "bold" : true,
+        "color" : "#EF2929",
+        "fontSize" : 11,
+        "length" : 15,
+        "start" : 38
+      } ],
+      "text" : "Workflow Annotation with Style Ranges and another one",
+      "textAlign" : "left"
+    } ]
+  },
   "worklfowent_root_executed" : {
     "connections" : {
       "root:11_1" : {
@@ -174,7 +303,10 @@
         "sourcePort" : 1
       }
     },
-    "name" : "workflow",
+    "info" : {
+      "containerType" : "project",
+      "name" : "workflow"
+    },
     "nodeTemplates" : {
       "org.knime.base.node.mine.pca.PCAComputeNodeFactory" : {
         "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MjI1QjUzNkI4NEE4MTFFNTlCODZDMzA0NTY3MzY5QkQiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MjI1QjUzNkE4NEE4MTFFNTlCODZDMzA0NTY3MzY5QkQiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowNUYxNEQ2ODM4NEUxMUU1OTk3MThDMzA3QzdERDI0QyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowNUYxNEQ2OTM4NEUxMUU1OTk3MThDMzA3QzdERDI0QyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PkxqD2MAAAHESURBVHjaYuRmZ/5vKMfDAAIsLCwMf/78YYABViD/N5R//tEXhq8//zIyoAEWJVEOhq15OgyEgE3nBYbLT77C+c99A8yBVCXT7z//GYgByOqAmp2B1FEg5mBkY2P7/+vXL4IGsLKyMvz+/ZsRqnknEO+R3LzBA+Sn/0AAVsTIyMgAYyPzP3z4wCAoKAiy2QVZM0gNE0zx55+/8bpAkZubAap5NUwz2BKYF0Kr2hg+KBgy/Ht0nUH8/WOGZVP74ZoLwiMY4t59YJDk4FgB1ByJbDCKFywcnBkk7LwY/irpMfz/8Ibhw8k9DMnaygyO588zNJw7y7DwwX2MaMQaBr///mNoWbyO4eIXRgZuVjYGVz5mhrTUCIbfXz9jpgOsIc7MxKD36RlD3N4DDO+TMxg2cogy2PYsZ2Dh5LoKlC7bleC0FcUFIiIiYCf8/fuX8d+/fww6AgIMMzW1GXru32PY8vYNyIWM34B22fYuPwVUZgrE74B4MhC3ggywQbZ9qpGxo7+UTMONz582uRzc34vmuCNuC/aJAekJQBwMxPdRZIHxnATE/4B4GjGpE2gYF7LmWFI0YwCgxrvkaGZETrrkAIAAAwCEr79+603VCwAAAABJRU5ErkJggg==",
@@ -1465,7 +1597,6 @@
         "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
       }
     },
-    "projectId" : "PLACEHOLDER_FOR_PROJECT_ID",
     "workflowAnnotations" : [ {
       "backgroundColor" : "#FFFFFF",
       "borderColor" : "#FFD800",
@@ -1706,6 +1837,149 @@
       "textAlign" : "center"
     } ]
   },
+  "workflowent_23" : {
+    "connections" : {
+      "root:23:0:9_1" : {
+        "destNode" : "root:23:0:9",
+        "destPort" : 1,
+        "sourceNode" : "root:23:0:10",
+        "sourcePort" : 1
+      },
+      "root:23:0:10_1" : {
+        "destNode" : "root:23:0:10",
+        "destPort" : 1,
+        "sourceNode" : "root:23:0:8",
+        "sourcePort" : 1
+      }
+    },
+    "info" : {
+      "containerId" : "root:23",
+      "containerType" : "component",
+      "name" : "Component"
+    },
+    "nodeTemplates" : {
+      "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory" : {
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPklEQVQ4je2RMQoAIBRCX13Mo3s024I//4agBBdBER1AaGB2zBcFJNm0jaSiJUEStot2rkEHgxM3/g2e32ABBL1vm0aW6zoAAAAASUVORK5CYII=",
+        "name" : "Table View",
+        "type" : "Visualizer"
+      },
+      "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76" : {
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+        "name" : "Component Output",
+        "type" : "VirtualOut"
+      },
+      "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76" : {
+        "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+        "name" : "Component Input",
+        "type" : "VirtualIn"
+      }
+    },
+    "nodes" : {
+      "root:23:0:10" : {
+        "id" : "root:23:0:10",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:23:0:10_1 ]",
+          "index" : 1,
+          "name" : "Input to display",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:23:0:9_1 ]",
+          "index" : 1,
+          "name" : "Input data and view selection",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 150,
+          "y" : 126
+        },
+        "state" : {
+          "executionState" : "IDLE"
+        },
+        "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
+      },
+      "root:23:0:8" : {
+        "id" : "root:23:0:8",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:23:0:10_1 ]",
+          "index" : 1,
+          "name" : "Delegated Component Input 0",
+          "type" : "table"
+        } ],
+        "position" : {
+          "x" : 50,
+          "y" : 126
+        },
+        "state" : {
+          "executionState" : "IDLE",
+          "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        },
+        "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76"
+      },
+      "root:23:0:9" : {
+        "id" : "root:23:0:9",
+        "inPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Inport",
+          "optional" : true,
+          "type" : "flowVariable"
+        }, {
+          "connectedVia" : "[ root:23:0:9_1 ]",
+          "index" : 1,
+          "name" : "Passed-on Component Output 0",
+          "optional" : false,
+          "type" : "table"
+        } ],
+        "kind" : "node",
+        "outPorts" : [ {
+          "connectedVia" : "[  ]",
+          "index" : 0,
+          "name" : "Variable Outport",
+          "type" : "flowVariable"
+        } ],
+        "position" : {
+          "x" : 250,
+          "y" : 126
+        },
+        "state" : {
+          "executionState" : "IDLE"
+        },
+        "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76"
+      }
+    },
+    "parents" : [ {
+      "containerType" : "project",
+      "name" : "workflow"
+    } ],
+    "workflowAnnotations" : [ ]
+  },
   "workflowent_root" : {
     "connections" : {
       "root:11_1" : {
@@ -1881,7 +2155,10 @@
         "sourcePort" : 1
       }
     },
-    "name" : "workflow",
+    "info" : {
+      "containerType" : "project",
+      "name" : "workflow"
+    },
     "nodeTemplates" : {
       "org.knime.base.node.mine.pca.PCAComputeNodeFactory" : {
         "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MjI1QjUzNkI4NEE4MTFFNTlCODZDMzA0NTY3MzY5QkQiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MjI1QjUzNkE4NEE4MTFFNTlCODZDMzA0NTY3MzY5QkQiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowNUYxNEQ2ODM4NEUxMUU1OTk3MThDMzA3QzdERDI0QyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowNUYxNEQ2OTM4NEUxMUU1OTk3MThDMzA3QzdERDI0QyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PkxqD2MAAAHESURBVHjaYuRmZ/5vKMfDAAIsLCwMf/78YYABViD/N5R//tEXhq8//zIyoAEWJVEOhq15OgyEgE3nBYbLT77C+c99A8yBVCXT7z//GYgByOqAmp2B1FEg5mBkY2P7/+vXL4IGsLKyMvz+/ZsRqnknEO+R3LzBA+Sn/0AAVsTIyMgAYyPzP3z4wCAoKAiy2QVZM0gNE0zx55+/8bpAkZubAap5NUwz2BKYF0Kr2hg+KBgy/Ht0nUH8/WOGZVP74ZoLwiMY4t59YJDk4FgB1ByJbDCKFywcnBkk7LwY/irpMfz/8Ibhw8k9DMnaygyO588zNJw7y7DwwX2MaMQaBr///mNoWbyO4eIXRgZuVjYGVz5mhrTUCIbfXz9jpgOsIc7MxKD36RlD3N4DDO+TMxg2cogy2PYsZ2Dh5LoKlC7bleC0FcUFIiIiYCf8/fuX8d+/fww6AgIMMzW1GXru32PY8vYNyIWM34B22fYuPwVUZgrE74B4MhC3ggywQbZ9qpGxo7+UTMONz582uRzc34vmuCNuC/aJAekJQBwMxPdRZIHxnATE/4B4GjGpE2gYF7LmWFI0YwCgxrvkaGZETrrkAIAAAwCEr79+603VCwAAAABJRU5ErkJggg==",
@@ -3132,7 +3409,6 @@
         "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
       }
     },
-    "projectId" : "PLACEHOLDER_FOR_PROJECT_ID",
     "workflowAnnotations" : [ {
       "backgroundColor" : "#FFFFFF",
       "borderColor" : "#FFD800",

@@ -110,11 +110,12 @@ public final class DefaultWorkflowService implements WorkflowService {
         } catch (IllegalStateException ex) {
             throw new NotASubWorkflowException(ex.getMessage(), ex);
         }
-        return buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm, projectId), workflowId);
+        return buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm), projectId, workflowId);
     }
 
-    WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final NodeIDEnt workflowId) {
-        UUID snapshotId = m_entityRepo.commit(Pair.create(workflow.getProjectId(), workflowId), workflow);
+    WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String projectId,
+        final NodeIDEnt workflowId) {
+        UUID snapshotId = m_entityRepo.commit(Pair.create(projectId, workflowId), workflow);
         return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
     }
 

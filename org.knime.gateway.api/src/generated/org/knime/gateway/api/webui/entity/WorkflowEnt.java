@@ -45,9 +45,11 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
+import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -64,16 +66,10 @@ public interface WorkflowEnt extends GatewayEntity {
 
 
   /**
-   * Get name
-   * @return name , never <code>null</code>
+   * Get info
+   * @return info , never <code>null</code>
    **/
-  public String getName();
-
-  /**
-   * The project id if this workflow is the top-level project workflow. Otherwise not given.
-   * @return projectId , never <code>null</code>
-   **/
-  public String getProjectId();
+  public WorkflowInfoEnt getInfo();
 
   /**
    * The node map.
@@ -99,6 +95,24 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
 
+  /**
+   * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent.  Not available if this workflow is the root already.
+   * @return parents 
+   **/
+  public java.util.List<WorkflowInfoEnt> getParents();
+
+  /**
+   * Get metaInPorts
+   * @return metaInPorts 
+   **/
+  public MetaPortsEnt getMetaInPorts();
+
+  /**
+   * Get metaOutPorts
+   * @return metaOutPorts 
+   **/
+  public MetaPortsEnt getMetaOutPorts();
+
 
     /**
      * The builder for the entity.
@@ -106,20 +120,12 @@ public interface WorkflowEnt extends GatewayEntity {
     public interface WorkflowEntBuilder extends GatewayEntityBuilder<WorkflowEnt> {
 
         /**
-   		 * Set name
+   		 * Set info
          * 
-         * @param name the property value, NOT <code>null</code>! 
+         * @param info the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setName(String name);
-        
-        /**
-         * The project id if this workflow is the top-level project workflow. Otherwise not given.
-         * 
-         * @param projectId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowEntBuilder setProjectId(String projectId);
+        WorkflowEntBuilder setInfo(WorkflowInfoEnt info);
         
         /**
          * The node map.
@@ -152,6 +158,30 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
+        
+        /**
+         * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent.  Not available if this workflow is the root already.
+         * 
+         * @param parents the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setParents(java.util.List<WorkflowInfoEnt> parents);
+        
+        /**
+   		 * Set metaInPorts
+         * 
+         * @param metaInPorts the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setMetaInPorts(MetaPortsEnt metaInPorts);
+        
+        /**
+   		 * Set metaOutPorts
+         * 
+         * @param metaOutPorts the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setMetaOutPorts(MetaPortsEnt metaOutPorts);
         
         
         /**
