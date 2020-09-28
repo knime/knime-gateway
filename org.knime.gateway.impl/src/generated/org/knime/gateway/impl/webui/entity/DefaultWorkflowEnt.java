@@ -52,7 +52,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -68,7 +67,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 public class DefaultWorkflowEnt  implements WorkflowEnt {
 
   protected WorkflowInfoEnt m_info;
-  protected java.util.Map<String, NodeEnt> m_nodes;
+  protected java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes;
   protected java.util.Map<String, NodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
@@ -157,7 +156,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   }
     
   @Override
-  public java.util.Map<String, NodeEnt> getNodes() {
+  public java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> getNodes() {
         return m_nodes;
   }
     
@@ -199,7 +198,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
     
         private WorkflowInfoEnt m_info;
-        private java.util.Map<String, NodeEnt> m_nodes = new java.util.HashMap<>();
+        private java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
@@ -217,7 +216,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes) {
+        public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> nodes) {
              if(nodes == null) {
                  throw new IllegalArgumentException("nodes must not be null.");
              }
