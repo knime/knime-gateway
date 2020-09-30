@@ -45,17 +45,18 @@
 
 package org.knime.gateway.impl.webui.jsonrpc.service.util;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcNodeServiceWrapper;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcEventServiceWrapper;
+import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcWorkflowServiceWrapper;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcApplicationServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcEventServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcNodeServiceWrapper;
-import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcWorkflowServiceWrapper;
+import org.knime.gateway.api.webui.service.ApplicationService;
+
+import org.knime.gateway.api.service.GatewayService;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Wraps the given gateway service with the appropriate json rpc service.
@@ -68,7 +69,7 @@ public class WrapWithJsonRpcService {
     private WrapWithJsonRpcService() {
         //utility class
     }
-
+    
     /**
      * Wraps a service instance with a JsonRpc-wrapper (that brings the json-rpc annotations).
      *

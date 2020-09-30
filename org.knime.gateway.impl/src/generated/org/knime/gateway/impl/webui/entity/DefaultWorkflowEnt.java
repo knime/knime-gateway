@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -74,6 +75,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   protected java.util.List<WorkflowInfoEnt> m_parents;
   protected MetaPortsEnt m_metaInPorts;
   protected MetaPortsEnt m_metaOutPorts;
+  protected AllowedActionsEnt m_allowedActions;
   
   protected DefaultWorkflowEnt() {
     //for sub-classes
@@ -109,6 +111,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     m_parents = immutable(builder.m_parents);
     m_metaInPorts = immutable(builder.m_metaInPorts);
     m_metaOutPorts = immutable(builder.m_metaOutPorts);
+    m_allowedActions = immutable(builder.m_allowedActions);
   }
   
    /**
@@ -126,7 +129,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts);
+        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions);
     }
 
 
@@ -145,6 +148,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
                .append(m_parents)
                .append(m_metaInPorts)
                .append(m_metaOutPorts)
+               .append(m_allowedActions)
                .toHashCode();
    }
   
@@ -190,6 +194,11 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         return m_metaOutPorts;
   }
     
+  @Override
+  public AllowedActionsEnt getAllowedActions() {
+        return m_allowedActions;
+  }
+    
   
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
     
@@ -205,6 +214,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         private java.util.List<WorkflowInfoEnt> m_parents;
         private MetaPortsEnt m_metaInPorts;
         private MetaPortsEnt m_metaOutPorts;
+        private AllowedActionsEnt m_allowedActions;
 
         @Override
         public DefaultWorkflowEntBuilder setInfo(WorkflowInfoEnt info) {
@@ -266,6 +276,12 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setMetaOutPorts(MetaPortsEnt metaOutPorts) {
              m_metaOutPorts = metaOutPorts;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
+             m_allowedActions = allowedActions;
              return this;
         }
 

@@ -1971,6 +1971,10 @@
     } ],
     "workflowAnnotations" : [ ]
   },
+  "allowedactions_8" : {
+    "canCancel" : false,
+    "canExecute" : true
+  },
   "node_states_execution" : {
     "root:1" : "IDLE",
     "root:2" : "EXECUTING",
@@ -1978,6 +1982,18 @@
     "root:4" : "EXECUTED",
     "root:7" : "EXECUTING",
     "root:8" : "QUEUED"
+  },
+  "allowedactions_root" : {
+    "canCancel" : false,
+    "canExecute" : true
+  },
+  "allowedactions_6" : {
+    "canCancel" : false,
+    "canExecute" : true
+  },
+  "allowedactions_12" : {
+    "canCancel" : false,
+    "canExecute" : true
   },
   "workflowent_root" : {
     "connections" : {

@@ -45,6 +45,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.webui.service.DefaultEventService.PatchEntCreator;
 
@@ -90,7 +91,8 @@ public abstract class AbstractEntityRepositoryTest {
         assertEquals(res, res2);
 
         WorkflowEnt newChangedEntity =
-            wfBuilder.setName("a new workflow name").setProjectId("another project id").build();
+            wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
+                .setName("a new workflow name").build()).build();
         UUID res3 = m_repo.commit(create(wfID, getRootID()), newChangedEntity);
 
         //since there is a change, the snapshot id should be new

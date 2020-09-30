@@ -119,7 +119,7 @@ public final class DefaultApplicationService implements ApplicationService {
                 wfm = (WorkflowManager)wfm.findNodeContainer(p.getSecond());
             }
             builder.setActiveWorkflow(DefaultWorkflowService.getInstance()
-                .buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm), wp.getID(), new NodeIDEnt(wfm.getID())));
+                .buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm, true), wp.getID(), new NodeIDEnt(wfm.getID())));
         });
         return builder.build();
     }

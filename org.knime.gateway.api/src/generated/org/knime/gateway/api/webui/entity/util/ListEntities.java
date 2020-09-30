@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity.util;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
@@ -96,6 +97,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AllowedActionsEnt.class);
         res.add(AnnotationEnt.class);
         res.add(AppStateEnt.class);
         res.add(BoundsEnt.class);
@@ -133,6 +135,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);

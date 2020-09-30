@@ -221,7 +221,8 @@ public final class DefaultEventService implements EventService {
 
     private static WorkflowChangedEventEnt createWorkflowChangedEvent(final PatchEntCreator patchEntCreator,
         final WorkflowManager wfm) {
-        patchEntCreator.createPatch(buildWorkflowEnt(wfm));
+        // TODO parameterize the 'includeInteractionInfo'
+        patchEntCreator.createPatch(buildWorkflowEnt(wfm, true));
         if (patchEntCreator.getPatch() == null) {
             return null;
         }

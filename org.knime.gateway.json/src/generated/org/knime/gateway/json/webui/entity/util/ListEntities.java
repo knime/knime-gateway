@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity.util;
 
+import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
@@ -95,6 +96,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AllowedActionsEntMixIn.class);
         res.add(AnnotationEntMixIn.class);
         res.add(AppStateEntMixIn.class);
         res.add(BoundsEntMixIn.class);
@@ -132,6 +134,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
         res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);

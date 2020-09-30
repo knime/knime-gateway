@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -169,6 +170,14 @@ public interface ComponentNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set allowedActions
+         * 
+         * @param allowedActions the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         /**
    		 * Set name

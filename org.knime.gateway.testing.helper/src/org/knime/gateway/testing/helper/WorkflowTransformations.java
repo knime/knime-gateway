@@ -65,7 +65,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 
 /**
- * A utility class that provides a list of {@link WorkflowTransformation}s.
+ * A utility class that provides a list of {@link WorkflowTransformation}s carried out on the
+ * {@link TestWorkflowCollection#GENERAL_WEB_UI} workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

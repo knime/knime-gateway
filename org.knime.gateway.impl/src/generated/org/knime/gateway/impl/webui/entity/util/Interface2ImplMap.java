@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.impl.webui.entity.util;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
@@ -122,6 +124,9 @@ public class Interface2ImplMap {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <B extends GatewayEntityBuilder> B create(final Class<B> clazz) {
+        if(clazz == AllowedActionsEntBuilder.class) {
+            return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
+        }        
         if(clazz == AnnotationEntBuilder.class) {
             return (B)new DefaultAnnotationEnt.DefaultAnnotationEntBuilder();
         }        

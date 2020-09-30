@@ -44,20 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
-import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.MetaNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -65,49 +59,25 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt.DefaultMetaNodeEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultMetaNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultAllowedActionsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface MetaNodeEntMixIn extends MetaNodeEnt {
+public interface AllowedActionsEntMixIn extends AllowedActionsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
+    @JsonProperty("canExecute")
+    public Boolean isCanExecute();
     
     @Override
-    @JsonProperty("inPorts")
-    public java.util.List<MetaNodePortEnt> getInPorts();
+    @JsonProperty("canCancel")
+    public Boolean isCanCancel();
     
     @Override
-    @JsonProperty("outPorts")
-    public java.util.List<MetaNodePortEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
-    
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("state")
-    public MetaNodeStateEnt getState();
+    @JsonProperty("canReset")
+    public Boolean isCanReset();
     
 
     /**
@@ -117,46 +87,22 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface MetaNodeEntMixInBuilder extends MetaNodeEntBuilder {
+    public static interface AllowedActionsEntMixInBuilder extends AllowedActionsEntBuilder {
     
         @Override
-        public MetaNodeEntMixIn build();
+        public AllowedActionsEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public MetaNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        @JsonProperty("canExecute")
+        public AllowedActionsEntMixInBuilder setCanExecute(final Boolean canExecute);
         
         @Override
-        @JsonProperty("inPorts")
-        public MetaNodeEntMixInBuilder setInPorts(final java.util.List<MetaNodePortEnt> inPorts);
+        @JsonProperty("canCancel")
+        public AllowedActionsEntMixInBuilder setCanCancel(final Boolean canCancel);
         
         @Override
-        @JsonProperty("outPorts")
-        public MetaNodeEntMixInBuilder setOutPorts(final java.util.List<MetaNodePortEnt> outPorts);
-        
-        @Override
-        @JsonProperty("annotation")
-        public MetaNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
-        @Override
-        @JsonProperty("position")
-        public MetaNodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public MetaNodeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("allowedActions")
-        public MetaNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
-        
-        @Override
-        @JsonProperty("name")
-        public MetaNodeEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("state")
-        public MetaNodeEntMixInBuilder setState(final MetaNodeStateEnt state);
+        @JsonProperty("canReset")
+        public AllowedActionsEntMixInBuilder setCanReset(final Boolean canReset);
         
     }
 

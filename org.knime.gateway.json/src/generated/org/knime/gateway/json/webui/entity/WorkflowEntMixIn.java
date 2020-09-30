@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -104,6 +105,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonProperty("metaOutPorts")
     public MetaPortsEnt getMetaOutPorts();
     
+    @Override
+    @JsonProperty("allowedActions")
+    public AllowedActionsEnt getAllowedActions();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -148,6 +153,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("metaOutPorts")
         public WorkflowEntMixInBuilder setMetaOutPorts(final MetaPortsEnt metaOutPorts);
+        
+        @Override
+        @JsonProperty("allowedActions")
+        public WorkflowEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
         
     }
 

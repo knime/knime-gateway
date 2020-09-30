@@ -101,8 +101,8 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId)
-        throws NotASubWorkflowException, NodeNotFoundException {
+    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
+        final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         WorkflowManager wfm;
         try {
             wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
@@ -111,7 +111,8 @@ public final class DefaultWorkflowService implements WorkflowService {
         } catch (IllegalStateException ex) {
             throw new NotASubWorkflowException(ex.getMessage(), ex);
         }
-        return buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm), projectId, workflowId);
+        return buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm, Boolean.TRUE.equals(includeInfoOnAllowedActions)),
+            projectId, workflowId);
     }
 
     WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String projectId,

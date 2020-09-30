@@ -4,6 +4,10 @@
       "activeWorkflow" : {
         "snapshotId" : "PLACEHOLDER_FOR_SNAPSHOT_ID",
         "workflow" : {
+          "allowedActions" : {
+            "canCancel" : false,
+            "canExecute" : true
+          },
           "connections" : {
             "root:11_1" : {
               "destNode" : "root:11",
@@ -289,6 +293,11 @@
           },
           "nodes" : {
             "root:1" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:1",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",
@@ -324,6 +333,11 @@
               "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
             },
             "root:2" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -366,12 +380,19 @@
               "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
             },
             "root:19" : {
+<<<<<<< HEAD
               "annotation" : {
                 "backgroundColor" : "#F57900",
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "Node annotation with\nbackground color",
                 "textAlign" : "center"
+=======
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+>>>>>>> NXT-264: Info about allowed actions added to workflow
               },
               "id" : "root:19",
               "inPorts" : [ {
@@ -410,6 +431,11 @@
               "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
             },
             "root:4" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:4",
               "inPorts" : [ {
                 "connectedVia" : "[ root:4_0 ]",
@@ -441,6 +467,11 @@
               "templateId" : "org.knime.base.node.viz.table.TableNodeFactory"
             },
             "root:5" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -485,6 +516,11 @@
               "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
             },
             "root:6" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:6",
               "inPorts" : [ {
                 "connectedVia" : "[ root:6_0 ]",
@@ -523,6 +559,11 @@
               }
             },
             "root:182" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : false,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 17,
                 "styleRanges" : [ ],
@@ -555,6 +596,11 @@
               "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory"
             },
             "root:20" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -610,6 +656,11 @@
               "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
             },
             "root:21" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -670,6 +721,11 @@
               "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
             },
             "root:183" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : false,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 17,
                 "styleRanges" : [ ],
@@ -726,6 +782,11 @@
               "type" : "Sink"
             },
             "root:25" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:25",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",
@@ -773,6 +834,11 @@
               "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
             },
             "root:22" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -822,6 +888,11 @@
               "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
             },
             "root:23" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -865,6 +936,11 @@
               }
             },
             "root:26" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -914,6 +990,11 @@
               "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
             },
             "root:27" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -968,6 +1049,11 @@
               "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
             },
             "root:10" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -1011,6 +1097,11 @@
               "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
             },
             "root:172" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : false,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 17,
                 "styleRanges" : [ ],
@@ -1043,6 +1134,11 @@
               "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"
             },
             "root:8" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:8",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",
@@ -1079,6 +1175,11 @@
               "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
             },
             "root:13" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -1121,6 +1222,11 @@
               "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
             },
             "root:9" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "styleRanges" : [ ],
                 "text" : "",
@@ -1165,6 +1271,11 @@
               "type" : "Visualizer"
             },
             "root:14" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -1208,6 +1319,11 @@
               "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
             },
             "root:11" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:11",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",
@@ -1244,6 +1360,11 @@
               "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
             },
             "root:12" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "styleRanges" : [ ],
                 "text" : "",
@@ -1286,6 +1407,11 @@
               }
             },
             "root:18" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
@@ -1328,6 +1454,11 @@
               "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
             },
             "root:15" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:15",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",
@@ -1358,6 +1489,11 @@
               "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
             },
             "root:16" : {
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "id" : "root:16",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",

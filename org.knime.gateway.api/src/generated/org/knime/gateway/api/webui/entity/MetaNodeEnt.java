@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -140,6 +141,14 @@ public interface MetaNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set allowedActions
+         * 
+         * @param allowedActions the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         /**
    		 * Set name

@@ -91,10 +91,10 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // one test that it generally works
         NativeNodeEnt nodeEnt =
-            (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow().getNodes().get("root:1");
+            (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.CONFIGURED));
         ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "execute");
-        nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow().getNodes().get("root:1");
+        nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.EXECUTING));
 
         // test node not found exception

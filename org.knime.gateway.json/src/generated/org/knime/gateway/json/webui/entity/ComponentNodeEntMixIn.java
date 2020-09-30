@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
@@ -97,6 +98,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public KindEnum getKind();
     
     @Override
+    @JsonProperty("allowedActions")
+    public AllowedActionsEnt getAllowedActions();
+    
+    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -148,6 +153,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("kind")
         public ComponentNodeEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("allowedActions")
+        public ComponentNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
         
         @Override
         @JsonProperty("name")

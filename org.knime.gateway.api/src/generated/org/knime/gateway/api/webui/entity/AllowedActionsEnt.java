@@ -44,115 +44,68 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Native node extension of a node.
+ * Mainly provides information on what actions are allowed on a node or an entire workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends NodeEnt {
+public interface AllowedActionsEnt extends GatewayEntity {
 
 
   /**
-   * The id of the node template this node is an instance of.
-   * @return templateId , never <code>null</code>
+   * Whether the node can be executed which depenends on the node state and the states of the node&#39;s predecessors.
+   * @return canExecute , never <code>null</code>
    **/
-  public String getTemplateId();
+  public Boolean isCanExecute();
 
   /**
-   * Get state
-   * @return state 
+   * Whether the node can be cancelled.
+   * @return canCancel , never <code>null</code>
    **/
-  public NodeStateEnt getState();
+  public Boolean isCanCancel();
+
+  /**
+   * Whether the node can be reset which depends on the node state and the states of the node&#39;s successors. Not given in case of the project workflow (action to reset all is not supported there).
+   * @return canReset 
+   **/
+  public Boolean isCanReset();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
+    public interface AllowedActionsEntBuilder extends GatewayEntityBuilder<AllowedActionsEnt> {
 
         /**
-         * The id of the node.
+         * Whether the node can be executed which depenends on the node state and the states of the node&#39;s predecessors.
          * 
-         * @param id the property value, NOT <code>null</code>! 
+         * @param canExecute the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        AllowedActionsEntBuilder setCanExecute(Boolean canExecute);
         
         /**
-         * The list of inputs.
+         * Whether the node can be cancelled.
          * 
-         * @param inPorts the property value, NOT <code>null</code>! 
+         * @param canCancel the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
+        AllowedActionsEntBuilder setCanCancel(Boolean canCancel);
         
         /**
-         * The list of outputs.
+         * Whether the node can be reset which depends on the node state and the states of the node&#39;s successors. Not given in case of the project workflow (action to reset all is not supported there).
          * 
-         * @param outPorts the property value, NOT <code>null</code>! 
+         * @param canReset the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
-        
-        /**
-   		 * Set annotation
-         * 
-         * @param annotation the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
-        
-        /**
-   		 * Set position
-         * 
-         * @param position the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setPosition(XYEnt position);
-        
-        /**
-         * Whether it&#39;s a native node, component or a metanode.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set allowedActions
-         * 
-         * @param allowedActions the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
-        
-        /**
-         * The id of the node template this node is an instance of.
-         * 
-         * @param templateId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setTemplateId(String templateId);
-        
-        /**
-   		 * Set state
-         * 
-         * @param state the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setState(NodeStateEnt state);
+        AllowedActionsEntBuilder setCanReset(Boolean canReset);
         
         
         /**
@@ -162,7 +115,7 @@ public interface NativeNodeEnt extends NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NativeNodeEnt build();
+        AllowedActionsEnt build();
     
     }
 

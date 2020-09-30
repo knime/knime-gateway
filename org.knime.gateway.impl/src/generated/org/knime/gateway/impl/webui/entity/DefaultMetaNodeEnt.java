@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -103,6 +104,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         throw new IllegalArgumentException("kind must not be null.");
     }
     m_kind = immutable(builder.m_kind);
+    m_allowedActions = immutable(builder.m_allowedActions);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
@@ -128,7 +130,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
             return false;
         }
         DefaultMetaNodeEnt ent = (DefaultMetaNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state);
     }
 
 
@@ -145,6 +147,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
                .append(m_annotation)
                .append(m_position)
                .append(m_kind)
+               .append(m_allowedActions)
                .append(m_name)
                .append(m_state)
                .toHashCode();
@@ -185,6 +188,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
+        private AllowedActionsEnt m_allowedActions;
         private String m_name;
         private MetaNodeStateEnt m_state;
 
@@ -236,6 +240,12 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
                  throw new IllegalArgumentException("kind must not be null.");
              }
              m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
+             m_allowedActions = allowedActions;
              return this;
         }
 

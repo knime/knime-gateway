@@ -44,14 +44,15 @@
  */
 package org.knime.gateway.api.webui.service.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.ApplicationService;
 
 import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

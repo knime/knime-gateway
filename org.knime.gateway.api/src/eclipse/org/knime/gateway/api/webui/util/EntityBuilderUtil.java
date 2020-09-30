@@ -60,6 +60,7 @@ import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
@@ -75,6 +76,8 @@ import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -148,16 +151,18 @@ public final class EntityBuilderUtil {
      * Builds a new {@link WorkflowEnt}.
      *
      * @param wfm the workflow manager to create the entity from
+     * @param includeInfoOnAllowedActions whether to include information on the allowed actions on nodes and the entire
+     *            workflow (such as execute, cancel or reset)
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm) {
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final boolean includeInfoOnAllowedActions) { // NOSONAR
         try (WorkflowLock lock = wfm.lock()) {
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
             Map<String, NodeEnt> nodes = new HashMap<>();
             Map<String, NodeTemplateEnt> templates = new HashMap<>();
             for (NodeContainer nc : nodeContainers) {
-                NodeEnt nodeEnt = buildNodeEnt(nc);
+                NodeEnt nodeEnt = includeInfoOnAllowedActions ? buildNodeEntWithInfoOnAllowedActions(nc) : buildNodeEnt(nc);
                 nodes.put(nodeEnt.getId().toString(), nodeEnt);
                 if (nc instanceof NativeNodeContainer) {
                     String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
@@ -179,6 +184,7 @@ public final class EntityBuilderUtil {
                 .setParents(buildParentWorkflowInfoEnts(wfm))
                 .setMetaInPorts(buildMetaPortsEnt(wfm, true))
                 .setMetaOutPorts(buildMetaPortsEnt(wfm, false))
+                .setAllowedActions(includeInfoOnAllowedActions ? buildAllowedActionsEnt(wfm) : null)
                 .build();
         }
     }
@@ -333,33 +339,49 @@ public final class EntityBuilderUtil {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
-    /**
-     * Builds a new {@link NodeEnt}.
-     * Depending on the node container implementation a different subclass is returned.
-     *
-     * @param nc the node container to create the entity from
-     * @return the newly created entity
-     */
-    public static NodeEnt buildNodeEnt(final NodeContainer nc) {
+    private static NodeEnt buildNodeEnt(final NodeContainer nc) {
+        return buildNodeEnt(nc, null);
+    }
+
+    private static NodeEnt buildNodeEntWithInfoOnAllowedActions(final NodeContainer nc) {
+        return buildNodeEnt(nc, buildAllowedActionsEnt(nc));
+    }
+
+    private static NodeEnt buildNodeEnt(final NodeContainer nc, final AllowedActionsEnt allowedActions) {
         if (nc instanceof NativeNodeContainer) {
-            return buildNativeNodeEnt((NativeNodeContainer) nc);
+            return buildNativeNodeEnt((NativeNodeContainer) nc, allowedActions);
         } else if (nc instanceof WorkflowManager) {
-            return buildMetaNodeEnt((WorkflowManager) nc);
+            return buildMetaNodeEnt((WorkflowManager) nc, allowedActions);
         } else if (nc instanceof SubNodeContainer) {
-            return buildComponentNodeEnt((SubNodeContainer) nc);
+            return buildComponentNodeEnt((SubNodeContainer) nc, allowedActions);
         } else {
             throw new IllegalArgumentException("Node container " + nc.getClass().getCanonicalName()
                 + " cannot be mapped to a node entity.");
         }
     }
 
-    /**
-     * Builds a new {@link MetaNodeEnt}.
-     *
-     * @param wm the workflow manager to build the node entity from
-     * @return the newly created entity
-     */
-    public static MetaNodeEnt buildMetaNodeEnt(final WorkflowManager wm) {
+    private static AllowedActionsEnt buildAllowedActionsEnt(final NodeContainer nc) {
+        WorkflowManager parent = nc.getParent();
+        if (nc instanceof WorkflowManager && ((WorkflowManager)nc).isProject()) {
+            // workaround because ROOT.canExecute(id) will cause a deadlock in a test because of locking the
+            // ROOT workflow (locking children before their parent is not allowed for some reason)
+            // -> we need to determine the values without locking ROOT
+            WorkflowManager wfm = (WorkflowManager)nc;
+            return builder(AllowedActionsEntBuilder.class)
+                    .setCanExecute(wfm.canExecuteAll())
+                    .setCanCancel(wfm.canCancelAll()).build();
+        }
+
+        NodeID id = nc.getID();
+        return builder(AllowedActionsEntBuilder.class)
+                .setCanExecute(parent.canExecuteNode(id))
+                .setCanReset(parent.canResetNode(id))
+                .setCanCancel(parent.canCancelNode(id))
+                .build();
+    }
+
+
+    private static MetaNodeEnt buildMetaNodeEnt(final WorkflowManager wm, final AllowedActionsEnt allowedActions) {
         return builder(MetaNodeEntBuilder.class).setName(wm.getName())
                 .setId(new NodeIDEnt(wm.getID()))
                 .setOutPorts(buildMetaNodePortEnts(wm, false))
@@ -367,7 +389,8 @@ public final class EntityBuilderUtil {
                 .setInPorts(buildMetaNodePortEnts(wm, true))
                 .setPosition(buildXYEnt(wm.getUIInformation()))
                 .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))
-                .setKind(KindEnum.METANODE).build();
+                .setKind(KindEnum.METANODE)
+                .setAllowedActions(allowedActions).build();
     }
 
     private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
@@ -404,13 +427,8 @@ public final class EntityBuilderUtil {
         }).collect(toList());
     }
 
-    /**
-     * Builds a new {@link ComponentNodeEnt}.
-     *
-     * @param nc the subnode container to create the node entity from
-     * @return the newly created entity
-     */
-    public static ComponentNodeEnt buildComponentNodeEnt(final SubNodeContainer nc) {
+    private static ComponentNodeEnt buildComponentNodeEnt(final SubNodeContainer nc,
+        final AllowedActionsEnt allowedActions) {
         String type = nc.getMetadata().getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())
                 .setId(new NodeIDEnt(nc.getID()))
@@ -422,7 +440,8 @@ public final class EntityBuilderUtil {
                 .setPosition(buildXYEnt(nc.getUIInformation()))
                 .setState(buildNodeStateEnt(nc))
                 .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))
-                .setKind(KindEnum.COMPONENT).build();
+                .setKind(KindEnum.COMPONENT)
+                .setAllowedActions(allowedActions).build();
     }
 
     private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts) {
@@ -502,7 +521,8 @@ public final class EntityBuilderUtil {
                 .build();
     }
 
-    private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc) {
+    private static NativeNodeEnt buildNativeNodeEnt(final NativeNodeContainer nc,
+        final AllowedActionsEnt allowedActions) {
         return builder(NativeNodeEntBuilder.class)
             .setId(new NodeIDEnt(nc.getID()))
             .setOutPorts(buildNodePortEnts(nc, false))
@@ -511,7 +531,8 @@ public final class EntityBuilderUtil {
             .setPosition(buildXYEnt(nc.getUIInformation()))
             .setKind(KindEnum.NODE)
             .setState(buildNodeStateEnt(nc))
-            .setTemplateId(createTemplateId(nc.getNode().getFactory())).build();
+            .setTemplateId(createTemplateId(nc.getNode().getFactory()))
+            .setAllowedActions(allowedActions).build();
     }
 
     private static NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {

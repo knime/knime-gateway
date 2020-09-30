@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -121,6 +122,12 @@ public interface NodeEnt extends GatewayEntity {
    **/
   public KindEnum getKind();
 
+  /**
+   * Get allowedActions
+   * @return allowedActions 
+   **/
+  public AllowedActionsEnt getAllowedActions();
+
 
     /**
      * The builder for the entity.
@@ -174,6 +181,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set allowedActions
+         * 
+         * @param allowedActions the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         
         /**

@@ -95,20 +95,20 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // check un-executed
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         cr(workflow, "workflowent_root");
 
         // get a metanode's workflow
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6)).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow();
         cr(workflow, "workflowent_6");
 
         // get a component's workflow
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(23)).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(23), false).getWorkflow();
         cr(workflow, "workflowent_23");
 
         //check executed
         executeWorkflow(wfId);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         cr(workflow, "worklfowent_root_executed");
     }
 
@@ -120,16 +120,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testNodeExecutionStates() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
 
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         cr(getNodeStates(workflow), "node_states");
 
         executeWorkflowAsync(wfId);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt w = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+            WorkflowEnt w = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
             assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
                 is(ExecutionStateEnum.EXECUTED));
         });
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         cr(getNodeStates(workflow), "node_states_execution");
     }
 
@@ -146,6 +146,25 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
             return Pair.create(e.getKey(), state);
         }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+    }
+
+    /**
+     * Tests the {@link WorkflowEnt#getAllowedActions()} property in partcular.
+     *
+     * @throws Exception
+     */
+    public void testGetAllowedActionsInfo() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+
+        // check the allowed actions on the workflow itself
+        cr(workflow.getAllowedActions(), "allowedactions_root");
+
+        // check for component, node and metanode
+        cr(workflow.getAllowedActions(), "allowedactions_8");
+        cr(workflow.getAllowedActions(), "allowedactions_12");
+        cr(workflow.getAllowedActions(), "allowedactions_6");
     }
 
 }

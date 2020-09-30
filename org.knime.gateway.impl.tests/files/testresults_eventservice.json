@@ -536,6 +536,14 @@
   "node_executed" : {
     "ops" : [ {
       "op" : "replace",
+      "path" : "/nodes/root:8/allowedActions/canExecute",
+      "value" : true
+    }, {
+      "op" : "replace",
+      "path" : "/allowedActions/canCancel",
+      "value" : false
+    }, {
+      "op" : "replace",
       "path" : "/nodes/root:12/state/executionState",
       "value" : "CONFIGURED"
     }, {
@@ -545,6 +553,14 @@
       "op" : "replace",
       "path" : "/nodes/root:8/state/executionState",
       "value" : "CONFIGURED"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:12/allowedActions/canExecute",
+      "value" : true
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:9/allowedActions/canExecute",
+      "value" : true
     }, {
       "op" : "replace",
       "path" : "/nodes/root:23/state/executionState",
@@ -566,11 +582,23 @@
       "value" : "Rows: 8, Cols: 5"
     }, {
       "op" : "replace",
+      "path" : "/nodes/root:1/allowedActions/canCancel",
+      "value" : false
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:1/allowedActions/canReset",
+      "value" : true
+    }, {
+      "op" : "replace",
       "path" : "/nodes/root:9/state/executionState",
       "value" : "CONFIGURED"
     }, {
       "op" : "remove",
       "path" : "/nodes/root:9/state/warning"
+    }, {
+      "op" : "replace",
+      "path" : "/nodes/root:23/allowedActions/canExecute",
+      "value" : true
     }, {
       "op" : "replace",
       "path" : "/nodes/root:1/state/executionState",
@@ -583,6 +611,11 @@
       "op" : "add",
       "path" : "/nodes/root:184",
       "value" : {
+        "allowedActions" : {
+          "canCancel" : false,
+          "canExecute" : false,
+          "canReset" : false
+        },
         "id" : "root:184",
         "inPorts" : [ {
           "connectedVia" : "[  ]",
@@ -653,6 +686,10 @@
   },
   "connection_added" : {
     "ops" : [ {
+      "op" : "replace",
+      "path" : "/nodes/root:14/allowedActions/canExecute",
+      "value" : true
+    }, {
       "op" : "add",
       "path" : "/nodes/root:13/outPorts/1/connectedVia/0",
       "value" : "root:14_1"
@@ -786,6 +823,10 @@
   },
   "connection_removed" : {
     "ops" : [ {
+      "op" : "replace",
+      "path" : "/nodes/root:14/allowedActions/canExecute",
+      "value" : false
+    }, {
       "op" : "remove",
       "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
     }, {

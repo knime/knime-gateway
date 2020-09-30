@@ -32,7 +32,7 @@ public final class GatewayTestCollection {
      * If manually set to true, the expected test results (i.e. the retrieved workflow etc.) will be updated and written
      * to the respective files. After that it need to be set to false again (otherwise the test will fail anyway).
      */
-    public static final boolean REWRITE_TEST_RESULTS = false;
+    public static final boolean REWRITE_TEST_RESULTS = true;
 
     private GatewayTestCollection() {
         //utility class
@@ -51,6 +51,8 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetWorkflow());
         res.put("testNodeExecutionStates",
             (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testNodeExecutionStates());
+        res.put("testGetAllowedActionsInfo",
+            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetAllowedActionsInfo());
         res.put("testChangeNodeState",
             (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
         return res;
