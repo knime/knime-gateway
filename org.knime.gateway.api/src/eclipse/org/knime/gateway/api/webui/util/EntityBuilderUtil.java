@@ -55,6 +55,7 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.DependentNodeProperties;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
@@ -161,13 +162,13 @@ public final class EntityBuilderUtil {
 
             Map<String, NodeEnt> nodes = new HashMap<>();
             Map<String, NodeTemplateEnt> templates = new HashMap<>();
+
+            DependentNodeProperties depNodeProps = null;
+            if (includeInfoOnAllowedActions) {
+                depNodeProps = wfm.determineDependentNodeProperties();
+            }
             for (NodeContainer nc : nodeContainers) {
-                NodeEnt nodeEnt = includeInfoOnAllowedActions ? buildNodeEntWithInfoOnAllowedActions(nc) : buildNodeEnt(nc);
-                nodes.put(nodeEnt.getId().toString(), nodeEnt);
-                if (nc instanceof NativeNodeContainer) {
-                    String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
-                    templates.computeIfAbsent(templateId, id -> buildNodeTemplateEnt((NativeNodeContainer)nc));
-                }
+                buildAndAddNodeEnt(nc, nodes, templates, depNodeProps);
             }
             Map<String, ConnectionEnt> connections =
                 wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
@@ -339,12 +340,24 @@ public final class EntityBuilderUtil {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
+    private static void buildAndAddNodeEnt(final NodeContainer nc, final Map<String, NodeEnt> nodes,
+        final Map<String, NodeTemplateEnt> templates, final DependentNodeProperties depNodeProps) {
+        NodeEnt nodeEnt =
+            depNodeProps != null ? buildNodeEntWithInfoOnAllowedActions(nc, depNodeProps) : buildNodeEnt(nc);
+        nodes.put(nodeEnt.getId().toString(), nodeEnt);
+        if (nc instanceof NativeNodeContainer) {
+            String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
+            templates.computeIfAbsent(templateId, id -> buildNodeTemplateEnt((NativeNodeContainer)nc));
+        }
+    }
+
     private static NodeEnt buildNodeEnt(final NodeContainer nc) {
         return buildNodeEnt(nc, null);
     }
 
-    private static NodeEnt buildNodeEntWithInfoOnAllowedActions(final NodeContainer nc) {
-        return buildNodeEnt(nc, buildAllowedActionsEnt(nc));
+    private static NodeEnt buildNodeEntWithInfoOnAllowedActions(final NodeContainer nc,
+        final DependentNodeProperties depNodeProps) {
+        return buildNodeEnt(nc, buildAllowedActionsEnt(nc, depNodeProps));
     }
 
     private static NodeEnt buildNodeEnt(final NodeContainer nc, final AllowedActionsEnt allowedActions) {
@@ -360,24 +373,21 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static AllowedActionsEnt buildAllowedActionsEnt(final NodeContainer nc) {
+    private static AllowedActionsEnt buildAllowedActionsEnt(final NodeContainer nc,
+        final DependentNodeProperties depNodeProps) {
         WorkflowManager parent = nc.getParent();
-        if (nc instanceof WorkflowManager && ((WorkflowManager)nc).isProject()) {
-            // workaround because ROOT.canExecute(id) will cause a deadlock in a test because of locking the
-            // ROOT workflow (locking children before their parent is not allowed for some reason)
-            // -> we need to determine the values without locking ROOT
-            WorkflowManager wfm = (WorkflowManager)nc;
-            return builder(AllowedActionsEntBuilder.class)
-                    .setCanExecute(wfm.canExecuteAll())
-                    .setCanCancel(wfm.canCancelAll()).build();
-        }
-
         NodeID id = nc.getID();
         return builder(AllowedActionsEntBuilder.class)
-                .setCanExecute(parent.canExecuteNode(id))
-                .setCanReset(parent.canResetNode(id))
+                .setCanExecute(depNodeProps.canExecuteNode(id))
+                .setCanReset(depNodeProps.canResetNode(id))
                 .setCanCancel(parent.canCancelNode(id))
                 .build();
+    }
+
+    private static AllowedActionsEnt buildAllowedActionsEnt(final WorkflowManager wfm) {
+        return builder(AllowedActionsEntBuilder.class)
+                .setCanExecute(wfm.canExecuteAll())
+                .setCanCancel(wfm.canCancelAll()).build();
     }
 
 
