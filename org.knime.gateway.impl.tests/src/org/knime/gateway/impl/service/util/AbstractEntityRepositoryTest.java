@@ -45,6 +45,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.webui.service.DefaultEventService.PatchEntCreator;
@@ -82,18 +83,18 @@ public abstract class AbstractEntityRepositoryTest {
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         UUID wfID = UUID.randomUUID();
         WorkflowEnt newEntity = wfBuilder.build();
-        UUID res = m_repo.commit(create(wfID, getRootID()), newEntity);
+        String res = m_repo.commit(create(wfID, getRootID()), newEntity);
 
         WorkflowEnt newUnchangedEntity = wfBuilder.build();
-        UUID res2 = m_repo.commit(create(wfID, getRootID()), newUnchangedEntity);
+        String res2 = m_repo.commit(create(wfID, getRootID()), newUnchangedEntity);
 
         //since nothing has changed, the snapshot id should remain unchanged
         assertEquals(res, res2);
 
         WorkflowEnt newChangedEntity =
             wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
-                .setName("a new workflow name").build()).build();
-        UUID res3 = m_repo.commit(create(wfID, getRootID()), newChangedEntity);
+                .setName("a new workflow name").setContainerType(ContainerTypeEnum.COMPONENT).build()).build();
+        String res3 = m_repo.commit(create(wfID, getRootID()), newChangedEntity);
 
         //since there is a change, the snapshot id should be new
         assertNotEquals(res, res3);
@@ -119,7 +120,7 @@ public abstract class AbstractEntityRepositoryTest {
         wfBuilder.setNodes(nodes);
 
         WorkflowEnt wfEntity = wfBuilder.build();
-        UUID commitRes = m_repo.commit(create(wfID, new NodeIDEnt(3)), wfEntity);
+        String commitRes = m_repo.commit(create(wfID, new NodeIDEnt(3)), wfEntity);
 
         //modify workflow entity
         nodeBuilder.setPosition(builder(XYEntBuilder.class).setX(11).setY(5).build())
@@ -129,7 +130,7 @@ public abstract class AbstractEntityRepositoryTest {
         wfBuilder.setNodes(nodes);
 
         WorkflowEnt newWfEntity = wfBuilder.build();
-        AtomicReference<UUID> patch1SnapshotId = new AtomicReference<>();
+        AtomicReference<String> patch1SnapshotId = new AtomicReference<>();
         PatchEnt patch1 =
             m_repo.getChangesAndCommit(commitRes, newWfEntity, id -> {
                 patch1SnapshotId.set(id);
@@ -158,7 +159,7 @@ public abstract class AbstractEntityRepositoryTest {
         UUID wfID = UUID.randomUUID();
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         WorkflowEnt newEntity = wfBuilder.build();
-        UUID commitRes = m_repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
+        String commitRes = m_repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
 
         m_repo.disposeHistory(k -> k.getFirst().equals(wfID));
 
@@ -169,11 +170,11 @@ public abstract class AbstractEntityRepositoryTest {
             assertThat(e.getMessage(), containsString("No workflow found for snapshot with ID"));
         }
 
-        UUID commitRes2 = m_repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
+        String commitRes2 = m_repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
         assertNotEquals(commitRes, commitRes2);
     }
 
-//    @Test
+    //@Test
     public void testPerformanceInMemoryRepo() throws Exception {
         UUID wfID = UUID.randomUUID();
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);

@@ -50,6 +50,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -124,6 +125,8 @@ public class RandomEntityBuilder {
             } else {
                 return null;
             }
+        } else if (type instanceof WildcardType) {
+            return getRandomValue(((WildcardType)type).getUpperBounds()[0]);
         } else if (type instanceof Class) {
             Class<?> clazz = (Class<?>)type;
             if (clazz.equals(Integer.class)) {

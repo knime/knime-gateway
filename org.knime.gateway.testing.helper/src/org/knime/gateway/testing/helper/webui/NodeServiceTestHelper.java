@@ -50,8 +50,12 @@ package org.knime.gateway.testing.helper.webui;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 
+import java.util.concurrent.TimeUnit;
+
+import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
@@ -94,8 +98,11 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
             (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.CONFIGURED));
         ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "execute");
-        nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow().getNodes().get("root:1");
-        assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.EXECUTING));
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+                .getNodes().get("root:1");
+            assertThat(nodeEnt2.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
+        });
 
         // test node not found exception
         assertThrows(NodeNotFoundException.class, () -> {

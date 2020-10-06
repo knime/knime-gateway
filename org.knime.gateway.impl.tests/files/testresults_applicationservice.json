@@ -380,19 +380,17 @@
               "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
             },
             "root:19" : {
-<<<<<<< HEAD
+              "allowedActions" : {
+                "canCancel" : false,
+                "canExecute" : true,
+                "canReset" : false
+              },
               "annotation" : {
                 "backgroundColor" : "#F57900",
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "Node annotation with\nbackground color",
                 "textAlign" : "center"
-=======
-              "allowedActions" : {
-                "canCancel" : false,
-                "canExecute" : true,
-                "canReset" : false
->>>>>>> NXT-264: Info about allowed actions added to workflow
               },
               "id" : "root:19",
               "inPorts" : [ {

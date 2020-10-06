@@ -86,7 +86,7 @@ public class UnexpectedJsonRpcErrorTest {
     public void testUnexpectedJsonRpcError() throws NotASubWorkflowException, NodeNotFoundException {
         Map<Class<? extends GatewayService>, GatewayService> serviceMocks = new HashMap<>();
         WorkflowService workflowServiceMock = mock(WorkflowService.class);
-        when(workflowServiceMock.getWorkflow(any(), any()))
+        when(workflowServiceMock.getWorkflow(any(), any(), any()))
             .thenThrow(new UnsupportedOperationException("an unexpected exception"));
         serviceMocks.put(WorkflowService.class, workflowServiceMock);
         DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler(serviceMocks);
@@ -94,7 +94,6 @@ public class UnexpectedJsonRpcErrorTest {
         JsonRpcClient jsonRpcClient = new JsonRpcClient(mapper,
             new TestExceptionResolver(Matchers.is("an unexpected exception"), Matchers.is(-32601)));
         WorkflowService workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
-        assertThrows(UnsupportedOperationException.class, () -> workflowServiceProxy.getWorkflow(null, null));
-
+        assertThrows(UnsupportedOperationException.class, () -> workflowServiceProxy.getWorkflow(null, null, false));
     }
 }

@@ -32,7 +32,7 @@ public final class GatewayTestCollection {
      * If manually set to true, the expected test results (i.e. the retrieved workflow etc.) will be updated and written
      * to the respective files. After that it need to be set to false again (otherwise the test will fail anyway).
      */
-    public static final boolean REWRITE_TEST_RESULTS = true;
+    public static final boolean REWRITE_TEST_RESULTS = false;
 
     private GatewayTestCollection() {
         //utility class
