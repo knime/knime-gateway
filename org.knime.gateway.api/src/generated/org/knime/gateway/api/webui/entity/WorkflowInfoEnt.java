@@ -84,7 +84,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
 
   /**
    * Get name
-   * @return name 
+   * @return name , never <code>null</code>
    **/
   public String getName();
 
@@ -96,7 +96,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
 
   /**
    * Whether the workflow is contained in a component, metanode or is the project workflow (i.e. top-level) itself.
-   * @return containerType 
+   * @return containerType , never <code>null</code>
    **/
   public ContainerTypeEnum getContainerType();
 
@@ -109,7 +109,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
         /**
    		 * Set name
          * 
-         * @param name the property value,  
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setName(String name);
@@ -125,7 +125,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
         /**
          * Whether the workflow is contained in a component, metanode or is the project workflow (i.e. top-level) itself.
          * 
-         * @param containerType the property value,  
+         * @param containerType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType);

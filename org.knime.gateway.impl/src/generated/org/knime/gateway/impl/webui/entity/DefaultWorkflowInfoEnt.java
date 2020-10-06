@@ -76,8 +76,14 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
   
   private DefaultWorkflowInfoEnt(DefaultWorkflowInfoEntBuilder builder) {
     
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
+    }
     m_name = immutable(builder.m_name);
     m_containerId = immutable(builder.m_containerId);
+    if(builder.m_containerType == null) {
+        throw new IllegalArgumentException("containerType must not be null.");
+    }
     m_containerType = immutable(builder.m_containerType);
   }
   
@@ -143,6 +149,9 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
 
         @Override
         public DefaultWorkflowInfoEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
+             }
              m_name = name;
              return this;
         }
@@ -155,6 +164,9 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
 
         @Override
         public DefaultWorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType) {
+             if(containerType == null) {
+                 throw new IllegalArgumentException("containerType must not be null.");
+             }
              m_containerType = containerType;
              return this;
         }
