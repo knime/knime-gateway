@@ -196,7 +196,9 @@ public class EventServiceTest extends GatewayServiceTest {
                         is(initialSnapshotId));
                     isVeryFirstPatch = false;
                 }
-                cr(events.get(numPatches - i - 1).getPatch(), workflowTransformation.getChangeNames()[i]);
+                if (workflowTransformation.getChangeNames()[i] != null) {
+                    cr(events.get(numPatches - i - 1).getPatch(), workflowTransformation.getChangeNames()[i]);
+                }
             }
 
             reset(eventConsumerMock);

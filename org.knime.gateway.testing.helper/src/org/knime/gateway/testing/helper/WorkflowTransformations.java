@@ -83,7 +83,7 @@ public final class WorkflowTransformations {
      */
     public static List<WorkflowTransformation> createWorkflowTransformations() {
         return Arrays.asList(
-            newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed_1", "node_executed_2"),
+            newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed", null),
             newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(14), 1)),
                 "connection_removed"),
             newTransformation(w -> w.removeNode(w.getID().createChild(18)), "node_removed"), newTransformation(w -> {
@@ -148,7 +148,8 @@ public final class WorkflowTransformations {
          * listener. This method returns unique names (and thus also the number) of the expected change events.
          *
          * @return names of the expected 'change events' in the order they are expected to arrive (provided a
-         *         {@link WorkflowChangesListener} available for the underlying {@link WorkflowManager})
+         *         {@link WorkflowChangesListener} available for the underlying {@link WorkflowManager}); if one of the
+         *         change names is <code>null</code>, the respective change/patch will be ignored for testing
          */
         String[] getChangeNames();
 
