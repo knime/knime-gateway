@@ -99,14 +99,6 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
     public TextAlignEnum getTextAlign();
     
     @Override
-    @JsonProperty("borderWidth")
-    public Integer getBorderWidth();
-    
-    @Override
-    @JsonProperty("borderColor")
-    public String getBorderColor();
-    
-    @Override
     @JsonProperty("defaultFontSize")
     public Integer getDefaultFontSize();
     
@@ -149,14 +141,6 @@ public interface AnnotationEntMixIn extends AnnotationEnt {
         @Override
         @JsonProperty("textAlign")
         public AnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
-        
-        @Override
-        @JsonProperty("borderWidth")
-        public AnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
-        
-        @Override
-        @JsonProperty("borderColor")
-        public AnnotationEntMixInBuilder setBorderColor(final String borderColor);
         
         @Override
         @JsonProperty("defaultFontSize")

@@ -95,14 +95,6 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     public TextAlignEnum getTextAlign();
     
     @Override
-    @JsonProperty("borderWidth")
-    public Integer getBorderWidth();
-    
-    @Override
-    @JsonProperty("borderColor")
-    public String getBorderColor();
-    
-    @Override
     @JsonProperty("defaultFontSize")
     public Integer getDefaultFontSize();
     
@@ -117,6 +109,14 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     @Override
     @JsonProperty("id")
     public org.knime.gateway.api.entity.AnnotationIDEnt getId();
+    
+    @Override
+    @JsonProperty("borderWidth")
+    public Integer getBorderWidth();
+    
+    @Override
+    @JsonProperty("borderColor")
+    public String getBorderColor();
     
 
     /**
@@ -151,14 +151,6 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         public WorkflowAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
         
         @Override
-        @JsonProperty("borderWidth")
-        public WorkflowAnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
-        
-        @Override
-        @JsonProperty("borderColor")
-        public WorkflowAnnotationEntMixInBuilder setBorderColor(final String borderColor);
-        
-        @Override
         @JsonProperty("defaultFontSize")
         public WorkflowAnnotationEntMixInBuilder setDefaultFontSize(final Integer defaultFontSize);
         
@@ -173,6 +165,14 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         @Override
         @JsonProperty("id")
         public WorkflowAnnotationEntMixInBuilder setId(final org.knime.gateway.api.entity.AnnotationIDEnt id);
+        
+        @Override
+        @JsonProperty("borderWidth")
+        public WorkflowAnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
+        
+        @Override
+        @JsonProperty("borderColor")
+        public WorkflowAnnotationEntMixInBuilder setBorderColor(final String borderColor);
         
     }
 

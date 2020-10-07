@@ -134,6 +134,11 @@ public final class EntityBuilderUtil {
      */
     private static final int NODE_Y_POS_CORRECTION = 6;
 
+    /*
+     * The default background color for node annotations which usually translates to opaque.
+     */
+    private static final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
+
     private EntityBuilderUtil() {
         //utility class
     }
@@ -490,9 +495,8 @@ public final class EntityBuilderUtil {
             Arrays.stream(na.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt).collect(Collectors.toList());
         return builder(NodeAnnotationEntBuilder.class)
                 .setTextAlign(textAlign)
-                .setBackgroundColor(hexStringColor(na.getBgColor()))
-                .setBorderColor(hexStringColor(na.getBorderColor()))
-                .setBorderWidth(na.getBorderSize())
+                .setBackgroundColor(na.getBgColor() == DEFAULT_NODE_ANNOTATION_BG_COLOR ? null : hexStringColor(na
+                    .getBgColor()))
                 .setText(na.getText())
                 .setStyleRanges(styleRanges)
                 .setDefaultFontSize(na.getDefaultFontSize() > 0 ? convertFromPtToPx(na.getDefaultFontSize()) : null)

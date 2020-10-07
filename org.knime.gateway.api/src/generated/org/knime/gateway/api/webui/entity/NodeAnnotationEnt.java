@@ -75,9 +75,9 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
         NodeAnnotationEntBuilder setText(String text);
         
         /**
-   		 * Set backgroundColor
+         * The background color. If not given, the default background color needs to be used (which is usually opaque).
          * 
-         * @param backgroundColor the property value, NOT <code>null</code>! 
+         * @param backgroundColor the property value,  
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setBackgroundColor(String backgroundColor);
@@ -89,22 +89,6 @@ public interface NodeAnnotationEnt extends AnnotationEnt {
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
-        
-        /**
-   		 * Set borderWidth
-         * 
-         * @param borderWidth the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeAnnotationEntBuilder setBorderWidth(Integer borderWidth);
-        
-        /**
-   		 * Set borderColor
-         * 
-         * @param borderColor the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeAnnotationEntBuilder setBorderColor(String borderColor);
         
         /**
          * The default font size (in px) for parts of the text where no style range is defined.

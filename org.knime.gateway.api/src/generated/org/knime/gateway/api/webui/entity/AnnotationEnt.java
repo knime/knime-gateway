@@ -90,8 +90,8 @@ public interface AnnotationEnt extends GatewayEntity {
   public String getText();
 
   /**
-   * Get backgroundColor
-   * @return backgroundColor , never <code>null</code>
+   * The background color. If not given, the default background color needs to be used (which is usually opaque).
+   * @return backgroundColor 
    **/
   public String getBackgroundColor();
 
@@ -100,18 +100,6 @@ public interface AnnotationEnt extends GatewayEntity {
    * @return textAlign , never <code>null</code>
    **/
   public TextAlignEnum getTextAlign();
-
-  /**
-   * Get borderWidth
-   * @return borderWidth , never <code>null</code>
-   **/
-  public Integer getBorderWidth();
-
-  /**
-   * Get borderColor
-   * @return borderColor , never <code>null</code>
-   **/
-  public String getBorderColor();
 
   /**
    * The default font size (in px) for parts of the text where no style range is defined.
@@ -140,9 +128,9 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setText(String text);
         
         /**
-   		 * Set backgroundColor
+         * The background color. If not given, the default background color needs to be used (which is usually opaque).
          * 
-         * @param backgroundColor the property value, NOT <code>null</code>! 
+         * @param backgroundColor the property value,  
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setBackgroundColor(String backgroundColor);
@@ -154,22 +142,6 @@ public interface AnnotationEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
-        
-        /**
-   		 * Set borderWidth
-         * 
-         * @param borderWidth the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AnnotationEntBuilder setBorderWidth(Integer borderWidth);
-        
-        /**
-   		 * Set borderColor
-         * 
-         * @param borderColor the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AnnotationEntBuilder setBorderColor(String borderColor);
         
         /**
          * The default font size (in px) for parts of the text where no style range is defined.

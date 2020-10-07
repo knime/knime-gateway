@@ -94,14 +94,6 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
     public TextAlignEnum getTextAlign();
     
     @Override
-    @JsonProperty("borderWidth")
-    public Integer getBorderWidth();
-    
-    @Override
-    @JsonProperty("borderColor")
-    public String getBorderColor();
-    
-    @Override
     @JsonProperty("defaultFontSize")
     public Integer getDefaultFontSize();
     
@@ -140,14 +132,6 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         @Override
         @JsonProperty("textAlign")
         public NodeAnnotationEntMixInBuilder setTextAlign(final TextAlignEnum textAlign);
-        
-        @Override
-        @JsonProperty("borderWidth")
-        public NodeAnnotationEntMixInBuilder setBorderWidth(final Integer borderWidth);
-        
-        @Override
-        @JsonProperty("borderColor")
-        public NodeAnnotationEntMixInBuilder setBorderColor(final String borderColor);
         
         @Override
         @JsonProperty("defaultFontSize")

@@ -325,9 +325,6 @@
             },
             "root:2" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "node annotation",
@@ -369,6 +366,13 @@
               "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
             },
             "root:19" : {
+              "annotation" : {
+                "backgroundColor" : "#F57900",
+                "defaultFontSize" : 15,
+                "styleRanges" : [ ],
+                "text" : "Node annotation with\nbackground color",
+                "textAlign" : "center"
+              },
               "id" : "root:19",
               "inPorts" : [ {
                 "connectedVia" : "[  ]",
@@ -438,9 +442,6 @@
             },
             "root:5" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "a non-executing node",
@@ -523,9 +524,6 @@
             },
             "root:182" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 17,
                 "styleRanges" : [ ],
                 "text" : "🤷🏻‍♂️ 🤨",
@@ -558,9 +556,6 @@
             },
             "root:20" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "check for simple port spec\n(distance measure)",
@@ -616,9 +611,6 @@
             },
             "root:21" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "optional\nin-ports",
@@ -679,9 +671,6 @@
             },
             "root:183" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 17,
                 "styleRanges" : [ ],
                 "text" : "Component",
@@ -785,9 +774,6 @@
             },
             "root:22" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "Check a \n'generic'\nport type spec",
@@ -837,9 +823,6 @@
             },
             "root:23" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "with JS view inside\n(i.e. with composite view)",
@@ -883,9 +866,6 @@
             },
             "root:26" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "test of another\nport object spec",
@@ -935,9 +915,6 @@
             },
             "root:27" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "dynamic\nports",
@@ -992,9 +969,6 @@
             },
             "root:10" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "a node created\nvia a node set factory",
@@ -1038,9 +1012,6 @@
             },
             "root:172" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 17,
                 "styleRanges" : [ ],
                 "text" : "Missing",
@@ -1109,9 +1080,6 @@
             },
             "root:13" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "Node 13",
@@ -1154,9 +1122,6 @@
             },
             "root:9" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#000000",
-                "borderWidth" : 0,
                 "styleRanges" : [ ],
                 "text" : "",
                 "textAlign" : "center"
@@ -1201,9 +1166,6 @@
             },
             "root:14" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "inactive branch",
@@ -1283,9 +1245,6 @@
             },
             "root:12" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#000000",
-                "borderWidth" : 0,
                 "styleRanges" : [ ],
                 "text" : "",
                 "textAlign" : "center"
@@ -1328,9 +1287,6 @@
             },
             "root:18" : {
               "annotation" : {
-                "backgroundColor" : "#FFFFFF",
-                "borderColor" : "#FFFFFF",
-                "borderWidth" : 0,
                 "defaultFontSize" : 15,
                 "styleRanges" : [ ],
                 "text" : "checking flow\nvariables (string)",
