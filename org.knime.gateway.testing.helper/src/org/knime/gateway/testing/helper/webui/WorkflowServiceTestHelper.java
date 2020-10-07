@@ -48,7 +48,20 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.awaitility.Awaitility;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -96,6 +109,42 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(wfId);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
         cr(workflow, "worklfowent_root_executed");
+    }
+
+    /**
+     * Tests the correct mapping of the node execution states.
+     *
+     * @throws Exception
+     */
+    public void testNodeExecutionStates() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
+
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        cr(getNodeStates(workflow), "node_states");
+
+        executeWorkflowAsync(wfId);
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            WorkflowEnt w = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+            assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
+                is(ExecutionStateEnum.EXECUTED));
+        });
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID()).getWorkflow();
+        cr(getNodeStates(workflow), "node_states_execution");
+    }
+
+    private static Map<String, ExecutionStateEnum> getNodeStates(final WorkflowEnt w) {
+        return w.getNodes().entrySet().stream().map(e -> { // NOSONAR
+            ExecutionStateEnum state = null;
+            NodeEnt n = e.getValue();
+            if (n instanceof NativeNodeEnt) {
+                state = ((NativeNodeEnt)n).getState().getExecutionState();
+            } else if (n instanceof ComponentNodeEnt) {
+                state = ((ComponentNodeEnt)n).getState().getExecutionState();
+            } else {
+                //
+            }
+            return Pair.create(e.getKey(), state);
+        }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
 }

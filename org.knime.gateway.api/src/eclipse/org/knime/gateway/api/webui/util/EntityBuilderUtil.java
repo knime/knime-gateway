@@ -540,7 +540,7 @@ public final class EntityBuilderUtil {
             return ExecutionStateEnum.CONFIGURED;
         } else if (ncState.isExecuted()) {
             return ExecutionStateEnum.EXECUTED;
-        } else if (ncState.isExecutionInProgress() || ncState.isExecutingRemotely()) {
+        } else if (isExecuting(ncState)) {
             return ExecutionStateEnum.EXECUTING;
         } else if (ncState.isIdle()) {
             return ExecutionStateEnum.IDLE;
@@ -558,7 +558,7 @@ public final class EntityBuilderUtil {
             return NodeStateEnum.CONFIGURED;
         } else if (ncState.isExecuted()) {
             return NodeStateEnum.EXECUTED;
-        } else if (ncState.isExecutionInProgress() || ncState.isExecutingRemotely()) {
+        } else if (isExecuting(ncState)) {
             return NodeStateEnum.EXECUTING;
         } else if (ncState.isIdle()) {
             return NodeStateEnum.IDLE;
@@ -569,6 +569,10 @@ public final class EntityBuilderUtil {
         } else {
             throw new IllegalStateException("Node container state cannot be mapped!");
         }
+    }
+
+    private static boolean isExecuting(final NodeContainerState ncState) {
+        return (ncState.isExecutionInProgress() && !ncState.isWaitingToBeExecuted()) || ncState.isExecutingRemotely();
     }
 
     private static NodeTemplateEnt buildNodeTemplateEnt(final NativeNodeContainer nc) {

@@ -99,7 +99,7 @@
     },
     "parents" : [ {
       "containerType" : "project",
-      "name" : "workflow"
+      "name" : "general_web_ui"
     } ],
     "workflowAnnotations" : [ {
       "backgroundColor" : "#FFFFFF",
@@ -321,7 +321,7 @@
     },
     "info" : {
       "containerType" : "project",
-      "name" : "workflow"
+      "name" : "general_web_ui"
     },
     "nodeTemplates" : {
       "org.knime.base.node.mine.pca.PCAComputeNodeFactory" : {
@@ -1853,6 +1853,14 @@
       "textAlign" : "center"
     } ]
   },
+  "node_states" : {
+    "root:1" : "IDLE",
+    "root:2" : "CONFIGURED",
+    "root:3" : "IDLE",
+    "root:4" : "CONFIGURED",
+    "root:7" : "CONFIGURED",
+    "root:8" : "IDLE"
+  },
   "workflowent_23" : {
     "connections" : {
       "root:23:0:9_1" : {
@@ -1992,9 +2000,17 @@
     },
     "parents" : [ {
       "containerType" : "project",
-      "name" : "workflow"
+      "name" : "general_web_ui"
     } ],
     "workflowAnnotations" : [ ]
+  },
+  "node_states_execution" : {
+    "root:1" : "IDLE",
+    "root:2" : "EXECUTING",
+    "root:3" : "QUEUED",
+    "root:4" : "EXECUTED",
+    "root:7" : "EXECUTING",
+    "root:8" : "QUEUED"
   },
   "workflowent_root" : {
     "connections" : {
@@ -2173,7 +2189,7 @@
     },
     "info" : {
       "containerType" : "project",
-      "name" : "workflow"
+      "name" : "general_web_ui"
     },
     "nodeTemplates" : {
       "org.knime.base.node.mine.pca.PCAComputeNodeFactory" : {

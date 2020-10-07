@@ -14,7 +14,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * The main workflow the web-ui tests are based on.
      */
-    GENERAL_WEB_UI("/files/Test Gateway Workflow.knwf", "workflow");
+    GENERAL_WEB_UI("/files/Test Gateway Workflow.knwf", "general_web_ui"),
+
+    /**
+     * Workflow to test the execution states.
+     */
+    EXECUTION_STATES("/files/Execution States.knwf", "execution states");
 
     private final String m_url;
 

@@ -537,7 +537,7 @@
     "ops" : [ {
       "op" : "replace",
       "path" : "/nodes/root:1/state/executionState",
-      "value" : "EXECUTING"
+      "value" : "QUEUED"
     } ],
     "targetTypeId" : "Workflow"
   },

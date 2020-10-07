@@ -43,6 +43,8 @@ public class GatewayTestCollection {
         Map<String, GatewayTestRunner> res = new HashMap<>();
         res.put("testGetWorkflow",
             (rc, wl, we) -> new WorkflowServiceTestHelper(rc, wl, we).testGetWorkflow());
+        res.put("testNodeExecutionStates",
+            (rc, wl, we) -> new WorkflowServiceTestHelper(rc, wl, we).testNodeExecutionStates());
         return res;
     }
 }
