@@ -76,17 +76,17 @@ public class WrapWithJsonRpcService {
      *
      * @return the service wrapper
      */
-    public static GatewayService wrap(final GatewayService service, final Class<?> serviceInterface) {
+    @SuppressWarnings("unchecked")
+    public static <S extends GatewayService> S wrap(final S service, final Class<S> serviceInterface) {
         try {
-        
             if(serviceInterface == EventService.class) {
-                return JsonRpcEventServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcEventServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }
             if(serviceInterface == WorkflowService.class) {
-                return JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }
             if(serviceInterface == ApplicationService.class) {
-                return JsonRpcApplicationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcApplicationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException ex) {

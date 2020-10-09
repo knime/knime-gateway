@@ -48,6 +48,8 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.ApplicationService;
 
+import org.knime.gateway.api.service.GatewayService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,8 +70,8 @@ public class ListServices {
      * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
      * @return the class list
      */
-    public static List<Class<?>> listServiceInterfaces() {
-        List<Class<?>> res = new ArrayList<>();
+    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
+        List<Class<? extends GatewayService>> res = new ArrayList<>();
         res.add(EventService.class);
         res.add(WorkflowService.class);
         res.add(ApplicationService.class);
