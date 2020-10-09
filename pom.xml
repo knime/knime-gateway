@@ -26,8 +26,9 @@
 		<module>org.knime.gateway.json</module>
 		<module>org.knime.gateway.json.tests</module>
 		<module>org.knime.gateway.impl</module>
-		<module>org.knime.gateway.impl.jsonrpc</module>
 		<module>org.knime.gateway.impl.tests</module>
+		<module>org.knime.gateway.impl.jsonrpc</module>
+		<module>org.knime.gateway.impl.jsonrpc.tests</module>
 		<module>org.knime.gateway.testing.helper</module>
 		<module>org.knime.update.gateway</module>
 		<module>org.knime.features.gateway</module>

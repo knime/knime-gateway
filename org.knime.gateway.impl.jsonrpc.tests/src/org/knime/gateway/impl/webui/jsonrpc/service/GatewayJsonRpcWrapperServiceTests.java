@@ -43,12 +43,21 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import static org.knime.gateway.testing.helper.webui.GatewayTestCollection.REWRITE_TEST_RESULTS;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.util.Map;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -57,7 +66,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
+import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
@@ -66,16 +78,24 @@ import org.knime.gateway.testing.helper.webui.GatewayTestRunner;
 import org.knime.gateway.testing.helper.webui.ServiceProvider;
 import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.googlecode.jsonrpc4j.ExceptionResolver;
+import com.googlecode.jsonrpc4j.JsonRpcClient;
+import com.googlecode.jsonrpc4j.ReflectionUtil;
+
 /**
- * Runs all tests provided by {@link GatewayTestCollection} on the default service implementations, e.g.
- * {@link DefaultWorkflowService}.
+ * Runs all tests provided by {@link GatewayTestCollection} on the json-rpc wrapper service implementations, e.g.
+ * {@link JsonRpcWorkflowServiceWrapper}.
  *
  * TODO consider using dynamic tests with JUnit 5 //NOSONAR
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @RunWith(Parameterized.class)
-public class GatewayDefaultServiceTests {
+public class GatewayJsonRpcWrapperServiceTests {
 
     private static final Map<String, GatewayTestRunner> GATEWAY_TESTS = GatewayTestCollection.collectAllGatewayTests();
 
@@ -89,6 +109,11 @@ public class GatewayDefaultServiceTests {
 
     private final ServiceProvider m_serviceProvider;
 
+    /**
+     * If manually set to true, the expected test results (i.e. the retrieved workflow etc.) will be updated and written
+     * to the respective files. After that it need to be set to false again (otherwise the test will fail anyway).
+     */
+    private static final boolean REWRITE_TEST_RESULTS = false;
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
@@ -101,7 +126,7 @@ public class GatewayDefaultServiceTests {
     /**
      * @param gatewayTestName the test to run, the test names stemming from {@link #testNames()}
      */
-    public GatewayDefaultServiceTests(final String gatewayTestName) {
+    public GatewayJsonRpcWrapperServiceTests(final String gatewayTestName) {
         m_workflowLoader = new LocalWorkflowLoader();
         m_workflowExecutor = new WorkflowExecutor() {
 
@@ -118,7 +143,12 @@ public class GatewayDefaultServiceTests {
                     .executeAllAndWaitUntilDone();
             }
         };
-        m_serviceProvider = DefaultWorkflowService::getInstance;
+        DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler();
+        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+        JsonRpcClient jsonRpcClient =
+            new JsonRpcClient(mapper, new TestExceptionResolver(notNullValue(String.class), is(-32600)));
+        m_serviceProvider = () -> createClientProxy(WorkflowService.class, handler, jsonRpcClient);
         m_gatewayTestName = gatewayTestName;
     }
 
@@ -135,6 +165,7 @@ public class GatewayDefaultServiceTests {
 
     /**
      * Removes the project where necessary.
+     *
      * @throws InterruptedException
      */
     @After
@@ -143,7 +174,7 @@ public class GatewayDefaultServiceTests {
     }
 
     /**
-     * A test that fails when {@link GatewayTestCollection#REWRITE_TEST_RESULTS} is set to <code>true</code>.
+     * A test that fails when {@link #REWRITE_TEST_RESULTS} is set to <code>true</code>.
      */
     @Test
     public void testTestResultsNotOverridden() {
@@ -168,4 +199,75 @@ public class GatewayDefaultServiceTests {
             resultChecker.writeTestResultsToFiles();
         }
     }
+
+    /**
+     * Creates a json-rpc service proxy that uses the provided {@link JsonRpcClient} to create the json-rpc request and
+     * parse the json-rpc response.
+     *
+     * The actual json-rpc request is turned into a json-rpc response by the provided
+     * {@link DefaultJsonRpcRequestHandler}.
+     *
+     * @param <T>
+     * @param proxyInterface
+     * @param handler
+     * @param jsonRpcClient
+     *
+     * @return the service proxy
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T createClientProxy(final Class<T> proxyInterface, final DefaultJsonRpcRequestHandler handler,
+        final JsonRpcClient jsonRpcClient) {
+        return (T)Proxy.newProxyInstance(proxyInterface.getClassLoader(), new Class<?>[]{proxyInterface},
+            (proxy, method, args) -> {
+                final Object arguments = ReflectionUtil.parseArguments(method, args);
+                String methodName = proxyInterface.getSimpleName() + "." + method.getName();
+
+                byte[] response;
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    jsonRpcClient.invoke(methodName, arguments, out);
+                    response = handler.handle(out.toByteArray());
+                }
+
+                try (ByteArrayInputStream in = new ByteArrayInputStream(response)) {
+                    return jsonRpcClient.readResponse(method.getGenericReturnType(), in);
+                }
+            });
+    }
+
+    public static class TestExceptionResolver implements ExceptionResolver {
+
+        private Matcher<String> m_messageMatcher;
+        private Matcher<Integer> m_codeMatcher;
+
+        /**
+         * @param messageMatcher
+         * @param codeMatcher
+         */
+        public TestExceptionResolver(final Matcher<String> messageMatcher, final Matcher<Integer> codeMatcher) {
+            m_messageMatcher = messageMatcher;
+            m_codeMatcher = codeMatcher;
+        }
+
+        @Override
+        public Throwable resolveException(final ObjectNode response) {
+            assertThat(response.get("jsonrpc").asText(), is("2.0"));
+            JsonNode error = response.get("error");
+            assertThat("unexpected error code", error.get("code").asInt(), m_codeMatcher);
+            JsonNode data = error.get("data");
+            String name = data.get("name").asText();
+            assertNotNull("no stacktrace given", data.get("stackTrace"));
+            String message = error.get("message").asText();
+            assertThat("unexpected exception message", message, m_messageMatcher);
+            try {
+                @SuppressWarnings("unchecked")
+                Class<? extends Exception> cl = (Class<? extends Exception>)Class.forName(name);
+                Constructor<? extends Exception> cons = cl.getConstructor(String.class);
+                return cons.newInstance(message);
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new AssertionError("Exception couldn't be created from the json-rpc error", ex);
+            }
+        }
+    }
+
 }

@@ -47,6 +47,7 @@ package org.knime.gateway.impl.jsonrpc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -100,12 +101,12 @@ public class JsonRpcRequestHandler {
                 ByteArrayInputStream in = new ByteArrayInputStream(jsonRpcRequest)) {
             m_jsonRpcMultiServer.handleRequest(in, out);
             return out.toByteArray();
-        } catch (Exception e) {
-            // unexpected exception
+        } catch (IOException e) {
             // turn it into a json error object
             ObjectMapper mapper = ObjectMapperUtil.getInstance().getBinaryObjectMapper();
             ObjectNode jsonRpc = mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
-            jsonRpc.putObject("error").put("code", -32601).put("message", m_exceptionTranslator.getMessage(e))
+            jsonRpc.putObject("error").put("code", m_exceptionTranslator.getUnexpectedExceptionErrorCode(e))
+                .put("message", m_exceptionTranslator.getMessage(e))
                 .set("data", mapper.convertValue(m_exceptionTranslator.getData(e), JsonNode.class));
             return jsonRpc.toPrettyString().getBytes(StandardCharsets.UTF_8);
         }

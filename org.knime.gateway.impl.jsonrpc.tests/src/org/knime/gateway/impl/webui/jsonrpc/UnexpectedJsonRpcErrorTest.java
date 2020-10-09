@@ -44,61 +44,57 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2020 (hornm): created
+ *   Oct 13, 2020 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc;
+package org.knime.gateway.impl.webui.jsonrpc;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.impl.webui.jsonrpc.service.GatewayJsonRpcWrapperServiceTests.createClientProxy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.webui.jsonrpc.service.GatewayJsonRpcWrapperServiceTests.TestExceptionResolver;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.googlecode.jsonrpc4j.JsonRpcClient;
 
 /**
- * A default implementation of the exception to jsonrpc error translator.
- *
- * The json-rpc error message contains the exception message itself. The json-rpc error data is a json object containg
- * the exception name and the entire stack trace.
+ * Test for correct json-rpc error responses if a gateway service throws an unexpected exception.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJsonRpcErrorTranslator {
+public class UnexpectedJsonRpcErrorTest {
 
     /**
-     * {@inheritDoc}
+     * Tests for the correct json-rpc error response if a gateway service throws an unexpected exception.
+     *
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
      */
-    @Override
-    public String getMessage(final Throwable t) {
-        return t.getMessage();
+    @Test
+    public void testUnexpectedJsonRpcError() throws NotASubWorkflowException, NodeNotFoundException {
+        Map<Class<? extends GatewayService>, GatewayService> serviceMocks = new HashMap<>();
+        WorkflowService workflowServiceMock = mock(WorkflowService.class);
+        when(workflowServiceMock.getWorkflow(any(), any()))
+            .thenThrow(new UnsupportedOperationException("an unexpected exception"));
+        serviceMocks.put(WorkflowService.class, workflowServiceMock);
+        DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler(serviceMocks);
+        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        JsonRpcClient jsonRpcClient = new JsonRpcClient(mapper,
+            new TestExceptionResolver(Matchers.is("an unexpected exception"), Matchers.is(-32601)));
+        WorkflowService workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
+        assertThrows(UnsupportedOperationException.class, () -> workflowServiceProxy.getWorkflow(null, null));
+
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JsonNode getData(final Throwable t) {
-        return getExceptionDetails(t);
-    }
-
-    @Override
-    public int getUnexpectedExceptionErrorCode(final Throwable t) {
-        return -32601;
-    }
-
-    private static JsonNode getExceptionDetails(final Throwable t) {
-        ObjectNode details = ObjectMapperUtil.getInstance().getObjectMapper().createObjectNode();
-        details.put("name", t.getClass().getCanonicalName());
-
-        try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
-            t.printStackTrace(printWriter);
-            details.put("stackTrace", stringWriter.toString());
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
-        }
-        return details;
-    }
-
 }

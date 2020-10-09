@@ -70,4 +70,10 @@ public interface ExceptionToJsonRpcErrorTranslator {
      */
     Object getData(Throwable t);
 
+    /**
+     * @param t the thrown exception
+     * @return the json-rpc 2.0 error code
+     */
+    int getUnexpectedExceptionErrorCode(Throwable t);
+
 }

@@ -43,58 +43,13 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.jsonrpc;
+package org.knime.gateway.impl.webui.jsonrpc;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.googlecode.jsonrpc4j.AnnotationsErrorResolver;
-import com.googlecode.jsonrpc4j.ErrorResolver;
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.ReflectionUtil;
+import org.knime.testing.core.AbstractTestcaseCollector;
 
 /**
- * Resolves exceptions by looking at {@link JsonRpcErrors} annotations. Almost the same as
- * {@link AnnotationsErrorResolver} (can not be derived, some code copied from there), except the error data object.
- *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class JsonRpcErrorResolver implements ErrorResolver {
-
-    private final ExceptionToJsonRpcErrorTranslator m_translator;
-
-    JsonRpcErrorResolver(final ExceptionToJsonRpcErrorTranslator t) {
-        m_translator = t;
-    }
-
-    @Override
-    public JsonError resolveError(final Throwable thrownException, final Method method,
-        final List<JsonNode> arguments) {
-        JsonRpcError resolver = getResolverForException(thrownException, method);
-        return new JsonError(
-            resolver != null ? resolver.code() : m_translator.getUnexpectedExceptionErrorCode(thrownException),
-            m_translator.getMessage(thrownException), m_translator.getData(thrownException));
-    }
-
-    private static JsonRpcError getResolverForException(final Throwable thrownException, final Method method) {
-        JsonRpcErrors errors = ReflectionUtil.getAnnotation(method, JsonRpcErrors.class);
-        if (hasAnnotations(errors)) {
-            for (JsonRpcError errorDefined : errors.value()) {
-                if (isExceptionInstanceOfError(thrownException, errorDefined)) {
-                    return errorDefined;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static boolean hasAnnotations(final JsonRpcErrors errors) {
-        return errors != null;
-    }
-
-    private static boolean isExceptionInstanceOfError(final Throwable target, final JsonRpcError em) {
-        return em.exception().isInstance(target);
-    }
+public class GatewayJsonRpcTestcaseCollector extends AbstractTestcaseCollector {
+	//empty on purpose
 }

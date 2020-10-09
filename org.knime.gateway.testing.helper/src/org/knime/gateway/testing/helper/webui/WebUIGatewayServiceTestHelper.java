@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
-import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.json.util.JsonUtil;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -74,6 +73,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
+
+    private final ServiceProvider m_serviceProvider;
 
     /**
      * Helps to create an {@link ResultChecker}-instance.
@@ -140,22 +141,26 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     /**
      * @param testName
      * @param entityResultChecker
+     * @param serviceProvider
      * @param workflowLoader
      */
     protected WebUIGatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
-        final WorkflowLoader workflowLoader) {
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader) {
         super(testName, entityResultChecker, workflowLoader);
+        m_serviceProvider = serviceProvider;
     }
 
     /**
      * @param testName
      * @param entityResultChecker
+     * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
      */
     protected WebUIGatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(testName, entityResultChecker, workflowLoader, workflowExecutor);
+        m_serviceProvider = serviceProvider;
     }
 
     /**
@@ -164,7 +169,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @return a workflow service instance
      */
     protected WorkflowService ws() {
-        return DefaultWorkflowService.getInstance();
+        return m_serviceProvider.getWorkflowService();
     }
 
 }

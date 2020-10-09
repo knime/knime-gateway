@@ -44,61 +44,67 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2020 (hornm): created
+ *   Oct 12, 2020 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc;
+package org.knime.gateway.impl.webui.jsonrpc;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.impl.jsonrpc.DefaultExceptionToJsonRpcErrorTranslator;
+import org.knime.gateway.impl.jsonrpc.JsonRpcRequestHandler;
+import org.knime.gateway.impl.webui.service.DefaultServices;
+import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 /**
- * A default implementation of the exception to jsonrpc error translator.
- *
- * The json-rpc error message contains the exception message itself. The json-rpc error data is a json object containg
- * the exception name and the entire stack trace.
+ * A {@link JsonRpcRequestHandler} that delegates the json-requests to the default service implementations of the web-ui
+ * (e.g. {@link DefaultWorkflowService}) using the {@link DefaultExceptionToJsonRpcErrorTranslator} in case of thrown
+ * exceptions.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJsonRpcErrorTranslator {
+public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
 
     /**
-     * {@inheritDoc}
+     * New instance.
      */
-    @Override
-    public String getMessage(final Throwable t) {
-        return t.getMessage();
+    public DefaultJsonRpcRequestHandler() {
+        super(ObjectMapperUtil.getInstance().getObjectMapper(), wrapWithJsonRpcServices(getDefaultServiceImpls()),
+            new DefaultExceptionToJsonRpcErrorTranslator());
     }
 
     /**
-     * {@inheritDoc}
+     * For testing purposes only.
      */
-    @Override
-    public JsonNode getData(final Throwable t) {
-        return getExceptionDetails(t);
+    DefaultJsonRpcRequestHandler(final Map<Class<? extends GatewayService>, GatewayService> serviceImpls) {
+        super(ObjectMapperUtil.getInstance().getObjectMapper(), wrapWithJsonRpcServices(serviceImpls),
+            new DefaultExceptionToJsonRpcErrorTranslator());
     }
 
-    @Override
-    public int getUnexpectedExceptionErrorCode(final Throwable t) {
-        return -32601;
+    private static Map<Class<? extends GatewayService>, GatewayService> getDefaultServiceImpls() {
+        // default web-ui service implementations
+        List<Class<? extends GatewayService>> serviceInterfaces =
+            org.knime.gateway.api.webui.service.util.ListServices.listServiceInterfaces();
+        return serviceInterfaces.stream().collect(Collectors.toMap(i -> i, DefaultServices::getDefaultService));
     }
 
-    private static JsonNode getExceptionDetails(final Throwable t) {
-        ObjectNode details = ObjectMapperUtil.getInstance().getObjectMapper().createObjectNode();
-        details.put("name", t.getClass().getCanonicalName());
+    private static Map<String, GatewayService>
+        wrapWithJsonRpcServices(final Map<Class<? extends GatewayService>, GatewayService> serviceImpls) {
+        Map<String, GatewayService> wrappedServices = new HashMap<>();
 
-        try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
-            t.printStackTrace(printWriter);
-            details.put("stackTrace", stringWriter.toString());
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
+        for (Entry<Class<? extends GatewayService>, GatewayService> entry : serviceImpls.entrySet()) { // NOSONAR
+            @SuppressWarnings("rawtypes")
+            Class key = entry.getKey(); // NOSONAR
+            @SuppressWarnings("unchecked")
+            GatewayService wrappedService =
+                org.knime.gateway.impl.webui.jsonrpc.service.util.WrapWithJsonRpcService.wrap(entry.getValue(), key);
+            wrappedServices.put(key.getSimpleName(), wrappedService);
         }
-        return details;
+        return wrappedServices;
     }
-
 }
