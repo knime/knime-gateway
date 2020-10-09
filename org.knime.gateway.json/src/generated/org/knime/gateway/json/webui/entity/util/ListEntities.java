@@ -51,7 +51,6 @@ import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.EventEntMixIn;
 import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
-import org.knime.gateway.json.webui.entity.GatewayExceptionEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeStateEntMixIn;
@@ -103,7 +102,6 @@ public class ListEntities {
         res.add(ConnectionEntMixIn.class);
         res.add(EventEntMixIn.class);
         res.add(EventTypeEntMixIn.class);
-        res.add(GatewayExceptionEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
         res.add(MetaNodeStateEntMixIn.class);
@@ -141,7 +139,6 @@ public class ListEntities {
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
         res.add(EventEntMixIn.EventEntMixInBuilder.class);
         res.add(EventTypeEntMixIn.EventTypeEntMixInBuilder.class);
-        res.add(GatewayExceptionEntMixIn.GatewayExceptionEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);
         res.add(MetaNodeStateEntMixIn.MetaNodeStateEntMixInBuilder.class);

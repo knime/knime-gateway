@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,69 +41,59 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Oct 9, 2020 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.jsonrpc;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.json.util.ObjectMapperUtil;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Details of an exception thrown by gateway implementations such as services.
- * 
+ * A default implementation of the exception to jsonrpc error translator.
+ *
+ * The json-rpc error message contains the exception message itself. The json-rpc error data is a json object containg
+ * the exception name and the entire stack trace.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface GatewayExceptionEnt extends GatewayEntity {
-
-
-  /**
-   * Simple name of the gateway executor exception.
-   * @return exceptionName 
-   **/
-  public String getExceptionName();
-
-  /**
-   * The more detailed exception message.
-   * @return exceptionMessage 
-   **/
-  public String getExceptionMessage();
-
+public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJsonRpcErrorTranslator {
 
     /**
-     * The builder for the entity.
+     * {@inheritDoc}
      */
-    public interface GatewayExceptionEntBuilder extends GatewayEntityBuilder<GatewayExceptionEnt> {
+    @Override
+    public String getMessage(final Throwable t) {
+        return t.getMessage();
+    }
 
-        /**
-         * Simple name of the gateway executor exception.
-         * 
-         * @param exceptionName the property value,  
-         * @return this entity builder for chaining
-         */
-        GatewayExceptionEntBuilder setExceptionName(String exceptionName);
-        
-        /**
-         * The more detailed exception message.
-         * 
-         * @param exceptionMessage the property value,  
-         * @return this entity builder for chaining
-         */
-        GatewayExceptionEntBuilder setExceptionMessage(String exceptionMessage);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        GatewayExceptionEnt build();
-    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonNode getData(final Throwable t) {
+        return getExceptionDetails(t);
+    }
+
+    private static JsonNode getExceptionDetails(final Throwable t) {
+        ObjectNode details = ObjectMapperUtil.getInstance().getObjectMapper().createObjectNode();
+        details.put("name", t.getClass().getSimpleName());
+
+        try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
+            t.printStackTrace(printWriter);
+            details.put("stackTrace", stringWriter.toString());
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+        return details;
     }
 
 }

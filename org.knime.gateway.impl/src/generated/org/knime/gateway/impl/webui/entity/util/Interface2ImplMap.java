@@ -58,8 +58,6 @@ import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
-import org.knime.gateway.api.webui.entity.GatewayExceptionEnt.GatewayExceptionEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultGatewayExceptionEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
@@ -144,9 +142,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == EventTypeEntBuilder.class) {
             return (B)new DefaultEventTypeEnt.DefaultEventTypeEntBuilder();
-        }        
-        if(clazz == GatewayExceptionEntBuilder.class) {
-            return (B)new DefaultGatewayExceptionEnt.DefaultGatewayExceptionEntBuilder();
         }        
         if(clazz == MetaNodeEntBuilder.class) {
             return (B)new DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder();

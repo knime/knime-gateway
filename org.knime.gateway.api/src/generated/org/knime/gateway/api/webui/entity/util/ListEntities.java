@@ -51,7 +51,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.api.webui.entity.GatewayExceptionEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
@@ -104,7 +103,6 @@ public class ListEntities {
         res.add(ConnectionEnt.class);
         res.add(EventEnt.class);
         res.add(EventTypeEnt.class);
-        res.add(GatewayExceptionEnt.class);
         res.add(MetaNodeEnt.class);
         res.add(MetaNodePortEnt.class);
         res.add(MetaNodeStateEnt.class);
@@ -142,7 +140,6 @@ public class ListEntities {
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(EventEnt.EventEntBuilder.class);
         res.add(EventTypeEnt.EventTypeEntBuilder.class);
-        res.add(GatewayExceptionEnt.GatewayExceptionEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
         res.add(MetaNodeStateEnt.MetaNodeStateEntBuilder.class);

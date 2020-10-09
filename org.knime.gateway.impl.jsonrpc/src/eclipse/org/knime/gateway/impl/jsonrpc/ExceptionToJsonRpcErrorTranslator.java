@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -42,62 +43,31 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 8, 2020 (hornm): created
  */
 package org.knime.gateway.impl.jsonrpc;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.googlecode.jsonrpc4j.AnnotationsErrorResolver;
-import com.googlecode.jsonrpc4j.ErrorResolver;
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.ReflectionUtil;
-
 /**
- * Resolves exceptions by looking at {@link JsonRpcErrors} annotations. Almost the same as
- * {@link AnnotationsErrorResolver} (can not be derived, some code copied from there), except the error data object.
+ * Turns an exception into the 'message' and 'data' properties of an error object as defined by the json-rpc 2.0
+ * standard.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class JsonRpcErrorResolver implements ErrorResolver {
+public interface ExceptionToJsonRpcErrorTranslator {
 
-    private final ExceptionToJsonRpcErrorTranslator m_translator;
+    /**
+     * @param t the thrown exception
+     * @return a short description of the error - corresponds to the 'message' property in the error object of the json
+     *         rpc 2.0 standard
+     */
+    String getMessage(Throwable t);
 
-    JsonRpcErrorResolver(final ExceptionToJsonRpcErrorTranslator t) {
-        m_translator = t;
-    }
+    /**
+     * @param t the thrown exception
+     * @return additional information about the error - corresponds to the 'data' property in the error object of the
+     *         json-rpc 2.0 standard
+     */
+    Object getData(Throwable t);
 
-    @Override
-    public JsonError resolveError(final Throwable thrownException, final Method method,
-        final List<JsonNode> arguments) {
-        JsonRpcError resolver = getResolverForException(thrownException, method);
-        if (resolver == null) {
-            return null;
-        }
-
-        return new JsonError(resolver.code(), m_translator.getMessage(thrownException),
-            m_translator.getData(thrownException));
-    }
-
-    private static JsonRpcError getResolverForException(final Throwable thrownException, final Method method) {
-        JsonRpcErrors errors = ReflectionUtil.getAnnotation(method, JsonRpcErrors.class);
-        if (hasAnnotations(errors)) {
-            for (JsonRpcError errorDefined : errors.value()) {
-                if (isExceptionInstanceOfError(thrownException, errorDefined)) {
-                    return errorDefined;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static boolean hasAnnotations(final JsonRpcErrors errors) {
-        return errors != null;
-    }
-
-    private static boolean isExceptionInstanceOfError(final Throwable target, final JsonRpcError em) {
-        return em.exception().isInstance(target);
-    }
 }

@@ -47,13 +47,16 @@ package org.knime.gateway.impl.jsonrpc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.json.util.ObjectMapperUtil;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 
 /**
@@ -65,21 +68,25 @@ import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 public class JsonRpcRequestHandler {
 
     private JsonRpcMultiServer m_jsonRpcMultiServer;
+    private ExceptionToJsonRpcErrorTranslator m_exceptionTranslator;
 
     /**
      * Creates a new request handler.
      *
      * @param mapper the object mapper to use for json de-/serialization
      * @param services the services to be used by the handler (map from service name to service handler)
+     * @param t to translate exception to json-rpc errors
      */
-    public JsonRpcRequestHandler(final ObjectMapper mapper, final Map<String, GatewayService> services) {
+    public JsonRpcRequestHandler(final ObjectMapper mapper, final Map<String, GatewayService> services,
+        final ExceptionToJsonRpcErrorTranslator t) {
         //setup json-rpc server
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
-        m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver());
-
+        m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver(t));
         for (Entry<String, GatewayService> entry : services.entrySet()) {
             m_jsonRpcMultiServer.addService(entry.getKey(), entry.getValue());
         }
+
+        m_exceptionTranslator = t;
     }
 
     /**
@@ -93,9 +100,14 @@ public class JsonRpcRequestHandler {
                 ByteArrayInputStream in = new ByteArrayInputStream(jsonRpcRequest)) {
             m_jsonRpcMultiServer.handleRequest(in, out);
             return out.toByteArray();
-        } catch (IOException ex) {
-            //TODO better exception handling
-            throw new RuntimeException(ex);
+        } catch (Exception e) {
+            // unexpected exception
+            // turn it into a json error object
+            ObjectMapper mapper = ObjectMapperUtil.getInstance().getBinaryObjectMapper();
+            ObjectNode jsonRpc = mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
+            jsonRpc.putObject("error").put("code", -32601).put("message", m_exceptionTranslator.getMessage(e))
+                .set("data", mapper.convertValue(m_exceptionTranslator.getData(e), JsonNode.class));
+            return jsonRpc.toPrettyString().getBytes(StandardCharsets.UTF_8);
         }
     }
 }
