@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -52,10 +53,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 
 /**
@@ -92,16 +92,17 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "typeId",
-        defaultImpl = DefaultEventTypeEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultEventTypeEnt.DefaultEventTypeEntBuilder.class, name="EventType")
-        ,
-      @Type(value = DefaultWorkflowChangedEventTypeEnt.DefaultWorkflowChangedEventTypeEntBuilder.class, name = "WorkflowChangedEventType")
-    })
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "typeId",
+    visible = true,
+    defaultImpl = DefaultEventTypeEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultEventTypeEnt.class, name="EventType")
+,
+  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
+})
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface EventTypeEntMixInBuilder extends EventTypeEntBuilder {
     

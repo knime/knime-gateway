@@ -46,16 +46,12 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaPortsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaPortsEnt.DefaultMetaPortsEntBuilder;
 
 /**
@@ -63,15 +59,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaPortsEnt.DefaultMetaPortsE
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultMetaPortsEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultMetaPortsEnt.class, name="MetaPorts")
-})
+
 @JsonDeserialize(builder=DefaultMetaPortsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface MetaPortsEntMixIn extends MetaPortsEnt {
@@ -94,14 +82,7 @@ public interface MetaPortsEntMixIn extends MetaPortsEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultMetaPortsEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultMetaPortsEnt.DefaultMetaPortsEntBuilder.class, name="MetaPorts")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface MetaPortsEntMixInBuilder extends MetaPortsEntBuilder {
     

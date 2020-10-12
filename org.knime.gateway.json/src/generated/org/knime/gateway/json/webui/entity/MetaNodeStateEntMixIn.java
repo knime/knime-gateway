@@ -45,16 +45,12 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt.DefaultMetaNodeStateEntBuilder;
 
 /**
@@ -62,15 +58,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt.DefaultMetaNo
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultMetaNodeStateEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultMetaNodeStateEnt.class, name="MetaNodeState")
-})
+
 @JsonDeserialize(builder=DefaultMetaNodeStateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface MetaNodeStateEntMixIn extends MetaNodeStateEnt {
@@ -89,14 +77,7 @@ public interface MetaNodeStateEntMixIn extends MetaNodeStateEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultMetaNodeStateEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultMetaNodeStateEnt.DefaultMetaNodeStateEntBuilder.class, name="MetaNodeState")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface MetaNodeStateEntMixInBuilder extends MetaNodeStateEntBuilder {
     

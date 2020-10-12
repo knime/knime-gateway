@@ -45,35 +45,20 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt.DefaultNodePortEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultNodePortEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultNodePortEnt.class, name="NodePort")
-,
-  @Type(value = DefaultMetaNodePortEnt.class, name = "MetaNodePort")
-})
+
 @JsonDeserialize(builder=DefaultNodePortEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodePortEntMixIn extends NodePortEnt {
@@ -120,16 +105,7 @@ public interface NodePortEntMixIn extends NodePortEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultNodePortEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultNodePortEnt.DefaultNodePortEntBuilder.class, name="NodePort")
-        ,
-      @Type(value = DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder.class, name = "MetaNodePort")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodePortEntMixInBuilder extends NodePortEntBuilder {
     

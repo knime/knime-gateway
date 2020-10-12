@@ -46,16 +46,12 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt.DefaultWorkflowChangedEventTypeEntBuilder;
 
 /**
@@ -63,15 +59,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt.De
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultWorkflowChangedEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name="WorkflowChangedEventType")
-})
+
 @JsonDeserialize(builder=DefaultWorkflowChangedEventTypeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface WorkflowChangedEventTypeEntMixIn extends WorkflowChangedEventTypeEnt {
@@ -102,14 +90,7 @@ public interface WorkflowChangedEventTypeEntMixIn extends WorkflowChangedEventTy
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultWorkflowChangedEventTypeEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultWorkflowChangedEventTypeEnt.DefaultWorkflowChangedEventTypeEntBuilder.class, name="WorkflowChangedEventType")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowChangedEventTypeEntMixInBuilder extends WorkflowChangedEventTypeEntBuilder {
     

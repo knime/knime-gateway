@@ -46,16 +46,12 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder;
 
 /**
@@ -63,15 +59,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt.DefaultWor
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultWorkflowSnapshotEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultWorkflowSnapshotEnt.class, name="WorkflowSnapshot")
-})
+
 @JsonDeserialize(builder=DefaultWorkflowSnapshotEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface WorkflowSnapshotEntMixIn extends WorkflowSnapshotEnt {
@@ -94,14 +82,7 @@ public interface WorkflowSnapshotEntMixIn extends WorkflowSnapshotEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultWorkflowSnapshotEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder.class, name="WorkflowSnapshot")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowSnapshotEntMixInBuilder extends WorkflowSnapshotEntBuilder {
     

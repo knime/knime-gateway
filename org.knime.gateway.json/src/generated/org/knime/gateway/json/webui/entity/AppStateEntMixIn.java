@@ -46,16 +46,12 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt.DefaultAppStateEntBuilder;
 
 /**
@@ -63,15 +59,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt.DefaultAppStateEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultAppStateEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultAppStateEnt.class, name="AppState")
-})
+
 @JsonDeserialize(builder=DefaultAppStateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface AppStateEntMixIn extends AppStateEnt {
@@ -90,14 +78,7 @@ public interface AppStateEntMixIn extends AppStateEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultAppStateEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultAppStateEnt.DefaultAppStateEntBuilder.class, name="AppState")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface AppStateEntMixInBuilder extends AppStateEntBuilder {
     

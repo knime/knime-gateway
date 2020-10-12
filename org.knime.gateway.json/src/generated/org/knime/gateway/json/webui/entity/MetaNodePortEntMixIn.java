@@ -46,16 +46,12 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder;
 
 /**
@@ -63,15 +59,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt.DefaultMetaNod
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultMetaNodePortEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultMetaNodePortEnt.class, name="MetaNodePort")
-})
+
 @JsonDeserialize(builder=DefaultMetaNodePortEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
@@ -122,14 +110,7 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultMetaNodePortEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder.class, name="MetaNodePort")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface MetaNodePortEntMixInBuilder extends MetaNodePortEntBuilder {
     

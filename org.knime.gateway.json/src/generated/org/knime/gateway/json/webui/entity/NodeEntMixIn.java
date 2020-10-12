@@ -48,6 +48,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -55,10 +56,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
@@ -71,17 +71,17 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
+    property = "kind",
     visible = true,
     defaultImpl = DefaultNodeEnt.class)
 @JsonSubTypes({
     @Type(value = DefaultNodeEnt.class, name="Node")
 ,
-  @Type(value = DefaultComponentNodeEnt.class, name = "ComponentNode")
+  @Type(value = DefaultNativeNodeEnt.class, name = "node")
 ,
-  @Type(value = DefaultMetaNodeEnt.class, name = "MetaNode")
+  @Type(value = DefaultComponentNodeEnt.class, name = "component")
 ,
-  @Type(value = DefaultNativeNodeEnt.class, name = "NativeNode")
+  @Type(value = DefaultMetaNodeEnt.class, name = "metanode")
 })
 @JsonDeserialize(builder=DefaultNodeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -121,20 +121,21 @@ public interface NodeEntMixIn extends NodeEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultNodeEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultNodeEnt.DefaultNodeEntBuilder.class, name="Node")
-        ,
-      @Type(value = DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder.class, name = "ComponentNode")
-        ,
-      @Type(value = DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder.class, name = "MetaNode")
-        ,
-      @Type(value = DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder.class, name = "NativeNode")
-    })
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "kind",
+    visible = true,
+    defaultImpl = DefaultNodeEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultNodeEnt.class, name="Node")
+,
+  @Type(value = DefaultNativeNodeEnt.class, name = "node")
+,
+  @Type(value = DefaultComponentNodeEnt.class, name = "component")
+,
+  @Type(value = DefaultMetaNodeEnt.class, name = "metanode")
+})
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodeEntMixInBuilder extends NodeEntBuilder {
     

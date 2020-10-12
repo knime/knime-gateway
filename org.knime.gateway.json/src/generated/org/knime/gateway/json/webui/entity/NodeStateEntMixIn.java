@@ -46,16 +46,12 @@ package org.knime.gateway.json.webui.entity;
 
 import java.math.BigDecimal;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt.DefaultNodeStateEntBuilder;
 
 /**
@@ -63,15 +59,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt.DefaultNodeStateE
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultNodeStateEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultNodeStateEnt.class, name="NodeState")
-})
+
 @JsonDeserialize(builder=DefaultNodeStateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeStateEntMixIn extends NodeStateEnt {
@@ -106,14 +94,7 @@ public interface NodeStateEntMixIn extends NodeStateEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultNodeStateEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultNodeStateEnt.DefaultNodeStateEntBuilder.class, name="NodeState")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodeStateEntMixInBuilder extends NodeStateEntBuilder {
     

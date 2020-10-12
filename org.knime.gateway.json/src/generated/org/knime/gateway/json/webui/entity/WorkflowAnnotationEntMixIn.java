@@ -48,16 +48,12 @@ import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder;
 
 /**
@@ -65,15 +61,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt.DefaultW
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultWorkflowAnnotationEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultWorkflowAnnotationEnt.class, name="WorkflowAnnotation")
-})
+
 @JsonDeserialize(builder=DefaultWorkflowAnnotationEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
@@ -124,14 +112,7 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultWorkflowAnnotationEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder.class, name="WorkflowAnnotation")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowAnnotationEntMixInBuilder extends WorkflowAnnotationEntBuilder {
     

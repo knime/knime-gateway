@@ -50,16 +50,12 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder;
 
 /**
@@ -67,15 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt.DefaultCompon
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultComponentNodeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultComponentNodeEnt.class, name="ComponentNode")
-})
+
 @JsonDeserialize(builder=DefaultComponentNodeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
@@ -130,14 +118,7 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultComponentNodeEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder.class, name="ComponentNode")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface ComponentNodeEntMixInBuilder extends ComponentNodeEntBuilder {
     

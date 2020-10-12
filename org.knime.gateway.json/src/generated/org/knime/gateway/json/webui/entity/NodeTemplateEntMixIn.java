@@ -45,16 +45,12 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder;
 
 /**
@@ -62,15 +58,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTem
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultNodeTemplateEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultNodeTemplateEnt.class, name="NodeTemplate")
-})
+
 @JsonDeserialize(builder=DefaultNodeTemplateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
@@ -97,14 +85,7 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultNodeTemplateEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder.class, name="NodeTemplate")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodeTemplateEntMixInBuilder extends NodeTemplateEntBuilder {
     

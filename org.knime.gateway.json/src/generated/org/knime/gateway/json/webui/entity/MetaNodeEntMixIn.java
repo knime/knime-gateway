@@ -50,16 +50,12 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder;
 
 /**
@@ -67,15 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt.DefaultMetaNodeEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultMetaNodeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultMetaNodeEnt.class, name="MetaNode")
-})
+
 @JsonDeserialize(builder=DefaultMetaNodeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface MetaNodeEntMixIn extends MetaNodeEnt {
@@ -122,14 +110,7 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultMetaNodeEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder.class, name="MetaNode")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface MetaNodeEntMixInBuilder extends MetaNodeEntBuilder {
     

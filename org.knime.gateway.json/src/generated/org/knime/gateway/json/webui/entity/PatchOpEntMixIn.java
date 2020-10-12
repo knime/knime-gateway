@@ -45,16 +45,12 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
 
 /**
@@ -62,15 +58,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBu
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultPatchOpEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultPatchOpEnt.class, name="PatchOp")
-})
+
 @JsonDeserialize(builder=DefaultPatchOpEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface PatchOpEntMixIn extends PatchOpEnt {
@@ -101,14 +89,7 @@ public interface PatchOpEntMixIn extends PatchOpEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultPatchOpEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultPatchOpEnt.DefaultPatchOpEntBuilder.class, name="PatchOp")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface PatchOpEntMixInBuilder extends PatchOpEntBuilder {
     

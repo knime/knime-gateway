@@ -45,35 +45,20 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.EventEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt.DefaultEventEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultEventEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventEnt.class, name="Event")
-,
-  @Type(value = DefaultWorkflowChangedEventEnt.class, name = "WorkflowChangedEvent")
-})
+
 @JsonDeserialize(builder=DefaultEventEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface EventEntMixIn extends EventEnt {
@@ -88,16 +73,7 @@ public interface EventEntMixIn extends EventEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultEventEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultEventEnt.DefaultEventEntBuilder.class, name="Event")
-        ,
-      @Type(value = DefaultWorkflowChangedEventEnt.DefaultWorkflowChangedEventEntBuilder.class, name = "WorkflowChangedEvent")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface EventEntMixInBuilder extends EventEntBuilder {
     

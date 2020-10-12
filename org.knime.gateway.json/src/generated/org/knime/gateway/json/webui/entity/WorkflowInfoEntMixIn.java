@@ -45,16 +45,12 @@
 package org.knime.gateway.json.webui.entity;
 
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder;
 
 /**
@@ -62,15 +58,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt.DefaultWorkflo
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultWorkflowInfoEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultWorkflowInfoEnt.class, name="WorkflowInfo")
-})
+
 @JsonDeserialize(builder=DefaultWorkflowInfoEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
@@ -97,14 +85,7 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultWorkflowInfoEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder.class, name="WorkflowInfo")
-    })
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowInfoEntMixInBuilder extends WorkflowInfoEntBuilder {
     
