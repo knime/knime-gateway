@@ -63,8 +63,8 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements WorkflowChangedEventEnt {
 
-  protected java.util.UUID m_snapshotId;
-  protected Object m_previousSnapshotId;
+  protected String m_snapshotId;
+  protected String m_previousSnapshotId;
   protected PatchEnt m_patch;
   
   protected DefaultWorkflowChangedEventEnt() {
@@ -127,12 +127,12 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
 	
 	
   @Override
-  public java.util.UUID getSnapshotId() {
+  public String getSnapshotId() {
         return m_snapshotId;
   }
     
   @Override
-  public Object getPreviousSnapshotId() {
+  public String getPreviousSnapshotId() {
         return m_previousSnapshotId;
   }
     
@@ -148,12 +148,12 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
             super();
         }
     
-        private java.util.UUID m_snapshotId;
-        private Object m_previousSnapshotId = null;
+        private String m_snapshotId;
+        private String m_previousSnapshotId;
         private PatchEnt m_patch;
 
         @Override
-        public DefaultWorkflowChangedEventEntBuilder setSnapshotId(java.util.UUID snapshotId) {
+        public DefaultWorkflowChangedEventEntBuilder setSnapshotId(String snapshotId) {
              if(snapshotId == null) {
                  throw new IllegalArgumentException("snapshotId must not be null.");
              }
@@ -162,7 +162,7 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
         }
 
         @Override
-        public DefaultWorkflowChangedEventEntBuilder setPreviousSnapshotId(Object previousSnapshotId) {
+        public DefaultWorkflowChangedEventEntBuilder setPreviousSnapshotId(String previousSnapshotId) {
              if(previousSnapshotId == null) {
                  throw new IllegalArgumentException("previousSnapshotId must not be null.");
              }

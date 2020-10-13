@@ -63,7 +63,7 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
 
   protected WorkflowEnt m_workflow;
-  protected java.util.UUID m_snapshotId;
+  protected String m_snapshotId;
   
   protected DefaultWorkflowSnapshotEnt() {
     //for sub-classes
@@ -125,7 +125,7 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
   }
     
   @Override
-  public java.util.UUID getSnapshotId() {
+  public String getSnapshotId() {
         return m_snapshotId;
   }
     
@@ -137,7 +137,7 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
         }
     
         private WorkflowEnt m_workflow;
-        private java.util.UUID m_snapshotId;
+        private String m_snapshotId;
 
         @Override
         public DefaultWorkflowSnapshotEntBuilder setWorkflow(WorkflowEnt workflow) {
@@ -149,7 +149,7 @@ public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
         }
 
         @Override
-        public DefaultWorkflowSnapshotEntBuilder setSnapshotId(java.util.UUID snapshotId) {
+        public DefaultWorkflowSnapshotEntBuilder setSnapshotId(String snapshotId) {
              if(snapshotId == null) {
                  throw new IllegalArgumentException("snapshotId must not be null.");
              }

@@ -94,7 +94,7 @@ public interface WorkflowChangedEventTypeEntMixIn extends WorkflowChangedEventTy
     
     @Override
     @JsonProperty("snapshotId")
-    public java.util.UUID getSnapshotId();
+    public String getSnapshotId();
     
 
     /**
@@ -130,7 +130,7 @@ public interface WorkflowChangedEventTypeEntMixIn extends WorkflowChangedEventTy
         
         @Override
         @JsonProperty("snapshotId")
-        public WorkflowChangedEventTypeEntMixInBuilder setSnapshotId(final java.util.UUID snapshotId);
+        public WorkflowChangedEventTypeEntMixInBuilder setSnapshotId(final String snapshotId);
         
     }
 

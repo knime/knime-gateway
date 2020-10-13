@@ -172,7 +172,7 @@ public class EventServiceTest extends GatewayServiceTest {
 
     @SuppressWarnings("unchecked")
     private void checkWorkflowChangeEvents(final WorkflowManager wfm,
-        final BiConsumer<String, EventEnt> eventConsumerMock, final UUID initialSnapshotId,
+        final BiConsumer<String, EventEnt> eventConsumerMock, final String initialSnapshotId,
         final List<WorkflowTransformation> wfTransformations) throws InterruptedException {
         boolean isVeryFirstPatch = true;
         for (WorkflowTransformation workflowTransformation : wfTransformations) {

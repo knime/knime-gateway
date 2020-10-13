@@ -86,7 +86,7 @@ public interface WorkflowSnapshotEntMixIn extends WorkflowSnapshotEnt {
     
     @Override
     @JsonProperty("snapshotId")
-    public java.util.UUID getSnapshotId();
+    public String getSnapshotId();
     
 
     /**
@@ -114,7 +114,7 @@ public interface WorkflowSnapshotEntMixIn extends WorkflowSnapshotEnt {
         
         @Override
         @JsonProperty("snapshotId")
-        public WorkflowSnapshotEntMixInBuilder setSnapshotId(final java.util.UUID snapshotId);
+        public WorkflowSnapshotEntMixInBuilder setSnapshotId(final String snapshotId);
         
     }
 

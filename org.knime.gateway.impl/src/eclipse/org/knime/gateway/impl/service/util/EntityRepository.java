@@ -46,7 +46,6 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -74,7 +73,7 @@ public interface EntityRepository<K, E extends GatewayEntity> {
      * @param entity the entity to commit (and possibly compare with the latest snapshot)
      * @return the snapshot id
      */
-    UUID commit(K key, E entity);
+    String commit(K key, E entity);
 
     /**
      * Determines the diff (i.e. changes as a patch) of the provided entity to the entity once committed to the
@@ -92,11 +91,11 @@ public interface EntityRepository<K, E extends GatewayEntity> {
      * @return the object representing the changes (e.g. a patch) or an empty optional if there are no changes
      * @throws IllegalArgumentException if there is not change history for the given snapshotID combination
      */
-    <P> Optional<P> getChangesAndCommit(UUID snapshotID, E entity, Function<UUID, PatchCreator<P>> patchCreator);
+    <P> Optional<P> getChangesAndCommit(String snapshotID, E entity, Function<String, PatchCreator<P>> patchCreator);
 
     /**
      * Disposes the whole history of entities with a certain key. A subsequent
-     * {@link #getChangesAndCommit(UUID, GatewayEntity, Function)} with the same entity ID will throw an exception.
+     * {@link #getChangesAndCommit(String, GatewayEntity, Function)} with the same entity ID will throw an exception.
      *
      * @param keyFilter disposes the history if the filter gives <code>true</code> for a certain key
      */

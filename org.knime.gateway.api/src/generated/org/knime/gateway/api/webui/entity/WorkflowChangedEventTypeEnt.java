@@ -75,7 +75,7 @@ public interface WorkflowChangedEventTypeEnt extends EventTypeEnt {
    * The initial snapshot id of the workflow version known to the client/ui.
    * @return snapshotId , never <code>null</code>
    **/
-  public java.util.UUID getSnapshotId();
+  public String getSnapshotId();
 
 
     /**
@@ -113,7 +113,7 @@ public interface WorkflowChangedEventTypeEnt extends EventTypeEnt {
          * @param snapshotId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowChangedEventTypeEntBuilder setSnapshotId(java.util.UUID snapshotId);
+        WorkflowChangedEventTypeEntBuilder setSnapshotId(String snapshotId);
         
         
         /**

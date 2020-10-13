@@ -70,7 +70,7 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
    * A unique identifier for the snapshot.
    * @return snapshotId , never <code>null</code>
    **/
-  public java.util.UUID getSnapshotId();
+  public String getSnapshotId();
 
 
     /**
@@ -92,7 +92,7 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
          * @param snapshotId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowSnapshotEntBuilder setSnapshotId(java.util.UUID snapshotId);
+        WorkflowSnapshotEntBuilder setSnapshotId(String snapshotId);
         
         
         /**

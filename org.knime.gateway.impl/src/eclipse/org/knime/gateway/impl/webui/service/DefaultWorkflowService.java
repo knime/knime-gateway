@@ -51,7 +51,8 @@ package org.knime.gateway.impl.webui.service;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEnt;
 
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -87,7 +88,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     private DefaultWorkflowService() {
-        m_entityRepo = new SimpleRepository<>(1);
+        m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         WorkflowProjectManager
             .addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(k -> k.getFirst().equals(uuid)));
     }
@@ -115,8 +116,19 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String projectId,
         final NodeIDEnt workflowId) {
-        UUID snapshotId = m_entityRepo.commit(Pair.create(projectId, workflowId), workflow);
+        String snapshotId = m_entityRepo.commit(Pair.create(projectId, workflowId), workflow);
         return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
+    }
+
+    private static class SnapshotIdGenerator implements Supplier<String> {
+
+        private AtomicLong m_count = new AtomicLong();
+
+        @Override
+        public String get() {
+            return Long.toString(m_count.getAndIncrement());
+        }
+
     }
 
 }

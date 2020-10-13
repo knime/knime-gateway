@@ -64,13 +64,13 @@ public interface WorkflowChangedEventEnt extends EventEnt {
    * A unique identifier for the version of the object this patch is applied to. Should only be missing if the patch is empty!
    * @return snapshotId , never <code>null</code>
    **/
-  public java.util.UUID getSnapshotId();
+  public String getSnapshotId();
 
   /**
    * The snapshot-id of the version before the patch is applied.
    * @return previousSnapshotId , never <code>null</code>
    **/
-  public Object getPreviousSnapshotId();
+  public String getPreviousSnapshotId();
 
   /**
    * Get patch
@@ -90,7 +90,7 @@ public interface WorkflowChangedEventEnt extends EventEnt {
          * @param snapshotId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowChangedEventEntBuilder setSnapshotId(java.util.UUID snapshotId);
+        WorkflowChangedEventEntBuilder setSnapshotId(String snapshotId);
         
         /**
          * The snapshot-id of the version before the patch is applied.
@@ -98,7 +98,7 @@ public interface WorkflowChangedEventEnt extends EventEnt {
          * @param previousSnapshotId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowChangedEventEntBuilder setPreviousSnapshotId(Object previousSnapshotId);
+        WorkflowChangedEventEntBuilder setPreviousSnapshotId(String previousSnapshotId);
         
         /**
    		 * Set patch

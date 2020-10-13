@@ -53,6 +53,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.javers.core.Javers;
@@ -83,16 +84,18 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     private static final int DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM = 500;
 
     /* maps snapshotID to workflow */
-    private final LRUCache<UUID, E> m_snapshots;
+    private final LRUCache<String, E> m_snapshots;
 
     /* maps snapshotID to key */
-    private final LRUCache<UUID, K> m_snapshotsKeyMap;
+    private final LRUCache<String, K> m_snapshotsKeyMap;
 
     /* maps key to <snapshotID, entity> */
-    private final Map<K, Pair<UUID, E>> m_latestSnapshotPerEntity = new HashMap<>();
+    private final Map<K, Pair<String, E>> m_latestSnapshotPerEntity = new HashMap<>();
 
     private final Javers m_javers = JaversBuilder.javers().registerValue(NodeIDEnt.class)
         .registerValue(ConnectionIDEnt.class).registerValue(AnnotationIDEnt.class).build();
+
+    private final Supplier<String> m_snapshotIdGenerator;
 
     /**
      * Creates a new instance. The maximum number of snapshots kept in memory is initialized with the default value.
@@ -108,15 +111,27 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
      *            recently used will be removed.
      */
     public SimpleRepository(final int maxNumSnapshotsInMem) {
+        this(maxNumSnapshotsInMem, () -> UUID.randomUUID().toString());
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param maxNumSnapshotsInMem the maximum number of snapshots (i.e. history) kept in memory. If full, the least
+     *            recently used will be removed.
+     * @param snapshotIdGenerator supplier that generates unique ids
+     */
+    public SimpleRepository(final int maxNumSnapshotsInMem, final Supplier<String> snapshotIdGenerator) {
         m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
         m_snapshotsKeyMap = new LRUCache<>(maxNumSnapshotsInMem);
+        m_snapshotIdGenerator = snapshotIdGenerator;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public UUID commit(final K key, final E entity) {
+    public String commit(final K key, final E entity) {
         return commitInternal(key, entity);
     }
 
@@ -124,8 +139,8 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
      * {@inheritDoc}
      */
     @Override
-    public <P> Optional<P> getChangesAndCommit(final UUID snapshotID, final E entity,
-        final Function<UUID, PatchCreator<P>> patchCreator) {
+    public <P> Optional<P> getChangesAndCommit(final String snapshotID, final E entity,
+        final Function<String, PatchCreator<P>> patchCreator) {
         K key = m_snapshotsKeyMap.get(snapshotID);
         E snapshot = m_snapshots.get(snapshotID);
         if (key == null || snapshot == null) {
@@ -136,7 +151,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
         if (diff.hasChanges()) {
             //try committing the current vision since there might be changes
             //compared to the latest version in the repository (not necessarily)
-            UUID newSnapshotID = commitInternal(key, entity);
+            String newSnapshotID = commitInternal(key, entity);
             return Optional.of(m_javers.processChangeList(diff.getChanges(),
                 new PatchChangeProcessor<P>(patchCreator.apply(newSnapshotID))));
         } else {
@@ -150,7 +165,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     @Override
     public void disposeHistory(final Predicate<K> keyFilter) {
         //remove all snapshots (and other map entries) for the given entity id
-        List<UUID> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
+        List<String> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
             .map(Entry::getKey).collect(Collectors.toList());
         snapshotIDs.forEach(s -> {
             m_snapshotsKeyMap.remove(s);
@@ -159,10 +174,10 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
         m_latestSnapshotPerEntity.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
     }
 
-    private UUID commitInternal(final K key, final E entity) {
+    private String commitInternal(final K key, final E entity) {
         //look for the most recent commit for the given key
-        Pair<UUID, E> latestSnapshot = m_latestSnapshotPerEntity.get(key); //NOSONAR
-        UUID snapshotID = null;
+        Pair<String, E> latestSnapshot = m_latestSnapshotPerEntity.get(key); //NOSONAR
+        String snapshotID = null;
         if (latestSnapshot != null) {
             //only commit if there is a difference to the latest commit
             Diff diff = m_javers.compare(latestSnapshot.getSecond(), entity);
@@ -174,7 +189,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
 
         //commit if necessary
         if (snapshotID == null) {
-            snapshotID = UUID.randomUUID();
+            snapshotID = m_snapshotIdGenerator.get();
             m_snapshots.put(snapshotID, entity);
             m_latestSnapshotPerEntity.put(key, Pair.create(snapshotID, entity));
             m_snapshotsKeyMap.put(snapshotID, key);

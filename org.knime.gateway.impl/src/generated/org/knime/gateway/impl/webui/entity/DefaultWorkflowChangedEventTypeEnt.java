@@ -64,7 +64,7 @@ public class DefaultWorkflowChangedEventTypeEnt extends DefaultEventTypeEnt impl
 
   protected String m_projectId;
   protected org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
-  protected java.util.UUID m_snapshotId;
+  protected String m_snapshotId;
   
   protected DefaultWorkflowChangedEventTypeEnt() {
     //for sub-classes
@@ -138,7 +138,7 @@ public class DefaultWorkflowChangedEventTypeEnt extends DefaultEventTypeEnt impl
   }
     
   @Override
-  public java.util.UUID getSnapshotId() {
+  public String getSnapshotId() {
         return m_snapshotId;
   }
     
@@ -152,7 +152,7 @@ public class DefaultWorkflowChangedEventTypeEnt extends DefaultEventTypeEnt impl
         private String m_typeId;
         private String m_projectId;
         private org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
-        private java.util.UUID m_snapshotId;
+        private String m_snapshotId;
 
         @Override
         public DefaultWorkflowChangedEventTypeEntBuilder setTypeId(String typeId) {
@@ -179,7 +179,7 @@ public class DefaultWorkflowChangedEventTypeEnt extends DefaultEventTypeEnt impl
         }
 
         @Override
-        public DefaultWorkflowChangedEventTypeEntBuilder setSnapshotId(java.util.UUID snapshotId) {
+        public DefaultWorkflowChangedEventTypeEntBuilder setSnapshotId(String snapshotId) {
              if(snapshotId == null) {
                  throw new IllegalArgumentException("snapshotId must not be null.");
              }

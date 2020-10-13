@@ -57,7 +57,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -147,7 +146,7 @@ public final class DefaultEventService implements EventService {
 
             // initialize WorkflowChangesListener (if not already)
             m_workflowChangesListeners.computeIfAbsent(key, k -> {
-                UUID latestSnapshotId =
+                String latestSnapshotId =
                     workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
                 m_patchEntCreators.put(key, new PatchEntCreator(latestSnapshotId));
                 Consumer<WorkflowManager> callback = createWorkflowChangesCallback(key);
@@ -241,9 +240,9 @@ public final class DefaultEventService implements EventService {
 
     private static class PatchEntCreator implements PatchCreator<PatchEnt> {
 
-        private UUID m_snapshotId;
+        private String m_snapshotId;
 
-        private UUID m_previousSnapshotId = null;
+        private String m_previousSnapshotId = null;
 
         private PatchEnt m_patch = null;
 
@@ -251,7 +250,7 @@ public final class DefaultEventService implements EventService {
 
         private String m_targetTypeID;
 
-        public PatchEntCreator(final UUID initialSnapshotId) {
+        public PatchEntCreator(final String initialSnapshotId) {
             m_snapshotId = initialSnapshotId;
         }
 
@@ -270,11 +269,11 @@ public final class DefaultEventService implements EventService {
             return m_patch;
         }
 
-        public UUID getSnapshotId() {
+        public String getSnapshotId() {
             return m_snapshotId;
         }
 
-        public UUID getPreviousSnapshotId() {
+        public String getPreviousSnapshotId() {
             return m_previousSnapshotId;
         }
 
