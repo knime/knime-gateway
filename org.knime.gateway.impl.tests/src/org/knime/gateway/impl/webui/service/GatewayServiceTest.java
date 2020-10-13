@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.testing.helper.webui.GatewayTestCollection.REWRITE_TEST_RESULTS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -85,8 +86,6 @@ public class GatewayServiceTest {
     private static ResultChecker entityResultChecker;
 
     private String m_testName;
-
-    private static final boolean REWRITE_TEST_RESULTS = false;
 
     /**
      * Initializes/instantiates the result checker.

@@ -44,6 +44,11 @@
         "index" : 1,
         "name" : "Inport 1",
         "type" : "table"
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 2,
+        "name" : "Inport 2",
+        "type" : "table"
       } ],
       "xPos" : 780
     },
@@ -656,6 +661,12 @@
           "info" : "Rows: 3, Cols: 4",
           "name" : "Connected to: Filtered Out",
           "nodeState" : "EXECUTED",
+          "type" : "table"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Outport 2",
+          "nodeState" : "IDLE",
           "type" : "table"
         } ],
         "position" : {
@@ -2514,6 +2525,12 @@
           "index" : 1,
           "name" : "Connected to: Filtered Out",
           "nodeState" : "CONFIGURED",
+          "type" : "table"
+        }, {
+          "connectedVia" : "[  ]",
+          "index" : 2,
+          "name" : "Outport 2",
+          "nodeState" : "IDLE",
           "type" : "table"
         } ],
         "position" : {

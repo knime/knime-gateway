@@ -136,6 +136,13 @@
 <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
 </config>
 </config>
+<config key="outport_2">
+<entry key="index" type="xint" value="2"/>
+<entry key="name" type="xstring" value="Outport 2"/>
+<config key="type">
+<entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+</config>
+</config>
 </config>
 </config>
 <config key="workflow_editor_settings">

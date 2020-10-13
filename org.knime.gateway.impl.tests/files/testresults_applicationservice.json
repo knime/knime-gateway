@@ -506,6 +506,12 @@
                 "name" : "Connected to: Filtered Out",
                 "nodeState" : "CONFIGURED",
                 "type" : "table"
+              }, {
+                "connectedVia" : "[  ]",
+                "index" : 2,
+                "name" : "Outport 2",
+                "nodeState" : "IDLE",
+                "type" : "table"
               } ],
               "position" : {
                 "x" : 484,

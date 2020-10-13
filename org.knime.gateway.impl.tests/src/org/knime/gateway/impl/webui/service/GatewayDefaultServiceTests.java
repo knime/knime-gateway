@@ -45,6 +45,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.testing.helper.webui.GatewayTestCollection.REWRITE_TEST_RESULTS;
+
 import java.util.Map;
 
 import org.junit.After;
@@ -83,12 +85,6 @@ public class GatewayDefaultServiceTests {
     private final WorkflowExecutor m_workflowExecutor;
 
     private static ResultChecker resultChecker;
-
-    /**
-     * If manually set to true, the expected test results (i.e. the retrieved workflow etc.) will be updated and written
-     * to the respective files. After that it need to be set to false again (otherwise the test will fail anyway).
-     */
-    private static final boolean REWRITE_TEST_RESULTS = false;
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
@@ -141,7 +137,7 @@ public class GatewayDefaultServiceTests {
     }
 
     /**
-     * A test that fails when {@link #REWRITE_TEST_RESULTS} is set to <code>true</code>.
+     * A test that fails when {@link GatewayTestCollection#REWRITE_TEST_RESULTS} is set to <code>true</code>.
      */
     @Test
     public void testTestResultsNotOverridden() {

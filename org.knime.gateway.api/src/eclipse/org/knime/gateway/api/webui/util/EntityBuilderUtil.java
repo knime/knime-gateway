@@ -18,6 +18,8 @@
  */
 package org.knime.gateway.api.webui.util;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
@@ -197,7 +199,7 @@ public final class EntityBuilderUtil {
                 ConnectionContainer connection = wfm.getIncomingConnectionFor(wfm.getID(), i);
                 NodeInPort port = wfm.getWorkflowOutgoingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null,
-                    Collections.singleton(connection)));
+                    connection != null ? singleton(connection) : emptyList()));
             }
         }
         builder.setPorts(ports);
