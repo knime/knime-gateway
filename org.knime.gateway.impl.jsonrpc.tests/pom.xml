@@ -25,6 +25,11 @@
 				<configuration>
 					<dependency-resolution>
 						<extraRequirements>
+					 		<requirement>
+								<type>eclipse-feature</type>
+								<id>org.knime.features.testing.application</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
 							<requirement>
 								<type>eclipse-feature</type>
 								<id>org.knime.features.core</id>

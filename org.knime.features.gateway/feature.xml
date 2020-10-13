@@ -935,6 +935,14 @@ propagated with or for interoperation with KNIME.
          unpack="false"/>
 
    <plugin
+         id="org.knime.gateway.impl.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
          id="org.knime.gateway.impl.jsonrpc"
          download-size="0"
          install-size="0"
@@ -942,11 +950,10 @@ propagated with or for interoperation with KNIME.
          unpack="false"/>
 
    <plugin
-         id="org.knime.gateway.impl.tests"
+         id="org.knime.gateway.impl.jsonrpc.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
          unpack="false"/>
 
    <plugin
