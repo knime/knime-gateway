@@ -95,13 +95,13 @@ public interface NodeEnt extends GatewayEntity {
    * The list of inputs.
    * @return inPorts , never <code>null</code>
    **/
-  public java.util.List<NodePortEnt> getInPorts();
+  public java.util.List<? extends NodePortEnt> getInPorts();
 
   /**
    * The list of outputs.
    * @return outPorts , never <code>null</code>
    **/
-  public java.util.List<NodePortEnt> getOutPorts();
+  public java.util.List<? extends NodePortEnt> getOutPorts();
 
   /**
    * Get annotation
@@ -141,7 +141,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
+        NodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -149,7 +149,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
+        NodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
         
         /**
    		 * Set annotation

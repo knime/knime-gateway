@@ -181,8 +181,8 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         }
     
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
-        private java.util.List<NodePortEnt> m_inPorts = new java.util.ArrayList<>();
-        private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
+        private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
+        private java.util.List<? extends NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
@@ -201,7 +201,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+        public DefaultComponentNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts) {
              if(inPorts == null) {
                  throw new IllegalArgumentException("inPorts must not be null.");
              }
@@ -210,7 +210,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+        public DefaultComponentNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts) {
              if(outPorts == null) {
                  throw new IllegalArgumentException("outPorts must not be null.");
              }

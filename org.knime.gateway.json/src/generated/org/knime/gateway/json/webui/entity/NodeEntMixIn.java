@@ -97,11 +97,11 @@ public interface NodeEntMixIn extends NodeEnt {
     
     @Override
     @JsonProperty("inPorts")
-    public java.util.List<NodePortEnt> getInPorts();
+    public java.util.List<? extends NodePortEnt> getInPorts();
     
     @Override
     @JsonProperty("outPorts")
-    public java.util.List<NodePortEnt> getOutPorts();
+    public java.util.List<? extends NodePortEnt> getOutPorts();
     
     @Override
     @JsonProperty("annotation")
@@ -148,11 +148,11 @@ public interface NodeEntMixIn extends NodeEnt {
         
         @Override
         @JsonProperty("inPorts")
-        public NodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
+        public NodeEntMixInBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public NodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
+        public NodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
         
         @Override
         @JsonProperty("annotation")

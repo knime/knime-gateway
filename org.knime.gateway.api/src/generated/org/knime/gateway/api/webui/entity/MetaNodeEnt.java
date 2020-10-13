@@ -44,10 +44,10 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -75,6 +75,18 @@ public interface MetaNodeEnt extends NodeEnt {
    **/
   public MetaNodeStateEnt getState();
 
+  /**
+   * The list of inputs.
+   * @return inPorts 
+   **/
+  public java.util.List<MetaNodePortEnt> getInPorts();
+
+  /**
+   * The list of outputs.
+   * @return outPorts 
+   **/
+  public java.util.List<MetaNodePortEnt> getOutPorts();
+
 
     /**
      * The builder for the entity.
@@ -95,7 +107,7 @@ public interface MetaNodeEnt extends NodeEnt {
          * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
+        MetaNodeEntBuilder setInPorts(java.util.List<MetaNodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -103,7 +115,7 @@ public interface MetaNodeEnt extends NodeEnt {
          * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
+        MetaNodeEntBuilder setOutPorts(java.util.List<MetaNodePortEnt> outPorts);
         
         /**
    		 * Set annotation

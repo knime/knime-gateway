@@ -65,8 +65,8 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 public class DefaultNodeEnt  implements NodeEnt {
 
   protected org.knime.gateway.api.entity.NodeIDEnt m_id;
-  protected java.util.List<NodePortEnt> m_inPorts;
-  protected java.util.List<NodePortEnt> m_outPorts;
+  protected java.util.List<? extends NodePortEnt> m_inPorts;
+  protected java.util.List<? extends NodePortEnt> m_outPorts;
   protected NodeAnnotationEnt m_annotation;
   protected XYEnt m_position;
   protected KindEnum m_kind;
@@ -148,12 +148,12 @@ public class DefaultNodeEnt  implements NodeEnt {
   }
     
   @Override
-  public java.util.List<NodePortEnt> getInPorts() {
+  public java.util.List<? extends NodePortEnt> getInPorts() {
         return m_inPorts;
   }
     
   @Override
-  public java.util.List<NodePortEnt> getOutPorts() {
+  public java.util.List<? extends NodePortEnt> getOutPorts() {
         return m_outPorts;
   }
     
@@ -180,8 +180,8 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
     
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
-        private java.util.List<NodePortEnt> m_inPorts = new java.util.ArrayList<>();
-        private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
+        private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
+        private java.util.List<? extends NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
@@ -196,7 +196,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+        public DefaultNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts) {
              if(inPorts == null) {
                  throw new IllegalArgumentException("inPorts must not be null.");
              }
@@ -205,7 +205,7 @@ public class DefaultNodeEnt  implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+        public DefaultNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts) {
              if(outPorts == null) {
                  throw new IllegalArgumentException("outPorts must not be null.");
              }

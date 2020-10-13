@@ -130,7 +130,7 @@ public class DefaultPatchEnt  implements PatchEnt {
             
         }
     
-        private java.util.List<PatchOpEnt> m_ops = new java.util.ArrayList<>();
+        private java.util.List<PatchOpEnt> m_ops;
         private String m_targetTypeId;
 
         @Override

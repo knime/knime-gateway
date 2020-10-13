@@ -50,9 +50,9 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -68,6 +68,8 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
 
   protected String m_name;
   protected MetaNodeStateEnt m_state;
+  protected java.util.List<MetaNodePortEnt> m_inPorts;
+  protected java.util.List<MetaNodePortEnt> m_outPorts;
   
   protected DefaultMetaNodeEnt() {
     //for sub-classes
@@ -160,6 +162,16 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         return m_state;
   }
     
+  @Override
+  public java.util.List<MetaNodePortEnt> getInPorts() {
+        return m_inPorts;
+  }
+    
+  @Override
+  public java.util.List<MetaNodePortEnt> getOutPorts() {
+        return m_outPorts;
+  }
+    
   
     public static class DefaultMetaNodeEntBuilder implements MetaNodeEntBuilder {
     
@@ -168,8 +180,8 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         }
     
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
-        private java.util.List<NodePortEnt> m_inPorts = new java.util.ArrayList<>();
-        private java.util.List<NodePortEnt> m_outPorts = new java.util.ArrayList<>();
+        private java.util.List<MetaNodePortEnt> m_inPorts = new java.util.ArrayList<>();
+        private java.util.List<MetaNodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
@@ -186,7 +198,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         }
 
         @Override
-        public DefaultMetaNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts) {
+        public DefaultMetaNodeEntBuilder setInPorts(java.util.List<MetaNodePortEnt> inPorts) {
              if(inPorts == null) {
                  throw new IllegalArgumentException("inPorts must not be null.");
              }
@@ -195,7 +207,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         }
 
         @Override
-        public DefaultMetaNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts) {
+        public DefaultMetaNodeEntBuilder setOutPorts(java.util.List<MetaNodePortEnt> outPorts) {
              if(outPorts == null) {
                  throw new IllegalArgumentException("outPorts must not be null.");
              }

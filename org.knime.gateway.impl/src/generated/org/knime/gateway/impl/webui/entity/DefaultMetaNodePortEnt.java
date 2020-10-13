@@ -149,7 +149,7 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
         private Integer m_index;
         private TypeEnum m_type;
         private String m_color;
-        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia = new java.util.ArrayList<>();
+        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
         private Boolean m_optional;
         private Boolean m_inactive;
         private NodeStateEnum m_nodeState;

@@ -202,7 +202,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
-        private java.util.List<WorkflowInfoEnt> m_parents = new java.util.ArrayList<>();
+        private java.util.List<WorkflowInfoEnt> m_parents;
         private MetaPortsEnt m_metaInPorts;
         private MetaPortsEnt m_metaOutPorts;
 

@@ -95,7 +95,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
+        NativeNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -103,7 +103,7 @@ public interface NativeNodeEnt extends NodeEnt {
          * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
+        NativeNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
         
         /**
    		 * Set annotation

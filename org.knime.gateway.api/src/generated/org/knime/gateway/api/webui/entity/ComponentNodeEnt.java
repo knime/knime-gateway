@@ -136,7 +136,7 @@ public interface ComponentNodeEnt extends NodeEnt {
          * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setInPorts(java.util.List<NodePortEnt> inPorts);
+        ComponentNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -144,7 +144,7 @@ public interface ComponentNodeEnt extends NodeEnt {
          * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setOutPorts(java.util.List<NodePortEnt> outPorts);
+        ComponentNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
         
         /**
    		 * Set annotation

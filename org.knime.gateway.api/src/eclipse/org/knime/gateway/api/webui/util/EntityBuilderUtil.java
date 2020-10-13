@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.NodeStateEnum;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
@@ -381,7 +382,7 @@ public final class EntityBuilderUtil {
         return builder(MetaNodeStateEntBuilder.class).setExecutionState(executionState).build();
     }
 
-    private static List<NodePortEnt> buildMetaNodePortEnts(final WorkflowManager wm, final boolean inPorts) {
+    private static List<MetaNodePortEnt> buildMetaNodePortEnts(final WorkflowManager wm, final boolean inPorts) {
         return buildNodePortEnts(wm, inPorts).stream().map(np -> { // NOSONAR
             NodeStateEnum nodeState;
             if (!inPorts) {

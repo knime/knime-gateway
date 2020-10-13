@@ -131,7 +131,7 @@ public class DefaultMetaPortsEnt  implements MetaPortsEnt {
         }
     
         private Integer m_xPos;
-        private java.util.List<NodePortEnt> m_ports = new java.util.ArrayList<>();
+        private java.util.List<NodePortEnt> m_ports;
 
         @Override
         public DefaultMetaPortsEntBuilder setXPos(Integer xPos) {

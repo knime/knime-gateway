@@ -44,9 +44,9 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -78,11 +78,11 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     
     @Override
     @JsonProperty("inPorts")
-    public java.util.List<NodePortEnt> getInPorts();
+    public java.util.List<MetaNodePortEnt> getInPorts();
     
     @Override
     @JsonProperty("outPorts")
-    public java.util.List<NodePortEnt> getOutPorts();
+    public java.util.List<MetaNodePortEnt> getOutPorts();
     
     @Override
     @JsonProperty("annotation")
@@ -123,11 +123,11 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         
         @Override
         @JsonProperty("inPorts")
-        public MetaNodeEntMixInBuilder setInPorts(final java.util.List<NodePortEnt> inPorts);
+        public MetaNodeEntMixInBuilder setInPorts(final java.util.List<MetaNodePortEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public MetaNodeEntMixInBuilder setOutPorts(final java.util.List<NodePortEnt> outPorts);
+        public MetaNodeEntMixInBuilder setOutPorts(final java.util.List<MetaNodePortEnt> outPorts);
         
         @Override
         @JsonProperty("annotation")

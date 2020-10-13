@@ -62,7 +62,7 @@ public interface AppStateEnt extends GatewayEntity {
 
   /**
    * List of all opened workflows.
-   * @return openedWorkflows 
+   * @return openedWorkflows , never <code>null</code>
    **/
   public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
 
@@ -75,7 +75,7 @@ public interface AppStateEnt extends GatewayEntity {
         /**
          * List of all opened workflows.
          * 
-         * @param openedWorkflows the property value,  
+         * @param openedWorkflows the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows);

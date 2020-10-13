@@ -75,6 +75,9 @@ public class DefaultAppStateEnt  implements AppStateEnt {
   
   private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
     
+    if(builder.m_openedWorkflows == null) {
+        throw new IllegalArgumentException("openedWorkflows must not be null.");
+    }
     m_openedWorkflows = immutable(builder.m_openedWorkflows);
   }
   
@@ -126,6 +129,9 @@ public class DefaultAppStateEnt  implements AppStateEnt {
 
         @Override
         public DefaultAppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows) {
+             if(openedWorkflows == null) {
+                 throw new IllegalArgumentException("openedWorkflows must not be null.");
+             }
              m_openedWorkflows = openedWorkflows;
              return this;
         }
