@@ -51,7 +51,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.NodeContainer;
@@ -62,6 +61,7 @@ import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -87,13 +87,11 @@ public class WorkflowChangesListener implements Closeable {
 
     private final Map<WorkflowAnnotationID, NodeUIInformationListener> m_workflowAnnotationListeners = new HashMap<>();
 
-    private final AtomicBoolean m_isCallbackWaiting = new AtomicBoolean(false);
-
-    private final AtomicBoolean m_isCallbackInProgress = new AtomicBoolean(false);
-
     private final Consumer<WorkflowManager> m_callback;
 
     private final ExecutorService m_executorService;
+
+    private final AtomicCallbackState m_callbackState = new AtomicCallbackState();
 
     /**
      * @param wfm the workflow manager to listen to
@@ -112,23 +110,31 @@ public class WorkflowChangesListener implements Closeable {
 
     private WorkflowListener startListening() {
         WorkflowListener workflowListener = e -> {
-            //TODO filter out workflow dirty event?
-            if (e.getType() == Type.NODE_ADDED) {
-                registerNode(m_wfm.getNodeContainer(e.getID()));
-            } else if (e.getType() == Type.ANNOTATION_ADDED) {
-                registerWorkflowAnnotation((WorkflowAnnotation)e.getNewValue());
-            } else {
-                //
-            }
+            addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
             callback();
         };
         m_wfm.addListener(workflowListener);
-        m_wfm.getNodeContainers().forEach(this::registerNode);
-        m_wfm.getWorkflowAnnotations().forEach(this::registerWorkflowAnnotation);
+        m_wfm.getNodeContainers().forEach(this::addNodeListeners);
+        m_wfm.getWorkflowAnnotations().forEach(this::addWorkflowAnnotationListener);
         return workflowListener;
     }
 
-    private void registerNode(final NodeContainer nc) {
+    private void addOrRemoveListenersFromNodeOrWorkflowAnnotation(final WorkflowEvent e) {
+        //TODO filter out workflow dirty event?
+        if (e.getType() == Type.NODE_ADDED) {
+            addNodeListeners(m_wfm.getNodeContainer(e.getID()));
+        } else if (e.getType() == Type.NODE_REMOVED) {
+            removeNodeListeners((NodeContainer)e.getOldValue());
+        } else if (e.getType() == Type.ANNOTATION_ADDED) {
+            addWorkflowAnnotationListener((WorkflowAnnotation)e.getNewValue());
+        } else if (e.getType() == Type.ANNOTATION_REMOVED) {
+            removeWorkflowAnnotationListener((WorkflowAnnotation)e.getOldValue());
+        } else {
+            //
+        }
+    }
+
+    private void addNodeListeners(final NodeContainer nc) {
         NodeStateChangeListener sl = e -> callback();
         m_nodeStateChangeListeners.put(nc.getID(), sl);
         nc.addNodeStateChangeListener(sl);
@@ -144,43 +150,44 @@ public class WorkflowChangesListener implements Closeable {
         nc.addNodeMessageListener(nml);
     }
 
-    private void registerWorkflowAnnotation(final WorkflowAnnotation wa) {
+    private void removeNodeListeners(final NodeContainer nc) {
+        NodeID id = nc.getID();
+        nc.removeNodeStateChangeListener(m_nodeStateChangeListeners.get(id));
+        nc.getProgressMonitor().removeProgressListener(m_progressListeners.get(id));
+        nc.removeUIInformationListener(m_nodeUIListeners.get(id));
+        nc.getNodeAnnotation().removeUIInformationListener(m_nodeUIListeners.get(id));
+        nc.removeNodeMessageListener(m_nodeMessageListeners.get(id));
+        m_nodeStateChangeListeners.remove(id);
+        m_progressListeners.remove(id);
+        m_nodeUIListeners.remove(id);
+        m_nodeMessageListeners.remove(id);
+    }
+
+    private void addWorkflowAnnotationListener(final WorkflowAnnotation wa) {
         NodeUIInformationListener l = e -> callback();
         m_workflowAnnotationListeners.put(wa.getID(), l);
         wa.addUIInformationListener(l);
     }
 
-    private void deregisterNode(final NodeContainer nc) {
-        nc.removeNodeStateChangeListener(m_nodeStateChangeListeners.get(nc.getID()));
-        nc.getProgressMonitor().removeProgressListener(m_progressListeners.get(nc.getID()));
-        nc.removeUIInformationListener(m_nodeUIListeners.get(nc.getID()));
-        nc.getNodeAnnotation().removeUIInformationListener(m_nodeUIListeners.get(nc.getID()));
-        nc.removeNodeMessageListener(m_nodeMessageListeners.get(nc.getID()));
+    private void removeWorkflowAnnotationListener(final WorkflowAnnotation wa) {
+        wa.removeUIInformationListener(m_workflowAnnotationListeners.get(wa.getID()));
+        m_workflowAnnotationListeners.remove(wa.getID());
     }
 
-    private synchronized void callback() {
-        if (m_isCallbackInProgress.get()) {
-            m_isCallbackWaiting.set(true);
-        } else {
-            m_isCallbackInProgress.set(true);
+    private void callback() {
+        if (!m_callbackState.checkIsCallbackInProgressAndChangeState()) {
             m_executorService.execute(() -> {
-                try {
-                    do {
-                        m_isCallbackWaiting.set(false);
-                        m_callback.accept(m_wfm);
-                    } while (m_isCallbackWaiting.get());
-                } finally {
-                    m_isCallbackInProgress.set(false);
-                }
+                do {
+                    m_callback.accept(m_wfm);
+                } while (m_callbackState.checkIsCallbackAwaitingAndChangeState());
             });
         }
     }
 
     private void stopListening() {
         m_wfm.removeListener(m_workflowListener);
-        m_wfm.getNodeContainers().forEach(this::deregisterNode);
-        m_wfm.getWorkflowAnnotations()
-            .forEach(wa -> wa.removeUIInformationListener(m_workflowAnnotationListeners.get(wa.getID())));
+        m_wfm.getNodeContainers().forEach(this::removeNodeListeners);
+        m_wfm.getWorkflowAnnotations().forEach(this::removeWorkflowAnnotationListener);
         m_nodeMessageListeners.clear();
         m_nodeStateChangeListeners.clear();
         m_nodeUIListeners.clear();
@@ -192,6 +199,50 @@ public class WorkflowChangesListener implements Closeable {
     public void close() {
         stopListening();
         m_executorService.shutdown();
+    }
+
+    private static final class AtomicCallbackState {
+
+        /*
+         * The state the 'callback process' is in. That is
+         * 0 - no callback in progress nor is one awaiting
+         * 1 - callback in progress, none is awaiting
+         * 2 - callback in progress, and another one awaiting
+         */
+        private int m_state = 0;
+
+        /**
+         * If the callback is in progress, state will change to 'in progress and one callback awaiting' (2); else to 'in
+         * progress, no callback awaiting' (1).
+         *
+         * @return <code>true</code> if the callback is in progress, otherwise <code>false</code>
+         */
+        synchronized boolean checkIsCallbackInProgressAndChangeState() {
+            if (m_state == 0) {
+                m_state = 1;
+                return false;
+            } else {
+                m_state = 2;
+                return true;
+            }
+        }
+
+        /**
+         * If a callback is awaiting (and another already in progress), the state will change to 'in progress' (1);
+         * otherwise it will change to 'not in progress, none awaiting' (0)
+         *
+         * @return <code>true</code> if a callback is awaiting, otherwise <code>false</code>
+         */
+        synchronized boolean checkIsCallbackAwaitingAndChangeState() {
+            if (m_state == 2) {
+                m_state = 1;
+                return true;
+            } else {
+                m_state = 0;
+                return false;
+            }
+        }
+
     }
 
 }
