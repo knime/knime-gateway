@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 
@@ -110,12 +111,12 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public TypeEnum getType();
     
     @Override
-    @JsonProperty("state")
-    public NodeStateEnt getState();
-    
-    @Override
     @JsonProperty("icon")
     public String getIcon();
+    
+    @Override
+    @JsonProperty("state")
+    public NodeStateEnt getState();
     
     @Override
     @JsonProperty("link")
@@ -171,12 +172,12 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         public ComponentNodeEntMixInBuilder setType(final TypeEnum type);
         
         @Override
-        @JsonProperty("state")
-        public ComponentNodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
         @JsonProperty("icon")
         public ComponentNodeEntMixInBuilder setIcon(final String icon);
+        
+        @Override
+        @JsonProperty("state")
+        public ComponentNodeEntMixInBuilder setState(final NodeStateEnt state);
         
         @Override
         @JsonProperty("link")

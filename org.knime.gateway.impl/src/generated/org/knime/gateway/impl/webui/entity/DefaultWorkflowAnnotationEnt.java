@@ -62,8 +62,13 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implements WorkflowAnnotationEnt {
+public class DefaultWorkflowAnnotationEnt implements WorkflowAnnotationEnt {
 
+  protected String m_text;
+  protected String m_backgroundColor;
+  protected TextAlignEnum m_textAlign;
+  protected Integer m_defaultFontSize;
+  protected java.util.List<StyleRangeEnt> m_styleRanges;
   protected BoundsEnt m_bounds;
   protected org.knime.gateway.api.entity.AnnotationIDEnt m_id;
   protected Integer m_borderWidth;
@@ -152,6 +157,31 @@ public class DefaultWorkflowAnnotationEnt extends DefaultAnnotationEnt implement
   
 	
 	
+  @Override
+  public String getText() {
+        return m_text;
+  }
+    
+  @Override
+  public String getBackgroundColor() {
+        return m_backgroundColor;
+  }
+    
+  @Override
+  public TextAlignEnum getTextAlign() {
+        return m_textAlign;
+  }
+    
+  @Override
+  public Integer getDefaultFontSize() {
+        return m_defaultFontSize;
+  }
+    
+  @Override
+  public java.util.List<StyleRangeEnt> getStyleRanges() {
+        return m_styleRanges;
+  }
+    
   @Override
   public BoundsEnt getBounds() {
         return m_bounds;

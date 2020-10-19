@@ -15,6 +15,7 @@ Require-Bundle: org.knime.gateway.testing.helper;bundle-version="[4.3.0,5.0.0)",
  org.knime.ext.weka_3.7;bundle-version="[4.3.0,5.0.0)",
  org.knime.distmatrix;bundle-version="[4.3.0,5.0.0)",
  org.junit;bundle-version="[4.13.0,5.0.0)",
- javax.servlet;bundle-version="[3.1.0,4.0.0)"
+ javax.servlet;bundle-version="[3.1.0,4.0.0)",
+ org.knime.js.quickforms;bundle-version="[4.3.0,5.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.knime.gateway.impl.jsonrpc.tests

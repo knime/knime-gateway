@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.NodePortAndTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -72,14 +73,6 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public String getName();
     
     @Override
-    @JsonProperty("info")
-    public String getInfo();
-    
-    @Override
-    @JsonProperty("index")
-    public Integer getIndex();
-    
-    @Override
     @JsonProperty("type")
     public TypeEnum getType();
     
@@ -88,12 +81,20 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public String getColor();
     
     @Override
-    @JsonProperty("connectedVia")
-    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
-    
-    @Override
     @JsonProperty("optional")
     public Boolean isOptional();
+    
+    @Override
+    @JsonProperty("info")
+    public String getInfo();
+    
+    @Override
+    @JsonProperty("index")
+    public Integer getIndex();
+    
+    @Override
+    @JsonProperty("connectedVia")
+    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
     
     @Override
     @JsonProperty("inactive")
@@ -117,14 +118,6 @@ public interface NodePortEntMixIn extends NodePortEnt {
         public NodePortEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("info")
-        public NodePortEntMixInBuilder setInfo(final String info);
-        
-        @Override
-        @JsonProperty("index")
-        public NodePortEntMixInBuilder setIndex(final Integer index);
-        
-        @Override
         @JsonProperty("type")
         public NodePortEntMixInBuilder setType(final TypeEnum type);
         
@@ -133,12 +126,20 @@ public interface NodePortEntMixIn extends NodePortEnt {
         public NodePortEntMixInBuilder setColor(final String color);
         
         @Override
-        @JsonProperty("connectedVia")
-        public NodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        @Override
         @JsonProperty("optional")
         public NodePortEntMixInBuilder setOptional(final Boolean optional);
+        
+        @Override
+        @JsonProperty("info")
+        public NodePortEntMixInBuilder setInfo(final String info);
+        
+        @Override
+        @JsonProperty("index")
+        public NodePortEntMixInBuilder setIndex(final Integer index);
+        
+        @Override
+        @JsonProperty("connectedVia")
+        public NodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
         
         @Override
         @JsonProperty("inactive")

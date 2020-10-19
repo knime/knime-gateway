@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Event for all kind of workflow changes.
@@ -57,7 +58,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowChangedEventEnt extends EventEnt {
+public interface WorkflowChangedEventEnt extends GatewayEntity, EventEnt {
 
 
   /**

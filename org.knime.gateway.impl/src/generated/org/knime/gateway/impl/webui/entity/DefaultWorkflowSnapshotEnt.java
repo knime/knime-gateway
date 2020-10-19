@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowSnapshotEnt  implements WorkflowSnapshotEnt {
+public class DefaultWorkflowSnapshotEnt implements WorkflowSnapshotEnt {
 
   protected WorkflowEnt m_workflow;
   protected String m_snapshotId;

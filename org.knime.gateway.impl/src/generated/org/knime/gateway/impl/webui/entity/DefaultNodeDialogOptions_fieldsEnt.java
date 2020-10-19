@@ -51,40 +51,38 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
 
 /**
- * General/static properties of a node.
+ * DefaultNodeDialogOptions_fieldsEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeTemplateEnt  implements NodeTemplateEnt {
+public class DefaultNodeDialogOptions_fieldsEnt implements NodeDialogOptions_fieldsEnt {
 
   protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_icon;
+  protected String m_description;
   
-  protected DefaultNodeTemplateEnt() {
+  protected DefaultNodeDialogOptions_fieldsEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "NodeTemplate";
+    return "NodeDialogOptions_fields";
   }
   
-  private DefaultNodeTemplateEnt(DefaultNodeTemplateEntBuilder builder) {
+  private DefaultNodeDialogOptions_fieldsEnt(DefaultNodeDialogOptions_fieldsEntBuilder builder) {
     
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_description == null) {
+        throw new IllegalArgumentException("description must not be null.");
     }
-    m_type = immutable(builder.m_type);
-    m_icon = immutable(builder.m_icon);
+    m_description = immutable(builder.m_description);
   }
   
    /**
@@ -101,8 +99,8 @@ public class DefaultNodeTemplateEnt  implements NodeTemplateEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNodeTemplateEnt ent = (DefaultNodeTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon);
+        DefaultNodeDialogOptions_fieldsEnt ent = (DefaultNodeDialogOptions_fieldsEnt)o;
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_description, ent.m_description);
     }
 
 
@@ -114,8 +112,7 @@ public class DefaultNodeTemplateEnt  implements NodeTemplateEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_name)
-               .append(m_type)
-               .append(m_icon)
+               .append(m_description)
                .toHashCode();
    }
   
@@ -127,28 +124,22 @@ public class DefaultNodeTemplateEnt  implements NodeTemplateEnt {
   }
     
   @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
-    
-  @Override
-  public String getIcon() {
-        return m_icon;
+  public String getDescription() {
+        return m_description;
   }
     
   
-    public static class DefaultNodeTemplateEntBuilder implements NodeTemplateEntBuilder {
+    public static class DefaultNodeDialogOptions_fieldsEntBuilder implements NodeDialogOptions_fieldsEntBuilder {
     
-        public DefaultNodeTemplateEntBuilder(){
+        public DefaultNodeDialogOptions_fieldsEntBuilder(){
             
         }
     
         private String m_name;
-        private TypeEnum m_type;
-        private String m_icon;
+        private String m_description;
 
         @Override
-        public DefaultNodeTemplateEntBuilder setName(String name) {
+        public DefaultNodeDialogOptions_fieldsEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("name must not be null.");
              }
@@ -157,24 +148,18 @@ public class DefaultNodeTemplateEnt  implements NodeTemplateEnt {
         }
 
         @Override
-        public DefaultNodeTemplateEntBuilder setType(TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNodeDialogOptions_fieldsEntBuilder setDescription(String description) {
+             if(description == null) {
+                 throw new IllegalArgumentException("description must not be null.");
              }
-             m_type = type;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeTemplateEntBuilder setIcon(String icon) {
-             m_icon = icon;
+             m_description = description;
              return this;
         }
 
         
         @Override
-        public DefaultNodeTemplateEnt build() {
-            return new DefaultNodeTemplateEnt(this);
+        public DefaultNodeDialogOptions_fieldsEnt build() {
+            return new DefaultNodeDialogOptions_fieldsEnt(this);
         }
     
     }

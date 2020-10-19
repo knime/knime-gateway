@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Native node extension of a node.
@@ -61,7 +62,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends NodeEnt {
+public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
 
 
   /**

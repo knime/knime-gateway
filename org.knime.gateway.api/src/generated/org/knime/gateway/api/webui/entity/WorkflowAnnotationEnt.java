@@ -51,6 +51,7 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * A workflow annotation.
@@ -58,7 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowAnnotationEnt extends AnnotationEnt {
+public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
 
 
   /**

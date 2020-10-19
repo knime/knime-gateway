@@ -128,7 +128,8 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonUtil.addWebUIMixIns(objectMapper);
-        JsonUtil.addIDEntitySerializer(objectMapper);
+        JsonUtil.addIDEntityDeSerializer(objectMapper);
+        JsonUtil.addDateTimeDeSerializer(objectMapper);
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         try {

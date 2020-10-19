@@ -45,9 +45,11 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -83,7 +85,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("nodeTemplates")
-    public java.util.Map<String, NodeTemplateEnt> getNodeTemplates();
+    public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates();
     
     @Override
     @JsonProperty("connections")
@@ -109,6 +111,14 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonProperty("allowedActions")
     public AllowedActionsEnt getAllowedActions();
     
+    @Override
+    @JsonProperty("componentMetadata")
+    public ComponentNodeTemplateEnt getComponentMetadata();
+    
+    @Override
+    @JsonProperty("projectMetadata")
+    public ProjectMetadataEnt getProjectMetadata();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -132,7 +142,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("nodeTemplates")
-        public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NodeTemplateEnt> nodeTemplates);
+        public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates);
         
         @Override
         @JsonProperty("connections")
@@ -157,6 +167,14 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("allowedActions")
         public WorkflowEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        
+        @Override
+        @JsonProperty("componentMetadata")
+        public WorkflowEntMixInBuilder setComponentMetadata(final ComponentNodeTemplateEnt componentMetadata);
+        
+        @Override
+        @JsonProperty("projectMetadata")
+        public WorkflowEntMixInBuilder setProjectMetadata(final ProjectMetadataEnt projectMetadata);
         
     }
 

@@ -59,7 +59,7 @@ import org.knime.gateway.api.webui.entity.XYEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultXYEnt  implements XYEnt {
+public class DefaultXYEnt implements XYEnt {
 
   protected Integer m_x;
   protected Integer m_y;

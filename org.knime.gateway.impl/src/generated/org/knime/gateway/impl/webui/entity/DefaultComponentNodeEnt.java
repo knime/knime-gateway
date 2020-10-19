@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
@@ -65,12 +66,19 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultComponentNodeEnt extends DefaultNodeEnt implements ComponentNodeEnt {
+public class DefaultComponentNodeEnt implements ComponentNodeEnt {
 
+  protected org.knime.gateway.api.entity.NodeIDEnt m_id;
+  protected java.util.List<? extends NodePortEnt> m_inPorts;
+  protected java.util.List<? extends NodePortEnt> m_outPorts;
+  protected NodeAnnotationEnt m_annotation;
+  protected XYEnt m_position;
+  protected KindEnum m_kind;
+  protected AllowedActionsEnt m_allowedActions;
   protected String m_name;
   protected TypeEnum m_type;
-  protected NodeStateEnt m_state;
   protected String m_icon;
+  protected NodeStateEnt m_state;
   protected String m_link;
   
   protected DefaultComponentNodeEnt() {
@@ -111,8 +119,11 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
     }
     m_name = immutable(builder.m_name);
     m_type = immutable(builder.m_type);
-    m_state = immutable(builder.m_state);
     m_icon = immutable(builder.m_icon);
+    if(builder.m_state == null) {
+        throw new IllegalArgumentException("state must not be null.");
+    }
+    m_state = immutable(builder.m_state);
     m_link = immutable(builder.m_link);
   }
   
@@ -131,7 +142,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_link, ent.m_link);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
     }
 
 
@@ -151,14 +162,49 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
                .append(m_allowedActions)
                .append(m_name)
                .append(m_type)
-               .append(m_state)
                .append(m_icon)
+               .append(m_state)
                .append(m_link)
                .toHashCode();
    }
   
 	
 	
+  @Override
+  public org.knime.gateway.api.entity.NodeIDEnt getId() {
+        return m_id;
+  }
+    
+  @Override
+  public java.util.List<? extends NodePortEnt> getInPorts() {
+        return m_inPorts;
+  }
+    
+  @Override
+  public java.util.List<? extends NodePortEnt> getOutPorts() {
+        return m_outPorts;
+  }
+    
+  @Override
+  public NodeAnnotationEnt getAnnotation() {
+        return m_annotation;
+  }
+    
+  @Override
+  public XYEnt getPosition() {
+        return m_position;
+  }
+    
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
+  }
+    
+  @Override
+  public AllowedActionsEnt getAllowedActions() {
+        return m_allowedActions;
+  }
+    
   @Override
   public String getName() {
         return m_name;
@@ -170,13 +216,13 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
   }
     
   @Override
-  public NodeStateEnt getState() {
-        return m_state;
+  public String getIcon() {
+        return m_icon;
   }
     
   @Override
-  public String getIcon() {
-        return m_icon;
+  public NodeStateEnt getState() {
+        return m_state;
   }
     
   @Override
@@ -200,8 +246,8 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         private AllowedActionsEnt m_allowedActions;
         private String m_name;
         private TypeEnum m_type;
-        private NodeStateEnt m_state;
         private String m_icon;
+        private NodeStateEnt m_state;
         private String m_link;
 
         @Override
@@ -277,14 +323,17 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setState(NodeStateEnt state) {
-             m_state = state;
+        public DefaultComponentNodeEntBuilder setIcon(String icon) {
+             m_icon = icon;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setIcon(String icon) {
-             m_icon = icon;
+        public DefaultComponentNodeEntBuilder setState(NodeStateEnt state) {
+             if(state == null) {
+                 throw new IllegalArgumentException("state must not be null.");
+             }
+             m_state = state;
              return this;
         }
 

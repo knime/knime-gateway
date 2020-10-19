@@ -65,8 +65,15 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEnt {
+public class DefaultNativeNodeEnt implements NativeNodeEnt {
 
+  protected org.knime.gateway.api.entity.NodeIDEnt m_id;
+  protected java.util.List<? extends NodePortEnt> m_inPorts;
+  protected java.util.List<? extends NodePortEnt> m_outPorts;
+  protected NodeAnnotationEnt m_annotation;
+  protected XYEnt m_position;
+  protected KindEnum m_kind;
+  protected AllowedActionsEnt m_allowedActions;
   protected String m_templateId;
   protected NodeStateEnt m_state;
   
@@ -150,6 +157,41 @@ public class DefaultNativeNodeEnt extends DefaultNodeEnt implements NativeNodeEn
   
 	
 	
+  @Override
+  public org.knime.gateway.api.entity.NodeIDEnt getId() {
+        return m_id;
+  }
+    
+  @Override
+  public java.util.List<? extends NodePortEnt> getInPorts() {
+        return m_inPorts;
+  }
+    
+  @Override
+  public java.util.List<? extends NodePortEnt> getOutPorts() {
+        return m_outPorts;
+  }
+    
+  @Override
+  public NodeAnnotationEnt getAnnotation() {
+        return m_annotation;
+  }
+    
+  @Override
+  public XYEnt getPosition() {
+        return m_position;
+  }
+    
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
+  }
+    
+  @Override
+  public AllowedActionsEnt getAllowedActions() {
+        return m_allowedActions;
+  }
+    
   @Override
   public String getTemplateId() {
         return m_templateId;

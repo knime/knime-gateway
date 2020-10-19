@@ -50,6 +50,7 @@ package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -187,6 +188,30 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(workflow.getAllowedActions(), "allowedactions_8");
         cr(workflow.getAllowedActions(), "allowedactions_12");
         cr(workflow.getAllowedActions(), "allowedactions_6");
+    }
+
+    /**
+     * Tests the metadata of the project workflow and components.
+     *
+     * @throws Exception
+     */
+    public void testWorkflowAndComponentMetadata() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.METADATA);
+
+        // checks the metadata of the project workflow
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        cr(workflow.getProjectMetadata(), "projectmetadataent");
+        assertNull(workflow.getComponentMetadata());
+
+        // checks the metadata of a component
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(4), false).getWorkflow();
+        cr(workflow.getComponentMetadata(), "componentmetadataent_4");
+        assertNull(workflow.getProjectMetadata());
+
+        // makes sure that no metadata is returned for a metanode
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), false).getWorkflow();
+        assertNull(workflow.getProjectMetadata());
+        assertNull(workflow.getComponentMetadata());
     }
 
 }

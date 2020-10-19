@@ -60,8 +60,16 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNodePortEnt {
+public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
 
+  protected String m_name;
+  protected TypeEnum m_type;
+  protected String m_color;
+  protected Boolean m_optional;
+  protected String m_info;
+  protected Integer m_index;
+  protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
+  protected Boolean m_inactive;
   protected NodeStateEnum m_nodeState;
   
   protected DefaultMetaNodePortEnt() {
@@ -76,18 +84,18 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
   private DefaultMetaNodePortEnt(DefaultMetaNodePortEntBuilder builder) {
     super();
     m_name = immutable(builder.m_name);
-    m_info = immutable(builder.m_info);
-    if(builder.m_index == null) {
-        throw new IllegalArgumentException("index must not be null.");
-    }
-    m_index = immutable(builder.m_index);
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
     }
     m_type = immutable(builder.m_type);
     m_color = immutable(builder.m_color);
-    m_connectedVia = immutable(builder.m_connectedVia);
     m_optional = immutable(builder.m_optional);
+    m_info = immutable(builder.m_info);
+    if(builder.m_index == null) {
+        throw new IllegalArgumentException("index must not be null.");
+    }
+    m_index = immutable(builder.m_index);
+    m_connectedVia = immutable(builder.m_connectedVia);
     m_inactive = immutable(builder.m_inactive);
     m_nodeState = immutable(builder.m_nodeState);
   }
@@ -107,7 +115,7 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
             return false;
         }
         DefaultMetaNodePortEnt ent = (DefaultMetaNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_nodeState, ent.m_nodeState);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_nodeState, ent.m_nodeState);
     }
 
 
@@ -119,12 +127,12 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_name)
-               .append(m_info)
-               .append(m_index)
                .append(m_type)
                .append(m_color)
-               .append(m_connectedVia)
                .append(m_optional)
+               .append(m_info)
+               .append(m_index)
+               .append(m_connectedVia)
                .append(m_inactive)
                .append(m_nodeState)
                .toHashCode();
@@ -132,6 +140,46 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
   
 	
 	
+  @Override
+  public String getName() {
+        return m_name;
+  }
+    
+  @Override
+  public TypeEnum getType() {
+        return m_type;
+  }
+    
+  @Override
+  public String getColor() {
+        return m_color;
+  }
+    
+  @Override
+  public Boolean isOptional() {
+        return m_optional;
+  }
+    
+  @Override
+  public String getInfo() {
+        return m_info;
+  }
+    
+  @Override
+  public Integer getIndex() {
+        return m_index;
+  }
+    
+  @Override
+  public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
+        return m_connectedVia;
+  }
+    
+  @Override
+  public Boolean isInactive() {
+        return m_inactive;
+  }
+    
   @Override
   public NodeStateEnum getNodeState() {
         return m_nodeState;
@@ -145,33 +193,18 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
         }
     
         private String m_name;
-        private String m_info;
-        private Integer m_index;
         private TypeEnum m_type;
         private String m_color;
-        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
         private Boolean m_optional;
+        private String m_info;
+        private Integer m_index;
+        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
         private Boolean m_inactive;
         private NodeStateEnum m_nodeState;
 
         @Override
         public DefaultMetaNodePortEntBuilder setName(String name) {
              m_name = name;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setInfo(String info) {
-             m_info = info;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setIndex(Integer index) {
-             if(index == null) {
-                 throw new IllegalArgumentException("index must not be null.");
-             }
-             m_index = index;
              return this;
         }
 
@@ -191,14 +224,29 @@ public class DefaultMetaNodePortEnt extends DefaultNodePortEnt implements MetaNo
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
-             m_connectedVia = connectedVia;
+        public DefaultMetaNodePortEntBuilder setOptional(Boolean optional) {
+             m_optional = optional;
              return this;
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setOptional(Boolean optional) {
-             m_optional = optional;
+        public DefaultMetaNodePortEntBuilder setInfo(String info) {
+             m_info = info;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodePortEntBuilder setIndex(Integer index) {
+             if(index == null) {
+                 throw new IllegalArgumentException("index must not be null.");
+             }
+             m_index = index;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
+             m_connectedVia = connectedVia;
              return this;
         }
 

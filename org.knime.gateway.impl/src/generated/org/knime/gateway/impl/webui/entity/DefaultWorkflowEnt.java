@@ -51,9 +51,11 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -65,17 +67,19 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowEnt  implements WorkflowEnt {
+public class DefaultWorkflowEnt implements WorkflowEnt {
 
   protected WorkflowInfoEnt m_info;
   protected java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes;
-  protected java.util.Map<String, NodeTemplateEnt> m_nodeTemplates;
+  protected java.util.Map<String, NativeNodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
   protected java.util.List<WorkflowInfoEnt> m_parents;
   protected MetaPortsEnt m_metaInPorts;
   protected MetaPortsEnt m_metaOutPorts;
   protected AllowedActionsEnt m_allowedActions;
+  protected ComponentNodeTemplateEnt m_componentMetadata;
+  protected ProjectMetadataEnt m_projectMetadata;
   
   protected DefaultWorkflowEnt() {
     //for sub-classes
@@ -112,6 +116,8 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     m_metaInPorts = immutable(builder.m_metaInPorts);
     m_metaOutPorts = immutable(builder.m_metaOutPorts);
     m_allowedActions = immutable(builder.m_allowedActions);
+    m_componentMetadata = immutable(builder.m_componentMetadata);
+    m_projectMetadata = immutable(builder.m_projectMetadata);
   }
   
    /**
@@ -129,7 +135,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions);
+        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata);
     }
 
 
@@ -149,6 +155,8 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
                .append(m_metaInPorts)
                .append(m_metaOutPorts)
                .append(m_allowedActions)
+               .append(m_componentMetadata)
+               .append(m_projectMetadata)
                .toHashCode();
    }
   
@@ -165,7 +173,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
   }
     
   @Override
-  public java.util.Map<String, NodeTemplateEnt> getNodeTemplates() {
+  public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates() {
         return m_nodeTemplates;
   }
     
@@ -199,6 +207,16 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         return m_allowedActions;
   }
     
+  @Override
+  public ComponentNodeTemplateEnt getComponentMetadata() {
+        return m_componentMetadata;
+  }
+    
+  @Override
+  public ProjectMetadataEnt getProjectMetadata() {
+        return m_projectMetadata;
+  }
+    
   
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
     
@@ -208,13 +226,15 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
     
         private WorkflowInfoEnt m_info;
         private java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes = new java.util.HashMap<>();
-        private java.util.Map<String, NodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
+        private java.util.Map<String, NativeNodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
         private java.util.List<WorkflowInfoEnt> m_parents;
         private MetaPortsEnt m_metaInPorts;
         private MetaPortsEnt m_metaOutPorts;
         private AllowedActionsEnt m_allowedActions;
+        private ComponentNodeTemplateEnt m_componentMetadata;
+        private ProjectMetadataEnt m_projectMetadata;
 
         @Override
         public DefaultWorkflowEntBuilder setInfo(WorkflowInfoEnt info) {
@@ -235,7 +255,7 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates) {
+        public DefaultWorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates) {
              if(nodeTemplates == null) {
                  throw new IllegalArgumentException("nodeTemplates must not be null.");
              }
@@ -282,6 +302,18 @@ public class DefaultWorkflowEnt  implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setComponentMetadata(ComponentNodeTemplateEnt componentMetadata) {
+             m_componentMetadata = componentMetadata;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata) {
+             m_projectMetadata = projectMetadata;
              return this;
         }
 

@@ -59,7 +59,7 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultConnectionEnt  implements ConnectionEnt {
+public class DefaultConnectionEnt implements ConnectionEnt {
 
   protected org.knime.gateway.api.entity.NodeIDEnt m_destNode;
   protected Integer m_destPort;

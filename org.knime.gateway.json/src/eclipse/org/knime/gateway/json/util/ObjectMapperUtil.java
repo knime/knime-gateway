@@ -43,7 +43,8 @@ public final class ObjectMapperUtil {
         mapper.setSerializationInclusion(Include.NON_NULL);
 
         JsonUtil.addWebUIMixIns(mapper);
-        JsonUtil.addIDEntitySerializer(mapper);
+        JsonUtil.addIDEntityDeSerializer(mapper);
+        JsonUtil.addDateTimeDeSerializer(mapper);
     }
 
     /**

@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -54,6 +55,7 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * A node wrapping (referencing) a workflow (also referred to it as component or subnode) that almost behaves as a ordinary node.
@@ -61,61 +63,14 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeEnt extends NodeEnt {
+public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeAndTemplateEnt {
 
-  /**
-   * The type of the component.
-   */
-  public enum TypeEnum {
-    SOURCE("Source"),
-    
-    SINK("Sink"),
-    
-    LEARNER("Learner"),
-    
-    PREDICTOR("Predictor"),
-    
-    MANIPULATOR("Manipulator"),
-    
-    VISUALIZER("Visualizer");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * Get name
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * The type of the component.
-   * @return type 
-   **/
-  public TypeEnum getType();
 
   /**
    * Get state
-   * @return state 
+   * @return state , never <code>null</code>
    **/
   public NodeStateEnt getState();
-
-  /**
-   * The icon encoded in a data-url. Not available if no icon is set.
-   * @return icon 
-   **/
-  public String getIcon();
 
   /**
    * A URL, if the component is linked.
@@ -186,7 +141,7 @@ public interface ComponentNodeEnt extends NodeEnt {
         ComponentNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         /**
-   		 * Set name
+         * The component name.
          * 
          * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -194,20 +149,12 @@ public interface ComponentNodeEnt extends NodeEnt {
         ComponentNodeEntBuilder setName(String name);
         
         /**
-         * The type of the component.
+         * Can be missing if nothing was selected by the user
          * 
          * @param type the property value,  
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setType(TypeEnum type);
-        
-        /**
-   		 * Set state
-         * 
-         * @param state the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setState(NodeStateEnt state);
         
         /**
          * The icon encoded in a data-url. Not available if no icon is set.
@@ -216,6 +163,14 @@ public interface ComponentNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setIcon(String icon);
+        
+        /**
+   		 * Set state
+         * 
+         * @param state the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setState(NodeStateEnt state);
         
         /**
          * A URL, if the component is linked.

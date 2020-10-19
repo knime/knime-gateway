@@ -60,8 +60,9 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowChangedEventTypeEnt extends DefaultEventTypeEnt implements WorkflowChangedEventTypeEnt {
+public class DefaultWorkflowChangedEventTypeEnt implements WorkflowChangedEventTypeEnt {
 
+  protected String m_typeId;
   protected String m_projectId;
   protected org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
   protected String m_snapshotId;
@@ -127,6 +128,11 @@ public class DefaultWorkflowChangedEventTypeEnt extends DefaultEventTypeEnt impl
   
 	
 	
+  @Override
+  public String getTypeId() {
+        return m_typeId;
+  }
+    
   @Override
   public String getProjectId() {
         return m_projectId;

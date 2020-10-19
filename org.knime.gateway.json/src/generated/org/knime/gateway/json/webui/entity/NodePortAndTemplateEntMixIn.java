@@ -50,8 +50,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortAndTemplateEnt.DefaultNodePortAndTemplateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,9 +59,9 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTem
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeTemplateEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodePortAndTemplateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
+public interface NodePortAndTemplateEntMixIn extends NodePortAndTemplateEnt {
 
     @Override
     @JsonIgnore
@@ -76,8 +76,12 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
     public TypeEnum getType();
     
     @Override
-    @JsonProperty("icon")
-    public String getIcon();
+    @JsonProperty("color")
+    public String getColor();
+    
+    @Override
+    @JsonProperty("optional")
+    public Boolean isOptional();
     
 
     /**
@@ -87,22 +91,26 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeTemplateEntMixInBuilder extends NodeTemplateEntBuilder {
+    public static interface NodePortAndTemplateEntMixInBuilder extends NodePortAndTemplateEntBuilder {
     
         @Override
-        public NodeTemplateEntMixIn build();
+        public NodePortAndTemplateEntMixIn build();
     
         @Override
         @JsonProperty("name")
-        public NodeTemplateEntMixInBuilder setName(final String name);
+        public NodePortAndTemplateEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("type")
-        public NodeTemplateEntMixInBuilder setType(final TypeEnum type);
+        public NodePortAndTemplateEntMixInBuilder setType(final TypeEnum type);
         
         @Override
-        @JsonProperty("icon")
-        public NodeTemplateEntMixInBuilder setIcon(final String icon);
+        @JsonProperty("color")
+        public NodePortAndTemplateEntMixInBuilder setColor(final String color);
+        
+        @Override
+        @JsonProperty("optional")
+        public NodePortAndTemplateEntMixInBuilder setOptional(final Boolean optional);
         
     }
 

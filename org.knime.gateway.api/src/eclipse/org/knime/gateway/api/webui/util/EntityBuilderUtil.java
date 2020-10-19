@@ -20,15 +20,19 @@ package org.knime.gateway.api.webui.util;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,8 +44,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
@@ -50,10 +58,13 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.dialog.DialogNodeValue;
+import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
+import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.DependentNodeProperties;
@@ -74,8 +85,14 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
+import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
 import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
+import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
+import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
+import org.knime.core.util.workflowalizer.Workflowalizer;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -84,10 +101,15 @@ import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBui
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
+import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
@@ -99,18 +121,29 @@ import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.NativeNodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -122,6 +155,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.xml.sax.SAXException;
 
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
@@ -163,7 +197,7 @@ public final class EntityBuilderUtil {
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
             Map<String, NodeEnt> nodes = new HashMap<>();
-            Map<String, NodeTemplateEnt> templates = new HashMap<>();
+            Map<String, NativeNodeTemplateEnt> templates = new HashMap<>();
 
             DependentNodeProperties depNodeProps = null;
             if (includeInfoOnAllowedActions) {
@@ -180,16 +214,21 @@ public final class EntityBuilderUtil {
             List<WorkflowAnnotationEnt> annotations =
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
                     .collect(Collectors.toList());
+            WorkflowInfoEnt info = buildWorkflowInfoEnt(wfm);
+            ContainerTypeEnum containerType = info.getContainerType();
             return builder(WorkflowEntBuilder.class)
-                .setInfo(buildWorkflowInfoEnt(wfm))
-                .setNodes(nodes)
-                .setNodeTemplates(templates)
-                .setConnections(connections)
-                .setWorkflowAnnotations(annotations)
-                .setParents(buildParentWorkflowInfoEnts(wfm))
-                .setMetaInPorts(buildMetaPortsEnt(wfm, true))
-                .setMetaOutPorts(buildMetaPortsEnt(wfm, false))
-                .setAllowedActions(includeInfoOnAllowedActions ? buildAllowedActionsEnt(wfm) : null)
+                .setInfo(info)//
+                .setNodes(nodes)//
+                .setNodeTemplates(templates)//
+                .setConnections(connections)//
+                .setWorkflowAnnotations(annotations)//
+                .setAllowedActions(includeInfoOnAllowedActions ? buildAllowedActionsEnt(wfm) : null)//
+                .setParents(buildParentWorkflowInfoEnts(wfm))//
+                .setMetaInPorts(buildMetaPortsEnt(wfm, true))//
+                .setMetaOutPorts(buildMetaPortsEnt(wfm, false))//
+                .setProjectMetadata(containerType == ContainerTypeEnum.PROJECT ? buildProjectMetadataEnt(wfm) : null)//
+                .setComponentMetadata(containerType == ContainerTypeEnum.COMPONENT
+                    ? buildComponentNodeTemplateEnt(getParentComponent(wfm)) : null)//
                 .build();
         }
     }
@@ -299,6 +338,37 @@ public final class EntityBuilderUtil {
         }
     }
 
+    private static ProjectMetadataEnt buildProjectMetadataEnt(final WorkflowManager wfm) {
+        assert wfm.isProject();
+        final ReferencedFile rf = wfm.getWorkingDir();
+        File metadataFile = new File(rf.getFile(), WorkflowPersistor.METAINFO_FILE);
+        if (metadataFile.exists()) {
+            WorkflowGroupMetadata metadata;
+            try {
+                metadata = Workflowalizer.readWorkflowGroup(metadataFile.toPath());
+            } catch (XPathExpressionException | ParserConfigurationException | SAXException | IOException ex) {
+                NodeLogger.getLogger(EntityBuilderUtil.class).error("Workflow metadata could not be read", ex);
+                return null;
+            }
+            return builder(ProjectMetadataEntBuilder.class)
+                    .setDescription(metadata.getDescription().orElse(null))
+                    .setLastEdit(wfm.getAuthorInformation().getLastEditDate()
+                        // the Date class doesn't support time zones. We just assume UTC here to create an OffsetDateTime
+                        .map(date -> date.toInstant().atOffset(ZoneOffset.UTC)).orElse(null))
+                    .setLinks(metadata.getLinks().map(EntityBuilderUtil::buildLinkEnts).orElse(null))
+                    .setTags(metadata.getTags().orElse(null))
+                    .setTitle(metadata.getTitle().orElse(null)).build();
+        } else {
+            return null;
+        }
+    }
+
+    private static List<LinkEnt> buildLinkEnts(final List<Link> links) {
+        return links.stream()
+            .map(link -> builder(LinkEntBuilder.class).setUrl(link.getUrl()).setText(link.getText()).build())
+            .collect(Collectors.toList());
+    }
+
     private static WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
         BoundsEnt bounds = builder(BoundsEntBuilder.class)
                 .setX(wa.getX())
@@ -359,13 +429,13 @@ public final class EntityBuilderUtil {
     }
 
     private static void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
-        final Map<String, NodeTemplateEnt> templates, final DependentNodeProperties depNodeProps) {
+        final Map<String, NativeNodeTemplateEnt> templates, final DependentNodeProperties depNodeProps) {
         NodeEnt nodeEnt =
             depNodeProps != null ? buildNodeEntWithInfoOnAllowedActions(id, nc, depNodeProps) : buildNodeEnt(id, nc);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
-            templates.computeIfAbsent(templateId, tid -> buildNodeTemplateEnt((NativeNodeContainer)nc));
+            templates.computeIfAbsent(templateId, tid -> buildNativeNodeTemplateEnt((NativeNodeContainer)nc));
         }
     }
 
@@ -459,7 +529,8 @@ public final class EntityBuilderUtil {
 
     private static ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
         final AllowedActionsEnt allowedActions) {
-        String type = nc.getMetadata().getNodeType().map(ComponentNodeType::toString).orElse(null);
+        ComponentMetadata metadata = nc.getMetadata();
+        String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
             .setType(type == null ? null : org.knime.gateway.api.webui.entity.ComponentNodeEnt.TypeEnum.valueOf(type))//
@@ -498,23 +569,27 @@ public final class EntityBuilderUtil {
     private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections) {
-        NodePortEntBuilder builder = builder(NodePortEntBuilder.class)
-                .setIndex(portIdx)
-                .setOptional(isOptional)
-                .setInactive(isInactive)
-                .setConnectedVia(connections.stream().map(EntityBuilderUtil::buildConnectionIDEnt)
-                    .collect(Collectors.toList()))
-                .setName(name)
-                .setInfo(info);
+        NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
+        return builder(NodePortEntBuilder.class).setIndex(portIdx)//
+            .setOptional(isOptional)//
+            .setInactive(isInactive)//
+            .setConnectedVia(
+                connections.stream().map(EntityBuilderUtil::buildConnectionIDEnt).collect(Collectors.toList()))//
+            .setName(name)//
+            .setInfo(info)//
+            .setType(resPortType)//
+            .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
+            .build();
+    }
+
+    private static NodePortAndTemplateEnt.TypeEnum getNodePortTemplateType(final PortType ptype) {
         if (BufferedDataTable.TYPE.equals(ptype)) {
-            builder.setType(org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.TABLE);
+            return NodePortAndTemplateEnt.TypeEnum.TABLE;
         } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
-            builder.setType(org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.FLOWVARIABLE);
+            return NodePortAndTemplateEnt.TypeEnum.FLOWVARIABLE;
         } else {
-            builder.setType(org.knime.gateway.api.webui.entity.NodePortEnt.TypeEnum.OTHER);
-            builder.setColor(hexStringColor(ptype.getColor()));
+            return NodePortAndTemplateEnt.TypeEnum.OTHER;
         }
-        return builder.build();
     }
 
     private static ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c) {
@@ -589,8 +664,6 @@ public final class EntityBuilderUtil {
         return builder.build();
     }
 
-
-
     private static ExecutionStateEnum getNodeExecutionStateEnum(final NodeContainerState ncState) { // NOSONAR
         if (ncState.isConfigured()) {
             return ExecutionStateEnum.CONFIGURED;
@@ -631,8 +704,8 @@ public final class EntityBuilderUtil {
         return (ncState.isExecutionInProgress() && !ncState.isWaitingToBeExecuted()) || ncState.isExecutingRemotely();
     }
 
-    private static NodeTemplateEnt buildNodeTemplateEnt(final NativeNodeContainer nc) {
-        NodeTemplateEntBuilder builder = builder(NodeTemplateEntBuilder.class)
+    private static NativeNodeTemplateEnt buildNativeNodeTemplateEnt(final NativeNodeContainer nc) {
+        NativeNodeTemplateEntBuilder builder = builder(NativeNodeTemplateEntBuilder.class)
             .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()));
         if(nc.getType() != NodeType.Missing) {
             builder.setName(nc.getName())
@@ -660,6 +733,99 @@ public final class EntityBuilderUtil {
         }
     }
 
+    private static ComponentNodeTemplateEnt buildComponentNodeTemplateEnt(final SubNodeContainer snc) {
+        if (snc != null) {
+            ComponentMetadata metadata = snc.getMetadata();
+            String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
+            return builder(ComponentNodeTemplateEntBuilder.class)//
+                .setName(snc.getName())//
+                .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
+                .setType(type == null ? null : ComponentNodeAndTemplateEnt.TypeEnum.valueOf(type))//
+                .setDescription(metadata.getDescription().orElse(null))//
+                .setOptions(buildNodeDialogOptionsEnts(snc))//
+                .setViews(buildNodeViewDescriptionEnts(snc))//
+                .setInPorts(buildComponentInNodePortTemplateEnts(metadata, snc))//
+                .setOutPorts(buildComponentOutNodePortTemplateEnts(metadata, snc))//
+                .build();
+        }
+        return null;
+    }
+
+    private static SubNodeContainer getParentComponent(final WorkflowManager wfm) {
+        NodeContainerParent ncParent = wfm.getDirectNCParent();
+        return ncParent instanceof SubNodeContainer ? (SubNodeContainer)ncParent : null;
+    }
+
+    private static List<NodeDialogOptionsEnt> buildNodeDialogOptionsEnts(final SubNodeContainer snc) {
+        List<SubNodeDescriptionProvider<? extends DialogNodeValue>> descs = snc.getDialogDescriptions();
+        if (!descs.isEmpty()) {
+            List<NodeDialogOptions_fieldsEnt> fields = descs.stream()
+                .map(d -> builder(NodeDialogOptions_fieldsEntBuilder.class).setName(d.getLabel())
+                    .setDescription(d.getDescription()).build())//
+                .collect(toList());
+            return singletonList(builder(NodeDialogOptionsEntBuilder.class).setFields(fields).build());
+        } else {
+            return null; // NOSONAR
+        }
+    }
+
+    private static List<NodeViewDescriptionEnt> buildNodeViewDescriptionEnts(final SubNodeContainer snc) {
+        InteractiveWebViewsResult interactiveWebViews = snc.getInteractiveWebViews();
+        List<NodeViewDescriptionEnt> res = new ArrayList<>();
+        if (interactiveWebViews.size() > 0) {
+            for (int i = 0; i < interactiveWebViews.size(); i++) {
+                SingleInteractiveWebViewResult siwvr = interactiveWebViews.get(i);
+                res.add(builder(NodeViewDescriptionEntBuilder.class).setName(siwvr.getViewName()).build());
+            }
+            return res;
+        } else {
+            return null; // NOSONAR
+        }
+    }
+
+    private static List<NodePortTemplateEnt> buildComponentInNodePortTemplateEnts(final ComponentMetadata metadata,
+        final SubNodeContainer snc) {
+        if(snc.getNrInPorts() == 1) {
+            return null; // NOSONAR
+        }
+        List<NodePortTemplateEnt> res = new ArrayList<>();
+        String[] names = metadata.getInPortNames().orElse(null);
+        String[] descs = metadata.getInPortDescriptions().orElse(null);
+        for (int i = 1; i < snc.getNrInPorts(); i++) {
+            res.add(buildNodePortTemplateEnt(snc.getInPort(i).getPortType(), names == null ? null : names[i - 1],
+                descs == null ? null : descs[i - 1]));
+        }
+        return res;
+    }
+
+    private static List<NodePortTemplateEnt> buildComponentOutNodePortTemplateEnts(final ComponentMetadata metadata,
+        final SubNodeContainer snc) {
+        if(snc.getNrOutPorts() == 1) {
+            return null; // NOSONAR
+        }
+        List<NodePortTemplateEnt> res = new ArrayList<>();
+        String[] names = metadata.getOutPortNames().orElse(null);
+        String[] descs = metadata.getOutPortDescriptions().orElse(null);
+        for (int i = 1; i < snc.getNrOutPorts(); i++) {
+            res.add(buildNodePortTemplateEnt(snc.getOutPort(i).getPortType(), names == null ? null : names[i - 1],
+                descs == null ? null : descs[i - 1]));
+        }
+        return res;
+    }
+
+    private static NodePortTemplateEnt buildNodePortTemplateEnt(final PortType ptype, final String name,
+        final String description) {
+        NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
+        return builder(NodePortTemplateEntBuilder.class)//
+            .setName(isBlank(name) ? null : name)//
+            .setDescription(isBlank(description) ? null : description)//
+            .setType(resPortType)//
+            .setTypeName(ptype.getName())//
+            .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)
+            .setOptional(ptype.isOptional())//
+            .build();
+    }
+
     private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
         URL url = nodeFactory.getIcon();
         if (url != null) {
@@ -677,7 +843,7 @@ public final class EntityBuilderUtil {
 
     private static String createIconDataURL(final byte[] iconData) {
         if (iconData != null) {
-            String dataUrlPrefix = "data:image/png;base64,";
+            final String dataUrlPrefix = "data:image/png;base64,";
             return dataUrlPrefix + new String(Base64.encodeBase64(iconData), StandardCharsets.UTF_8);
         } else {
             return null;

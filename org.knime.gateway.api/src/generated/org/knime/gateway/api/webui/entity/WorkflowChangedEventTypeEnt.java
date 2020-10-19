@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Event type to register for &#39;WorkflowChangedEvent&#39;s.
@@ -56,7 +57,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowChangedEventTypeEnt extends EventTypeEnt {
+public interface WorkflowChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
 
   /**

@@ -55,7 +55,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A node.
+ * Represents a node of certain kind (native node, component, metanode) in a workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

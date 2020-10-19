@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -56,40 +57,11 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodePortEnt extends GatewayEntity {
-
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    TABLE("table"),
-    
-    FLOWVARIABLE("flowVariable"),
-    
-    OTHER("other");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface NodePortEnt extends GatewayEntity, NodePortAndTemplateEnt {
 
 
   /**
-   * A descriptive name for the port (taken from the node description)
-   * @return name 
-   **/
-  public String getName();
-
-  /**
-   * Additional port info if the port carries data (i.e. if the respective node is executed and the port is active).
+   * For native nodes, this provides additional information if the port carries data (i.e. if the respective node is executed and the port is active). For components, the port description is taken from the component&#39;s description, if provided by the user. 
    * @return info 
    **/
   public String getInfo();
@@ -101,28 +73,10 @@ public interface NodePortEnt extends GatewayEntity {
   public Integer getIndex();
 
   /**
-   * Get type
-   * @return type , never <code>null</code>
-   **/
-  public TypeEnum getType();
-
-  /**
-   * The color of the port in case of type &#39;other&#39;.
-   * @return color 
-   **/
-  public String getColor();
-
-  /**
    * Get connectedVia
    * @return connectedVia 
    **/
   public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
-
-  /**
-   * Get optional
-   * @return optional 
-   **/
-  public Boolean isOptional();
 
   /**
    * Get inactive
@@ -137,7 +91,7 @@ public interface NodePortEnt extends GatewayEntity {
     public interface NodePortEntBuilder extends GatewayEntityBuilder<NodePortEnt> {
 
         /**
-         * A descriptive name for the port (taken from the node description)
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For  components, the port name is taken from the component&#39;s description, if provided by the user.
          * 
          * @param name the property value,  
          * @return this entity builder for chaining
@@ -145,23 +99,7 @@ public interface NodePortEnt extends GatewayEntity {
         NodePortEntBuilder setName(String name);
         
         /**
-         * Additional port info if the port carries data (i.e. if the respective node is executed and the port is active).
-         * 
-         * @param info the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setInfo(String info);
-        
-        /**
-         * The index starting at 0.
-         * 
-         * @param index the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setIndex(Integer index);
-        
-        /**
-   		 * Set type
+         * The port type.
          * 
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -177,20 +115,36 @@ public interface NodePortEnt extends GatewayEntity {
         NodePortEntBuilder setColor(String color);
         
         /**
+         * Whether it&#39;s a optional port or not.
+         * 
+         * @param optional the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setOptional(Boolean optional);
+        
+        /**
+         * For native nodes, this provides additional information if the port carries data (i.e. if the respective node is executed and the port is active). For components, the port description is taken from the component&#39;s description, if provided by the user. 
+         * 
+         * @param info the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setInfo(String info);
+        
+        /**
+         * The index starting at 0.
+         * 
+         * @param index the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setIndex(Integer index);
+        
+        /**
    		 * Set connectedVia
          * 
          * @param connectedVia the property value,  
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        /**
-   		 * Set optional
-         * 
-         * @param optional the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setOptional(Boolean optional);
         
         /**
    		 * Set inactive

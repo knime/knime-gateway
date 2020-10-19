@@ -61,7 +61,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements WorkflowChangedEventEnt {
+public class DefaultWorkflowChangedEventEnt implements WorkflowChangedEventEnt {
 
   protected String m_snapshotId;
   protected PatchEnt m_patch;

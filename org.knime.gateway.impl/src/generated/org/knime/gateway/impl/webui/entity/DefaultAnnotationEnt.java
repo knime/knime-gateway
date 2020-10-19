@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAnnotationEnt  implements AnnotationEnt {
+public class DefaultAnnotationEnt implements AnnotationEnt {
 
   protected String m_text;
   protected String m_backgroundColor;

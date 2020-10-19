@@ -52,14 +52,20 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt.ComponentNodeAndTemplateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
@@ -70,20 +76,32 @@ import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.NativeNodeTemplateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNativeNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionsEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptions_fieldsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt.NodePortAndTemplateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
@@ -136,8 +154,14 @@ public class Interface2ImplMap {
         if(clazz == BoundsEntBuilder.class) {
             return (B)new DefaultBoundsEnt.DefaultBoundsEntBuilder();
         }        
+        if(clazz == ComponentNodeAndTemplateEntBuilder.class) {
+            return (B)new DefaultComponentNodeAndTemplateEnt.DefaultComponentNodeAndTemplateEntBuilder();
+        }        
         if(clazz == ComponentNodeEntBuilder.class) {
             return (B)new DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder();
+        }        
+        if(clazz == ComponentNodeTemplateEntBuilder.class) {
+            return (B)new DefaultComponentNodeTemplateEnt.DefaultComponentNodeTemplateEntBuilder();
         }        
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();
@@ -147,6 +171,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == EventTypeEntBuilder.class) {
             return (B)new DefaultEventTypeEnt.DefaultEventTypeEntBuilder();
+        }        
+        if(clazz == LinkEntBuilder.class) {
+            return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();
         }        
         if(clazz == MetaNodeEntBuilder.class) {
             return (B)new DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder();
@@ -163,26 +190,44 @@ public class Interface2ImplMap {
         if(clazz == NativeNodeEntBuilder.class) {
             return (B)new DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder();
         }        
+        if(clazz == NativeNodeTemplateEntBuilder.class) {
+            return (B)new DefaultNativeNodeTemplateEnt.DefaultNativeNodeTemplateEntBuilder();
+        }        
         if(clazz == NodeAnnotationEntBuilder.class) {
             return (B)new DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder();
+        }        
+        if(clazz == NodeDialogOptionsEntBuilder.class) {
+            return (B)new DefaultNodeDialogOptionsEnt.DefaultNodeDialogOptionsEntBuilder();
+        }        
+        if(clazz == NodeDialogOptions_fieldsEntBuilder.class) {
+            return (B)new DefaultNodeDialogOptions_fieldsEnt.DefaultNodeDialogOptions_fieldsEntBuilder();
         }        
         if(clazz == NodeEntBuilder.class) {
             return (B)new DefaultNodeEnt.DefaultNodeEntBuilder();
         }        
+        if(clazz == NodePortAndTemplateEntBuilder.class) {
+            return (B)new DefaultNodePortAndTemplateEnt.DefaultNodePortAndTemplateEntBuilder();
+        }        
         if(clazz == NodePortEntBuilder.class) {
             return (B)new DefaultNodePortEnt.DefaultNodePortEntBuilder();
+        }        
+        if(clazz == NodePortTemplateEntBuilder.class) {
+            return (B)new DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder();
         }        
         if(clazz == NodeStateEntBuilder.class) {
             return (B)new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();
         }        
-        if(clazz == NodeTemplateEntBuilder.class) {
-            return (B)new DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder();
+        if(clazz == NodeViewDescriptionEntBuilder.class) {
+            return (B)new DefaultNodeViewDescriptionEnt.DefaultNodeViewDescriptionEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();
         }        
         if(clazz == PatchOpEntBuilder.class) {
             return (B)new DefaultPatchOpEnt.DefaultPatchOpEntBuilder();
+        }        
+        if(clazz == ProjectMetadataEntBuilder.class) {
+            return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();

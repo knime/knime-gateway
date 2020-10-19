@@ -42,138 +42,95 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.json.webui.entity.NodePortAndTemplateEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder;
 
 /**
- * General/static properties of a node.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeTemplateEnt extends GatewayEntity {
 
-  /**
-   * The type of the node.
-   */
-  public enum TypeEnum {
-    SOURCE("Source"),
-    
-    SINK("Sink"),
-    
-    LEARNER("Learner"),
-    
-    PREDICTOR("Predictor"),
-    
-    MANIPULATOR("Manipulator"),
-    
-    VISUALIZER("Visualizer"),
-    
-    WIDGET("Widget"),
-    
-    LOOPSTART("LoopStart"),
-    
-    LOOPEND("LoopEnd"),
-    
-    SCOPESTART("ScopeStart"),
-    
-    SCOPEEND("ScopeEnd"),
-    
-    QUICKFORM("QuickForm"),
-    
-    CONFIGURATION("Configuration"),
-    
-    OTHER("Other"),
-    
-    MISSING("Missing"),
-    
-    UNKNOWN("Unknown"),
-    
-    SUBNODE("Subnode"),
-    
-    VIRTUALIN("VirtualIn"),
-    
-    VIRTUALOUT("VirtualOut"),
-    
-    CONTAINER("Container");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
+@JsonDeserialize(builder=DefaultNodePortTemplateEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
+    @JsonIgnore
+    public String getTypeID();
 
-  }
-
-
-  /**
-   * The node&#39;s name.
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * The type of the node.
-   * @return type , never <code>null</code>
-   **/
-  public TypeEnum getType();
-
-  /**
-   * The icon encoded in a data-url.
-   * @return icon 
-   **/
-  public String getIcon();
-
+    @Override
+    @JsonProperty("name")
+    public String getName();
+    
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
+    
+    @Override
+    @JsonProperty("color")
+    public String getColor();
+    
+    @Override
+    @JsonProperty("optional")
+    public Boolean isOptional();
+    
+    @Override
+    @JsonProperty("description")
+    public String getDescription();
+    
+    @Override
+    @JsonProperty("typeName")
+    public String getTypeName();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface NodeTemplateEntBuilder extends GatewayEntityBuilder<NodeTemplateEnt> {
 
-        /**
-         * The node&#39;s name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeTemplateEntBuilder setName(String name);
-        
-        /**
-         * The type of the node.
-         * 
-         * @param type the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeTemplateEntBuilder setType(TypeEnum type);
-        
-        /**
-         * The icon encoded in a data-url.
-         * 
-         * @param icon the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeTemplateEntBuilder setIcon(String icon);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        NodeTemplateEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NodePortTemplateEntMixInBuilder extends NodePortTemplateEntBuilder {
     
+        @Override
+        public NodePortTemplateEntMixIn build();
+    
+        @Override
+        @JsonProperty("name")
+        public NodePortTemplateEntMixInBuilder setName(final String name);
+        
+        @Override
+        @JsonProperty("type")
+        public NodePortTemplateEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("color")
+        public NodePortTemplateEntMixInBuilder setColor(final String color);
+        
+        @Override
+        @JsonProperty("optional")
+        public NodePortTemplateEntMixInBuilder setOptional(final Boolean optional);
+        
+        @Override
+        @JsonProperty("description")
+        public NodePortTemplateEntMixInBuilder setDescription(final String description);
+        
+        @Override
+        @JsonProperty("typeName")
+        public NodePortTemplateEntMixInBuilder setTypeName(final String typeName);
+        
     }
 
+
 }
+

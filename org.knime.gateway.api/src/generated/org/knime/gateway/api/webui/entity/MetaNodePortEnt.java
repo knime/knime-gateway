@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Extension of a node port with extra properties as required to characterise a metanode port.
@@ -56,7 +57,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface MetaNodePortEnt extends NodePortEnt {
+public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
 
   /**
    * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
@@ -101,7 +102,7 @@ public interface MetaNodePortEnt extends NodePortEnt {
     public interface MetaNodePortEntBuilder extends GatewayEntityBuilder<MetaNodePortEnt> {
 
         /**
-         * A descriptive name for the port (taken from the node description)
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For  components, the port name is taken from the component&#39;s description, if provided by the user.
          * 
          * @param name the property value,  
          * @return this entity builder for chaining
@@ -109,23 +110,7 @@ public interface MetaNodePortEnt extends NodePortEnt {
         MetaNodePortEntBuilder setName(String name);
         
         /**
-         * Additional port info if the port carries data (i.e. if the respective node is executed and the port is active).
-         * 
-         * @param info the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setInfo(String info);
-        
-        /**
-         * The index starting at 0.
-         * 
-         * @param index the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setIndex(Integer index);
-        
-        /**
-   		 * Set type
+         * The port type.
          * 
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -141,20 +126,36 @@ public interface MetaNodePortEnt extends NodePortEnt {
         MetaNodePortEntBuilder setColor(String color);
         
         /**
+         * Whether it&#39;s a optional port or not.
+         * 
+         * @param optional the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setOptional(Boolean optional);
+        
+        /**
+         * For native nodes, this provides additional information if the port carries data (i.e. if the respective node is executed and the port is active). For components, the port description is taken from the component&#39;s description, if provided by the user. 
+         * 
+         * @param info the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setInfo(String info);
+        
+        /**
+         * The index starting at 0.
+         * 
+         * @param index the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setIndex(Integer index);
+        
+        /**
    		 * Set connectedVia
          * 
          * @param connectedVia the property value,  
          * @return this entity builder for chaining
          */
         MetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        /**
-   		 * Set optional
-         * 
-         * @param optional the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setOptional(Boolean optional);
         
         /**
    		 * Set inactive

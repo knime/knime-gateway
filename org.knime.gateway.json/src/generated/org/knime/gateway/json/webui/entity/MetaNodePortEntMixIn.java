@@ -73,14 +73,6 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public String getName();
     
     @Override
-    @JsonProperty("info")
-    public String getInfo();
-    
-    @Override
-    @JsonProperty("index")
-    public Integer getIndex();
-    
-    @Override
     @JsonProperty("type")
     public TypeEnum getType();
     
@@ -89,12 +81,20 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public String getColor();
     
     @Override
-    @JsonProperty("connectedVia")
-    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
-    
-    @Override
     @JsonProperty("optional")
     public Boolean isOptional();
+    
+    @Override
+    @JsonProperty("info")
+    public String getInfo();
+    
+    @Override
+    @JsonProperty("index")
+    public Integer getIndex();
+    
+    @Override
+    @JsonProperty("connectedVia")
+    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
     
     @Override
     @JsonProperty("inactive")
@@ -122,14 +122,6 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         public MetaNodePortEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("info")
-        public MetaNodePortEntMixInBuilder setInfo(final String info);
-        
-        @Override
-        @JsonProperty("index")
-        public MetaNodePortEntMixInBuilder setIndex(final Integer index);
-        
-        @Override
         @JsonProperty("type")
         public MetaNodePortEntMixInBuilder setType(final TypeEnum type);
         
@@ -138,12 +130,20 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         public MetaNodePortEntMixInBuilder setColor(final String color);
         
         @Override
-        @JsonProperty("connectedVia")
-        public MetaNodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        @Override
         @JsonProperty("optional")
         public MetaNodePortEntMixInBuilder setOptional(final Boolean optional);
+        
+        @Override
+        @JsonProperty("info")
+        public MetaNodePortEntMixInBuilder setInfo(final String info);
+        
+        @Override
+        @JsonProperty("index")
+        public MetaNodePortEntMixInBuilder setIndex(final Integer index);
+        
+        @Override
+        @JsonProperty("connectedVia")
+        public MetaNodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
         
         @Override
         @JsonProperty("inactive")

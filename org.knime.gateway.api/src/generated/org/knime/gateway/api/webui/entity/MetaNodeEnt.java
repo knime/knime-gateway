@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * A node containing (referencing) a workflow (also referred to it as metanode)
@@ -61,7 +62,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface MetaNodeEnt extends NodeEnt {
+public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
 
 
   /**

@@ -58,12 +58,12 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 
 /**
- * A node.
+ * Represents a node of certain kind (native node, component, metanode) in a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeEnt  implements NodeEnt {
+public class DefaultNodeEnt implements NodeEnt {
 
   protected org.knime.gateway.api.entity.NodeIDEnt m_id;
   protected java.util.List<? extends NodePortEnt> m_inPorts;

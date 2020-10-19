@@ -65,12 +65,17 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
+public class DefaultMetaNodeEnt implements MetaNodeEnt {
 
-  protected String m_name;
-  protected MetaNodeStateEnt m_state;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_id;
   protected java.util.List<MetaNodePortEnt> m_inPorts;
   protected java.util.List<MetaNodePortEnt> m_outPorts;
+  protected NodeAnnotationEnt m_annotation;
+  protected XYEnt m_position;
+  protected KindEnum m_kind;
+  protected AllowedActionsEnt m_allowedActions;
+  protected String m_name;
+  protected MetaNodeStateEnt m_state;
   protected String m_link;
   
   protected DefaultMetaNodeEnt() {
@@ -159,13 +164,8 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
 	
 	
   @Override
-  public String getName() {
-        return m_name;
-  }
-    
-  @Override
-  public MetaNodeStateEnt getState() {
-        return m_state;
+  public org.knime.gateway.api.entity.NodeIDEnt getId() {
+        return m_id;
   }
     
   @Override
@@ -176,6 +176,36 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
   @Override
   public java.util.List<MetaNodePortEnt> getOutPorts() {
         return m_outPorts;
+  }
+    
+  @Override
+  public NodeAnnotationEnt getAnnotation() {
+        return m_annotation;
+  }
+    
+  @Override
+  public XYEnt getPosition() {
+        return m_position;
+  }
+    
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
+  }
+    
+  @Override
+  public AllowedActionsEnt getAllowedActions() {
+        return m_allowedActions;
+  }
+    
+  @Override
+  public String getName() {
+        return m_name;
+  }
+    
+  @Override
+  public MetaNodeStateEnt getState() {
+        return m_state;
   }
     
   @Override

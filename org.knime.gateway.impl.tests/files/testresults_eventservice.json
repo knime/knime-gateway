@@ -17,18 +17,6 @@
   "workflow_annotation_removed" : {
     "ops" : [ {
       "op" : "replace",
-      "path" : "/workflowAnnotations/6/id",
-      "value" : "root_7"
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/6/borderWidth",
-      "value" : 0
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/6/borderColor",
-      "value" : "#000000"
-    }, {
-      "op" : "replace",
       "path" : "/workflowAnnotations/6/text",
       "value" : ""
     }, {
@@ -56,6 +44,18 @@
       "path" : "/workflowAnnotations/6/styleRanges/3"
     }, {
       "op" : "replace",
+      "path" : "/workflowAnnotations/6/id",
+      "value" : "root_7"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/6/borderWidth",
+      "value" : 0
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/6/borderColor",
+      "value" : "#000000"
+    }, {
+      "op" : "replace",
       "path" : "/workflowAnnotations/5/styleRanges/0/length",
       "value" : 4
     }, {
@@ -74,18 +74,6 @@
       "op" : "replace",
       "path" : "/workflowAnnotations/0/bounds/x",
       "value" : 880
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/id",
-      "value" : "root_6"
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/borderWidth",
-      "value" : 4
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/5/borderColor",
-      "value" : "#CC0000"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/5/text",
@@ -128,12 +116,16 @@
       }
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/4/id",
-      "value" : "root_5"
+      "path" : "/workflowAnnotations/5/id",
+      "value" : "root_6"
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/4/borderColor",
-      "value" : "#FFD800"
+      "path" : "/workflowAnnotations/5/borderWidth",
+      "value" : 4
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/5/borderColor",
+      "value" : "#CC0000"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/4/text",
@@ -203,12 +195,12 @@
       "path" : "/workflowAnnotations/4/styleRanges/17"
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/3/id",
-      "value" : "root_4"
+      "path" : "/workflowAnnotations/4/id",
+      "value" : "root_5"
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/3/borderColor",
-      "value" : "#CC0000"
+      "path" : "/workflowAnnotations/4/borderColor",
+      "value" : "#FFD800"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/3/text",
@@ -388,8 +380,12 @@
       }
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/2/id",
-      "value" : "root_3"
+      "path" : "/workflowAnnotations/3/id",
+      "value" : "root_4"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/3/borderColor",
+      "value" : "#CC0000"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/2/text",
@@ -409,12 +405,8 @@
       }
     }, {
       "op" : "replace",
-      "path" : "/workflowAnnotations/1/id",
-      "value" : "root_2"
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/1/borderColor",
-      "value" : "#FFD800"
+      "path" : "/workflowAnnotations/2/id",
+      "value" : "root_3"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/1/text",
@@ -424,16 +416,24 @@
       "path" : "/workflowAnnotations/1/defaultFontSize"
     }, {
       "op" : "replace",
+      "path" : "/workflowAnnotations/1/id",
+      "value" : "root_2"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/1/borderColor",
+      "value" : "#FFD800"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/0/text",
+      "value" : "this is a red workflow annotation"
+    }, {
+      "op" : "replace",
       "path" : "/workflowAnnotations/0/id",
       "value" : "root_1"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/0/borderColor",
       "value" : "#EF2929"
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/0/text",
-      "value" : "this is a red workflow annotation"
     }, {
       "op" : "replace",
       "path" : "/workflowAnnotations/3/bounds/x",
@@ -800,14 +800,6 @@
   "workflow_annotation_changed" : {
     "ops" : [ {
       "op" : "replace",
-      "path" : "/workflowAnnotations/0/borderWidth",
-      "value" : 0
-    }, {
-      "op" : "replace",
-      "path" : "/workflowAnnotations/0/borderColor",
-      "value" : "#000000"
-    }, {
-      "op" : "replace",
       "path" : "/workflowAnnotations/0/text",
       "value" : ""
     }, {
@@ -817,6 +809,14 @@
     }, {
       "op" : "remove",
       "path" : "/workflowAnnotations/0/defaultFontSize"
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/0/borderWidth",
+      "value" : 0
+    }, {
+      "op" : "replace",
+      "path" : "/workflowAnnotations/0/borderColor",
+      "value" : "#000000"
     } ]
   },
   "connection_removed" : {

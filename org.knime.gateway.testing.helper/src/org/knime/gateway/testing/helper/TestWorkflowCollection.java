@@ -24,7 +24,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * A component project.
      */
-    COMPONENT_PROJECT("/files/Component.knar", "component project");
+    COMPONENT_PROJECT("/files/Component.knar", "component project"),
+
+    /**
+     * Workflow to test workflow and component metadata.
+     */
+    METADATA("/files/Workflow Metadata.knwf", "workflow_metadata");
 
     private final String m_url;
 

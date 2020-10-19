@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowProjectEnt  implements WorkflowProjectEnt {
+public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
 
   protected String m_projectId;
   protected String m_name;

@@ -45,9 +45,11 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -81,7 +83,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * A map from ids to node templates.
    * @return nodeTemplates , never <code>null</code>
    **/
-  public java.util.Map<String, NodeTemplateEnt> getNodeTemplates();
+  public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates();
 
   /**
    * The list of connections.
@@ -119,6 +121,18 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public AllowedActionsEnt getAllowedActions();
 
+  /**
+   * Get componentMetadata
+   * @return componentMetadata 
+   **/
+  public ComponentNodeTemplateEnt getComponentMetadata();
+
+  /**
+   * Get projectMetadata
+   * @return projectMetadata 
+   **/
+  public ProjectMetadataEnt getProjectMetadata();
+
 
     /**
      * The builder for the entity.
@@ -147,7 +161,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param nodeTemplates the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NodeTemplateEnt> nodeTemplates);
+        WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates);
         
         /**
          * The list of connections.
@@ -196,6 +210,22 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        
+        /**
+   		 * Set componentMetadata
+         * 
+         * @param componentMetadata the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setComponentMetadata(ComponentNodeTemplateEnt componentMetadata);
+        
+        /**
+   		 * Set projectMetadata
+         * 
+         * @param projectMetadata the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata);
         
         
         /**

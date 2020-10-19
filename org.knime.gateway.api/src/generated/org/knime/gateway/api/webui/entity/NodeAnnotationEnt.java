@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * The annotation to a node.
@@ -57,7 +58,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeAnnotationEnt extends AnnotationEnt {
+public interface NodeAnnotationEnt extends GatewayEntity, AnnotationEnt {
 
 
 

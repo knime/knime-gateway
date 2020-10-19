@@ -47,6 +47,7 @@ package org.knime.gateway.json.util;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -103,11 +104,11 @@ public class JsonUtil {
      * @param mapper the mapper to add the de-/serializer to
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static void addIDEntitySerializer(final ObjectMapper mapper) {
+    public static void addIDEntityDeSerializer(final ObjectMapper mapper) {
         for (Class clazz : Arrays.asList(NodeIDEnt.class, ConnectionIDEnt.class, AnnotationIDEnt.class)) {
             SimpleModule nodeIdMod = new SimpleModule();
             nodeIdMod.addSerializer(clazz, createToStringSerializer(clazz));
-            nodeIdMod.addDeserializer(clazz, createFromStringSerializer(clazz));
+            nodeIdMod.addDeserializer(clazz, createFromStringDeserializer(clazz));
             mapper.registerModule(nodeIdMod);
         }
     }
@@ -125,7 +126,7 @@ public class JsonUtil {
     }
 
     @SuppressWarnings("serial")
-    private static <C> JsonDeserializer<C> createFromStringSerializer(final Class<C> clazz) {
+    private static <C> JsonDeserializer<C> createFromStringDeserializer(final Class<C> clazz) {
         return new StdDeserializer<C>(clazz) {
 
             @Override
@@ -139,5 +140,25 @@ public class JsonUtil {
                 }
             }
         };
+    }
+
+    /**
+     * Custom serializer for {@link OffsetDateTime} properties. Will be serialized in ISO 8601 format.
+     *
+     * @param mapper the mapper to add the new serializer to
+     */
+    @SuppressWarnings("serial")
+    public static void addDateTimeDeSerializer(final ObjectMapper mapper) {
+        SimpleModule dateTimeDeSer = new SimpleModule();
+        dateTimeDeSer.addSerializer(createToStringSerializer(OffsetDateTime.class));
+        dateTimeDeSer.addDeserializer(OffsetDateTime.class, new StdDeserializer<OffsetDateTime>(OffsetDateTime.class) {
+
+            @Override
+            public OffsetDateTime deserialize(final JsonParser p, final DeserializationContext ctxt)
+                throws IOException {
+                return OffsetDateTime.parse(p.getText());
+            }
+        });
+        mapper.registerModule(dateTimeDeSer);
     }
 }
