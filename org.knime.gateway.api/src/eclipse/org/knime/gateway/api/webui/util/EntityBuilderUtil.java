@@ -371,14 +371,12 @@ public final class EntityBuilderUtil {
 
     private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
         org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum executionState;
-        if (state.isConfigured() || state.isIdle() || state.isWaitingToBeExecuted()) {
-            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.IDLE;
-        } else if (state.isExecuted() || state.isHalted()) {
-            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.EXECUTED;
-        } else if (state.isExecutingRemotely() || state.isExecutionInProgress()) {
+        if (state.isExecutingRemotely() || state.isExecutionInProgress()) {
             executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.EXECUTING;
+        } else if (state.isExecuted()) {
+            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.EXECUTED;
         } else {
-            throw new IllegalStateException("Node container state cannot be mapped!");
+            executionState = org.knime.gateway.api.webui.entity.MetaNodeStateEnt.ExecutionStateEnum.IDLE;
         }
         return builder(MetaNodeStateEntBuilder.class).setExecutionState(executionState).build();
     }
