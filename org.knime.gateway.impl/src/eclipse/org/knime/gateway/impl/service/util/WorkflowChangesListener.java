@@ -120,7 +120,6 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void addOrRemoveListenersFromNodeOrWorkflowAnnotation(final WorkflowEvent e) {
-        //TODO filter out workflow dirty event?
         if (e.getType() == Type.NODE_ADDED) {
             addNodeListeners(m_wfm.getNodeContainer(e.getID()));
         } else if (e.getType() == Type.NODE_REMOVED) {
@@ -204,12 +203,24 @@ public class WorkflowChangesListener implements Closeable {
     private static final class AtomicCallbackState {
 
         /*
-         * The state the 'callback process' is in. That is
-         * 0 - no callback in progress nor is one awaiting
-         * 1 - callback in progress, none is awaiting
-         * 2 - callback in progress, and another one awaiting
+         * The state the 'callback process' is in.
          */
-        private int m_state = 0;
+        private enum CallbackState {
+                /*
+                 * No callback in progress nor is one awaiting
+                 */
+                IDLE,
+                /*
+                 * Callback in progress, none is awaiting
+                 */
+                IN_PROGRESS,
+                /*
+                 * Callback in progress, and another one awaiting
+                 */
+                IN_PROGRESS_AND_AWAITING;
+        }
+
+        private CallbackState m_state = CallbackState.IDLE;
 
         /**
          * If the callback is in progress, state will change to 'in progress and one callback awaiting' (2); else to 'in
@@ -218,11 +229,11 @@ public class WorkflowChangesListener implements Closeable {
          * @return <code>true</code> if the callback is in progress, otherwise <code>false</code>
          */
         synchronized boolean checkIsCallbackInProgressAndChangeState() {
-            if (m_state == 0) {
-                m_state = 1;
+            if (m_state == CallbackState.IDLE) {
+                m_state = CallbackState.IN_PROGRESS;
                 return false;
             } else {
-                m_state = 2;
+                m_state = CallbackState.IN_PROGRESS_AND_AWAITING;
                 return true;
             }
         }
@@ -234,11 +245,11 @@ public class WorkflowChangesListener implements Closeable {
          * @return <code>true</code> if a callback is awaiting, otherwise <code>false</code>
          */
         synchronized boolean checkIsCallbackAwaitingAndChangeState() {
-            if (m_state == 2) {
-                m_state = 1;
+            if (m_state == CallbackState.IN_PROGRESS_AND_AWAITING) {
+                m_state = CallbackState.IN_PROGRESS;
                 return true;
             } else {
-                m_state = 0;
+                m_state = CallbackState.IDLE;
                 return false;
             }
         }
