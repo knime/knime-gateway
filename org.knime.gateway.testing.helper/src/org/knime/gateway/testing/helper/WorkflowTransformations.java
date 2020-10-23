@@ -84,6 +84,7 @@ public final class WorkflowTransformations {
     public static List<WorkflowTransformation> createWorkflowTransformations() {
         return Arrays.asList(
             newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed", null),
+            newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"),
             newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(14), 1)),
                 "connection_removed"),
             newTransformation(w -> w.removeNode(w.getID().createChild(18)), "node_removed"), newTransformation(w -> {

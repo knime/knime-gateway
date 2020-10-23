@@ -123,8 +123,14 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
     @Override
     public void onValueChange(final ValueChange valueChange) {
-        m_patchCreator.replaced(getPath(valueChange.getAffectedGlobalId(), valueChange.getPropertyName()),
-            valueChange.getRight());
+        String path = getPath(valueChange.getAffectedGlobalId(), valueChange.getPropertyName());
+        if (valueChange.getRight() == null) {
+            m_patchCreator.removed(path);
+        } else if (valueChange.getLeft() == null) {
+            m_patchCreator.added(path, valueChange.getRight());
+        } else {
+            m_patchCreator.replaced(path, valueChange.getRight());
+        }
     }
 
     private static String getPath(final GlobalId globalId, final String propertyName) {
