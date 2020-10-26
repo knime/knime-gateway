@@ -54,6 +54,7 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflow
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -165,11 +166,23 @@ public final class DefaultEventService implements EventService {
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
             WorkflowKey wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
-            @SuppressWarnings("resource")
-            WorkflowChangesListener listener = m_workflowChangesListeners.remove(wfKey);
-            listener.close();
-            m_patchEntCreators.remove(wfKey);
+            removeEventListener(wfKey);
         }
+    }
+
+    /**
+     * Unregisters and removes all event listeners. After this method has been called, no events will arrive anymore at
+     * the registered event consumers.
+     */
+    public void removeAllEventListeners() {
+        new HashSet<>(m_workflowChangesListeners.keySet()).forEach(this::removeEventListener);
+    }
+
+    private void removeEventListener(final WorkflowKey wfKey) {
+        @SuppressWarnings("resource")
+        WorkflowChangesListener listener = m_workflowChangesListeners.remove(wfKey);
+        listener.close();
+        m_patchEntCreators.remove(wfKey);
     }
 
     /**

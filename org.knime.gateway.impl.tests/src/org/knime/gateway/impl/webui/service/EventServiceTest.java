@@ -104,24 +104,15 @@ public class EventServiceTest extends GatewayServiceTest {
     @Test
     public void testWorkflowChangedEvents() throws Exception {
         Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-
-        DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
-        DefaultEventService es = DefaultEventService.getInstance();
-
-        // get the current workflow state and register event listener
-        // (such that change events are send for that workflow)
-        WorkflowSnapshotEnt wf = ws.getWorkflow(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID(), true);
-        WorkflowChangedEventTypeEnt eventType =
-            builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(idAndWfm.getFirst().toString())
-                .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(wf.getSnapshotId()).build();
-        es.addEventListener(eventType);
+        WorkflowChangedEventTypeEnt eventType = registerEventListener(idAndWfm.getFirst().toString());
 
         // add event consumer to receive and check the change events
+        DefaultEventService es = DefaultEventService.getInstance();
         BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
         es.addEventConsumer(eventConsumerMock);
 
         WorkflowManager wfm = idAndWfm.getSecond();
-        checkWorkflowChangeEvents(wfm, eventConsumerMock, wf.getSnapshotId(),
+        checkWorkflowChangeEvents(wfm, eventConsumerMock, eventType.getSnapshotId(),
             WorkflowTransformations.createWorkflowTransformations());
 
         // remove event listener and check successful removal
@@ -135,6 +126,19 @@ public class EventServiceTest extends GatewayServiceTest {
         verify(eventConsumerMock, times(0)).accept(any(), any());
     }
 
+    private static WorkflowChangedEventTypeEnt registerEventListener(final String wfId) throws Exception {
+        DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
+        DefaultEventService es = DefaultEventService.getInstance();
+
+        // get the current workflow state and register event listener
+        // (such that change events are send for that workflow)
+        WorkflowSnapshotEnt wf = ws.getWorkflow(wfId, NodeIDEnt.getRootID(), true);
+        WorkflowChangedEventTypeEnt eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(wfId)
+            .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(wf.getSnapshotId()).build();
+        es.addEventListener(eventType);
+        return eventType;
+    }
+
     /**
      * Tests that no more listeners are registered with the workflow once they have been removed.
      * @throws Exception
@@ -142,26 +146,44 @@ public class EventServiceTest extends GatewayServiceTest {
     @Test
     public void testWorkflowChangedEventsRemovedListeners() throws Exception {
         Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        WorkflowChangedEventTypeEnt eventType = registerEventListener(idAndWfm.getFirst().toString());
 
-        DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
         DefaultEventService es = DefaultEventService.getInstance();
 
-        // get the current workflow state
-        WorkflowSnapshotEnt wf = ws.getWorkflow(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID(), false);
-        WorkflowChangedEventTypeEnt eventType =
-            builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(idAndWfm.getFirst().toString())
-                .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(wf.getSnapshotId()).build();
-
-        // add and remove event listener again
-        es.addEventListener(eventType);
+        // remove event listener again
         es.removeEventListener(eventType);
+
+        checkThatNoEventsAreSent(idAndWfm.getSecond());
+    }
+
+    /**
+     * Tests {@link DefaultEventService#removeAllEventListeners()}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testRemoveAllEventListeners() throws Exception {
+        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        WorkflowChangedEventTypeEnt eventType = registerEventListener(idAndWfm.getFirst().toString());
+
+        DefaultEventService es = DefaultEventService.getInstance();
+
+        // add one more event listenr
+        es.addEventListener(eventType);
+
+        es.removeAllEventListeners();
+
+        checkThatNoEventsAreSent(idAndWfm.getSecond());
+    }
+
+    private static void checkThatNoEventsAreSent(final WorkflowManager wfm) {
+        DefaultEventService es = DefaultEventService.getInstance();
 
         // add event consumer to receive and check the change events
         @SuppressWarnings("unchecked")
         BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
         es.addEventConsumerForTesting(eventConsumerMock);
 
-        WorkflowManager wfm = idAndWfm.getSecond();
         // carry out the workflow changes
         WorkflowTransformations.createWorkflowTransformations().forEach(t -> t.apply(wfm));
 
