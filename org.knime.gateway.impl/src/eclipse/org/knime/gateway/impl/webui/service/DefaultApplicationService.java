@@ -55,6 +55,7 @@ import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEn
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -77,7 +78,7 @@ import org.knime.gateway.impl.webui.AppState;
 public final class DefaultApplicationService implements ApplicationService {
     private static final DefaultApplicationService INSTANCE = new DefaultApplicationService();
 
-    private AppState m_appState = null;
+    private Supplier<AppState> m_appStateSupplier = null;
 
     /**
      * Returns the singleton instance for this service.
@@ -97,11 +98,15 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
-        if (m_appState == null) {
+        if (m_appStateSupplier == null) {
             return builder(AppStateEntBuilder.class).build();
         }
-        final Set<Pair<String, NodeID>> activeWorkflowIds = m_appState.getActiveWorkflowIds();
-        List<WorkflowProjectEnt> projects = m_appState.getLoadedWorkflowProjectIds().stream()
+        AppState appState = m_appStateSupplier.get();
+        if (appState == null) {
+            return builder(AppStateEntBuilder.class).build();
+        }
+        final Set<Pair<String, NodeID>> activeWorkflowIds = appState.getActiveWorkflowIds();
+        List<WorkflowProjectEnt> projects = appState.getLoadedWorkflowProjectIds().stream()
             .map(id -> WorkflowProjectManager.getWorkflowProject(id).orElse(null)).filter(Objects::nonNull)
             .map(wp -> buildWorkflowProjectEnt(wp, activeWorkflowIds)).collect(toList());
         return builder(AppStateEntBuilder.class).setOpenedWorkflows(projects).build();
@@ -125,11 +130,15 @@ public final class DefaultApplicationService implements ApplicationService {
     }
 
     /**
-     * Updates the web ui application state.
+     * Sets the state supplier, i.e. a function that can be called to get the current app state.
      *
-     * @param state the new state
+     * @param stateSupplier the app state supplier
+     * @throws IllegalStateException if the app state supplier is already set
      */
-    public void updateAppState(final AppState state) {
-        m_appState = state;
+    public void setAppStateSupplier(final Supplier<AppState> stateSupplier) {
+        if(m_appStateSupplier != null) {
+            throw new IllegalStateException("App state supplier is already set");
+        }
+        m_appStateSupplier = stateSupplier;
     }
 }

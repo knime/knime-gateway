@@ -81,7 +81,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         DefaultApplicationService appService = DefaultApplicationService.getInstance();
         cr(appService.getState(), "empty_appstate");
 
-        appService.updateAppState(new AppState() {
+        appService.setAppStateSupplier(() -> new AppState() {
 
             @Override
             public Set<String> getLoadedWorkflowProjectIds() {
