@@ -19,7 +19,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow to test the execution states.
      */
-    EXECUTION_STATES("/files/Execution States.knwf", "execution states");
+    EXECUTION_STATES("/files/Execution States.knwf", "execution states"),
+
+    /**
+     * A component project.
+     */
+    COMPONENT_PROJECT("/files/Component.knar", "component project");
 
     private final String m_url;
 

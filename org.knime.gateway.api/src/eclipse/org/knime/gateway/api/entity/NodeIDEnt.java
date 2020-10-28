@@ -76,7 +76,16 @@ public final class NodeIDEnt {
      * @param nodeID the node id to create the entity from
      */
     public NodeIDEnt(final NodeID nodeID) {
-        this(extractNodeIDs(nodeID));
+        this(extractNodeIDs(nodeID, false));
+    }
+
+    /**
+     * @param nodeID the node id to create the entity from
+     * @param hasComponentProjectParent if the node with the given id is part of a component project; if so, an
+     *            unnecessary '0' is removed; e.g. instead of 'root:0:4:5', 'root:4:5' is used
+     */
+    public NodeIDEnt(final NodeID nodeID, final boolean hasComponentProjectParent) {
+        this(extractNodeIDs(nodeID, hasComponentProjectParent));
     }
 
     /**
@@ -85,21 +94,22 @@ public final class NodeIDEnt {
      * @param s string representation as returned by {@link #toString()}
      */
     public NodeIDEnt(final String s) {
-        this(extractNodeIDs(s));
+        this(extractNodeIDs(s, false));
     }
 
-    private static int[] extractNodeIDs(final NodeID nodeID) {
+    private static int[] extractNodeIDs(final NodeID nodeID, final boolean hasComponentProjectParent) {
         String s = nodeID.toString();
-        return extractNodeIDs(s);
+        return extractNodeIDs(s, hasComponentProjectParent);
     }
 
-    private static int[] extractNodeIDs(final String s) {
+    private static int[] extractNodeIDs(final String s, final boolean hasComponentProjectParent) {
         int index = s.indexOf(':');
-        if (index >= 0) {
+        int start = hasComponentProjectParent ? 1 : 0;
+        if (index >= start) {
             String[] split = s.substring(index + 1).split(":");
-            int[] ids = new int[split.length];
-            for (int i = 0; i < split.length; i++) {
-                ids[i] = Integer.parseInt(split[i]);
+            int[] ids = new int[split.length - start];
+            for (int i = start; i < split.length; i++) {
+                ids[i - start] = Integer.parseInt(split[i]);
             }
             return ids;
         } else {

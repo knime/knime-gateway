@@ -53,6 +53,8 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testNodeExecutionStates());
         res.put("testGetAllowedActionsInfo",
             (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetAllowedActionsInfo());
+        res.put("testGetComponentProjectWorkflow",
+            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetComponentProjectWorkflow());
         res.put("testChangeNodeState",
             (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
         return res;

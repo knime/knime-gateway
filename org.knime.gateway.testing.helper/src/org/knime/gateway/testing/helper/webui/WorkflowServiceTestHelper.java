@@ -113,6 +113,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests to get a workflow of a component workflow.
+     *
+     * @throws Exception
+     */
+    public void testGetComponentProjectWorkflow() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.COMPONENT_PROJECT);
+
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        cr(workflow, "component_project");
+
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5), true).getWorkflow();
+        cr(workflow, "component_in_component_project_l1");
+
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5,0,7), true).getWorkflow();
+        cr(workflow, "component_in_component_project_l2");
+    }
+
+    /**
      * Tests the correct mapping of the node execution states.
      *
      * @throws Exception
