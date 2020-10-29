@@ -63,7 +63,6 @@ import org.knime.gateway.api.webui.entity.PatchEnt;
 public class DefaultPatchEnt  implements PatchEnt {
 
   protected java.util.List<PatchOpEnt> m_ops;
-  protected String m_targetTypeId;
   
   protected DefaultPatchEnt() {
     //for sub-classes
@@ -77,7 +76,6 @@ public class DefaultPatchEnt  implements PatchEnt {
   private DefaultPatchEnt(DefaultPatchEntBuilder builder) {
     
     m_ops = immutable(builder.m_ops);
-    m_targetTypeId = immutable(builder.m_targetTypeId);
   }
   
    /**
@@ -95,7 +93,7 @@ public class DefaultPatchEnt  implements PatchEnt {
             return false;
         }
         DefaultPatchEnt ent = (DefaultPatchEnt)o;
-        return Objects.equals(m_ops, ent.m_ops) && Objects.equals(m_targetTypeId, ent.m_targetTypeId);
+        return Objects.equals(m_ops, ent.m_ops);
     }
 
 
@@ -107,7 +105,6 @@ public class DefaultPatchEnt  implements PatchEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_ops)
-               .append(m_targetTypeId)
                .toHashCode();
    }
   
@@ -118,11 +115,6 @@ public class DefaultPatchEnt  implements PatchEnt {
         return m_ops;
   }
     
-  @Override
-  public String getTargetTypeId() {
-        return m_targetTypeId;
-  }
-    
   
     public static class DefaultPatchEntBuilder implements PatchEntBuilder {
     
@@ -131,17 +123,10 @@ public class DefaultPatchEnt  implements PatchEnt {
         }
     
         private java.util.List<PatchOpEnt> m_ops;
-        private String m_targetTypeId;
 
         @Override
         public DefaultPatchEntBuilder setOps(java.util.List<PatchOpEnt> ops) {
              m_ops = ops;
-             return this;
-        }
-
-        @Override
-        public DefaultPatchEntBuilder setTargetTypeId(String targetTypeId) {
-             m_targetTypeId = targetTypeId;
              return this;
         }
 

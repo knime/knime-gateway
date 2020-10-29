@@ -12,8 +12,7 @@
     }, {
       "op" : "remove",
       "path" : "/connections/root:18_1"
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "workflow_annotation_removed" : {
     "ops" : [ {
@@ -530,8 +529,7 @@
       "op" : "replace",
       "path" : "/workflowAnnotations/4/bounds/height",
       "value" : 61
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "node_executed" : {
     "ops" : [ {
@@ -603,8 +601,7 @@
       "op" : "replace",
       "path" : "/nodes/root:1/state/executionState",
       "value" : "EXECUTED"
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "node_added" : {
     "ops" : [ {
@@ -657,8 +654,7 @@
         },
         "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
       }
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "ports_added" : {
     "ops" : [ {
@@ -681,8 +677,7 @@
         "optional" : false,
         "type" : "table"
       }
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "connection_added" : {
     "ops" : [ {
@@ -707,8 +702,7 @@
         "sourceNode" : "root:13",
         "sourcePort" : 1
       }
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "workflow_annotation_added" : {
     "ops" : [ {
@@ -729,8 +723,7 @@
         "text" : "",
         "textAlign" : "left"
       }
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "node_reset" : {
     "ops" : [ {
@@ -782,8 +775,7 @@
       "op" : "replace",
       "path" : "/nodes/root:1/state/executionState",
       "value" : "CONFIGURED"
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "node_annotation_added" : {
     "ops" : [ {
@@ -795,8 +787,7 @@
         "text" : "new anno text",
         "textAlign" : "left"
       }
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "workflow_annotation_changed" : {
     "ops" : [ {
@@ -818,8 +809,7 @@
     }, {
       "op" : "remove",
       "path" : "/workflowAnnotations/0/defaultFontSize"
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "connection_removed" : {
     "ops" : [ {
@@ -835,15 +825,13 @@
     }, {
       "op" : "remove",
       "path" : "/connections/root:14_1"
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   },
   "node_annotation_changed" : {
     "ops" : [ {
       "op" : "replace",
       "path" : "/nodes/root:1/annotation/text",
       "value" : "yet another text"
-    } ],
-    "targetTypeId" : "Workflow"
+    } ]
   }
 }

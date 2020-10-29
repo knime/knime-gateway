@@ -72,10 +72,6 @@ public interface PatchEntMixIn extends PatchEnt {
     @JsonProperty("ops")
     public java.util.List<PatchOpEnt> getOps();
     
-    @Override
-    @JsonProperty("targetTypeId")
-    public String getTargetTypeId();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -92,10 +88,6 @@ public interface PatchEntMixIn extends PatchEnt {
         @Override
         @JsonProperty("ops")
         public PatchEntMixInBuilder setOps(final java.util.List<PatchOpEnt> ops);
-        
-        @Override
-        @JsonProperty("targetTypeId")
-        public PatchEntMixInBuilder setTargetTypeId(final String targetTypeId);
         
     }
 

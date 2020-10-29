@@ -49,8 +49,6 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -196,7 +194,6 @@ public class EventServiceTest extends GatewayServiceTest {
     private void checkWorkflowChangeEvents(final WorkflowManager wfm,
         final BiConsumer<String, EventEnt> eventConsumerMock, final String initialSnapshotId,
         final List<WorkflowTransformation> wfTransformations) throws InterruptedException {
-        boolean isVeryFirstPatch = true;
         for (WorkflowTransformation workflowTransformation : wfTransformations) {
             workflowTransformation.apply(wfm);
             wfm.waitWhileInExecution(10, TimeUnit.SECONDS);
@@ -213,11 +210,6 @@ public class EventServiceTest extends GatewayServiceTest {
             verify(eventConsumerMock, times(numPatches)).accept(eq("WorkflowChangedEvent"), eventCaptor.capture());
             List<WorkflowChangedEventEnt> events = eventCaptor.getAllValues();
             for (int i = 0; i < numPatches; i++) {
-                if (isVeryFirstPatch) {
-                    assertThat("wrong previous snapshot id", events.get(0).getPreviousSnapshotId(),
-                        is(initialSnapshotId));
-                    isVeryFirstPatch = false;
-                }
                 if (workflowTransformation.getChangeNames()[i] != null) {
                     cr(events.get(numPatches - i - 1).getPatch(), workflowTransformation.getChangeNames()[i]);
                 }

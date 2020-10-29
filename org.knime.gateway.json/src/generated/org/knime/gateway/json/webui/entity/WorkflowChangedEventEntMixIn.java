@@ -74,10 +74,6 @@ public interface WorkflowChangedEventEntMixIn extends WorkflowChangedEventEnt {
     public String getSnapshotId();
     
     @Override
-    @JsonProperty("previousSnapshotId")
-    public String getPreviousSnapshotId();
-    
-    @Override
     @JsonProperty("patch")
     public PatchEnt getPatch();
     
@@ -97,10 +93,6 @@ public interface WorkflowChangedEventEntMixIn extends WorkflowChangedEventEnt {
         @Override
         @JsonProperty("snapshotId")
         public WorkflowChangedEventEntMixInBuilder setSnapshotId(final String snapshotId);
-        
-        @Override
-        @JsonProperty("previousSnapshotId")
-        public WorkflowChangedEventEntMixInBuilder setPreviousSnapshotId(final String previousSnapshotId);
         
         @Override
         @JsonProperty("patch")

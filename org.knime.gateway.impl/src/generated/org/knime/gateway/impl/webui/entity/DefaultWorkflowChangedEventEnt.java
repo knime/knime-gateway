@@ -64,7 +64,6 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements WorkflowChangedEventEnt {
 
   protected String m_snapshotId;
-  protected String m_previousSnapshotId;
   protected PatchEnt m_patch;
   
   protected DefaultWorkflowChangedEventEnt() {
@@ -82,10 +81,6 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
         throw new IllegalArgumentException("snapshotId must not be null.");
     }
     m_snapshotId = immutable(builder.m_snapshotId);
-    if(builder.m_previousSnapshotId == null) {
-        throw new IllegalArgumentException("previousSnapshotId must not be null.");
-    }
-    m_previousSnapshotId = immutable(builder.m_previousSnapshotId);
     if(builder.m_patch == null) {
         throw new IllegalArgumentException("patch must not be null.");
     }
@@ -107,7 +102,7 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
             return false;
         }
         DefaultWorkflowChangedEventEnt ent = (DefaultWorkflowChangedEventEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_previousSnapshotId, ent.m_previousSnapshotId) && Objects.equals(m_patch, ent.m_patch);
+        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_patch, ent.m_patch);
     }
 
 
@@ -119,7 +114,6 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_snapshotId)
-               .append(m_previousSnapshotId)
                .append(m_patch)
                .toHashCode();
    }
@@ -129,11 +123,6 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
   @Override
   public String getSnapshotId() {
         return m_snapshotId;
-  }
-    
-  @Override
-  public String getPreviousSnapshotId() {
-        return m_previousSnapshotId;
   }
     
   @Override
@@ -149,7 +138,6 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
         }
     
         private String m_snapshotId;
-        private String m_previousSnapshotId;
         private PatchEnt m_patch;
 
         @Override
@@ -158,15 +146,6 @@ public class DefaultWorkflowChangedEventEnt extends DefaultEventEnt implements W
                  throw new IllegalArgumentException("snapshotId must not be null.");
              }
              m_snapshotId = snapshotId;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowChangedEventEntBuilder setPreviousSnapshotId(String previousSnapshotId) {
-             if(previousSnapshotId == null) {
-                 throw new IllegalArgumentException("previousSnapshotId must not be null.");
-             }
-             m_previousSnapshotId = previousSnapshotId;
              return this;
         }
 

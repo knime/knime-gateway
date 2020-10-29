@@ -67,12 +67,6 @@ public interface WorkflowChangedEventEnt extends EventEnt {
   public String getSnapshotId();
 
   /**
-   * The snapshot-id of the version before the patch is applied.
-   * @return previousSnapshotId , never <code>null</code>
-   **/
-  public String getPreviousSnapshotId();
-
-  /**
    * Get patch
    * @return patch , never <code>null</code>
    **/
@@ -91,14 +85,6 @@ public interface WorkflowChangedEventEnt extends EventEnt {
          * @return this entity builder for chaining
          */
         WorkflowChangedEventEntBuilder setSnapshotId(String snapshotId);
-        
-        /**
-         * The snapshot-id of the version before the patch is applied.
-         * 
-         * @param previousSnapshotId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowChangedEventEntBuilder setPreviousSnapshotId(String previousSnapshotId);
         
         /**
    		 * Set patch

@@ -240,8 +240,7 @@ public final class DefaultEventService implements EventService {
             return null;
         }
         return builder(WorkflowChangedEventEntBuilder.class).setPatch(patchEntCreator.getPatch())
-            .setSnapshotId(patchEntCreator.getSnapshotId())
-            .setPreviousSnapshotId(patchEntCreator.getPreviousSnapshotId()).build();
+            .setSnapshotId(patchEntCreator.getSnapshotId()).build();
     }
 
     private void sendEvent(final WorkflowChangedEventEnt event) {
@@ -259,13 +258,9 @@ public final class DefaultEventService implements EventService {
 
         private String m_snapshotId;
 
-        private String m_previousSnapshotId = null;
-
         private PatchEnt m_patch = null;
 
         private final List<PatchOpEnt> m_ops = new ArrayList<>();
-
-        private String m_targetTypeID;
 
         /**
          * @param initialSnapshotId
@@ -276,10 +271,8 @@ public final class DefaultEventService implements EventService {
 
         private void createPatch(final WorkflowEnt ent) {
             m_ops.clear();
-            m_targetTypeID = ent.getTypeID();
             m_patch = DefaultWorkflowService.getInstance().getEntityRepository()
                 .getChangesAndCommit(m_snapshotId, ent, id -> {
-                    m_previousSnapshotId = m_snapshotId;
                     m_snapshotId = id;
                     return this;
                 }).orElse(null);
@@ -291,10 +284,6 @@ public final class DefaultEventService implements EventService {
 
         private String getSnapshotId() {
             return m_snapshotId;
-        }
-
-        private String getPreviousSnapshotId() {
-            return m_previousSnapshotId;
         }
 
         @Override
@@ -326,7 +315,7 @@ public final class DefaultEventService implements EventService {
 
         @Override
         public PatchEnt create() {
-            return new DefaultPatchEntBuilder().setOps(m_ops).setTargetTypeId(m_targetTypeID).build();
+            return new DefaultPatchEntBuilder().setOps(m_ops).build();
         }
     }
 

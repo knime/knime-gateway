@@ -66,12 +66,6 @@ public interface PatchEnt extends GatewayEntity {
    **/
   public java.util.List<PatchOpEnt> getOps();
 
-  /**
-   * ID of the entity this patch can exclusively be applied to. Should only be missing, if the patch is empty!
-   * @return targetTypeId 
-   **/
-  public String getTargetTypeId();
-
 
     /**
      * The builder for the entity.
@@ -85,14 +79,6 @@ public interface PatchEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         PatchEntBuilder setOps(java.util.List<PatchOpEnt> ops);
-        
-        /**
-         * ID of the entity this patch can exclusively be applied to. Should only be missing, if the patch is empty!
-         * 
-         * @param targetTypeId the property value,  
-         * @return this entity builder for chaining
-         */
-        PatchEntBuilder setTargetTypeId(String targetTypeId);
         
         
         /**
