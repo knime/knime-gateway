@@ -43,76 +43,62 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.jsonrpc.table;
 
-import java.io.IOException;
-import java.util.List;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.rpc.RpcServer;
+import org.knime.core.node.rpc.json.JsonRpcSingleServer;
+import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
+import org.knime.gateway.impl.rpc.NodePortRpcServerFactory;
+import org.knime.gateway.impl.rpc.table.DefaultTableService;
+import org.knime.gateway.impl.rpc.table.TableService;
 
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.rpc.RpcServerManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The default implementation of the {@link NodeService}-interface.
+ * Creates instances of a json rpc server for tables.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultNodeService implements NodeService {
-    private static final DefaultNodeService INSTANCE = new DefaultNodeService();
+public class JsonRpcTableServerFactory implements NodePortRpcServerFactory {
 
     /**
-     * Returns the singleton instance for this service.
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCompatible(final PortType ptype) {
+        return BuildInWebPortViewType.getPortViewTypeFor(ptype).map(t -> t == BuildInWebPortViewType.TABLE)
+            .orElse(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RpcServer createRpcServer(final NodeOutPort port) {
+        return createRpcServer(new DefaultTableService(port), createObjectMapper());
+    }
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        return mapper;
+    }
+
+    /**
+     * This method is for testing purposes only!!
      *
-     * @return the singleton instance
+     * @param tableService
+     * @param mapper
+     * @return a new rpc server instance
      */
-    public static DefaultNodeService getInstance() {
-        return INSTANCE;
-    }
-
-    private DefaultNodeService() {
-        // singleton
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changeNodeStates(final String projectId, final List<NodeIDEnt> nodeIds, final String action)
-        throws NodeNotFoundException, OperationNotAllowedException {
-        try {
-            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getRootWorkflowManager(projectId), action,
-                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        } catch (IllegalStateException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String doPortRpc(final String projectId, final NodeIDEnt nodeId, final Integer portIdx, final String body)
-        throws NodeNotFoundException, InvalidRequestException {
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        try {
-            return RpcServerManager.getInstance().doRpc(nc, portIdx, body);
-        } catch (IOException | IllegalStateException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
-        }
+    protected RpcServer createRpcServer(final DefaultTableService tableService, final ObjectMapper mapper) {
+        return new JsonRpcSingleServer<TableService>(tableService, mapper);
     }
 
 }

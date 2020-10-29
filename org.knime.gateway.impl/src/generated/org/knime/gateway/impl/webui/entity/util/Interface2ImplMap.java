@@ -100,6 +100,8 @@ import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt;
+import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
@@ -225,6 +227,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == PatchOpEntBuilder.class) {
             return (B)new DefaultPatchOpEnt.DefaultPatchOpEntBuilder();
+        }        
+        if(clazz == PortViewEntBuilder.class) {
+            return (B)new DefaultPortViewEnt.DefaultPortViewEntBuilder();
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();

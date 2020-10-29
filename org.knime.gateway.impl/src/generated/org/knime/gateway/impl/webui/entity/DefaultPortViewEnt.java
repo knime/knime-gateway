@@ -42,45 +42,99 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 /**
- * Operations on individual nodes.
+ * Represents port view.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeService extends GatewayService {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultPortViewEnt implements PortViewEnt {
 
-    /**
-     * Changes the node state of multiple nodes represented by a list of node-id.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level.
-     * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
-     *
-     * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+  protected TypeEnum m_type;
+  
+  protected DefaultPortViewEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "PortView";
+  }
+  
+  private DefaultPortViewEnt(DefaultPortViewEntBuilder builder) {
+    
+    m_type = immutable(builder.m_type);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-    void changeNodeStates(String projectId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultPortViewEnt ent = (DefaultPortViewEnt)o;
+        return Objects.equals(m_type, ent.m_type);
+    }
+
+
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_type)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public TypeEnum getType() {
+        return m_type;
+  }
+    
+  
+    public static class DefaultPortViewEntBuilder implements PortViewEntBuilder {
+    
+        public DefaultPortViewEntBuilder(){
+            
+        }
+    
+        private TypeEnum m_type;
+
+        @Override
+        public DefaultPortViewEntBuilder setType(TypeEnum type) {
+             m_type = type;
+             return this;
+        }
+
         
-    /**
-     * Performs text-based remote procedure calls for ports. The format of the rpc request and response depends on the port type that is being adressed.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param portIdx The port index to get the table for.
-     * @param body 
-     *
-     * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     */
-    String doPortRpc(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
-        
+        @Override
+        public DefaultPortViewEnt build() {
+            return new DefaultPortViewEnt(this);
+        }
+    
+    }
+
 }

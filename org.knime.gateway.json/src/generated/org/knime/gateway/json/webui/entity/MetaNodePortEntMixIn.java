@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 
 
@@ -101,6 +102,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public Boolean isInactive();
     
     @Override
+    @JsonProperty("view")
+    public PortViewEnt getView();
+    
+    @Override
     @JsonProperty("nodeState")
     public NodeStateEnum getNodeState();
     
@@ -148,6 +153,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         @Override
         @JsonProperty("inactive")
         public MetaNodePortEntMixInBuilder setInactive(final Boolean inactive);
+        
+        @Override
+        @JsonProperty("view")
+        public MetaNodePortEntMixInBuilder setView(final PortViewEnt view);
         
         @Override
         @JsonProperty("nodeState")

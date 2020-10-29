@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -134,6 +135,7 @@ public class ListEntities {
         res.add(NodeViewDescriptionEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
+        res.add(PortViewEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(StyleRangeEnt.class);
         res.add(WorkflowAnnotationEnt.class);
@@ -181,6 +183,7 @@ public class ListEntities {
         res.add(NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
+        res.add(PortViewEnt.PortViewEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);

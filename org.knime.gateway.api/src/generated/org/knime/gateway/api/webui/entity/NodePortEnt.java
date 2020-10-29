@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -83,6 +84,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortAndTemplateEnt {
    * @return inactive 
    **/
   public Boolean isInactive();
+
+  /**
+   * Get view
+   * @return view 
+   **/
+  public PortViewEnt getView();
 
 
     /**
@@ -153,6 +160,14 @@ public interface NodePortEnt extends GatewayEntity, NodePortAndTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setInactive(Boolean inactive);
+        
+        /**
+   		 * Set view
+         * 
+         * @param view the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setView(PortViewEnt view);
         
         
         /**

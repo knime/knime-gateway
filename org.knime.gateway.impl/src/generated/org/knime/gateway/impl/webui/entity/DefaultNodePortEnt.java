@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortAndTemplateEnt;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -70,6 +71,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
   protected Integer m_index;
   protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
   protected Boolean m_inactive;
+  protected PortViewEnt m_view;
   
   protected DefaultNodePortEnt() {
     //for sub-classes
@@ -96,6 +98,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
     m_index = immutable(builder.m_index);
     m_connectedVia = immutable(builder.m_connectedVia);
     m_inactive = immutable(builder.m_inactive);
+    m_view = immutable(builder.m_view);
   }
   
    /**
@@ -113,7 +116,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view);
     }
 
 
@@ -132,6 +135,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
                .append(m_index)
                .append(m_connectedVia)
                .append(m_inactive)
+               .append(m_view)
                .toHashCode();
    }
   
@@ -177,6 +181,11 @@ public class DefaultNodePortEnt implements NodePortEnt {
         return m_inactive;
   }
     
+  @Override
+  public PortViewEnt getView() {
+        return m_view;
+  }
+    
   
     public static class DefaultNodePortEntBuilder implements NodePortEntBuilder {
     
@@ -192,6 +201,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
         private Integer m_index;
         private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
         private Boolean m_inactive;
+        private PortViewEnt m_view;
 
         @Override
         public DefaultNodePortEntBuilder setName(String name) {
@@ -244,6 +254,12 @@ public class DefaultNodePortEnt implements NodePortEnt {
         @Override
         public DefaultNodePortEntBuilder setInactive(Boolean inactive) {
              m_inactive = inactive;
+             return this;
+        }
+
+        @Override
+        public DefaultNodePortEntBuilder setView(PortViewEnt view) {
+             m_view = view;
              return this;
         }
 

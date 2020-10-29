@@ -43,76 +43,38 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.rpc.table;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.rpc.RpcServerManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-
 /**
- * The default implementation of the {@link NodeService}-interface.
+ * Gives access to a table, e.g. of a port or node view. Only for the purpose of displaying the respective table (i.e.
+ * not for processing).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultNodeService implements NodeService {
-    private static final DefaultNodeService INSTANCE = new DefaultNodeService();
+public interface TableService {
 
     /**
-     * Returns the singleton instance for this service.
+     * Gets a table representation.
      *
-     * @return the singleton instance
+     * @param start the index of the rows to start with
+     * @param size the maximum number of rows to include
+     * @return the table with the requested number of rows (if any) and the table spec
      */
-    public static DefaultNodeService getInstance() {
-        return INSTANCE;
-    }
-
-    private DefaultNodeService() {
-        // singleton
-    }
+    Table getTable(long start, int size);
 
     /**
-     * {@inheritDoc}
+     * Requests a certain range of rows.
+     *
+     * @param start the index of the rows to start with
+     * @param size the maximum number of rows to include
+     * @return the list of rows; an empty collection if there are no rows in the given range; <code>null</code> if the
+     *         underlying port or node view doesn't have any data
      */
-    @Override
-    public void changeNodeStates(final String projectId, final List<NodeIDEnt> nodeIds, final String action)
-        throws NodeNotFoundException, OperationNotAllowedException {
-        try {
-            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getRootWorkflowManager(projectId), action,
-                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        } catch (IllegalStateException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String doPortRpc(final String projectId, final NodeIDEnt nodeId, final Integer portIdx, final String body)
-        throws NodeNotFoundException, InvalidRequestException {
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        try {
-            return RpcServerManager.getInstance().doRpc(nc, portIdx, body);
-        } catch (IOException | IllegalStateException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
-        }
-    }
+    List<Row> getRows(long start, int size);
 
 }

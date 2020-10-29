@@ -317,12 +317,18 @@
                 "connectedVia" : "[ root:10_1, root:19_1, root:20_1, root:20_2, root:21_1, root:22_2, root:25_1, root:26_2, root:27_1, root:27_3, root:2_1 ]",
                 "index" : 1,
                 "name" : "Random data with cluster ID",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[ root:12_1, root:23_1, root:27_2, root:9_1 ]",
                 "index" : 2,
                 "name" : "Cluster centers",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 204,
@@ -357,7 +363,10 @@
                 "index" : 1,
                 "name" : "Table to be filtered",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -369,7 +378,10 @@
                 "connectedVia" : "[ root:11_1, root:6_0 ]",
                 "index" : 1,
                 "name" : "Filtered table",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 344,
@@ -405,7 +417,10 @@
                 "index" : 1,
                 "name" : "Input Table",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -447,7 +462,10 @@
                 "index" : 1,
                 "name" : "Input to display",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -489,7 +507,10 @@
                 "index" : 1,
                 "name" : "Input data",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -618,13 +639,19 @@
                 "index" : 1,
                 "name" : "Query table",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[ root:20_2 ]",
                 "index" : 2,
                 "name" : "Reference table (neighbors)",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "color" : "#9B9B9B",
                 "connectedVia" : "[ root:20_3 ]",
@@ -643,7 +670,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Input 1 + columns/rows with neighbor information",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 864,
@@ -678,25 +708,37 @@
                 "index" : 1,
                 "name" : "First table to concatenate",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[  ]",
                 "index" : 2,
                 "name" : "Optional second table to concatenate",
                 "optional" : true,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[  ]",
                 "index" : 3,
                 "name" : "Optional third table to concatenate",
                 "optional" : true,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[  ]",
                 "index" : 4,
                 "name" : "Optional fourth table to concatenate",
                 "optional" : true,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -708,7 +750,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Concatenated table",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 384,
@@ -744,7 +789,10 @@
                 "index" : 1,
                 "name" : "myPort 1",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[  ]",
                 "index" : 2,
@@ -764,7 +812,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Outport 1",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "color" : "#9B9B9B",
                 "connectedVia" : "[  ]",
@@ -799,7 +850,10 @@
                 "index" : 1,
                 "name" : "Table to transform",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -811,12 +865,18 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Covariance matrix",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[  ]",
                 "index" : 2,
                 "name" : "Spectral decomposition",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "color" : "#1EB9DC",
                 "connectedVia" : "[ root:26_1 ]",
@@ -864,7 +924,10 @@
                 "index" : 2,
                 "name" : "Test data",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -876,7 +939,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Classified Test data",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 544,
@@ -911,7 +977,10 @@
                 "index" : 1,
                 "name" : "Port 1",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "component",
               "name" : "Component",
@@ -924,7 +993,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Port 1",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 164,
@@ -966,7 +1038,10 @@
                 "index" : 2,
                 "name" : "Table to transform",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -978,7 +1053,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Projected data",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 1064,
@@ -1013,19 +1091,28 @@
                 "index" : 1,
                 "name" : "First table to concatenate",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[ root:27_2 ]",
                 "index" : 2,
                 "name" : "Second table to concatenate",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               }, {
                 "connectedVia" : "[ root:27_3 ]",
                 "index" : 3,
                 "name" : "Additional table to concatenate",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -1037,7 +1124,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Concatenated table",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 204,
@@ -1072,7 +1162,10 @@
                 "index" : 1,
                 "name" : "Training data",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -1151,7 +1244,10 @@
                 "index" : 1,
                 "name" : "Display data",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -1163,7 +1259,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Robust Statistics",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 484,
@@ -1245,7 +1344,10 @@
                 "index" : 1,
                 "name" : "Port 1",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "component",
               "name" : "Component with icon and type",
@@ -1258,7 +1360,10 @@
                 "connectedVia" : "[ root:8_1 ]",
                 "index" : 1,
                 "name" : "Port 1",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 344,
@@ -1306,7 +1411,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Variable table",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 784,
@@ -1336,7 +1444,10 @@
                 "index" : 1,
                 "name" : "Any input table",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {
@@ -1348,7 +1459,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Copy of input",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 484,
@@ -1382,7 +1496,10 @@
                 "index" : 1,
                 "name" : "Port 1",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "component",
               "name" : "Component Failing",
@@ -1395,7 +1512,10 @@
                 "connectedVia" : "[  ]",
                 "index" : 1,
                 "name" : "Port 1",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 344,
@@ -1477,7 +1597,10 @@
                 "connectedVia" : "[ root:16_1 ]",
                 "index" : 1,
                 "name" : "Manually created table",
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "position" : {
                 "x" : 224,
@@ -1506,7 +1629,10 @@
                 "index" : 1,
                 "name" : "Parameters table",
                 "optional" : false,
-                "type" : "table"
+                "type" : "table",
+                "view" : {
+                  "type" : "table"
+                }
               } ],
               "kind" : "node",
               "outPorts" : [ {

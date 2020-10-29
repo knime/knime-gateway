@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,47 +41,37 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.rpc;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.rpc.RpcServerFactory;
+import org.knime.core.node.workflow.NodeOutPort;
 
 /**
- * Operations on individual nodes.
+ * To be implemented by a node model's factory if the node model provides a node data service.
+ *
+ * Implementations are currently provided by a temporary extension point. Will need to be provided by the
+ * {@link PortObject}-implementation it self (directly or indirectly).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ *
+ * @noreference This class is not intended to be referenced by clients.
+ * @noextend This class is not intended to be subclassed by clients.
+ *
+ * @since 4.3
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeService extends GatewayService {
+public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
 
     /**
-     * Changes the node state of multiple nodes represented by a list of node-id.
+     * Determines whether this rpc server factory is compatible with the respective port type.
      *
-     * @param projectId ID of the workflow-project.
-     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level.
-     * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
-     *
-     * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @param ptype the port type to check the compatibility for
+     * @return <code>true</code> if compatible otherwise <code>false</code>
      */
-    void changeNodeStates(String projectId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
-        
-    /**
-     * Performs text-based remote procedure calls for ports. The format of the rpc request and response depends on the port type that is being adressed.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param portIdx The port index to get the table for.
-     * @param body 
-     *
-     * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     */
-    String doPortRpc(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
-        
+    boolean isCompatible(PortType ptype);
+
 }

@@ -43,76 +43,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.rpc.table;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.rpc.RpcServerManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DirectAccessTable;
+import org.knime.core.data.cache.WindowCacheTable;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.DataTableSpecProvider;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NodeOutPort;
 
 /**
- * The default implementation of the {@link NodeService}-interface.
+ * Default implementation for {@link TableService}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultNodeService implements NodeService {
-    private static final DefaultNodeService INSTANCE = new DefaultNodeService();
+public class DefaultTableService implements TableService {
+
+    private final DirectAccessTable m_table;
+
+    private DataTableSpec m_spec;
 
     /**
-     * Returns the singleton instance for this service.
+     * Creates a new table service instance.
      *
-     * @return the singleton instance
+     * @param port the port to create the table service from
      */
-    public static DefaultNodeService getInstance() {
-        return INSTANCE;
+    public DefaultTableService(final NodeOutPort port) {
+        PortType portType = port.getPortType();
+        if (DataTableSpec.class.isAssignableFrom(portType.getPortObjectSpecClass())
+            && BufferedDataTable.class.equals(portType.getPortObjectClass())) {
+            if (port.getPortObject() != null) {
+                m_table = new WindowCacheTable((BufferedDataTable)port.getPortObject());
+            } else {
+                m_table = null;
+            }
+            m_spec = (DataTableSpec)port.getPortObjectSpec();
+        } else if (DataTableSpecProvider.class.isAssignableFrom(portType.getPortObjectSpecClass())
+            && DirectAccessTable.class.isAssignableFrom(portType.getPortObjectClass())) {
+            m_table = (DirectAccessTable)port.getPortObject();
+            m_spec = ((DataTableSpecProvider)port.getPortObjectSpec()).getDataTableSpec();
+        } else {
+            throw new IllegalArgumentException("No table can be served from port type " + portType.getName());
+        }
     }
 
-    private DefaultNodeService() {
-        // singleton
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void changeNodeStates(final String projectId, final List<NodeIDEnt> nodeIds, final String action)
-        throws NodeNotFoundException, OperationNotAllowedException {
-        try {
-            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getRootWorkflowManager(projectId), action,
-                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        } catch (IllegalStateException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
+    public Table getTable(final long start, final int size) {
+        return Table.create(m_spec, m_table, start, size);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String doPortRpc(final String projectId, final NodeIDEnt nodeId, final Integer portIdx, final String body)
-        throws NodeNotFoundException, InvalidRequestException {
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        try {
-            return RpcServerManager.getInstance().doRpc(nc, portIdx, body);
-        } catch (IOException | IllegalStateException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
-        }
+    public List<Row> getRows(final long start, final int size) {
+        return Table.getRows(m_table, start, size, m_spec);
     }
 
 }

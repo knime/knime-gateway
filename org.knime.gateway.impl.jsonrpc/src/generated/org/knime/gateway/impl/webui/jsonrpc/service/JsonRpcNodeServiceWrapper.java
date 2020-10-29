@@ -85,4 +85,19 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         m_service.changeNodeStates(projectId, nodeIds, action);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "doPortRpc")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public String doPortRpc(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="body") String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.doPortRpc(projectId, nodeId, portIdx, body);    
+    }
+
 }

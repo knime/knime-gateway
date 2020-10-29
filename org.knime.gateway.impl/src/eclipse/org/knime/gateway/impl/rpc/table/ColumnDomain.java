@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,47 +41,60 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Oct 27, 2020 (hornm): created
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.rpc.table;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
+import org.knime.core.data.DataColumnDomain;
 
 /**
- * Operations on individual nodes.
+ * Represents a table column's domain.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeService extends GatewayService {
+public interface ColumnDomain {
 
     /**
-     * Changes the node state of multiple nodes represented by a list of node-id.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level.
-     * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
-     *
-     * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @return the lower bound or <code>null</code> if none (or the column type is not a number)
      */
-    void changeNodeStates(String projectId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
-        
+    String getLowerBound();
+
     /**
-     * Performs text-based remote procedure calls for ports. The format of the rpc request and response depends on the port type that is being adressed.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param portIdx The port index to get the table for.
-     * @param body 
-     *
-     * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @return the upper bound or <code>null</code> if none (or the column type is not a number)
      */
-    String doPortRpc(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
-        
+    String getUpperBound();
+
+    /**
+     * Helper to create a column domain instance.
+     *
+     * @param domain
+     * @return a new instance
+     */
+    static ColumnDomain create(final DataColumnDomain domain) {
+        if (!domain.hasUpperBound() && !domain.hasLowerBound()) {
+            return null;
+        }
+        return new ColumnDomain() {
+
+            @Override
+            public String getUpperBound() {
+                if (domain.hasUpperBound()) {
+                    return domain.getUpperBound().toString();
+                }
+                return null;
+            }
+
+            @Override
+            public String getLowerBound() {
+                if (domain.hasLowerBound()) {
+                    return domain.getLowerBound().toString();
+                }
+                return null;
+            }
+        };
+    }
+
 }

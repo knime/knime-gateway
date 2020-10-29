@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
 
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
@@ -70,6 +71,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
   protected Integer m_index;
   protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
   protected Boolean m_inactive;
+  protected PortViewEnt m_view;
   protected NodeStateEnum m_nodeState;
   
   protected DefaultMetaNodePortEnt() {
@@ -97,6 +99,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
     m_index = immutable(builder.m_index);
     m_connectedVia = immutable(builder.m_connectedVia);
     m_inactive = immutable(builder.m_inactive);
+    m_view = immutable(builder.m_view);
     m_nodeState = immutable(builder.m_nodeState);
   }
   
@@ -115,7 +118,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
             return false;
         }
         DefaultMetaNodePortEnt ent = (DefaultMetaNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_nodeState, ent.m_nodeState);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_nodeState, ent.m_nodeState);
     }
 
 
@@ -134,6 +137,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
                .append(m_index)
                .append(m_connectedVia)
                .append(m_inactive)
+               .append(m_view)
                .append(m_nodeState)
                .toHashCode();
    }
@@ -181,6 +185,11 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
   }
     
   @Override
+  public PortViewEnt getView() {
+        return m_view;
+  }
+    
+  @Override
   public NodeStateEnum getNodeState() {
         return m_nodeState;
   }
@@ -200,6 +209,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         private Integer m_index;
         private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
         private Boolean m_inactive;
+        private PortViewEnt m_view;
         private NodeStateEnum m_nodeState;
 
         @Override
@@ -253,6 +263,12 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         @Override
         public DefaultMetaNodePortEntBuilder setInactive(Boolean inactive) {
              m_inactive = inactive;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodePortEntBuilder setView(PortViewEnt view) {
+             m_view = view;
              return this;
         }
 

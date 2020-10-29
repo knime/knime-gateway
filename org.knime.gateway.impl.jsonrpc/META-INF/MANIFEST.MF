@@ -15,4 +15,6 @@ Require-Bundle: com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)",
  org.knime.gateway.api;bundle-version="[4.3.0,5.0.0)",
  org.knime.gateway.json;bundle-version="[4.3.0,5.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.11.0,3.0.0)",
- org.knime.gateway.impl;bundle-version="[4.3.0,5.0.0)"
+ org.knime.gateway.impl;bundle-version="[4.3.0,5.0.0)",
+ org.knime.core;bundle-version="[4.3.0,5.0.0)",
+ com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.11.0,3.0.0)"

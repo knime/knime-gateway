@@ -629,13 +629,19 @@
           "index" : 1,
           "name" : "First table to concatenate",
           "optional" : false,
-          "type" : "table"
+          "type" : "table",
+          "view" : {
+            "type" : "table"
+          }
         }, {
           "connectedVia" : "[  ]",
           "index" : 2,
           "name" : "Second table to concatenate",
           "optional" : false,
-          "type" : "table"
+          "type" : "table",
+          "view" : {
+            "type" : "table"
+          }
         } ],
         "kind" : "node",
         "outPorts" : [ {
@@ -647,7 +653,10 @@
           "connectedVia" : "[  ]",
           "index" : 1,
           "name" : "Concatenated table",
-          "type" : "table"
+          "type" : "table",
+          "view" : {
+            "type" : "table"
+          }
         } ],
         "position" : {
           "x" : 40,
@@ -669,7 +678,10 @@
         "index" : 3,
         "name" : "Additional table to concatenate",
         "optional" : false,
-        "type" : "table"
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
       }
     }, {
       "op" : "add",
@@ -679,7 +691,10 @@
         "index" : 4,
         "name" : "Additional table to concatenate",
         "optional" : false,
-        "type" : "table"
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
       }
     } ]
   },

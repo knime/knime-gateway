@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.knime.core.PortType">
+      <portType
+            hidden="false"
+            name="DirectAccessTablePortObject (for testing)"
+            objectClass="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObject"
+            objectSerializer="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObject$DirectAccessTablePortObjectSerializer"
+            specClass="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObjectSpec"
+            specSerializer="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObjectSpec$DirectAccessTablePortObjectSpecSerializer">
+      </portType>
+   </extension>
+
+</plugin>

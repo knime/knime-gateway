@@ -44,16 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortViewEnt;
-import org.knime.gateway.json.webui.entity.NodePortAndTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt.DefaultNodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.PortViewEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewEnt.DefaultPortViewEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,49 +59,17 @@ import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt.DefaultNodePortEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodePortEntBuilder.class)
+@JsonDeserialize(builder=DefaultPortViewEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodePortEntMixIn extends NodePortEnt {
+public interface PortViewEntMixIn extends PortViewEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("type")
     public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
-    
-    @Override
-    @JsonProperty("optional")
-    public Boolean isOptional();
-    
-    @Override
-    @JsonProperty("info")
-    public String getInfo();
-    
-    @Override
-    @JsonProperty("index")
-    public Integer getIndex();
-    
-    @Override
-    @JsonProperty("connectedVia")
-    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
-    
-    @Override
-    @JsonProperty("inactive")
-    public Boolean isInactive();
-    
-    @Override
-    @JsonProperty("view")
-    public PortViewEnt getView();
     
 
     /**
@@ -113,46 +79,14 @@ public interface NodePortEntMixIn extends NodePortEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortEntMixInBuilder extends NodePortEntBuilder {
+    public static interface PortViewEntMixInBuilder extends PortViewEntBuilder {
     
         @Override
-        public NodePortEntMixIn build();
+        public PortViewEntMixIn build();
     
-        @Override
-        @JsonProperty("name")
-        public NodePortEntMixInBuilder setName(final String name);
-        
         @Override
         @JsonProperty("type")
-        public NodePortEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("color")
-        public NodePortEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("optional")
-        public NodePortEntMixInBuilder setOptional(final Boolean optional);
-        
-        @Override
-        @JsonProperty("info")
-        public NodePortEntMixInBuilder setInfo(final String info);
-        
-        @Override
-        @JsonProperty("index")
-        public NodePortEntMixInBuilder setIndex(final Integer index);
-        
-        @Override
-        @JsonProperty("connectedVia")
-        public NodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        @Override
-        @JsonProperty("inactive")
-        public NodePortEntMixInBuilder setInactive(final Boolean inactive);
-        
-        @Override
-        @JsonProperty("view")
-        public NodePortEntMixInBuilder setView(final PortViewEnt view);
+        public PortViewEntMixInBuilder setType(final TypeEnum type);
         
     }
 

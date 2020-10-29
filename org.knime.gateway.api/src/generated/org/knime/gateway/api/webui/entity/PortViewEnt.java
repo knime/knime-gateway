@@ -42,45 +42,74 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Operations on individual nodes.
- *
+ * Represents port view.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeService extends GatewayService {
+public interface PortViewEnt extends GatewayEntity {
+
+  /**
+   * Specification of the port view available for this port.
+   */
+  public enum TypeEnum {
+    TABLE("table"),
+    
+    OTHER("other");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * Specification of the port view available for this port.
+   * @return type 
+   **/
+  public TypeEnum getType();
+
 
     /**
-     * Changes the node state of multiple nodes represented by a list of node-id.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level.
-     * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
-     *
-     * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * The builder for the entity.
      */
-    void changeNodeStates(String projectId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+    public interface PortViewEntBuilder extends GatewayEntityBuilder<PortViewEnt> {
+
+        /**
+         * Specification of the port view available for this port.
+         * 
+         * @param type the property value,  
+         * @return this entity builder for chaining
+         */
+        PortViewEntBuilder setType(TypeEnum type);
         
-    /**
-     * Performs text-based remote procedure calls for ports. The format of the rpc request and response depends on the port type that is being adressed.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param portIdx The port index to get the table for.
-     * @param body 
-     *
-     * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     */
-    String doPortRpc(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        PortViewEnt build();
+    
+    }
+
 }

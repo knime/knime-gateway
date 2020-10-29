@@ -43,76 +43,49 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.rpc.table;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.rpc.RpcServerManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpec;
 
 /**
- * The default implementation of the {@link NodeService}-interface.
+ * A table row, only for the purpose to be displayed, not for processing.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultNodeService implements NodeService {
-    private static final DefaultNodeService INSTANCE = new DefaultNodeService();
+public interface Row {
 
     /**
-     * Returns the singleton instance for this service.
+     * @return the list of cell in the row
+     */
+    List<TableCell> getCells();
+
+    /**
+     * Helper to create a row instance.
      *
-     * @return the singleton instance
+     * @param row the object to create the row instance from
+     * @param spec the original table spec, mainly used to sync with the global column data type
+     * @return a new instance
      */
-    public static DefaultNodeService getInstance() {
-        return INSTANCE;
-    }
+    static Row create(final DataRow row, final DataTableSpec spec) {
+        return new Row() {
 
-    private DefaultNodeService() {
-        // singleton
-    }
+            @Override
+            public List<TableCell> getCells() {
+                List<TableCell> res = new ArrayList<>(row.getNumCells());
+                for (int i = 0; i < row.getNumCells(); i++) {
+                    res.add(TableCell.create(row.getCell(i), spec.getColumnSpec(i).getType()));
+                }
+                return res;
+            }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changeNodeStates(final String projectId, final List<NodeIDEnt> nodeIds, final String action)
-        throws NodeNotFoundException, OperationNotAllowedException {
-        try {
-            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getRootWorkflowManager(projectId), action,
-                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        } catch (IllegalStateException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String doPortRpc(final String projectId, final NodeIDEnt nodeId, final Integer portIdx, final String body)
-        throws NodeNotFoundException, InvalidRequestException {
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        try {
-            return RpcServerManager.getInstance().doRpc(nc, portIdx, body);
-        } catch (IOException | IllegalStateException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
-        }
+        };
     }
 
 }

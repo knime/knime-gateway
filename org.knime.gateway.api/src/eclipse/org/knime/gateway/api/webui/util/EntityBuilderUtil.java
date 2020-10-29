@@ -142,6 +142,8 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.PortViewEnt;
+import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
@@ -179,6 +181,10 @@ public final class EntityBuilderUtil {
      * The default background color for node annotations which usually translates to opaque.
      */
     private static final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
+
+    private static final Map<String, NativeNodeTemplateEnt> m_nativeNodeTemplateCache = new HashMap<>();
+
+    private static final Map<String, NodePortTemplateEnt> m_nodePortTemplateCache = new HashMap<>();
 
     private EntityBuilderUtil() {
         //utility class
@@ -435,7 +441,8 @@ public final class EntityBuilderUtil {
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
-            templates.computeIfAbsent(templateId, tid -> buildNativeNodeTemplateEnt((NativeNodeContainer)nc));
+            templates.computeIfAbsent(templateId,
+                tid -> buildOrGetFromCacheNativeNodeTemplateEnt(templateId, (NativeNodeContainer)nc));
         }
     }
 
@@ -579,7 +586,18 @@ public final class EntityBuilderUtil {
             .setInfo(info)//
             .setType(resPortType)//
             .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
+            .setView(buildPortViewEnt(ptype))//
             .build();
+    }
+
+    private static PortViewEnt buildPortViewEnt(final PortType ptype) {
+        BuildInWebPortViewType portViewType = BuildInWebPortViewType.getPortViewTypeFor(ptype).orElse(null);
+        if (portViewType != null) {
+            return builder(PortViewEntBuilder.class).setType(PortViewEnt.TypeEnum.valueOf(portViewType.toString()))
+                .build();
+        } else {
+            return null;
+        }
     }
 
     private static NodePortAndTemplateEnt.TypeEnum getNodePortTemplateType(final PortType ptype) {
@@ -704,12 +722,17 @@ public final class EntityBuilderUtil {
         return (ncState.isExecutionInProgress() && !ncState.isWaitingToBeExecuted()) || ncState.isExecutingRemotely();
     }
 
+
+    private static NativeNodeTemplateEnt buildOrGetFromCacheNativeNodeTemplateEnt(final String templateId,
+        final NativeNodeContainer nc) {
+        return m_nativeNodeTemplateCache.computeIfAbsent(templateId, id -> buildNativeNodeTemplateEnt(nc));
+    }
+
     private static NativeNodeTemplateEnt buildNativeNodeTemplateEnt(final NativeNodeContainer nc) {
         NativeNodeTemplateEntBuilder builder = builder(NativeNodeTemplateEntBuilder.class)
             .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()));
-        if(nc.getType() != NodeType.Missing) {
-            builder.setName(nc.getName())
-                .setIcon(createIconDataURL(nc.getNode().getFactory()));
+        if (nc.getType() != NodeType.Missing) {
+            builder.setName(nc.getName()).setIcon(createIconDataURL(nc.getNode().getFactory()));
         } else {
             NodeFactory<? extends NodeModel> factory = nc.getNode().getFactory();
             NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)factory).getNodeAndBundleInfo();
@@ -792,8 +815,8 @@ public final class EntityBuilderUtil {
         String[] names = metadata.getInPortNames().orElse(null);
         String[] descs = metadata.getInPortDescriptions().orElse(null);
         for (int i = 1; i < snc.getNrInPorts(); i++) {
-            res.add(buildNodePortTemplateEnt(snc.getInPort(i).getPortType(), names == null ? null : names[i - 1],
-                descs == null ? null : descs[i - 1]));
+            res.add(buildOrGetFromCacheNodePortTemplateEnt(snc.getInPort(i).getPortType(),
+                names == null ? null : names[i - 1], descs == null ? null : descs[i - 1]));
         }
         return res;
     }
@@ -807,10 +830,16 @@ public final class EntityBuilderUtil {
         String[] names = metadata.getOutPortNames().orElse(null);
         String[] descs = metadata.getOutPortDescriptions().orElse(null);
         for (int i = 1; i < snc.getNrOutPorts(); i++) {
-            res.add(buildNodePortTemplateEnt(snc.getOutPort(i).getPortType(), names == null ? null : names[i - 1],
-                descs == null ? null : descs[i - 1]));
+            res.add(buildOrGetFromCacheNodePortTemplateEnt(snc.getOutPort(i).getPortType(),
+                names == null ? null : names[i - 1], descs == null ? null : descs[i - 1]));
         }
         return res;
+    }
+
+    private static NodePortTemplateEnt buildOrGetFromCacheNodePortTemplateEnt(final PortType ptype, final String name,
+        final String description) {
+        return m_nodePortTemplateCache.computeIfAbsent(ptype.getPortObjectClass().getCanonicalName(),
+            k -> buildNodePortTemplateEnt(ptype, name, description));
     }
 
     private static NodePortTemplateEnt buildNodePortTemplateEnt(final PortType ptype, final String name,
@@ -821,7 +850,7 @@ public final class EntityBuilderUtil {
             .setDescription(isBlank(description) ? null : description)//
             .setType(resPortType)//
             .setTypeName(ptype.getName())//
-            .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)
+            .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
             .setOptional(ptype.isOptional())//
             .build();
     }
