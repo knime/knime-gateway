@@ -88,6 +88,12 @@ public interface MetaNodeEnt extends NodeEnt {
    **/
   public java.util.List<MetaNodePortEnt> getOutPorts();
 
+  /**
+   * A URL, if the metanode is linked.
+   * @return link 
+   **/
+  public String getLink();
+
 
     /**
      * The builder for the entity.
@@ -165,6 +171,14 @@ public interface MetaNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setState(MetaNodeStateEnt state);
+        
+        /**
+         * A URL, if the metanode is linked.
+         * 
+         * @param link the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setLink(String link);
         
         
         /**

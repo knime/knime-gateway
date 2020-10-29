@@ -79,6 +79,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
     @JsonProperty("containerType")
     public ContainerTypeEnum getContainerType();
     
+    @Override
+    @JsonProperty("linked")
+    public Boolean isLinked();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -103,6 +107,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
         @Override
         @JsonProperty("containerType")
         public WorkflowInfoEntMixInBuilder setContainerType(final ContainerTypeEnum containerType);
+        
+        @Override
+        @JsonProperty("linked")
+        public WorkflowInfoEntMixInBuilder setLinked(final Boolean linked);
         
     }
 

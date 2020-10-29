@@ -26,6 +26,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeContainerTemplate;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
@@ -224,10 +226,17 @@ public final class EntityBuilderUtil {
     }
 
     private static WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm) {
-        return builder(WorkflowInfoEntBuilder.class)
-                .setName(wfm.getName())
-                .setContainerId(getContainerId(wfm))
-                .setContainerType(getContainerType(wfm)).build();
+        return builder(WorkflowInfoEntBuilder.class)//
+                .setName(wfm.getName())//
+                .setContainerId(getContainerId(wfm))//
+                .setContainerType(getContainerType(wfm))//
+                .setLinked(getTemplateLink(wfm) == null ? null : Boolean.TRUE)
+                .build();
+    }
+
+    private static String getTemplateLink(final NodeContainerTemplate nct) {
+        URI sourceURI = nct.getTemplateInformation().getSourceURI();
+        return sourceURI == null ? null : sourceURI.toString();
     }
 
     private static NodeIDEnt getContainerId(final WorkflowManager wfm) {
@@ -400,6 +409,7 @@ public final class EntityBuilderUtil {
                 .setPosition(buildXYEnt(wm.getUIInformation()))
                 .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))
                 .setKind(KindEnum.METANODE)
+                .setLink(getTemplateLink(wm))
                 .setAllowedActions(allowedActions).build();
     }
 
@@ -451,6 +461,7 @@ public final class EntityBuilderUtil {
                 .setState(buildNodeStateEnt(nc))
                 .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))
                 .setKind(KindEnum.COMPONENT)
+                .setLink(getTemplateLink(nc))
                 .setAllowedActions(allowedActions).build();
     }
 

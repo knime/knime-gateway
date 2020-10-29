@@ -64,6 +64,7 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
   protected String m_name;
   protected org.knime.gateway.api.entity.NodeIDEnt m_containerId;
   protected ContainerTypeEnum m_containerType;
+  protected Boolean m_linked;
   
   protected DefaultWorkflowInfoEnt() {
     //for sub-classes
@@ -85,6 +86,7 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
         throw new IllegalArgumentException("containerType must not be null.");
     }
     m_containerType = immutable(builder.m_containerType);
+    m_linked = immutable(builder.m_linked);
   }
   
    /**
@@ -102,7 +104,7 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
             return false;
         }
         DefaultWorkflowInfoEnt ent = (DefaultWorkflowInfoEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_containerId, ent.m_containerId) && Objects.equals(m_containerType, ent.m_containerType);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_containerId, ent.m_containerId) && Objects.equals(m_containerType, ent.m_containerType) && Objects.equals(m_linked, ent.m_linked);
     }
 
 
@@ -116,6 +118,7 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
                .append(m_name)
                .append(m_containerId)
                .append(m_containerType)
+               .append(m_linked)
                .toHashCode();
    }
   
@@ -136,6 +139,11 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
         return m_containerType;
   }
     
+  @Override
+  public Boolean isLinked() {
+        return m_linked;
+  }
+    
   
     public static class DefaultWorkflowInfoEntBuilder implements WorkflowInfoEntBuilder {
     
@@ -146,6 +154,7 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
         private String m_name;
         private org.knime.gateway.api.entity.NodeIDEnt m_containerId;
         private ContainerTypeEnum m_containerType;
+        private Boolean m_linked;
 
         @Override
         public DefaultWorkflowInfoEntBuilder setName(String name) {
@@ -168,6 +177,12 @@ public class DefaultWorkflowInfoEnt  implements WorkflowInfoEnt {
                  throw new IllegalArgumentException("containerType must not be null.");
              }
              m_containerType = containerType;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowInfoEntBuilder setLinked(Boolean linked) {
+             m_linked = linked;
              return this;
         }
 

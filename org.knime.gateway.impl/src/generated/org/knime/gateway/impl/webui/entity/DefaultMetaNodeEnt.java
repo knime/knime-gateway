@@ -71,6 +71,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
   protected MetaNodeStateEnt m_state;
   protected java.util.List<MetaNodePortEnt> m_inPorts;
   protected java.util.List<MetaNodePortEnt> m_outPorts;
+  protected String m_link;
   
   protected DefaultMetaNodeEnt() {
     //for sub-classes
@@ -113,6 +114,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         throw new IllegalArgumentException("state must not be null.");
     }
     m_state = immutable(builder.m_state);
+    m_link = immutable(builder.m_link);
   }
   
    /**
@@ -130,7 +132,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
             return false;
         }
         DefaultMetaNodeEnt ent = (DefaultMetaNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
     }
 
 
@@ -150,6 +152,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
                .append(m_allowedActions)
                .append(m_name)
                .append(m_state)
+               .append(m_link)
                .toHashCode();
    }
   
@@ -175,6 +178,11 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         return m_outPorts;
   }
     
+  @Override
+  public String getLink() {
+        return m_link;
+  }
+    
   
     public static class DefaultMetaNodeEntBuilder implements MetaNodeEntBuilder {
     
@@ -191,6 +199,7 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
         private AllowedActionsEnt m_allowedActions;
         private String m_name;
         private MetaNodeStateEnt m_state;
+        private String m_link;
 
         @Override
         public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -264,6 +273,12 @@ public class DefaultMetaNodeEnt extends DefaultNodeEnt implements MetaNodeEnt {
                  throw new IllegalArgumentException("state must not be null.");
              }
              m_state = state;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodeEntBuilder setLink(String link) {
+             m_link = link;
              return this;
         }
 

@@ -100,6 +100,12 @@ public interface WorkflowInfoEnt extends GatewayEntity {
    **/
   public ContainerTypeEnum getContainerType();
 
+  /**
+   * True, if the component or metanode is linked. If not, this property is absent.
+   * @return linked 
+   **/
+  public Boolean isLinked();
+
 
     /**
      * The builder for the entity.
@@ -129,6 +135,14 @@ public interface WorkflowInfoEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType);
+        
+        /**
+         * True, if the component or metanode is linked. If not, this property is absent.
+         * 
+         * @param linked the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowInfoEntBuilder setLinked(Boolean linked);
         
         
         /**

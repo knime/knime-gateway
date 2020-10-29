@@ -117,6 +117,12 @@ public interface ComponentNodeEnt extends NodeEnt {
    **/
   public String getIcon();
 
+  /**
+   * A URL, if the component is linked.
+   * @return link 
+   **/
+  public String getLink();
+
 
     /**
      * The builder for the entity.
@@ -210,6 +216,14 @@ public interface ComponentNodeEnt extends NodeEnt {
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setIcon(String icon);
+        
+        /**
+         * A URL, if the component is linked.
+         * 
+         * @param link the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setLink(String link);
         
         
         /**

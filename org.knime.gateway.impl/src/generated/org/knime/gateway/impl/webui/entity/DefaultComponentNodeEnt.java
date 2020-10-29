@@ -71,6 +71,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
   protected TypeEnum m_type;
   protected NodeStateEnt m_state;
   protected String m_icon;
+  protected String m_link;
   
   protected DefaultComponentNodeEnt() {
     //for sub-classes
@@ -112,6 +113,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
     m_type = immutable(builder.m_type);
     m_state = immutable(builder.m_state);
     m_icon = immutable(builder.m_icon);
+    m_link = immutable(builder.m_link);
   }
   
    /**
@@ -129,7 +131,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_icon, ent.m_icon);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_link, ent.m_link);
     }
 
 
@@ -151,6 +153,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
                .append(m_type)
                .append(m_state)
                .append(m_icon)
+               .append(m_link)
                .toHashCode();
    }
   
@@ -176,6 +179,11 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         return m_icon;
   }
     
+  @Override
+  public String getLink() {
+        return m_link;
+  }
+    
   
     public static class DefaultComponentNodeEntBuilder implements ComponentNodeEntBuilder {
     
@@ -194,6 +202,7 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         private TypeEnum m_type;
         private NodeStateEnt m_state;
         private String m_icon;
+        private String m_link;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -276,6 +285,12 @@ public class DefaultComponentNodeEnt extends DefaultNodeEnt implements Component
         @Override
         public DefaultComponentNodeEntBuilder setIcon(String icon) {
              m_icon = icon;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentNodeEntBuilder setLink(String link) {
+             m_link = link;
              return this;
         }
 

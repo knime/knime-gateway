@@ -752,6 +752,7 @@
                 "type" : "flowVariable"
               } ],
               "kind" : "component",
+              "link" : "knime://knime.mountpoint/Streaming%20Component",
               "name" : "Streaming Component",
               "outPorts" : [ {
                 "connectedVia" : "[  ]",
