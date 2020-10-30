@@ -404,9 +404,10 @@ public final class EntityBuilderUtil {
     }
 
     private static AllowedActionsEnt buildAllowedActionsEnt(final WorkflowManager wfm) {
-        return builder(AllowedActionsEntBuilder.class)
-                .setCanExecute(wfm.canExecuteAll())
-                .setCanCancel(wfm.canCancelAll()).build();
+        return builder(AllowedActionsEntBuilder.class)//
+            .setCanReset(wfm.canResetAll())//
+            .setCanExecute(wfm.canExecuteAll())//
+            .setCanCancel(wfm.canCancelAll()).build();
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,

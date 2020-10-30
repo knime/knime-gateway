@@ -73,7 +73,7 @@ public interface AllowedActionsEnt extends GatewayEntity {
 
   /**
    * Whether the node can be reset which depends on the node state and the states of the node&#39;s successors. Not given in case of the project workflow (action to reset all is not supported there).
-   * @return canReset 
+   * @return canReset , never <code>null</code>
    **/
   public Boolean isCanReset();
 
@@ -102,7 +102,7 @@ public interface AllowedActionsEnt extends GatewayEntity {
         /**
          * Whether the node can be reset which depends on the node state and the states of the node&#39;s successors. Not given in case of the project workflow (action to reset all is not supported there).
          * 
-         * @param canReset the property value,  
+         * @param canReset the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AllowedActionsEntBuilder setCanReset(Boolean canReset);

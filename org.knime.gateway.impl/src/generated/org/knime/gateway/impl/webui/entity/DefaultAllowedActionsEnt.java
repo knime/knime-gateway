@@ -84,6 +84,9 @@ public class DefaultAllowedActionsEnt  implements AllowedActionsEnt {
         throw new IllegalArgumentException("canCancel must not be null.");
     }
     m_canCancel = immutable(builder.m_canCancel);
+    if(builder.m_canReset == null) {
+        throw new IllegalArgumentException("canReset must not be null.");
+    }
     m_canReset = immutable(builder.m_canReset);
   }
   
@@ -167,6 +170,9 @@ public class DefaultAllowedActionsEnt  implements AllowedActionsEnt {
 
         @Override
         public DefaultAllowedActionsEntBuilder setCanReset(Boolean canReset) {
+             if(canReset == null) {
+                 throw new IllegalArgumentException("canReset must not be null.");
+             }
              m_canReset = canReset;
              return this;
         }

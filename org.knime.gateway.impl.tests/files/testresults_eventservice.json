@@ -542,6 +542,10 @@
       "value" : false
     }, {
       "op" : "replace",
+      "path" : "/allowedActions/canReset",
+      "value" : true
+    }, {
+      "op" : "replace",
       "path" : "/nodes/root:12/state/executionState",
       "value" : "CONFIGURED"
     }, {
@@ -727,6 +731,10 @@
   },
   "node_reset" : {
     "ops" : [ {
+      "op" : "replace",
+      "path" : "/allowedActions/canReset",
+      "value" : false
+    }, {
       "op" : "replace",
       "path" : "/nodes/root:12/state/executionState",
       "value" : "IDLE"

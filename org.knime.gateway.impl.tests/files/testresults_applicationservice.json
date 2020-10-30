@@ -6,7 +6,8 @@
         "workflow" : {
           "allowedActions" : {
             "canCancel" : false,
-            "canExecute" : true
+            "canExecute" : true,
+            "canReset" : false
           },
           "connections" : {
             "root:11_1" : {

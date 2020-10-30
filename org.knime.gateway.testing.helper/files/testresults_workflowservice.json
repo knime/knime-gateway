@@ -152,7 +152,8 @@
   "component_in_component_project_l2" : {
     "allowedActions" : {
       "canCancel" : false,
-      "canExecute" : true
+      "canExecute" : true,
+      "canReset" : false
     },
     "connections" : { },
     "info" : {
@@ -292,7 +293,8 @@
   "component_in_component_project_l1" : {
     "allowedActions" : {
       "canCancel" : false,
-      "canExecute" : true
+      "canExecute" : true,
+      "canReset" : false
     },
     "connections" : { },
     "info" : {
@@ -418,7 +420,8 @@
   "component_project" : {
     "allowedActions" : {
       "canCancel" : false,
-      "canExecute" : true
+      "canExecute" : true,
+      "canReset" : false
     },
     "connections" : {
       "root:7_1" : {
@@ -609,7 +612,8 @@
   },
   "allowedactions_8" : {
     "canCancel" : false,
-    "canExecute" : true
+    "canExecute" : true,
+    "canReset" : false
   },
   "node_states_execution" : {
     "root:1" : "IDLE",
@@ -621,15 +625,18 @@
   },
   "allowedactions_root" : {
     "canCancel" : false,
-    "canExecute" : true
+    "canExecute" : true,
+    "canReset" : false
   },
   "allowedactions_6" : {
     "canCancel" : false,
-    "canExecute" : true
+    "canExecute" : true,
+    "canReset" : false
   },
   "allowedactions_12" : {
     "canCancel" : false,
-    "canExecute" : true
+    "canExecute" : true,
+    "canReset" : false
   },
   "worklfowent_root_executed" : {
     "connections" : {
