@@ -106,10 +106,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(23), false).getWorkflow();
         cr(workflow, "workflowent_23");
 
-        //check executed
+        // check executed
         executeWorkflow(wfId);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         cr(workflow, "worklfowent_root_executed");
+
+        // get a workflow of a linked component
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(183), false).getWorkflow();
+        cr(workflow, "workflowent_183_linked_component");
     }
 
     /**

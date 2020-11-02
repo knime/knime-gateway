@@ -228,12 +228,18 @@ public final class EntityBuilderUtil {
     }
 
     private static WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm) {
+        NodeContainerTemplate template;
+        if (wfm.getDirectNCParent() instanceof SubNodeContainer) {
+            template = (SubNodeContainer)wfm.getDirectNCParent();
+        } else {
+            template = wfm;
+        }
         return builder(WorkflowInfoEntBuilder.class)//
-                .setName(wfm.getName())//
-                .setContainerId(getContainerId(wfm))//
-                .setContainerType(getContainerType(wfm))//
-                .setLinked(getTemplateLink(wfm) == null ? null : Boolean.TRUE)
-                .build();
+            .setName(wfm.getName())//
+            .setContainerId(getContainerId(wfm))//
+            .setContainerType(getContainerType(wfm))//
+            .setLinked(getTemplateLink(template) == null ? null : Boolean.TRUE)//
+            .build();
     }
 
     private static String getTemplateLink(final NodeContainerTemplate nct) {
