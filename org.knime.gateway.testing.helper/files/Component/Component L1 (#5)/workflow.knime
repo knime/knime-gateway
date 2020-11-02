@@ -39,8 +39,8 @@
 <entry key="array-size" type="xint" value="4"/>
 <entry key="0" type="xint" value="50"/>
 <entry key="1" type="xint" value="120"/>
-<entry key="2" type="xint" value="90"/>
-<entry key="3" type="xint" value="103"/>
+<entry key="2" type="xint" value="134"/>
+<entry key="3" type="xint" value="83"/>
 </config>
 </config>
 </config>
@@ -55,8 +55,8 @@
 <entry key="array-size" type="xint" value="4"/>
 <entry key="0" type="xint" value="250"/>
 <entry key="1" type="xint" value="120"/>
-<entry key="2" type="xint" value="90"/>
-<entry key="3" type="xint" value="103"/>
+<entry key="2" type="xint" value="147"/>
+<entry key="3" type="xint" value="83"/>
 </config>
 </config>
 </config>
@@ -71,7 +71,7 @@
 <entry key="array-size" type="xint" value="4"/>
 <entry key="0" type="xint" value="164"/>
 <entry key="1" type="xint" value="210"/>
-<entry key="2" type="xint" value="146"/>
+<entry key="2" type="xint" value="113"/>
 <entry key="3" type="xint" value="83"/>
 </config>
 </config>

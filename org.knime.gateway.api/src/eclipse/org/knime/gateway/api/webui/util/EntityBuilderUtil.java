@@ -174,8 +174,8 @@ public final class EntityBuilderUtil {
                 NodeIDEnt id = new NodeIDEnt(nc.getID(), hasComponentProjectParent);
                 buildAndAddNodeEnt(id, nc, nodes, templates, depNodeProps);
             }
-            Map<String, ConnectionEnt> connections =
-                wfm.getConnectionContainers().stream().map(EntityBuilderUtil::buildConnectionEnt).collect(
+            Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
+                .map(cc -> buildConnectionEnt(cc, hasComponentProjectParent)).collect(
                     Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations =
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
@@ -688,12 +688,12 @@ public final class EntityBuilderUtil {
         return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
     }
 
-    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc) {
-        return builder(ConnectionEntBuilder.class).setDestNode(new NodeIDEnt(cc.getDest()))
-            .setDestPort(cc.getDestPort())
-            .setSourceNode(new NodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())
-            .setFlowVariableConnection(
-                cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null)
+    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc,
+        final boolean hasComponentProjectParent) {
+        return builder(ConnectionEntBuilder.class).setDestNode(new NodeIDEnt(cc.getDest(), hasComponentProjectParent))//
+            .setDestPort(cc.getDestPort())//
+            .setSourceNode(new NodeIDEnt(cc.getSource(), hasComponentProjectParent)).setSourcePort(cc.getSourcePort())//
+            .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null)//
             .build();
     }
 }
