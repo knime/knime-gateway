@@ -83,31 +83,31 @@ public class GatewayServiceTestHelper {
 
     private final ResultChecker m_entityResultChecker;
 
-    private final String m_testName;
+    private final Class<?> m_testClass;
 
     /**
      * Creates a new abstract service test.
      *
-     * @param testName a unique name for this particular test
+     * @param testClass the test class carrying out the actual test
      * @param entityResultChecker logic to check whether the returned entities are the expected ones
      * @param workflowLoader logic to load a workflow
      */
-    protected GatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
+    protected GatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
         final WorkflowLoader workflowLoader) {
-        this(testName, entityResultChecker, workflowLoader, null);
+        this(testClass, entityResultChecker, workflowLoader, null);
     }
 
     /**
      * Creates a new abstract service test.
      *
-     * @param testName a unique name for this particular test
+     * @param testClass the test class carrying out the actual test
      * @param entityResultChecker logic to check whether the returned entities are the expected ones
      * @param workflowLoader logic to load a workflow
      * @param workflowExecutor logic to execute a workflow, can be <code>null</code> if not required by the test
      */
-    protected GatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
+    protected GatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        m_testName = testName;
+        m_testClass = testClass;
         m_workflowLoader = workflowLoader;
         m_workflowExecutor = workflowExecutor;
         m_entityResultChecker = entityResultChecker;
@@ -153,7 +153,7 @@ public class GatewayServiceTestHelper {
      *             by the given key)
      */
     protected final void cr(final Object obj, final String resultKey) {
-        m_entityResultChecker.checkObject(m_testName, obj, resultKey);
+        m_entityResultChecker.checkObject(m_testClass, resultKey, obj);
     }
 
     /**

@@ -1,0 +1,16 @@
+{
+  "ops" : [ {
+    "op" : "replace",
+    "path" : "/nodes/root:14/allowedActions/canExecute",
+    "value" : false
+  }, {
+    "op" : "remove",
+    "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
+  }, {
+    "op" : "remove",
+    "path" : "/nodes/root:14/inPorts/1/connectedVia/0"
+  }, {
+    "op" : "remove",
+    "path" : "/connections/root:14_1"
+  } ]
+}

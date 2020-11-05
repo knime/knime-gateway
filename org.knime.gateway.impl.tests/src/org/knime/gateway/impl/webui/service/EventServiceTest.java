@@ -86,13 +86,6 @@ import org.mockito.ArgumentCaptor;
 public class EventServiceTest extends GatewayServiceTest {
 
     /**
-     * New test.
-     */
-    public EventServiceTest() {
-        super("eventservice");
-    }
-
-    /**
      * Tests that the expected workflow change events are issued by the event service for certain changes to the
      * workflow manager.
      *

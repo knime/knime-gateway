@@ -84,7 +84,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     protected WorkflowServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super("workflowservice", entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+        super(WorkflowServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
     /**

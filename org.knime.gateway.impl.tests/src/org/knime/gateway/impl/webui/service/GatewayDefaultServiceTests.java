@@ -45,13 +45,9 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.knime.gateway.testing.helper.webui.GatewayTestCollection.REWRITE_TEST_RESULTS;
-
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,29 +139,11 @@ public class GatewayDefaultServiceTests {
     }
 
     /**
-     * A test that fails when {@link GatewayTestCollection#REWRITE_TEST_RESULTS} is set to <code>true</code>.
-     */
-    @Test
-    public void testTestResultsNotOverridden() {
-        Assert.assertFalse("Result files have been rewritten. Set 'REWRITE_TEST_RESULTS' back to 'false'.",
-            REWRITE_TEST_RESULTS);
-    }
-
-    /**
      * Initializes/instantiates the result checker.
      */
     @BeforeClass
     public static void initResultChecker() {
-        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker(REWRITE_TEST_RESULTS);
+        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker();
     }
 
-    /**
-     * Finishes the result checker and writes collected test results to files (if configured).
-     */
-    @AfterClass
-    public static void finishResultChecker() {
-        if (REWRITE_TEST_RESULTS) {
-            resultChecker.writeTestResultsToFiles();
-        }
-    }
 }

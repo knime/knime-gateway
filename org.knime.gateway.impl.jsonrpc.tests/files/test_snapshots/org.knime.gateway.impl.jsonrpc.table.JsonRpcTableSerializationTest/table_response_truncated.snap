@@ -11,7 +11,6 @@
     "spec" : {
       "cellTypes" : {
         "org.knime.core.data.def.StringCell" : {
-          "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAoUlEQVR42rWSoQ7DIBRF+4NoPgCPx03g8XwAvh6Px/MBePx2kpcs2xJgTbab0LxSzrv3tT1uF3Ww7l/rF0BrzTlnjFFKUZRSVgCn1bu01mOMKZBSksbUnBMfNqcAAaRrCIG6915rxXY1g7X2NU+McTM0Sc7zJNUTW0XimfeeGHJLewA8p4A05kp6rIA3gAz9oZzzagYY8eGd7j/c3/6lS3oA3x8++aOvDFgAAAAASUVORK5CYII=",
           "name" : "String",
           "preferredValueId" : "org.knime.core.data.StringValue"
         }

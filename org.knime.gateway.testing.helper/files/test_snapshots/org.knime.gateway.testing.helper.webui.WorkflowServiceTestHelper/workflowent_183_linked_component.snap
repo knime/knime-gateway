@@ -1,0 +1,179 @@
+{
+  "componentMetadata" : {
+    "description" : "A component",
+    "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwUlEQVR4nGOQlpYy1tBQfwqk/2PD6uqqj0Fq/HtcWQL63beEzfR5GDjBff7///8ZQJgBqPlJU1Pj/0ePHv5/8uQJCgaJgeSUlZXu+3e75sWtCfmRcTDuf8g075dwA0C2gBTiAiA5NUul/6EzvN+ANCdtj/of2Oe2BsUAkG24AEjOrcbuf+rO6P/p+2OBBnk98elykcAw4P6z+/8Pnt///+aDmygGHDi5/3/U0sD/mYfi/seuDvnr1+GcA9OMYkDx4jyw8+KWhvw/c+0MWPP3H9/+5y7M+J9+IPZ/2q6Y/8BA3IOsGSUMmlfV/U/fG/sf5M/4pUH/j108+n/dwbX/U7dEgm0Pm+372afNWQ/DABUV5YegkD53+cz//MWZ/1N3x/zPBNoYvzIUaFA42MC4tSH//LpcKtE1w1xgrKam8gjkEg17lf/+fW5g54ICDOSiVCD2n+Bxx6/blQOrAegCXs2OKiFTvO6k7YoC2x421/etT5uTMTbNWA2AGiIbNMnjVPB070fAgGsGiZ3kkOY6L6G2+bKS/kMQBrFBYlgNwIZBGh64ev1/7B8IxiA2SIxoA0C2wjTDMEiMfgZQ7AVcgQgAUT6awwoY0YUAAAAASUVORK5CYII=",
+    "inPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "type" : "table",
+      "typeName" : "Data"
+    }, {
+      "optional" : false,
+      "type" : "flowVariable",
+      "typeName" : "Flow Variable"
+    } ],
+    "name" : "Streaming Component",
+    "outPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "type" : "table",
+      "typeName" : "Data"
+    }, {
+      "color" : "#9B9B9B",
+      "optional" : false,
+      "type" : "other",
+      "typeName" : "Generic Port"
+    } ],
+    "type" : "Sink"
+  },
+  "connections" : { },
+  "info" : {
+    "containerId" : "root:183",
+    "containerType" : "component",
+    "linked" : true,
+    "name" : "Streaming Component"
+  },
+  "nodeTemplates" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:ba827aa8" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Output",
+      "type" : "VirtualOut"
+    },
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:51ca6eb2" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Input",
+      "type" : "VirtualIn"
+    },
+    "org.knime.base.node.flowvariable.extractvariables.ExtractVariablesNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QkYyNjg3MDI3RjFEMTFFNUE3NjBCMzY2NkE3NjU5N0EiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QkYyNjg3MDE3RjFEMTFFNUE3NjBCMzY2NkE3NjU5N0EiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoyNjE5N0RCNDQ1QzcxMUU1QUM2QkE3NzQyQjhFM0EyRCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoyNjE5N0RCNTQ1QzcxMUU1QUM2QkE3NzQyQjhFM0EyRCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pl1sTZEAAACrSURBVHjaYvr//z8DPgwEd4H4GQMCCAIxSGIVSJ6JgTCYBcSSQGwM5YdC6dVgkggXwGwsh2pcBcTfYXqJMQCmCeYNkOYOUg1wgboiDUobwwxgRFKEFTAyMsKY76D0DyCWghlATCDCQCc0PCaiWEDIBYQAEwOFAMWA5/4BDUD8nywDQJqBVD2pLgCHATG2Sm7cwEiTMIDHArIXcNmG1wVATSADGsl2AbkAIMAAbbCgxpIHrsQAAAAASUVORK5CYII=",
+      "name" : "Extract Variables (Data)",
+      "type" : "Other"
+    }
+  },
+  "nodes" : {
+    "root:183:0:18" : {
+      "id" : "root:183:0:18",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Passed-on Component Output 0",
+        "optional" : false,
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      }, {
+        "color" : "#9B9B9B",
+        "connectedVia" : "[  ]",
+        "index" : 2,
+        "name" : "Passed-on Component Output 1",
+        "optional" : false,
+        "type" : "other"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      } ],
+      "position" : {
+        "x" : 250,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "IDLE"
+      },
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:ba827aa8"
+    },
+    "root:183:0:17" : {
+      "id" : "root:183:0:17",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Delegated Component Input 0",
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 2,
+        "name" : "Delegated Component Input 1",
+        "type" : "flowVariable"
+      } ],
+      "position" : {
+        "x" : 50,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "IDLE",
+        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+      },
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:51ca6eb2"
+    },
+    "root:183:0:14" : {
+      "id" : "root:183:0:14",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Data connection",
+        "optional" : false,
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Variable port",
+        "type" : "flowVariable"
+      } ],
+      "position" : {
+        "x" : 150,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "IDLE"
+      },
+      "templateId" : "org.knime.base.node.flowvariable.extractvariables.ExtractVariablesNodeFactory"
+    }
+  },
+  "parents" : [ {
+    "containerType" : "project",
+    "name" : "general_web_ui"
+  } ],
+  "workflowAnnotations" : [ ]
+}

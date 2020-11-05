@@ -1,0 +1,131 @@
+{
+  "allowedActions" : {
+    "canCancel" : false,
+    "canExecute" : true,
+    "canReset" : false
+  },
+  "componentMetadata" : {
+    "description" : "",
+    "name" : "Component L1"
+  },
+  "connections" : { },
+  "info" : {
+    "containerId" : "root:5",
+    "containerType" : "component",
+    "name" : "Component L1"
+  },
+  "nodeTemplates" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Input",
+      "type" : "VirtualIn"
+    },
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Output",
+      "type" : "VirtualOut"
+    }
+  },
+  "nodes" : {
+    "root:5:0:5" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canExecute" : true,
+        "canReset" : false
+      },
+      "id" : "root:5:0:5",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      } ],
+      "position" : {
+        "x" : 50,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      },
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory"
+    },
+    "root:5:0:6" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canExecute" : true,
+        "canReset" : false
+      },
+      "id" : "root:5:0:6",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      } ],
+      "position" : {
+        "x" : 250,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      },
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory"
+    },
+    "root:5:0:7" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canExecute" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "styleRanges" : [ ],
+        "text" : "",
+        "textAlign" : "center"
+      },
+      "id" : "root:5:0:7",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      } ],
+      "kind" : "component",
+      "name" : "Component L2",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      } ],
+      "position" : {
+        "x" : 164,
+        "y" : 216
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      }
+    }
+  },
+  "parents" : [ {
+    "containerType" : "project",
+    "name" : "component project"
+  } ],
+  "workflowAnnotations" : [ ]
+}

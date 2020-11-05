@@ -1,0 +1,10 @@
+{
+  "description" : "The workflow description",
+  "lastEdit" : "2020-10-20T09:42:57Z",
+  "links" : [ {
+    "text" : "BLUB",
+    "url" : "http://blub.com"
+  } ],
+  "tags" : [ "tag1", "tag2" ],
+  "title" : "Workflow with metadata"
+}

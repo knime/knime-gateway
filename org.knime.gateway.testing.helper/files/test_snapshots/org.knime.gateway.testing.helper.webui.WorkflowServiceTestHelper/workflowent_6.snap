@@ -1,0 +1,171 @@
+{
+  "connections" : {
+    "root:6_1" : {
+      "destNode" : "root:6",
+      "destPort" : 1,
+      "sourceNode" : "root:6:3",
+      "sourcePort" : 2
+    },
+    "root:6:3_1" : {
+      "destNode" : "root:6:3",
+      "destPort" : 1,
+      "sourceNode" : "root:6",
+      "sourcePort" : 0
+    },
+    "root:6_0" : {
+      "destNode" : "root:6",
+      "destPort" : 0,
+      "sourceNode" : "root:6:3",
+      "sourcePort" : 1
+    }
+  },
+  "info" : {
+    "containerId" : "root:6",
+    "containerType" : "metanode",
+    "name" : "Metanode"
+  },
+  "metaInPorts" : {
+    "ports" : [ {
+      "connectedVia" : "[ root:6:3_1 ]",
+      "index" : 0,
+      "name" : "Connected to: Filtered table",
+      "type" : "table",
+      "view" : {
+        "type" : "table"
+      }
+    } ]
+  },
+  "metaOutPorts" : {
+    "ports" : [ {
+      "connectedVia" : "[ root:6_0 ]",
+      "index" : 0,
+      "name" : "Inport 0",
+      "type" : "table",
+      "view" : {
+        "type" : "table"
+      }
+    }, {
+      "connectedVia" : "[ root:6_1 ]",
+      "index" : 1,
+      "name" : "Inport 1",
+      "type" : "table",
+      "view" : {
+        "type" : "table"
+      }
+    }, {
+      "connectedVia" : "[  ]",
+      "index" : 2,
+      "name" : "Inport 2",
+      "type" : "table",
+      "view" : {
+        "type" : "table"
+      }
+    } ],
+    "xPos" : 780
+  },
+  "nodeTemplates" : {
+    "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzA3QTY5QUExNjhEMTFFNUJEOTVBMUI1OTFFQzZGQkIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzA3QTY5QTkxNjhEMTFFNUJEOTVBMUI1OTFFQzZGQkIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDplYjRlYWE5NS1mMzM5LTQzZTctYmY1Yy0yNzFmOThkY2ZiMmIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+3KzYuwAAAHZJREFUeNrUU9EKACEIc9GH3325XVhhETJ8u4FBtXSaiqqKtw99ecRgBwfHGybpgnmH4fiKOogenf0KCTAkrwDApiqUd41oDtbbqAaMMlQ2jaNGK/2SDL6C1kQNtn1WgZ7N8uMiFmaYou6lhilqb2qYoq9uAgwAcxJd484pDhYAAAAASUVORK5CYII=",
+      "name" : "Row Splitter",
+      "type" : "Manipulator"
+    }
+  },
+  "nodes" : {
+    "root:6:3" : {
+      "id" : "root:6:3",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[ root:6:3_1 ]",
+        "index" : 1,
+        "name" : "To be filtered",
+        "optional" : false,
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[ root:6_0 ]",
+        "index" : 1,
+        "name" : "Filtered",
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      }, {
+        "connectedVia" : "[ root:6_1 ]",
+        "index" : 2,
+        "name" : "Filtered Out",
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      } ],
+      "position" : {
+        "x" : 150,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      },
+      "templateId" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory"
+    }
+  },
+  "parents" : [ {
+    "containerType" : "project",
+    "name" : "general_web_ui"
+  } ],
+  "workflowAnnotations" : [ {
+    "backgroundColor" : "#FFFFFF",
+    "borderColor" : "#FFD800",
+    "borderWidth" : 10,
+    "bounds" : {
+      "height" : 140,
+      "width" : 250,
+      "x" : 233,
+      "y" : 293
+    },
+    "defaultFontSize" : 15,
+    "id" : "root:6_0",
+    "styleRanges" : [ {
+      "color" : "#EF2929",
+      "fontSize" : 15,
+      "length" : 13,
+      "start" : 25
+    }, {
+      "bold" : true,
+      "color" : "#EF2929",
+      "fontSize" : 15,
+      "length" : 15,
+      "start" : 38
+    } ],
+    "text" : "Workflow Annotation with Style Ranges and another one",
+    "textAlign" : "left"
+  }, {
+    "backgroundColor" : "#FFFFFF",
+    "borderColor" : "#FFD800",
+    "borderWidth" : 10,
+    "bounds" : {
+      "height" : 61,
+      "width" : 221,
+      "x" : 840,
+      "y" : 200
+    },
+    "defaultFontSize" : 15,
+    "id" : "root:6_1",
+    "styleRanges" : [ ],
+    "text" : "<- this output bar has a custom position and size",
+    "textAlign" : "left"
+  } ]
+}

@@ -63,13 +63,6 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
 public class ApplicationServiceTest extends GatewayServiceTest {
 
     /**
-     * New test.
-     */
-    public ApplicationServiceTest() {
-        super("applicationservice");
-    }
-
-    /**
      * Test to get the app state.
      *
      * @throws Exception

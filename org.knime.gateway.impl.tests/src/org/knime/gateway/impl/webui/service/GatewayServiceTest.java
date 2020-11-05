@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.knime.gateway.testing.helper.webui.GatewayTestCollection.REWRITE_TEST_RESULTS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +58,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.InvalidSettingsException;
@@ -85,34 +83,20 @@ public class GatewayServiceTest {
 
     private static ResultChecker entityResultChecker;
 
-    private final String m_testName;
-
     /**
      * Initializes/instantiates the result checker.
      */
     @BeforeClass
     public static void initResultChecker() {
-        entityResultChecker =
-            WebUIGatewayServiceTestHelper.createResultChecker(REWRITE_TEST_RESULTS, GatewayServiceTest.class);
-    }
-
-    /**
-     * Finishes the result checker and writes collected test results to files (if configured).
-     */
-    @AfterClass
-    public static void finishResultChecker() {
-        if (REWRITE_TEST_RESULTS) {
-            entityResultChecker.writeTestResultsToFiles();
-        }
+        entityResultChecker = WebUIGatewayServiceTestHelper.createResultChecker(GatewayServiceTest.class);
     }
 
     /**
      * Creates a new abstract service test.
      *
-     * @param testName a unique name for this particular test
      */
-    protected GatewayServiceTest(final String testName) {
-        m_testName = testName;
+    protected GatewayServiceTest() {
+        //
     }
 
     /**
@@ -168,7 +152,7 @@ public class GatewayServiceTest {
      *             by the given key)
      */
     protected final void cr(final Object obj, final String resultKey) {
-        entityResultChecker.checkObject(m_testName, obj, resultKey);
+        entityResultChecker.checkObject(getClass(), resultKey, obj);
     }
 
     /**

@@ -1,0 +1,7 @@
+{
+  "ops" : [ {
+    "op" : "replace",
+    "path" : "/nodes/root:1/annotation/text",
+    "value" : "yet another text"
+  } ]
+}

@@ -19,22 +19,19 @@ package org.knime.gateway.testing.helper;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.junit.Assert;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -46,13 +43,16 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 /**
- * Compares objects to a representation stored to files.
+ * Compares objects to a representation stored to files (i.e. snapshot testing).
  *
- * The objects (e.g. WorkflowEnt) are compared by turning them into a string via jackson and compare it to a
- * static string.
+ * The objects (e.g. WorkflowEnt) are compared by turning them into a string via jackson and compare it to a static
+ * string.
  *
- * This class also allows one to newly collect and (re-)write the results (see
- * #{@link ResultChecker#ResultChecker(boolean, PropertyExceptions, ObjectMapper, File))}).
+ * A snapshot is stored into its own file, placed in a directory named after the test-class which carries out the test.
+ *
+ * Snapshot can be re-written by deleting the respective snapshot file (.snap). If a snapshot doesn't match, a debug
+ * file (.snap.debug) will be created next to the original snapshot file what allows direct file comparison. The debug
+ * file will be deleted automatically as soon as the respective snapshot matches again.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,10 +63,6 @@ public class ResultChecker {
      */
     private final ObjectMapper m_objectMapper;
 
-    private final Map<String, Map<String, JsonNode>> m_resultMaps;
-
-    private final boolean m_rewriteTestResults;
-
     private final PropertyExceptions m_propertyExceptions;
 
     private final File m_resultDirectory;
@@ -75,18 +71,14 @@ public class ResultChecker {
      * Creates a new instance of the result checker.
      *
      * @param propertyExceptions let one define exceptions of how to deal with certain properties for comparison
-     * @param rewriteTestResults if set to true, the expected test results (i.e. the retrieved workflow etc.) will be
-     *            updated and written to the respective files on calling {@link #writeTestResultsToFiles()}
      * @param objectMapper the mapper for object serialization for comparison
-     * @param resultDirectory the directory to read the result-snapshots from (and write them to, if desired)
+     * @param resultDirectory the directory to read the result-snapshots from (and write them to, if not present), can
+     *            be <code>null</code> if there are no exceptions
      */
-    public ResultChecker(final boolean rewriteTestResults, final PropertyExceptions propertyExceptions,
-        final ObjectMapper objectMapper, final File resultDirectory) {
-        m_rewriteTestResults = rewriteTestResults;
+    public ResultChecker(final PropertyExceptions propertyExceptions, final ObjectMapper objectMapper,
+        final File resultDirectory) {
         m_propertyExceptions = propertyExceptions;
         m_resultDirectory = resultDirectory;
-        m_resultMaps = new HashMap<>();
-
         m_objectMapper = objectMapper;
         // setup object mapper for entity-comparison with property exceptions
         SimpleModule module = new SimpleModule();
@@ -95,99 +87,68 @@ public class ResultChecker {
     }
 
     /**
-     * Writes the newly created result maps to files, one file for each test, with the test name as file name.
-     *
-     * @throws IllegalStateException if the result checker wasn't configured to rewrite the test results
-     */
-    public void writeTestResultsToFiles() {
-        if (m_rewriteTestResults) {
-            m_resultMaps.entrySet().forEach(resultMap -> {
-                try {
-                    try (FileWriterWithEncoding writer =
-                        new FileWriterWithEncoding(getResultFilePath(resultMap.getKey()), Charset.defaultCharset())) {
-                        m_objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, resultMap.getValue());
-                    }
-                } catch (IOException e) {
-                    throw new IllegalStateException("Result map couldn't be written!", e);
-                }
-            });
-        } else {
-            throw new IllegalStateException("Result checker wasn't configured to rewrite the test results.");
-        }
-    }
-
-    /**
      * Checks an object by comparing it to a string referenced by a specific test name and a result key.
      *
-     * @param testName the name of the test
-     * @param obj the object to test
-     * @param resultKey the key in the result map
+     * @param testClass the class running the test
+     * @param obj the object to snapshot-test
+     * @param snapshotName the name for the snapshot
      * @throws AssertionError if the result check failed (e.g. if the entity differs from the representation referenced
      *             by the given key)
      */
-    public void checkObject(final String testName, final Object obj, final String resultKey) {
-        JsonNode objAsJson = objectToJson(obj);
-        if (m_rewriteTestResults) {
-            Map<String, JsonNode> resultMap =
-                m_resultMaps.computeIfAbsent(testName, k -> new HashMap<String, JsonNode>());
-            resultMap.put(resultKey, objAsJson);
-            //result map will be written to file in the writeTestResultsToFiles()-method
-        } else {
-            JsonNode expectedResult = getResultMap(testName).get(resultKey);
-            try {
-                String expectedResultAsString =
-                    m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(expectedResult);
-                String objAsString = m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objAsJson);
-
-                // Still using assetEquals on strings(!) here since a nice result comparison can be opened
-                // with double-click on the test-error
-                // assertThat("Unexpected result returned", result, is(expectedResult));
-                // TODO alternatively https://github.com/skyscreamer/JSONassert could be used
-                // here eventually or the JsonNode-object itself for comparison
-                Assert.assertEquals(expectedResultAsString, objAsString);
-            } catch (JsonProcessingException ex) { //NOSONAR
-                Assert.fail("Problem comparing objects");
-            }
-        }
-    }
-
-    /**
-     * Returns the result map for a particular test.
-     *
-     * @param testName the test to get the result map for
-     * @return
-     */
-    private Map<String, JsonNode> getResultMap(final String testName) {
-        return m_resultMaps.computeIfAbsent(testName, this::readResultMap);
-    }
-
-    /**
-     * Essentially reads the result map (string to compare to) from a file.
-     */
-    private Map<String, JsonNode> readResultMap(final String testName) {
+    public void checkObject(final Class<?> testClass, final String snapshotName, final Object obj) {
         try {
-            String json = IOUtils.toString(getResultFilePath(testName).toURI().toURL(), Charset.defaultCharset());
-            return m_objectMapper.readValue(json, new TypeReference<Map<String, JsonNode>>() {
-            });
-        } catch (IOException e) {
-            // should never happen
-            throw new RuntimeException(e); // NOSONAR
+            compareWithSnapshotFromFile(testClass, snapshotName, obj);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to compare with snapshot from file", ex); // NOSONAR
         }
     }
 
-    private File getResultFilePath(final String testName) {
-        return new File(m_resultDirectory, "testresults_" + testName + ".json"); // NOSONAR vulnerability; because it's
-                                                                                 // for testing purposes only
+    private void compareWithSnapshotFromFile(final Class<?> testClass, final String snapshotName, final Object obj)
+        throws IOException {
+        String actual = (obj instanceof String) ? (String)obj
+            : m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+        Path snapFile = getSnapshotFile(testClass, snapshotName);
+        if (Files.exists(snapFile)) {
+            // load expected snapshot and compare
+            String expected = new String(Files.readAllBytes(snapFile), StandardCharsets.UTF_8);
+            Path debugFile = getSnapshotDebugFile(testClass, snapshotName);
+            if (!actual.equals(expected)) {
+                // write debug file if snapshot doesn't match
+                Files.write(debugFile, actual.getBytes(StandardCharsets.UTF_8));
+                assertEquals(snapshotName, expected, actual);
+            } else if (Files.exists(debugFile)) {
+                // if snapshot matches, delete debug file (might not exist)
+                Files.delete(debugFile);
+            } else {
+                //
+            }
+        } else {
+            // just write the snapshot
+            Files.createDirectories(snapFile.getParent());
+            Files.write(snapFile, actual.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        }
     }
 
-    /**
-     * Turns an object into a json-string by using jackson.
-     *
-     * @param obj the object to get the json string from
-     * @return the json representation
-     */
-    private final JsonNode objectToJson(final Object obj) {
-        return m_objectMapper.valueToTree(obj);
+    private static void assertEquals(final String snapshotName, final String expected, final String actual) {
+        // Still using assetEquals on strings(!) here since a nice result comparison can be opened
+        // with double-click on the test-error
+        // assertThat("Unexpected result returned", result, is(expectedResult));
+        // TODO alternatively https://github.com/skyscreamer/JSONassert could be used
+        // here eventually or the JsonNode-object itself for comparison
+        Assert.assertEquals("Snapshot '" + snapshotName + "' doesn't match", expected, actual);
+    }
+
+    private Path getSnapshotFile(final Class<?> testClass, final String snapshotName) {
+        return Paths.get(m_resultDirectory.getAbsolutePath(), getDirFromClass(testClass) + snapshotName + ".snap");
+    }
+
+    private Path getSnapshotDebugFile(final Class<?> testClass, final String snapshotName) {
+        return Paths.get(m_resultDirectory.getAbsolutePath(),
+            getDirFromClass(testClass) + snapshotName + ".snap.debug");
+    }
+
+    private static String getDirFromClass(final Class<?> testClass) {
+        return "/" + testClass.getCanonicalName() + "/";
     }
 
     /**
@@ -246,7 +207,8 @@ public class ResultChecker {
         public void serialize(final T value, final JsonGenerator gen, final SerializerProvider serializers)
             throws IOException {
             String name = gen.getOutputContext().getCurrentName();
-            if (name == null || !m_propertyExceptions.alternativeSerialization(name, gen, value)) {
+            if (name == null || m_propertyExceptions == null
+                || !m_propertyExceptions.alternativeSerialization(name, gen, value)) {
                 m_defaultSerializer.serialize(value, gen, serializers);
             }
         }

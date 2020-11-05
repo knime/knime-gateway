@@ -59,8 +59,6 @@ import java.util.Map;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,12 +106,6 @@ public class GatewayJsonRpcWrapperServiceTests {
     private final WorkflowExecutor m_workflowExecutor;
 
     private final ServiceProvider m_serviceProvider;
-
-    /**
-     * If manually set to true, the expected test results (i.e. the retrieved workflow etc.) will be updated and written
-     * to the respective files. After that it need to be set to false again (otherwise the test will fail anyway).
-     */
-    private static final boolean REWRITE_TEST_RESULTS = false;
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
@@ -174,30 +166,11 @@ public class GatewayJsonRpcWrapperServiceTests {
     }
 
     /**
-     * A test that fails when {@link #REWRITE_TEST_RESULTS} is set to <code>true</code>.
-     */
-    @Test
-    public void testTestResultsNotOverridden() {
-        Assert.assertFalse("Result files have been rewritten. Set 'REWRITE_TEST_RESULTS' back to 'false'.",
-            REWRITE_TEST_RESULTS);
-    }
-
-    /**
      * Initializes/instantiates the result checker.
      */
     @BeforeClass
     public static void initResultChecker() {
-        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker(REWRITE_TEST_RESULTS);
-    }
-
-    /**
-     * Finishes the result checker and writes collected test results to files (if configured).
-     */
-    @AfterClass
-    public static void finishResultChecker() {
-        if (REWRITE_TEST_RESULTS) {
-            resultChecker.writeTestResultsToFiles();
-        }
+        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker();
     }
 
     /**

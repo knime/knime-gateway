@@ -1,0 +1,15 @@
+{
+  "ops" : [ {
+    "op" : "remove",
+    "path" : "/nodes/root:16/outPorts/1/connectedVia/0"
+  }, {
+    "op" : "remove",
+    "path" : "/nodes/root:18"
+  }, {
+    "op" : "remove",
+    "path" : "/nodeTemplates/org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
+  }, {
+    "op" : "remove",
+    "path" : "/connections/root:18_1"
+  } ]
+}

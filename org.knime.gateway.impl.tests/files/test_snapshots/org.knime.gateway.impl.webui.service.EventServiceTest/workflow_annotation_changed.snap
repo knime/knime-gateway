@@ -1,0 +1,22 @@
+{
+  "ops" : [ {
+    "op" : "replace",
+    "path" : "/workflowAnnotations/0/text",
+    "value" : ""
+  }, {
+    "op" : "replace",
+    "path" : "/workflowAnnotations/0/backgroundColor",
+    "value" : "#000000"
+  }, {
+    "op" : "remove",
+    "path" : "/workflowAnnotations/0/defaultFontSize"
+  }, {
+    "op" : "replace",
+    "path" : "/workflowAnnotations/0/borderWidth",
+    "value" : 0
+  }, {
+    "op" : "replace",
+    "path" : "/workflowAnnotations/0/borderColor",
+    "value" : "#000000"
+  } ]
+}

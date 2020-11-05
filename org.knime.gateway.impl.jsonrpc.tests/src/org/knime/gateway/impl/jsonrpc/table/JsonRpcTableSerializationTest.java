@@ -51,15 +51,8 @@ package org.knime.gateway.impl.jsonrpc.table;
 import static org.knime.gateway.testing.helper.rpc.TableServiceTestHelper.createTable;
 import static org.knime.gateway.testing.helper.rpc.TableServiceTestHelper.mockNodeOutPort;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
@@ -71,6 +64,8 @@ import org.knime.gateway.impl.jsonrpc.table.JsonRpcTableServiceTest.TestRpcTrans
 import org.knime.gateway.impl.rpc.table.Table;
 import org.knime.gateway.impl.rpc.table.TableCell;
 import org.knime.gateway.impl.rpc.table.TableService;
+import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
 
 /**
  * Tests the correct serialization of a table into json.
@@ -79,8 +74,15 @@ import org.knime.gateway.impl.rpc.table.TableService;
  */
 public class JsonRpcTableSerializationTest {
 
-    private static final String SNAPSHOTS_DIR =
-        "src/__snapshots__/" + JsonRpcTableSerializationTest.class.getSimpleName();
+    private static ResultChecker resultChecker;
+
+    /**
+     * Inits the result checker for snapshot testing.
+     */
+    @BeforeClass
+    public static void initResultChecker() {
+        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker(JsonRpcTableSerializationTest.class);
+    }
 
     /**
      * Snapshot tests for the json-serialization of a {@link Table}.
@@ -113,34 +115,7 @@ public class JsonRpcTableSerializationTest {
     }
 
     private static void matchSnapshot(final String snapshotName, final String s) {
-        try {
-            matchSnapshotFromFile(snapshotName, s);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // TODO fuse with ResultChecker
-    private static void matchSnapshotFromFile(final String snapshotName, final String s) throws IOException {
-        Path snapFile = Paths.get(SNAPSHOTS_DIR, snapshotName + ".snap");
-        if (Files.exists(snapFile)) {
-            // load expected snapshot and compare
-            String expected = new String(Files.readAllBytes(snapFile));
-            Path debugFile = Paths.get(SNAPSHOTS_DIR, snapshotName + ".snap.debug");
-            if (!s.equals(expected)) {
-                // write debug file if snapshot doesn't match
-                Files.write(debugFile, s.getBytes(StandardCharsets.UTF_8));
-                Assert.fail(String.format("Snapshot '%s' doesn't match. Got: <<%s>>, but expected is <<%s>>",
-                    snapshotName, s, expected));
-            } else if (Files.exists(debugFile)) {
-                // if snapshot matches, delete debug file (might not exist)
-                Files.delete(debugFile);
-            }
-        } else {
-            // just write the snapshot
-            Files.createDirectories(Paths.get(SNAPSHOTS_DIR));
-            Files.write(snapFile, s.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
-        }
+        resultChecker.checkObject(JsonRpcTableSerializationTest.class, snapshotName, s);
     }
 
 }

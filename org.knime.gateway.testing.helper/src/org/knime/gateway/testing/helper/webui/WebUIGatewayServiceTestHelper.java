@@ -81,23 +81,21 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     /**
      * Helps to create an {@link ResultChecker}-instance.
      *
-     * @param rewriteTestResults whether to overwrite the result-snapshots
      * @return the new result checker instance
      */
-    public static ResultChecker createResultChecker(final boolean rewriteTestResults) {
-        return createResultChecker(rewriteTestResults, WebUIGatewayServiceTestHelper.class);
+    public static ResultChecker createResultChecker() {
+        return createResultChecker(WebUIGatewayServiceTestHelper.class);
     }
 
     /**
      * Helps to create an {@link ResultChecker}-instance.
      *
-     * @param rewriteTestResults whether to overwrite the result-snapshots
      * @param testClass the class of the test to determine the plugin to write the test results into (in the
      *            /files-folder of the respective plugin)
      * @return the new result checker instance
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static ResultChecker createResultChecker(final boolean rewriteTestResults, final Class<?> testClass) {
+    public static ResultChecker createResultChecker(final Class<?> testClass) {
         PropertyExceptions pe = new PropertyExceptions();
 
         /** Same as above but for the snapshot id. */
@@ -133,8 +131,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         try {
-            return new ResultChecker(rewriteTestResults, pe, objectMapper,
-                resolveToFile("/files", testClass));
+            return new ResultChecker(pe, objectMapper, resolveToFile("/files/test_snapshots", testClass));
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); //NOSONAR
@@ -142,27 +139,27 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     }
 
     /**
-     * @param testName
+     * @param testClass
      * @param entityResultChecker
      * @param serviceProvider
      * @param workflowLoader
      */
-    protected WebUIGatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
+    protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
         final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader) {
-        super(testName, entityResultChecker, workflowLoader);
+        super(testClass, entityResultChecker, workflowLoader);
         m_serviceProvider = serviceProvider;
     }
 
     /**
-     * @param testName
+     * @param testClass
      * @param entityResultChecker
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
      */
-    protected WebUIGatewayServiceTestHelper(final String testName, final ResultChecker entityResultChecker,
+    protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
         final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super(testName, entityResultChecker, workflowLoader, workflowExecutor);
+        super(testClass, entityResultChecker, workflowLoader, workflowExecutor);
         m_serviceProvider = serviceProvider;
     }
 
