@@ -74,7 +74,7 @@ public interface Row {
      * @return a new instance
      */
     static Row create(final DataRow row, final DataTableSpec spec) {
-        return new Row() {
+        return new Row() { // NOSONAR
 
             @Override
             public List<TableCell> getCells() {

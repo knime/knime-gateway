@@ -131,7 +131,7 @@ public interface Table {
     static List<Row> getRows(final DirectAccessTable table, final long start, final int size,
         final DataTableSpec spec) {
         if (table == null) {
-            return null;
+            return null; // NOSONAR
         }
         try {
             return table.getRows(Math.max(start, 0), size, null).stream().map(r -> Row.create(r, spec))

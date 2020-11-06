@@ -48,8 +48,8 @@ package org.knime.gateway.impl.rpc;
 
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.rpc.RpcServerFactory;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.rpc.RpcServerFactory;
 
 /**
  * To be implemented by a node model's factory if the node model provides a node data service.

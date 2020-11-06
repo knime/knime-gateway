@@ -57,13 +57,13 @@ import org.knime.core.data.MissingValue;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface TableCell {
+public interface TableCell { // NOSONAR
 
     /**
      * The maximum number of characters allowed in a string returned by {@link #getValueAsString()}. If the string is
      * longer it will be truncated.
      */
-    public static final int MAX_STRING_LENGTH = 10000;
+    static final int MAX_STRING_LENGTH = 10000;
 
     /**
      * The type of this specific cell. Only given if not in accordance with the column spec.
@@ -103,9 +103,9 @@ public interface TableCell {
      * @param colType the original data type of the column (not the cell!)
      * @return the new instance
      */
-    static TableCell create(final DataCell cell, final DataType colType) {
+    static TableCell create(final DataCell cell, final DataType colType) { // NOSONAR
         final String value = cell.isMissing() ? null : cell.toString();
-        return new TableCell() {
+        return new TableCell() { // NOSONAR
 
             @Override
             public String getValueAsString() {
@@ -130,7 +130,7 @@ public interface TableCell {
                 if (cell.getType().equals(colType) || cell.isMissing()) {
                     return null;
                 } else {
-                    return TableCellType.create(cell.getType(), false);
+                    return TableCellType.create(cell.getType());
                 }
             }
 

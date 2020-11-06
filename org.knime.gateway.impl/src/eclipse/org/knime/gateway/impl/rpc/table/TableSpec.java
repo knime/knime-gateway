@@ -98,7 +98,7 @@ public interface TableSpec {
             return null;
         }
 
-        return new TableSpec() {
+        return new TableSpec() { // NOSONAR
 
             @Override
             public List<Column> getColumns() {
@@ -119,7 +119,7 @@ public interface TableSpec {
                 Map<String, TableCellType> res = new HashMap<>();
                 for (int i = 0; i < spec.getNumColumns(); i++) {
                     DataType type = spec.getColumnSpec(i).getType();
-                    res.put(getCellTypeRef(type), TableCellType.create(type, true));
+                    res.put(getCellTypeRef(type), TableCellType.create(type));
                 }
                 return res;
             }

@@ -55,11 +55,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.knime.core.node.rpc.RpcServer;
-import org.knime.core.node.rpc.RpcSingleClient;
-import org.knime.core.node.rpc.RpcTransport;
-import org.knime.core.node.rpc.json.JsonRpcSingleServer;
-import org.knime.core.node.rpc.json.JsonRpcTestUtil;
+import org.knime.core.rpc.RpcServer;
+import org.knime.core.rpc.RpcSingleClient;
+import org.knime.core.rpc.RpcTransport;
+import org.knime.core.rpc.json.JsonRpcSingleServer;
+import org.knime.core.rpc.json.JsonRpcTestUtil;
 import org.knime.gateway.impl.rpc.table.DefaultTableService;
 import org.knime.gateway.impl.rpc.table.Table;
 import org.knime.gateway.impl.rpc.table.TableService;

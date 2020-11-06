@@ -70,11 +70,11 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.rpc.NodeRpcServerFactory;
-import org.knime.core.node.rpc.RpcServer;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.rpc.NodeRpcServerFactory;
+import org.knime.core.rpc.RpcServer;
 
 /**
  * Manages and forwards rpc-requests to respective rpc servers provided, e.g., by/for nodes or ports.
@@ -102,7 +102,7 @@ public final class RpcServerManager {
      *
      * @return the singleton instance
      */
-    public static RpcServerManager getInstance() {
+    public static synchronized RpcServerManager getInstance() {
         if (instance == null) {
             instance = new RpcServerManager();
         }
@@ -141,7 +141,7 @@ public final class RpcServerManager {
         return doRpc(getRpcServer(nc.getOutPort(portIdx)), remoteProcedureCall);
     }
 
-    private static Optional<NodePortRpcServerFactory> getRpcServerFactoryForPort(final PortType ptype) {
+    private static synchronized Optional<NodePortRpcServerFactory> getRpcServerFactoryForPort(final PortType ptype) {
         if (nodePortRpcServerFactories == null) {
             nodePortRpcServerFactories = collectNodePortRpcServerFactoriesFromExtension();
         }

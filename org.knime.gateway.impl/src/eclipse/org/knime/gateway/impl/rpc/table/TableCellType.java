@@ -71,10 +71,9 @@ public interface TableCellType {
      * Helper to create an instance of a table cell type.
      *
      * @param type the data type to create the instance from
-     * @param includeIcon whether to include the icon data or not
      * @return a new instance
      */
-    static TableCellType create(final DataType type, final boolean includeIcon) {
+    static TableCellType create(final DataType type) {
         return new TableCellType() { // NOSONAR
 
             @Override
