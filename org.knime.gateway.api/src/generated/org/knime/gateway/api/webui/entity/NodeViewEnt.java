@@ -44,13 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -58,117 +51,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Native node extension of a node.
+ * Information to describe a node&#39;s view.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
+public interface NodeViewEnt extends GatewayEntity {
 
 
   /**
-   * The id of the node template this node is an instance of.
-   * @return templateId , never <code>null</code>
+   * The view&#39;s name.
+   * @return name , never <code>null</code>
    **/
-  public String getTemplateId();
+  public String getName();
 
   /**
-   * Get state
-   * @return state 
+   * Determines whether the node view is available.
+   * @return available , never <code>null</code>
    **/
-  public NodeStateEnt getState();
-
-  /**
-   * Get view
-   * @return view 
-   **/
-  public NodeViewEnt getView();
+  public Boolean isAvailable();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
+    public interface NodeViewEntBuilder extends GatewayEntityBuilder<NodeViewEnt> {
 
         /**
-         * The id of the node.
+         * The view&#39;s name.
          * 
-         * @param id the property value, NOT <code>null</code>! 
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        NodeViewEntBuilder setName(String name);
         
         /**
-         * The list of inputs.
+         * Determines whether the node view is available.
          * 
-         * @param inPorts the property value, NOT <code>null</code>! 
+         * @param available the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
-        
-        /**
-         * The list of outputs.
-         * 
-         * @param outPorts the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
-        
-        /**
-   		 * Set annotation
-         * 
-         * @param annotation the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
-        
-        /**
-   		 * Set position
-         * 
-         * @param position the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setPosition(XYEnt position);
-        
-        /**
-         * Whether it&#39;s a native node, component or a metanode.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set allowedActions
-         * 
-         * @param allowedActions the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
-        
-        /**
-         * The id of the node template this node is an instance of.
-         * 
-         * @param templateId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setTemplateId(String templateId);
-        
-        /**
-   		 * Set state
-         * 
-         * @param state the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setState(NodeStateEnt state);
-        
-        /**
-   		 * Set view
-         * 
-         * @param view the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setView(NodeViewEnt view);
+        NodeViewEntBuilder setAvailable(Boolean available);
         
         
         /**
@@ -178,7 +101,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NativeNodeEnt build();
+        NodeViewEnt build();
     
     }
 

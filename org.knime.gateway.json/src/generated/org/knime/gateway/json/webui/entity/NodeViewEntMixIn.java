@@ -44,21 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NativeNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -66,53 +59,21 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt.DefaultNativeNod
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeViewEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NativeNodeEntMixIn extends NativeNodeEnt {
+public interface NodeViewEntMixIn extends NodeViewEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
+    @JsonProperty("name")
+    public String getName();
     
     @Override
-    @JsonProperty("inPorts")
-    public java.util.List<? extends NodePortEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<? extends NodePortEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
-    
-    @Override
-    @JsonProperty("templateId")
-    public String getTemplateId();
-    
-    @Override
-    @JsonProperty("state")
-    public NodeStateEnt getState();
-    
-    @Override
-    @JsonProperty("view")
-    public NodeViewEnt getView();
+    @JsonProperty("available")
+    public Boolean isAvailable();
     
 
     /**
@@ -122,50 +83,18 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeEntMixInBuilder extends NativeNodeEntBuilder {
+    public static interface NodeViewEntMixInBuilder extends NodeViewEntBuilder {
     
         @Override
-        public NativeNodeEntMixIn build();
+        public NodeViewEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public NativeNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        @JsonProperty("name")
+        public NodeViewEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("inPorts")
-        public NativeNodeEntMixInBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public NativeNodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
-        
-        @Override
-        @JsonProperty("annotation")
-        public NativeNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
-        @Override
-        @JsonProperty("position")
-        public NativeNodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public NativeNodeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("allowedActions")
-        public NativeNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
-        
-        @Override
-        @JsonProperty("templateId")
-        public NativeNodeEntMixInBuilder setTemplateId(final String templateId);
-        
-        @Override
-        @JsonProperty("state")
-        public NativeNodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
-        @JsonProperty("view")
-        public NativeNodeEntMixInBuilder setView(final NodeViewEnt view);
+        @JsonProperty("available")
+        public NodeViewEntMixInBuilder setAvailable(final Boolean available);
         
     }
 

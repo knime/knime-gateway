@@ -96,6 +96,8 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -221,6 +223,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeViewDescriptionEntBuilder.class) {
             return (B)new DefaultNodeViewDescriptionEnt.DefaultNodeViewDescriptionEntBuilder();
+        }        
+        if(clazz == NodeViewEntBuilder.class) {
+            return (B)new DefaultNodeViewEnt.DefaultNodeViewEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();

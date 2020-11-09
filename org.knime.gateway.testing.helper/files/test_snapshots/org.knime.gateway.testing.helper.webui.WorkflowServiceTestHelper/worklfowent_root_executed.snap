@@ -951,6 +951,10 @@
       },
       "state" : {
         "executionState" : "EXECUTED"
+      },
+      "view" : {
+        "available" : true,
+        "name" : "Interactive View: Component"
       }
     },
     "root:26" : {

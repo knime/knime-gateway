@@ -1004,6 +1004,10 @@
             "state" : {
               "executionState" : "IDLE",
               "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+            },
+            "view" : {
+              "available" : false,
+              "name" : "Interactive View: Component"
             }
           },
           "root:26" : {

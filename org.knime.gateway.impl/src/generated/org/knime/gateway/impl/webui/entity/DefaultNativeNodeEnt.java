@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -76,6 +77,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   protected AllowedActionsEnt m_allowedActions;
   protected String m_templateId;
   protected NodeStateEnt m_state;
+  protected NodeViewEnt m_view;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -115,6 +117,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     }
     m_templateId = immutable(builder.m_templateId);
     m_state = immutable(builder.m_state);
+    m_view = immutable(builder.m_view);
   }
   
    /**
@@ -132,7 +135,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_view, ent.m_view);
     }
 
 
@@ -152,6 +155,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                .append(m_allowedActions)
                .append(m_templateId)
                .append(m_state)
+               .append(m_view)
                .toHashCode();
    }
   
@@ -202,6 +206,11 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         return m_state;
   }
     
+  @Override
+  public NodeViewEnt getView() {
+        return m_view;
+  }
+    
   
     public static class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {
     
@@ -218,6 +227,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         private AllowedActionsEnt m_allowedActions;
         private String m_templateId;
         private NodeStateEnt m_state;
+        private NodeViewEnt m_view;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -288,6 +298,12 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setState(NodeStateEnt state) {
              m_state = state;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeEntBuilder setView(NodeViewEnt view) {
+             m_view = view;
              return this;
         }
 

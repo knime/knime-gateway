@@ -95,7 +95,11 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
+      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory",
+      "view" : {
+        "available" : false,
+        "name" : "JavaScript Table View"
+      }
     },
     "root:23:0:8" : {
       "id" : "root:23:0:8",

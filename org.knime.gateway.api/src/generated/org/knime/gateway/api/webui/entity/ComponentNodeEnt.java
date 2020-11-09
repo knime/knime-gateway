@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -77,6 +78,12 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
    * @return link 
    **/
   public String getLink();
+
+  /**
+   * Get view
+   * @return view 
+   **/
+  public NodeViewEnt getView();
 
 
     /**
@@ -179,6 +186,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setLink(String link);
+        
+        /**
+   		 * Set view
+         * 
+         * @param view the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setView(NodeViewEnt view);
         
         
         /**

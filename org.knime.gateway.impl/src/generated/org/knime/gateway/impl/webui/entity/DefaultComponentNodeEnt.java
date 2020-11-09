@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
@@ -80,6 +81,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
   protected String m_icon;
   protected NodeStateEnt m_state;
   protected String m_link;
+  protected NodeViewEnt m_view;
   
   protected DefaultComponentNodeEnt() {
     //for sub-classes
@@ -125,6 +127,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
     }
     m_state = immutable(builder.m_state);
     m_link = immutable(builder.m_link);
+    m_view = immutable(builder.m_view);
   }
   
    /**
@@ -142,7 +145,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link) && Objects.equals(m_view, ent.m_view);
     }
 
 
@@ -165,6 +168,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
                .append(m_icon)
                .append(m_state)
                .append(m_link)
+               .append(m_view)
                .toHashCode();
    }
   
@@ -230,6 +234,11 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         return m_link;
   }
     
+  @Override
+  public NodeViewEnt getView() {
+        return m_view;
+  }
+    
   
     public static class DefaultComponentNodeEntBuilder implements ComponentNodeEntBuilder {
     
@@ -249,6 +258,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         private String m_icon;
         private NodeStateEnt m_state;
         private String m_link;
+        private NodeViewEnt m_view;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -340,6 +350,12 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         @Override
         public DefaultComponentNodeEntBuilder setLink(String link) {
              m_link = link;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentNodeEntBuilder setView(NodeViewEnt view) {
+             m_view = view;
              return this;
         }
 

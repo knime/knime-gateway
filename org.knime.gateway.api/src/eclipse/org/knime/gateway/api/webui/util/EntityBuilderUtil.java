@@ -143,6 +143,8 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -564,7 +566,30 @@ public final class EntityBuilderUtil {
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
+            .setView(buildNodeViewEnt(nc))//
             .setAllowedActions(allowedActions).build();
+    }
+
+    private static NodeViewEnt buildNodeViewEnt(final SubNodeContainer nc) {
+        if (nc.getInteractiveWebViews().size() > 0) {
+            return buildNodeViewEnt("Interactive View: " + nc.getName(),
+                nc.getNodeContainerState().isExecuted());
+        } else {
+            return null;
+        }
+    }
+
+    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nc) {
+        InteractiveWebViewsResult interactiveWebViews = nc.getInteractiveWebViews();
+        if (interactiveWebViews.size() == 1) {
+            return buildNodeViewEnt(interactiveWebViews.get(0).getViewName(), nc.getNodeContainerState().isExecuted());
+        } else {
+            return null;
+        }
+    }
+
+    private static NodeViewEnt buildNodeViewEnt(final String name, final boolean isAvailable) {
+        return builder(NodeViewEntBuilder.class).setName(name).setAvailable(isAvailable).build();
     }
 
     private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts,
@@ -673,7 +698,9 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.NODE)//
             .setState(buildNodeStateEnt(nc))//
             .setTemplateId(createTemplateId(nc.getNode().getFactory()))//
-            .setAllowedActions(allowedActions).build();
+            .setAllowedActions(allowedActions)//
+            .setView(buildNodeViewEnt(nc))//
+            .build();
     }
 
     private static NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {

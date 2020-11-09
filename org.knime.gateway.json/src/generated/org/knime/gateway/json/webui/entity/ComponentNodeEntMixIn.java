@@ -48,6 +48,7 @@ import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
@@ -122,6 +123,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @JsonProperty("link")
     public String getLink();
     
+    @Override
+    @JsonProperty("view")
+    public NodeViewEnt getView();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -182,6 +187,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("link")
         public ComponentNodeEntMixInBuilder setLink(final String link);
+        
+        @Override
+        @JsonProperty("view")
+        public ComponentNodeEntMixInBuilder setView(final NodeViewEnt view);
         
     }
 
