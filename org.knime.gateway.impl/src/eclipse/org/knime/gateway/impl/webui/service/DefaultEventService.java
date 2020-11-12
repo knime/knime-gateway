@@ -181,7 +181,9 @@ public final class DefaultEventService implements EventService {
     private void removeEventListener(final WorkflowKey wfKey) {
         @SuppressWarnings("resource")
         WorkflowChangesListener listener = m_workflowChangesListeners.remove(wfKey);
-        listener.close();
+        if (listener != null) {
+            listener.close();
+        }
         m_patchEntCreators.remove(wfKey);
     }
 

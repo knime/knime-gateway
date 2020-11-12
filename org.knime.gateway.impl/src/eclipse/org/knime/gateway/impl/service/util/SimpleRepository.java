@@ -46,6 +46,7 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,7 +60,6 @@ import java.util.stream.Collectors;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
-import org.knime.core.util.LRUCache;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -81,49 +81,51 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepository<K, E> {
 
     /* The default value of the maximum number of snapshots in memory */
-    private static final int DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM = 500;
-
-    /* maps snapshotID to workflow */
-    private final LRUCache<String, E> m_snapshots;
+    private static final int DEFAULT_MAX_NUM_SNAPSHOTS_PER_ENTITY_IN_MEM = 500;
 
     /* maps snapshotID to key */
-    private final LRUCache<String, K> m_snapshotsKeyMap;
+    private final Map<String, K> m_snapshotsKeyMap;
 
     /* maps key to <snapshotID, entity> */
     private final Map<K, Pair<String, E>> m_latestSnapshotPerEntity = new HashMap<>();
+
+    /* maps key to entity history (lru-cache of <snapshotID, entity>) */
+    private final Map<K, LRUCache> m_historyPerEntity = new HashMap<>();
 
     private final Javers m_javers = JaversBuilder.javers().registerValue(NodeIDEnt.class)
         .registerValue(ConnectionIDEnt.class).registerValue(AnnotationIDEnt.class).build();
 
     private final Supplier<String> m_snapshotIdGenerator;
 
+    private final int m_maxNumSnapshotsPerEntity;
+
     /**
      * Creates a new instance. The maximum number of snapshots kept in memory is initialized with the default value.
      */
     public SimpleRepository() {
-        this(DEFAULT_MAX_NUM_SNAPSHOTS_IN_MEM);
+        this(DEFAULT_MAX_NUM_SNAPSHOTS_PER_ENTITY_IN_MEM);
     }
 
     /**
      * Creates a new instance.
      *
-     * @param maxNumSnapshotsInMem the maximum number of snapshots (i.e. history) kept in memory. If full, the least
-     *            recently used will be removed.
+     * @param maxNumSnapshotsPerEntity the maximum number of snapshots (i.e. history) kept in memory. If full, the
+     *            least recently used will be removed.
      */
-    public SimpleRepository(final int maxNumSnapshotsInMem) {
-        this(maxNumSnapshotsInMem, () -> UUID.randomUUID().toString());
+    public SimpleRepository(final int maxNumSnapshotsPerEntity) {
+        this(maxNumSnapshotsPerEntity, () -> UUID.randomUUID().toString());
     }
 
     /**
      * Creates a new instance.
      *
-     * @param maxNumSnapshotsInMem the maximum number of snapshots (i.e. history) kept in memory. If full, the least
-     *            recently used will be removed.
+     * @param maxNumSnapshotsPerEntity the maximum number of snapshots (i.e. history) per entity kept in memory. If
+     *            full, the least recently used will be removed.
      * @param snapshotIdGenerator supplier that generates unique ids
      */
-    public SimpleRepository(final int maxNumSnapshotsInMem, final Supplier<String> snapshotIdGenerator) {
-        m_snapshots = new LRUCache<>(maxNumSnapshotsInMem);
-        m_snapshotsKeyMap = new LRUCache<>(maxNumSnapshotsInMem);
+    public SimpleRepository(final int maxNumSnapshotsPerEntity, final Supplier<String> snapshotIdGenerator) {
+        m_maxNumSnapshotsPerEntity = maxNumSnapshotsPerEntity;
+        m_snapshotsKeyMap = new HashMap<>();
         m_snapshotIdGenerator = snapshotIdGenerator;
     }
 
@@ -142,7 +144,11 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     public <P> Optional<P> getChangesAndCommit(final String snapshotID, final E entity,
         final Function<String, PatchCreator<P>> patchCreator) {
         K key = m_snapshotsKeyMap.get(snapshotID);
-        E snapshot = m_snapshots.get(snapshotID);
+        LRUCache entityHistory = m_historyPerEntity.get(key);
+        E snapshot = null;
+        if (entityHistory != null) {
+            snapshot = entityHistory.get(snapshotID);
+        }
         if (key == null || snapshot == null) {
             throw new IllegalArgumentException("No workflow found for snapshot with ID '" + snapshotID + "'");
         }
@@ -167,11 +173,9 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
         //remove all snapshots (and other map entries) for the given entity id
         List<String> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
             .map(Entry::getKey).collect(Collectors.toList());
-        snapshotIDs.forEach(s -> {
-            m_snapshotsKeyMap.remove(s);
-            m_snapshots.remove(s);
-        });
+        snapshotIDs.forEach(m_snapshotsKeyMap::remove);
         m_latestSnapshotPerEntity.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
+        m_historyPerEntity.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
     }
 
     private String commitInternal(final K key, final E entity) {
@@ -190,10 +194,41 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
         //commit if necessary
         if (snapshotID == null) {
             snapshotID = m_snapshotIdGenerator.get();
-            m_snapshots.put(snapshotID, entity);
             m_latestSnapshotPerEntity.put(key, Pair.create(snapshotID, entity));
             m_snapshotsKeyMap.put(snapshotID, key);
+            LRUCache entityHistory = m_historyPerEntity.computeIfAbsent(key,
+                k -> new LRUCache(m_maxNumSnapshotsPerEntity, m_maxNumSnapshotsPerEntity));
+            entityHistory.put(snapshotID, entity);
         }
         return snapshotID;
+    }
+
+    private class LRUCache extends LinkedHashMap<String, E> {
+
+        private final int m_maxHistory;
+
+        /**
+         * @param initialCapacity the initial capacity of the cache
+         * @param maxHistory the maximum size of the cache
+         * @since 4.0
+         */
+        public LRUCache(final int initialCapacity, final int maxHistory) {
+            super(initialCapacity, 0.75f, true);
+            if (maxHistory < 1) {
+                throw new IllegalArgumentException("max history must be larger 0: " + maxHistory);
+            }
+            m_maxHistory = maxHistory;
+
+        }
+
+        @Override
+        protected boolean removeEldestEntry(final Map.Entry<String, E> e) {
+            if (size() > m_maxHistory) {
+                m_snapshotsKeyMap.remove(e.getKey());
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }

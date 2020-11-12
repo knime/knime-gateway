@@ -63,7 +63,11 @@ public class SimpleRepositoryTest extends AbstractEntityRepositoryTest {
      * {@inheritDoc}
      */
     @Override
-    protected EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> createRepo() {
-        return new SimpleRepository<>();
+    protected EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> createRepo(final int numSnapshotsPerEntity) {
+        if (numSnapshotsPerEntity <= 0) {
+            return new SimpleRepository<>();
+        } else {
+            return new SimpleRepository<>(numSnapshotsPerEntity);
+        }
     }
 }

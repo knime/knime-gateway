@@ -17,11 +17,12 @@
  */
 package org.knime.gateway.impl.service.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.knime.core.util.Pair.create;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
@@ -30,11 +31,11 @@ import static org.knime.gateway.impl.service.util.RandomEntityBuilder.buildRando
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -56,22 +57,12 @@ import org.knime.gateway.impl.webui.service.DefaultEventService.PatchEntCreator;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public abstract class AbstractEntityRepositoryTest {
-    private EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> m_repo;
 
     /**
-     * Init repository.
-     *
-     * @throws Exception
-     */
-    @Before
-    public void setup() throws Exception {
-        m_repo = createRepo();
-    }
-
-    /**
+     * @param numSnapshotsPerEntity -1 if the default shall be used
      * @return an instance of the {@link EntityRepository}
      */
-    protected abstract EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> createRepo();
+    protected abstract EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> createRepo(int numSnapshotsPerEntity);
 
     /**
      * Tests the {@link EntityRepository#commit(Object, org.knime.gateway.api.entity.GatewayEntity)} method.
@@ -80,13 +71,14 @@ public abstract class AbstractEntityRepositoryTest {
      */
     @Test
     public void testCommit() throws Exception {
+        EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> repo = createRepo(-1);
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         UUID wfID = UUID.randomUUID();
         WorkflowEnt newEntity = wfBuilder.build();
-        String res = m_repo.commit(create(wfID, getRootID()), newEntity);
+        String res = repo.commit(create(wfID, getRootID()), newEntity);
 
         WorkflowEnt newUnchangedEntity = wfBuilder.build();
-        String res2 = m_repo.commit(create(wfID, getRootID()), newUnchangedEntity);
+        String res2 = repo.commit(create(wfID, getRootID()), newUnchangedEntity);
 
         //since nothing has changed, the snapshot id should remain unchanged
         assertEquals(res, res2);
@@ -94,7 +86,7 @@ public abstract class AbstractEntityRepositoryTest {
         WorkflowEnt newChangedEntity =
             wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
                 .setName("a new workflow name").setContainerType(ContainerTypeEnum.COMPONENT).build()).build();
-        String res3 = m_repo.commit(create(wfID, getRootID()), newChangedEntity);
+        String res3 = repo.commit(create(wfID, getRootID()), newChangedEntity);
 
         //since there is a change, the snapshot id should be new
         assertNotEquals(res, res3);
@@ -102,13 +94,14 @@ public abstract class AbstractEntityRepositoryTest {
 
     /**
      * Tests the
-     * {@link EntityRepository#getChangesAndCommit(UUID, org.knime.gateway.api.entity.GatewayEntity, java.util.function.Function)}
+     * {@link EntityRepository#getChangesAndCommit(String, org.knime.gateway.api.entity.GatewayEntity, java.util.function.Function)}
      * method.
      *
      * @throws Exception
      */
     @Test
     public void testGetChangesAndCommit() throws Exception {
+        EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> repo = createRepo(-1);
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         UUID wfID = UUID.randomUUID();
         NativeNodeEntBuilder nodeBuilder = buildRandomEntityBuilder(NativeNodeEntBuilder.class);
@@ -120,7 +113,7 @@ public abstract class AbstractEntityRepositoryTest {
         wfBuilder.setNodes(nodes);
 
         WorkflowEnt wfEntity = wfBuilder.build();
-        String commitRes = m_repo.commit(create(wfID, new NodeIDEnt(3)), wfEntity);
+        String commitRes = repo.commit(create(wfID, new NodeIDEnt(3)), wfEntity);
 
         //modify workflow entity
         nodeBuilder.setPosition(builder(XYEntBuilder.class).setX(11).setY(5).build())
@@ -132,7 +125,7 @@ public abstract class AbstractEntityRepositoryTest {
         WorkflowEnt newWfEntity = wfBuilder.build();
         AtomicReference<String> patch1SnapshotId = new AtomicReference<>();
         PatchEnt patch1 =
-            m_repo.getChangesAndCommit(commitRes, newWfEntity, id -> {
+            repo.getChangesAndCommit(commitRes, newWfEntity, id -> {
                 patch1SnapshotId.set(id);
                 return new PatchEntCreator(id);
             }).orElse(null);
@@ -141,11 +134,11 @@ public abstract class AbstractEntityRepositoryTest {
 
         //get patch for a non-modified entity
         PatchEnt patch2 =
-            m_repo.getChangesAndCommit(patch1SnapshotId.get(), wfBuilder.build(), PatchEntCreator::new).orElse(null);
+            repo.getChangesAndCommit(patch1SnapshotId.get(), wfBuilder.build(), PatchEntCreator::new).orElse(null);
         Assert.assertNull(patch2);
 
         //make sure that the very first snapshot is still there
-        PatchEnt patch3 = m_repo.getChangesAndCommit(commitRes, wfBuilder.build(), PatchEntCreator::new).orElse(null);
+        PatchEnt patch3 = repo.getChangesAndCommit(commitRes, wfBuilder.build(), PatchEntCreator::new).orElse(null);
         assertThat(patch3.getOps().size(), is(3));
     }
 
@@ -156,26 +149,88 @@ public abstract class AbstractEntityRepositoryTest {
      */
     @Test
     public void testDisposeHistory() throws Exception {
+        EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> repo = createRepo(-1);
         UUID wfID = UUID.randomUUID();
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         WorkflowEnt newEntity = wfBuilder.build();
-        String commitRes = m_repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
+        String commitRes = repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
 
-        m_repo.disposeHistory(k -> k.getFirst().equals(wfID));
+        repo.disposeHistory(k -> k.getFirst().equals(wfID));
 
         try {
-            m_repo.getChangesAndCommit(commitRes, wfBuilder.build(), PatchEntCreator::new);
+            repo.getChangesAndCommit(commitRes, wfBuilder.build(), PatchEntCreator::new);
             fail("Expected a IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
             assertThat(e.getMessage(), containsString("No workflow found for snapshot with ID"));
         }
 
-        String commitRes2 = m_repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
+        String commitRes2 = repo.commit(create(wfID, new NodeIDEnt(2)), newEntity);
         assertNotEquals(commitRes, commitRes2);
+    }
+
+    /**
+     * Tests that there is the specified number of snapshots available for each entity.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNumSnapshotsPerEntity() throws Exception {
+        EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> repo = createRepo(2);
+
+
+        // create snapshot history for first workflow
+
+        WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
+        UUID wfID = UUID.randomUUID();
+        WorkflowEnt wf1 = wfBuilder.build();
+        String id1 = repo.commit(create(wfID, getRootID()), wf1);
+
+        WorkflowEnt wf12 = wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
+            .setName("wf_1_2").setContainerType(ContainerTypeEnum.COMPONENT).build()).build();
+        String id12 = repo.commit(create(wfID, getRootID()), wf12);
+
+        WorkflowEnt wf13 = wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
+            .setName("wf_1_3").setContainerType(ContainerTypeEnum.COMPONENT).build()).build();
+        String id13 = repo.commit(create(wfID, getRootID()), wf13);
+
+
+        // create snapshot history for another workflow
+
+        wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
+        wfID = UUID.randomUUID();
+        WorkflowEnt wf2 = wfBuilder.build();
+        String id2 = repo.commit(create(wfID, new NodeIDEnt(2)), wf2);
+
+        WorkflowEnt wf22 = wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
+            .setName("wf_2_2").setContainerType(ContainerTypeEnum.COMPONENT).build()).build();
+        String id22 = repo.commit(create(wfID, new NodeIDEnt(2)), wf22);
+
+        WorkflowEnt wf23 = wfBuilder.setInfo(builder(WorkflowInfoEntBuilder.class).setContainerId(new NodeIDEnt(2, 3))
+            .setName("wf_2_3").setContainerType(ContainerTypeEnum.COMPONENT).build()).build();
+        String id23 = repo.commit(create(wfID, new NodeIDEnt(2)), wf23);
+
+
+        // actual tests
+
+        // snapshot history size per entity is 2! The first snapshot should be gone now
+        assertThrows("workflow is still part of the snapshot history", IllegalArgumentException.class,
+            () -> repo.getChangesAndCommit(id1, wf1, PatchEntCreator::new));
+        assertThat("not an empty patch", repo.getChangesAndCommit(id12, wf12, PatchEntCreator::new),
+            is(Optional.empty()));
+        assertThat("not an empty patch", repo.getChangesAndCommit(id13, wf13, PatchEntCreator::new),
+            is(Optional.empty()));
+
+        assertThrows("workflow is still part of the snapshot history", IllegalArgumentException.class,
+            () -> repo.getChangesAndCommit(id2, wf2, PatchEntCreator::new));
+        assertThat("not an empty patch", repo.getChangesAndCommit(id22, wf22, PatchEntCreator::new),
+            is(Optional.empty()));
+        assertThat("not an empty patch", repo.getChangesAndCommit(id23, wf23, PatchEntCreator::new),
+            is(Optional.empty()));
     }
 
     //@Test
     public void testPerformanceInMemoryRepo() throws Exception {
+        EntityRepository<Pair<UUID, NodeIDEnt>, WorkflowEnt> repo = createRepo(-1);
         UUID wfID = UUID.randomUUID();
         WorkflowEntBuilder wfBuilder = buildRandomEntityBuilder(WorkflowEntBuilder.class);
         Map<String, NodeEnt> nodes = new HashMap<>(wfBuilder.build().getNodes());
@@ -190,7 +245,7 @@ public abstract class AbstractEntityRepositoryTest {
                     builder(NodeStateEntBuilder.class).setExecutionState(ExecutionStateEnum.EXECUTED).build());
             }
             nodes.put("node", nodeBuilder.build());
-            m_repo.commit(create(wfID, null), wfBuilder.setNodes(nodes).build());
+            repo.commit(create(wfID, null), wfBuilder.setNodes(nodes).build());
         }
     }
 
