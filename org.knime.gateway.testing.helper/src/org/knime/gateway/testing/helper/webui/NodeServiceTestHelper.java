@@ -51,6 +51,7 @@ package org.knime.gateway.testing.helper.webui;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
 
 import java.util.concurrent.TimeUnit;
@@ -60,6 +61,7 @@ import org.hamcrest.Matchers;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
+import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -113,6 +115,16 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThrows(OperationNotAllowedException.class, () -> {
             ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "blub");
         });
+    }
+
+    /**
+     * Test for {@link NodeService#doPortRpc(String, NodeIDEnt, Integer, String)}.
+     */
+    public void testDoPortRpc() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        String rpcRes = ns().doPortRpc(wfId, new NodeIDEnt(1), 1,
+            "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}");
+        assertThat("not a json rpc response", rpcRes, startsWith("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
     }
 
 }
