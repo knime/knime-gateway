@@ -44,7 +44,6 @@ import org.knime.core.ui.node.workflow.WorkflowContextUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
 import org.knime.core.util.Version;
 
-import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.entity.NodeEnt;
 import com.knime.gateway.entity.NodeSettingsEnt;
 import com.knime.gateway.entity.NodeSettingsEnt.NodeSettingsEntBuilder;
@@ -120,7 +119,7 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
                     //wait for p to finish
                     m_dialogPane = p.get();
                 }
-                shutdownExecutorsAndWait(exec);
+                shutdownExecutorsAndWait(exec, m_clientTimeout);
 
                 NodeSettings nodeSettings = f1.get();
                 PortObjectSpec[] portObjectSpecs = f2.get();
@@ -259,10 +258,11 @@ abstract class AbstractEntityProxySingleNodeContainer<E extends NodeEnt> extends
      * @param exec the execution service
      * @throws InterruptedException in case of an interruption
      */
-    private static void shutdownExecutorsAndWait(final ExecutorService exec) throws InterruptedException {
+    private static void shutdownExecutorsAndWait(final ExecutorService exec, final long clientTimeout)
+        throws InterruptedException {
         exec.shutdown();
         //wait a bit longer than the timeouts of the individual requests
-        exec.awaitTermination(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT + 1000, TimeUnit.MILLISECONDS);
+        exec.awaitTermination(clientTimeout + 1000, TimeUnit.MILLISECONDS);
     }
 
     /**

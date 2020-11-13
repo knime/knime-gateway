@@ -113,6 +113,22 @@ public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePag
             "Specifies the number of rows loaded at once from\nthe server for the table view of a port."
                 + "\nNote: only takes effect on port views opened for the first time"
                 + "\nafter opening the workflow or node re-execution."));
+
+        addField(new HorizontalLineField(parent));
+
+        IntegerFieldEditor clientTimeout = new IntegerFieldEditor(
+            PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT, "Client timeout (in ms)", parent) {
+            @Override
+            public void setValidRange(final int min, final int max) {
+                super.setValidRange(min, max);
+                refreshValidState();
+            }
+        };
+
+        clientTimeout.setValidRange(10000, Integer.MAX_VALUE);
+        addField(clientTimeout);
+        addField(new LabelField(parent,
+            "Specifies the timeout in milliseconds of KNIME Analytics Platform\nwhen communicating with the server."));
     }
 
     /** {@inheritDoc} */

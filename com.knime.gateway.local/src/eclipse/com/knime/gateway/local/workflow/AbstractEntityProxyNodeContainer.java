@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -59,6 +60,8 @@ import org.knime.core.ui.node.workflow.NodeOutPortUI;
 import org.knime.core.ui.node.workflow.async.AsyncNodeContainerUI;
 import org.knime.core.ui.node.workflow.async.AsyncWorkflowManagerUI;
 import org.knime.core.ui.node.workflow.async.CompletableFutureEx;
+import org.knime.workbench.ui.KNIMEUIPlugin;
+import org.knime.workbench.ui.preferences.PreferenceConstants;
 
 import com.knime.gateway.entity.BoundsEnt;
 import com.knime.gateway.entity.BoundsEnt.BoundsEntBuilder;
@@ -110,6 +113,11 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
     private NodeUIInformation m_uiInfo;
 
     /**
+     * The client timeout in ms.
+     */
+    protected final int m_clientTimeout;
+
+    /**
      * See {@link AbstractEntityProxy#AbstractEntityProxy(com.knime.gateway.entity.GatewayEntity, EntityProxyAccess)}.
      *
      * @param node
@@ -118,6 +126,8 @@ public abstract class AbstractEntityProxyNodeContainer<E extends NodeEnt> extend
      */
     AbstractEntityProxyNodeContainer(final E node, final EntityProxyAccess access) {
         super(node, access);
+        final IPreferenceStore prefStore = KNIMEUIPlugin.getDefault().getPreferenceStore();
+        m_clientTimeout = prefStore.getInt(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT);
     }
 
     /**

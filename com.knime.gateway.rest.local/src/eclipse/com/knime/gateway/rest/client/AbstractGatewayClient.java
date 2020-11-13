@@ -37,17 +37,19 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator;
 import org.knime.core.util.ThreadLocalHTTPAuthenticator.AuthenticationCloseable;
 import org.knime.core.util.Version;
+import org.knime.workbench.ui.KNIMEUIPlugin;
+import org.knime.workbench.ui.preferences.PreferenceConstants;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.knime.enterprise.server.rest.AutocloseableResponse;
 import com.knime.enterprise.server.rest.api.Util;
 import com.knime.enterprise.server.rest.client.AbstractClient;
 import com.knime.enterprise.server.rest.providers.exception.ResponseToExceptionMapper;
-import com.knime.enterprise.utility.KnimeServerConstants;
 import com.knime.gateway.entity.EntityBuilderManager;
 import com.knime.gateway.entity.GatewayEntity;
 import com.knime.gateway.entity.GatewayExceptionEnt;
@@ -94,8 +96,11 @@ public abstract class AbstractGatewayClient<C> extends AbstractClient {
         jaxRSProviders.add(new EntityJSONDeserializer());
         jaxRSProviders.add(new StringJSONDeserializer());
         jaxRSProviders.add(0, new CollectionJSONDeserializer());
+
+        final IPreferenceStore prefStore = KNIMEUIPlugin.getDefault().getPreferenceStore();
+        final int clientTimeout = prefStore.getInt(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT);
         m_client = createProxy(resourceClass, m_restAddress, null, null, jaxRSProviders, "Explorer01",
-            Duration.ofMillis(KnimeServerConstants.GATEWAY_CLIENT_TIMEOUT));
+            Duration.ofMillis(clientTimeout));
         if (jwt != null) {
             WebClient.client(m_client).header("Authorization", "Bearer " + jwt);
         }
