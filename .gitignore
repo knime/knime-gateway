@@ -4,3 +4,4 @@
 **/.openapi-generator/
 **/.flattened-pom.xml
 **/target
+**/CHANGELOG.md
