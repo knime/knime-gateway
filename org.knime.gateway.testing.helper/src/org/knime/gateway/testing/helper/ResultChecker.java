@@ -17,6 +17,8 @@
  */
 package org.knime.gateway.testing.helper;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,8 +28,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.junit.Assert;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -41,6 +46,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.Patch;
 
 /**
  * Compares objects to a representation stored to files (i.e. snapshot testing).
@@ -115,7 +122,7 @@ public class ResultChecker {
             if (!actual.equals(expected)) {
                 // write debug file if snapshot doesn't match
                 Files.write(debugFile, actual.getBytes(StandardCharsets.UTF_8));
-                assertEquals(snapshotName, expected, actual);
+                assertEquals(snapshotName, testClass, expected, actual);
             } else if (Files.exists(debugFile)) {
                 // if snapshot matches, delete debug file (might not exist)
                 Files.delete(debugFile);
@@ -129,13 +136,36 @@ public class ResultChecker {
         }
     }
 
-    private static void assertEquals(final String snapshotName, final String expected, final String actual) {
-        // Still using assetEquals on strings(!) here since a nice result comparison can be opened
-        // with double-click on the test-error
-        // assertThat("Unexpected result returned", result, is(expectedResult));
-        // TODO alternatively https://github.com/skyscreamer/JSONassert could be used
-        // here eventually or the JsonNode-object itself for comparison
-        Assert.assertEquals("Snapshot '" + snapshotName + "' doesn't match", expected, actual);
+    private static void assertEquals(final String snapshotName, final Class<?> testClass, final String expected,
+        final String actual) {
+        assertThat(String.format("Snapshot '%s' in test '%s' doesn't match", snapshotName, testClass.getSimpleName()),
+            actual, compareWithDiff(expected));
+    }
+
+    private static Matcher<String> compareWithDiff(final String expected) {
+        return new BaseMatcher<String>() {
+
+            @Override
+            public boolean matches(final Object item) {
+                return item instanceof String && item.equals(expected);
+            }
+
+            @Override
+            public void describeMismatch(final Object item, final Description description) {
+                if (item instanceof String) {
+                    Patch<String> diff = DiffUtils.diff((String)item, expected, null);
+                    description.appendText("there are differences:\n"
+                        + diff.getDeltas().stream().map(Object::toString).collect(Collectors.joining(",\n")));
+                } else {
+                    description.appendText("not a String");
+                }
+            }
+
+            @Override
+            public void describeTo(final Description description) {
+                description.appendText("Snapshot file content");
+            }
+        };
     }
 
     private Path getSnapshotFile(final Class<?> testClass, final String snapshotName) {
