@@ -36,9 +36,13 @@ import org.hamcrest.Matcher;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -112,8 +116,7 @@ public class ResultChecker {
 
     private void compareWithSnapshotFromFile(final Class<?> testClass, final String snapshotName, final Object obj)
         throws IOException {
-        String actual = (obj instanceof String) ? (String)obj
-            : m_objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+        String actual = objToString(obj);
         Path snapFile = getSnapshotFile(testClass, snapshotName);
         if (Files.exists(snapFile)) {
             // load expected snapshot and compare
@@ -133,6 +136,16 @@ public class ResultChecker {
             // just write the snapshot
             Files.createDirectories(snapFile.getParent());
             Files.write(snapFile, actual.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        }
+    }
+
+    private String objToString(final Object obj) throws JsonProcessingException {
+        if (obj instanceof String) {
+            return (String)obj;
+        } else {
+            ObjectWriter objectWriter = m_objectMapper
+                .writer(new DefaultPrettyPrinter().withObjectIndenter(new DefaultIndenter().withLinefeed("\n")));
+            return objectWriter.writeValueAsString(obj);
         }
     }
 
