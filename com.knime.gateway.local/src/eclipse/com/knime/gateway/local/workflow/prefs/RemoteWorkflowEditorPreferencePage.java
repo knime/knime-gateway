@@ -18,13 +18,19 @@
  */
 package com.knime.gateway.local.workflow.prefs;
 
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.KNIMEConstants;
+import org.knime.core.ui.util.SWTUtilities;
 import org.knime.workbench.ui.KNIMEUIPlugin;
 import org.knime.workbench.ui.preferences.HorizontalLineField;
 import org.knime.workbench.ui.preferences.LabelField;
@@ -42,6 +48,14 @@ public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePag
     private BooleanFieldEditor m_autoRefresh;
 
     private BooleanFieldEditor m_disableWorkflowEdits;
+
+    private IntegerFieldEditor m_clientTimeout;
+
+    private int m_initialTimeoutValue;
+
+    private int m_appliedTimeoutValue;
+
+    private boolean m_apply;
 
     /**
      * Constructor.
@@ -116,17 +130,32 @@ public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePag
 
         addField(new HorizontalLineField(parent));
 
-        IntegerFieldEditor clientTimeout = new IntegerFieldEditor(
-            PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT, "Client timeout (in ms)", parent) {
+        m_clientTimeout = new IntegerFieldEditor(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT,
+            "Client timeout (in ms)", parent) {
             @Override
             public void setValidRange(final int min, final int max) {
                 super.setValidRange(min, max);
                 refreshValidState();
             }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected void valueChanged() {
+                super.valueChanged();
+                if (m_clientTimeout.getIntValue() != m_initialTimeoutValue) {
+                    setMessage("You need to restart KNIME Analytics Platform to apply this setting!",
+                        IMessageProvider.WARNING);
+                } else {
+                    setMessage("");
+                }
+            }
         };
 
-        clientTimeout.setValidRange(10000, Integer.MAX_VALUE);
-        addField(clientTimeout);
+        m_initialTimeoutValue = getPreferenceStore().getInt(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT);
+        m_clientTimeout.setValidRange(10000, Integer.MAX_VALUE);
+        addField(m_clientTimeout);
         addField(new LabelField(parent,
             "Specifies the timeout in milliseconds of KNIME Analytics Platform\nwhen communicating with the server."));
     }
@@ -144,5 +173,68 @@ public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePag
         super.initialize();
         m_refreshInterval.setEnabled(m_autoRefresh.getBooleanValue(), getFieldEditorParent());
         m_disableWorkflowEdits.setEnabled(m_autoRefresh.getBooleanValue(), getFieldEditorParent());
+    }
+
+    /**
+     * Overriden to display a message box in case the client timeout was changed.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean performOk() {
+        super.performOk();
+        m_appliedTimeoutValue = m_clientTimeout.getIntValue();
+        checkChanges();
+        return true;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    protected void performApply() {
+        m_apply = true;
+        m_appliedTimeoutValue = m_clientTimeout.getIntValue();
+        super.performApply();
+    }
+
+    /**
+     * Overriden to react when the users applies but then presses cancel.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean performCancel() {
+        final boolean result = super.performCancel();
+        checkChanges();
+        return result;
+    }
+
+    private void checkChanges() {
+        final boolean apply = m_apply;
+        m_apply = false;
+
+        if (apply) {
+            return;
+        }
+
+        if (m_initialTimeoutValue != m_appliedTimeoutValue) {
+            final String message = "Changes of the remote workflow editor client timeout become " //
+                + "available after restarting the workbench.\n" //
+                + "Do you want to restart the workbench now?";
+
+            Display.getDefault().asyncExec(() -> promptRestartWithMessage(message));
+        }
+    }
+
+    private static void promptRestartWithMessage(final String message) {
+        final MessageBox mb = new MessageBox(SWTUtilities.getActiveShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+        mb.setText("Restart workbench...");
+        mb.setMessage(message);
+        if (mb.open() != SWT.YES) {
+            return;
+        }
+        PlatformUI.getWorkbench().restart();
     }
 }
