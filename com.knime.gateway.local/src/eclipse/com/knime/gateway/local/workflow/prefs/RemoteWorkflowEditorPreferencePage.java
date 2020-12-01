@@ -154,6 +154,7 @@ public class RemoteWorkflowEditorPreferencePage extends FieldEditorPreferencePag
         };
 
         m_initialTimeoutValue = getPreferenceStore().getInt(PreferenceConstants.P_REMOTE_WORKFLOW_EDITOR_CLIENT_TIMEOUT);
+        m_appliedTimeoutValue = m_initialTimeoutValue;
         m_clientTimeout.setValidRange(10000, Integer.MAX_VALUE);
         addField(m_clientTimeout);
         addField(new LabelField(parent,
