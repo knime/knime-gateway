@@ -5,8 +5,23 @@
 <entry key="version" type="xstring" value="4.1.0"/>
 <config key="workflow_template_information">
 <entry key="role" type="xstring" value="Template"/>
-<entry key="timestamp" type="xstring" value="2020-11-02 18:17:58"/>
+<entry key="timestamp" type="xstring" value="2020-12-02 15:48:18"/>
 <entry key="sourceURI" type="xstring" isnull="true" value=""/>
 <entry key="templateType" type="xstring" value="SubNode"/>
+<config key="exampleInputDataInfo">
+<entry key="location" type="xstring" value="exampleInputData"/>
+<config key="content">
+<config key="object_0.zip">
+<entry key="index" type="xint" value="0"/>
+<entry key="type" type="xstring" value="null"/>
+</config>
+<config key="object_1.zip">
+<entry key="index" type="xint" value="1"/>
+<entry key="type" type="xstring" value="table"/>
+<entry key="table_file" type="xstring" value="object_1.zip"/>
+</config>
+</config>
+</config>
+<config key="incomingFlowVariables"/>
 </config>
 </config>

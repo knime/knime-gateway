@@ -23,10 +23,12 @@
 </config>
 <entry key="variable-prefix" type="xstring" isnull="true" value=""/>
 <config key="port-names">
-<entry key="array-size" type="xint" value="0"/>
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="Port 1"/>
 </config>
 <config key="port-descriptions">
-<entry key="array-size" type="xint" value="0"/>
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value=""/>
 </config>
 </config>
 <entry key="customDescription" type="xstring" isnull="true" value=""/>

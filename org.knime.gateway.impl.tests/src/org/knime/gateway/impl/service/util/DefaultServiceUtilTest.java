@@ -117,10 +117,11 @@ public class DefaultServiceUtilTest {
         nodeIDEnt = NodeIDEnt.getRootID();
         resNodeID = DefaultServiceUtil.changeNodeStates(wfm, "execute", nodeIDEnt)[0];
         assertThat(resNodeID, is(new NodeID(0)));
-        verify(parent).executeUpToHere(eq(new NodeID(0)));
-        verify(wfm).getParent();
-        verify(wfm).getID();
+        verify(parent, never()).executeUpToHere(eq(new NodeID(0)));
+        verify(wfm, never()).getParent();
         verify(wfm, never()).findNodeContainer(any());
+        verify(wfm).getID();
+        verify(wfm).executeAll();
 
         // check exception if action is nonsense
         Assert.assertThrows("exception expected", IllegalStateException.class,

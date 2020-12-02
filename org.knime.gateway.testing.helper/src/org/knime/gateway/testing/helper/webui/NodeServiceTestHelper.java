@@ -118,7 +118,34 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests to change the node execution state on a component project.
+     *
+     * @throws Exception
+     */
+    public void testChangeNodeStateOfComponentProject() throws Exception {
+        String wfId = loadComponent(TestWorkflowCollection.COMPONENT_PROJECT);
+
+        // test execution on root level
+        ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "execute");
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+                .getNodes().get("root:7");
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
+        });
+
+        // reset on root level
+        ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "reset");
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+                .getNodes().get("root:7");
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
+        });
+    }
+
+    /**
      * Test for {@link NodeService#doPortRpc(String, NodeIDEnt, Integer, String)}.
+     *
+     * @throws Exception
      */
     public void testDoPortRpc() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);

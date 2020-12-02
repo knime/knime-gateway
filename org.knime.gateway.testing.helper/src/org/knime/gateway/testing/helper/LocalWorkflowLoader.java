@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.testing.helper;
 
+import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,6 +57,7 @@ import java.util.UUID;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.TemplateNodeContainerPersistor;
+import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
@@ -110,7 +112,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     @Override
     public String loadComponent(final TestWorkflow component) throws Exception {
         URI componentURI = component.getUrlFolder().toURI();
-        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper(true, true, null);
+        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper(true, true, createWorkflowContext());
         TemplateNodeContainerPersistor loadPersistor =
             loadHelper.createTemplateLoadPersistor(component.getUrlFolder(), componentURI);
         MetaNodeLinkUpdateResult loadResult =
@@ -118,6 +120,10 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
         SubNodeContainer snc = (SubNodeContainer)loadResult.getLoadedInstance();
         return addToProjectManager(snc.getWorkflowManager(), component.getName());
+    }
+
+    private static WorkflowContext createWorkflowContext() {
+        return new WorkflowContext.Factory(new File("")).createContext();
     }
 
     /**

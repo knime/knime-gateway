@@ -228,8 +228,8 @@ public final class DefaultServiceUtil {
         WorkflowManager wfm;
         NodeID rootID = rootWfm.getID();
         if (Arrays.stream(nodeIdEnts).anyMatch(nodeId -> nodeId.equals(NodeIDEnt.getRootID()))) {
-            nodeIDs = new NodeID[]{rootID};
-            wfm = rootWfm.getParent();
+            nodeIDs = ALL;
+            wfm = rootWfm;
         } else {
             nodeIDs = new NodeID[nodeIdEnts.length];
             nodeIDs[0] = nodeIdEnts[0].toNodeID(rootID);
@@ -246,24 +246,51 @@ public final class DefaultServiceUtil {
 
         doChangeNodeState(wfm, action, nodeIDs);
 
-        return nodeIDs;
+        return nodeIDs == ALL ? new NodeID[]{rootID} : nodeIDs;
     }
+
+    private static final NodeID[] ALL = new NodeID[0];
 
     private static void doChangeNodeState(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
         if (StringUtils.isBlank(action)) {
             //if there is no action (null or empty)
         } else if (action.equals("reset")) {
+            reset(wfm, nodeIDs);
+        } else if (action.equals("cancel")) {
+            cancel(wfm, nodeIDs);
+        } else if (action.equals("execute")) {
+            execute(wfm, nodeIDs);
+        } else {
+            throw new IllegalStateException("Unknown action '" + action + "'");
+        }
+    }
+
+    private static void reset(final WorkflowManager wfm, final NodeID... nodeIDs) {
+        if (nodeIDs == ALL) {
+            wfm.resetAndConfigureAll();
+        } else {
             for (NodeID nodeID : nodeIDs) {
                 wfm.resetAndConfigureNode(nodeID);
             }
-        } else if (action.equals("cancel")) {
+        }
+    }
+
+    private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
+        if (nodeIDs == ALL) {
+            wfm.getNodeContainers().stream().filter(nc -> nc.getNodeContainerState().isExecutionInProgress())
+                .forEach(wfm::cancelExecution);
+        } else {
             for (NodeID nodeID : nodeIDs) {
                 wfm.cancelExecution(wfm.getNodeContainer(nodeID));
             }
-        } else if (action.equals("execute")) {
-            wfm.executeUpToHere(nodeIDs);
+        }
+    }
+
+    private static void execute(final WorkflowManager wfm, final NodeID... nodeIDs) {
+        if (nodeIDs == ALL) {
+            wfm.executeAll();
         } else {
-            throw new IllegalStateException("Unknown action '" + action + "'");
+            wfm.executeUpToHere(nodeIDs);
         }
     }
 

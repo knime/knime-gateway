@@ -60,7 +60,7 @@
     "root:8" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canExecute" : false,
+        "canExecute" : true,
         "canReset" : false
       },
       "id" : "root:8",
@@ -100,7 +100,7 @@
         "y" : 126
       },
       "state" : {
-        "executionState" : "IDLE"
+        "executionState" : "CONFIGURED"
       },
       "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
     },
@@ -136,14 +136,13 @@
         "y" : 234
       },
       "state" : {
-        "executionState" : "CONFIGURED",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "CONFIGURED"
       }
     },
     "root:6" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canExecute" : false,
+        "canExecute" : true,
         "canReset" : false
       },
       "id" : "root:6",
@@ -174,15 +173,14 @@
         "y" : 126
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "CONFIGURED"
       },
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76"
     },
     "root:7" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canExecute" : false,
+        "canExecute" : true,
         "canReset" : false
       },
       "id" : "root:7",
@@ -214,7 +212,7 @@
         "y" : 126
       },
       "state" : {
-        "executionState" : "IDLE"
+        "executionState" : "CONFIGURED"
       },
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76"
     }
