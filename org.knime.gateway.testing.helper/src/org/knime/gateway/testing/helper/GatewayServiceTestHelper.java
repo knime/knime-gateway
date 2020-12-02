@@ -58,6 +58,7 @@ import org.eclipse.core.runtime.Path;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
@@ -122,6 +123,17 @@ public class GatewayServiceTestHelper {
      */
     protected String loadWorkflow(final TestWorkflow workflow) throws Exception {
         return m_workflowLoader.loadWorkflow(workflow);
+    }
+
+    /**
+     * See {@link WorkflowLoader#loadComponent(TestWorkflow)}.
+     *
+     * @param component the copmonent to load
+     * @return the component's id
+     * @throws Exception if loading fails
+     */
+    protected String loadComponent(final TestWorkflow component) throws Exception {
+        return m_workflowLoader.loadComponent(component);
     }
 
     /**
@@ -235,11 +247,16 @@ public class GatewayServiceTestHelper {
      * @throws InterruptedException
      */
     public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
-        wfm.getParent().cancelExecution(wfm);
+        wfm.getNodeContainers().forEach(wfm::cancelExecution);
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
             wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         }
-        wfm.getParent().removeProject(wfm.getID());
+        if (wfm.isComponentProjectWFM()) {
+            SubNodeContainer snc = (SubNodeContainer)wfm.getDirectNCParent();
+            snc.getParent().removeProject(snc.getID());
+        } else if (wfm.isProject()) {
+            wfm.getParent().removeProject(wfm.getID());
+        }
     }
 
 }

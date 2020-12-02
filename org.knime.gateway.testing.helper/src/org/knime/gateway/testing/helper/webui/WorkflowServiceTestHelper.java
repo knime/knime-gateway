@@ -123,7 +123,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetComponentProjectWorkflow() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.COMPONENT_PROJECT);
+        String wfId = loadComponent(TestWorkflowCollection.COMPONENT_PROJECT);
 
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
         cr(workflow, "component_project");

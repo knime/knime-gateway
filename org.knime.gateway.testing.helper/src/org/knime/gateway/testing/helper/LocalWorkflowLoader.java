@@ -48,16 +48,17 @@
  */
 package org.knime.gateway.testing.helper;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
+import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.TemplateNodeContainerPersistor;
+import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.LockFailedException;
+import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 
@@ -75,25 +76,24 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     @Override
     public String loadWorkflow(final TestWorkflow workflow) throws Exception {
+        WorkflowManager wfm = GatewayServiceTestHelper.loadWorkflow(workflow.getUrlFolder());
+        return addToProjectManager(wfm, workflow.getName());
+    }
+
+    private String addToProjectManager(final WorkflowManager wfm, final String name) {
         final UUID uuid = UUID.randomUUID();
         WorkflowProjectManager.addWorkflowProject(uuid.toString(), new WorkflowProject() {
 
             @Override
             public WorkflowManager openProject() {
-                try {
-                    WorkflowManager wfm = GatewayServiceTestHelper.loadWorkflow(workflow.getUrlFolder());
-                    wfm.setName(workflow.getName());
-                    m_loadedWorkflows.add(uuid);
-                    return wfm;
-                } catch (IOException | InvalidSettingsException | CanceledExecutionException
-                        | UnsupportedWorkflowVersionException | LockFailedException e) {
-                    throw new RuntimeException(e);
-                }
+                wfm.setName(name);
+                m_loadedWorkflows.add(uuid);
+                return wfm;
             }
 
             @Override
             public String getName() {
-                return workflow.getName();
+                return name;
             }
 
             @Override
@@ -102,6 +102,22 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             }
         });
         return uuid.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String loadComponent(final TestWorkflow component) throws Exception {
+        URI componentURI = component.getUrlFolder().toURI();
+        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper(true, true, null);
+        TemplateNodeContainerPersistor loadPersistor =
+            loadHelper.createTemplateLoadPersistor(component.getUrlFolder(), componentURI);
+        MetaNodeLinkUpdateResult loadResult =
+            new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
+        WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
+        SubNodeContainer snc = (SubNodeContainer)loadResult.getLoadedInstance();
+        return addToProjectManager(snc.getWorkflowManager(), component.getName());
     }
 
     /**

@@ -23,17 +23,24 @@ package org.knime.gateway.testing.helper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@FunctionalInterface
 public interface WorkflowLoader {
 
 	/**
-	 * Loads the workflow from the given URL. The
-	 * resource behind the URL must be a ZIP archive containing a workflow.
+	 * Loads a workflow.
 	 *
 	 * @param workflow workflow to load
 	 * @return the unique identifier of the loaded workflow
 	 * @throws Exception if the loading fails
 	 */
 	String loadWorkflow(TestWorkflow workflow) throws Exception;
+
+    /**
+     * Loads a component.
+     *
+     * @param component component to load
+     * @return the unique identifier of the loaded workflow
+     * @throws Exception if the loading fails
+     */
+    String loadComponent(TestWorkflow component) throws Exception;
 
 }

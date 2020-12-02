@@ -166,7 +166,7 @@ public class ResultChecker {
             @Override
             public void describeMismatch(final Object item, final Description description) {
                 if (item instanceof String) {
-                    Patch<String> diff = DiffUtils.diff((String)item, expected, null);
+                    Patch<String> diff = DiffUtils.diff(expected, (String)item, null);
                     description.appendText("there are differences:\n"
                         + diff.getDeltas().stream().map(Object::toString).collect(Collectors.joining(",\n")));
                 } else {

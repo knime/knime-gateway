@@ -53,7 +53,8 @@
         "y" : 126
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "CONFIGURED",
+        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory"
     },
@@ -83,7 +84,8 @@
         "y" : 126
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "CONFIGURED",
+        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory"
     },
@@ -119,11 +121,13 @@
         "y" : 216
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "CONFIGURED",
+        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
     }
   },
   "parents" : [ {
+    "containerId" : "root",
     "containerType" : "project",
     "name" : "component project"
   } ],

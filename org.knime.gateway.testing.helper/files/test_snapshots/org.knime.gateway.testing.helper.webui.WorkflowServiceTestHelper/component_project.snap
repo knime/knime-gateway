@@ -4,6 +4,22 @@
     "canExecute" : true,
     "canReset" : false
   },
+  "componentMetadata" : {
+    "description" : "The component description",
+    "inPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "type" : "table",
+      "typeName" : "Data"
+    } ],
+    "name" : "component project",
+    "outPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "type" : "table",
+      "typeName" : "Data"
+    } ]
+  },
   "connections" : {
     "root:7_1" : {
       "destNode" : "root:7",
@@ -19,6 +35,7 @@
     }
   },
   "info" : {
+    "containerId" : "root",
     "containerType" : "project",
     "name" : "component project"
   },
@@ -119,7 +136,8 @@
         "y" : 234
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "CONFIGURED",
+        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
     },
     "root:6" : {
