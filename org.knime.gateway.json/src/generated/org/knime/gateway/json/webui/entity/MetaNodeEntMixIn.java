@@ -78,6 +78,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
+    @JsonProperty("dialog")
+    public Boolean isDialog();
+    
+    @Override
     @JsonProperty("inPorts")
     public java.util.List<MetaNodePortEnt> getInPorts();
     
@@ -129,6 +133,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("id")
         public MetaNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        
+        @Override
+        @JsonProperty("dialog")
+        public MetaNodeEntMixInBuilder setDialog(final Boolean dialog);
         
         @Override
         @JsonProperty("inPorts")

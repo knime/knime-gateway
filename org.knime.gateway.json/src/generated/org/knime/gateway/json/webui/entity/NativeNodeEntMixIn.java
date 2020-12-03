@@ -79,6 +79,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
+    @JsonProperty("dialog")
+    public Boolean isDialog();
+    
+    @Override
     @JsonProperty("inPorts")
     public java.util.List<? extends NodePortEnt> getInPorts();
     
@@ -130,6 +134,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("id")
         public NativeNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        
+        @Override
+        @JsonProperty("dialog")
+        public NativeNodeEntMixInBuilder setDialog(final Boolean dialog);
         
         @Override
         @JsonProperty("inPorts")

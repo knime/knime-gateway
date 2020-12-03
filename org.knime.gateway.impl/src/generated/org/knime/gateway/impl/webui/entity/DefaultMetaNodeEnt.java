@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 public class DefaultMetaNodeEnt implements MetaNodeEnt {
 
   protected org.knime.gateway.api.entity.NodeIDEnt m_id;
+  protected Boolean m_dialog;
   protected java.util.List<MetaNodePortEnt> m_inPorts;
   protected java.util.List<MetaNodePortEnt> m_outPorts;
   protected NodeAnnotationEnt m_annotation;
@@ -93,6 +94,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
+    m_dialog = immutable(builder.m_dialog);
     if(builder.m_inPorts == null) {
         throw new IllegalArgumentException("inPorts must not be null.");
     }
@@ -137,7 +139,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
             return false;
         }
         DefaultMetaNodeEnt ent = (DefaultMetaNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
     }
 
 
@@ -149,6 +151,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_id)
+               .append(m_dialog)
                .append(m_inPorts)
                .append(m_outPorts)
                .append(m_annotation)
@@ -166,6 +169,11 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getId() {
         return m_id;
+  }
+    
+  @Override
+  public Boolean isDialog() {
+        return m_dialog;
   }
     
   @Override
@@ -221,6 +229,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         }
     
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
+        private Boolean m_dialog;
         private java.util.List<MetaNodePortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<MetaNodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
@@ -237,6 +246,12 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
                  throw new IllegalArgumentException("id must not be null.");
              }
              m_id = id;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodeEntBuilder setDialog(Boolean dialog) {
+             m_dialog = dialog;
              return this;
         }
 

@@ -298,6 +298,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:1",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -350,6 +351,7 @@
               "text" : "node annotation",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:2",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -404,6 +406,7 @@
               "text" : "Node annotation with\nbackground color",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:19",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -449,6 +452,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:4",
             "inPorts" : [ {
               "connectedVia" : "[ root:4_0 ]",
@@ -494,6 +498,7 @@
               "text" : "a non-executing node",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:5",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -540,6 +545,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:6",
             "inPorts" : [ {
               "connectedVia" : "[ root:6_0 ]",
@@ -589,6 +595,7 @@
               "text" : "🤷🏻‍♂️ 🤨",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:182",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -626,6 +633,7 @@
               "text" : "check for simple port spec\n(distance measure)",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:20",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -695,6 +703,7 @@
               "text" : "optional\nin-ports",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:21",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -775,6 +784,7 @@
               "text" : "Component",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwUlEQVR4nGOQlpYy1tBQfwqk/2PD6uqqj0Fq/HtcWQL63beEzfR5GDjBff7///8ZQJgBqPlJU1Pj/0ePHv5/8uQJCgaJgeSUlZXu+3e75sWtCfmRcTDuf8g075dwA0C2gBTiAiA5NUul/6EzvN+ANCdtj/of2Oe2BsUAkG24AEjOrcbuf+rO6P/p+2OBBnk98elykcAw4P6z+/8Pnt///+aDmygGHDi5/3/U0sD/mYfi/seuDvnr1+GcA9OMYkDx4jyw8+KWhvw/c+0MWPP3H9/+5y7M+J9+IPZ/2q6Y/8BA3IOsGSUMmlfV/U/fG/sf5M/4pUH/j108+n/dwbX/U7dEgm0Pm+372afNWQ/DABUV5YegkD53+cz//MWZ/1N3x/zPBNoYvzIUaFA42MC4tSH//LpcKtE1w1xgrKam8gjkEg17lf/+fW5g54ICDOSiVCD2n+Bxx6/blQOrAegCXs2OKiFTvO6k7YoC2x421/etT5uTMTbNWA2AGiIbNMnjVPB070fAgGsGiZ3kkOY6L6G2+bKS/kMQBrFBYlgNwIZBGh64ev1/7B8IxiA2SIxoA0C2wjTDMEiMfgZQ7AVcgQgAUT6awwoY0YUAAAAASUVORK5CYII=",
             "id" : "root:183",
             "inPorts" : [ {
@@ -837,6 +847,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:25",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -904,6 +915,7 @@
               "text" : "Check a \n'generic'\nport type spec",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:22",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -964,6 +976,7 @@
               "text" : "with JS view inside\n(i.e. with composite view)",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:23",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1022,6 +1035,7 @@
               "text" : "test of another\nport object spec",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:26",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1082,6 +1096,7 @@
               "text" : "dynamic\nports",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:27",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1153,6 +1168,7 @@
               "text" : "a node created\nvia a node set factory",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:10",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1204,6 +1220,7 @@
               "text" : "Missing",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:172",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1235,6 +1252,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:8",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1288,6 +1306,7 @@
               "text" : "Node 13",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:13",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1334,6 +1353,7 @@
               "text" : "",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
             "id" : "root:9",
             "inPorts" : [ {
@@ -1390,6 +1410,7 @@
               "text" : "inactive branch",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:14",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1435,6 +1456,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:11",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1487,6 +1509,7 @@
               "text" : "",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:12",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1541,6 +1564,7 @@
               "text" : "checking flow\nvariables (string)",
               "textAlign" : "center"
             },
+            "dialog" : true,
             "id" : "root:18",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1582,6 +1606,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:15",
             "inPorts" : [ {
               "connectedVia" : "[  ]",
@@ -1620,6 +1645,7 @@
               "canExecute" : true,
               "canReset" : false
             },
+            "dialog" : true,
             "id" : "root:16",
             "inPorts" : [ {
               "connectedVia" : "[  ]",

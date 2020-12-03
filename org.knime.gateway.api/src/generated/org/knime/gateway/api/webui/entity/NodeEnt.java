@@ -93,6 +93,12 @@ public interface NodeEnt extends GatewayEntity {
   public org.knime.gateway.api.entity.NodeIDEnt getId();
 
   /**
+   * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available.
+   * @return dialog 
+   **/
+  public Boolean isDialog();
+
+  /**
    * The list of inputs.
    * @return inPorts , never <code>null</code>
    **/
@@ -141,6 +147,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        
+        /**
+         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available.
+         * 
+         * @param dialog the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setDialog(Boolean dialog);
         
         /**
          * The list of inputs.

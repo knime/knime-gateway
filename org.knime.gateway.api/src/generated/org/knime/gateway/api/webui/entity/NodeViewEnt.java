@@ -66,7 +66,7 @@ public interface NodeViewEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * Determines whether the node view is available.
+   * Determines whether the node view is available. I.e. the node has a view, but it is currently not available.
    * @return available , never <code>null</code>
    **/
   public Boolean isAvailable();
@@ -86,7 +86,7 @@ public interface NodeViewEnt extends GatewayEntity {
         NodeViewEntBuilder setName(String name);
         
         /**
-         * Determines whether the node view is available.
+         * Determines whether the node view is available. I.e. the node has a view, but it is currently not available.
          * 
          * @param available the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

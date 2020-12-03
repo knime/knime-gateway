@@ -99,6 +99,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
+         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available.
+         * 
+         * @param dialog the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setDialog(Boolean dialog);
+        
+        /**
          * The list of inputs.
          * 
          * @param inPorts the property value, NOT <code>null</code>! 

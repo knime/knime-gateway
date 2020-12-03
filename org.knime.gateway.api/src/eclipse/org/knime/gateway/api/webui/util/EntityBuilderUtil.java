@@ -513,7 +513,8 @@ public final class EntityBuilderUtil {
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
             .setLink(getTemplateLink(wm))//
-            .setAllowedActions(allowedActions).build();
+            .setAllowedActions(allowedActions)//
+            .setDialog(wm.hasDialog() ? Boolean.TRUE : null).build();
     }
 
     private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
@@ -567,7 +568,8 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
             .setView(buildNodeViewEnt(nc))//
-            .setAllowedActions(allowedActions).build();
+            .setAllowedActions(allowedActions)//
+            .setDialog(nc.hasDialog() ? Boolean.TRUE : null).build();
     }
 
     private static NodeViewEnt buildNodeViewEnt(final SubNodeContainer nc) {
@@ -700,6 +702,7 @@ public final class EntityBuilderUtil {
             .setTemplateId(createTemplateId(nc.getNode().getFactory()))//
             .setAllowedActions(allowedActions)//
             .setView(buildNodeViewEnt(nc))//
+            .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
             .build();
     }
 

@@ -56,6 +56,7 @@
   },
   "nodes" : {
     "root:23:0:10" : {
+      "dialog" : true,
       "id" : "root:23:0:10",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -102,6 +103,7 @@
       }
     },
     "root:23:0:8" : {
+      "dialog" : true,
       "id" : "root:23:0:8",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -136,6 +138,7 @@
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76"
     },
     "root:23:0:9" : {
+      "dialog" : true,
       "id" : "root:23:0:9",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

@@ -8,6 +8,7 @@
         "canExecute" : false,
         "canReset" : false
       },
+      "dialog" : true,
       "id" : "root:184",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

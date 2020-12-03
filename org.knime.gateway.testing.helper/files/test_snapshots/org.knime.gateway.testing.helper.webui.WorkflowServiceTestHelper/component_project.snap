@@ -63,6 +63,7 @@
         "canExecute" : true,
         "canReset" : false
       },
+      "dialog" : true,
       "id" : "root:8",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -115,6 +116,7 @@
         "text" : "",
         "textAlign" : "center"
       },
+      "dialog" : true,
       "id" : "root:5",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -145,6 +147,7 @@
         "canExecute" : true,
         "canReset" : false
       },
+      "dialog" : true,
       "id" : "root:6",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -183,6 +186,7 @@
         "canExecute" : true,
         "canReset" : false
       },
+      "dialog" : true,
       "id" : "root:7",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
