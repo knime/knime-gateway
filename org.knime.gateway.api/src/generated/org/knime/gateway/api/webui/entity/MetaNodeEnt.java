@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -164,6 +165,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        
+        /**
+   		 * Set jobManager
+         * 
+         * @param jobManager the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
    		 * Set name

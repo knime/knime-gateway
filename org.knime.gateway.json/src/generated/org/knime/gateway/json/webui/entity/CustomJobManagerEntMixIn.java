@@ -44,21 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
-import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
-import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.MetaNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -66,61 +59,21 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt.DefaultMetaNodeEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultMetaNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultCustomJobManagerEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface MetaNodeEntMixIn extends MetaNodeEnt {
+public interface CustomJobManagerEntMixIn extends CustomJobManagerEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
-    
-    @Override
-    @JsonProperty("dialog")
-    public Boolean isDialog();
-    
-    @Override
-    @JsonProperty("inPorts")
-    public java.util.List<MetaNodePortEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<MetaNodePortEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
-    
-    @Override
-    @JsonProperty("jobManager")
-    public JobManagerEnt getJobManager();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
     @Override
-    @JsonProperty("state")
-    public MetaNodeStateEnt getState();
-    
-    @Override
-    @JsonProperty("link")
-    public String getLink();
+    @JsonProperty("icon")
+    public String getIcon();
     
 
     /**
@@ -130,58 +83,18 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface MetaNodeEntMixInBuilder extends MetaNodeEntBuilder {
+    public static interface CustomJobManagerEntMixInBuilder extends CustomJobManagerEntBuilder {
     
         @Override
-        public MetaNodeEntMixIn build();
+        public CustomJobManagerEntMixIn build();
     
-        @Override
-        @JsonProperty("id")
-        public MetaNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        @Override
-        @JsonProperty("dialog")
-        public MetaNodeEntMixInBuilder setDialog(final Boolean dialog);
-        
-        @Override
-        @JsonProperty("inPorts")
-        public MetaNodeEntMixInBuilder setInPorts(final java.util.List<MetaNodePortEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public MetaNodeEntMixInBuilder setOutPorts(final java.util.List<MetaNodePortEnt> outPorts);
-        
-        @Override
-        @JsonProperty("annotation")
-        public MetaNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
-        @Override
-        @JsonProperty("position")
-        public MetaNodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public MetaNodeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("allowedActions")
-        public MetaNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
-        
-        @Override
-        @JsonProperty("jobManager")
-        public MetaNodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
-        
         @Override
         @JsonProperty("name")
-        public MetaNodeEntMixInBuilder setName(final String name);
+        public CustomJobManagerEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("state")
-        public MetaNodeEntMixInBuilder setState(final MetaNodeStateEnt state);
-        
-        @Override
-        @JsonProperty("link")
-        public MetaNodeEntMixInBuilder setLink(final String link);
+        @JsonProperty("icon")
+        public CustomJobManagerEntMixInBuilder setIcon(final String icon);
         
     }
 

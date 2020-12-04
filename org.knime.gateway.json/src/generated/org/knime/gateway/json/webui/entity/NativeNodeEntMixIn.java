@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
@@ -107,6 +108,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public AllowedActionsEnt getAllowedActions();
     
     @Override
+    @JsonProperty("jobManager")
+    public JobManagerEnt getJobManager();
+    
+    @Override
     @JsonProperty("templateId")
     public String getTemplateId();
     
@@ -162,6 +167,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("allowedActions")
         public NativeNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        
+        @Override
+        @JsonProperty("jobManager")
+        public NativeNodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
         
         @Override
         @JsonProperty("templateId")

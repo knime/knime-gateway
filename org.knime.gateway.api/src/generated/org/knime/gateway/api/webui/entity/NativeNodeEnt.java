@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -153,6 +154,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        
+        /**
+   		 * Set jobManager
+         * 
+         * @param jobManager the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
          * The id of the node template this node is an instance of.

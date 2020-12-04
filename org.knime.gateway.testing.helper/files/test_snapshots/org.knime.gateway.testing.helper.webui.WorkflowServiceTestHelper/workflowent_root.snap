@@ -750,6 +750,9 @@
         "optional" : false,
         "type" : "flowVariable"
       } ],
+      "jobManager" : {
+        "type" : "streaming"
+      },
       "kind" : "component",
       "link" : "knime://knime.mountpoint/Streaming%20Component",
       "name" : "Streaming Component",

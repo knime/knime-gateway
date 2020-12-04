@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -124,6 +125,10 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonProperty("allowedActions")
     public AllowedActionsEnt getAllowedActions();
     
+    @Override
+    @JsonProperty("jobManager")
+    public JobManagerEnt getJobManager();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -182,6 +187,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("allowedActions")
         public NodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        
+        @Override
+        @JsonProperty("jobManager")
+        public NodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
         
     }
 

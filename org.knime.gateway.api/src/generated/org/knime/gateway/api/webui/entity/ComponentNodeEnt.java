@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -154,6 +155,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        
+        /**
+   		 * Set jobManager
+         * 
+         * @param jobManager the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
          * The component name.

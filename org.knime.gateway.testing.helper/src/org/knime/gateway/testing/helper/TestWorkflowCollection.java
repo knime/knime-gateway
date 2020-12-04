@@ -29,7 +29,13 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow to test workflow and component metadata.
      */
-    METADATA("/files/Workflow Metadata.knwf", "workflow_metadata");
+    METADATA("/files/Workflow Metadata.knwf", "workflow_metadata"),
+
+    /**
+     * Workflow to test job managers.
+     */
+    JOB_MANAGER("/files/Job Manager.knwf", "job_manager");
+
 
     private final String m_url;
 

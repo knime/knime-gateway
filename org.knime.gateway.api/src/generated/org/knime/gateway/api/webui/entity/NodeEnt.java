@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -134,6 +135,12 @@ public interface NodeEnt extends GatewayEntity {
    **/
   public AllowedActionsEnt getAllowedActions();
 
+  /**
+   * Get jobManager
+   * @return jobManager 
+   **/
+  public JobManagerEnt getJobManager();
+
 
     /**
      * The builder for the entity.
@@ -203,6 +210,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        
+        /**
+   		 * Set jobManager
+         * 
+         * @param jobManager the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setJobManager(JobManagerEnt jobManager);
         
         
         /**

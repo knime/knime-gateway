@@ -61,9 +61,11 @@ import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
@@ -75,6 +77,8 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeContainerTemplate;
+import org.knime.core.node.workflow.NodeExecutionJobManager;
+import org.knime.core.node.workflow.NodeExecutionJobManagerFactory;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
@@ -109,6 +113,10 @@ import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
+import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
+import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
@@ -184,6 +192,9 @@ public final class EntityBuilderUtil {
      * The default background color for node annotations which usually translates to opaque.
      */
     private static final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
+
+    private static final String STREAMING_JOB_MANAGER_ID =
+        "org.knime.core.streaming.SimpleStreamerNodeExecutionJobManagerFactory";
 
     private static final Map<String, NativeNodeTemplateEnt> m_nativeNodeTemplateCache = new HashMap<>();
 
@@ -514,7 +525,8 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.METANODE)//
             .setLink(getTemplateLink(wm))//
             .setAllowedActions(allowedActions)//
-            .setDialog(wm.hasDialog() ? Boolean.TRUE : null).build();
+            .setDialog(wm.hasDialog() ? Boolean.TRUE : null)//
+            .setJobManager(buildJobManagerEnt(wm)).build();
     }
 
     private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
@@ -569,7 +581,8 @@ public final class EntityBuilderUtil {
             .setLink(getTemplateLink(nc))//
             .setView(buildNodeViewEnt(nc))//
             .setAllowedActions(allowedActions)//
-            .setDialog(nc.hasDialog() ? Boolean.TRUE : null).build();
+            .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
+            .setJobManager(buildJobManagerEnt(nc)).build();
     }
 
     private static NodeViewEnt buildNodeViewEnt(final SubNodeContainer nc) {
@@ -703,6 +716,7 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setView(buildNodeViewEnt(nc))//
             .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
+            .setJobManager(buildJobManagerEnt(nc))//
             .build();
     }
 
@@ -903,15 +917,47 @@ public final class EntityBuilderUtil {
             .build();
     }
 
+    private static JobManagerEnt buildJobManagerEnt(final NodeContainer nc) {
+        NodeExecutionJobManager jobManager = nc.getJobManager();
+        if (jobManager == null || jobManager instanceof ThreadNodeExecutionJobManager) {
+            return null;
+        } else if (jobManager.getID().equals(STREAMING_JOB_MANAGER_ID)) {
+            return builder(JobManagerEntBuilder.class)
+                .setType(org.knime.gateway.api.webui.entity.JobManagerEnt.TypeEnum.STREAMING).build();
+        } else {
+            return builder(JobManagerEntBuilder.class)
+                .setType(org.knime.gateway.api.webui.entity.JobManagerEnt.TypeEnum.OTHER)
+                .setCustom(buildCustomJobManagerEnt(jobManager)).build();
+        }
+    }
+
+    private static CustomJobManagerEnt buildCustomJobManagerEnt(final NodeExecutionJobManager jobManager) {
+        NodeExecutionJobManagerFactory factory = NodeExecutionJobManagerPool.getJobManagerFactory(jobManager.getID());
+        String name = factory == null ? jobManager.getID() : factory.getLabel();
+        String icon = null;
+        try {
+            icon = createIconDataURL(jobManager.getIcon());
+        } catch (IOException ex) {
+            NodeLogger.getLogger(EntityBuilderUtil.class)
+                .error(String.format("Icon for job manager '%s' couldn't be read", name), ex);
+        }
+        return builder(CustomJobManagerEntBuilder.class).setName(name).setIcon(icon).build();
+    }
+
     private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
-        URL url = nodeFactory.getIcon();
+        try {
+            return createIconDataURL(nodeFactory.getIcon());
+        } catch (IOException ex) {
+            NodeLogger.getLogger(EntityBuilderUtil.class)
+                .error(String.format("Icon for node '%s' couldn't be read", nodeFactory.getNodeName()), ex);
+            return null;
+        }
+    }
+
+    private static String createIconDataURL(final URL url) throws IOException {
         if (url != null) {
             try (InputStream in = url.openStream()) {
                 return createIconDataURL(IOUtils.toByteArray(in));
-            } catch (IOException ex) {
-                NodeLogger.getLogger(EntityBuilderUtil.class)
-                    .error(String.format("Icon for node '%s' couldn't be read", nodeFactory.getNodeName()), ex);
-                return null;
             }
         } else {
             return null;

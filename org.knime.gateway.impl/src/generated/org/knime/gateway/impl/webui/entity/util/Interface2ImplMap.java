@@ -60,10 +60,14 @@ import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNode
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
+import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
@@ -170,11 +174,17 @@ public class Interface2ImplMap {
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();
         }        
+        if(clazz == CustomJobManagerEntBuilder.class) {
+            return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();
+        }        
         if(clazz == EventEntBuilder.class) {
             return (B)new DefaultEventEnt.DefaultEventEntBuilder();
         }        
         if(clazz == EventTypeEntBuilder.class) {
             return (B)new DefaultEventTypeEnt.DefaultEventTypeEntBuilder();
+        }        
+        if(clazz == JobManagerEntBuilder.class) {
+            return (B)new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
         }        
         if(clazz == LinkEntBuilder.class) {
             return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();
