@@ -70,6 +70,7 @@ import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.DependentNodeProperties;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
@@ -224,18 +225,19 @@ public final class EntityBuilderUtil {
                 depNodeProps = wfm.determineDependentNodeProperties();
             }
             final boolean hasComponentProjectParent = wfm.getProjectComponent().isPresent();
-            Function<NodeID, NodeIDEnt> buildNodeIDEnt = id -> new NodeIDEnt(id, hasComponentProjectParent);
+            BuildContext buildContext =
+                createBuildContext(id -> new NodeIDEnt(id, hasComponentProjectParent), isInStreamingMode(wfm));
             for (NodeContainer nc : nodeContainers) {
-                buildAndAddNodeEnt(buildNodeIDEnt.apply(nc.getID()), nc, nodes, templates, depNodeProps,
-                    buildNodeIDEnt);
+                buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, depNodeProps,
+                    buildContext);
             }
             Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
-                .map(cc -> buildConnectionEnt(cc, buildNodeIDEnt)).collect(
+                .map(cc -> buildConnectionEnt(cc, buildContext)).collect(
                     Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations =
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
                     .collect(Collectors.toList());
-            WorkflowInfoEnt info = buildWorkflowInfoEnt(wfm, buildNodeIDEnt);
+            WorkflowInfoEnt info = buildWorkflowInfoEnt(wfm, buildContext);
             return builder(WorkflowEntBuilder.class)
                 .setInfo(info)//
                 .setNodes(nodes)//
@@ -243,9 +245,9 @@ public final class EntityBuilderUtil {
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
                 .setAllowedActions(includeInfoOnAllowedActions ? buildAllowedActionsEnt(wfm) : null)//
-                .setParents(buildParentWorkflowInfoEnts(wfm, buildNodeIDEnt))//
-                .setMetaInPorts(buildMetaPortsEnt(wfm, true, buildNodeIDEnt))//
-                .setMetaOutPorts(buildMetaPortsEnt(wfm, false, buildNodeIDEnt))//
+                .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
+                .setMetaInPorts(buildMetaPortsEnt(wfm, true, buildContext))//
+                .setMetaOutPorts(buildMetaPortsEnt(wfm, false, buildContext))//
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(isComponentWFM(wfm) ? buildComponentNodeTemplateEnt(getParentComponent(wfm))
                     : null)//
@@ -253,12 +255,27 @@ public final class EntityBuilderUtil {
         }
     }
 
+    /**
+     * Determines whether a workflow has the streaming executor set.
+     *
+     * @param wfm the workflow to check
+     * @return <code>true</code> if in streaming mode
+     */
+    public static boolean isInStreamingMode(final WorkflowManager wfm) {
+        NodeContainerParent directNCParent = wfm.getDirectNCParent();
+        if (wfm.getDirectNCParent() instanceof SubNodeContainer) {
+            NodeContainer nc = (NodeContainer)directNCParent;
+            return nc.getJobManager() != null && nc.getJobManager().getID().equals(STREAMING_JOB_MANAGER_ID);
+        }
+        return false;
+    }
+
     private static boolean isComponentWFM(final WorkflowManager wfm) {
         return wfm.getDirectNCParent() instanceof SubNodeContainer;
     }
 
     private static MetaPortsEnt buildMetaPortsEnt(final WorkflowManager wfm, final boolean incoming,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final BuildContext buildContext) {
         if (wfm.isProject() || wfm.getDirectNCParent() instanceof SubNodeContainer) {
             // no meta ports for workflow projects and component workflows
             return null;
@@ -272,7 +289,7 @@ public final class EntityBuilderUtil {
                 Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
-                    port.isInactive() ? Boolean.TRUE : null, connections, buildNodeIDEnt));
+                    port.isInactive() ? Boolean.TRUE : null, connections, buildContext));
             }
         } else {
             int nrPorts = wfm.getNrWorkflowOutgoingPorts();
@@ -280,7 +297,7 @@ public final class EntityBuilderUtil {
                 ConnectionContainer connection = wfm.getIncomingConnectionFor(wfm.getID(), i);
                 NodeInPort port = wfm.getWorkflowOutgoingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null,
-                    connection != null ? singleton(connection) : emptyList(), buildNodeIDEnt));
+                    connection != null ? singleton(connection) : emptyList(), buildContext));
             }
         }
         builder.setPorts(ports);
@@ -291,8 +308,7 @@ public final class EntityBuilderUtil {
         return builder.build();
     }
 
-    private static WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+    private static WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm, final BuildContext buildContext) {
         NodeContainerTemplate template;
         if (wfm.getDirectNCParent() instanceof SubNodeContainer) {
             template = (SubNodeContainer)wfm.getDirectNCParent();
@@ -301,7 +317,7 @@ public final class EntityBuilderUtil {
         }
         return builder(WorkflowInfoEntBuilder.class)//
             .setName(wfm.getName())//
-            .setContainerId(getContainerId(wfm, buildNodeIDEnt))//
+            .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) == null ? null : Boolean.TRUE)//
             .build();
@@ -315,8 +331,7 @@ public final class EntityBuilderUtil {
         return sourceURI == null ? null : sourceURI.toString();
     }
 
-    private static NodeIDEnt getContainerId(final WorkflowManager wfm,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+    private static NodeIDEnt getContainerId(final WorkflowManager wfm, final BuildContext buildContext) {
         if (wfm.isProject()) {
             return null;
         }
@@ -324,9 +339,9 @@ public final class EntityBuilderUtil {
         NodeContainerParent ncParent = wfm.getDirectNCParent();
         if (ncParent instanceof SubNodeContainer) {
             // it's a component's workflow
-            return buildNodeIDEnt.apply(((SubNodeContainer)ncParent).getID());
+            return buildContext.buildNodeIDEnt(((SubNodeContainer)ncParent).getID());
         } else {
-            return buildNodeIDEnt.apply(wfm.getID());
+            return buildContext.buildNodeIDEnt(wfm.getID());
         }
     }
 
@@ -345,7 +360,7 @@ public final class EntityBuilderUtil {
     }
 
     private static List<WorkflowInfoEnt> buildParentWorkflowInfoEnts(final WorkflowManager wfm,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final BuildContext buildContext) {
         if (wfm.isProject() || wfm.isComponentProjectWFM()) {
             return null; // NOSONAR
         }
@@ -353,7 +368,7 @@ public final class EntityBuilderUtil {
         WorkflowManager parent = wfm;
         do {
             parent = getWorkflowParent(parent);
-            parents.add(buildWorkflowInfoEnt(parent, buildNodeIDEnt));
+            parents.add(buildWorkflowInfoEnt(parent, buildContext));
         } while (!parent.isProject() && !parent.isComponentProjectWFM());
         Collections.reverse(parents);
         return parents;
@@ -460,10 +475,10 @@ public final class EntityBuilderUtil {
 
     private static void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
         final Map<String, NativeNodeTemplateEnt> templates, final DependentNodeProperties depNodeProps,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final BuildContext buildContext) {
         NodeEnt nodeEnt =
-            depNodeProps != null ? buildNodeEntWithInfoOnAllowedActions(id, nc, depNodeProps, buildNodeIDEnt)
-                : buildNodeEnt(id, nc, buildNodeIDEnt);
+            depNodeProps != null ? buildNodeEntWithInfoOnAllowedActions(id, nc, depNodeProps, buildContext)
+                : buildNodeEnt(id, nc, buildContext);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
@@ -472,24 +487,23 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
-        return buildNodeEnt(id, nc, null, buildNodeIDEnt);
+    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc, final BuildContext buildContext) {
+        return buildNodeEnt(id, nc, null, buildContext);
     }
 
     private static NodeEnt buildNodeEntWithInfoOnAllowedActions(final NodeIDEnt id, final NodeContainer nc,
-        final DependentNodeProperties depNodeProps, final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
-        return buildNodeEnt(id, nc, buildAllowedActionsEnt(nc, depNodeProps), buildNodeIDEnt);
+        final DependentNodeProperties depNodeProps, final BuildContext buildContext) {
+        return buildNodeEnt(id, nc, buildAllowedActionsEnt(nc, depNodeProps), buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final AllowedActionsEnt allowedActions, final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
         if (nc instanceof NativeNodeContainer) {
-            return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, buildNodeIDEnt);
+            return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, buildContext);
         } else if (nc instanceof WorkflowManager) {
-            return buildMetaNodeEnt(id, (WorkflowManager)nc, allowedActions, buildNodeIDEnt);
+            return buildMetaNodeEnt(id, (WorkflowManager)nc, allowedActions, buildContext);
         } else if (nc instanceof SubNodeContainer) {
-            return buildComponentNodeEnt(id, (SubNodeContainer)nc, allowedActions, buildNodeIDEnt);
+            return buildComponentNodeEnt(id, (SubNodeContainer)nc, allowedActions, buildContext);
         } else {
             throw new IllegalArgumentException(
                 "Node container " + nc.getClass().getCanonicalName() + " cannot be mapped to a node entity.");
@@ -515,11 +529,11 @@ public final class EntityBuilderUtil {
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,
-        final AllowedActionsEnt allowedActions, final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
         return builder(MetaNodeEntBuilder.class).setName(wm.getName()).setId(id)//
-            .setOutPorts(buildMetaNodePortEnts(wm, false, buildNodeIDEnt))//
+            .setOutPorts(buildMetaNodePortEnts(wm, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))//
-            .setInPorts(buildMetaNodePortEnts(wm, true, buildNodeIDEnt))//
+            .setInPorts(buildMetaNodePortEnts(wm, true, buildContext))//
             .setPosition(buildXYEnt(wm.getUIInformation()))//
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
@@ -542,8 +556,8 @@ public final class EntityBuilderUtil {
     }
 
     private static List<MetaNodePortEnt> buildMetaNodePortEnts(final WorkflowManager wm, final boolean inPorts,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
-        return buildNodePortEnts(wm, inPorts, buildNodeIDEnt).stream().map(np -> { // NOSONAR
+        final BuildContext buildContext) {
+        return buildNodePortEnts(wm, inPorts, buildContext).stream().map(np -> { // NOSONAR
             NodeStateEnum nodeState;
             if (!inPorts) {
                 nodeState = getNodeStateEnumForMetaNodePort(wm.getOutPort(np.getIndex()).getNodeState());
@@ -565,15 +579,15 @@ public final class EntityBuilderUtil {
     }
 
     private static ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
-        final AllowedActionsEnt allowedActions, final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
         ComponentMetadata metadata = nc.getMetadata();
         String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
             .setType(type == null ? null : org.knime.gateway.api.webui.entity.ComponentNodeEnt.TypeEnum.valueOf(type))//
-            .setOutPorts(buildNodePortEnts(nc, false, buildNodeIDEnt))//
+            .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
-            .setInPorts(buildNodePortEnts(nc, true, buildNodeIDEnt))//
+            .setInPorts(buildNodePortEnts(nc, true, buildContext))//
             .setPosition(buildXYEnt(nc.getUIInformation()))//
             .setState(buildNodeStateEnt(nc))//
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
@@ -608,7 +622,7 @@ public final class EntityBuilderUtil {
     }
 
     private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final BuildContext buildContext) {
         List<NodePortEnt> res = new ArrayList<>();
         if (inPorts) {
             for (int i = 0; i < nc.getNrInPorts(); i++) {
@@ -617,14 +631,14 @@ public final class EntityBuilderUtil {
                 res.add(buildNodePortEnt(inPort.getPortType(), inPort.getPortName(), null, i,
                     inPort.getPortType().isOptional(), null,
                     connection == null ? Collections.emptyList() : Collections.singletonList(connection),
-                    buildNodeIDEnt));
+                        buildContext));
             }
         } else {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
                 res.add(buildNodePortEnt(outPort.getPortType(), outPort.getPortName(), outPort.getPortSummary(), i,
-                    null, outPort.isInactive() ? outPort.isInactive() : null, connections, buildNodeIDEnt));
+                    null, outPort.isInactive() ? outPort.isInactive() : null, connections, buildContext));
             }
         }
         return res;
@@ -632,12 +646,12 @@ public final class EntityBuilderUtil {
 
     private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
-        final Collection<ConnectionContainer> connections, final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final Collection<ConnectionContainer> connections, final BuildContext buildContext) {
         NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
             .setInactive(isInactive)//
-            .setConnectedVia(connections.stream().map(cc -> buildConnectionIDEnt(cc, buildNodeIDEnt))
+            .setConnectedVia(connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext))
                 .collect(Collectors.toList()))//
             .setName(name)//
             .setInfo(info)//
@@ -667,9 +681,8 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
-        return new ConnectionIDEnt(buildNodeIDEnt.apply(c.getDest()), c.getDestPort());
+    private static ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c, final BuildContext buildContext) {
+        return new ConnectionIDEnt(buildContext.buildNodeIDEnt(c.getDest()), c.getDestPort());
     }
 
     private static NodeAnnotationEnt buildNodeAnnotationEnt(final NodeAnnotation na) {
@@ -703,12 +716,12 @@ public final class EntityBuilderUtil {
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NodeIDEnt id, final NativeNodeContainer nc,
-        final AllowedActionsEnt allowedActions, final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
+        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
-            .setOutPorts(buildNodePortEnts(nc, false, buildNodeIDEnt))//
+            .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
-            .setInPorts(buildNodePortEnts(nc, true, buildNodeIDEnt))//
+            .setInPorts(buildNodePortEnts(nc, true, buildContext))//
             .setPosition(buildXYEnt(nc.getUIInformation()))//
             .setKind(KindEnum.NODE)//
             .setState(buildNodeStateEnt(nc))//
@@ -978,12 +991,41 @@ public final class EntityBuilderUtil {
         return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
     }
 
-    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc,
-        final Function<NodeID, NodeIDEnt> buildNodeIDEnt) {
-        return builder(ConnectionEntBuilder.class).setDestNode(buildNodeIDEnt.apply(cc.getDest()))//
+    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc, final BuildContext buildContext) {
+        ConnectionEntBuilder builder = builder(ConnectionEntBuilder.class)
+            .setDestNode(buildContext.buildNodeIDEnt(cc.getDest()))//
             .setDestPort(cc.getDestPort())//
-            .setSourceNode(buildNodeIDEnt.apply(cc.getSource())).setSourcePort(cc.getSourcePort())//
-            .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null)//
-            .build();
+            .setSourceNode(buildContext.buildNodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())//
+            .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null);
+        if (buildContext.isInStreamingMode()) {
+            ConnectionUIInformation uiInfo = cc.getUIInfo();
+            if (uiInfo != null) {
+                builder.setLabel(uiInfo.getLabel().orElse(null)).setStreaming(uiInfo.isInProgress());
+            }
+       }
+        return builder.build();
     }
+
+    private static BuildContext createBuildContext(final Function<NodeID, NodeIDEnt> buildNodeIDEnt,
+        final boolean isInStreamingMode) {
+        return new BuildContext() {
+
+            @Override
+            public boolean isInStreamingMode() {
+                return isInStreamingMode;
+            }
+
+            @Override
+            public NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
+                return buildNodeIDEnt.apply(nodeID);
+            }
+        };
+    }
+
+    private interface BuildContext {
+        NodeIDEnt buildNodeIDEnt(NodeID nodeID);
+
+        boolean isInStreamingMode();
+    }
+
 }

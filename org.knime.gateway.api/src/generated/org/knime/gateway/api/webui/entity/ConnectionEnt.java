@@ -89,6 +89,18 @@ public interface ConnectionEnt extends GatewayEntity {
    **/
   public Boolean isFlowVariableConnection();
 
+  /**
+   * Whether data is streaming through the connection at the moment. Either true or absent.
+   * @return streaming 
+   **/
+  public Boolean isStreaming();
+
+  /**
+   * A (optional) label for the connection.
+   * @return label 
+   **/
+  public String getLabel();
+
 
     /**
      * The builder for the entity.
@@ -134,6 +146,22 @@ public interface ConnectionEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ConnectionEntBuilder setFlowVariableConnection(Boolean flowVariableConnection);
+        
+        /**
+         * Whether data is streaming through the connection at the moment. Either true or absent.
+         * 
+         * @param streaming the property value,  
+         * @return this entity builder for chaining
+         */
+        ConnectionEntBuilder setStreaming(Boolean streaming);
+        
+        /**
+         * A (optional) label for the connection.
+         * 
+         * @param label the property value,  
+         * @return this entity builder for chaining
+         */
+        ConnectionEntBuilder setLabel(String label);
         
         
         /**

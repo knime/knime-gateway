@@ -66,6 +66,8 @@ public class DefaultConnectionEnt implements ConnectionEnt {
   protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
   protected Integer m_sourcePort;
   protected Boolean m_flowVariableConnection;
+  protected Boolean m_streaming;
+  protected String m_label;
   
   protected DefaultConnectionEnt() {
     //for sub-classes
@@ -95,6 +97,8 @@ public class DefaultConnectionEnt implements ConnectionEnt {
     }
     m_sourcePort = immutable(builder.m_sourcePort);
     m_flowVariableConnection = immutable(builder.m_flowVariableConnection);
+    m_streaming = immutable(builder.m_streaming);
+    m_label = immutable(builder.m_label);
   }
   
    /**
@@ -112,7 +116,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
             return false;
         }
         DefaultConnectionEnt ent = (DefaultConnectionEnt)o;
-        return Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection);
+        return Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection) && Objects.equals(m_streaming, ent.m_streaming) && Objects.equals(m_label, ent.m_label);
     }
 
 
@@ -128,6 +132,8 @@ public class DefaultConnectionEnt implements ConnectionEnt {
                .append(m_sourceNode)
                .append(m_sourcePort)
                .append(m_flowVariableConnection)
+               .append(m_streaming)
+               .append(m_label)
                .toHashCode();
    }
   
@@ -158,6 +164,16 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         return m_flowVariableConnection;
   }
     
+  @Override
+  public Boolean isStreaming() {
+        return m_streaming;
+  }
+    
+  @Override
+  public String getLabel() {
+        return m_label;
+  }
+    
   
     public static class DefaultConnectionEntBuilder implements ConnectionEntBuilder {
     
@@ -170,6 +186,8 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         private org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
         private Integer m_sourcePort;
         private Boolean m_flowVariableConnection;
+        private Boolean m_streaming;
+        private String m_label;
 
         @Override
         public DefaultConnectionEntBuilder setDestNode(org.knime.gateway.api.entity.NodeIDEnt destNode) {
@@ -210,6 +228,18 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         @Override
         public DefaultConnectionEntBuilder setFlowVariableConnection(Boolean flowVariableConnection) {
              m_flowVariableConnection = flowVariableConnection;
+             return this;
+        }
+
+        @Override
+        public DefaultConnectionEntBuilder setStreaming(Boolean streaming) {
+             m_streaming = streaming;
+             return this;
+        }
+
+        @Override
+        public DefaultConnectionEntBuilder setLabel(String label) {
+             m_label = label;
              return this;
         }
 

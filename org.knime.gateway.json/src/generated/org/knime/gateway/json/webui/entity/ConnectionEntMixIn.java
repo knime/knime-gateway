@@ -87,6 +87,14 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
     @JsonProperty("flowVariableConnection")
     public Boolean isFlowVariableConnection();
     
+    @Override
+    @JsonProperty("streaming")
+    public Boolean isStreaming();
+    
+    @Override
+    @JsonProperty("label")
+    public String getLabel();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -119,6 +127,14 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
         @Override
         @JsonProperty("flowVariableConnection")
         public ConnectionEntMixInBuilder setFlowVariableConnection(final Boolean flowVariableConnection);
+        
+        @Override
+        @JsonProperty("streaming")
+        public ConnectionEntMixInBuilder setStreaming(final Boolean streaming);
+        
+        @Override
+        @JsonProperty("label")
+        public ConnectionEntMixInBuilder setLabel(final String label);
         
     }
 

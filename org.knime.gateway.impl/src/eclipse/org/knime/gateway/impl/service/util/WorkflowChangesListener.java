@@ -53,6 +53,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.ConnectionProgressListener;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessageListener;
@@ -65,6 +68,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 
 /**
  * Summarizes all kind of workflow changes and allows one to register one single listener to all of them.
@@ -87,11 +91,15 @@ public class WorkflowChangesListener implements Closeable {
 
     private final Map<WorkflowAnnotationID, NodeUIInformationListener> m_workflowAnnotationListeners = new HashMap<>();
 
+    private final Map<ConnectionID, ConnectionProgressListener> m_connectionListeners;
+
     private final Consumer<WorkflowManager> m_callback;
 
     private final ExecutorService m_executorService;
 
     private final AtomicCallbackState m_callbackState = new AtomicCallbackState();
+
+    private final boolean m_isInStreamingMode;
 
     /**
      * @param wfm the workflow manager to listen to
@@ -105,6 +113,10 @@ public class WorkflowChangesListener implements Closeable {
             return t;
         });
         m_callback = callback;
+
+        m_isInStreamingMode = EntityBuilderUtil.isInStreamingMode(m_wfm);
+        m_connectionListeners = m_isInStreamingMode ? new HashMap<>() : null;
+
         m_workflowListener = startListening();
     }
 
@@ -116,6 +128,9 @@ public class WorkflowChangesListener implements Closeable {
         m_wfm.addListener(workflowListener);
         m_wfm.getNodeContainers().forEach(this::addNodeListeners);
         m_wfm.getWorkflowAnnotations().forEach(this::addWorkflowAnnotationListener);
+        if (m_isInStreamingMode) {
+            m_wfm.getConnectionContainers().forEach(this::addConnectionListener);
+        }
         return workflowListener;
     }
 
@@ -128,6 +143,14 @@ public class WorkflowChangesListener implements Closeable {
             addWorkflowAnnotationListener((WorkflowAnnotation)e.getNewValue());
         } else if (e.getType() == Type.ANNOTATION_REMOVED) {
             removeWorkflowAnnotationListener((WorkflowAnnotation)e.getOldValue());
+        } else if (e.getType() == Type.CONNECTION_ADDED) {
+            if (m_isInStreamingMode) {
+                addConnectionListener((ConnectionContainer)e.getNewValue());
+            }
+        } else if (e.getType() == Type.CONNECTION_REMOVED) {
+            if (m_isInStreamingMode) {
+                removeConnectionListener((ConnectionContainer)e.getOldValue());
+            }
         } else {
             //
         }
@@ -162,6 +185,18 @@ public class WorkflowChangesListener implements Closeable {
         m_nodeMessageListeners.remove(id);
     }
 
+    private void addConnectionListener(final ConnectionContainer cc) {
+        ConnectionProgressListener l = e -> callback();
+        cc.addProgressListener(l);
+        m_connectionListeners.put(cc.getID(), l);
+    }
+
+    private void removeConnectionListener(final ConnectionContainer cc) {
+        ConnectionID id = cc.getID();
+        cc.removeProgressListener(m_connectionListeners.get(id));
+        m_connectionListeners.remove(id);
+    }
+
     private void addWorkflowAnnotationListener(final WorkflowAnnotation wa) {
         NodeUIInformationListener l = e -> callback();
         m_workflowAnnotationListeners.put(wa.getID(), l);
@@ -192,6 +227,10 @@ public class WorkflowChangesListener implements Closeable {
         m_nodeUIListeners.clear();
         m_progressListeners.clear();
         m_workflowAnnotationListeners.clear();
+        if (m_isInStreamingMode) {
+            m_wfm.getConnectionContainers().forEach(this::removeConnectionListener);
+            m_connectionListeners.clear();
+        }
     }
 
     @Override
@@ -200,25 +239,36 @@ public class WorkflowChangesListener implements Closeable {
         m_executorService.shutdown();
     }
 
-    private static final class AtomicCallbackState {
+    /**
+     * Gives the current callback state. Mainly for testing purposes.
+     *
+     * @return the current callback state
+     */
+    public CallbackState getCallbackState() {
+        return m_callbackState.m_state;
+    }
 
-        /*
-         * The state the 'callback process' is in.
-         */
-        private enum CallbackState {
-                /*
-                 * No callback in progress nor is one awaiting
-                 */
-                IDLE,
-                /*
-                 * Callback in progress, none is awaiting
-                 */
-                IN_PROGRESS,
-                /*
-                 * Callback in progress, and another one awaiting
-                 */
-                IN_PROGRESS_AND_AWAITING;
-        }
+    /**
+     * The state the 'callback process' is in.
+     */
+    public enum CallbackState {
+            /**
+             * No callback in progress nor is one awaiting
+             */
+            IDLE,
+
+            /**
+             * Callback in progress, none is awaiting
+             */
+            IN_PROGRESS,
+
+            /**
+             * Callback in progress, and another one awaiting
+             */
+            IN_PROGRESS_AND_AWAITING;
+    }
+
+    private static final class AtomicCallbackState {
 
         private CallbackState m_state = CallbackState.IDLE;
 
