@@ -45,11 +45,11 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -111,7 +111,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
         MetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available.
+         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
          * 
          * @param dialog the property value,  
          * @return this entity builder for chaining
@@ -167,12 +167,12 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
         MetaNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         /**
-   		 * Set jobManager
+   		 * Set executionInfo
          * 
-         * @param jobManager the property value,  
+         * @param executionInfo the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setJobManager(JobManagerEnt jobManager);
+        MetaNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
    		 * Set name

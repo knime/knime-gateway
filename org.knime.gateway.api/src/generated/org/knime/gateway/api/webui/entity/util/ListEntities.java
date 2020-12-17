@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
@@ -133,6 +134,7 @@ public class ListEntities {
         res.add(NodeDialogOptionsEnt.class);
         res.add(NodeDialogOptions_fieldsEnt.class);
         res.add(NodeEnt.class);
+        res.add(NodeExecutionInfoEnt.class);
         res.add(NodePortAndTemplateEnt.class);
         res.add(NodePortEnt.class);
         res.add(NodePortTemplateEnt.class);
@@ -184,6 +186,7 @@ public class ListEntities {
         res.add(NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder.class);
         res.add(NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder.class);
         res.add(NodeEnt.NodeEntBuilder.class);
+        res.add(NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder.class);
         res.add(NodePortAndTemplateEnt.NodePortAndTemplateEntBuilder.class);
         res.add(NodePortEnt.NodePortEntBuilder.class);
         res.add(NodePortTemplateEnt.NodePortTemplateEntBuilder.class);

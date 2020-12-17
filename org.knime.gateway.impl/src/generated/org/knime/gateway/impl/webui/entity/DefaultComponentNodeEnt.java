@@ -49,14 +49,18 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+
+import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 
 /**
  * A node wrapping (referencing) a workflow (also referred to it as component or subnode) that almost behaves as a ordinary node.
@@ -74,24 +78,24 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
   protected XYEnt m_position;
   protected KindEnum m_kind;
   protected AllowedActionsEnt m_allowedActions;
-  protected JobManagerEnt m_jobManager;
+  protected NodeExecutionInfoEnt m_executionInfo;
   protected String m_name;
   protected TypeEnum m_type;
   protected String m_icon;
   protected NodeStateEnt m_state;
   protected String m_link;
   protected NodeViewEnt m_view;
-
+  
   protected DefaultComponentNodeEnt() {
     //for sub-classes
   }
-
+  
   @Override
   public String getTypeID() {
     return "ComponentNode";
   }
-
-  private DefaultComponentNodeEnt(final DefaultComponentNodeEntBuilder builder) {
+  
+  private DefaultComponentNodeEnt(DefaultComponentNodeEntBuilder builder) {
     super();
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
@@ -116,7 +120,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
     }
     m_kind = immutable(builder.m_kind);
     m_allowedActions = immutable(builder.m_allowedActions);
-    m_jobManager = immutable(builder.m_jobManager);
+    m_executionInfo = immutable(builder.m_executionInfo);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
@@ -130,7 +134,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
     m_link = immutable(builder.m_link);
     m_view = immutable(builder.m_view);
   }
-
+  
    /**
      * {@inheritDoc}
      */
@@ -146,11 +150,11 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link)  && Objects.equals(m_view, ent.m_view);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link) && Objects.equals(m_view, ent.m_view);
     }
 
 
-
+  
    /**
     * {@inheritDoc}
     */
@@ -165,7 +169,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
                .append(m_position)
                .append(m_kind)
                .append(m_allowedActions)
-               .append(m_jobManager)
+               .append(m_executionInfo)
                .append(m_name)
                .append(m_type)
                .append(m_icon)
@@ -174,91 +178,91 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
                .append(m_view)
                .toHashCode();
    }
-
-
-
+  
+	
+	
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getId() {
         return m_id;
   }
-
+    
   @Override
   public Boolean isDialog() {
         return m_dialog;
   }
-
+    
   @Override
   public java.util.List<? extends NodePortEnt> getInPorts() {
         return m_inPorts;
   }
-
+    
   @Override
   public java.util.List<? extends NodePortEnt> getOutPorts() {
         return m_outPorts;
   }
-
+    
   @Override
   public NodeAnnotationEnt getAnnotation() {
         return m_annotation;
   }
-
+    
   @Override
   public XYEnt getPosition() {
         return m_position;
   }
-
+    
   @Override
   public KindEnum getKind() {
         return m_kind;
   }
-
+    
   @Override
   public AllowedActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
-
+    
   @Override
-  public JobManagerEnt getJobManager() {
-        return m_jobManager;
+  public NodeExecutionInfoEnt getExecutionInfo() {
+        return m_executionInfo;
   }
-
+    
   @Override
   public String getName() {
         return m_name;
   }
-
+    
   @Override
   public TypeEnum getType() {
         return m_type;
   }
-
+    
   @Override
   public String getIcon() {
         return m_icon;
   }
-
+    
   @Override
   public NodeStateEnt getState() {
         return m_state;
   }
-
+    
   @Override
   public String getLink() {
         return m_link;
   }
-
+    
   @Override
   public NodeViewEnt getView() {
         return m_view;
   }
-
-
+    
+  
     public static class DefaultComponentNodeEntBuilder implements ComponentNodeEntBuilder {
-
+    
         public DefaultComponentNodeEntBuilder(){
             super();
         }
-
+    
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
         private Boolean m_dialog;
         private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
@@ -267,7 +271,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         private XYEnt m_position;
         private KindEnum m_kind;
         private AllowedActionsEnt m_allowedActions;
-        private JobManagerEnt m_jobManager;
+        private NodeExecutionInfoEnt m_executionInfo;
         private String m_name;
         private TypeEnum m_type;
         private String m_icon;
@@ -276,7 +280,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         private NodeViewEnt m_view;
 
         @Override
-        public DefaultComponentNodeEntBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id) {
+        public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
              if(id == null) {
                  throw new IllegalArgumentException("id must not be null.");
              }
@@ -285,13 +289,13 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setDialog(final Boolean dialog) {
+        public DefaultComponentNodeEntBuilder setDialog(Boolean dialog) {
              m_dialog = dialog;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts) {
+        public DefaultComponentNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts) {
              if(inPorts == null) {
                  throw new IllegalArgumentException("inPorts must not be null.");
              }
@@ -300,7 +304,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts) {
+        public DefaultComponentNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts) {
              if(outPorts == null) {
                  throw new IllegalArgumentException("outPorts must not be null.");
              }
@@ -309,13 +313,13 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setAnnotation(final NodeAnnotationEnt annotation) {
+        public DefaultComponentNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation) {
              m_annotation = annotation;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setPosition(final XYEnt position) {
+        public DefaultComponentNodeEntBuilder setPosition(XYEnt position) {
              if(position == null) {
                  throw new IllegalArgumentException("position must not be null.");
              }
@@ -324,7 +328,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setKind(final KindEnum kind) {
+        public DefaultComponentNodeEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -333,19 +337,19 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setAllowedActions(final AllowedActionsEnt allowedActions) {
+        public DefaultComponentNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setJobManager(final JobManagerEnt jobManager) {
-             m_jobManager = jobManager;
+        public DefaultComponentNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo) {
+             m_executionInfo = executionInfo;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setName(final String name) {
+        public DefaultComponentNodeEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("name must not be null.");
              }
@@ -354,19 +358,19 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setType(final TypeEnum type) {
+        public DefaultComponentNodeEntBuilder setType(TypeEnum type) {
              m_type = type;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setIcon(final String icon) {
+        public DefaultComponentNodeEntBuilder setIcon(String icon) {
              m_icon = icon;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setState(final NodeStateEnt state) {
+        public DefaultComponentNodeEntBuilder setState(NodeStateEnt state) {
              if(state == null) {
                  throw new IllegalArgumentException("state must not be null.");
              }
@@ -375,23 +379,23 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setLink(final String link) {
+        public DefaultComponentNodeEntBuilder setLink(String link) {
              m_link = link;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setView(final NodeViewEnt view) {
+        public DefaultComponentNodeEntBuilder setView(NodeViewEnt view) {
              m_view = view;
              return this;
         }
 
-
+        
         @Override
         public DefaultComponentNodeEnt build() {
             return new DefaultComponentNodeEnt(this);
         }
-
+    
     }
 
 }

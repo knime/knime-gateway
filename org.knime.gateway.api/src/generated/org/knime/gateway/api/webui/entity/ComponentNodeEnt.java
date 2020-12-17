@@ -46,9 +46,9 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewEnt;
@@ -101,7 +101,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         ComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available.
+         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
          * 
          * @param dialog the property value,  
          * @return this entity builder for chaining
@@ -157,12 +157,12 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         ComponentNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         /**
-   		 * Set jobManager
+   		 * Set executionInfo
          * 
-         * @param jobManager the property value,  
+         * @param executionInfo the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setJobManager(JobManagerEnt jobManager);
+        ComponentNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
          * The component name.

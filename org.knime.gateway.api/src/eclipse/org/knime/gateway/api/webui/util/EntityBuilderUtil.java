@@ -28,6 +28,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,14 +65,17 @@ import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
 import org.knime.core.node.missing.MissingNodeFactory;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.ConnectionUIInformation;
+import org.knime.core.node.workflow.ConnectionProgress;
 import org.knime.core.node.workflow.DependentNodeProperties;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
@@ -142,6 +147,8 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
@@ -197,9 +204,11 @@ public final class EntityBuilderUtil {
     private static final String STREAMING_JOB_MANAGER_ID =
         "org.knime.core.streaming.SimpleStreamerNodeExecutionJobManagerFactory";
 
-    private static final Map<String, NativeNodeTemplateEnt> m_nativeNodeTemplateCache = new HashMap<>();
+    private static final Map<String, NativeNodeTemplateEnt> m_nativeNodeTemplateCache = new ConcurrentHashMap<>();
 
-    private static final Map<String, NodePortTemplateEnt> m_nodePortTemplateCache = new HashMap<>();
+    private static final Map<String, NodePortTemplateEnt> m_nodePortTemplateCache = new ConcurrentHashMap<>();
+
+    private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
 
     private EntityBuilderUtil() {
         //utility class
@@ -540,7 +549,7 @@ public final class EntityBuilderUtil {
             .setLink(getTemplateLink(wm))//
             .setAllowedActions(allowedActions)//
             .setDialog(wm.hasDialog() ? Boolean.TRUE : null)//
-            .setJobManager(buildJobManagerEnt(wm)).build();
+            .setExecutionInfo(buildNodeExecutionInfoEnt(wm)).build();
     }
 
     private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
@@ -596,7 +605,7 @@ public final class EntityBuilderUtil {
             .setView(buildNodeViewEnt(nc))//
             .setAllowedActions(allowedActions)//
             .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
-            .setJobManager(buildJobManagerEnt(nc)).build();
+            .setExecutionInfo(buildNodeExecutionInfoEnt(nc)).build();
     }
 
     private static NodeViewEnt buildNodeViewEnt(final SubNodeContainer nc) {
@@ -729,7 +738,7 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setView(buildNodeViewEnt(nc))//
             .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
-            .setJobManager(buildJobManagerEnt(nc))//
+            .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .build();
     }
 
@@ -930,11 +939,63 @@ public final class EntityBuilderUtil {
             .build();
     }
 
+    private static NodeExecutionInfoEnt buildNodeExecutionInfoEnt(final NodeContainer nc) {
+        JobManagerEnt jobManagerEnt = buildJobManagerEnt(nc);
+        if (jobManagerEnt != null) {
+            return builder(NodeExecutionInfoEntBuilder.class).setJobManager(jobManagerEnt).build();
+        } else {
+            NodeExecutionJobManager parentJobManager = nc.getParent().findJobManager();
+            if (!isDefaultOrNullJobManager(parentJobManager)) {
+                return buildNodeExecutionInfoEntFromParentJobManager(parentJobManager, nc);
+            }
+        }
+        return null;
+    }
+
+    private static NodeExecutionInfoEnt buildNodeExecutionInfoEntFromParentJobManager(
+        final NodeExecutionJobManager parentJobManager, final NodeContainer nc) {
+        if (isStreamingJobManager(parentJobManager)) {
+            if (nc instanceof NativeNodeContainer) {
+                return builder(NodeExecutionInfoEntBuilder.class).setStreamable(isStreamable((NativeNodeContainer)nc))
+                    .build();
+            }
+        } else if (parentJobManager instanceof AbstractNodeExecutionJobManager) {
+            try {
+                return builder(NodeExecutionInfoEntBuilder.class)
+                    .setIcon(createIconDataURL(((AbstractNodeExecutionJobManager)parentJobManager).getIconForChild(nc)))
+                    .build();
+            } catch (IOException ex) {
+                NodeLogger.getLogger(EntityBuilderUtil.class).error(String.format(
+                    "Problem reading icon for job manager '%s' and node '%s'.", parentJobManager.getID(), nc), ex);
+            }
+        } else {
+            //
+        }
+        return null;
+    }
+
+    private static Boolean isStreamable(final NativeNodeContainer nc) {
+        final Class<?> nodeModelClass = nc.getNode().getNodeModel().getClass();
+        return IS_STREAMABLE.computeIfAbsent(nodeModelClass, EntityBuilderUtil::determineStreamability);
+    }
+
+    private static boolean determineStreamability(final Class<?> nodeModelClass) {
+        Method m;
+        try {
+            m = nodeModelClass.getMethod("createStreamableOperator", PartitionInfo.class, PortObjectSpec[].class);
+            return m.getDeclaringClass() != NodeModel.class;
+        } catch (NoSuchMethodException | SecurityException ex) {
+            NodeLogger.getLogger(EntityBuilderUtil.class)
+                .error("Ability to be run in streaming mode couldn't be determined for node " + nodeModelClass, ex);
+        }
+        return false;
+    }
+
     private static JobManagerEnt buildJobManagerEnt(final NodeContainer nc) {
         NodeExecutionJobManager jobManager = nc.getJobManager();
-        if (jobManager == null || jobManager instanceof ThreadNodeExecutionJobManager) {
+        if (isDefaultOrNullJobManager(jobManager)) {
             return null;
-        } else if (jobManager.getID().equals(STREAMING_JOB_MANAGER_ID)) {
+        } else if (isStreamingJobManager(jobManager)) {
             return builder(JobManagerEntBuilder.class)
                 .setType(org.knime.gateway.api.webui.entity.JobManagerEnt.TypeEnum.STREAMING).build();
         } else {
@@ -944,17 +1005,35 @@ public final class EntityBuilderUtil {
         }
     }
 
+    private static boolean isDefaultOrNullJobManager(final NodeExecutionJobManager jobManager) {
+        return jobManager == null || jobManager instanceof ThreadNodeExecutionJobManager;
+    }
+
+    private static boolean isStreamingJobManager(final NodeExecutionJobManager jobManager) {
+        return jobManager.getID().equals(STREAMING_JOB_MANAGER_ID);
+    }
+
     private static CustomJobManagerEnt buildCustomJobManagerEnt(final NodeExecutionJobManager jobManager) {
         NodeExecutionJobManagerFactory factory = NodeExecutionJobManagerPool.getJobManagerFactory(jobManager.getID());
         String name = factory == null ? jobManager.getID() : factory.getLabel();
         String icon = null;
+        String iconForWorkflow = null;
         try {
             icon = createIconDataURL(jobManager.getIcon());
         } catch (IOException ex) {
             NodeLogger.getLogger(EntityBuilderUtil.class)
                 .error(String.format("Icon for job manager '%s' couldn't be read", name), ex);
         }
-        return builder(CustomJobManagerEntBuilder.class).setName(name).setIcon(icon).build();
+        if (jobManager instanceof AbstractNodeExecutionJobManager) {
+            try {
+                iconForWorkflow = createIconDataURL(((AbstractNodeExecutionJobManager)jobManager).getIconForWorkflow());
+            } catch (IOException ex) {
+                NodeLogger.getLogger(EntityBuilderUtil.class)
+                    .error(String.format("Workflow icon for job manager '%s' couldn't be read", name), ex);
+            }
+        }
+        return builder(CustomJobManagerEntBuilder.class).setName(name).setIcon(icon).setWorkflowIcon(iconForWorkflow)
+            .build();
     }
 
     private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
@@ -998,11 +1077,11 @@ public final class EntityBuilderUtil {
             .setSourceNode(buildContext.buildNodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())//
             .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null);
         if (buildContext.isInStreamingMode()) {
-            ConnectionUIInformation uiInfo = cc.getUIInfo();
-            if (uiInfo != null) {
-                builder.setLabel(uiInfo.getLabel().orElse(null)).setStreaming(uiInfo.isInProgress());
+            ConnectionProgress connectionProgress = cc.getConnectionProgress().orElse(null);
+            if (connectionProgress != null) {
+                builder.setLabel(connectionProgress.getMessage()).setStreaming(connectionProgress.inProgress());
             }
-       }
+        }
         return builder.build();
     }
 

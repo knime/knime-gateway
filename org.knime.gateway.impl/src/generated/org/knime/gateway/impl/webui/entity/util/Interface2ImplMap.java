@@ -90,6 +90,8 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialog
 import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptions_fieldsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt.NodePortAndTemplateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
@@ -218,6 +220,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeEntBuilder.class) {
             return (B)new DefaultNodeEnt.DefaultNodeEntBuilder();
+        }        
+        if(clazz == NodeExecutionInfoEntBuilder.class) {
+            return (B)new DefaultNodeExecutionInfoEnt.DefaultNodeExecutionInfoEntBuilder();
         }        
         if(clazz == NodePortAndTemplateEntBuilder.class) {
             return (B)new DefaultNodePortAndTemplateEnt.DefaultNodePortAndTemplateEntBuilder();

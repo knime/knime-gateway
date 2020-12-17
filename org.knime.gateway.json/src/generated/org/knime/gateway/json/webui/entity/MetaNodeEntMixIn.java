@@ -45,10 +45,10 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -107,8 +107,8 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public AllowedActionsEnt getAllowedActions();
     
     @Override
-    @JsonProperty("jobManager")
-    public JobManagerEnt getJobManager();
+    @JsonProperty("executionInfo")
+    public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
     @JsonProperty("name")
@@ -168,8 +168,8 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         public MetaNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
         
         @Override
-        @JsonProperty("jobManager")
-        public MetaNodeEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
+        @JsonProperty("executionInfo")
+        public MetaNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
         
         @Override
         @JsonProperty("name")

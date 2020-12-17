@@ -45,9 +45,9 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewEnt;
@@ -100,7 +100,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available.
+         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
          * 
          * @param dialog the property value,  
          * @return this entity builder for chaining
@@ -156,12 +156,12 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
         
         /**
-   		 * Set jobManager
+   		 * Set executionInfo
          * 
-         * @param jobManager the property value,  
+         * @param executionInfo the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setJobManager(JobManagerEnt jobManager);
+        NativeNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
          * The id of the node template this node is an instance of.

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,61 +52,61 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Details about a custom job manager provided by a third party.
+ * Information about the node execution. Might not be present if no special node execution info is available. If given, usually only one of the following properties is set, either the icon, the &#39;streamble&#39;-flag, or  the job-manager.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CustomJobManagerEnt extends GatewayEntity {
+public interface NodeExecutionInfoEnt extends GatewayEntity {
 
 
   /**
-   * The job manager&#39;s name
-   * @return name , never <code>null</code>
+   * Get jobManager
+   * @return jobManager 
    **/
-  public String getName();
+  public JobManagerEnt getJobManager();
 
   /**
-   * An icon for the job manager, encoded as a data-url.
+   * This properties is only given if this node is part of a workflow (i.e. a component&#39;s workflow) that is in streaming mode. If true, this node can process the data in streamed manner, if false, it can&#39;t.
+   * @return streamable 
+   **/
+  public Boolean isStreamable();
+
+  /**
+   * A custom (decorator) icon set by its node executor (or the node executor of the parent workflow). Not present if the custom executor doesn&#39;t define a special icon or the &#39;streamable&#39; property is given. The icon is encoded in a data-url.
    * @return icon 
    **/
   public String getIcon();
-
-  /**
-   * A (larger) icon displayed within the workflow (e.g. of a component). Only necessary for job managers that can be configured on components or metanode. Encoded as a data-url.
-   * @return workflowIcon 
-   **/
-  public String getWorkflowIcon();
 
 
     /**
      * The builder for the entity.
      */
-    public interface CustomJobManagerEntBuilder extends GatewayEntityBuilder<CustomJobManagerEnt> {
+    public interface NodeExecutionInfoEntBuilder extends GatewayEntityBuilder<NodeExecutionInfoEnt> {
 
         /**
-         * The job manager&#39;s name
+   		 * Set jobManager
          * 
-         * @param name the property value, NOT <code>null</code>! 
+         * @param jobManager the property value,  
          * @return this entity builder for chaining
          */
-        CustomJobManagerEntBuilder setName(String name);
+        NodeExecutionInfoEntBuilder setJobManager(JobManagerEnt jobManager);
         
         /**
-         * An icon for the job manager, encoded as a data-url.
+         * This properties is only given if this node is part of a workflow (i.e. a component&#39;s workflow) that is in streaming mode. If true, this node can process the data in streamed manner, if false, it can&#39;t.
+         * 
+         * @param streamable the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeExecutionInfoEntBuilder setStreamable(Boolean streamable);
+        
+        /**
+         * A custom (decorator) icon set by its node executor (or the node executor of the parent workflow). Not present if the custom executor doesn&#39;t define a special icon or the &#39;streamable&#39; property is given. The icon is encoded in a data-url.
          * 
          * @param icon the property value,  
          * @return this entity builder for chaining
          */
-        CustomJobManagerEntBuilder setIcon(String icon);
-        
-        /**
-         * A (larger) icon displayed within the workflow (e.g. of a component). Only necessary for job managers that can be configured on components or metanode. Encoded as a data-url.
-         * 
-         * @param workflowIcon the property value,  
-         * @return this entity builder for chaining
-         */
-        CustomJobManagerEntBuilder setWorkflowIcon(String workflowIcon);
+        NodeExecutionInfoEntBuilder setIcon(String icon);
         
         
         /**
@@ -115,7 +116,7 @@ public interface CustomJobManagerEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        CustomJobManagerEnt build();
+        NodeExecutionInfoEnt build();
     
     }
 

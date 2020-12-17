@@ -67,6 +67,7 @@ import org.knime.gateway.json.webui.entity.NodeAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDialogOptionsEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDialogOptions_fieldsEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
+import org.knime.gateway.json.webui.entity.NodeExecutionInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortAndTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
@@ -132,6 +133,7 @@ public class ListEntities {
         res.add(NodeDialogOptionsEntMixIn.class);
         res.add(NodeDialogOptions_fieldsEntMixIn.class);
         res.add(NodeEntMixIn.class);
+        res.add(NodeExecutionInfoEntMixIn.class);
         res.add(NodePortAndTemplateEntMixIn.class);
         res.add(NodePortEntMixIn.class);
         res.add(NodePortTemplateEntMixIn.class);
@@ -183,6 +185,7 @@ public class ListEntities {
         res.add(NodeDialogOptionsEntMixIn.NodeDialogOptionsEntMixInBuilder.class);
         res.add(NodeDialogOptions_fieldsEntMixIn.NodeDialogOptions_fieldsEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
+        res.add(NodeExecutionInfoEntMixIn.NodeExecutionInfoEntMixInBuilder.class);
         res.add(NodePortAndTemplateEntMixIn.NodePortAndTemplateEntMixInBuilder.class);
         res.add(NodePortEntMixIn.NodePortEntMixInBuilder.class);
         res.add(NodePortTemplateEntMixIn.NodePortTemplateEntMixInBuilder.class);

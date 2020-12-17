@@ -50,38 +50,36 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
-import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 
 /**
- * Details about a custom job manager provided by a third party.
+ * Information about the node execution. Might not be present if no special node execution info is available. If given, usually only one of the following properties is set, either the icon, the &#39;streamble&#39;-flag, or  the job-manager.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCustomJobManagerEnt implements CustomJobManagerEnt {
+public class DefaultNodeExecutionInfoEnt implements NodeExecutionInfoEnt {
 
-  protected String m_name;
+  protected JobManagerEnt m_jobManager;
+  protected Boolean m_streamable;
   protected String m_icon;
-  protected String m_workflowIcon;
   
-  protected DefaultCustomJobManagerEnt() {
+  protected DefaultNodeExecutionInfoEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "CustomJobManager";
+    return "NodeExecutionInfo";
   }
   
-  private DefaultCustomJobManagerEnt(DefaultCustomJobManagerEntBuilder builder) {
+  private DefaultNodeExecutionInfoEnt(DefaultNodeExecutionInfoEntBuilder builder) {
     
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
+    m_jobManager = immutable(builder.m_jobManager);
+    m_streamable = immutable(builder.m_streamable);
     m_icon = immutable(builder.m_icon);
-    m_workflowIcon = immutable(builder.m_workflowIcon);
   }
   
    /**
@@ -98,8 +96,8 @@ public class DefaultCustomJobManagerEnt implements CustomJobManagerEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultCustomJobManagerEnt ent = (DefaultCustomJobManagerEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_workflowIcon, ent.m_workflowIcon);
+        DefaultNodeExecutionInfoEnt ent = (DefaultNodeExecutionInfoEnt)o;
+        return Objects.equals(m_jobManager, ent.m_jobManager) && Objects.equals(m_streamable, ent.m_streamable) && Objects.equals(m_icon, ent.m_icon);
     }
 
 
@@ -110,17 +108,22 @@ public class DefaultCustomJobManagerEnt implements CustomJobManagerEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_name)
+               .append(m_jobManager)
+               .append(m_streamable)
                .append(m_icon)
-               .append(m_workflowIcon)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getName() {
-        return m_name;
+  public JobManagerEnt getJobManager() {
+        return m_jobManager;
+  }
+    
+  @Override
+  public Boolean isStreamable() {
+        return m_streamable;
   }
     
   @Override
@@ -128,47 +131,39 @@ public class DefaultCustomJobManagerEnt implements CustomJobManagerEnt {
         return m_icon;
   }
     
-  @Override
-  public String getWorkflowIcon() {
-        return m_workflowIcon;
-  }
-    
   
-    public static class DefaultCustomJobManagerEntBuilder implements CustomJobManagerEntBuilder {
+    public static class DefaultNodeExecutionInfoEntBuilder implements NodeExecutionInfoEntBuilder {
     
-        public DefaultCustomJobManagerEntBuilder(){
+        public DefaultNodeExecutionInfoEntBuilder(){
             
         }
     
-        private String m_name;
+        private JobManagerEnt m_jobManager;
+        private Boolean m_streamable;
         private String m_icon;
-        private String m_workflowIcon;
 
         @Override
-        public DefaultCustomJobManagerEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
-             }
-             m_name = name;
+        public DefaultNodeExecutionInfoEntBuilder setJobManager(JobManagerEnt jobManager) {
+             m_jobManager = jobManager;
              return this;
         }
 
         @Override
-        public DefaultCustomJobManagerEntBuilder setIcon(String icon) {
+        public DefaultNodeExecutionInfoEntBuilder setStreamable(Boolean streamable) {
+             m_streamable = streamable;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeExecutionInfoEntBuilder setIcon(String icon) {
              m_icon = icon;
-             return this;
-        }
-
-        @Override
-        public DefaultCustomJobManagerEntBuilder setWorkflowIcon(String workflowIcon) {
-             m_workflowIcon = workflowIcon;
              return this;
         }
 
         
         @Override
-        public DefaultCustomJobManagerEnt build() {
-            return new DefaultCustomJobManagerEnt(this);
+        public DefaultNodeExecutionInfoEnt build() {
+            return new DefaultNodeExecutionInfoEnt(this);
         }
     
     }

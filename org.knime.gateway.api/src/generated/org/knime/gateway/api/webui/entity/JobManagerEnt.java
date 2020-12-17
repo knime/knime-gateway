@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The node&#39;s job manager. If not available, the default job manager is used.
+ * The node&#39;s job manager, if a special one is defined. Otherwise not given.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -60,7 +60,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface JobManagerEnt extends GatewayEntity {
 
   /**
-   * The type of job manager being used. Either a build-in job manager type or &#39;other&#39; if in case of a third party job manager. Details for custom job managers are provided via the &#39;custom&#39;-field.
+   * The type of job manager being used. Either a build-in job manager type or &#39;other&#39; in case of a third party job manager. Details for custom job managers are provided via the &#39;custom&#39;-field.
    */
   public enum TypeEnum {
     STREAMING("streaming"),
@@ -82,7 +82,7 @@ public interface JobManagerEnt extends GatewayEntity {
 
 
   /**
-   * The type of job manager being used. Either a build-in job manager type or &#39;other&#39; if in case of a third party job manager. Details for custom job managers are provided via the &#39;custom&#39;-field.
+   * The type of job manager being used. Either a build-in job manager type or &#39;other&#39; in case of a third party job manager. Details for custom job managers are provided via the &#39;custom&#39;-field.
    * @return type , never <code>null</code>
    **/
   public TypeEnum getType();
@@ -100,7 +100,7 @@ public interface JobManagerEnt extends GatewayEntity {
     public interface JobManagerEntBuilder extends GatewayEntityBuilder<JobManagerEnt> {
 
         /**
-         * The type of job manager being used. Either a build-in job manager type or &#39;other&#39; if in case of a third party job manager. Details for custom job managers are provided via the &#39;custom&#39;-field.
+         * The type of job manager being used. Either a build-in job manager type or &#39;other&#39; in case of a third party job manager. Details for custom job managers are provided via the &#39;custom&#39;-field.
          * 
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

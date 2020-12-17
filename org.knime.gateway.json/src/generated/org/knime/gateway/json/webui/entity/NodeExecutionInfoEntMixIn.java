@@ -44,14 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt.DefaultNodeExecutionInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,25 +60,25 @@ import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt.DefaultCus
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultCustomJobManagerEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeExecutionInfoEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface CustomJobManagerEntMixIn extends CustomJobManagerEnt {
+public interface NodeExecutionInfoEntMixIn extends NodeExecutionInfoEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("jobManager")
+    public JobManagerEnt getJobManager();
+    
+    @Override
+    @JsonProperty("streamable")
+    public Boolean isStreamable();
     
     @Override
     @JsonProperty("icon")
     public String getIcon();
-    
-    @Override
-    @JsonProperty("workflowIcon")
-    public String getWorkflowIcon();
     
 
     /**
@@ -87,22 +88,22 @@ public interface CustomJobManagerEntMixIn extends CustomJobManagerEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface CustomJobManagerEntMixInBuilder extends CustomJobManagerEntBuilder {
+    public static interface NodeExecutionInfoEntMixInBuilder extends NodeExecutionInfoEntBuilder {
     
         @Override
-        public CustomJobManagerEntMixIn build();
+        public NodeExecutionInfoEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public CustomJobManagerEntMixInBuilder setName(final String name);
+        @JsonProperty("jobManager")
+        public NodeExecutionInfoEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
+        
+        @Override
+        @JsonProperty("streamable")
+        public NodeExecutionInfoEntMixInBuilder setStreamable(final Boolean streamable);
         
         @Override
         @JsonProperty("icon")
-        public CustomJobManagerEntMixInBuilder setIcon(final String icon);
-        
-        @Override
-        @JsonProperty("workflowIcon")
-        public CustomJobManagerEntMixInBuilder setWorkflowIcon(final String workflowIcon);
+        public NodeExecutionInfoEntMixInBuilder setIcon(final String icon);
         
     }
 

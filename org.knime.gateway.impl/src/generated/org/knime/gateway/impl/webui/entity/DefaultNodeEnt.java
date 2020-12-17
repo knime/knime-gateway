@@ -49,12 +49,14 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
+
+import org.knime.gateway.api.webui.entity.NodeEnt;
 
 /**
  * Represents a node of certain kind (native node, component, metanode) in a workflow.
@@ -72,19 +74,19 @@ public class DefaultNodeEnt implements NodeEnt {
   protected XYEnt m_position;
   protected KindEnum m_kind;
   protected AllowedActionsEnt m_allowedActions;
-  protected JobManagerEnt m_jobManager;
-
+  protected NodeExecutionInfoEnt m_executionInfo;
+  
   protected DefaultNodeEnt() {
     //for sub-classes
   }
-
+  
   @Override
   public String getTypeID() {
     return "Node";
   }
-
-  private DefaultNodeEnt(final DefaultNodeEntBuilder builder) {
-
+  
+  private DefaultNodeEnt(DefaultNodeEntBuilder builder) {
+    
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
     }
@@ -108,9 +110,9 @@ public class DefaultNodeEnt implements NodeEnt {
     }
     m_kind = immutable(builder.m_kind);
     m_allowedActions = immutable(builder.m_allowedActions);
-    m_jobManager = immutable(builder.m_jobManager);
+    m_executionInfo = immutable(builder.m_executionInfo);
   }
-
+  
    /**
      * {@inheritDoc}
      */
@@ -126,11 +128,11 @@ public class DefaultNodeEnt implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_jobManager, ent.m_jobManager);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo);
     }
 
 
-
+  
    /**
     * {@inheritDoc}
     */
@@ -145,64 +147,64 @@ public class DefaultNodeEnt implements NodeEnt {
                .append(m_position)
                .append(m_kind)
                .append(m_allowedActions)
-               .append(m_jobManager)
+               .append(m_executionInfo)
                .toHashCode();
    }
-
-
-
+  
+	
+	
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getId() {
         return m_id;
   }
-
+    
   @Override
   public Boolean isDialog() {
         return m_dialog;
   }
-
+    
   @Override
   public java.util.List<? extends NodePortEnt> getInPorts() {
         return m_inPorts;
   }
-
+    
   @Override
   public java.util.List<? extends NodePortEnt> getOutPorts() {
         return m_outPorts;
   }
-
+    
   @Override
   public NodeAnnotationEnt getAnnotation() {
         return m_annotation;
   }
-
+    
   @Override
   public XYEnt getPosition() {
         return m_position;
   }
-
+    
   @Override
   public KindEnum getKind() {
         return m_kind;
   }
-
+    
   @Override
   public AllowedActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
-
+    
   @Override
-  public JobManagerEnt getJobManager() {
-        return m_jobManager;
+  public NodeExecutionInfoEnt getExecutionInfo() {
+        return m_executionInfo;
   }
-
-
+    
+  
     public static class DefaultNodeEntBuilder implements NodeEntBuilder {
-
+    
         public DefaultNodeEntBuilder(){
-
+            
         }
-
+    
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
         private Boolean m_dialog;
         private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
@@ -211,10 +213,10 @@ public class DefaultNodeEnt implements NodeEnt {
         private XYEnt m_position;
         private KindEnum m_kind;
         private AllowedActionsEnt m_allowedActions;
-        private JobManagerEnt m_jobManager;
+        private NodeExecutionInfoEnt m_executionInfo;
 
         @Override
-        public DefaultNodeEntBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id) {
+        public DefaultNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
              if(id == null) {
                  throw new IllegalArgumentException("id must not be null.");
              }
@@ -223,13 +225,13 @@ public class DefaultNodeEnt implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setDialog(final Boolean dialog) {
+        public DefaultNodeEntBuilder setDialog(Boolean dialog) {
              m_dialog = dialog;
              return this;
         }
 
         @Override
-        public DefaultNodeEntBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts) {
+        public DefaultNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts) {
              if(inPorts == null) {
                  throw new IllegalArgumentException("inPorts must not be null.");
              }
@@ -238,7 +240,7 @@ public class DefaultNodeEnt implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts) {
+        public DefaultNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts) {
              if(outPorts == null) {
                  throw new IllegalArgumentException("outPorts must not be null.");
              }
@@ -247,13 +249,13 @@ public class DefaultNodeEnt implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setAnnotation(final NodeAnnotationEnt annotation) {
+        public DefaultNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation) {
              m_annotation = annotation;
              return this;
         }
 
         @Override
-        public DefaultNodeEntBuilder setPosition(final XYEnt position) {
+        public DefaultNodeEntBuilder setPosition(XYEnt position) {
              if(position == null) {
                  throw new IllegalArgumentException("position must not be null.");
              }
@@ -262,7 +264,7 @@ public class DefaultNodeEnt implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setKind(final KindEnum kind) {
+        public DefaultNodeEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -271,23 +273,23 @@ public class DefaultNodeEnt implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setAllowedActions(final AllowedActionsEnt allowedActions) {
+        public DefaultNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
         }
 
         @Override
-        public DefaultNodeEntBuilder setJobManager(final JobManagerEnt jobManager) {
-             m_jobManager = jobManager;
+        public DefaultNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo) {
+             m_executionInfo = executionInfo;
              return this;
         }
 
-
+        
         @Override
         public DefaultNodeEnt build() {
             return new DefaultNodeEnt(this);
         }
-
+    
     }
 
 }

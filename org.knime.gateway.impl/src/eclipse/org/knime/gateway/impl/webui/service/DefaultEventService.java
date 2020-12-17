@@ -83,6 +83,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
+import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
 
@@ -197,9 +198,14 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.add(eventConsumer);
     }
 
-    void addEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer) {
+    void setEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer) {
+        m_eventConsumer.clear();
         addEventConsumer(eventConsumer);
         m_callEventConsumerOnError = true;
+    }
+
+    boolean checkWorkflowChangesListenerCallbackState(final CallbackState state) {
+        return m_workflowChangesListeners.values().stream().anyMatch(l -> l.getCallbackState() == state);
     }
 
     /**

@@ -55,7 +55,7 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 /**
- * The node&#39;s job manager. If not available, the default job manager is used.
+ * The node&#39;s job manager, if a special one is defined. Otherwise not given.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
