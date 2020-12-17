@@ -48,87 +48,32 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.awaitility.Awaitility.await;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 import org.junit.Test;
-import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
-import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
-import org.knime.gateway.testing.helper.WorkflowTransformations.WorkflowTransformation;
-import org.mockito.ArgumentCaptor;
 
 /**
- * Tests for push events such as workflow changes.
+ * Tests regarding the {@link DefaultEventService}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class EventServiceTest extends GatewayServiceTest {
-
-    /**
-     * Tests that the expected workflow change events are issued by the event service for certain changes to the
-     * workflow manager.
-     *
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testWorkflowChangedEvents() throws Exception {
-        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowChangedEventTypeEnt eventType = registerEventListener(idAndWfm.getFirst().toString());
-
-        // add event consumer to receive and check the change events
-        DefaultEventService es = DefaultEventService.getInstance();
-        BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
-        es.addEventConsumer(eventConsumerMock);
-
-        WorkflowManager wfm = idAndWfm.getSecond();
-        checkWorkflowChangeEvents(wfm, eventConsumerMock, eventType.getSnapshotId(),
-            WorkflowTransformations.createWorkflowTransformations());
-
-        // remove event listener and check successful removal
-        reset(eventConsumerMock);
-        es.removeEventListener(eventType);
-        WorkflowListener wfListenerMock = mock(WorkflowListener.class);
-        wfm.addListener(wfListenerMock); // listener in order to wait for the wf-events to be broadcasted
-        wfm.addWorkflowAnnotation(new WorkflowAnnotation());
-        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> verify(wfListenerMock, times(1)).workflowChanged(any()));
-        verify(eventConsumerMock, times(0)).accept(any(), any());
-    }
-
-    private static WorkflowChangedEventTypeEnt registerEventListener(final String wfId) throws Exception {
-        DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
-        DefaultEventService es = DefaultEventService.getInstance();
-
-        // get the current workflow state and register event listener
-        // (such that change events are send for that workflow)
-        WorkflowSnapshotEnt wf = ws.getWorkflow(wfId, NodeIDEnt.getRootID(), true);
-        WorkflowChangedEventTypeEnt eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(wfId)
-            .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(wf.getSnapshotId()).build();
-        es.addEventListener(eventType);
-        return eventType;
-    }
 
     /**
      * Tests that no more listeners are registered with the workflow once they have been removed.
@@ -137,7 +82,8 @@ public class EventServiceTest extends GatewayServiceTest {
     @Test
     public void testWorkflowChangedEventsRemovedListeners() throws Exception {
         Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowChangedEventTypeEnt eventType = registerEventListener(idAndWfm.getFirst().toString());
+        WorkflowChangedEventTypeEnt eventType =
+            registerEventListener(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID());
 
         DefaultEventService es = DefaultEventService.getInstance();
 
@@ -155,7 +101,8 @@ public class EventServiceTest extends GatewayServiceTest {
     @Test
     public void testRemoveAllEventListeners() throws Exception {
         Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowChangedEventTypeEnt eventType = registerEventListener(idAndWfm.getFirst().toString());
+        WorkflowChangedEventTypeEnt eventType =
+            registerEventListener(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID());
 
         DefaultEventService es = DefaultEventService.getInstance();
 
@@ -167,49 +114,34 @@ public class EventServiceTest extends GatewayServiceTest {
         checkThatNoEventsAreSent(idAndWfm.getSecond());
     }
 
+    static WorkflowChangedEventTypeEnt registerEventListener(final String projectId, final NodeIDEnt wfId)
+        throws Exception {
+        DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
+        DefaultEventService es = DefaultEventService.getInstance();
+
+        // get the current workflow state and register event listener
+        // (such that change events are send for that workflow)
+        WorkflowSnapshotEnt wf = ws.getWorkflow(projectId, wfId, true);
+        WorkflowChangedEventTypeEnt eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
+            .setProjectId(projectId).setWorkflowId(wfId).setSnapshotId(wf.getSnapshotId()).build();
+        es.addEventListener(eventType);
+        return eventType;
+    }
+
     private static void checkThatNoEventsAreSent(final WorkflowManager wfm) {
         DefaultEventService es = DefaultEventService.getInstance();
 
         // add event consumer to receive and check the change events
         @SuppressWarnings("unchecked")
         BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
-        es.addEventConsumerForTesting(eventConsumerMock);
+        es.setEventConsumerForTesting(eventConsumerMock);
 
         // carry out the workflow changes
-        WorkflowTransformations.createWorkflowTransformations().forEach(t -> t.apply(wfm));
+        WorkflowTransformations.createWorkflowTransformations(TestWorkflowCollection.GENERAL_WEB_UI)
+            .forEach(t -> t.apply(wfm));
 
         // check that there weren't any events
         verify(eventConsumerMock, times(0)).accept(any(), any());
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private void checkWorkflowChangeEvents(final WorkflowManager wfm,
-        final BiConsumer<String, EventEnt> eventConsumerMock, final String initialSnapshotId,
-        final List<WorkflowTransformation> wfTransformations) throws InterruptedException {
-        for (WorkflowTransformation workflowTransformation : wfTransformations) {
-            workflowTransformation.apply(wfm);
-            wfm.waitWhileInExecution(10, TimeUnit.SECONDS);
-
-            int numPatches = workflowTransformation.getChangeNames().length;
-
-            // wait for all events to arrive
-            await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> verify(eventConsumerMock, times(numPatches)).accept(any(), any()));
-
-            // check the expected patches
-            ArgumentCaptor<WorkflowChangedEventEnt> eventCaptor =
-                ArgumentCaptor.forClass(WorkflowChangedEventEnt.class);
-            verify(eventConsumerMock, times(numPatches)).accept(eq("WorkflowChangedEvent"), eventCaptor.capture());
-            List<WorkflowChangedEventEnt> events = eventCaptor.getAllValues();
-            for (int i = 0; i < numPatches; i++) {
-                if (workflowTransformation.getChangeNames()[i] != null) {
-                    cr(events.get(numPatches - i - 1).getPatch(), workflowTransformation.getChangeNames()[i]);
-                }
-            }
-
-            reset(eventConsumerMock);
-        }
     }
 
 }

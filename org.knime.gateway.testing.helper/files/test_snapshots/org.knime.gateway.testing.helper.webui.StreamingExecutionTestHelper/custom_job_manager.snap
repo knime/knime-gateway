@@ -1,0 +1,9 @@
+{
+  "jobManager" : {
+    "custom" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEVSURBVDiN3dE/SxVgFAbw33tRSAu0cLggQUNLUyAJDg0XEdyF5qDBvQ/QlNDsJ5CGtrY+guBUF8GhaBBMlBsOOggGmo+D772IXkW5mwce3ofz9z3PKUkMYo2Bqu9HgxKWMX/B9wEfK/+Od/iCKXzDHyz2ssN4eBN+hmaYCbuVPwmz4UcYDc/DozAd/oVmQ3KAfZxIOjhBE7/wCW0cYwcLkkPsIZKOJMJc2Kj8VdhO0o09Dg9CK+xX37NwlORaESeVcqCUNbzAJlbw+Upmb9INeMrkQ9bx8nLsVg2qJn8rvmKiGytJlFJaeIvfGKsFq3hdi/7jPUbqx7fqOktdDRoo9QJDOK0o9R0+v3gfG3SFuzRo9xPxDCg1/qNMQeUFAAAAAElFTkSuQmCC",
+      "name" : "Test for Streaming and Distributed Processing"
+    },
+    "type" : "other"
+  }
+}

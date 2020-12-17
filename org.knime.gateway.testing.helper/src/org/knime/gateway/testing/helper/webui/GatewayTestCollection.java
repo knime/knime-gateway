@@ -51,14 +51,19 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetComponentProjectWorkflow());
         res.put("testWorkflowAndComponentMetadata",
             (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testWorkflowAndComponentMetadata());
-        res.put("testNodeJobManager",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testNodeJobManager());
+
         res.put("testChangeNodeState",
             (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
         res.put("testChangeNodeStateOfComponentProject",
             (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateOfComponentProject());
         res.put("testDoPortRpc",
             (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testDoPortRpc());
+
+        res.put("testJobManagerProperty",
+            (rc, sp, wl, we) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testJobManagerProperty());
+        res.put("testStreamedWorkflow",
+            (rc, sp, wl, we) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testStreamedWorkflow());
+
         return res;
     }
 }

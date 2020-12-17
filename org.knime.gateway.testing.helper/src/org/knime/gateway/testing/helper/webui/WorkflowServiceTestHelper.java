@@ -110,7 +110,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // check executed
         executeWorkflow(wfId);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
-        cr(workflow, "worklfowent_root_executed");
+        cr(workflow, "workflowent_root_executed");
 
         // get a workflow of a linked component
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(183), false).getWorkflow();
@@ -212,18 +212,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), false).getWorkflow();
         assertNull(workflow.getProjectMetadata());
         assertNull(workflow.getComponentMetadata());
-    }
-
-    /**
-     * Snapshot test for node's job manager property.
-     *
-     * @throws Exception
-     */
-    public void testNodeJobManager() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.JOB_MANAGER);
-        Map<String, NodeEnt> nodes = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow().getNodes();
-        cr(nodes.get("root:1").getJobManager(), "custom_job_manager");
-        cr(nodes.get("root:3").getJobManager(), "streaming_job_manager");
     }
 
 }

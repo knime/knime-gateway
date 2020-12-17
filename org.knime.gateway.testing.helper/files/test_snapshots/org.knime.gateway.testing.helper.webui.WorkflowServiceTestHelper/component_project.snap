@@ -7,14 +7,12 @@
   "componentMetadata" : {
     "description" : "The component description",
     "inPorts" : [ {
-      "name" : "Port 1",
       "optional" : false,
       "type" : "table",
       "typeName" : "Data"
     } ],
     "name" : "component project",
     "outPorts" : [ {
-      "name" : "Port 1",
       "optional" : false,
       "type" : "table",
       "typeName" : "Data"

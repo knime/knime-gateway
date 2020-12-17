@@ -1,0 +1,35 @@
+{
+  "ops" : [ {
+    "op" : "replace",
+    "path" : "/nodes/root:8/allowedActions/canExecute",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/allowedActions/canCancel",
+    "value" : true
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:12/allowedActions/canExecute",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:9/allowedActions/canExecute",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:1/allowedActions/canExecute",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:1/allowedActions/canCancel",
+    "value" : true
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:23/allowedActions/canExecute",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:1/state/executionState",
+    "value" : "QUEUED"
+  } ]
+}

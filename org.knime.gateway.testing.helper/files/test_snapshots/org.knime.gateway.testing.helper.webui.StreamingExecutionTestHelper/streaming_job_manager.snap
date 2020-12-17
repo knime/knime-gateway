@@ -1,0 +1,5 @@
+{
+  "jobManager" : {
+    "type" : "streaming"
+  }
+}

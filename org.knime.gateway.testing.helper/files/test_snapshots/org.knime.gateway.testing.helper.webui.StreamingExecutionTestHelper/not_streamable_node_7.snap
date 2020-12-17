@@ -1,0 +1,48 @@
+{
+  "dialog" : true,
+  "executionInfo" : {
+    "streamable" : false
+  },
+  "id" : "root:3:0:7",
+  "inPorts" : [ {
+    "connectedVia" : "[  ]",
+    "index" : 0,
+    "name" : "Variable Inport",
+    "optional" : true,
+    "type" : "flowVariable"
+  }, {
+    "connectedVia" : "[ root:3:0:7_1 ]",
+    "index" : 1,
+    "name" : "Table",
+    "optional" : false,
+    "type" : "table",
+    "view" : {
+      "type" : "table"
+    }
+  } ],
+  "kind" : "node",
+  "outPorts" : [ {
+    "connectedVia" : "[  ]",
+    "index" : 0,
+    "info" : "Variables connection",
+    "name" : "Variable Outport",
+    "type" : "flowVariable"
+  }, {
+    "connectedVia" : "[ root:3:0:6_1 ]",
+    "index" : 1,
+    "info" : "Rows: 0, Cols: 3",
+    "name" : "Transposed Table",
+    "type" : "table",
+    "view" : {
+      "type" : "table"
+    }
+  } ],
+  "position" : {
+    "x" : 259,
+    "y" : 133
+  },
+  "state" : {
+    "executionState" : "EXECUTED"
+  },
+  "templateId" : "org.knime.base.node.preproc.transpose.TransposeTableNodeFactory"
+}

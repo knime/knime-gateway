@@ -48,8 +48,13 @@
  */
 package org.knime.gateway.testing.helper;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
+import static org.awaitility.Awaitility.await;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.knime.core.node.BufferedDataTable;
@@ -58,11 +63,12 @@ import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener;
+import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
  * A utility class that provides a list of {@link WorkflowTransformation}s carried out on the
@@ -72,19 +78,59 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener;
  */
 public final class WorkflowTransformations {
 
-    private WorkflowTransformations() {
-        // utility class
+    private static List<WorkflowTransformations> m_workflowTransformations;
+
+    /**
+     * @return list of all workflow transformations (multiple transformations per test-workflow)
+     */
+    public static List<WorkflowTransformations> getAllWorkflowTransformations() {
+        if (m_workflowTransformations == null) {
+            m_workflowTransformations = new ArrayList<>();
+            for (TestWorkflowCollection testWorkflow : TestWorkflowCollection.values()) {
+                List<WorkflowTransformation> trans = createWorkflowTransformations(testWorkflow);
+                if (!trans.isEmpty()) {
+                    m_workflowTransformations
+                        .add(new WorkflowTransformations(testWorkflow, getWorkflowIdFor(testWorkflow), trans));
+                }
+            }
+            m_workflowTransformations = Collections.unmodifiableList(m_workflowTransformations);
+        }
+        return m_workflowTransformations;
     }
 
     /**
      * A list of many possible transformations that can be applied to a {@link WorkflowManager} (e.g. execution, node
      * removal, port replacement, ...).
      *
+     * @param testWorkflow the test workflow to create the workflow transformations for
+     *
      * @return list of {@link WorkflowTransformation}s
      */
-    public static List<WorkflowTransformation> createWorkflowTransformations() {
-        return Arrays.asList(
-            newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed", null),
+    public static List<WorkflowTransformation>
+        createWorkflowTransformations(final TestWorkflowCollection testWorkflow) {
+        switch (testWorkflow) {
+            case GENERAL_WEB_UI:
+                return createTransformationsForGeneral();
+            case STREAMING_EXECUTION:
+                return createTransformationsForStreamingExecution();
+            default:
+                //
+        }
+        return Collections.emptyList();
+    }
+
+    private static NodeIDEnt getWorkflowIdFor(final TestWorkflowCollection testWorkflow) {
+        switch (testWorkflow) {
+            case STREAMING_EXECUTION:
+                return new NodeIDEnt(3);
+            default:
+                return NodeIDEnt.getRootID();
+        }
+    }
+
+    private static List<WorkflowTransformation> createTransformationsForGeneral() {
+        return asList(
+            newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"),
             newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"),
             newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(14), 1)),
                 "connection_removed"),
@@ -123,8 +169,29 @@ public final class WorkflowTransformations {
             }, "ports_added"));
     }
 
+    private static List<WorkflowTransformation> createTransformationsForStreamingExecution() {
+        return asList(newTransformation(WorkflowManager::executeAll, "streaming_execution", wfm -> {
+            await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
+                NodeContainerState ncs1 = wfm.getNodeContainer(wfm.getID().createChild(3)).getNodeContainerState();
+                NodeContainerState ncs2 = wfm.getNodeContainer(wfm.getID().createChild(5)).getNodeContainerState();
+                return ncs1.isExecuted() && ncs2.isExecutionInProgress() && !ncs2.isWaitingToBeExecuted();
+            });
+        }));
+    }
+
     private static WorkflowTransformation newTransformation(final Consumer<WorkflowManager> workflowTransformation,
-        final String... changeNames) {
+        final String name) {
+        return newTransformation(workflowTransformation, name, wfm -> {
+            try {
+                wfm.waitWhileInExecution(10, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+
+    private static WorkflowTransformation newTransformation(final Consumer<WorkflowManager> workflowTransformation,
+        final String name, final Consumer<WorkflowManager> waitForStableState) {
         return new WorkflowTransformation() {
 
             @Override
@@ -133,9 +200,15 @@ public final class WorkflowTransformations {
             }
 
             @Override
-            public String[] getChangeNames() {
-                return changeNames;
+            public String getName() {
+                return name;
             }
+
+            @Override
+            public void waitForStableState(final WorkflowManager wfm) throws InterruptedException {
+                waitForStableState.accept(wfm);
+            }
+
         };
     }
 
@@ -145,15 +218,9 @@ public final class WorkflowTransformations {
     public interface WorkflowTransformation {
 
         /**
-         * If a workflow transformation is applied to a {@link WorkflowManager} and a {@link WorkflowChangesListener} is
-         * registered to this workflow manager, the transformation will result in one or more 'change callbacks' for the
-         * listener. This method returns unique names (and thus also the number) of the expected change events.
-         *
-         * @return names of the expected 'change events' in the order they are expected to arrive (provided a
-         *         {@link WorkflowChangesListener} available for the underlying {@link WorkflowManager}); if one of the
-         *         change names is <code>null</code>, the respective change/patch will be ignored for testing
+         * @return the name for this particular workflow transformation
          */
-        String[] getChangeNames();
+        String getName();
 
         /**
          * Applies the workflow transformation to the provided workflow manager.
@@ -162,6 +229,55 @@ public final class WorkflowTransformations {
          */
         void apply(WorkflowManager wfm);
 
+        /**
+         * Called right after the workflow transformation has been applied in order to wait till the workflow is in a
+         * stable state (i.e. no more changes are expected).
+         *
+         * @param wfm
+         * @throws InterruptedException
+         */
+        void waitForStableState(final WorkflowManager wfm) throws InterruptedException;
+
+    }
+
+    private final TestWorkflowCollection m_testWorkflowProject;
+
+    private final NodeIDEnt m_testWorkflowId;
+
+    private final List<WorkflowTransformation> m_transformations;
+
+    private WorkflowTransformations(final TestWorkflowCollection testWorkflowProject, final NodeIDEnt testWorkflowId,
+        final List<WorkflowTransformation> transformations) {
+        m_testWorkflowProject = testWorkflowProject;
+        m_testWorkflowId = testWorkflowId;
+        m_transformations = transformations;
+    }
+
+    /**
+     * @return the testworkflow project the workflow transformations are applied on
+     */
+    public TestWorkflowCollection getTestWorkflowProject() {
+        return m_testWorkflowProject;
+    }
+
+    /**
+     * @return the workflow id, if it's a sub-workflow (component or metanode) of the testworkflow project or
+     *         {@link NodeIDEnt#getRootID()} if it's the workflow project itself
+     */
+    public NodeIDEnt getWorkflowId() {
+        return m_testWorkflowId;
+    }
+
+    /**
+     * @return list of all transformations to be applied to the workflow
+     */
+    public List<WorkflowTransformation> getTransformations() {
+        return m_transformations;
+    }
+
+    @Override
+    public String toString() {
+        return "Transformations for " + m_testWorkflowProject.getName();
     }
 
 }

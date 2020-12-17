@@ -34,7 +34,7 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow to test job managers.
      */
-    JOB_MANAGER("/files/Job Manager.knwf", "job_manager");
+    STREAMING_EXECUTION("/files/Streaming Execution.knwf", "streaming_execution");
 
 
     private final String m_url;
