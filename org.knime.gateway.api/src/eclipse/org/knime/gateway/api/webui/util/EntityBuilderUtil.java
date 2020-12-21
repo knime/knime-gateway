@@ -206,7 +206,8 @@ public final class EntityBuilderUtil {
 
     private static final Map<String, NativeNodeTemplateEnt> m_nativeNodeTemplateCache = new ConcurrentHashMap<>();
 
-    private static final Map<String, NodePortTemplateEnt> m_nodePortTemplateCache = new ConcurrentHashMap<>();
+    private static final Map<String, NodePortTemplateEntBuilder> m_nodePortTemplateBuilderCache =
+        new ConcurrentHashMap<>();
 
     private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
 
@@ -923,21 +924,20 @@ public final class EntityBuilderUtil {
 
     private static NodePortTemplateEnt buildOrGetFromCacheNodePortTemplateEnt(final PortType ptype, final String name,
         final String description) {
-        return m_nodePortTemplateCache.computeIfAbsent(ptype.getPortObjectClass().getCanonicalName(),
-            k -> buildNodePortTemplateEnt(ptype, name, description));
+        NodePortTemplateEntBuilder builder = m_nodePortTemplateBuilderCache.computeIfAbsent(
+            ptype.getPortObjectClass().getCanonicalName(), k -> buildNodePortTemplateEntBuilder(ptype));
+        builder.setName(isBlank(name) ? null : name);
+        builder.setDescription(isBlank(description) ? null : description);
+        return builder.build();
     }
 
-    private static NodePortTemplateEnt buildNodePortTemplateEnt(final PortType ptype, final String name,
-        final String description) {
+    private static NodePortTemplateEntBuilder buildNodePortTemplateEntBuilder(final PortType ptype) {
         NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
         return builder(NodePortTemplateEntBuilder.class)//
-            .setName(isBlank(name) ? null : name)//
-            .setDescription(isBlank(description) ? null : description)//
             .setType(resPortType)//
             .setTypeName(ptype.getName())//
             .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
-            .setOptional(ptype.isOptional())//
-            .build();
+            .setOptional(ptype.isOptional());
     }
 
     private static NodeExecutionInfoEnt buildNodeExecutionInfoEnt(final NodeContainer nc) {
