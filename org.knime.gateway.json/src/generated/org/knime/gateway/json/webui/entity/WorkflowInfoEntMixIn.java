@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -83,6 +84,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
     @JsonProperty("linked")
     public Boolean isLinked();
     
+    @Override
+    @JsonProperty("jobManager")
+    public JobManagerEnt getJobManager();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -111,6 +116,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
         @Override
         @JsonProperty("linked")
         public WorkflowInfoEntMixInBuilder setLinked(final Boolean linked);
+        
+        @Override
+        @JsonProperty("jobManager")
+        public WorkflowInfoEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
         
     }
 

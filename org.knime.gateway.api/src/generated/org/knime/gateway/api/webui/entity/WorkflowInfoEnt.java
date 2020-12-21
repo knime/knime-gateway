@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -106,6 +107,12 @@ public interface WorkflowInfoEnt extends GatewayEntity {
    **/
   public Boolean isLinked();
 
+  /**
+   * Get jobManager
+   * @return jobManager 
+   **/
+  public JobManagerEnt getJobManager();
+
 
     /**
      * The builder for the entity.
@@ -143,6 +150,14 @@ public interface WorkflowInfoEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setLinked(Boolean linked);
+        
+        /**
+   		 * Set jobManager
+         * 
+         * @param jobManager the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowInfoEntBuilder setJobManager(JobManagerEnt jobManager);
         
         
         /**

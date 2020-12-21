@@ -1,0 +1,8 @@
+{
+  "containerId" : "root:3",
+  "containerType" : "component",
+  "jobManager" : {
+    "type" : "streaming"
+  },
+  "name" : "Component"
+}

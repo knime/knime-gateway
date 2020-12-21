@@ -119,6 +119,7 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
 
         cr(componentWf_3.getNodes().get("root:3:0:5"), "streamable_node_5");
         cr(componentWf_3.getNodes().get("root:3:0:7"), "not_streamable_node_7");
+        cr(componentWf_3.getInfo(), "streamed_workflow_info");
     }
 
 }

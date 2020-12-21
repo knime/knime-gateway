@@ -28,6 +28,9 @@
   "info" : {
     "containerId" : "root:183",
     "containerType" : "component",
+    "jobManager" : {
+      "type" : "streaming"
+    },
     "linked" : true,
     "name" : "Streaming Component"
   },

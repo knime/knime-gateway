@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The node&#39;s job manager, if a special one is defined. Otherwise not given.
+ * The node/workflow&#39;s job manager, if a special one is defined. Otherwise not given.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

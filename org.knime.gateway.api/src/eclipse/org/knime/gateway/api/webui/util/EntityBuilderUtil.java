@@ -329,6 +329,7 @@ public final class EntityBuilderUtil {
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) == null ? null : Boolean.TRUE)//
+            .setJobManager(buildJobManagerEnt(wfm.findJobManager()))
             .build();
     }
 
@@ -940,7 +941,7 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeExecutionInfoEnt buildNodeExecutionInfoEnt(final NodeContainer nc) {
-        JobManagerEnt jobManagerEnt = buildJobManagerEnt(nc);
+        JobManagerEnt jobManagerEnt = buildJobManagerEnt(nc.getJobManager());
         if (jobManagerEnt != null) {
             return builder(NodeExecutionInfoEntBuilder.class).setJobManager(jobManagerEnt).build();
         } else {
@@ -991,8 +992,7 @@ public final class EntityBuilderUtil {
         return false;
     }
 
-    private static JobManagerEnt buildJobManagerEnt(final NodeContainer nc) {
-        NodeExecutionJobManager jobManager = nc.getJobManager();
+    private static JobManagerEnt buildJobManagerEnt(final NodeExecutionJobManager jobManager) {
         if (isDefaultOrNullJobManager(jobManager)) {
             return null;
         } else if (isStreamingJobManager(jobManager)) {
