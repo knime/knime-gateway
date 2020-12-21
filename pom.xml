@@ -114,6 +114,11 @@
 			<layout>p2</layout>
 			<url>${knime.js.base.p2}</url>
 		</repository>
+				<repository>
+			<id>p2-knime-streaming</id>
+			<layout>p2</layout>
+			<url>${knime.streaming.p2}</url>
+		</repository>
 	</repositories>
 
 </project><!-- vim: set shiftwidth=4 expandtab smarttab: -->
