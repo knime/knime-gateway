@@ -1,0 +1,8 @@
+{
+  "allowedActions" : {
+    "canPause" : false,
+    "canResume" : true,
+    "canStep" : true
+  },
+  "status" : "PAUSED"
+}

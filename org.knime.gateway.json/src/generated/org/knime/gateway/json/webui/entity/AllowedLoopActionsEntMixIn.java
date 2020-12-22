@@ -44,22 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.LoopInfoEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NativeNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedLoopActionsEnt.DefaultAllowedLoopActionsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -67,57 +59,25 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt.DefaultNativeNod
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNativeNodeEntBuilder.class)
+@JsonDeserialize(builder=DefaultAllowedLoopActionsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NativeNodeEntMixIn extends NativeNodeEnt {
+public interface AllowedLoopActionsEntMixIn extends AllowedLoopActionsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.NodeIDEnt getId();
+    @JsonProperty("canResume")
+    public Boolean isCanResume();
     
     @Override
-    @JsonProperty("inPorts")
-    public java.util.List<? extends NodePortEnt> getInPorts();
+    @JsonProperty("canPause")
+    public Boolean isCanPause();
     
     @Override
-    @JsonProperty("outPorts")
-    public java.util.List<? extends NodePortEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("annotation")
-    public NodeAnnotationEnt getAnnotation();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("allowedActions")
-    public AllowedNodeActionsEnt getAllowedActions();
-    
-    @Override
-    @JsonProperty("executionInfo")
-    public NodeExecutionInfoEnt getExecutionInfo();
-    
-    @Override
-    @JsonProperty("templateId")
-    public String getTemplateId();
-    
-    @Override
-    @JsonProperty("state")
-    public NodeStateEnt getState();
-    
-    @Override
-    @JsonProperty("loopInfo")
-    public LoopInfoEnt getLoopInfo();
+    @JsonProperty("canStep")
+    public Boolean isCanStep();
     
 
     /**
@@ -127,54 +87,22 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeEntMixInBuilder extends NativeNodeEntBuilder {
+    public static interface AllowedLoopActionsEntMixInBuilder extends AllowedLoopActionsEntBuilder {
     
         @Override
-        public NativeNodeEntMixIn build();
+        public AllowedLoopActionsEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public NativeNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        @JsonProperty("canResume")
+        public AllowedLoopActionsEntMixInBuilder setCanResume(final Boolean canResume);
         
         @Override
-        @JsonProperty("inPorts")
-        public NativeNodeEntMixInBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts);
+        @JsonProperty("canPause")
+        public AllowedLoopActionsEntMixInBuilder setCanPause(final Boolean canPause);
         
         @Override
-        @JsonProperty("outPorts")
-        public NativeNodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
-        
-        @Override
-        @JsonProperty("annotation")
-        public NativeNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
-        @Override
-        @JsonProperty("position")
-        public NativeNodeEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("kind")
-        public NativeNodeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("allowedActions")
-        public NativeNodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
-        
-        @Override
-        @JsonProperty("executionInfo")
-        public NativeNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
-        
-        @Override
-        @JsonProperty("templateId")
-        public NativeNodeEntMixInBuilder setTemplateId(final String templateId);
-        
-        @Override
-        @JsonProperty("state")
-        public NativeNodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
-        @JsonProperty("loopInfo")
-        public NativeNodeEntMixInBuilder setLoopInfo(final LoopInfoEnt loopInfo);
+        @JsonProperty("canStep")
+        public AllowedLoopActionsEntMixInBuilder setCanStep(final Boolean canStep);
         
     }
 

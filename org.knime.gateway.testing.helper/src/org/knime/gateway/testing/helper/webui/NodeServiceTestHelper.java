@@ -49,9 +49,11 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static java.util.Collections.singletonList;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
 
 import java.util.concurrent.TimeUnit;
@@ -59,10 +61,12 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -130,19 +134,86 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // test execution on root level
         ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "execute");
+        NodeIDEnt n7 = new NodeIDEnt(7);
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow()
-                .getNodes().get("root:7");
+            NativeNodeEnt node = getNativeNodeEnt(wfId, n7);
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
 
         // reset on root level
         ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "reset");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow()
-                .getNodes().get("root:7");
+            NativeNodeEnt node = getNativeNodeEnt(wfId, n7);
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });
+    }
+
+    /**
+     * Tests the change of the loop execution state (step, pause, resume).
+     *
+     * @throws Exception
+     */
+    public void testChangeLoopExecutionState() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
+
+        NodeIDEnt n4 = new NodeIDEnt(4);
+        // step before first iteration
+        ns().changeLoopState(wfId, n4, "step");
+        cr(getNativeNodeEnt(wfId, n4).getLoopInfo(), "loop_info_not_executed");
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = getNativeNodeEnt(wfId, n4);
+            assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
+        });
+        cr(getNativeNodeEnt(wfId, n4).getLoopInfo(), "loop_info_paused");
+
+        // step while paused
+        ns().changeLoopState(wfId, n4, "step");
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = getNativeNodeEnt(wfId, n4);
+            assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
+        });
+        cr(getNativeNodeEnt(wfId, n4).getLoopInfo(), "loop_info_paused");
+
+        // resume
+        ns().changeLoopState(wfId, n4, "resume");
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = getNativeNodeEnt(wfId, n4);
+            assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.FINISHED));
+        });
+        cr(getNativeNodeEnt(wfId, n4).getLoopInfo(), "loop_info_finished");
+
+        // pause execution
+        ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "reset");
+        ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "execute");
+        ns().changeLoopState(wfId, n4, "pause");
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = getNativeNodeEnt(wfId, n4);
+            assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
+        });
+
+        // no loop info for non loop end nodes
+        assertThat(getNativeNodeEnt(wfId, new NodeIDEnt(2)).getLoopInfo(), is(nullValue()));
+
+        // test node not found exception
+        assertThrows(NodeNotFoundException.class, () -> {
+            ns().changeLoopState(wfId, new NodeIDEnt(83747273), "pause");
+        });
+
+        // test operation not allow exception
+        assertThrows(OperationNotAllowedException.class, () -> {
+            ns().changeLoopState(wfId, n4, "blub");
+        });
+
+        // test on non-loop-end node
+        assertThrows(OperationNotAllowedException.class, () -> {
+            ns().changeLoopState(wfId, new NodeIDEnt(2), "pause");
+        });
+    }
+
+    private NativeNodeEnt getNativeNodeEnt(final String projectId, final NodeIDEnt nodeId)
+        throws NotASubWorkflowException, NodeNotFoundException {
+        return (NativeNodeEnt)ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow().getNodes()
+            .get(nodeId.toString());
     }
 
     /**

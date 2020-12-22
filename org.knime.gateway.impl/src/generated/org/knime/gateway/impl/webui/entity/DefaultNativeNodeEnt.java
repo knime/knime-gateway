@@ -51,6 +51,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -78,6 +79,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   protected NodeExecutionInfoEnt m_executionInfo;
   protected String m_templateId;
   protected NodeStateEnt m_state;
+  protected LoopInfoEnt m_loopInfo;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -118,6 +120,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     }
     m_templateId = immutable(builder.m_templateId);
     m_state = immutable(builder.m_state);
+    m_loopInfo = immutable(builder.m_loopInfo);
   }
   
    /**
@@ -135,7 +138,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo);
     }
 
 
@@ -156,6 +159,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                .append(m_executionInfo)
                .append(m_templateId)
                .append(m_state)
+               .append(m_loopInfo)
                .toHashCode();
    }
   
@@ -211,6 +215,11 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         return m_state;
   }
     
+  @Override
+  public LoopInfoEnt getLoopInfo() {
+        return m_loopInfo;
+  }
+    
   
     public static class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {
     
@@ -228,6 +237,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         private NodeExecutionInfoEnt m_executionInfo;
         private String m_templateId;
         private NodeStateEnt m_state;
+        private LoopInfoEnt m_loopInfo;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -304,6 +314,12 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setState(NodeStateEnt state) {
              m_state = state;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeEntBuilder setLoopInfo(LoopInfoEnt loopInfo) {
+             m_loopInfo = loopInfo;
              return this;
         }
 

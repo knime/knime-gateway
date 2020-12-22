@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -77,6 +78,12 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    * @return state 
    **/
   public NodeStateEnt getState();
+
+  /**
+   * Get loopInfo
+   * @return loopInfo 
+   **/
+  public LoopInfoEnt getLoopInfo();
 
 
     /**
@@ -163,6 +170,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setState(NodeStateEnt state);
+        
+        /**
+   		 * Set loopInfo
+         * 
+         * @param loopInfo the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setLoopInfo(LoopInfoEnt loopInfo);
         
         
         /**

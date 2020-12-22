@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -58,6 +59,7 @@ import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
@@ -112,6 +114,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEnt.class);
+        res.add(AllowedLoopActionsEnt.class);
         res.add(AllowedNodeActionsEnt.class);
         res.add(AnnotationEnt.class);
         res.add(AppStateEnt.class);
@@ -125,6 +128,7 @@ public class ListEntities {
         res.add(EventTypeEnt.class);
         res.add(JobManagerEnt.class);
         res.add(LinkEnt.class);
+        res.add(LoopInfoEnt.class);
         res.add(MetaNodeEnt.class);
         res.add(MetaNodePortEnt.class);
         res.add(MetaNodeStateEnt.class);
@@ -164,6 +168,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
+        res.add(AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder.class);
         res.add(AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder.class);
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
@@ -177,6 +182,7 @@ public class ListEntities {
         res.add(EventTypeEnt.EventTypeEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(LinkEnt.LinkEntBuilder.class);
+        res.add(LoopInfoEnt.LoopInfoEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
         res.add(MetaNodeStateEnt.MetaNodeStateEntBuilder.class);

@@ -57,6 +57,19 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 public interface NodeService extends GatewayService {
 
     /**
+     * Changes state of a loop. The provided node-id must reference a loop-end node.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param action The action (pause, resume, step) to be performed in order to change the loop state.
+     *
+     * 
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     */
+    void changeLoopState(String projectId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+        
+    /**
      * Changes the node state of multiple nodes represented by a list of node-id.
      *
      * @param projectId ID of the workflow-project.

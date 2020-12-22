@@ -77,6 +77,7 @@ import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionProgress;
 import org.knime.core.node.workflow.DependentNodeProperties;
+import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
@@ -109,6 +110,8 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
@@ -127,6 +130,9 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
@@ -235,8 +241,8 @@ public final class EntityBuilderUtil {
                 depNodeProps = wfm.determineDependentNodeProperties();
             }
             final boolean hasComponentProjectParent = wfm.getProjectComponent().isPresent();
-            BuildContext buildContext =
-                createBuildContext(id -> new NodeIDEnt(id, hasComponentProjectParent), isInStreamingMode(wfm));
+            BuildContext buildContext = createBuildContext(id -> new NodeIDEnt(id, hasComponentProjectParent),
+                isInStreamingMode(wfm), includeInfoOnAllowedActions);
             for (NodeContainer nc : nodeContainers) {
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, depNodeProps,
                     buildContext);
@@ -493,9 +499,7 @@ public final class EntityBuilderUtil {
     private static void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
         final Map<String, NativeNodeTemplateEnt> templates, final DependentNodeProperties depNodeProps,
         final BuildContext buildContext) {
-        NodeEnt nodeEnt =
-            depNodeProps != null ? buildNodeEntWithInfoOnAllowedActions(id, nc, depNodeProps, buildContext)
-                : buildNodeEnt(id, nc, buildContext);
+        NodeEnt nodeEnt = buildNodeEnt(id, nc, depNodeProps, buildContext);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
@@ -504,13 +508,10 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc, final BuildContext buildContext) {
-        return buildNodeEnt(id, nc, null, buildContext);
-    }
-
-    private static NodeEnt buildNodeEntWithInfoOnAllowedActions(final NodeIDEnt id, final NodeContainer nc,
+    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
         final DependentNodeProperties depNodeProps, final BuildContext buildContext) {
-        return buildNodeEnt(id, nc, buildAllowedNodeActionsEnt(nc, depNodeProps), buildContext);
+        return buildNodeEnt(id, nc,
+            buildContext.includeAllowedActions() ? buildAllowedNodeActionsEnt(nc, depNodeProps) : null, buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
@@ -739,6 +740,7 @@ public final class EntityBuilderUtil {
             .setTemplateId(createTemplateId(nc.getNode().getFactory()))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
+            .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
             .build();
     }
 
@@ -764,6 +766,22 @@ public final class EntityBuilderUtil {
             builder.setProgressMessage(progressMonitor.getMessage());
         }
         return builder.build();
+    }
+
+    private static LoopInfoEnt buildLoopInfoEnt(final NativeNodeContainer nc, final BuildContext buildContext) {
+        if (!nc.isModelCompatibleTo(LoopEndNode.class)) {
+            return null;
+        }
+        StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
+        AllowedLoopActionsEnt allowedActions = null;
+        if (buildContext.includeAllowedActions()) {
+            allowedActions = builder(AllowedLoopActionsEntBuilder.class)//
+                .setCanPause(nc.getNodeContainerState().isExecutionInProgress() && status != StatusEnum.PAUSED)//
+                .setCanResume(status == StatusEnum.PAUSED)//
+                // either the node is paused or we can execute it (then this will be the first step)
+                .setCanStep(status == StatusEnum.PAUSED || nc.getParent().canExecuteNodeDirectly(nc.getID())).build();
+        }
+        return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
     }
 
     private static ExecutionStateEnum getNodeExecutionStateEnum(final NodeContainerState ncState) { // NOSONAR
@@ -1087,7 +1105,7 @@ public final class EntityBuilderUtil {
     }
 
     private static BuildContext createBuildContext(final Function<NodeID, NodeIDEnt> buildNodeIDEnt,
-        final boolean isInStreamingMode) {
+        final boolean isInStreamingMode, final boolean includeAllowedActions) {
         return new BuildContext() {
 
             @Override
@@ -1099,6 +1117,11 @@ public final class EntityBuilderUtil {
             public NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
                 return buildNodeIDEnt.apply(nodeID);
             }
+
+            @Override
+            public boolean includeAllowedActions() {
+                return includeAllowedActions;
+            }
         };
     }
 
@@ -1106,6 +1129,8 @@ public final class EntityBuilderUtil {
         NodeIDEnt buildNodeIDEnt(NodeID nodeID);
 
         boolean isInStreamingMode();
+
+        boolean includeAllowedActions();
     }
 
 }

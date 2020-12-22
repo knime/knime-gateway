@@ -49,7 +49,13 @@ package org.knime.gateway.impl.webui.service;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.workflow.LoopEndNode;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -92,6 +98,52 @@ public final class DefaultNodeService implements NodeService {
             throw new NodeNotFoundException(e.getMessage(), e);
         } catch (IllegalStateException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void changeLoopState(final String projectId, final NodeIDEnt nodeId, final String action)
+        throws NodeNotFoundException, OperationNotAllowedException {
+        try {
+            Pair<WorkflowManager, NodeContainer> wfmAndNc = DefaultServiceUtil.getRootWfmAndNc(projectId, nodeId);
+            if (wfmAndNc.getSecond() instanceof NativeNodeContainer) {
+                NativeNodeContainer nnc = (NativeNodeContainer)wfmAndNc.getSecond();
+                if (nnc.isModelCompatibleTo(LoopEndNode.class)) {
+                    changeLoopState(action, wfmAndNc.getFirst(), nnc);
+                    return;
+                }
+            }
+            throw new OperationNotAllowedException("The action to change the loop state is not applicable for "
+                + wfmAndNc.getSecond().getNameWithID() + ". Not a loop end node.");
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+    }
+
+    private static void changeLoopState(final String action, final WorkflowManager wfm, final NativeNodeContainer nnc)
+        throws OperationNotAllowedException {
+        if (StringUtils.isBlank(action)) {
+            // if there is no action (null or empty)
+        } else if (action.equals("pause")) {
+            wfm.pauseLoopExecution(nnc);
+        } else if (action.equals("resume")) {
+            if (nnc.getLoopStatus() == LoopStatus.PAUSED) {
+                wfm.resumeLoopExecution(nnc, false);
+            }
+        } else if (action.equals("step")) {
+            if (nnc.getLoopStatus() == LoopStatus.PAUSED) {
+                wfm.resumeLoopExecution(nnc, true);
+            } else if (wfm.canExecuteNodeDirectly(nnc.getID())) {
+                wfm.executeUpToHere(nnc.getID());
+                wfm.pauseLoopExecution(nnc);
+            } else {
+                //
+            }
+        } else {
+            throw new OperationNotAllowedException("Unknown action '" + action + "'");
         }
     }
 

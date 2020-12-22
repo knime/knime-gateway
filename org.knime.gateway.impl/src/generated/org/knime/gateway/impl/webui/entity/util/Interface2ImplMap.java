@@ -46,6 +46,8 @@ package org.knime.gateway.impl.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
@@ -72,6 +74,8 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
+import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultLoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
@@ -155,6 +159,9 @@ public class Interface2ImplMap {
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
         }        
+        if(clazz == AllowedLoopActionsEntBuilder.class) {
+            return (B)new DefaultAllowedLoopActionsEnt.DefaultAllowedLoopActionsEntBuilder();
+        }        
         if(clazz == AllowedNodeActionsEntBuilder.class) {
             return (B)new DefaultAllowedNodeActionsEnt.DefaultAllowedNodeActionsEntBuilder();
         }        
@@ -193,6 +200,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == LinkEntBuilder.class) {
             return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();
+        }        
+        if(clazz == LoopInfoEntBuilder.class) {
+            return (B)new DefaultLoopInfoEnt.DefaultLoopInfoEntBuilder();
         }        
         if(clazz == MetaNodeEntBuilder.class) {
             return (B)new DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder();

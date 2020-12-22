@@ -34,8 +34,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow to test job managers.
      */
-    STREAMING_EXECUTION("/files/testflows/Streaming Execution", "streaming_execution");
+    STREAMING_EXECUTION("/files/testflows/Streaming Execution", "streaming_execution"),
 
+    /**
+     * Workflow to test loop execution.
+     */
+    LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution");
 
     private final String m_workflowDir;
 

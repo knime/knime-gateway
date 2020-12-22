@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
+import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedNodeActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
@@ -58,6 +59,7 @@ import org.knime.gateway.json.webui.entity.EventEntMixIn;
 import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.JobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
+import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeStateEntMixIn;
@@ -111,6 +113,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEntMixIn.class);
+        res.add(AllowedLoopActionsEntMixIn.class);
         res.add(AllowedNodeActionsEntMixIn.class);
         res.add(AnnotationEntMixIn.class);
         res.add(AppStateEntMixIn.class);
@@ -124,6 +127,7 @@ public class ListEntities {
         res.add(EventTypeEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(LinkEntMixIn.class);
+        res.add(LoopInfoEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
         res.add(MetaNodeStateEntMixIn.class);
@@ -163,6 +167,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
+        res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);
         res.add(AllowedNodeActionsEntMixIn.AllowedNodeActionsEntMixInBuilder.class);
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
         res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
@@ -176,6 +181,7 @@ public class ListEntities {
         res.add(EventTypeEntMixIn.EventTypeEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
+        res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);
         res.add(MetaNodeStateEntMixIn.MetaNodeStateEntMixInBuilder.class);
