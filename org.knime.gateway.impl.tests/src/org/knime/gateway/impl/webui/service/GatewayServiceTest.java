@@ -67,7 +67,7 @@ import org.knime.core.util.LockFailedException;
 import org.knime.core.util.Pair;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
@@ -135,7 +135,7 @@ public class GatewayServiceTest {
         InvalidSettingsException, CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
         WorkflowProject workflowProject = mock(WorkflowProject.class);
         WorkflowProjectManager.addWorkflowProject(workflowProjectId, workflowProject);
-        WorkflowManager wfm = GatewayServiceTestHelper.loadWorkflow(wf.getUrlFolder());
+        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(wf.getUrlFolder());
         m_loadedWorkflows.add(wfm);
         when(workflowProject.openProject()).thenReturn(wfm);
         when(workflowProject.getID()).thenReturn(workflowProjectId);
