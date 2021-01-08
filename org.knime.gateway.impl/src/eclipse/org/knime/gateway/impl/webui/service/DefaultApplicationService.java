@@ -50,25 +50,27 @@ package org.knime.gateway.impl.webui.service;
 
 import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEnt;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.AppState;
+import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -105,27 +107,43 @@ public final class DefaultApplicationService implements ApplicationService {
         if (appState == null) {
             return builder(AppStateEntBuilder.class).build();
         }
-        final Set<Pair<String, NodeID>> activeWorkflowIds = appState.getActiveWorkflowIds();
-        List<WorkflowProjectEnt> projects = appState.getLoadedWorkflowProjectIds().stream()
-            .map(id -> WorkflowProjectManager.getWorkflowProject(id).orElse(null)).filter(Objects::nonNull)
-            .map(wp -> buildWorkflowProjectEnt(wp, activeWorkflowIds)).collect(toList());
+        List<WorkflowProjectEnt> projects = appState.getOpenedWorkflows().stream()
+            .map(DefaultApplicationService::buildWorkflowProjectEnt).filter(Objects::nonNull).collect(toList());
         return builder(AppStateEntBuilder.class).setOpenedWorkflows(projects).build();
     }
 
-    private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
-        final Set<Pair<String, NodeID>> activeWorkflowProjectIds) {
+    private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf) {
+        WorkflowProject wp = WorkflowProjectManager.getWorkflowProject(wf.getProjectId()).orElse(null);
+        if (wp == null) {
+            return null;
+        }
+
         final WorkflowProjectEntBuilder builder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
 
         // optionally set an active workflow for this workflow project
-        activeWorkflowProjectIds.stream().filter(p -> p.getFirst().equals(wp.getID())).findFirst().ifPresent(p -> {
-            WorkflowManager wfm = wp.openProject();
-            if (!wfm.getID().equals(p.getSecond())) {
-                wfm = (WorkflowManager)wfm.findNodeContainer(p.getSecond());
+        if (wf.isVisible()) {
+            String wfId = wf.getWorkflowId();
+            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(wf.getProjectId()).orElse(null);
+            if (wfm != null && !wfId.equals(NodeIDEnt.getRootID().toString())) {
+                NodeContainer nc =
+                    wfm.findNodeContainer(DefaultServiceUtil.entityToNodeID(wf.getProjectId(), new NodeIDEnt(wfId)));
+                if (nc instanceof SubNodeContainer) {
+                    wfm = ((SubNodeContainer)nc).getWorkflowManager();
+                } else if (nc instanceof WorkflowManager) {
+                    wfm = (WorkflowManager)nc;
+                } else {
+                    //
+                }
             }
-            builder.setActiveWorkflow(DefaultWorkflowService.getInstance()
-                .buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm, true), wp.getID(), new NodeIDEnt(wfm.getID())));
-        });
+            if (wfm != null) {
+                builder.setActiveWorkflow(DefaultWorkflowService.getInstance().buildWorkflowSnapshotEnt(
+                    EntityBuilderUtil.buildWorkflowEnt(wfm, true), wp.getID(), new NodeIDEnt(wfm.getID())));
+            } else {
+                NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
+                    "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));
+            }
+        }
         return builder.build();
     }
 
@@ -140,5 +158,14 @@ public final class DefaultApplicationService implements ApplicationService {
             throw new IllegalStateException("App state supplier is already set");
         }
         m_appStateSupplier = stateSupplier;
+    }
+
+    /**
+     * Removes the application state supplier that has been set via {@link #setAppStateSupplier(Supplier)}.
+     *
+     * Mainly for testing purposes.
+     */
+    public void clearAppStateSupplier() {
+        m_appStateSupplier = null;
     }
 }

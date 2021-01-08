@@ -48,10 +48,7 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.Set;
-
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.util.Pair;
+import java.util.List;
 
 /**
  * Represents the state of the Web UI Application which is, e.g., persisted in the back-end.
@@ -63,18 +60,30 @@ import org.knime.core.util.Pair;
 public interface AppState {
 
     /**
-     * List of ids of the loaded workflow projects.
-     *
-     * @return id list
+     * @return list of all opened workflows
      */
-    Set<String> getLoadedWorkflowProjectIds();
+    List<OpenedWorkflow> getOpenedWorkflows();
 
     /**
-     * List of active workflow referenced by a pair of the project-id and the workflow's node id (which is null if it's
-     * the root workflow).
-     *
-     * @return id list
+     * Represents an opened workflow.
      */
-    Set<Pair<String, NodeID>> getActiveWorkflowIds();
+    public interface OpenedWorkflow {
+
+        /**
+         * @return the workflow project id
+         */
+        String getProjectId();
+
+        /**
+         * @return the id representing the actual (sub-)workflow that is opened
+         */
+        String getWorkflowId();
+
+        /**
+         * @return <code>true</code> if the workflow is visible, otherwise <code>false</code>
+         */
+        boolean isVisible();
+
+    }
 
 }
