@@ -21,7 +21,8 @@
           "preferredValueId" : "org.knime.core.data.DoubleValue"
         },
         "valueAsString" : "1.7976931348623157E308"
-      } ]
+      } ],
+      "id" : "0"
     }, {
       "cells" : [ { }, {
         "error" : "error 1"
@@ -29,7 +30,8 @@
         "error" : "error 3"
       }, { }, {
         "error" : "error 5"
-      }, { } ]
+      }, { } ],
+      "id" : "1"
     }, {
       "cells" : [ {
         "valueAsString" : "2"
@@ -49,7 +51,8 @@
           "preferredValueId" : "org.knime.core.data.DoubleValue"
         },
         "valueAsString" : "1.7976931348623157E308"
-      } ]
+      } ],
+      "id" : "2"
     }, {
       "cells" : [ {
         "valueAsString" : "3"
@@ -69,7 +72,8 @@
           "preferredValueId" : "org.knime.core.data.StringValue"
         },
         "valueAsString" : "11"
-      } ]
+      } ],
+      "id" : "3"
     }, {
       "cells" : [ {
         "valueAsString" : "4"
@@ -89,7 +93,8 @@
           "preferredValueId" : "org.knime.core.data.DoubleValue"
         },
         "valueAsString" : "1.7976931348623157E308"
-      } ]
+      } ],
+      "id" : "4"
     } ],
     "spec" : {
       "cellTypes" : {

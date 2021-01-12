@@ -227,6 +227,8 @@ public class TableServiceTestHelper {
         Table table = tableService.getTable(2, 5);
         assertThat(table.getTotalNumRows(), is(numRows));
         assertThat(table.getRows().size(), is(5));
+        assertThat(table.getRows().get(0).getId(), is("2"));
+        assertThat(table.getRows().get(4).getId(), is("6"));
         assertThat(tableService.getRows(2, 5).size(), is(5));
         assertThat(tableService.getRows(1, (int)numRows + 5).size(), is((int)numRows - 1));
         assertThat(tableService.getRows(-5, 2).size(), is(2));

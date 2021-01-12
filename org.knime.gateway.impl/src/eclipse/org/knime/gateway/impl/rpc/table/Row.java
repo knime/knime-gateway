@@ -62,6 +62,11 @@ import org.knime.core.data.DataTableSpec;
 public interface Row {
 
     /**
+     * @return the row id, never <code>null</code>
+     */
+    String getId();
+
+    /**
      * @return the list of cell in the row
      */
     List<TableCell> getCells();
@@ -75,6 +80,11 @@ public interface Row {
      */
     static Row create(final DataRow row, final DataTableSpec spec) {
         return new Row() { // NOSONAR
+
+            @Override
+            public String getId() {
+                return row.getKey().getString();
+            }
 
             @Override
             public List<TableCell> getCells() {
