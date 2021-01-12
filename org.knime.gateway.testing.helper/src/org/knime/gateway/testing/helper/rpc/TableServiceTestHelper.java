@@ -127,22 +127,23 @@ public class TableServiceTestHelper {
             SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
 
     /**
-     * TODO
+     * Creates a new {@link BufferedDataTable} for testing purposes with some dummy values per row.
      *
-     * @param rowCount
-     * @return
+     * @param rowCount the number of rows in the new table
+     * @return the new table instance
      */
     public static BufferedDataTable createTable(final int rowCount) {
-        final DataRow[] rows = IntStream.range(0, rowCount).mapToObj(i -> createRow(i)).toArray(DataRow[]::new);
+        final DataRow[] rows =
+            IntStream.range(0, rowCount).mapToObj(TableServiceTestHelper::createRow).toArray(DataRow[]::new);
         return createTable(SPEC, rows);
     }
 
     /**
-     * TODO
+     * Creates a new {@link BufferedDataTable} for testing purposes.
      *
-     * @param spec
-     * @param rows
-     * @return
+     * @param spec the spec of the new table
+     * @param rows the rows of the new table
+     * @return the new table instance
      */
     public static BufferedDataTable createTable(final DataTableSpec spec, final DataRow... rows) {
         final BufferedDataContainer cont = EXEC.createDataContainer(spec, true, Integer.MAX_VALUE);
@@ -158,13 +159,13 @@ public class TableServiceTestHelper {
             // add a row with missing cells
             return new DefaultRow(new RowKey(Integer.toString(i)),
                 IntStream.range(0, SPEC.getNumColumns())
-                    .mapToObj(colIdx -> new MissingCell(colIdx % 2 == 1 ? "error " + colIdx : null))
+                    .mapToObj(colIdx -> new MissingCell(colIdx % 2 == 1 ? ("error " + colIdx) : null))
                     .collect(Collectors.toList()));
         } else {
             return new DefaultRow(new RowKey(Integer.toString(i)), new IntCell(i), new StringCell(Integer.toString(i)),
-                new LongCell(i), new DoubleCell(i), i % 2 == 1 ? BooleanCell.TRUE : BooleanCell.FALSE,
+                new LongCell(i), new DoubleCell(i), i % 2 != 0 ? BooleanCell.TRUE : BooleanCell.FALSE,
                 LocalDateTimeCellFactory.create(LocalDateTime.MIN),
-                i % 2 == 1 ? new StringCell(Integer.toBinaryString(i)) : new DoubleCell(Double.MAX_VALUE));
+                i % 2 != 0 ? new StringCell(Integer.toBinaryString(i)) : new DoubleCell(Double.MAX_VALUE));
         }
     }
 
@@ -233,10 +234,11 @@ public class TableServiceTestHelper {
     }
 
     /**
-     * TODO
+     * Creates a mock for a {@link NodeOutPort} whose returned port object, spec and port type is in accordance with the
+     * passed table.
      *
-     * @param table
-     * @return
+     * @param table defines the return values of the mocked port
+     * @return the new mock instance
      */
     public static NodeOutPort mockNodeOutPort(final BufferedDataTable table) {
         NodeOutPort port = Mockito.mock(NodeOutPort.class);

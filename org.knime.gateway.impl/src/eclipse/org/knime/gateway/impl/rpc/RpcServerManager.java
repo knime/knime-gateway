@@ -69,6 +69,7 @@ import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
@@ -95,7 +96,7 @@ public final class RpcServerManager {
     private final Map<NativeNodeContainer, RpcServer> m_nodeRpcServerCache =
         Collections.synchronizedMap(new WeakHashMap<>());
 
-    private final Map<NodeOutPort, RpcServer> m_portRpcServerCache = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<PortObject, RpcServer> m_portRpcServerCache = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Returns the singleton instance for this service.
@@ -185,7 +186,12 @@ public final class RpcServerManager {
     private RpcServer getRpcServer(final NodeOutPort port) {
         NodePortRpcServerFactory factory = getRpcServerFactoryForPort(port.getPortType()).orElse(null);
         if (factory != null) {
-            return m_portRpcServerCache.computeIfAbsent(port, factory::createRpcServer);
+            PortObject portObject = port.getPortObject();
+            if (portObject == null) {
+                return factory.createRpcServer(port);
+            } else {
+                return m_portRpcServerCache.computeIfAbsent(port.getPortObject(), p -> factory.createRpcServer(port));
+            }
         } else {
             throw new IllegalStateException(
                 "The port of type '" + port.getPortType().getName() + "' does not provide a rpc server.");
@@ -212,6 +218,15 @@ public final class RpcServerManager {
                     + "but could not process extension %s: %s", cfe.getContributor().getName(), ex.getMessage()), ex);
         }
         return null;
+    }
+
+    /**
+     * For testing purposes only!
+     *
+     * @return the number of cached port rpc servers
+     */
+    int getNumCachedPortRpcServers() {
+        return m_portRpcServerCache.size();
     }
 
 }

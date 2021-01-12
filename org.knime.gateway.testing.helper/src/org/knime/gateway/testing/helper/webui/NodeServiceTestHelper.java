@@ -51,7 +51,7 @@ package org.knime.gateway.testing.helper.webui;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThrows;
 
 import java.util.concurrent.TimeUnit;
@@ -64,10 +64,13 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Test for the endpoints of the node service.
@@ -151,7 +154,10 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         String rpcRes = ns().doPortRpc(wfId, new NodeIDEnt(1), 1,
             "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}");
-        assertThat("not a json rpc response", rpcRes, startsWith("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
+        JsonNode json = ObjectMapperUtil.getInstance().getObjectMapper().readValue(rpcRes, JsonNode.class);
+        assertThat(json.get("jsonrpc").asText(), is("2.0"));
+        assertThat(json.get("id").asInt(), is(1));
+        assertThat(json.get("result"), notNullValue());
     }
 
 }

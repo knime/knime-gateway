@@ -55,7 +55,6 @@ import org.knime.core.rpc.json.JsonRpcSingleServer;
 import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
 import org.knime.gateway.impl.rpc.NodePortRpcServerFactory;
 import org.knime.gateway.impl.rpc.table.DefaultTableService;
-import org.knime.gateway.impl.rpc.table.TableService;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +65,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class JsonRpcTableServerFactory implements NodePortRpcServerFactory {
+
+    private static ObjectMapper objectMapper = createObjectMapper();
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        return mapper;
+    }
 
     /**
      * {@inheritDoc}
@@ -81,13 +88,7 @@ public class JsonRpcTableServerFactory implements NodePortRpcServerFactory {
      */
     @Override
     public RpcServer createRpcServer(final NodeOutPort port) {
-        return createRpcServer(new DefaultTableService(port), createObjectMapper());
-    }
-
-    private static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        return mapper;
+        return createRpcServer(new DefaultTableService(port), objectMapper);
     }
 
     /**
@@ -98,7 +99,7 @@ public class JsonRpcTableServerFactory implements NodePortRpcServerFactory {
      * @return a new rpc server instance
      */
     protected RpcServer createRpcServer(final DefaultTableService tableService, final ObjectMapper mapper) {
-        return new JsonRpcSingleServer<TableService>(tableService, mapper);
+        return new JsonRpcSingleServer<>(tableService, mapper);
     }
 
 }
