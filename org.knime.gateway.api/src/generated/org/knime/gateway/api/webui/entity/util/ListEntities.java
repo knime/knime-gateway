@@ -86,6 +86,8 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
+import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
+import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -155,6 +157,8 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEnt.class);
         res.add(WorkflowEnt.class);
         res.add(WorkflowInfoEnt.class);
+        res.add(WorkflowPartsEnt.class);
+        res.add(WorkflowPartsWithPositionEnt.class);
         res.add(WorkflowProjectEnt.class);
         res.add(WorkflowSnapshotEnt.class);
         res.add(XYEnt.class);
@@ -209,6 +213,8 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
         res.add(WorkflowInfoEnt.WorkflowInfoEntBuilder.class);
+        res.add(WorkflowPartsEnt.WorkflowPartsEntBuilder.class);
+        res.add(WorkflowPartsWithPositionEnt.WorkflowPartsWithPositionEntBuilder.class);
         res.add(WorkflowProjectEnt.WorkflowProjectEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);
         res.add(XYEnt.XYEntBuilder.class);

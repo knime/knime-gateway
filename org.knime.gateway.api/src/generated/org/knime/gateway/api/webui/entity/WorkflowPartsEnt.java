@@ -42,80 +42,67 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.api.webui.entity;
+
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Summarizes auto-generated exceptions that can occur in the executor.
- *
+ * Represents parts of a workflow referenced by their ids.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public final class ServiceExceptions {
+public interface WorkflowPartsEnt extends GatewayEntity {
 
-   /**
-    * The requested node was not found.
-    */
-    public static class NodeNotFoundException extends Exception {
-        public NodeNotFoundException(String message) {
-            super(message);
-        }
+
+  /**
+   * The ids of the nodes referenced.
+   * @return nodeIDs , never <code>null</code>
+   **/
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIDs();
+
+  /**
+   * The ids of the workflow annotations referenced.
+   * @return annotationIDs , never <code>null</code>
+   **/
+  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIDs();
+
+
+    /**
+     * The builder for the entity.
+     */
+    public interface WorkflowPartsEntBuilder extends GatewayEntityBuilder<WorkflowPartsEnt> {
+
+        /**
+         * The ids of the nodes referenced.
+         * 
+         * @param nodeIDs the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowPartsEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
         
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * The requested workflow annotation was not found.
-    */
-    public static class NotFoundException extends Exception {
-        public NotFoundException(String message) {
-            super(message);
-        }
+        /**
+         * The ids of the workflow annotations referenced.
+         * 
+         * @param annotationIDs the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowPartsEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
         
-        public NotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-    */
-    public static class NotASubWorkflowException extends Exception {
-        public NotASubWorkflowException(String message) {
-            super(message);
-        }
         
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the request is invalid for a reason.
-    */
-    public static class InvalidRequestException extends Exception {
-        public InvalidRequestException(String message) {
-            super(message);
-        }
-        
-        public InvalidRequestException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the an operation is not allowed, e.g., because it&#39;s not applicable.
-    */
-    public static class OperationNotAllowedException extends Exception {
-        public OperationNotAllowedException(String message) {
-            super(message);
-        }
-        
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        WorkflowPartsEnt build();
     
+    }
+
 }

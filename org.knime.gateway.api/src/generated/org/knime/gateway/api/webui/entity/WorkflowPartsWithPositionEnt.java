@@ -42,80 +42,69 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.api.webui.entity;
+
+import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Summarizes auto-generated exceptions that can occur in the executor.
- *
+ * Adds a position to a workflow parts object.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public final class ServiceExceptions {
+public interface WorkflowPartsWithPositionEnt extends GatewayEntity {
 
-   /**
-    * The requested node was not found.
-    */
-    public static class NodeNotFoundException extends Exception {
-        public NodeNotFoundException(String message) {
-            super(message);
-        }
+
+  /**
+   * Get position
+   * @return position , never <code>null</code>
+   **/
+  public XYEnt getPosition();
+
+  /**
+   * Get parts
+   * @return parts , never <code>null</code>
+   **/
+  public WorkflowPartsEnt getParts();
+
+
+    /**
+     * The builder for the entity.
+     */
+    public interface WorkflowPartsWithPositionEntBuilder extends GatewayEntityBuilder<WorkflowPartsWithPositionEnt> {
+
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowPartsWithPositionEntBuilder setPosition(XYEnt position);
         
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * The requested workflow annotation was not found.
-    */
-    public static class NotFoundException extends Exception {
-        public NotFoundException(String message) {
-            super(message);
-        }
+        /**
+   		 * Set parts
+         * 
+         * @param parts the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowPartsWithPositionEntBuilder setParts(WorkflowPartsEnt parts);
         
-        public NotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-    */
-    public static class NotASubWorkflowException extends Exception {
-        public NotASubWorkflowException(String message) {
-            super(message);
-        }
         
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the request is invalid for a reason.
-    */
-    public static class InvalidRequestException extends Exception {
-        public InvalidRequestException(String message) {
-            super(message);
-        }
-        
-        public InvalidRequestException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the an operation is not allowed, e.g., because it&#39;s not applicable.
-    */
-    public static class OperationNotAllowedException extends Exception {
-        public OperationNotAllowedException(String message) {
-            super(message);
-        }
-        
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        WorkflowPartsWithPositionEnt build();
     
+    }
+
 }

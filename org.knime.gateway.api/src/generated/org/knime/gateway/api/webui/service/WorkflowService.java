@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 /**
@@ -69,5 +70,19 @@ public interface WorkflowService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
     WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+        
+    /**
+     * Changes the position of multiple elements (nodes or workflow annotations) in a workflow.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @param workflowPartsWithPositionEnt The workflow parts together with their new position.
+     *
+     * 
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.NotFoundException The requested workflow annotation was not found.
+     */
+    void translateWorkflowParts(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowPartsWithPositionEnt workflowPartsWithPositionEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotFoundException;
         
 }

@@ -44,20 +44,12 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Represents a node of certain kind (native node, component, metanode) in a workflow.
- * 
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
@@ -68,14 +60,14 @@ public interface NodeEnt extends GatewayEntity {
    */
   public enum KindEnum {
     NODE("node"),
-    
+
     COMPONENT("component"),
-    
+
     METANODE("metanode");
 
     private String value;
 
-    KindEnum(String value) {
+    KindEnum(final String value) {
       this.value = value;
     }
 
@@ -107,7 +99,7 @@ public interface NodeEnt extends GatewayEntity {
 
   /**
    * Get annotation
-   * @return annotation 
+   * @return annotation
    **/
   public NodeAnnotationEnt getAnnotation();
 
@@ -125,13 +117,13 @@ public interface NodeEnt extends GatewayEntity {
 
   /**
    * Get allowedActions
-   * @return allowedActions 
+   * @return allowedActions
    **/
   public AllowedNodeActionsEnt getAllowedActions();
 
   /**
    * Get executionInfo
-   * @return executionInfo 
+   * @return executionInfo
    **/
   public NodeExecutionInfoEnt getExecutionInfo();
 
@@ -143,78 +135,78 @@ public interface NodeEnt extends GatewayEntity {
 
         /**
          * The id of the node.
-         * 
-         * @param id the property value, NOT <code>null</code>! 
+         *
+         * @param id the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         NodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
-        
+
         /**
          * The list of inputs.
-         * 
-         * @param inPorts the property value, NOT <code>null</code>! 
+         *
+         * @param inPorts the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         NodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
-        
+
         /**
          * The list of outputs.
-         * 
-         * @param outPorts the property value, NOT <code>null</code>! 
+         *
+         * @param outPorts the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         NodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
-        
+
         /**
    		 * Set annotation
-         * 
-         * @param annotation the property value,  
+         *
+         * @param annotation the property value,
          * @return this entity builder for chaining
          */
         NodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
-        
+
         /**
    		 * Set position
-         * 
-         * @param position the property value, NOT <code>null</code>! 
+         *
+         * @param position the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         NodeEntBuilder setPosition(XYEnt position);
-        
+
         /**
          * Whether it&#39;s a native node, component or a metanode.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
+         *
+         * @param kind the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         NodeEntBuilder setKind(KindEnum kind);
-        
+
         /**
    		 * Set allowedActions
-         * 
-         * @param allowedActions the property value,  
+         *
+         * @param allowedActions the property value,
          * @return this entity builder for chaining
          */
         NodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
-        
+
         /**
    		 * Set executionInfo
-         * 
-         * @param executionInfo the property value,  
+         *
+         * @param executionInfo the property value,
          * @return this entity builder for chaining
          */
         NodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
-        
-        
+
+
         /**
         * Creates the entity from the builder.
-        * 
+        *
         * @return the entity
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
         NodeEnt build();
-    
+
     }
 
 }

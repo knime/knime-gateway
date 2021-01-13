@@ -86,6 +86,8 @@ import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowInfoEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowPartsEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowPartsWithPositionEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
@@ -154,6 +156,8 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEntMixIn.class);
         res.add(WorkflowEntMixIn.class);
         res.add(WorkflowInfoEntMixIn.class);
+        res.add(WorkflowPartsEntMixIn.class);
+        res.add(WorkflowPartsWithPositionEntMixIn.class);
         res.add(WorkflowProjectEntMixIn.class);
         res.add(WorkflowSnapshotEntMixIn.class);
         res.add(XYEntMixIn.class);
@@ -208,6 +212,8 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEntMixIn.WorkflowChangedEventTypeEntMixInBuilder.class);
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
         res.add(WorkflowInfoEntMixIn.WorkflowInfoEntMixInBuilder.class);
+        res.add(WorkflowPartsEntMixIn.WorkflowPartsEntMixInBuilder.class);
+        res.add(WorkflowPartsWithPositionEntMixIn.WorkflowPartsWithPositionEntMixInBuilder.class);
         res.add(WorkflowProjectEntMixIn.WorkflowProjectEntMixInBuilder.class);
         res.add(WorkflowSnapshotEntMixIn.WorkflowSnapshotEntMixInBuilder.class);
         res.add(XYEntMixIn.XYEntMixInBuilder.class);

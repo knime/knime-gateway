@@ -128,6 +128,10 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
+import org.knime.gateway.api.webui.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsEnt;
+import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt.WorkflowPartsWithPositionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsWithPositionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
@@ -281,6 +285,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowInfoEntBuilder.class) {
             return (B)new DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder();
+        }        
+        if(clazz == WorkflowPartsEntBuilder.class) {
+            return (B)new DefaultWorkflowPartsEnt.DefaultWorkflowPartsEntBuilder();
+        }        
+        if(clazz == WorkflowPartsWithPositionEntBuilder.class) {
+            return (B)new DefaultWorkflowPartsWithPositionEnt.DefaultWorkflowPartsWithPositionEntBuilder();
         }        
         if(clazz == WorkflowProjectEntBuilder.class) {
             return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();

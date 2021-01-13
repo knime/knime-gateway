@@ -42,80 +42,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsWithPositionEnt.DefaultWorkflowPartsWithPositionEntBuilder;
 
 /**
- * Summarizes auto-generated exceptions that can occur in the executor.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public final class ServiceExceptions {
 
-   /**
-    * The requested node was not found.
-    */
-    public static class NodeNotFoundException extends Exception {
-        public NodeNotFoundException(String message) {
-            super(message);
-        }
-        
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
+@JsonDeserialize(builder=DefaultWorkflowPartsWithPositionEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface WorkflowPartsWithPositionEntMixIn extends WorkflowPartsWithPositionEnt {
 
-   /**
-    * The requested workflow annotation was not found.
-    */
-    public static class NotFoundException extends Exception {
-        public NotFoundException(String message) {
-            super(message);
-        }
-        
-        public NotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-   /**
-    * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-    */
-    public static class NotASubWorkflowException extends Exception {
-        public NotASubWorkflowException(String message) {
-            super(message);
-        }
-        
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the request is invalid for a reason.
-    */
-    public static class InvalidRequestException extends Exception {
-        public InvalidRequestException(String message) {
-            super(message);
-        }
-        
-        public InvalidRequestException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
-    * If the an operation is not allowed, e.g., because it&#39;s not applicable.
-    */
-    public static class OperationNotAllowedException extends Exception {
-        public OperationNotAllowedException(String message) {
-            super(message);
-        }
-        
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
+    @Override
+    @JsonProperty("position")
+    public XYEnt getPosition();
     
+    @Override
+    @JsonProperty("parts")
+    public WorkflowPartsEnt getParts();
+    
+
+    /**
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
+     */
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface WorkflowPartsWithPositionEntMixInBuilder extends WorkflowPartsWithPositionEntBuilder {
+    
+        @Override
+        public WorkflowPartsWithPositionEntMixIn build();
+    
+        @Override
+        @JsonProperty("position")
+        public WorkflowPartsWithPositionEntMixInBuilder setPosition(final XYEnt position);
+        
+        @Override
+        @JsonProperty("parts")
+        public WorkflowPartsWithPositionEntMixInBuilder setParts(final WorkflowPartsEnt parts);
+        
+    }
+
+
 }
+
