@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -61,5 +62,10 @@ public interface ServiceProvider {
      * @return workflow service implementation
      */
     WorkflowService getWorkflowService();
+
+    /**
+     * @return node service implementation
+     */
+    NodeService getNodeService();
 
 }

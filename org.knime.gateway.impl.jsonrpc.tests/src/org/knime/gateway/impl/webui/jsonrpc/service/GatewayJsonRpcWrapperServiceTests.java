@@ -64,7 +64,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
 import org.knime.gateway.json.util.ObjectMapperUtil;
@@ -140,7 +142,19 @@ public class GatewayJsonRpcWrapperServiceTests {
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
         JsonRpcClient jsonRpcClient =
             new JsonRpcClient(mapper, new TestExceptionResolver(notNullValue(String.class), is(-32600)));
-        m_serviceProvider = () -> createClientProxy(WorkflowService.class, handler, jsonRpcClient);
+        m_serviceProvider = new ServiceProvider() {
+
+            @Override
+            public WorkflowService getWorkflowService() {
+                return createClientProxy(WorkflowService.class, handler, jsonRpcClient);
+            }
+
+            @Override
+            public NodeService getNodeService() {
+                return createClientProxy(NodeService.class, handler, jsonRpcClient);
+            }
+        };
+
         m_gatewayTestName = gatewayTestName;
     }
 

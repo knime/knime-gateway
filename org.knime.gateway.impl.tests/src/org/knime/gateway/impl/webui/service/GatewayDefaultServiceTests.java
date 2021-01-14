@@ -53,6 +53,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -114,7 +116,18 @@ public class GatewayDefaultServiceTests {
                     .executeAllAndWaitUntilDone();
             }
         };
-        m_serviceProvider = DefaultWorkflowService::getInstance;
+        m_serviceProvider = new ServiceProvider() {
+
+            @Override
+            public WorkflowService getWorkflowService() {
+                return DefaultWorkflowService.getInstance();
+            }
+
+            @Override
+            public NodeService getNodeService() {
+                return DefaultNodeService.getInstance();
+            }
+        };
         m_gatewayTestName = gatewayTestName;
     }
 

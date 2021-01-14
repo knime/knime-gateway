@@ -90,7 +90,7 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
 
     private static JsonNode getExceptionDetails(final Throwable t) {
         ObjectNode details = ObjectMapperUtil.getInstance().getObjectMapper().createObjectNode();
-        details.put("name", t.getClass().getCanonicalName());
+        details.put("name", t.getClass().getName());
 
         try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
             t.printStackTrace(printWriter);
