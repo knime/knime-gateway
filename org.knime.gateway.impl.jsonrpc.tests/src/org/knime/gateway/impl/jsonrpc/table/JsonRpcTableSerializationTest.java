@@ -59,8 +59,8 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.gateway.impl.jsonrpc.table.JsonRpcTableServiceTest.TestJsonRpcTableServerFactory;
-import org.knime.gateway.impl.jsonrpc.table.JsonRpcTableServiceTest.TestRpcTransport;
+import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.gateway.impl.rpc.table.DefaultTableService;
 import org.knime.gateway.impl.rpc.table.Table;
 import org.knime.gateway.impl.rpc.table.TableCell;
 import org.knime.gateway.impl.rpc.table.TableService;
@@ -106,12 +106,12 @@ public class JsonRpcTableSerializationTest {
     }
 
     private static String getJsonRpcTableResponse(final BufferedDataTable bdt) {
-        TestRpcTransport transport = new TestRpcTransport();
-        TestJsonRpcTableServerFactory factory = new TestJsonRpcTableServerFactory(transport);
-        factory.createRpcServer(mockNodeOutPort(bdt));
-        TableService tableService = factory.getRpcClient().getService(TableService.class);
+        NodeOutPort nodeOutPortMock = mockNodeOutPort(bdt);
+        TestJsonRpcClient<TableService> rpcClient =
+            new TestJsonRpcClient<>(TableService.class, new DefaultTableService(nodeOutPortMock));
+        TableService tableService = rpcClient.getService();
         tableService.getTable(0, (int)bdt.size());
-        return transport.getLastResponse();
+        return rpcClient.getLastServerResponse();
     }
 
     private static void matchSnapshot(final String snapshotName, final String s) {

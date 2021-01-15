@@ -48,28 +48,11 @@
  */
 package org.knime.gateway.impl.jsonrpc.table;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.knime.core.rpc.RpcServer;
-import org.knime.core.rpc.RpcSingleClient;
-import org.knime.core.rpc.RpcTransport;
-import org.knime.core.rpc.json.JsonRpcSingleServer;
-import org.knime.core.rpc.json.JsonRpcTestUtil;
 import org.knime.gateway.impl.rpc.table.DefaultTableService;
-import org.knime.gateway.impl.rpc.table.Table;
 import org.knime.gateway.impl.rpc.table.TableService;
 import org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper;
-
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.mrbean.AbstractTypeMaterializer;
-import com.fasterxml.jackson.module.mrbean.MrBeanModule;
 
 /**
  * Tests expected behavior of {@link TableService}-methods.
@@ -85,11 +68,8 @@ public class JsonRpcTableServiceTest {
      */
     @Before
     public void setupTestHelper() {
-        TestJsonRpcTableServerFactory factory = new TestJsonRpcTableServerFactory();
-        m_testHelper = new TableServiceTestHelper(p -> {
-            factory.createRpcServer(p);
-            return factory.getRpcClient().getService();
-        });
+        m_testHelper = new TableServiceTestHelper(
+            p -> new TestJsonRpcClient<>(TableService.class, new DefaultTableService(p)).getService());
     }
 
     /**
@@ -106,76 +86,6 @@ public class JsonRpcTableServiceTest {
     @Test
     public void testTruncatedColumns() {
         m_testHelper.testTruncatedColumns();
-    }
-
-    static class TestJsonRpcTableServerFactory extends JsonRpcTableServerFactory {
-
-        private RpcSingleClient<TableService> m_rpcClient;
-
-        private final TestRpcTransport m_transport;
-
-        TestJsonRpcTableServerFactory() {
-            this(null);
-        }
-
-        TestJsonRpcTableServerFactory(final TestRpcTransport transport) {
-            m_transport = transport;
-        }
-
-        @Override
-        protected RpcServer createRpcServer(final DefaultTableService tableService, final ObjectMapper mapper) {
-            // allows one to deserialize, e.g., json into objects just represented by an interface
-            mapper.registerModule(new MrBeanModule(new AbstractTypeMaterializer(Table.class.getClassLoader())));
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
-
-            JsonRpcSingleServer<TableService> server = new JsonRpcSingleServer<>(tableService, mapper);
-            if (m_transport == null) {
-                m_rpcClient =
-                    JsonRpcTestUtil.createRpcSingleClientInstanceForTesting(TableService.class, tableService, mapper);
-            } else {
-                m_transport.setRpcServer(server);
-                m_rpcClient =
-                    JsonRpcTestUtil.createRpcSingleClientInstanceForTesting(TableService.class, mapper, m_transport);
-            }
-            return server;
-        }
-
-        RpcSingleClient<TableService> getRpcClient() {
-            return m_rpcClient;
-        }
-
-    }
-
-    static class TestRpcTransport implements RpcTransport {
-
-        private RpcServer m_server;
-
-        private String m_lastResponse;
-
-        void setRpcServer(final RpcServer server) {
-            m_server = server;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String sendAndReceive(final String rpc) {
-            try (ByteArrayInputStream request = new ByteArrayInputStream(rpc.getBytes(StandardCharsets.UTF_8));
-                    ByteArrayOutputStream response = new ByteArrayOutputStream()) {
-                m_server.handleRequest(request, response);
-                m_lastResponse = new String(response.toByteArray(), StandardCharsets.UTF_8.name());
-                return m_lastResponse;
-            } catch (IOException ex) {
-                throw new IllegalStateException("I/O exception during node data service rpc request handling", ex);
-            }
-        }
-
-        String getLastResponse() {
-            return m_lastResponse;
-        }
-
     }
 
 }
