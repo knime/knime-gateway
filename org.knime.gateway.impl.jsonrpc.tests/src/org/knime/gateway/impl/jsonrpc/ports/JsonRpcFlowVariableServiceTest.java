@@ -44,41 +44,38 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.gateway.impl.jsonrpc.ports;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServerFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.knime.gateway.impl.rpc.flowvars.DefaultFlowVariableService;
+import org.knime.gateway.impl.rpc.flowvars.FlowVariableService;
+import org.knime.gateway.testing.helper.rpc.port.FlowVariableServiceTestHelper;
 
 /**
- * Provides generic access to data of a port via remote procedure calls.
- *
- * Implementations are currently provided by a temporary extension point. Will need to be provided by the
- * {@link PortObject}-implementation itself (directly or indirectly).
+ * Tests expected behavior of {@link FlowVariableService}-methods.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- *
- * @since 4.3
  */
-public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
+public class JsonRpcFlowVariableServiceTest {
+
+    private FlowVariableServiceTestHelper m_testHelper;
 
     /**
-     * Determines whether this rpc server factory is compatible with the respective port type.
-     *
-     * @param ptype the port type to check the compatibility for
-     * @return <code>true</code> if compatible otherwise <code>false</code>
+     * Initializes the {@link FlowVariableServiceTestHelper}.
      */
-    boolean isCompatible(PortType ptype);
+    @Before
+    public void setupTestHelper() {
+        m_testHelper = new FlowVariableServiceTestHelper(
+            p -> new TestJsonRpcClient<>(FlowVariableService.class, new DefaultFlowVariableService(p)).getService());
+    }
 
     /**
-     * @return whether the created rpc server can and should be cached or not
+     * see {@link FlowVariableServiceTestHelper#testFlowVariableService()}
      */
-    default boolean isCachable() {
-        return true;
+    @Test
+    public void testFlowVariableService() {
+        m_testHelper.testFlowVariableService();
     }
 
 }

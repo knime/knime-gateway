@@ -44,78 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 27, 2020 (hornm): created
+ *   Oct 26, 2020 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc.table;
+package org.knime.gateway.impl.jsonrpc.ports;
 
-import static org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper.createTable;
-import static org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper.mockNodeOutPort;
-
-import org.apache.commons.lang3.StringUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.gateway.impl.rpc.table.DefaultTableService;
-import org.knime.gateway.impl.rpc.table.Table;
-import org.knime.gateway.impl.rpc.table.TableCell;
 import org.knime.gateway.impl.rpc.table.TableService;
-import org.knime.gateway.testing.helper.ResultChecker;
-import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
+import org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper;
 
 /**
- * Tests the correct serialization of a table into json.
+ * Tests expected behavior of {@link TableService}-methods.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class JsonRpcTableSerializationTest {
+public class JsonRpcTableServiceTest {
 
-    private static ResultChecker resultChecker;
+    private TableServiceTestHelper m_testHelper;
 
     /**
-     * Inits the result checker for snapshot testing.
+     * Initializes the {@link TableServiceTestHelper}.
      */
-    @BeforeClass
-    public static void initResultChecker() {
-        resultChecker = WebUIGatewayServiceTestHelper.createResultChecker(JsonRpcTableSerializationTest.class);
+    @Before
+    public void setupTestHelper() {
+        m_testHelper = new TableServiceTestHelper(
+            p -> new TestJsonRpcClient<>(TableService.class, new DefaultTableService(p)).getService());
     }
 
     /**
-     * Snapshot tests for the json-serialization of a {@link Table}.
-     */
-    @Test
-    public void testTableToJsonSerialization() {
-        BufferedDataTable table = createTable(5);
-        String jsonRpcResponse = getJsonRpcTableResponse(table);
-        matchSnapshot("table_response", jsonRpcResponse);
-    }
-
-    /**
-     * Snapshot test for json-serialization of a table with truncated values.
+     * see {@link TableServiceTestHelper#testTableService()}
      */
     @Test
-    public void testTableWithTruncatedValues() {
-        DataTableSpec spec = new DataTableSpec(new String[]{"col"}, new DataType[]{StringCell.TYPE});
-        String value = "very_long_string_" + StringUtils.repeat("*", TableCell.MAX_STRING_LENGTH) + "_string_end";
-        BufferedDataTable table = createTable(spec, new DefaultRow("rowkey", value));
-        matchSnapshot("table_response_truncated", getJsonRpcTableResponse(table));
+    public void testTableService() {
+        m_testHelper.testTableService();
     }
 
-    private static String getJsonRpcTableResponse(final BufferedDataTable bdt) {
-        NodeOutPort nodeOutPortMock = mockNodeOutPort(bdt);
-        TestJsonRpcClient<TableService> rpcClient =
-            new TestJsonRpcClient<>(TableService.class, new DefaultTableService(nodeOutPortMock));
-        TableService tableService = rpcClient.getService();
-        tableService.getTable(0, (int)bdt.size());
-        return rpcClient.getLastServerResponse();
-    }
-
-    private static void matchSnapshot(final String snapshotName, final String s) {
-        resultChecker.checkObject(JsonRpcTableSerializationTest.class, snapshotName, s);
+    /**
+     * see {@link TableServiceTestHelper#testTruncatedColumns()}
+     */
+    @Test
+    public void testTruncatedColumns() {
+        m_testHelper.testTruncatedColumns();
     }
 
 }

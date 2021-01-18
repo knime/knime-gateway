@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -43,42 +43,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.gateway.impl.jsonrpc.ports;
 
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServerFactory;
+import org.knime.core.rpc.RpcServer;
+import org.knime.core.rpc.json.JsonRpcSingleServer;
+import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
+import org.knime.gateway.impl.rpc.NodePortRpcServerFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Provides generic access to data of a port via remote procedure calls.
- *
- * Implementations are currently provided by a temporary extension point. Will need to be provided by the
- * {@link PortObject}-implementation itself (directly or indirectly).
+ * Abstract {@link NodePortRpcServerFactory}-implementation for build-in port types (see {@link BuildInWebPortViewType})
+ * based on json-rpc.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- *
- * @since 4.3
  */
-public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
+abstract class AbstractPortJsonRpcServerFactory<S> implements NodePortRpcServerFactory {
 
-    /**
-     * Determines whether this rpc server factory is compatible with the respective port type.
-     *
-     * @param ptype the port type to check the compatibility for
-     * @return <code>true</code> if compatible otherwise <code>false</code>
-     */
-    boolean isCompatible(PortType ptype);
+    private final BuildInWebPortViewType m_portType;
 
-    /**
-     * @return whether the created rpc server can and should be cached or not
-     */
-    default boolean isCachable() {
-        return true;
+    protected AbstractPortJsonRpcServerFactory(final BuildInWebPortViewType portType) {
+        m_portType = portType;
     }
+
+    private static ObjectMapper objectMapper = createObjectMapper();
+
+    /**
+     * Publicly visible only for testing.
+     *
+     * @return a new object mapper instance
+     */
+    public static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        return mapper;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCompatible(final PortType ptype) {
+        return BuildInWebPortViewType.getPortViewTypeFor(ptype).map(t -> t == m_portType).orElse(Boolean.FALSE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RpcServer createRpcServer(final NodeOutPort port) {
+        return new JsonRpcSingleServer<S>(createService(port), objectMapper);
+    }
+
+    protected abstract S createService(NodeOutPort port);
 
 }

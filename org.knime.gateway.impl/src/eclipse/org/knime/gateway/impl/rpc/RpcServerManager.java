@@ -198,7 +198,7 @@ public final class RpcServerManager {
         NodePortRpcServerFactory factory = getRpcServerFactoryForPort(port.getPortType()).orElse(null);
         if (factory != null) {
             PortObject portObject = port.getPortObject();
-            if (portObject == null) {
+            if (portObject == null || !factory.isCachable()) {
                 return factory.createRpcServer(port);
             } else {
                 return getFromCacheOrCreate(portObject, m_portRpcServerCache, () -> factory.createRpcServer(port));

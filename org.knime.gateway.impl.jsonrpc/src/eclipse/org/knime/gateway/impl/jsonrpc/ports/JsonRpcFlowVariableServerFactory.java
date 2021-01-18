@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -43,42 +43,44 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Jan 14, 2021 (hornm): created
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.gateway.impl.jsonrpc.ports;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServerFactory;
+import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
+import org.knime.gateway.impl.rpc.flowvars.DefaultFlowVariableService;
+import org.knime.gateway.impl.rpc.flowvars.FlowVariableService;
 
 /**
- * Provides generic access to data of a port via remote procedure calls.
- *
- * Implementations are currently provided by a temporary extension point. Will need to be provided by the
- * {@link PortObject}-implementation itself (directly or indirectly).
+ * Creates instances of a json rpc server for flow variables.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- *
- * @since 4.3
  */
-public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
+public class JsonRpcFlowVariableServerFactory extends AbstractPortJsonRpcServerFactory<FlowVariableService> {
 
     /**
-     * Determines whether this rpc server factory is compatible with the respective port type.
-     *
-     * @param ptype the port type to check the compatibility for
-     * @return <code>true</code> if compatible otherwise <code>false</code>
+     * New factory instance.
      */
-    boolean isCompatible(PortType ptype);
+    public JsonRpcFlowVariableServerFactory() {
+        super(BuildInWebPortViewType.FLOWVARIABLE);
+    }
 
     /**
-     * @return whether the created rpc server can and should be cached or not
+     * {@inheritDoc}
      */
-    default boolean isCachable() {
-        return true;
+    @Override
+    protected FlowVariableService createService(final NodeOutPort port) {
+        return new DefaultFlowVariableService(port);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCachable() {
+        return false;
     }
 
 }

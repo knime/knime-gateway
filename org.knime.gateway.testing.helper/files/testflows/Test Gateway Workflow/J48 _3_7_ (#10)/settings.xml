@@ -21,8 +21,8 @@
 <entry key="bgcolor" type="xint" value="16777215"/>
 <entry key="x-coordinate" type="xint" value="292"/>
 <entry key="y-coordinate" type="xint" value="219"/>
-<entry key="width" type="xint" value="136"/>
-<entry key="height" type="xint" value="38"/>
+<entry key="width" type="xint" value="137"/>
+<entry key="height" type="xint" value="36"/>
 <entry key="alignment" type="xstring" value="CENTER"/>
 <entry key="borderSize" type="xint" value="0"/>
 <entry key="borderColor" type="xint" value="16777215"/>
@@ -37,7 +37,7 @@
 <entry key="node-bundle-name" type="xstring" value="KNIME WEKA nodes (3.7)"/>
 <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.ext.weka_3.7"/>
 <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
-<entry key="node-bundle-version" type="xstring" value="4.2.0.qualifier"/>
+<entry key="node-bundle-version" type="xstring" value="4.4.0.qualifier"/>
 <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
 <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
 <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>

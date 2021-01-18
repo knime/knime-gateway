@@ -674,7 +674,7 @@ public final class EntityBuilderUtil {
 
     private static PortViewEnt buildPortViewEnt(final PortType ptype) {
         BuildInWebPortViewType portViewType = BuildInWebPortViewType.getPortViewTypeFor(ptype).orElse(null);
-        if (portViewType != null) {
+        if (portViewType != null && portViewType != BuildInWebPortViewType.FLOWVARIABLE) {
             return builder(PortViewEntBuilder.class).setType(PortViewEnt.TypeEnum.valueOf(portViewType.toString()))
                 .build();
         } else {

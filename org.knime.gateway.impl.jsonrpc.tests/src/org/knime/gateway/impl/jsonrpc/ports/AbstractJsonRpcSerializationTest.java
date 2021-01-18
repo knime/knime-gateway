@@ -43,42 +43,79 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 27, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.gateway.impl.jsonrpc.ports;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServerFactory;
+import static org.knime.gateway.testing.helper.GatewayServiceTestHelper.resolveToFile;
+
+import java.io.IOException;
+
+import org.junit.Before;
+import org.knime.core.node.util.CheckUtils;
+import org.knime.gateway.impl.rpc.table.TableService;
+import org.knime.gateway.testing.helper.ResultChecker;
 
 /**
- * Provides generic access to data of a port via remote procedure calls.
- *
- * Implementations are currently provided by a temporary extension point. Will need to be provided by the
- * {@link PortObject}-implementation itself (directly or indirectly).
+ * Abstracts some details of port rpc service tests (such as the {@link TableService}).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- *
- * @since 4.3
  */
-public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
+public class AbstractJsonRpcSerializationTest<S> {
+
+    private ResultChecker m_resultChecker;
+
+    private final Class<S> m_serviceClass;
+
+    private TestJsonRpcClient<S> m_rpcClient;
 
     /**
-     * Determines whether this rpc server factory is compatible with the respective port type.
+     * New test instance.
      *
-     * @param ptype the port type to check the compatibility for
-     * @return <code>true</code> if compatible otherwise <code>false</code>
+     * @param serviceClass the service interface class
      */
-    boolean isCompatible(PortType ptype);
+    protected AbstractJsonRpcSerializationTest(final Class<S> serviceClass) {
+        m_serviceClass = serviceClass;
+    }
 
     /**
-     * @return whether the created rpc server can and should be cached or not
+     * Inits the result checker for snapshot testing.
+     *
+     * @throws IOException
      */
-    default boolean isCachable() {
-        return true;
+    @Before
+    public void initResultChecker() throws IOException {
+        m_resultChecker = new ResultChecker(null, null, resolveToFile("/files/test_snapshots", this.getClass()));
+    }
+
+    /**
+     * Creates a new service client instance.
+     *
+     * @param serviceImpl
+     * @return the new service client instance
+     */
+    protected S createServiceClient(final S serviceImpl) {
+        m_rpcClient = new TestJsonRpcClient<>(m_serviceClass, serviceImpl);
+        return m_rpcClient.getService();
+    }
+
+    /**
+     * Checks the last response from the rpc server by comparing it to the snapshot of the provided name
+     *
+     * @param snapshotName the snapshot to compare the last server response to
+     */
+    protected void checkLastServerResponse(final String snapshotName) {
+        CheckUtils.checkNotNull(m_rpcClient, "No rpc client initialized. Call 'createServiceClient' first.");
+        m_resultChecker.checkObject(AbstractJsonRpcSerializationTest.class, snapshotName,
+            m_rpcClient.getLastServerResponse());
+    }
+
+    /**
+     * @return the last server response as json-rpc string
+     */
+    protected String getLastServerResponse() {
+        return m_rpcClient.getLastServerResponse();
     }
 
 }

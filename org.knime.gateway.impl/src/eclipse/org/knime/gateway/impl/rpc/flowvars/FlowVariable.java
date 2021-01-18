@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,48 +44,70 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 26, 2020 (hornm): created
+ *   Jan 14, 2021 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc.table;
+package org.knime.gateway.impl.rpc.flowvars;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.knime.gateway.impl.rpc.table.DefaultTableService;
-import org.knime.gateway.impl.rpc.table.TableService;
-import org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper;
+import org.knime.core.node.workflow.NodeID;
 
 /**
- * Tests expected behavior of {@link TableService}-methods.
+ * Represents a flow variable to be displayed as port of the flow variable port view.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class JsonRpcTableServiceTest {
-
-    private TableServiceTestHelper m_testHelper;
+public interface FlowVariable {
 
     /**
-     * Initializes the {@link TableServiceTestHelper}.
+     * @return the flow variable name
      */
-    @Before
-    public void setupTestHelper() {
-        m_testHelper = new TableServiceTestHelper(
-            p -> new TestJsonRpcClient<>(TableService.class, new DefaultTableService(p)).getService());
-    }
+    String getName();
 
     /**
-     * see {@link TableServiceTestHelper#testTableService()}
+     * @return the flow var type
      */
-    @Test
-    public void testTableService() {
-        m_testHelper.testTableService();
-    }
+    String getType();
 
     /**
-     * see {@link TableServiceTestHelper#testTruncatedColumns()}
+     * @return the actual value
      */
-    @Test
-    public void testTruncatedColumns() {
-        m_testHelper.testTruncatedColumns();
+    String getValue();
+
+    /**
+     * @return the id of the node that created the flow variable (can be <code>null</code>)
+     */
+    String getOwnerNodeId();
+
+    /**
+     * Helper to create a flow variable on the fly.
+     *
+     * @param v
+     * @return the new flow variable which retrieves the values from the passed 'core'-flow variable representation on
+     *         demand
+     */
+    static FlowVariable create(final org.knime.core.node.workflow.FlowVariable v) {
+        return new FlowVariable() {
+
+            @Override
+            public String getValue() {
+                return v.getValueAsString();
+            }
+
+            @Override
+            public String getType() {
+                return v.getVariableType().getClass().getSimpleName();
+            }
+
+            @Override
+            public String getOwnerNodeId() {
+                NodeID owner = v.getOwner();
+                return owner != null && !owner.isRoot() ? owner.toString() : null;
+            }
+
+            @Override
+            public String getName() {
+                return v.getName();
+            }
+        };
     }
 
 }

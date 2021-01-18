@@ -64,7 +64,7 @@ import org.knime.core.node.workflow.NodeOutPort;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultTableService implements TableService {
+public final class DefaultTableService implements TableService {
 
     private final DirectAccessTable m_table;
 

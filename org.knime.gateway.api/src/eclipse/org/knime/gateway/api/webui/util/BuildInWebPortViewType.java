@@ -54,6 +54,7 @@ import org.knime.core.data.DirectAccessTable;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.DataTableSpecProvider;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 
 /**
  * Enumerates the build-in port views available in the web-ui.
@@ -66,7 +67,12 @@ public enum BuildInWebPortViewType {
         /**
          * The table port view.
          */
-        TABLE;
+        TABLE,
+
+        /**
+         * The flow variables port.
+         */
+        FLOWVARIABLE;
 
     /**
      * Determines the web port view type for a given {@link PortType}.
@@ -75,14 +81,16 @@ public enum BuildInWebPortViewType {
      * @return the port view type or an empty optional if there is none available for the provided port type
      */
     public static Optional<BuildInWebPortViewType> getPortViewTypeFor(final PortType ptype) {
-        if (isBufferedataTable(ptype) || isDirectAccessTable(ptype)) {
+        if (isBufferedDataTable(ptype) || isDirectAccessTable(ptype)) {
             return Optional.of(TABLE);
+        } else if (ptype.equals(FlowVariablePortObject.TYPE)) {
+            return Optional.of(FLOWVARIABLE);
         } else {
             return Optional.empty();
         }
     }
 
-    private static boolean isBufferedataTable(final PortType ptype) {
+    private static boolean isBufferedDataTable(final PortType ptype) {
         return ptype.equals(BufferedDataTable.TYPE);
     }
 

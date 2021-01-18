@@ -44,62 +44,55 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 23, 2020 (hornm): created
+ *   Jan 14, 2021 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc.table;
+package org.knime.gateway.impl.rpc.flowvars;
 
-import org.knime.core.node.port.PortType;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServer;
-import org.knime.core.rpc.json.JsonRpcSingleServer;
-import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
-import org.knime.gateway.impl.rpc.NodePortRpcServerFactory;
-import org.knime.gateway.impl.rpc.table.DefaultTableService;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.knime.core.node.workflow.SingleNodeContainer;
 
 /**
- * Creates instances of a json rpc server for tables.
+ * Default implementation of {@link FlowVariableService}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class JsonRpcTableServerFactory implements NodePortRpcServerFactory {
+public final class DefaultFlowVariableService implements FlowVariableService {
 
-    private static ObjectMapper objectMapper = createObjectMapper();
-
-    private static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        return mapper;
-    }
+    private final List<FlowVariable> m_variables;
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isCompatible(final PortType ptype) {
-        return BuildInWebPortViewType.getPortViewTypeFor(ptype).map(t -> t == BuildInWebPortViewType.TABLE)
-            .orElse(Boolean.FALSE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RpcServer createRpcServer(final NodeOutPort port) {
-        return createRpcServer(new DefaultTableService(port), objectMapper);
-    }
-
-    /**
-     * This method is for testing purposes only!!
+     * New flowvariable service instance.
      *
-     * @param tableService
-     * @param mapper
-     * @return a new rpc server instance
+     * @param port the port to create the flowvariable service from
      */
-    protected RpcServer createRpcServer(final DefaultTableService tableService, final ObjectMapper mapper) {
-        return new JsonRpcSingleServer<>(tableService, mapper);
+    public DefaultFlowVariableService(final NodeOutPort port) {
+        SingleNodeContainer snc = port.getConnectedNodeContainer();
+        if (snc != null) {
+            // for normal nodes port 0 is available (hidden variable OutPort!)
+            FlowObjectStack fos = snc.getOutPort(0).getFlowObjectStack();
+            if (fos != null) {
+                m_variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
+                    .collect(Collectors.toList());
+            } else {
+                m_variables = Collections.emptyList();
+            }
+        } else {
+            throw new IllegalArgumentException("The provided port doesn't belong to a node nor a component.");
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FlowVariable> getFlowVariables() {
+        return m_variables;
     }
 
 }

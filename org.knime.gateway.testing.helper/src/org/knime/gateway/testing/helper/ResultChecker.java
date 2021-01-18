@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.knime.gateway.api.entity.GatewayEntity;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -82,7 +81,8 @@ public class ResultChecker {
      * Creates a new instance of the result checker.
      *
      * @param propertyExceptions let one define exceptions of how to deal with certain properties for comparison
-     * @param objectMapper the mapper for object serialization for comparison
+     * @param objectMapper the mapper for object serialization for comparison, can be <code>null</code> iff
+     *            {@link #checkString(Class, String, String)} is used exclusively
      * @param resultDirectory the directory to read the result-snapshots from (and write them to, if not present), can
      *            be <code>null</code> if there are no exceptions
      */
@@ -91,10 +91,12 @@ public class ResultChecker {
         m_propertyExceptions = propertyExceptions;
         m_resultDirectory = resultDirectory;
         m_objectMapper = objectMapper;
-        // setup object mapper for entity-comparison with property exceptions
-        SimpleModule module = new SimpleModule();
-        module.setSerializerModifier(new PropertyExceptionSerializerModifier());
-        m_objectMapper.registerModule(module);
+        if (m_objectMapper != null) {
+            // setup object mapper for entity-comparison with property exceptions
+            SimpleModule module = new SimpleModule();
+            module.setSerializerModifier(new PropertyExceptionSerializerModifier());
+            m_objectMapper.registerModule(module);
+        }
     }
 
     /**
@@ -112,6 +114,18 @@ public class ResultChecker {
         } catch (IOException ex) {
             throw new RuntimeException("Failed to compare with snapshot from file", ex); // NOSONAR
         }
+    }
+
+    /**
+     * See {@link #checkObject(Class, String, Object)} where the object to be checked is a string. In this case, no
+     * object mapper is required.
+     *
+     * @param testClass
+     * @param snapshotName
+     * @param s
+     */
+    public void checkString(final Class<?> testClass, final String snapshotName, final String s) {
+        checkObject(testClass, snapshotName, s);
     }
 
     private void compareWithSnapshotFromFile(final Class<?> testClass, final String snapshotName, final Object obj)
@@ -275,8 +289,7 @@ public class ResultChecker {
 
         private final List<String> m_propNames = new ArrayList<>();
 
-        @SuppressWarnings("rawtypes")
-        private final List<PropertyException> m_altFuncs = new ArrayList<>();
+        private final List<PropertyException<?>> m_altFuncs = new ArrayList<>();
 
         /**
          * Adds a new exception.
@@ -285,7 +298,7 @@ public class ResultChecker {
          * @param propName the actual property name to apply the exception to
          * @param altFunc how the property should be serialized alternatively
          */
-        public <E extends GatewayEntity> void addException(final Class<E> entityClass, final String propName,
+        public <E> void addException(final Class<E> entityClass, final String propName,
             final PropertyException<E> altFunc) {
             m_classes.add(entityClass);
             m_propNames.add(propName);
@@ -301,15 +314,14 @@ public class ResultChecker {
          * @throws IOException
          */
         @SuppressWarnings("unchecked")
-        private boolean alternativeSerialization(final String propName, final JsonGenerator gen, final Object value)
+        private <E> boolean alternativeSerialization(final String propName, final JsonGenerator gen, final Object value)
             throws IOException {
             Class<?> parentEntity = gen.getCurrentValue().getClass();
-            if (GatewayEntity.class.isAssignableFrom(parentEntity)) {
-                for (int i = 0; i < m_classes.size(); i++) {
-                    if (m_classes.get(i).isAssignableFrom(parentEntity) && propName.equals(m_propNames.get(i))) {
-                        m_altFuncs.get(i).alternativeSerialization(value, gen, gen.getCurrentValue());
-                        return true;
-                    }
+            for (int i = 0; i < m_classes.size(); i++) {
+                if (m_classes.get(i).isAssignableFrom(parentEntity) && propName.equals(m_propNames.get(i))) {
+                    PropertyException<E> pe = (PropertyException<E>)m_altFuncs.get(i);
+                    pe.alternativeSerialization(value, gen, (E)gen.getCurrentValue());
+                    return true;
                 }
             }
             return false;

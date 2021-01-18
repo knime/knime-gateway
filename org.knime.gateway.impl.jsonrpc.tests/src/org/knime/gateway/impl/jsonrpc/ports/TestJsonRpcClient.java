@@ -46,7 +46,7 @@
  * History
  *   Jan 15, 2021 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc.table;
+package org.knime.gateway.impl.jsonrpc.ports;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,7 +59,6 @@ import org.knime.core.rpc.RpcTransport;
 import org.knime.core.rpc.json.JsonRpcSingleServer;
 import org.knime.core.rpc.json.JsonRpcTestUtil;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -107,8 +106,7 @@ class TestJsonRpcClient<S> {
     }
 
     private static <S> ObjectMapper createObjectMapper(final Class<S> serviceClass) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
+        ObjectMapper mapper = AbstractPortJsonRpcServerFactory.createObjectMapper();
         // allows one to deserialize, e.g., json into objects just represented by an interface
         mapper.registerModule(new MrBeanModule(new AbstractTypeMaterializer(serviceClass.getClassLoader())));
         mapper.enable(SerializationFeature.INDENT_OUTPUT);

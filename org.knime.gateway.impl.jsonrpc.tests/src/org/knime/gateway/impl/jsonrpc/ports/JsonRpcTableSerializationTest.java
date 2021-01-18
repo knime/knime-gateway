@@ -43,42 +43,65 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 27, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.gateway.impl.jsonrpc.ports;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServerFactory;
+import static org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper.createTable;
+import static org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper.mockNodeOutPort;
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.gateway.impl.rpc.table.DefaultTableService;
+import org.knime.gateway.impl.rpc.table.Table;
+import org.knime.gateway.impl.rpc.table.TableCell;
+import org.knime.gateway.impl.rpc.table.TableService;
 
 /**
- * Provides generic access to data of a port via remote procedure calls.
- *
- * Implementations are currently provided by a temporary extension point. Will need to be provided by the
- * {@link PortObject}-implementation itself (directly or indirectly).
+ * Tests the correct serialization of a table into json.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- *
- * @since 4.3
  */
-public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
+public class JsonRpcTableSerializationTest extends AbstractJsonRpcSerializationTest<TableService> {
 
     /**
-     * Determines whether this rpc server factory is compatible with the respective port type.
      *
-     * @param ptype the port type to check the compatibility for
-     * @return <code>true</code> if compatible otherwise <code>false</code>
      */
-    boolean isCompatible(PortType ptype);
-
-    /**
-     * @return whether the created rpc server can and should be cached or not
-     */
-    default boolean isCachable() {
-        return true;
+    public JsonRpcTableSerializationTest() {
+        super(TableService.class);
     }
 
+    /**
+     * Snapshot tests for the json-serialization of a {@link Table}.
+     */
+    @Test
+    public void testTableToJsonSerialization() {
+        BufferedDataTable table = createTable(5);
+        TableService service = createServiceClient(createService(table));
+        service.getTable(0,  (int)table.size());
+        checkLastServerResponse("table_response");
+    }
+
+    /**
+     * Snapshot test for json-serialization of a table with truncated values.
+     */
+    @Test
+    public void testTableWithTruncatedValues() {
+        DataTableSpec spec = new DataTableSpec(new String[]{"col"}, new DataType[]{StringCell.TYPE});
+        String value = "very_long_string_" + StringUtils.repeat("*", TableCell.MAX_STRING_LENGTH) + "_string_end";
+        BufferedDataTable table = createTable(spec, new DefaultRow("rowkey", value));
+        TableService service = createServiceClient(createService(table));
+        service.getTable(0,  (int)table.size());
+        checkLastServerResponse("table_response_truncated");
+    }
+
+    private static TableService createService(final BufferedDataTable table) {
+        return new DefaultTableService(mockNodeOutPort(table));
+    }
 }

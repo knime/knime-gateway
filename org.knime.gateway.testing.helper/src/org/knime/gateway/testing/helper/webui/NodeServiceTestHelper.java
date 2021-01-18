@@ -152,9 +152,19 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testDoPortRpc() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+
+        // table
         String rpcRes = ns().doPortRpc(wfId, new NodeIDEnt(1), 1,
             "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}");
         JsonNode json = ObjectMapperUtil.getInstance().getObjectMapper().readValue(rpcRes, JsonNode.class);
+        assertThat(json.get("jsonrpc").asText(), is("2.0"));
+        assertThat(json.get("id").asInt(), is(1));
+        assertThat(json.get("result"), notNullValue());
+
+        // flow variables
+        rpcRes = ns().doPortRpc(wfId, new NodeIDEnt(1), 0,
+            "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getFlowVariables\"}");
+        json = ObjectMapperUtil.getInstance().getObjectMapper().readValue(rpcRes, JsonNode.class);
         assertThat(json.get("jsonrpc").asText(), is("2.0"));
         assertThat(json.get("id").asInt(), is(1));
         assertThat(json.get("result"), notNullValue());

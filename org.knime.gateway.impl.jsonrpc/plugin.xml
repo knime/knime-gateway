@@ -4,7 +4,11 @@
    <extension
          point="org.knime.gateway.impl.NodePortRpcServerFactory">
       <NodePortRpcServerFactory
-            impl="org.knime.gateway.impl.jsonrpc.table.JsonRpcTableServerFactory"></NodePortRpcServerFactory>
+            impl="org.knime.gateway.impl.jsonrpc.ports.JsonRpcTableServerFactory">
+      </NodePortRpcServerFactory>
+      <NodePortRpcServerFactory
+            impl="org.knime.gateway.impl.jsonrpc.ports.JsonRpcFlowVariableServerFactory">
+      </NodePortRpcServerFactory>
    </extension>
 
 </plugin>

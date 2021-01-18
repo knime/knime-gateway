@@ -97,30 +97,39 @@ public class RpcServerManagerTest {
         String wfId = loader.loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(wfId).orElse(null);
         NodeContainer dataGen = wfm.getNodeContainer(wfm.getID().createChild(1)); // NOSONAR wfm never null
-        String rpcRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}";
+        String rpcTableRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}";
+        String rpcFlowVarRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getFlowVariables\"}";
 
-        String rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkPortRpcResponse(rpcResponse, 5, -1);
+        String rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        checkRpcTableResponse(rpcTableResponse, 5, -1);
+        String rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        checkRpcFlowVarResponse(rpcFlowVarResponse, "exposed");
 
         // change config and check again
-        changeDataGenConfig(wfm, dataGen.getID(), 1);
-        rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkPortRpcResponse(rpcResponse, 3, -1);
+        changeDataGenConfig(wfm, dataGen.getID(), 1, "test1");
+        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        checkRpcTableResponse(rpcTableResponse, 3, -1);
+        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        checkRpcFlowVarResponse(rpcFlowVarResponse, "test1");
 
         /* test with data (i.e. executed node) */
 
         wfm.executeUpToHere(dataGen.getID());
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkPortRpcResponse(rpcResponse, 3, 8);
+        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        checkRpcTableResponse(rpcTableResponse, 3, 8);
+        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        checkRpcFlowVarResponse(rpcFlowVarResponse, "test1");
 
         // change config and check again
         wfm.resetAndConfigureNode(dataGen.getID());
-        changeDataGenConfig(wfm, dataGen.getID(), 2);
+        changeDataGenConfig(wfm, dataGen.getID(), 2, "test2");
         wfm.executeUpToHere(dataGen.getID());
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkPortRpcResponse(rpcResponse, 5, 8);
+        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        checkRpcTableResponse(rpcTableResponse, 5, 8);
+        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        checkRpcFlowVarResponse(rpcFlowVarResponse, "test2");
 
         // check number of cached port rpc servers before and after gc just to make sure that all the
         // RpcServer-instances are only weakly referenced and are removed from memory
@@ -128,7 +137,7 @@ public class RpcServerManagerTest {
         assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(2));
         System.gc(); // NOSONAR
         assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
-        RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
+        RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
         assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(1));
         assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() != null));
 
@@ -163,18 +172,22 @@ public class RpcServerManagerTest {
         wfm.getParent().removeProject(wfm.getID());
     }
 
-    private static void changeDataGenConfig(final WorkflowManager wfm, final NodeID id, final int universeSize)
-        throws InvalidSettingsException {
+    private static void changeDataGenConfig(final WorkflowManager wfm, final NodeID id, final int universeSize,
+        final String exposedVarName) throws InvalidSettingsException {
         NodeSettings ns = new NodeSettings("settings");
         wfm.saveNodeSettings(id, ns);
         NodeSettings model = ns.getNodeSettings("model");
         NodeSettings unisize = model.getNodeSettings("unisize");
         unisize.addInt("0", universeSize);
         unisize.addInt("1", universeSize);
+
+        NodeSettings noiseVariable = ns.getNodeSettings("variables").getNodeSettings("tree").getNodeSettings("noise");
+        noiseVariable.addString("exposed_variable", exposedVarName);
+
         wfm.loadNodeSettings(id, ns);
     }
 
-    private static void checkPortRpcResponse(final String res, final int colCount, final int rowCount) {
+    private static void checkRpcTableResponse(final String res, final int colCount, final int rowCount) {
         assertThat("wrong number of expected columns", res, containsString("\"totalNumColumns\":" + colCount));
         assertThat("wrong number of expected rows", res, containsString("\"totalNumRows\":" + rowCount));
     }
@@ -193,5 +206,9 @@ public class RpcServerManagerTest {
         }
     }
 
+
+    private static void checkRpcFlowVarResponse(final String res, final String flowVarName) {
+        assertThat("expected flow variable not found", res, containsString("\"name\":\"" + flowVarName));
+    }
 
 }

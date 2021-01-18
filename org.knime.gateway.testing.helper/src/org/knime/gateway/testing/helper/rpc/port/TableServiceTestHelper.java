@@ -97,15 +97,15 @@ import org.mockito.Mockito;
  */
 public class TableServiceTestHelper {
 
-    private Function<NodeOutPort, TableService> m_tableServiceProvider;
+    private Function<NodeOutPort, TableService> m_serviceCreator;
 
     /**
      * Creates a new table service test helper.
      *
-     * @param tableServiceProvider provider for the {@link TableService} implementation
+     * @param serviceCreator provider for the {@link TableService} implementation
      */
-    public TableServiceTestHelper(final Function<NodeOutPort, TableService> tableServiceProvider) {
-        m_tableServiceProvider = tableServiceProvider;
+    public TableServiceTestHelper(final Function<NodeOutPort, TableService> serviceCreator) {
+        m_serviceCreator = serviceCreator;
     }
 
     private static final DataTableSpec SPEC =
@@ -178,19 +178,19 @@ public class TableServiceTestHelper {
 
         // test with BufferedDataTable
         NodeOutPort port = mockNodeOutPort(bdt);
-        basicTableServiceChecks(m_tableServiceProvider.apply(port), bdt.size());
+        basicTableServiceChecks(m_serviceCreator.apply(port), bdt.size());
 
         // test with no given table (only spec)
         port = mockNodeOutPort(bdt);
         when(port.getPortObject()).thenReturn(null);
-        TableService tableService = m_tableServiceProvider.apply(port);
+        TableService tableService = m_serviceCreator.apply(port);
         Table table = tableService.getTable(2, 5);
         assertNull(table.getRows());
         assertNotNull(table.getSpec());
 
         // test with no given spec nor table
         when(port.getPortObjectSpec()).thenReturn(null);
-        tableService = m_tableServiceProvider.apply(port);
+        tableService = m_serviceCreator.apply(port);
         table = tableService.getTable(2, 5);
         assertNull(table.getRows());
         assertNull(table.getSpec());
@@ -200,7 +200,7 @@ public class TableServiceTestHelper {
             .thenReturn(PortTypeRegistry.getInstance().getPortType(DirectAccessTablePortObject.class));
         when(port.getPortObject()).thenReturn(new DirectAccessTablePortObject(bdt));
         when(port.getPortObjectSpec()).thenReturn(new DirectAccessTablePortObjectSpec(bdt.getDataTableSpec()));
-        basicTableServiceChecks(m_tableServiceProvider.apply(port), bdt.size());
+        basicTableServiceChecks(m_serviceCreator.apply(port), bdt.size());
     }
 
     /**
@@ -216,7 +216,7 @@ public class TableServiceTestHelper {
         BufferedDataTable bdt = createTable(new DataTableSpec(names, types));
         NodeOutPort port = mockNodeOutPort(bdt);
 
-        Table table = m_tableServiceProvider.apply(port).getTable(0, 1);
+        Table table = m_serviceCreator.apply(port).getTable(0, 1);
         assertThat(table.getTotalNumRows(), is(0l));
         assertThat(table.getSpec().getTotalNumColumns(), is(names.length));
         assertThat(table.getSpec().getColumns().size(), is(names.length - 2));

@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -43,42 +43,28 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Jan 14, 2021 (hornm): created
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.gateway.impl.rpc.flowvars;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.RpcServerFactory;
+import java.util.List;
+
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.gateway.impl.rpc.NodePortRpcServerFactory;
 
 /**
- * Provides generic access to data of a port via remote procedure calls.
- *
- * Implementations are currently provided by a temporary extension point. Will need to be provided by the
- * {@link PortObject}-implementation itself (directly or indirectly).
+ * Gives access to the node's flow variables. Provided as a rpc service because it's logic closely related to flow
+ * variable port ({@link FlowVariablePortObject}) and will maybe tied to it more closely in the future (as part of the
+ * 'node port data provider'-framework via rpc, see e.g. {@link NodePortRpcServerFactory}).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- *
- * @since 4.3
  */
-public interface NodePortRpcServerFactory extends RpcServerFactory<NodeOutPort> {
+public interface FlowVariableService {
 
     /**
-     * Determines whether this rpc server factory is compatible with the respective port type.
-     *
-     * @param ptype the port type to check the compatibility for
-     * @return <code>true</code> if compatible otherwise <code>false</code>
+     * @return a list of flow variables
      */
-    boolean isCompatible(PortType ptype);
-
-    /**
-     * @return whether the created rpc server can and should be cached or not
-     */
-    default boolean isCachable() {
-        return true;
-    }
+    List<FlowVariable> getFlowVariables();
 
 }

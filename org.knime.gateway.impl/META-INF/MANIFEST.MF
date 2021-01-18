@@ -16,6 +16,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.knime.gateway.impl.project,
  org.knime.gateway.impl.rpc,
+ org.knime.gateway.impl.rpc.flowvars,
  org.knime.gateway.impl.rpc.table,
  org.knime.gateway.impl.service.util,
  org.knime.gateway.impl.webui,
