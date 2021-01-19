@@ -225,11 +225,12 @@ public final class EntityBuilderUtil {
      * Builds a new {@link WorkflowEnt}.
      *
      * @param wfm the workflow manager to create the entity from
-     * @param includeInfoOnAllowedActions whether to include information on the allowed actions on nodes and the entire
-     *            workflow (such as execute, cancel or reset)
+     * @param includeInteractionInfo whether to include information required in case the user interacts with the
+     *            worklow. E.g. Info on the allowed actions for nodes and the entire workflow (such as execute, cancel
+     *            or reset).
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final boolean includeInfoOnAllowedActions) { // NOSONAR
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final boolean includeInteractionInfo) { // NOSONAR
         try (WorkflowLock lock = wfm.lock()) {
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
@@ -237,12 +238,12 @@ public final class EntityBuilderUtil {
             Map<String, NativeNodeTemplateEnt> templates = new HashMap<>();
 
             DependentNodeProperties depNodeProps = null;
-            if (includeInfoOnAllowedActions) {
+            if (includeInteractionInfo) {
                 depNodeProps = wfm.determineDependentNodeProperties();
             }
             final boolean hasComponentProjectParent = wfm.getProjectComponent().isPresent();
             BuildContext buildContext = createBuildContext(id -> new NodeIDEnt(id, hasComponentProjectParent),
-                isInStreamingMode(wfm), includeInfoOnAllowedActions);
+                isInStreamingMode(wfm), includeInteractionInfo);
             for (NodeContainer nc : nodeContainers) {
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, depNodeProps,
                     buildContext);
@@ -260,7 +261,7 @@ public final class EntityBuilderUtil {
                 .setNodeTemplates(templates)//
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
-                .setAllowedActions(includeInfoOnAllowedActions ? buildAllowedActionsEnt(wfm) : null)//
+                .setAllowedActions(includeInteractionInfo ? buildAllowedActionsEnt(wfm) : null)//
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
@@ -511,7 +512,7 @@ public final class EntityBuilderUtil {
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
         final DependentNodeProperties depNodeProps, final BuildContext buildContext) {
         return buildNodeEnt(id, nc,
-            buildContext.includeAllowedActions() ? buildAllowedNodeActionsEnt(nc, depNodeProps) : null, buildContext);
+            buildContext.includeInteractionInfo() ? buildAllowedNodeActionsEnt(nc, depNodeProps) : null, buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
@@ -774,7 +775,7 @@ public final class EntityBuilderUtil {
         }
         StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
         AllowedLoopActionsEnt allowedActions = null;
-        if (buildContext.includeAllowedActions()) {
+        if (buildContext.includeInteractionInfo()) {
             allowedActions = builder(AllowedLoopActionsEntBuilder.class)//
                 .setCanPause(nc.getNodeContainerState().isExecutionInProgress() && status != StatusEnum.PAUSED)//
                 .setCanResume(status == StatusEnum.PAUSED)//
@@ -1105,7 +1106,7 @@ public final class EntityBuilderUtil {
     }
 
     private static BuildContext createBuildContext(final Function<NodeID, NodeIDEnt> buildNodeIDEnt,
-        final boolean isInStreamingMode, final boolean includeAllowedActions) {
+        final boolean isInStreamingMode, final boolean includeInteractionInfo) {
         return new BuildContext() {
 
             @Override
@@ -1119,8 +1120,8 @@ public final class EntityBuilderUtil {
             }
 
             @Override
-            public boolean includeAllowedActions() {
-                return includeAllowedActions;
+            public boolean includeInteractionInfo() {
+                return includeInteractionInfo;
             }
         };
     }
@@ -1130,7 +1131,7 @@ public final class EntityBuilderUtil {
 
         boolean isInStreamingMode();
 
-        boolean includeAllowedActions();
+        boolean includeInteractionInfo();
     }
 
 }
