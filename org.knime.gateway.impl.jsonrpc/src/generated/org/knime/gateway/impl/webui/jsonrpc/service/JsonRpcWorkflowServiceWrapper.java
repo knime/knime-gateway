@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -76,6 +76,23 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "applyWorkflowOperation")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+    })
+    public void applyWorkflowOperation(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowOperationEnt") WorkflowOperationEnt workflowOperationEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+        m_service.applyWorkflowOperation(projectId, workflowId, workflowOperationEnt);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getWorkflow")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
@@ -85,23 +102,6 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     })
     public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         return m_service.getWorkflow(projectId, workflowId, includeInteractionInfo);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "translateWorkflowParts")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NotFoundException.class, code = -32600,
-            data = "NotFoundException" /*per convention the data property contains the exception name*/)
-    })
-    public void translateWorkflowParts(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowPartsWithPositionEnt") WorkflowPartsWithPositionEnt workflowPartsWithPositionEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotFoundException {
-        m_service.translateWorkflowParts(projectId, workflowId, workflowPartsWithPositionEnt);    
     }
 
 }

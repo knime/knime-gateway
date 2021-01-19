@@ -50,31 +50,43 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
+import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
 
 /**
- * Represents parts of a workflow referenced by their ids.
+ * Moves workflow nodes and workflow annotations to a defined position.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
+public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
 
+  protected KindEnum m_kind;
+  protected XYEnt m_position;
   protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIDs;
   protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIDs;
   
-  protected DefaultWorkflowPartsEnt() {
+  protected DefaultTranslateOperationEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WorkflowParts";
+    return "TranslateOperation";
   }
   
-  private DefaultWorkflowPartsEnt(DefaultWorkflowPartsEntBuilder builder) {
-    
+  private DefaultTranslateOperationEnt(DefaultTranslateOperationEntBuilder builder) {
+    super();
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
+    }
+    m_kind = immutable(builder.m_kind);
+    if(builder.m_position == null) {
+        throw new IllegalArgumentException("position must not be null.");
+    }
+    m_position = immutable(builder.m_position);
     if(builder.m_nodeIDs == null) {
         throw new IllegalArgumentException("nodeIDs must not be null.");
     }
@@ -99,8 +111,8 @@ public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowPartsEnt ent = (DefaultWorkflowPartsEnt)o;
-        return Objects.equals(m_nodeIDs, ent.m_nodeIDs) && Objects.equals(m_annotationIDs, ent.m_annotationIDs);
+        DefaultTranslateOperationEnt ent = (DefaultTranslateOperationEnt)o;
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeIDs, ent.m_nodeIDs) && Objects.equals(m_annotationIDs, ent.m_annotationIDs);
     }
 
 
@@ -111,6 +123,8 @@ public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
+               .append(m_kind)
+               .append(m_position)
                .append(m_nodeIDs)
                .append(m_annotationIDs)
                .toHashCode();
@@ -118,6 +132,16 @@ public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
   
 	
 	
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
+  }
+    
+  @Override
+  public XYEnt getPosition() {
+        return m_position;
+  }
+    
   @Override
   public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIDs() {
         return m_nodeIDs;
@@ -129,17 +153,37 @@ public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
   }
     
   
-    public static class DefaultWorkflowPartsEntBuilder implements WorkflowPartsEntBuilder {
+    public static class DefaultTranslateOperationEntBuilder implements TranslateOperationEntBuilder {
     
-        public DefaultWorkflowPartsEntBuilder(){
-            
+        public DefaultTranslateOperationEntBuilder(){
+            super();
         }
     
+        private KindEnum m_kind;
+        private XYEnt m_position;
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIDs = new java.util.ArrayList<>();
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIDs = new java.util.ArrayList<>();
 
         @Override
-        public DefaultWorkflowPartsEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs) {
+        public DefaultTranslateOperationEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
+             }
+             m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultTranslateOperationEntBuilder setPosition(XYEnt position) {
+             if(position == null) {
+                 throw new IllegalArgumentException("position must not be null.");
+             }
+             m_position = position;
+             return this;
+        }
+
+        @Override
+        public DefaultTranslateOperationEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs) {
              if(nodeIDs == null) {
                  throw new IllegalArgumentException("nodeIDs must not be null.");
              }
@@ -148,7 +192,7 @@ public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
         }
 
         @Override
-        public DefaultWorkflowPartsEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs) {
+        public DefaultTranslateOperationEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs) {
              if(annotationIDs == null) {
                  throw new IllegalArgumentException("annotationIDs must not be null.");
              }
@@ -158,8 +202,8 @@ public class DefaultWorkflowPartsEnt implements WorkflowPartsEnt {
 
         
         @Override
-        public DefaultWorkflowPartsEnt build() {
-            return new DefaultWorkflowPartsEnt(this);
+        public DefaultTranslateOperationEnt build() {
+            return new DefaultTranslateOperationEnt(this);
         }
     
     }

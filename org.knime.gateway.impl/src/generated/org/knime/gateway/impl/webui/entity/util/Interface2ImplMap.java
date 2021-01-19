@@ -118,6 +118,8 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntB
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TranslateOperationEnt.TranslateOperationEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -128,10 +130,8 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsEnt;
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt.WorkflowPartsWithPositionEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsWithPositionEnt;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt.WorkflowOperationEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
@@ -271,6 +271,9 @@ public class Interface2ImplMap {
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
         }        
+        if(clazz == TranslateOperationEntBuilder.class) {
+            return (B)new DefaultTranslateOperationEnt.DefaultTranslateOperationEntBuilder();
+        }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();
         }        
@@ -286,11 +289,8 @@ public class Interface2ImplMap {
         if(clazz == WorkflowInfoEntBuilder.class) {
             return (B)new DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder();
         }        
-        if(clazz == WorkflowPartsEntBuilder.class) {
-            return (B)new DefaultWorkflowPartsEnt.DefaultWorkflowPartsEntBuilder();
-        }        
-        if(clazz == WorkflowPartsWithPositionEntBuilder.class) {
-            return (B)new DefaultWorkflowPartsWithPositionEnt.DefaultWorkflowPartsWithPositionEntBuilder();
+        if(clazz == WorkflowOperationEntBuilder.class) {
+            return (B)new DefaultWorkflowOperationEnt.DefaultWorkflowOperationEntBuilder();
         }        
         if(clazz == WorkflowProjectEntBuilder.class) {
             return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();

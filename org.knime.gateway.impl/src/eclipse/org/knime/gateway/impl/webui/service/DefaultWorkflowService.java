@@ -65,15 +65,16 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -154,17 +155,28 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public void translateWorkflowParts(final String projectId, final NodeIDEnt workflowId,
-        final WorkflowPartsWithPositionEnt workflowPartsWithPositionEnt)
-        throws NotASubWorkflowException, NodeNotFoundException, NotFoundException {
+    public void applyWorkflowOperation(final String projectId, final NodeIDEnt workflowId,
+        final WorkflowOperationEnt workflowOperationEnt)
+        throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
+        if (workflowOperationEnt instanceof TranslateOperationEnt) {
+            applyTranslateOperation(projectId, workflowId, (TranslateOperationEnt)workflowOperationEnt);
+        } else {
+            throw new OperationNotAllowedException("Operation of type "
+                + workflowOperationEnt.getClass().getSimpleName() + " cannot be applied. Unknown operation.");
+        }
+    }
+
+    private static void applyTranslateOperation(final String projectId, final NodeIDEnt workflowId,
+        final TranslateOperationEnt translateOperation)
+        throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
         WorkflowManager wfm = getWorkflowManager(projectId, workflowId);
         List<NodeContainer> nodes;
         List<String> nodesNotFound = null;
         int x = Integer.MAX_VALUE;
         int y = Integer.MAX_VALUE;
-        if (!workflowPartsWithPositionEnt.getParts().getNodeIDs().isEmpty()) {
+        if (!translateOperation.getNodeIDs().isEmpty()) {
             nodes = new ArrayList<>();
-            for (NodeIDEnt id : workflowPartsWithPositionEnt.getParts().getNodeIDs()) {
+            for (NodeIDEnt id : translateOperation.getNodeIDs()) {
                 try {
                     NodeContainer nc = wfm.getNodeContainer(DefaultServiceUtil.entityToNodeID(projectId, id));
                     int[] bounds = nc.getUIInformation().getBounds();
@@ -181,9 +193,9 @@ public final class DefaultWorkflowService implements WorkflowService {
 
         List<WorkflowAnnotation> annotations;
         List<String> annosNotFound = null;
-        if (!workflowPartsWithPositionEnt.getParts().getAnnotationIDs().isEmpty()) {
+        if (!translateOperation.getAnnotationIDs().isEmpty()) {
             annotations = new ArrayList<>();
-            for (AnnotationIDEnt id : workflowPartsWithPositionEnt.getParts().getAnnotationIDs()) {
+            for (AnnotationIDEnt id : translateOperation.getAnnotationIDs()) {
                 WorkflowAnnotation[] annos =
                     wfm.getWorkflowAnnotations(DefaultServiceUtil.entityToAnnotationID(projectId, id));
                 if (annos.length == 0 || annos[0] == null) {
@@ -198,12 +210,12 @@ public final class DefaultWorkflowService implements WorkflowService {
             annotations = Collections.emptyList();
         }
 
-        checkAndThrowNotFoundException(nodesNotFound, annosNotFound);
+        checkAndThrowException(nodesNotFound, annosNotFound);
 
-        translateWorkflowParts(workflowPartsWithPositionEnt.getPosition(), nodes, x, y, annotations);
+        applyTranslateOperation(translateOperation.getPosition(), nodes, x, y, annotations);
     }
 
-    private static void translateWorkflowParts(final XYEnt newPos, final List<NodeContainer> nodes, final int x,
+    private static void applyTranslateOperation(final XYEnt newPos, final List<NodeContainer> nodes, final int x,
         final int y, final List<WorkflowAnnotation> annotations) {
         int[] delta = new int[]{newPos.getX() - x, newPos.getY() - y - EntityBuilderUtil.NODE_Y_POS_CORRECTION};
         for (NodeContainer nc : nodes) {
@@ -214,10 +226,10 @@ public final class DefaultWorkflowService implements WorkflowService {
         }
     }
 
-    private static void checkAndThrowNotFoundException(final List<String> nodesNotFound,
-        final List<String> annosNotFound) throws NotFoundException {
+    private static void checkAndThrowException(final List<String> nodesNotFound, final List<String> annosNotFound)
+        throws OperationNotAllowedException {
         if (nodesNotFound != null || annosNotFound != null) {
-            StringBuilder message = new StringBuilder("Parts not found: ");
+            StringBuilder message = new StringBuilder("Failed to apply operation. Workflow parts not found: ");
             if (nodesNotFound != null) {
                 message.append("nodes (").append(nodesNotFound.stream().collect(Collectors.joining(","))).append(")");
             }
@@ -228,7 +240,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 message.append("workflow-annotations (").append(annosNotFound.stream().collect(Collectors.joining(",")))
                     .append(")");
             }
-            throw new NotFoundException(message.toString());
+            throw new OperationNotAllowedException(message.toString());
         }
     }
 

@@ -44,14 +44,16 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.json.webui.entity.WorkflowOperationEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsEnt.DefaultWorkflowPartsEntBuilder;
+import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt.DefaultTranslateOperationEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,14 +61,22 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsEnt.DefaultWorkfl
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultWorkflowPartsEntBuilder.class)
+@JsonDeserialize(builder=DefaultTranslateOperationEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowPartsEntMixIn extends WorkflowPartsEnt {
+public interface TranslateOperationEntMixIn extends TranslateOperationEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("position")
+    public XYEnt getPosition();
+    
     @Override
     @JsonProperty("nodeIDs")
     public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIDs();
@@ -83,18 +93,26 @@ public interface WorkflowPartsEntMixIn extends WorkflowPartsEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowPartsEntMixInBuilder extends WorkflowPartsEntBuilder {
+    public static interface TranslateOperationEntMixInBuilder extends TranslateOperationEntBuilder {
     
         @Override
-        public WorkflowPartsEntMixIn build();
+        public TranslateOperationEntMixIn build();
     
+        @Override
+        @JsonProperty("kind")
+        public TranslateOperationEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("position")
+        public TranslateOperationEntMixInBuilder setPosition(final XYEnt position);
+        
         @Override
         @JsonProperty("nodeIDs")
-        public WorkflowPartsEntMixInBuilder setNodeIDs(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
+        public TranslateOperationEntMixInBuilder setNodeIDs(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
         
         @Override
         @JsonProperty("annotationIDs")
-        public WorkflowPartsEntMixInBuilder setAnnotationIDs(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
+        public TranslateOperationEntMixInBuilder setAnnotationIDs(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
         
     }
 

@@ -66,19 +66,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * The requested workflow annotation was not found.
-    */
-    public static class NotFoundException extends Exception {
-        public NotFoundException(String message) {
-            super(message);
-        }
-        
-        public NotFoundException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-   /**
     * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
     */
     public static class NotASubWorkflowException extends Exception {

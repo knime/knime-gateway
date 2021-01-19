@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,13 +53,19 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents parts of a workflow referenced by their ids.
+ * Moves workflow nodes and workflow annotations to a defined position.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowPartsEnt extends GatewayEntity {
+public interface TranslateOperationEnt extends GatewayEntity, WorkflowOperationEnt {
 
+
+  /**
+   * Get position
+   * @return position , never <code>null</code>
+   **/
+  public XYEnt getPosition();
 
   /**
    * The ids of the nodes referenced.
@@ -75,15 +83,31 @@ public interface WorkflowPartsEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface WorkflowPartsEntBuilder extends GatewayEntityBuilder<WorkflowPartsEnt> {
+    public interface TranslateOperationEntBuilder extends GatewayEntityBuilder<TranslateOperationEnt> {
 
+        /**
+         * Discriminates the kind of operations that are possible.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        TranslateOperationEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        TranslateOperationEntBuilder setPosition(XYEnt position);
+        
         /**
          * The ids of the nodes referenced.
          * 
          * @param nodeIDs the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowPartsEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
+        TranslateOperationEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
         
         /**
          * The ids of the workflow annotations referenced.
@@ -91,7 +115,7 @@ public interface WorkflowPartsEnt extends GatewayEntity {
          * @param annotationIDs the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowPartsEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
+        TranslateOperationEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
         
         
         /**
@@ -101,7 +125,7 @@ public interface WorkflowPartsEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowPartsEnt build();
+        TranslateOperationEnt build();
     
     }
 

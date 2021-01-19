@@ -42,65 +42,72 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import org.knime.gateway.api.webui.entity.ComponentTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentTypeEnt.DefaultComponentTypeEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * An operation that can be applied to a workflow to change it.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "",
-    visible = true,
-    defaultImpl = DefaultComponentTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultComponentTypeEnt.class, name="ComponentType")
-})
-@JsonDeserialize(builder=DefaultComponentTypeEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentTypeEntMixIn extends ComponentTypeEnt {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface WorkflowOperationEnt extends GatewayEntity {
+
+  /**
+   * Discriminates the kind of operations that are possible.
+   */
+  public enum KindEnum {
+    TRANSLATE("translate");
+
+    private String value;
+
+    KindEnum(String value) {
+      this.value = value;
+    }
 
     @Override
-    @JsonIgnore
-    public String getTypeID();
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * Discriminates the kind of operations that are possible.
+   * @return kind , never <code>null</code>
+   **/
+  public KindEnum getKind();
 
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
-    @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "",
-        defaultImpl = DefaultComponentTypeEntBuilder.class)
-    @JsonSubTypes({
-        @Type(value = DefaultComponentTypeEnt.DefaultComponentTypeEntBuilder.class, name="ComponentType")
-    })
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentTypeEntMixInBuilder extends ComponentTypeEntBuilder {
-    
+    public interface WorkflowOperationEntBuilder extends GatewayEntityBuilder<WorkflowOperationEnt> {
+
+        /**
+         * Discriminates the kind of operations that are possible.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowOperationEntBuilder setKind(KindEnum kind);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
         @Override
-        public ComponentTypeEntMixIn build();
+        WorkflowOperationEnt build();
     
     }
 
-
 }
-

@@ -50,41 +50,34 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
 
 /**
- * Adds a position to a workflow parts object.
+ * An operation that can be applied to a workflow to change it.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowPartsWithPositionEnt implements WorkflowPartsWithPositionEnt {
+public class DefaultWorkflowOperationEnt implements WorkflowOperationEnt {
 
-  protected XYEnt m_position;
-  protected WorkflowPartsEnt m_parts;
+  protected KindEnum m_kind;
   
-  protected DefaultWorkflowPartsWithPositionEnt() {
+  protected DefaultWorkflowOperationEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WorkflowPartsWithPosition";
+    return "WorkflowOperation";
   }
   
-  private DefaultWorkflowPartsWithPositionEnt(DefaultWorkflowPartsWithPositionEntBuilder builder) {
+  private DefaultWorkflowOperationEnt(DefaultWorkflowOperationEntBuilder builder) {
     
-    if(builder.m_position == null) {
-        throw new IllegalArgumentException("position must not be null.");
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
     }
-    m_position = immutable(builder.m_position);
-    if(builder.m_parts == null) {
-        throw new IllegalArgumentException("parts must not be null.");
-    }
-    m_parts = immutable(builder.m_parts);
+    m_kind = immutable(builder.m_kind);
   }
   
    /**
@@ -101,8 +94,8 @@ public class DefaultWorkflowPartsWithPositionEnt implements WorkflowPartsWithPos
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowPartsWithPositionEnt ent = (DefaultWorkflowPartsWithPositionEnt)o;
-        return Objects.equals(m_position, ent.m_position) && Objects.equals(m_parts, ent.m_parts);
+        DefaultWorkflowOperationEnt ent = (DefaultWorkflowOperationEnt)o;
+        return Objects.equals(m_kind, ent.m_kind);
     }
 
 
@@ -113,55 +106,39 @@ public class DefaultWorkflowPartsWithPositionEnt implements WorkflowPartsWithPos
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_position)
-               .append(m_parts)
+               .append(m_kind)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public XYEnt getPosition() {
-        return m_position;
-  }
-    
-  @Override
-  public WorkflowPartsEnt getParts() {
-        return m_parts;
+  public KindEnum getKind() {
+        return m_kind;
   }
     
   
-    public static class DefaultWorkflowPartsWithPositionEntBuilder implements WorkflowPartsWithPositionEntBuilder {
+    public static class DefaultWorkflowOperationEntBuilder implements WorkflowOperationEntBuilder {
     
-        public DefaultWorkflowPartsWithPositionEntBuilder(){
+        public DefaultWorkflowOperationEntBuilder(){
             
         }
     
-        private XYEnt m_position;
-        private WorkflowPartsEnt m_parts;
+        private KindEnum m_kind;
 
         @Override
-        public DefaultWorkflowPartsWithPositionEntBuilder setPosition(XYEnt position) {
-             if(position == null) {
-                 throw new IllegalArgumentException("position must not be null.");
+        public DefaultWorkflowOperationEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
              }
-             m_position = position;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowPartsWithPositionEntBuilder setParts(WorkflowPartsEnt parts) {
-             if(parts == null) {
-                 throw new IllegalArgumentException("parts must not be null.");
-             }
-             m_parts = parts;
+             m_kind = kind;
              return this;
         }
 
         
         @Override
-        public DefaultWorkflowPartsWithPositionEnt build() {
-            return new DefaultWorkflowPartsWithPositionEnt(this);
+        public DefaultWorkflowOperationEnt build() {
+            return new DefaultWorkflowOperationEnt(this);
         }
     
     }

@@ -44,38 +44,47 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowPartsWithPositionEnt.DefaultWorkflowPartsWithPositionEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt.DefaultWorkflowOperationEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
-@JsonDeserialize(builder=DefaultWorkflowPartsWithPositionEntBuilder.class)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "kind",
+    visible = true,
+    defaultImpl = DefaultWorkflowOperationEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultWorkflowOperationEnt.class, name="WorkflowOperation")
+,
+  @Type(value = DefaultTranslateOperationEnt.class, name = "translate")
+})
+@JsonDeserialize(builder=DefaultWorkflowOperationEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowPartsWithPositionEntMixIn extends WorkflowPartsWithPositionEnt {
+public interface WorkflowOperationEntMixIn extends WorkflowOperationEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("parts")
-    public WorkflowPartsEnt getParts();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
 
     /**
@@ -83,20 +92,26 @@ public interface WorkflowPartsWithPositionEntMixIn extends WorkflowPartsWithPosi
      *
      * @author Martin Horn, University of Konstanz
      */
-
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "kind",
+    visible = true,
+    defaultImpl = DefaultWorkflowOperationEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultWorkflowOperationEnt.class, name="WorkflowOperation")
+,
+  @Type(value = DefaultTranslateOperationEnt.class, name = "translate")
+})
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowPartsWithPositionEntMixInBuilder extends WorkflowPartsWithPositionEntBuilder {
+    public static interface WorkflowOperationEntMixInBuilder extends WorkflowOperationEntBuilder {
     
         @Override
-        public WorkflowPartsWithPositionEntMixIn build();
+        public WorkflowOperationEntMixIn build();
     
         @Override
-        @JsonProperty("position")
-        public WorkflowPartsWithPositionEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("parts")
-        public WorkflowPartsWithPositionEntMixInBuilder setParts(final WorkflowPartsEnt parts);
+        @JsonProperty("kind")
+        public WorkflowOperationEntMixInBuilder setKind(final KindEnum kind);
         
     }
 

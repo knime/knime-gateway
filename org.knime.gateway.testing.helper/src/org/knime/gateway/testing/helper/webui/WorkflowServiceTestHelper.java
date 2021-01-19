@@ -69,17 +69,16 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
+import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
+import org.knime.gateway.api.webui.entity.TranslateOperationEnt.TranslateOperationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt;
-import org.knime.gateway.api.webui.entity.WorkflowPartsEnt.WorkflowPartsEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt;
-import org.knime.gateway.api.webui.entity.WorkflowPartsWithPositionEnt.WorkflowPartsWithPositionEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
@@ -232,11 +231,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests
-     * {@link WorkflowService#translateWorkflowParts(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowPartsTranslationEnt)}.
+     * {@link WorkflowService#applyWorkflowOperation(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowOperationEnt)}
+     * when called with {@link TranslateOperationEnt}.
      *
      * @throws Exception
      */
-    public void testTranslateWorkflowParts() throws Exception {
+    public void testApplyTranslateOperation() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // node and annotation translation
@@ -244,12 +244,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         NodeIDEnt node16 = new NodeIDEnt(16);
         NodeIDEnt node18 = new NodeIDEnt(18);
         AnnotationIDEnt anno3 = new AnnotationIDEnt("root_3");
-        WorkflowPartsEnt parts =
-            builder(WorkflowPartsEntBuilder.class).setNodeIDs(asList(node15, node16, node18))
-                .setAnnotationIDs(singletonList(anno3)).build();
-        WorkflowPartsWithPositionEnt partsWithPos = builder(WorkflowPartsWithPositionEntBuilder.class).setParts(parts)
+        TranslateOperationEnt op = builder(TranslateOperationEntBuilder.class).setKind(KindEnum.TRANSLATE)
+            .setNodeIDs(asList(node15, node16, node18)).setAnnotationIDs(singletonList(anno3))
             .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
-        ws().translateWorkflowParts(wfId, NodeIDEnt.getRootID(), partsWithPos);
+        ws().applyWorkflowOperation(wfId, NodeIDEnt.getRootID(), op);
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         XYEnt pos = workflow.getNodes().get(node15.toString()).getPosition();
         assertThat(pos.getX(), is(0));
@@ -267,29 +265,29 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // annotation translation alone
         AnnotationIDEnt anno1 = new AnnotationIDEnt("root_1");
-        parts = builder(WorkflowPartsEntBuilder.class).setAnnotationIDs(singletonList(anno1)).build();
-        partsWithPos = builder(WorkflowPartsWithPositionEntBuilder.class).setParts(parts)
-            .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
-        ws().translateWorkflowParts(wfId, NodeIDEnt.getRootID(), partsWithPos);
+        TranslateOperationEnt op2 = builder(TranslateOperationEntBuilder.class).setKind(KindEnum.TRANSLATE)
+            .setAnnotationIDs(singletonList(anno1)).setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())
+            .build();
+        ws().applyWorkflowOperation(wfId, NodeIDEnt.getRootID(), op2);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         wa = workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno1)).findFirst().orElse(null);
         assertThat(wa.getBounds().getX(), is(0)); // NOSONAR wa guaranteed to be non-null
         assertThat(wa.getBounds().getY(), is(0));
 
         // exceptions
-        WorkflowPartsEnt p = builder(WorkflowPartsEntBuilder.class).setNodeIDs(singletonList(new NodeIDEnt(9999)))
-                .setAnnotationIDs(singletonList(new AnnotationIDEnt("root_12345"))).build();
-        assertThrows(NodeNotFoundException.class,
-            () -> ws().translateWorkflowParts(wfId, new NodeIDEnt(999999),
-                builder(WorkflowPartsWithPositionEntBuilder.class)
-                    .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setParts(p).build()));
+        TranslateOperationEnt op3 =
+            builder(TranslateOperationEntBuilder.class).setKind(KindEnum.TRANSLATE)
+                .setNodeIDs(singletonList(new NodeIDEnt(9999)))
+                .setAnnotationIDs(singletonList(new AnnotationIDEnt("root_12345")))
+                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
+        assertThrows(NodeNotFoundException.class, () -> ws().applyWorkflowOperation(wfId, new NodeIDEnt(999999), op3));
         try {
-            ws().translateWorkflowParts(wfId, NodeIDEnt.getRootID(), builder(WorkflowPartsWithPositionEntBuilder.class)
-                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setParts(p).build());
+            ws().applyWorkflowOperation(wfId, NodeIDEnt.getRootID(), op3);
         } catch (Exception e) { // NOSONAR
-            assertThat("unexpected exception class", e, Matchers.instanceOf(NotFoundException.class));
+            assertThat("unexpected exception class", e, Matchers.instanceOf(OperationNotAllowedException.class));
             assertThat("unexpected exception message", e.getMessage(),
-                is("Parts not found: nodes (root:9999), workflow-annotations (root_12345)"));
+                is("Failed to apply operation. Workflow parts not found: "
+                    + "nodes (root:9999), workflow-annotations (root_12345)"));
         }
 
     }
