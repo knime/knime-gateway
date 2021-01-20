@@ -107,6 +107,24 @@ public final class DefaultServiceUtil {
     }
 
     /**
+     * Gets the node container for the coordinates 'root workflow id', 'workflow id' and 'node id'. The 'workflow id' is
+     * the node-id of the sub-workflow or 'root' for faster access to the node container.
+     *
+     * @param rootWorkflowID id of the root workflow (project)
+     * @param workflowID id of the sub-workflow or 'root'
+     * @param nodeID the id of the actual node
+     * @return the node container
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
+     */
+    public static NodeContainer getNodeContainer(final String rootWorkflowID, final NodeIDEnt workflowID,
+        final NodeIDEnt nodeID) {
+        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, workflowID);
+        WorkflowManager rootWfm = getRootWorkflowManager(rootWorkflowID);
+        return wfm.getNodeContainer(nodeID.toNodeID(rootWfm.getID()));
+    }
+
+    /**
      * Gets the workflow manager from the {@link WorkflowProjectManager} for a corresponding root workflow id.
      *
      * @param rootWorkflowID the id to get the wfm for

@@ -55,7 +55,6 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -89,10 +88,10 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void changeNodeStates(final String projectId, final List<NodeIDEnt> nodeIds, final String action)
-        throws NodeNotFoundException, OperationNotAllowedException {
+    public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
+        final String action) throws NodeNotFoundException, OperationNotAllowedException {
         try {
-            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getRootWorkflowManager(projectId), action,
+            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getWorkflowManager(projectId, workflowId), action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
@@ -105,26 +104,27 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void changeLoopState(final String projectId, final NodeIDEnt nodeId, final String action)
-        throws NodeNotFoundException, OperationNotAllowedException {
+    public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String action) throws NodeNotFoundException, OperationNotAllowedException {
         try {
-            Pair<WorkflowManager, NodeContainer> wfmAndNc = DefaultServiceUtil.getRootWfmAndNc(projectId, nodeId);
-            if (wfmAndNc.getSecond() instanceof NativeNodeContainer) {
-                NativeNodeContainer nnc = (NativeNodeContainer)wfmAndNc.getSecond();
+            NodeContainer nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+            if (nc instanceof NativeNodeContainer) {
+                NativeNodeContainer nnc = (NativeNodeContainer)nc;
                 if (nnc.isModelCompatibleTo(LoopEndNode.class)) {
-                    changeLoopState(action, wfmAndNc.getFirst(), nnc);
+                    changeLoopState(action, nnc);
                     return;
                 }
             }
             throw new OperationNotAllowedException("The action to change the loop state is not applicable for "
-                + wfmAndNc.getSecond().getNameWithID() + ". Not a loop end node.");
+                + nc.getNameWithID() + ". Not a loop end node.");
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
     }
 
-    private static void changeLoopState(final String action, final WorkflowManager wfm, final NativeNodeContainer nnc)
+    private static void changeLoopState(final String action, final NativeNodeContainer nnc)
         throws OperationNotAllowedException {
+        WorkflowManager wfm = nnc.getParent();
         if (StringUtils.isBlank(action)) {
             // if there is no action (null or empty)
         } else if (action.equals("pause")) {
@@ -151,11 +151,11 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String doPortRpc(final String projectId, final NodeIDEnt nodeId, final Integer portIdx, final String body)
-        throws NodeNotFoundException, InvalidRequestException {
+    public String doPortRpc(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId, final Integer portIdx,
+        final String body) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, nodeId);
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
