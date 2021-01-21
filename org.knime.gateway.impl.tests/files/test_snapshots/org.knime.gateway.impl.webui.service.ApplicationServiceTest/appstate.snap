@@ -184,7 +184,7 @@
         },
         "info" : {
           "containerType" : "project",
-          "name" : "Test Gateway Workflow"
+          "name" : "general_web_ui"
         },
         "nodeTemplates" : {
           "org.knime.base.node.mine.pca.PCAComputeNodeFactory" : {
@@ -1931,7 +1931,7 @@
         } ]
       }
     },
-    "name" : "Test Gateway Workflow",
+    "name" : "general_web_ui",
     "projectId" : "the_workflow_project_id"
   } ]
 }

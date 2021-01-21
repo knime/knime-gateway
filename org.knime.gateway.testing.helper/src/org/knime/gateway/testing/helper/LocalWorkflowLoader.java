@@ -72,25 +72,38 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  */
 public class LocalWorkflowLoader implements WorkflowLoader {
 
-    private Set<UUID> m_loadedWorkflows = new HashSet<>();
+    private final Set<String> m_loadedWorkflows = new HashSet<>();
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String loadWorkflow(final TestWorkflow workflow) throws Exception {
-        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(workflow.getUrlFolder());
-        return addToProjectManager(wfm, workflow.getName());
+        final String projectId = UUID.randomUUID().toString();
+        loadWorkflow(workflow, projectId);
+        return projectId;
     }
 
-    private String addToProjectManager(final WorkflowManager wfm, final String name) {
-        final UUID uuid = UUID.randomUUID();
-        WorkflowProjectManager.addWorkflowProject(uuid.toString(), new WorkflowProject() {
+    /**
+     * Same as {@link #loadWorkflow(TestWorkflow)} with the additional possibility to set a custom project id (instead
+     * of a randomly generated one).
+     *
+     * @param workflow
+     * @param projectId
+     * @throws Exception
+     */
+    public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
+        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(workflow.getUrlFolder());
+        addToProjectManager(wfm, workflow.getName(), projectId);
+    }
+
+    private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
+        WorkflowProjectManager.addWorkflowProject(projectId, new WorkflowProject() {
 
             @Override
             public WorkflowManager openProject() {
                 wfm.setName(name);
-                m_loadedWorkflows.add(uuid);
+                m_loadedWorkflows.add(projectId);
                 return wfm;
             }
 
@@ -101,10 +114,9 @@ public class LocalWorkflowLoader implements WorkflowLoader {
 
             @Override
             public String getID() {
-                return uuid.toString();
+                return projectId;
             }
         });
-        return uuid.toString();
     }
 
     /**
@@ -112,6 +124,20 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     @Override
     public String loadComponent(final TestWorkflow component) throws Exception {
+        String projectId = UUID.randomUUID().toString();
+        loadComponent(component, projectId);
+        return projectId;
+    }
+
+    /**
+     * Same as {@link #loadComponent(TestWorkflow)} with the additional possibility to set a custom project id (instead
+     * of a randomly generated one).
+     *
+     * @param component
+     * @param projectId
+     * @throws Exception
+     */
+    public void loadComponent(final TestWorkflow component, final String projectId) throws Exception {
         URI componentURI = component.getUrlFolder().toURI();
         WorkflowLoadHelper loadHelper = new WorkflowLoadHelper(true, true, createWorkflowContext());
         TemplateNodeContainerPersistor loadPersistor =
@@ -120,7 +146,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
         SubNodeContainer snc = (SubNodeContainer)loadResult.getLoadedInstance();
-        return addToProjectManager(snc.getWorkflowManager(), component.getName());
+        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId);
     }
 
     private static WorkflowContext createWorkflowContext() {
@@ -133,11 +159,11 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws InterruptedException
      */
     public void disposeWorkflows() throws InterruptedException {
-        for (UUID uuid : m_loadedWorkflows) {
-            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(uuid.toString()).orElse(null);
+        for (String projectId : m_loadedWorkflows) {
+            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(projectId).orElse(null);
             if (wfm != null) {
                 DefaultServiceUtil.cancelAndCloseLoadedWorkflow(wfm);
-                WorkflowProjectManager.removeWorkflowProject(uuid.toString());
+                WorkflowProjectManager.removeWorkflowProject(projectId);
             }
         }
     }

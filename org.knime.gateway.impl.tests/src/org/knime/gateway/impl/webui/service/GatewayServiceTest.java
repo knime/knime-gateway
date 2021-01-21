@@ -48,26 +48,15 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.BeforeClass;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.LockFailedException;
 import org.knime.core.util.Pair;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
@@ -79,9 +68,9 @@ import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
  */
 public class GatewayServiceTest {
 
-    private List<WorkflowManager> m_loadedWorkflows = new ArrayList<>();
-
     private static ResultChecker entityResultChecker;
+
+    private final LocalWorkflowLoader m_workflowLoader = new LocalWorkflowLoader();
 
     /**
      * Initializes/instantiates the result checker.
@@ -105,42 +94,39 @@ public class GatewayServiceTest {
      * @param wf the test workflow to load
      * @return the workflow id (to be provided to the default service implementations which in turn access the workflow
      *         via the {@link WorkflowProjectManager}) and the workflow manager instance.
-     * @throws IOException
-     * @throws InvalidSettingsException
-     * @throws CanceledExecutionException
-     * @throws UnsupportedWorkflowVersionException
-     * @throws LockFailedException
+     * @throws Exception
      */
-    protected Pair<UUID, WorkflowManager> loadWorkflow(final TestWorkflow wf) throws IOException,
-        InvalidSettingsException, CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
+    protected Pair<UUID, WorkflowManager> loadWorkflow(final TestWorkflow wf) throws Exception {
         UUID uuid = UUID.randomUUID();
         return Pair.create(uuid, loadWorkflow(wf, uuid.toString()));
     }
-
 
     /**
      * Helper to load workflows for testing.
      *
      * @param wf the test workflow to load
      * @param workflowProjectId a custom workflow project id of the loaded workflow
-     * @return the workflow id (to be provided to the default service implementations which in turn access the workflow
-     *         via the {@link WorkflowProjectManager}) and the workflow manager instance.
-     * @throws IOException
-     * @throws InvalidSettingsException
-     * @throws CanceledExecutionException
-     * @throws UnsupportedWorkflowVersionException
-     * @throws LockFailedException
+     * @return the loaded workflow manager instance
+     * @throws Exception
      */
-    protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String workflowProjectId) throws IOException,
-        InvalidSettingsException, CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
-        WorkflowProject workflowProject = mock(WorkflowProject.class);
-        WorkflowProjectManager.addWorkflowProject(workflowProjectId, workflowProject);
-        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(wf.getUrlFolder());
-        m_loadedWorkflows.add(wfm);
-        when(workflowProject.openProject()).thenReturn(wfm);
-        when(workflowProject.getID()).thenReturn(workflowProjectId);
-        when(workflowProject.getName()).thenReturn(wfm.getName());
-        return wfm;
+    protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String workflowProjectId) throws Exception {
+        m_workflowLoader.loadWorkflow(wf, workflowProjectId);
+        WorkflowProject project = WorkflowProjectManager.getWorkflowProject(workflowProjectId).orElse(null);
+        return project == null ? null : project.openProject();
+    }
+
+    /**
+     * Helper to load component projects for testing.
+     *
+     * @param wf the test component project to load
+     * @param projectId a custom project id of the loaded component project
+     * @return the loaded workflow manager instance
+     * @throws Exception
+     */
+    protected WorkflowManager loadComponent(final TestWorkflow wf, final String projectId) throws Exception {
+        m_workflowLoader.loadComponent(wf, projectId);
+        WorkflowProject project = WorkflowProjectManager.getWorkflowProject(projectId).orElse(null);
+        return project == null ? null : project.openProject();
     }
 
     /**
@@ -158,20 +144,12 @@ public class GatewayServiceTest {
     /**
      * Cancels all workflow executions and disposes all workflows that have been loaded via
      * {@link #loadWorkflow(TestWorkflow)}.
+     *
+     * @throws InterruptedException
      */
     @After
-    public void disposeWorkflows() {
-        for (WorkflowManager wfm : m_loadedWorkflows) {
-            wfm.getParent().cancelExecution(wfm);
-            if (wfm.getNodeContainerState().isExecutionInProgress()) {
-                try {
-                    wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            wfm.getParent().removeProject(wfm.getID());
-        }
+    public void disposeWorkflows() throws InterruptedException {
+        m_workflowLoader.disposeWorkflows();
     }
 
 }
