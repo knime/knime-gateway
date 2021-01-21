@@ -50,7 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -77,7 +77,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   protected java.util.List<WorkflowInfoEnt> m_parents;
   protected MetaPortsEnt m_metaInPorts;
   protected MetaPortsEnt m_metaOutPorts;
-  protected AllowedActionsEnt m_allowedActions;
+  protected AllowedWorkflowActionsEnt m_allowedActions;
   protected ComponentNodeTemplateEnt m_componentMetadata;
   protected ProjectMetadataEnt m_projectMetadata;
   
@@ -203,7 +203,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   }
     
   @Override
-  public AllowedActionsEnt getAllowedActions() {
+  public AllowedWorkflowActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
     
@@ -232,7 +232,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         private java.util.List<WorkflowInfoEnt> m_parents;
         private MetaPortsEnt m_metaInPorts;
         private MetaPortsEnt m_metaOutPorts;
-        private AllowedActionsEnt m_allowedActions;
+        private AllowedWorkflowActionsEnt m_allowedActions;
         private ComponentNodeTemplateEnt m_componentMetadata;
         private ProjectMetadataEnt m_projectMetadata;
 
@@ -300,7 +300,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
+        public DefaultWorkflowEntBuilder setAllowedActions(AllowedWorkflowActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
         }

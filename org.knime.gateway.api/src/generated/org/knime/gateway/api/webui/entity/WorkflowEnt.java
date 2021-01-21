@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -119,7 +119,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * Get allowedActions
    * @return allowedActions 
    **/
-  public AllowedActionsEnt getAllowedActions();
+  public AllowedWorkflowActionsEnt getAllowedActions();
 
   /**
    * Get componentMetadata
@@ -209,7 +209,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        WorkflowEntBuilder setAllowedActions(AllowedWorkflowActionsEnt allowedActions);
         
         /**
    		 * Set componentMetadata

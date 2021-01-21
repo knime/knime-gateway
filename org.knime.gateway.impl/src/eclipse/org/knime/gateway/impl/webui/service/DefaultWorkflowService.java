@@ -49,28 +49,16 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEnt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeUIInformation;
-import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -80,6 +68,7 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.SimpleRepository;
+import org.knime.gateway.impl.webui.service.operations.WorkflowOperations;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -87,9 +76,17 @@ import org.knime.gateway.impl.service.util.SimpleRepository;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class DefaultWorkflowService implements WorkflowService {
+
+    /**
+     * Determines the number of operations per workflow kept in the undo and redo stacks.
+     */
+    private static final int UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW = 50;
+
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
-    private final EntityRepository<Pair<String, NodeIDEnt>, WorkflowEnt> m_entityRepo;
+    private final EntityRepository<WorkflowKey, WorkflowEnt> m_entityRepo;
+
+    private final WorkflowOperations m_operations;
 
     /**
      * Returns the singleton instance for this service.
@@ -102,11 +99,14 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private DefaultWorkflowService() {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
-        WorkflowProjectManager
-            .addWorkflowProjectRemovedListener(uuid -> m_entityRepo.disposeHistory(k -> k.getFirst().equals(uuid)));
+        m_operations = new WorkflowOperations(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
+        WorkflowProjectManager.addWorkflowProjectRemovedListener(id -> {
+            m_entityRepo.disposeHistory(k -> k.getProjectId().equals(id));
+            m_operations.disposeUndoAndRedoStacks(id);
+        });
     }
 
-    EntityRepository<Pair<String, NodeIDEnt>, WorkflowEnt> getEntityRepository() {
+    EntityRepository<WorkflowKey, WorkflowEnt> getEntityRepository() {
         return m_entityRepo;
     }
 
@@ -116,16 +116,30 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
-        WorkflowManager wfm = getWorkflowManager(projectId, workflowId);
-        return buildWorkflowSnapshotEnt(buildWorkflowEnt(wfm, Boolean.TRUE.equals(includeInfoOnAllowedActions)),
-            projectId, workflowId);
+        WorkflowKey wfKey = new WorkflowKey(projectId, workflowId);
+        WorkflowManager wfm = getWorkflowManager(wfKey);
+        if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
+            return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEntWithInteractionInfo(wfm,
+                m_operations.canUndo(wfKey), m_operations.canRedo(wfKey)), wfKey);
+        } else {
+            return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEnt(wfm), wfKey);
+        }
     }
 
-    private static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId)
+    /**
+     * Helper method to get the workflow manager from a project-id and workflow-id (referencing a sub-workflow or
+     * 'root').
+     *
+     * @param wfKey
+     * @return the workflow manager
+     * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
+     * @throws NotASubWorkflowException if the workflow-id doesn't reference a metanode or a component
+     */
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
         WorkflowManager wfm;
         try {
-            wfm = DefaultServiceUtil.getWorkflowManager(projectId, workflowId);
+            wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
         } catch (IllegalArgumentException ex) {
             throw new NodeNotFoundException(ex.getMessage(), ex);
         } catch (IllegalStateException ex) {
@@ -134,9 +148,8 @@ public final class DefaultWorkflowService implements WorkflowService {
         return wfm;
     }
 
-    WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String projectId,
-        final NodeIDEnt workflowId) {
-        String snapshotId = m_entityRepo.commit(Pair.create(projectId, workflowId), workflow);
+    WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final WorkflowKey wfKey) {
+        String snapshotId = m_entityRepo.commit(wfKey, workflow);
         return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
     }
 
@@ -158,99 +171,34 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void applyWorkflowOperation(final String projectId, final NodeIDEnt workflowId,
         final WorkflowOperationEnt workflowOperationEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        if (workflowOperationEnt instanceof TranslateOperationEnt) {
-            applyTranslateOperation(projectId, workflowId, (TranslateOperationEnt)workflowOperationEnt);
-        } else {
-            throw new OperationNotAllowedException("Operation of type "
-                + workflowOperationEnt.getClass().getSimpleName() + " cannot be applied. Unknown operation.");
-        }
+        m_operations.apply(new WorkflowKey(projectId, workflowId), workflowOperationEnt);
     }
 
-    private static void applyTranslateOperation(final String projectId, final NodeIDEnt workflowId,
-        final TranslateOperationEnt translateOperation)
-        throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        WorkflowManager wfm = getWorkflowManager(projectId, workflowId);
-        List<NodeContainer> nodes;
-        List<String> nodesNotFound = null;
-        int x = Integer.MAX_VALUE;
-        int y = Integer.MAX_VALUE;
-        if (!translateOperation.getNodeIDs().isEmpty()) {
-            nodes = new ArrayList<>();
-            for (NodeIDEnt id : translateOperation.getNodeIDs()) {
-                try {
-                    NodeContainer nc = wfm.getNodeContainer(DefaultServiceUtil.entityToNodeID(projectId, id));
-                    int[] bounds = nc.getUIInformation().getBounds();
-                    x = Math.min(bounds[0], x);
-                    y = Math.min(bounds[1], y);
-                    nodes.add(nc);
-                } catch (IllegalArgumentException e) { // NOSONAR will be thrown further down
-                    nodesNotFound = initAndAdd(nodesNotFound, id.toString());
-                }
-            }
-        } else {
-            nodes = Collections.emptyList();
-        }
-
-        List<WorkflowAnnotation> annotations;
-        List<String> annosNotFound = null;
-        if (!translateOperation.getAnnotationIDs().isEmpty()) {
-            annotations = new ArrayList<>();
-            for (AnnotationIDEnt id : translateOperation.getAnnotationIDs()) {
-                WorkflowAnnotation[] annos =
-                    wfm.getWorkflowAnnotations(DefaultServiceUtil.entityToAnnotationID(projectId, id));
-                if (annos.length == 0 || annos[0] == null) {
-                    annosNotFound = initAndAdd(annosNotFound, id.toString());
-                    continue;
-                }
-                x = Math.min(annos[0].getX(), x);
-                y = Math.min(annos[0].getY(), y);
-                annotations.add(annos[0]);
-            }
-        } else {
-            annotations = Collections.emptyList();
-        }
-
-        checkAndThrowException(nodesNotFound, annosNotFound);
-
-        applyTranslateOperation(translateOperation.getPosition(), nodes, x, y, annotations);
-    }
-
-    private static void applyTranslateOperation(final XYEnt newPos, final List<NodeContainer> nodes, final int x,
-        final int y, final List<WorkflowAnnotation> annotations) {
-        int[] delta = new int[]{newPos.getX() - x, newPos.getY() - y - EntityBuilderUtil.NODE_Y_POS_CORRECTION};
-        for (NodeContainer nc : nodes) {
-            NodeUIInformation.moveNodeBy(nc, delta);
-        }
-        for (WorkflowAnnotation wa : annotations) {
-            wa.shiftPosition(delta[0], delta[1] + EntityBuilderUtil.NODE_Y_POS_CORRECTION);
-        }
-    }
-
-    private static void checkAndThrowException(final List<String> nodesNotFound, final List<String> annosNotFound)
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void undoWorkflowOperation(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        if (nodesNotFound != null || annosNotFound != null) {
-            StringBuilder message = new StringBuilder("Failed to apply operation. Workflow parts not found: ");
-            if (nodesNotFound != null) {
-                message.append("nodes (").append(nodesNotFound.stream().collect(Collectors.joining(","))).append(")");
-            }
-            if (nodesNotFound != null && annosNotFound != null) {
-                message.append(", ");
-            }
-            if (annosNotFound != null) {
-                message.append("workflow-annotations (").append(annosNotFound.stream().collect(Collectors.joining(",")))
-                    .append(")");
-            }
-            throw new OperationNotAllowedException(message.toString());
-        }
+        m_operations.undo(new WorkflowKey(projectId, workflowId));
     }
 
-    private static List<String> initAndAdd(final List<String> l, final String s) {
-        List<String> res = l;
-        if (res == null) {
-            res = new ArrayList<>();
-        }
-        res.add(s);
-        return res;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void redoWorkflowOperation(final String projectId, final NodeIDEnt workflowId)
+        throws OperationNotAllowedException {
+        m_operations.redo(new WorkflowKey(projectId, workflowId));
+    }
+
+    /**
+     * Gives access to the workflow operations instance.
+     *
+     * @return the workflow operations instance
+     */
+    WorkflowOperations getWorkflowOperations() {
+        return m_operations;
     }
 
 }

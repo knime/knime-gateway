@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,74 +41,75 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.operations;
 
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
+import org.knime.gateway.impl.webui.service.WorkflowKey;
 
 /**
- * An operation that can be applied to a workflow to change it.
- * 
+ * Facilitates the implementation of a {@link WorkflowOperation}.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowOperationEnt extends GatewayEntity {
+abstract class AbstractWorkflowOperation<E extends WorkflowOperationEnt> implements WorkflowOperation<E> {
 
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate");
+    private E m_operationEntity;
 
-    private String value;
+    private WorkflowManager m_wfm;
 
-    KindEnum(String value) {
-      this.value = value;
-    }
+    private WorkflowKey m_wfKey;
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public void apply(final WorkflowKey wfKey, final E operationEntity)
+        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
+        m_wfKey = wfKey;
+        m_operationEntity = operationEntity;
+        m_wfm = DefaultWorkflowService.getWorkflowManager(wfKey);
+        apply();
     }
 
-  }
+    /**
+     * Applies the operation. Use {@link #getOperationEntity()}, {@link #getWorkflowManager()}, or
+     * {@link #getWorkflowKey()} to retrieve the data required to carry out the operation.
+     *
+     * @throws OperationNotAllowedException
+     */
+    protected abstract void apply() throws OperationNotAllowedException;
 
-
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
+    @Override
+    public void redo() throws OperationNotAllowedException {
+        apply();
+    }
 
     /**
-     * The builder for the entity.
+     * @return the operation entity that actual represents the operation to be applied (undone, re-done)
      */
-    public interface WorkflowOperationEntBuilder extends GatewayEntityBuilder<WorkflowOperationEnt> {
+    protected E getOperationEntity() {
+        return m_operationEntity;
+    }
 
-        /**
-         * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowOperationEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowOperationEnt build();
-    
+    /**
+     * @return the workflow manager to apply (redo, undo) the operation to
+     */
+    protected WorkflowManager getWorkflowManager() {
+        return m_wfm;
+    }
+
+    /**
+     * @return reference to the workflow underlying this operation
+     */
+    protected WorkflowKey getWorkflowKey() {
+        return m_wfKey;
     }
 
 }

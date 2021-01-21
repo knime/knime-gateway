@@ -1,5 +1,7 @@
 {
   "canCancel" : false,
   "canExecute" : true,
-  "canReset" : false
+  "canRedo" : false,
+  "canReset" : false,
+  "canUndo" : false
 }

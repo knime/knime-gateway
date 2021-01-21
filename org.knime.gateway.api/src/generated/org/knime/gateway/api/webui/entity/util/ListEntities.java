@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.entity.util;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
@@ -118,6 +119,7 @@ public class ListEntities {
         res.add(AllowedActionsEnt.class);
         res.add(AllowedLoopActionsEnt.class);
         res.add(AllowedNodeActionsEnt.class);
+        res.add(AllowedWorkflowActionsEnt.class);
         res.add(AnnotationEnt.class);
         res.add(AppStateEnt.class);
         res.add(BoundsEnt.class);
@@ -174,6 +176,7 @@ public class ListEntities {
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
         res.add(AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder.class);
         res.add(AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder.class);
+        res.add(AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder.class);
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);

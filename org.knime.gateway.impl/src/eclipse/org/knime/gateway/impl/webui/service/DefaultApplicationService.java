@@ -139,12 +139,13 @@ public final class DefaultApplicationService implements ApplicationService {
             }
             if (wfm != null) {
                 builder.setActiveWorkflow(DefaultWorkflowService.getInstance().buildWorkflowSnapshotEnt(
-                    EntityBuilderUtil.buildWorkflowEnt(wfm, true), wp.getID(), new NodeIDEnt(wfm.getID())));
+                    EntityBuilderUtil.buildWorkflowEntWithInteractionInfo(wfm, false, false),
+                    new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID()))));
             } else {
                 NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
                     "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));
             }
-        }
+       }
         return builder.build();
     }
 

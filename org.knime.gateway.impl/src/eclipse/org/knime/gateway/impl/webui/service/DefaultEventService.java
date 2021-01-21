@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEnt;
+import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEntWithInteractionInfo;
 import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager;
 
 import java.util.ArrayList;
@@ -57,13 +57,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
@@ -86,6 +84,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
+import org.knime.gateway.impl.webui.service.operations.WorkflowOperations;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -142,7 +141,7 @@ public final class DefaultEventService implements EventService {
             // create very first changed event to be send first (and thus catch up with the most recent
             // workflow version)
             PatchEntCreator patchEntCreator = new PatchEntCreator(wfEventType.getSnapshotId());
-            WorkflowChangedEventEnt workflowChangedEvent = createWorkflowChangedEvent(patchEntCreator, wfm);
+            WorkflowChangedEventEnt workflowChangedEvent = createWorkflowChangedEvent(patchEntCreator, wfm, key);
             if (workflowChangedEvent != null) {
                 sendEvent(workflowChangedEvent);
             }
@@ -227,7 +226,7 @@ public final class DefaultEventService implements EventService {
                 m_preEventCreationCallback.run();
             }
             WorkflowChangedEventEnt event =
-                createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm);
+                createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm, key);
             if (event != null) {
                 sendEvent(event);
             }
@@ -247,9 +246,10 @@ public final class DefaultEventService implements EventService {
     }
 
     private static WorkflowChangedEventEnt createWorkflowChangedEvent(final PatchEntCreator patchEntCreator,
-        final WorkflowManager wfm) {
+        final WorkflowManager wfm, final WorkflowKey wfKey) {
         // TODO parameterize the 'includeInteractionInfo'
-        patchEntCreator.createPatch(buildWorkflowEnt(wfm, true));
+        WorkflowOperations ops = DefaultWorkflowService.getInstance().getWorkflowOperations();
+        patchEntCreator.createPatch(buildWorkflowEntWithInteractionInfo(wfm, ops.canUndo(wfKey), ops.canRedo(wfKey)));
         if (patchEntCreator.getPatch() == null) {
             return null;
         }
@@ -331,43 +331,6 @@ public final class DefaultEventService implements EventService {
         public PatchEnt create() {
             return new DefaultPatchEntBuilder().setOps(m_ops).build();
         }
-    }
-
-    private static class WorkflowKey {
-
-        private String m_projectId;
-
-        private NodeIDEnt m_workfowId;
-
-        public WorkflowKey(final String projectId, final NodeIDEnt workfowId) {
-            m_projectId = projectId;
-            m_workfowId = workfowId;
-        }
-
-        @Override
-        public boolean equals(final Object o) { // NOSONAR
-            if (o == this) {
-                return true;
-            }
-            if (o == null) {
-                return false;
-            }
-            if (this.getClass() == o.getClass()) {
-                WorkflowKey k = (WorkflowKey)o;
-                return Objects.equals(m_projectId, k.m_projectId) && Objects.equals(m_workfowId, k.m_workfowId);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + m_projectId.hashCode();
-            result = prime * result + m_workfowId.hashCode();
-            return result;
-        }
-
     }
 
 }

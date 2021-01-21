@@ -108,12 +108,12 @@ import org.knime.core.util.workflowalizer.Workflowalizer;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -225,12 +225,28 @@ public final class EntityBuilderUtil {
      * Builds a new {@link WorkflowEnt}.
      *
      * @param wfm the workflow manager to create the entity from
-     * @param includeInteractionInfo whether to include information required in case the user interacts with the
-     *            worklow. E.g. Info on the allowed actions for nodes and the entire workflow (such as execute, cancel
-     *            or reset).
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final boolean includeInteractionInfo) { // NOSONAR
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm) {
+        return buildWorkflowEnt(wfm, false, false, false);
+    }
+
+    /**
+     * Builds a new {@link WorkflowEnt} which also includes information that is required if the user interacts with it,
+     * such as info on allowed actions for nodes or the entire workflow (execute, cancel, reset).
+     *
+     * @param wfm the workflow manager to create the entity from
+     * @param canUndo whether an undo is possible at least once on the workflow
+     * @param canRedo whether a redo is possible at least once on the workflow
+     * @return the newly created entity
+     */
+    public static WorkflowEnt buildWorkflowEntWithInteractionInfo(final WorkflowManager wfm, final boolean canUndo,
+        final boolean canRedo) {
+        return buildWorkflowEnt(wfm, true, canUndo, canRedo);
+    }
+
+    private static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final boolean includeInteractionInfo,
+        final boolean canUndo, final boolean canRedo) { // NOSONAR
         try (WorkflowLock lock = wfm.lock()) {
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
@@ -261,13 +277,14 @@ public final class EntityBuilderUtil {
                 .setNodeTemplates(templates)//
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
-                .setAllowedActions(includeInteractionInfo ? buildAllowedActionsEnt(wfm) : null)//
+                .setAllowedActions(
+                    includeInteractionInfo ? buildAllowedWorkflowActionsEnt(wfm, canUndo, canRedo) : null)//
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
-                .setComponentMetadata(isComponentWFM(wfm) ? buildComponentNodeTemplateEnt(getParentComponent(wfm))
-                    : null)//
+                .setComponentMetadata(
+                    isComponentWFM(wfm) ? buildComponentNodeTemplateEnt(getParentComponent(wfm)) : null)//
                 .build();
         }
     }
@@ -542,11 +559,14 @@ public final class EntityBuilderUtil {
                 .build();
     }
 
-    private static AllowedActionsEnt buildAllowedActionsEnt(final WorkflowManager wfm) {
-        return builder(AllowedActionsEntBuilder.class)//
+    private static AllowedWorkflowActionsEnt buildAllowedWorkflowActionsEnt(final WorkflowManager wfm,
+        final boolean canUndo, final boolean canRedo) {
+        return builder(AllowedWorkflowActionsEntBuilder.class)//
             .setCanReset(wfm.canResetAll())//
             .setCanExecute(wfm.canExecuteAll())//
-            .setCanCancel(wfm.canCancelAll()).build();
+            .setCanCancel(wfm.canCancelAll())//
+            .setCanUndo(canUndo)//
+            .setCanRedo(canRedo).build();
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,

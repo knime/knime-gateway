@@ -239,29 +239,73 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testApplyTranslateOperation() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
-        // node and annotation translation
         NodeIDEnt node15 = new NodeIDEnt(15);
         NodeIDEnt node16 = new NodeIDEnt(16);
         NodeIDEnt node18 = new NodeIDEnt(18);
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        Map<String, NodeEnt> nodes = workflow.getNodes();
+        XYEnt orgPosNode15 = nodes.get(node15.toString()).getPosition();
+        XYEnt orgPosNode16 = nodes.get(node16.toString()).getPosition();
+        XYEnt orgPosNode18 = nodes.get(node18.toString()).getPosition();
+
+        assertThat(workflow.getAllowedActions().isCanUndo(), is(false));
+        assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
+
+        // node and annotation translation
         AnnotationIDEnt anno3 = new AnnotationIDEnt("root_3");
         TranslateOperationEnt op = builder(TranslateOperationEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setNodeIDs(asList(node15, node16, node18)).setAnnotationIDs(singletonList(anno3))
             .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
         ws().applyWorkflowOperation(wfId, NodeIDEnt.getRootID(), op);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
-        XYEnt pos = workflow.getNodes().get(node15.toString()).getPosition();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        nodes = workflow.getNodes();
+        XYEnt pos = nodes.get(node15.toString()).getPosition();
         assertThat(pos.getX(), is(0));
         assertThat(pos.getY(), is(0));
-        pos = workflow.getNodes().get(node16.toString()).getPosition();
+        pos = nodes.get(node16.toString()).getPosition();
         assertThat(pos.getX(), is(120));
         assertThat(pos.getY(), is(0));
-        pos = workflow.getNodes().get(node18.toString()).getPosition();
+        pos = nodes.get(node18.toString()).getPosition();
         assertThat(pos.getX(), is(240));
         assertThat(pos.getY(), is(0));
         WorkflowAnnotationEnt wa =
             workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno3)).findFirst().orElse(null);
         assertThat(wa.getBounds().getX(), is(116)); // NOSONAR wa guaranteed to be non-null
         assertThat(wa.getBounds().getY(), is(123));
+        assertThat(workflow.getAllowedActions().isCanUndo(), is(true));
+        assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
+
+        // undo
+        ws().undoWorkflowOperation(wfId, NodeIDEnt.getRootID());
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        nodes = workflow.getNodes();
+        pos = nodes.get(node15.toString()).getPosition();
+        assertThat(pos.getX(), is(orgPosNode15.getX()));
+        assertThat(pos.getY(), is(orgPosNode15.getY()));
+        pos = nodes.get(node16.toString()).getPosition();
+        assertThat(pos.getX(), is(orgPosNode16.getX()));
+        assertThat(pos.getY(), is(orgPosNode16.getY()));
+        pos = nodes.get(node18.toString()).getPosition();
+        assertThat(pos.getX(), is(orgPosNode18.getX()));
+        assertThat(pos.getY(), is(orgPosNode18.getY()));
+        assertThat(workflow.getAllowedActions().isCanUndo(), is(false));
+        assertThat(workflow.getAllowedActions().isCanRedo(), is(true));
+
+        // redo
+        ws().redoWorkflowOperation(wfId, NodeIDEnt.getRootID());
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        nodes = workflow.getNodes();
+        pos = nodes.get(node15.toString()).getPosition();
+        assertThat(pos.getX(), is(0));
+        assertThat(pos.getY(), is(0));
+        pos = nodes.get(node16.toString()).getPosition();
+        assertThat(pos.getX(), is(120));
+        assertThat(pos.getY(), is(0));
+        pos = nodes.get(node18.toString()).getPosition();
+        assertThat(pos.getX(), is(240));
+        assertThat(pos.getY(), is(0));
+        assertThat(workflow.getAllowedActions().isCanUndo(), is(true));
+        assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
 
         // annotation translation alone
         AnnotationIDEnt anno1 = new AnnotationIDEnt("root_1");

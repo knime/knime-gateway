@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,74 +41,77 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service;
 
+import java.util.Objects;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
- * An operation that can be applied to a workflow to change it.
- * 
+ * Uniquely identifies a workflow by its project-id and the node-id in case its a sub-workflow (the node-id is 'root' if
+ * it's the top-level workflow).
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowOperationEnt extends GatewayEntity {
+public final class WorkflowKey {
 
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate");
+    private final String m_projectId;
 
-    private String value;
+    private final NodeIDEnt m_workfowId;
 
-    KindEnum(String value) {
-      this.value = value;
+    /**
+     * Creates a new key instance.
+     *
+     * @param projectId the workflow project id
+     * @param workflowId the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level
+     *            workflow
+     */
+    public WorkflowKey(final String projectId, final NodeIDEnt workflowId) {
+        m_projectId = projectId;
+        m_workfowId = workflowId;
+    }
+
+    /**
+     * @return the workflow project id
+     */
+    public String getProjectId() {
+        return m_projectId;
+    }
+
+    /**
+     * @return the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level workflow
+     */
+    public NodeIDEnt getWorkflowId() {
+        return m_workfowId;
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (this.getClass() == o.getClass()) {
+            WorkflowKey k = (WorkflowKey)o;
+            return Objects.equals(m_projectId, k.m_projectId) && Objects.equals(m_workfowId, k.m_workfowId);
+        }
+        return false;
     }
 
-  }
-
-
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-    /**
-     * The builder for the entity.
-     */
-    public interface WorkflowOperationEntBuilder extends GatewayEntityBuilder<WorkflowOperationEnt> {
-
-        /**
-         * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowOperationEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowOperationEnt build();
-    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + m_projectId.hashCode();
+        result = prime * result + m_workfowId.hashCode();
+        return result;
     }
 
 }

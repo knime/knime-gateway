@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -109,7 +109,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
+    public AllowedWorkflowActionsEnt getAllowedActions();
     
     @Override
     @JsonProperty("componentMetadata")
@@ -166,7 +166,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("allowedActions")
-        public WorkflowEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        public WorkflowEntMixInBuilder setAllowedActions(final AllowedWorkflowActionsEnt allowedActions);
         
         @Override
         @JsonProperty("componentMetadata")

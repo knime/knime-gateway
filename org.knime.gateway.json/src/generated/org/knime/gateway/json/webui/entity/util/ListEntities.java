@@ -47,6 +47,7 @@ package org.knime.gateway.json.webui.entity.util;
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedNodeActionsEntMixIn;
+import org.knime.gateway.json.webui.entity.AllowedWorkflowActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
@@ -117,6 +118,7 @@ public class ListEntities {
         res.add(AllowedActionsEntMixIn.class);
         res.add(AllowedLoopActionsEntMixIn.class);
         res.add(AllowedNodeActionsEntMixIn.class);
+        res.add(AllowedWorkflowActionsEntMixIn.class);
         res.add(AnnotationEntMixIn.class);
         res.add(AppStateEntMixIn.class);
         res.add(BoundsEntMixIn.class);
@@ -173,6 +175,7 @@ public class ListEntities {
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);
         res.add(AllowedNodeActionsEntMixIn.AllowedNodeActionsEntMixInBuilder.class);
+        res.add(AllowedWorkflowActionsEntMixIn.AllowedWorkflowActionsEntMixInBuilder.class);
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
         res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);

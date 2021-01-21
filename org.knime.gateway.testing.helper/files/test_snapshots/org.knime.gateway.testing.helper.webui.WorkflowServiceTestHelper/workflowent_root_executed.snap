@@ -2,7 +2,9 @@
   "allowedActions" : {
     "canCancel" : false,
     "canExecute" : true,
-    "canReset" : true
+    "canRedo" : false,
+    "canReset" : true,
+    "canUndo" : false
   },
   "connections" : {
     "root:11_1" : {

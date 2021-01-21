@@ -85,4 +85,26 @@ public interface WorkflowService extends GatewayService {
      */
     WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
+    /**
+     * Re-does the last operation from the redo-stack.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     *
+     * 
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     */
+    void redoWorkflowOperation(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
+        
+    /**
+     * Un-does the last operation from the undo-stack.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     *
+     * 
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     */
+    void undoWorkflowOperation(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
+        
 }

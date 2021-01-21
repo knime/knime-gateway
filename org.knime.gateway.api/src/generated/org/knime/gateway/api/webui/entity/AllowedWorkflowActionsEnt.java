@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,52 +52,71 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * An operation that can be applied to a workflow to change it.
+ * Set of allowed actions specific for a workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowOperationEnt extends GatewayEntity {
-
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface AllowedWorkflowActionsEnt extends GatewayEntity, AllowedActionsEnt {
 
 
   /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * Whether there is an operation that can be undone.
+   * @return canUndo , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public Boolean isCanUndo();
+
+  /**
+   * Whether there is an operation that can re-done.
+   * @return canRedo , never <code>null</code>
+   **/
+  public Boolean isCanRedo();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowOperationEntBuilder extends GatewayEntityBuilder<WorkflowOperationEnt> {
+    public interface AllowedWorkflowActionsEntBuilder extends GatewayEntityBuilder<AllowedWorkflowActionsEnt> {
 
         /**
-         * The kind of operation which directly maps to a specific &#39;implementation&#39;.
+         * Whether the node can be executed which depends on the node state and the states of the node&#39;s predecessors.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param canExecute the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowOperationEntBuilder setKind(KindEnum kind);
+        AllowedWorkflowActionsEntBuilder setCanExecute(Boolean canExecute);
+        
+        /**
+         * Whether the node can be cancelled.
+         * 
+         * @param canCancel the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AllowedWorkflowActionsEntBuilder setCanCancel(Boolean canCancel);
+        
+        /**
+         * Whether the node can be reset which depends on the node state and the states of the node&#39;s successors. Not given in case of the project workflow (action to reset all is not supported there).
+         * 
+         * @param canReset the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AllowedWorkflowActionsEntBuilder setCanReset(Boolean canReset);
+        
+        /**
+         * Whether there is an operation that can be undone.
+         * 
+         * @param canUndo the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AllowedWorkflowActionsEntBuilder setCanUndo(Boolean canUndo);
+        
+        /**
+         * Whether there is an operation that can re-done.
+         * 
+         * @param canRedo the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AllowedWorkflowActionsEntBuilder setCanRedo(Boolean canRedo);
         
         
         /**
@@ -106,7 +126,7 @@ public interface WorkflowOperationEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowOperationEnt build();
+        AllowedWorkflowActionsEnt build();
     
     }
 

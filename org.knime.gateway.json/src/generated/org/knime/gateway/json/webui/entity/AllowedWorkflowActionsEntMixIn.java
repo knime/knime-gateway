@@ -42,72 +42,87 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedWorkflowActionsEnt.DefaultAllowedWorkflowActionsEntBuilder;
 
 /**
- * An operation that can be applied to a workflow to change it.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowOperationEnt extends GatewayEntity {
 
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
+@JsonDeserialize(builder=DefaultAllowedWorkflowActionsEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface AllowedWorkflowActionsEntMixIn extends AllowedWorkflowActionsEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
+    @JsonIgnore
+    public String getTypeID();
 
-  }
-
-
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
+    @Override
+    @JsonProperty("canExecute")
+    public Boolean isCanExecute();
+    
+    @Override
+    @JsonProperty("canCancel")
+    public Boolean isCanCancel();
+    
+    @Override
+    @JsonProperty("canReset")
+    public Boolean isCanReset();
+    
+    @Override
+    @JsonProperty("canUndo")
+    public Boolean isCanUndo();
+    
+    @Override
+    @JsonProperty("canRedo")
+    public Boolean isCanRedo();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface WorkflowOperationEntBuilder extends GatewayEntityBuilder<WorkflowOperationEnt> {
 
-        /**
-         * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowOperationEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowOperationEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface AllowedWorkflowActionsEntMixInBuilder extends AllowedWorkflowActionsEntBuilder {
     
+        @Override
+        public AllowedWorkflowActionsEntMixIn build();
+    
+        @Override
+        @JsonProperty("canExecute")
+        public AllowedWorkflowActionsEntMixInBuilder setCanExecute(final Boolean canExecute);
+        
+        @Override
+        @JsonProperty("canCancel")
+        public AllowedWorkflowActionsEntMixInBuilder setCanCancel(final Boolean canCancel);
+        
+        @Override
+        @JsonProperty("canReset")
+        public AllowedWorkflowActionsEntMixInBuilder setCanReset(final Boolean canReset);
+        
+        @Override
+        @JsonProperty("canUndo")
+        public AllowedWorkflowActionsEntMixInBuilder setCanUndo(final Boolean canUndo);
+        
+        @Override
+        @JsonProperty("canRedo")
+        public AllowedWorkflowActionsEntMixInBuilder setCanRedo(final Boolean canRedo);
+        
     }
 
+
 }
+

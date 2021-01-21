@@ -104,4 +104,30 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         return m_service.getWorkflow(projectId, workflowId, includeInteractionInfo);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "redoWorkflowOperation")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+    })
+    public void redoWorkflowOperation(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException {
+        m_service.redoWorkflowOperation(projectId, workflowId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "undoWorkflowOperation")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+    })
+    public void undoWorkflowOperation(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException {
+        m_service.undoWorkflowOperation(projectId, workflowId);    
+    }
+
 }

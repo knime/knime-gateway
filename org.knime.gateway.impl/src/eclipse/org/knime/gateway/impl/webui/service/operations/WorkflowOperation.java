@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,74 +41,53 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.operations;
 
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.WorkflowKey;
 
 /**
- * An operation that can be applied to a workflow to change it.
- * 
+ * Unifying interface for all workflow operations. The methods are guaranteed to be called in a fixed order: apply ->
+ * undo -> redo -> undo -> ... .
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowOperationEnt extends GatewayEntity {
-
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
+interface WorkflowOperation<E extends WorkflowOperationEnt> {
 
     /**
-     * The builder for the entity.
+     * Carries out the workflow operation as represented by the operation entity. Always called before {@link #undo()}
+     * and {@link #redo()}.
+     *
+     * @param wfKey references the workflow to apply the operation to
+     * @param operationEntity representation of the operation to be applied
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
+     * @throws OperationNotAllowedException
      */
-    public interface WorkflowOperationEntBuilder extends GatewayEntityBuilder<WorkflowOperationEnt> {
+    void apply(WorkflowKey wfKey, E operationEntity)
+        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
-        /**
-         * The kind of operation which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowOperationEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowOperationEnt build();
-    
-    }
+    /**
+     * Undoes this operation. Guaranteed to be called only if {@link #apply(WorkflowKey, WorkflowOperationEnt)} has
+     * been called before already.
+     *
+     * @throws OperationNotAllowedException
+     */
+    void undo() throws OperationNotAllowedException;
+
+    /**
+     * Re-does this operation. Guaranteed to be called only if {@link #undo()} has been called before already.
+     *
+     * @throws OperationNotAllowedException
+     */
+    void redo() throws OperationNotAllowedException;
 
 }

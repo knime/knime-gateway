@@ -86,7 +86,7 @@ public interface TranslateOperationEnt extends GatewayEntity, WorkflowOperationE
     public interface TranslateOperationEntBuilder extends GatewayEntityBuilder<TranslateOperationEnt> {
 
         /**
-         * Discriminates the kind of operations that are possible.
+         * The kind of operation which directly maps to a specific &#39;implementation&#39;.
          * 
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
