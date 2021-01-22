@@ -203,7 +203,10 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
         return snapshotID;
     }
 
+    @SuppressWarnings("java:S2160")
     private class LRUCache extends LinkedHashMap<String, E> {
+
+        private static final long serialVersionUID = 107343581425956367L;
 
         private final int m_maxHistory;
 

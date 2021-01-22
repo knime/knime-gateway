@@ -80,7 +80,7 @@ public class JsonRpcTableServerFactory implements NodePortRpcServerFactory {
     @Override
     public boolean isCompatible(final PortType ptype) {
         return BuildInWebPortViewType.getPortViewTypeFor(ptype).map(t -> t == BuildInWebPortViewType.TABLE)
-            .orElse(false);
+            .orElse(Boolean.FALSE);
     }
 
     /**

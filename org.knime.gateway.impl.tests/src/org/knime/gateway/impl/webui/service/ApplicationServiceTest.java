@@ -47,11 +47,11 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.impl.webui.AppState;
+import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
 /**
@@ -73,31 +73,31 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         DefaultApplicationService appService = DefaultApplicationService.getInstance();
         cr(appService.getState(), "empty_appstate");
 
-        appService.setAppStateSupplier(() -> new AppState() {
+        appService.setAppStateSupplier(() -> createAppState(workflowProjectId));
+        cr(appService.getState(), "appstate");
+    }
+
+    private static AppState createAppState(final String workflowProjectId) {
+        return () -> Collections.singletonList(createOpenedWorkflow(workflowProjectId));
+    }
+
+    private static OpenedWorkflow createOpenedWorkflow(final String workflowProjectId) {
+        return new OpenedWorkflow() {
 
             @Override
-            public List<OpenedWorkflow> getOpenedWorkflows() {
-                return Collections.singletonList(new OpenedWorkflow() {
-
-                    @Override
-                    public String getProjectId() {
-                        return workflowProjectId;
-                    }
-
-                    @Override
-                    public String getWorkflowId() {
-                        return NodeIDEnt.getRootID().toString();
-                    }
-
-                    @Override
-                    public boolean isVisible() {
-                        return true;
-                    }
-
-                });
+            public String getProjectId() {
+                return workflowProjectId;
             }
 
-        });
-        cr(appService.getState(), "appstate");
+            @Override
+            public String getWorkflowId() {
+                return NodeIDEnt.getRootID().toString();
+            }
+
+            @Override
+            public boolean isVisible() {
+                return true;
+            }
+        };
     }
 }

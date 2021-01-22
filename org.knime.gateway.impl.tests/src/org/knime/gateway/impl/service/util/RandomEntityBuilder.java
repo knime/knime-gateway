@@ -70,9 +70,13 @@ import org.knime.gateway.impl.webui.entity.DefaultEntityBuilderFactory;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class RandomEntityBuilder {
+public final class RandomEntityBuilder {
 
     private static final Random RANDOM = new Random();
+
+    private RandomEntityBuilder() {
+        // utility class
+    }
 
     /**
      * Creates new entity builder with all properties assigned with random values.
@@ -80,15 +84,17 @@ public class RandomEntityBuilder {
      * @param entityBuilderInterface the builder interface to create a random instance for
      * @return the entity builder interface with random values
      * @throws IllegalAccessException
-     * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
     @SuppressWarnings("rawtypes")
     public static <E extends GatewayEntityBuilder> E buildRandomEntityBuilder(final Class<E> entityBuilderInterface)
-        throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        throws IllegalAccessException, InvocationTargetException {
 
         @SuppressWarnings("unchecked")
-        E builder = (E)new DefaultEntityBuilderFactory().createEntityBuilder(entityBuilderInterface).get();
+        E builder = (E)new DefaultEntityBuilderFactory().createEntityBuilder(entityBuilderInterface).orElse(null);
+        if (builder == null) {
+            throw new IllegalStateException("No builder implementation available for " + entityBuilderInterface);
+        }
 
         //provide random values to all setter methods via reflection
         Method[] methods = builder.getClass().getInterfaces()[0].getDeclaredMethods();
@@ -104,63 +110,69 @@ public class RandomEntityBuilder {
         return builder;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Object getRandomValue(final Type type)
-        throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        throws IllegalAccessException, InvocationTargetException {
         if (type instanceof ParameterizedType) {
-            ParameterizedType ptype = (ParameterizedType)type;
-            Class<?> rclazz = (Class<?>)ptype.getRawType();
-            if (List.class.isAssignableFrom(rclazz)) {
-                List l = new ArrayList();
-                for (int i = 0; i < RANDOM.nextInt(10); i++) {
-                    l.add(getRandomValue(ptype.getActualTypeArguments()[0]));
-                }
-                return l;
-            } else if (Map.class.isAssignableFrom(rclazz)) {
-                Map m = new HashMap();
-                for (int i = 0; i < RANDOM.nextInt(10); i++) {
-                    m.put(getRandomValue(String.class), getRandomValue(ptype.getActualTypeArguments()[1]));
-                }
-                return m;
-            } else {
-                return null;
-            }
+            return getRandomValue((ParameterizedType)type);
         } else if (type instanceof WildcardType) {
             return getRandomValue(((WildcardType)type).getUpperBounds()[0]);
         } else if (type instanceof Class) {
-            Class<?> clazz = (Class<?>)type;
-            if (clazz.equals(Integer.class)) {
-                return RANDOM.nextInt();
-            } else if (clazz.equals(Boolean.class)) {
-                return RANDOM.nextBoolean();
-            } else if (clazz.equals(String.class)) {
-                return UUID.randomUUID().toString();
-            } else if (clazz.equals(UUID.class)) {
-                return UUID.randomUUID();
-            } else if (Enum.class.isAssignableFrom(clazz)) {
-                Object[] enumVals = clazz.getEnumConstants();
-                return enumVals[RANDOM.nextInt(enumVals.length)];
-            } else if(clazz.equals(NodeIDEnt.class)) {
-                return new NodeIDEnt(RANDOM.nextInt());
-            } else if (clazz.equals(AnnotationIDEnt.class)) {
-                return new AnnotationIDEnt(new NodeIDEnt(RANDOM.nextInt()), RANDOM.nextInt());
-            } else if (GatewayEntity.class.isAssignableFrom(clazz)) {
-                Class<GatewayEntityBuilder> builderInterface =
-                    getBuilderInterfaceForEntity((Class<GatewayEntity>)clazz);
-                return buildRandomEntityBuilder(builderInterface).build();
-            } else {
-                return null;
-            }
+            return getRandomValue((Class<?>)type);
         } else {
             return null;
         }
 
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static Class<GatewayEntityBuilder>
+    @SuppressWarnings({"java:S1142", "unchecked"})
+    private static Object getRandomValue(final Class<?> clazz) throws IllegalAccessException, InvocationTargetException {
+        if (clazz.equals(Integer.class)) {
+            return RANDOM.nextInt();
+        } else if (clazz.equals(Boolean.class)) {
+            return RANDOM.nextBoolean();
+        } else if (clazz.equals(String.class)) {
+            return UUID.randomUUID().toString();
+        } else if (clazz.equals(UUID.class)) {
+            return UUID.randomUUID();
+        } else if (Enum.class.isAssignableFrom(clazz)) {
+            Object[] enumVals = clazz.getEnumConstants();
+            return enumVals[RANDOM.nextInt(enumVals.length)];
+        } else if(clazz.equals(NodeIDEnt.class)) {
+            return new NodeIDEnt(RANDOM.nextInt());
+        } else if (clazz.equals(AnnotationIDEnt.class)) {
+            return new AnnotationIDEnt(new NodeIDEnt(RANDOM.nextInt()), RANDOM.nextInt());
+        } else if (GatewayEntity.class.isAssignableFrom(clazz)) {
+            return buildRandomEntityBuilder(getBuilderInterfaceForEntity((Class<GatewayEntity>)clazz)).build();
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object getRandomValue(final ParameterizedType ptype)
+        throws IllegalAccessException, InvocationTargetException {
+        Class<?> rclazz = (Class<?>)ptype.getRawType();
+        if (List.class.isAssignableFrom(rclazz)) {
+            List l = new ArrayList();
+            for (int i = 0; i < RANDOM.nextInt(10); i++) {
+                l.add(getRandomValue(ptype.getActualTypeArguments()[0]));
+            }
+            return l;
+        } else if (Map.class.isAssignableFrom(rclazz)) {
+            Map m = new HashMap();
+            for (int i = 0; i < RANDOM.nextInt(10); i++) {
+                m.put(getRandomValue(String.class), getRandomValue(ptype.getActualTypeArguments()[1]));
+            }
+            return m;
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private static Class<GatewayEntityBuilder<? extends GatewayEntity>>
         getBuilderInterfaceForEntity(final Class<GatewayEntity> entityInterface) {
-        return (Class<GatewayEntityBuilder>)ListEntities.listEntityBuilderClasses()
+        return (Class<GatewayEntityBuilder<? extends GatewayEntity>>)ListEntities.listEntityBuilderClasses()
             .get(ListEntities.listEntityClasses().indexOf(entityInterface));
     }
 

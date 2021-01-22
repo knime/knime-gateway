@@ -100,16 +100,17 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
+        AppStateEntBuilder builder = builder(AppStateEntBuilder.class);
         if (m_appStateSupplier == null) {
-            return builder(AppStateEntBuilder.class).build();
+            return builder.build();
         }
         AppState appState = m_appStateSupplier.get();
         if (appState == null) {
-            return builder(AppStateEntBuilder.class).build();
+            return builder.build();
         }
         List<WorkflowProjectEnt> projects = appState.getOpenedWorkflows().stream()
             .map(DefaultApplicationService::buildWorkflowProjectEnt).filter(Objects::nonNull).collect(toList());
-        return builder(AppStateEntBuilder.class).setOpenedWorkflows(projects).build();
+        return builder.setOpenedWorkflows(projects).build();
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf) {

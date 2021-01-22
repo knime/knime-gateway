@@ -149,9 +149,8 @@ public final class RpcServerManager {
         return nodePortRpcServerFactories.stream().filter(f -> f.isCompatible(ptype)).findFirst();
     }
 
-    private static Optional<NodeRpcServerFactory> getRpcServerFactoryForNode(final NodeContainer nc) {
-        NativeNodeContainer nativeNodeContainer = (NativeNodeContainer)nc;
-        NodeFactory<NodeModel> factory = nativeNodeContainer.getNode().getFactory();
+    private static Optional<NodeRpcServerFactory> getRpcServerFactoryForNode(final NativeNodeContainer nnc) {
+        NodeFactory<NodeModel> factory = nnc.getNode().getFactory();
         // TODO can a single and multi rpc server can be used in parallel? (e.g. for backwards-compatibility) //NOSONAR
         if (factory instanceof NodeRpcServerFactory) {
             return Optional.of((NodeRpcServerFactory)factory);

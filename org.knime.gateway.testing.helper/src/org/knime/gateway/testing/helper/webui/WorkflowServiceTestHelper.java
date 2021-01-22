@@ -96,24 +96,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // check un-executed
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
         cr(workflow, "workflowent_root");
 
         // get a metanode's workflow
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6), Boolean.FALSE).getWorkflow();
         cr(workflow, "workflowent_6");
 
         // get a component's workflow
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(23), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(23), Boolean.FALSE).getWorkflow();
         cr(workflow, "workflowent_23");
 
         // check executed
         executeWorkflow(wfId);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
         cr(workflow, "workflowent_root_executed");
 
         // get a workflow of a linked component
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(183), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(183), Boolean.FALSE).getWorkflow();
         cr(workflow, "workflowent_183_linked_component");
     }
 
@@ -125,13 +125,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testGetComponentProjectWorkflow() throws Exception {
         String wfId = loadComponent(TestWorkflowCollection.COMPONENT_PROJECT);
 
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
         cr(workflow, "component_project");
 
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5), true).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.TRUE).getWorkflow();
         cr(workflow, "component_in_component_project_l1");
 
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5,0,7), true).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5,0,7), Boolean.TRUE).getWorkflow();
         cr(workflow, "component_in_component_project_l2");
     }
 
@@ -143,16 +143,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testNodeExecutionStates() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
 
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
         cr(getNodeStates(workflow), "node_states");
 
         executeWorkflowAsync(wfId);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt w = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+            WorkflowEnt w = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
             assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
                 is(ExecutionStateEnum.EXECUTED));
         });
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
         cr(getNodeStates(workflow), "node_states_execution");
     }
 
@@ -179,7 +179,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testGetAllowedActionsInfo() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
 
         // check the allowed actions on the workflow itself
         cr(workflow.getAllowedActions(), "allowedactions_root");
@@ -199,17 +199,17 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.METADATA);
 
         // checks the metadata of the project workflow
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
         cr(workflow.getProjectMetadata(), "projectmetadataent");
         assertNull(workflow.getComponentMetadata());
 
         // checks the metadata of a component
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(4), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(4), Boolean.FALSE).getWorkflow();
         cr(workflow.getComponentMetadata(), "componentmetadataent_4");
         assertNull(workflow.getProjectMetadata());
 
         // makes sure that no metadata is returned for a metanode
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), Boolean.FALSE).getWorkflow();
         assertNull(workflow.getProjectMetadata());
         assertNull(workflow.getComponentMetadata());
     }

@@ -60,7 +60,7 @@ import org.knime.core.node.NodeLogger;
  *
  * @author Martin Horn, University of Konstanz
  */
-public class ExtPointUtil {
+public final class ExtPointUtil {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ExtPointUtil.class);
 
@@ -76,6 +76,7 @@ public class ExtPointUtil {
      * @param extPointAttr the extension point attributes of the class to get the instances for
      * @return the list of all instances for the class-extension point attribute
      */
+    @SuppressWarnings("java:S1192")
     public static <C> List<C> collectExecutableExtensions(final String extPointID, final String extPointAttr) {
 
         List<C> instances = new ArrayList<>();
@@ -99,38 +100,7 @@ public class ExtPointUtil {
                 continue;
             }
 
-            // try instantiating.
-            C instance = null;
-            try {
-                instance = (C)elem.createExecutableExtension(extPointAttr);
-            } catch (UnsatisfiedLinkError ule) {
-                // in case an implementation tries to load an external lib
-                // when the factory class gets loaded
-                LOGGER.error("Unable to load a library required for '" + attr + "'");
-                LOGGER.error(
-                    "Either specify it in the -Djava.library.path " + "option at the program's command line, or");
-                LOGGER.error("include it in the LD_LIBRARY_PATH variable.");
-                LOGGER.error("Extension " + attr + " ('" + decl + "') ignored.", ule);
-            } catch (CoreException ex) {
-                Throwable cause = ex.getStatus().getException();
-                if (cause != null) {
-                    LOGGER.error("Problems during initialization of executable extension with attribute id '" + attr + "': " + cause.getMessage(), ex);
-                    if (decl != null) {
-                        LOGGER.error("Extension " + decl + " ignored.");
-                    }
-                } else {
-                    LOGGER.error("Problems during initialization of executable extension with attribute id '" + attr + "'", ex);
-                    if (decl != null) {
-                        LOGGER.error("Extension " + decl + " ignored.");
-                    }
-                }
-            } catch (Throwable t) {
-                LOGGER.error("Problems during initialization of executable extension with attribute id '"
-                    + attr + "'", t);
-                if (decl != null) {
-                    LOGGER.error("Extension " + decl + " ignored.");
-                }
-            }
+            C instance = instantiate(extPointAttr, elem, attr, decl);
 
             if (instance != null) {
                 instances.add(instance);
@@ -139,6 +109,44 @@ public class ExtPointUtil {
 
         return instances;
 
+    }
+
+    @SuppressWarnings("java:S1192")
+    private static <C> C instantiate(final String extPointAttr, final IConfigurationElement elem, final String attr,
+        final String decl) {
+        // try instantiating.
+        C instance = null;
+        try {
+            instance = (C)elem.createExecutableExtension(extPointAttr);
+        } catch (UnsatisfiedLinkError ule) {
+            // in case an implementation tries to load an external lib
+            // when the factory class gets loaded
+            LOGGER.error("Unable to load a library required for '" + attr + "'");
+            LOGGER.error("Either specify it in the -Djava.library.path " + "option at the program's command line, or");
+            LOGGER.error("include it in the LD_LIBRARY_PATH variable.");
+            LOGGER.error("Extension " + attr + " ('" + decl + "') ignored.", ule);
+        } catch (CoreException ex) {
+            Throwable cause = ex.getStatus().getException();
+            if (cause != null) {
+                LOGGER.error("Problems during initialization of executable extension with attribute id '" + attr + "': "
+                    + cause.getMessage(), ex);
+                if (decl != null) {
+                    LOGGER.error("Extension " + decl + " ignored.");
+                }
+            } else {
+                LOGGER.error("Problems during initialization of executable extension with attribute id '" + attr + "'",
+                    ex);
+                if (decl != null) {
+                    LOGGER.error("Extension " + decl + " ignored.");
+                }
+            }
+        } catch (Throwable t) { // NOSONAR
+            LOGGER.error("Problems during initialization of executable extension with attribute id '" + attr + "'", t);
+            if (decl != null) {
+                LOGGER.error("Extension " + decl + " ignored.");
+            }
+        }
+        return instance;
     }
 
 }

@@ -49,6 +49,7 @@
 package org.knime.gateway.testing.helper;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.awaitility.Awaitility.await;
 
 import java.util.ArrayList;
@@ -78,24 +79,24 @@ import org.knime.gateway.api.entity.NodeIDEnt;
  */
 public final class WorkflowTransformations {
 
-    private static List<WorkflowTransformations> m_workflowTransformations;
+    private static List<WorkflowTransformations> workflowTransformationList;
 
     /**
      * @return list of all workflow transformations (multiple transformations per test-workflow)
      */
     public static List<WorkflowTransformations> getAllWorkflowTransformations() {
-        if (m_workflowTransformations == null) {
-            m_workflowTransformations = new ArrayList<>();
+        if (workflowTransformationList == null) {
+            workflowTransformationList = new ArrayList<>();
             for (TestWorkflowCollection testWorkflow : TestWorkflowCollection.values()) {
                 List<WorkflowTransformation> trans = createWorkflowTransformations(testWorkflow);
                 if (!trans.isEmpty()) {
-                    m_workflowTransformations
+                    workflowTransformationList
                         .add(new WorkflowTransformations(testWorkflow, getWorkflowIdFor(testWorkflow), trans));
                 }
             }
-            m_workflowTransformations = Collections.unmodifiableList(m_workflowTransformations);
+            workflowTransformationList = Collections.unmodifiableList(workflowTransformationList);
         }
-        return m_workflowTransformations;
+        return workflowTransformationList;
     }
 
     /**
@@ -120,11 +121,10 @@ public final class WorkflowTransformations {
     }
 
     private static NodeIDEnt getWorkflowIdFor(final TestWorkflowCollection testWorkflow) {
-        switch (testWorkflow) {
-            case STREAMING_EXECUTION:
-                return new NodeIDEnt(3);
-            default:
-                return NodeIDEnt.getRootID();
+        if (testWorkflow == TestWorkflowCollection.STREAMING_EXECUTION) {
+            return new NodeIDEnt(3);
+        } else {
+            return NodeIDEnt.getRootID();
         }
     }
 
@@ -170,7 +170,7 @@ public final class WorkflowTransformations {
     }
 
     private static List<WorkflowTransformation> createTransformationsForStreamingExecution() {
-        return asList(newTransformation(WorkflowManager::executeAll, "streaming_execution", wfm -> {
+        return singletonList(newTransformation(WorkflowManager::executeAll, "streaming_execution", wfm -> {
             await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
                 NodeContainerState ncs1 = wfm.getNodeContainer(wfm.getID().createChild(3)).getNodeContainerState();
                 NodeContainerState ncs2 = wfm.getNodeContainer(wfm.getID().createChild(5)).getNodeContainerState();
@@ -183,9 +183,12 @@ public final class WorkflowTransformations {
         final String name) {
         return newTransformation(workflowTransformation, name, wfm -> {
             try {
-                wfm.waitWhileInExecution(10, TimeUnit.SECONDS);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+                boolean done = wfm.waitWhileInExecution(10, TimeUnit.SECONDS);
+                if (!done) {
+                    throw new IllegalStateException("Workflow still executing");
+                }
+            } catch (InterruptedException ex) { // NOSONAR should never been interrupted
+                throw new IllegalStateException(ex);
             }
         });
     }

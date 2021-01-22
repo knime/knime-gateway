@@ -256,8 +256,8 @@ public final class EntityBuilderUtil {
                 .setWorkflowAnnotations(annotations)//
                 .setAllowedActions(includeInfoOnAllowedActions ? buildAllowedActionsEnt(wfm) : null)//
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
-                .setMetaInPorts(buildMetaPortsEnt(wfm, true, buildContext))//
-                .setMetaOutPorts(buildMetaPortsEnt(wfm, false, buildContext))//
+                .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
+                .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(isComponentWFM(wfm) ? buildComponentNodeTemplateEnt(getParentComponent(wfm))
                     : null)//
@@ -284,14 +284,25 @@ public final class EntityBuilderUtil {
         return wfm.getDirectNCParent() instanceof SubNodeContainer;
     }
 
-    private static MetaPortsEnt buildMetaPortsEnt(final WorkflowManager wfm, final boolean incoming,
+    private static MetaPortsEnt buildMetaPortsEntForWorkflow(final WorkflowManager wfm, final boolean incoming,
         final BuildContext buildContext) {
         if (wfm.isProject() || wfm.getDirectNCParent() instanceof SubNodeContainer) {
             // no meta ports for workflow projects and component workflows
             return null;
         }
+        List<NodePortEnt> ports = buildNodePortEntsForWorkflow(wfm, incoming, buildContext);
         MetaPortsEntBuilder builder = builder(MetaPortsEntBuilder.class);
+        builder.setPorts(ports);
 
+        NodeUIInformation barUIInfo = incoming ? wfm.getInPortsBarUIInfo() : wfm.getOutPortsBarUIInfo();
+        if (barUIInfo != null) {
+            builder.setXPos(barUIInfo.getBounds()[0]);
+        }
+        return builder.build();
+    }
+
+    private static List<NodePortEnt> buildNodePortEntsForWorkflow(final WorkflowManager wfm, final boolean incoming,
+        final BuildContext buildContext) {
         List<NodePortEnt> ports = new ArrayList<>();
         if (incoming) {
             int nrPorts = wfm.getNrWorkflowIncomingPorts();
@@ -310,18 +321,13 @@ public final class EntityBuilderUtil {
                     connection != null ? singleton(connection) : emptyList(), buildContext));
             }
         }
-        builder.setPorts(ports);
-        NodeUIInformation barUIInfo = incoming ? wfm.getInPortsBarUIInfo() : wfm.getOutPortsBarUIInfo();
-        if (barUIInfo != null) {
-            builder.setXPos(barUIInfo.getBounds()[0]);
-        }
-        return builder.build();
+        return ports;
     }
 
     private static WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm, final BuildContext buildContext) {
         NodeContainerTemplate template;
         if (wfm.getDirectNCParent() instanceof SubNodeContainer) {
-            template = (SubNodeContainer)wfm.getDirectNCParent();
+            template = (NodeContainerTemplate)wfm.getDirectNCParent();
         } else {
             template = wfm;
         }
@@ -595,7 +601,8 @@ public final class EntityBuilderUtil {
         String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
-            .setType(type == null ? null : org.knime.gateway.api.webui.entity.ComponentNodeEnt.TypeEnum.valueOf(type))//
+            .setType(type == null ? null
+                : org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt.TypeEnum.valueOf(type))//
             .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
             .setInPorts(buildNodePortEnts(nc, true, buildContext))//
@@ -655,6 +662,7 @@ public final class EntityBuilderUtil {
         return res;
     }
 
+    @SuppressWarnings("java:S107") // it's a 'builder'-method, so many parameters are ok
     private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections, final BuildContext buildContext) {
@@ -836,7 +844,8 @@ public final class EntityBuilderUtil {
         }
         if (nodeFactory instanceof MissingNodeFactory) {
             NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)nodeFactory).getNodeAndBundleInfo();
-            return nodeInfo.getFactoryClass().orElse("unknown_missing_node_factory_" + UUID.randomUUID()) + configHash;
+            return nodeInfo.getFactoryClass().orElseGet(() -> "unknown_missing_node_factory_" + UUID.randomUUID())
+                + configHash;
         } else {
             return nodeFactory.getClass().getCanonicalName() + configHash;
         }
@@ -959,6 +968,8 @@ public final class EntityBuilderUtil {
             if (nc instanceof NativeNodeContainer) {
                 return builder(NodeExecutionInfoEntBuilder.class).setStreamable(isStreamable((NativeNodeContainer)nc))
                     .build();
+            } else {
+                return null;
             }
         } else if (parentJobManager instanceof AbstractNodeExecutionJobManager) {
             try {
@@ -968,11 +979,11 @@ public final class EntityBuilderUtil {
             } catch (IOException ex) {
                 NodeLogger.getLogger(EntityBuilderUtil.class).error(String.format(
                     "Problem reading icon for job manager '%s' and node '%s'.", parentJobManager.getID(), nc), ex);
+                return null;
             }
         } else {
-            //
+            return null;
         }
-        return null;
     }
 
     private static Boolean isStreamable(final NativeNodeContainer nc) {

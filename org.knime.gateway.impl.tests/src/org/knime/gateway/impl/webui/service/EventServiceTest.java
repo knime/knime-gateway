@@ -121,7 +121,7 @@ public class EventServiceTest extends GatewayServiceTest {
 
         // get the current workflow state and register event listener
         // (such that change events are send for that workflow)
-        WorkflowSnapshotEnt wf = ws.getWorkflow(projectId, wfId, true);
+        WorkflowSnapshotEnt wf = ws.getWorkflow(projectId, wfId, Boolean.TRUE);
         WorkflowChangedEventTypeEnt eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(projectId).setWorkflowId(wfId).setSnapshotId(wf.getSnapshotId()).build();
         es.addEventListener(eventType);

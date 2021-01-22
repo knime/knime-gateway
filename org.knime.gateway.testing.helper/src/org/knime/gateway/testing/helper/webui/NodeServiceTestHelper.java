@@ -99,12 +99,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // one test that it generally works
-        NativeNodeEnt nodeEnt =
-            (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow().getNodes().get("root:1");
+        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE)
+            .getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), Matchers.is(ExecutionStateEnum.CONFIGURED));
         ns().changeNodeStates(wfId, singletonList(new NodeIDEnt(1)), "execute");
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow()
                 .getNodes().get("root:1");
             assertThat(nodeEnt2.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
@@ -131,7 +131,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // test execution on root level
         ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "execute");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow()
                 .getNodes().get("root:7");
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
@@ -139,7 +139,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // reset on root level
         ns().changeNodeStates(wfId, singletonList(NodeIDEnt.getRootID()), "reset");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+            NativeNodeEnt node = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow()
                 .getNodes().get("root:7");
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });

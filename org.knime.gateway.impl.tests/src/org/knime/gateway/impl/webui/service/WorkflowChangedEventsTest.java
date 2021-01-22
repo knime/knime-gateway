@@ -194,8 +194,8 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             m_lock.unlock();
         }
 
-        void block() {
-            m_lock.tryLock();
+        final void block() {
+            m_lock.tryLock(); // NOSONAR
         }
 
         void unblock() {
