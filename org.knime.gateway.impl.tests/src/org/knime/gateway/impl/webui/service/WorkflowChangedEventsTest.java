@@ -124,7 +124,15 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         // add event consumer to receive and check the change events
         DefaultEventService es = DefaultEventService.getInstance();
         TestEventConsumer testEventConsumer = new TestEventConsumer();
-        es.setEventConsumerForTesting(testEventConsumer);
+        es.setEventConsumerForTesting(testEventConsumer, () -> {
+            // slightly delays the creation of the events to increase
+            // the determinism of the event patches
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) { // NOSONAR
+                //
+            }
+        });
 
         WorkflowManager wfm = idAndWfm.getSecond();
         checkWorkflowChangeEvents(wfm, testEventConsumer, m_transformations.getTransformations());

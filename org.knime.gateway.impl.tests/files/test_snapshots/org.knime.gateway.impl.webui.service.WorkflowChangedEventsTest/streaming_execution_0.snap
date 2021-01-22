@@ -2,7 +2,7 @@
   "ops" : [ {
     "op" : "replace",
     "path" : "/nodes/root:3:0:6/state/executionState",
-    "value" : "QUEUED"
+    "value" : "EXECUTING"
   }, {
     "op" : "replace",
     "path" : "/allowedActions/canCancel",
@@ -10,14 +10,17 @@
   }, {
     "op" : "replace",
     "path" : "/nodes/root:3:0:3/state/executionState",
-    "value" : "QUEUED"
+    "value" : "EXECUTING"
+  }, {
+    "op" : "remove",
+    "path" : "/nodes/root:3:0:3/state/warning"
   }, {
     "op" : "replace",
     "path" : "/nodes/root:3:0:5/state/executionState",
-    "value" : "QUEUED"
+    "value" : "EXECUTING"
   }, {
     "op" : "replace",
     "path" : "/nodes/root:3:0:7/state/executionState",
-    "value" : "QUEUED"
+    "value" : "EXECUTING"
   } ]
 }

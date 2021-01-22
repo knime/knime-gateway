@@ -134,7 +134,7 @@ public class EventServiceTest extends GatewayServiceTest {
         // add event consumer to receive and check the change events
         @SuppressWarnings("unchecked")
         BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
-        es.setEventConsumerForTesting(eventConsumerMock);
+        es.setEventConsumerForTesting(eventConsumerMock, null);
 
         // carry out the workflow changes
         WorkflowTransformations.createWorkflowTransformations(TestWorkflowCollection.GENERAL_WEB_UI)

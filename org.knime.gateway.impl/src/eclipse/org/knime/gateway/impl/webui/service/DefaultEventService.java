@@ -122,6 +122,7 @@ public final class DefaultEventService implements EventService {
      * For testing purposes only.
      */
     private boolean m_callEventConsumerOnError = false;
+    private Runnable m_preEventCreationCallback = null;
 
     private DefaultEventService() {
         // singleton
@@ -198,8 +199,10 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.add(eventConsumer);
     }
 
-    void setEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer) {
+    void setEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer,
+        final Runnable preEventCreationCallback) {
         m_eventConsumer.clear();
+        m_preEventCreationCallback = preEventCreationCallback;
         addEventConsumer(eventConsumer);
         m_callEventConsumerOnError = true;
     }
@@ -220,6 +223,9 @@ public final class DefaultEventService implements EventService {
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey key) {
         return wfm -> {
             assertPatchEntCreatorAvaible(key);
+            if (m_preEventCreationCallback != null) {
+                m_preEventCreationCallback.run();
+            }
             WorkflowChangedEventEnt event =
                 createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm);
             if (event != null) {
