@@ -93,7 +93,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
-        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(workflow.getUrlFolder());
+        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(workflow.getWorkflowDir());
         addToProjectManager(wfm, workflow.getName(), projectId);
     }
 
@@ -138,10 +138,10 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadComponent(final TestWorkflow component, final String projectId) throws Exception {
-        URI componentURI = component.getUrlFolder().toURI();
+        URI componentURI = component.getWorkflowDir().toURI();
         WorkflowLoadHelper loadHelper = new WorkflowLoadHelper(true, true, createWorkflowContext());
         TemplateNodeContainerPersistor loadPersistor =
-            loadHelper.createTemplateLoadPersistor(component.getUrlFolder(), componentURI);
+            loadHelper.createTemplateLoadPersistor(component.getWorkflowDir(), componentURI);
         MetaNodeLinkUpdateResult loadResult =
             new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);

@@ -49,7 +49,10 @@
 package org.knime.gateway.testing.helper;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+
+import org.knime.core.util.FileUtil;
 
 /**
  * Represents a test workflow.
@@ -59,18 +62,31 @@ import java.net.URL;
 public interface TestWorkflow {
 
     /**
-     * @return url of the workflow file
+     * @return url of the zipped workflow file
+     *
+     * @throws IOException if there is a problem while zipping the workflow
      */
-    public URL getUrlZipFile();
+    URL createKnwfFileAndGetUrl() throws IOException;
 
     /**
      * @return the file of the workflow folder
      */
-    File getUrlFolder();
+    File getWorkflowDir();
 
     /**
      * @return name of the loaded workflow
      */
     String getName();
+
+    /**
+     * @param workflowDir the workflow directory to create the knwf-file from
+     * @return the temporary knwf-file
+     * @throws IOException if there is a problem while zipping the workflow
+     */
+    static File createKnwfFile(final File workflowDir) throws IOException {
+        File tmpFile = FileUtil.createTempFile("test_workflow_upload", ".knwf");
+        FileUtil.zipDir(tmpFile, workflowDir, 9);
+        return tmpFile;
+    }
 
 }

@@ -14,62 +14,57 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * The main workflow the web-ui tests are based on.
      */
-    GENERAL_WEB_UI("/files/Test Gateway Workflow.knwf", "general_web_ui"),
+    GENERAL_WEB_UI("/files/Test Gateway Workflow", "general_web_ui"),
 
     /**
      * Workflow to test the execution states.
      */
-    EXECUTION_STATES("/files/Execution States.knwf", "execution states"),
+    EXECUTION_STATES("/files/Execution States", "execution states"),
 
     /**
      * A component project.
      */
-    COMPONENT_PROJECT("/files/Component.knar", "component project"),
+    COMPONENT_PROJECT("/files/Component", "component project"),
 
     /**
      * Workflow to test workflow and component metadata.
      */
-    METADATA("/files/Workflow Metadata.knwf", "workflow_metadata"),
+    METADATA("/files/Workflow Metadata", "workflow_metadata"),
 
     /**
      * Workflow to test job managers.
      */
-    STREAMING_EXECUTION("/files/Streaming Execution.knwf", "streaming_execution");
+    STREAMING_EXECUTION("/files/Streaming Execution", "streaming_execution");
 
 
-    private final String m_url;
+    private final String m_workflowDir;
 
     private final String m_name;
 
     /**
-     * @param url the workflow url
+     * @param the relative path for the workflow directory
      * @param name the workflow name
      */
-    private TestWorkflowCollection(final String url, final String name) {
-        m_url = url;
+    private TestWorkflowCollection(final String workflowDir, final String name) {
+        m_workflowDir = workflowDir;
         m_name = name;
     }
 
     /**
-     * @return url of the workflow file
+     * {@inheritDoc}
      */
     @Override
-    public URL getUrlZipFile() {
-        try {
-            return GatewayServiceTestHelper.resolveToURL(m_url, TestWorkflowCollection.class);
-        } catch (IOException ex) {
-            // should never happen
-            throw new RuntimeException(ex); // NOSONAR
-        }
+    public URL createKnwfFileAndGetUrl() throws IOException {
+        return TestWorkflow.createKnwfFile(getWorkflowDir()).toURI().toURL();
     }
 
     /**
      * @return the file of the workflow folder
      */
     @Override
-    public File getUrlFolder() {
+    public File getWorkflowDir() {
         try {
-            return GatewayServiceTestHelper.resolveToFile(m_url.substring(0, m_url.length() - 5), TestWorkflowCollection.class);
+            return GatewayServiceTestHelper.resolveToFile(m_workflowDir, TestWorkflowCollection.class);
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); // NOSONAR
