@@ -48,6 +48,8 @@ package org.knime.gateway.impl.jsonrpc;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.knime.core.node.NodeLogger;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.googlecode.jsonrpc4j.AnnotationsErrorResolver;
 import com.googlecode.jsonrpc4j.ErrorResolver;
@@ -72,6 +74,7 @@ final class JsonRpcErrorResolver implements ErrorResolver {
     @Override
     public JsonError resolveError(final Throwable thrownException, final Method method,
         final List<JsonNode> arguments) {
+        NodeLogger.getLogger(getClass()).warn("A json rpc error occurred", thrownException);
         JsonRpcError resolver = getResolverForException(thrownException, method);
         return new JsonError(
             resolver != null ? resolver.code() : m_translator.getUnexpectedExceptionErrorCode(thrownException),

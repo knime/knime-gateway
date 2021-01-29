@@ -52,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
@@ -102,6 +103,7 @@ public class JsonRpcRequestHandler {
             m_jsonRpcMultiServer.handleRequest(in, out);
             return out.toByteArray();
         } catch (IOException e) {
+            NodeLogger.getLogger(getClass()).warn("Problem handling json rpc request", e);
             // turn it into a json error object
             ObjectMapper mapper = ObjectMapperUtil.getInstance().getBinaryObjectMapper();
             ObjectNode jsonRpc = mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
