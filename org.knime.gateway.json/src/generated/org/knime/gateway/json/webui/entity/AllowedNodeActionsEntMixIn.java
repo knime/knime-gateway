@@ -44,14 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedNodeActionsEnt.DefaultAllowedNodeActionsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,21 +60,33 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeViewEntBuilder.class)
+@JsonDeserialize(builder=DefaultAllowedNodeActionsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeViewEntMixIn extends NodeViewEnt {
+public interface AllowedNodeActionsEntMixIn extends AllowedNodeActionsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("canExecute")
+    public Boolean isCanExecute();
     
     @Override
-    @JsonProperty("available")
-    public Boolean isAvailable();
+    @JsonProperty("canCancel")
+    public Boolean isCanCancel();
+    
+    @Override
+    @JsonProperty("canReset")
+    public Boolean isCanReset();
+    
+    @Override
+    @JsonProperty("canOpenDialog")
+    public Boolean isCanOpenDialog();
+    
+    @Override
+    @JsonProperty("canOpenView")
+    public Boolean isCanOpenView();
     
 
     /**
@@ -83,18 +96,30 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeViewEntMixInBuilder extends NodeViewEntBuilder {
+    public static interface AllowedNodeActionsEntMixInBuilder extends AllowedNodeActionsEntBuilder {
     
         @Override
-        public NodeViewEntMixIn build();
+        public AllowedNodeActionsEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public NodeViewEntMixInBuilder setName(final String name);
+        @JsonProperty("canExecute")
+        public AllowedNodeActionsEntMixInBuilder setCanExecute(final Boolean canExecute);
         
         @Override
-        @JsonProperty("available")
-        public NodeViewEntMixInBuilder setAvailable(final Boolean available);
+        @JsonProperty("canCancel")
+        public AllowedNodeActionsEntMixInBuilder setCanCancel(final Boolean canCancel);
+        
+        @Override
+        @JsonProperty("canReset")
+        public AllowedNodeActionsEntMixInBuilder setCanReset(final Boolean canReset);
+        
+        @Override
+        @JsonProperty("canOpenDialog")
+        public AllowedNodeActionsEntMixInBuilder setCanOpenDialog(final Boolean canOpenDialog);
+        
+        @Override
+        @JsonProperty("canOpenView")
+        public AllowedNodeActionsEntMixInBuilder setCanOpenView(final Boolean canOpenView);
         
     }
 

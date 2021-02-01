@@ -50,7 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -67,13 +67,12 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 public class DefaultNodeEnt implements NodeEnt {
 
   protected org.knime.gateway.api.entity.NodeIDEnt m_id;
-  protected Boolean m_dialog;
   protected java.util.List<? extends NodePortEnt> m_inPorts;
   protected java.util.List<? extends NodePortEnt> m_outPorts;
   protected NodeAnnotationEnt m_annotation;
   protected XYEnt m_position;
   protected KindEnum m_kind;
-  protected AllowedActionsEnt m_allowedActions;
+  protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
   
   protected DefaultNodeEnt() {
@@ -91,7 +90,6 @@ public class DefaultNodeEnt implements NodeEnt {
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
-    m_dialog = immutable(builder.m_dialog);
     if(builder.m_inPorts == null) {
         throw new IllegalArgumentException("inPorts must not be null.");
     }
@@ -128,7 +126,7 @@ public class DefaultNodeEnt implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo);
     }
 
 
@@ -140,7 +138,6 @@ public class DefaultNodeEnt implements NodeEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_id)
-               .append(m_dialog)
                .append(m_inPorts)
                .append(m_outPorts)
                .append(m_annotation)
@@ -156,11 +153,6 @@ public class DefaultNodeEnt implements NodeEnt {
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getId() {
         return m_id;
-  }
-    
-  @Override
-  public Boolean isDialog() {
-        return m_dialog;
   }
     
   @Override
@@ -189,7 +181,7 @@ public class DefaultNodeEnt implements NodeEnt {
   }
     
   @Override
-  public AllowedActionsEnt getAllowedActions() {
+  public AllowedNodeActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
     
@@ -206,13 +198,12 @@ public class DefaultNodeEnt implements NodeEnt {
         }
     
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
-        private Boolean m_dialog;
         private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<? extends NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
-        private AllowedActionsEnt m_allowedActions;
+        private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
 
         @Override
@@ -221,12 +212,6 @@ public class DefaultNodeEnt implements NodeEnt {
                  throw new IllegalArgumentException("id must not be null.");
              }
              m_id = id;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setDialog(Boolean dialog) {
-             m_dialog = dialog;
              return this;
         }
 
@@ -273,7 +258,7 @@ public class DefaultNodeEnt implements NodeEnt {
         }
 
         @Override
-        public DefaultNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
+        public DefaultNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
         }

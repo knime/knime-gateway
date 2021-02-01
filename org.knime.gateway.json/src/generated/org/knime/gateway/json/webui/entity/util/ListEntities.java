@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
+import org.knime.gateway.json.webui.entity.AllowedNodeActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
@@ -73,7 +74,6 @@ import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeStateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeViewDescriptionEntMixIn;
-import org.knime.gateway.json.webui.entity.NodeViewEntMixIn;
 import org.knime.gateway.json.webui.entity.PatchEntMixIn;
 import org.knime.gateway.json.webui.entity.PatchOpEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewEntMixIn;
@@ -111,6 +111,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEntMixIn.class);
+        res.add(AllowedNodeActionsEntMixIn.class);
         res.add(AnnotationEntMixIn.class);
         res.add(AppStateEntMixIn.class);
         res.add(BoundsEntMixIn.class);
@@ -139,7 +140,6 @@ public class ListEntities {
         res.add(NodePortTemplateEntMixIn.class);
         res.add(NodeStateEntMixIn.class);
         res.add(NodeViewDescriptionEntMixIn.class);
-        res.add(NodeViewEntMixIn.class);
         res.add(PatchEntMixIn.class);
         res.add(PatchOpEntMixIn.class);
         res.add(PortViewEntMixIn.class);
@@ -163,6 +163,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
+        res.add(AllowedNodeActionsEntMixIn.AllowedNodeActionsEntMixInBuilder.class);
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
         res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);
@@ -191,7 +192,6 @@ public class ListEntities {
         res.add(NodePortTemplateEntMixIn.NodePortTemplateEntMixInBuilder.class);
         res.add(NodeStateEntMixIn.NodeStateEntMixInBuilder.class);
         res.add(NodeViewDescriptionEntMixIn.NodeViewDescriptionEntMixInBuilder.class);
-        res.add(NodeViewEntMixIn.NodeViewEntMixInBuilder.class);
         res.add(PatchEntMixIn.PatchEntMixInBuilder.class);
         res.add(PatchOpEntMixIn.PatchOpEntMixInBuilder.class);
         res.add(PortViewEntMixIn.PortViewEntMixInBuilder.class);

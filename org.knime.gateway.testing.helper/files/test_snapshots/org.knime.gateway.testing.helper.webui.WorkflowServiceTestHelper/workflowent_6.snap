@@ -72,7 +72,6 @@
   },
   "nodes" : {
     "root:6:3" : {
-      "dialog" : true,
       "id" : "root:6:3",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

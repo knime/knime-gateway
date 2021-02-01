@@ -36,9 +36,9 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
-      "dialog" : true,
       "id" : "root:5:0:7:0:4",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -83,9 +83,9 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
-      "dialog" : true,
       "id" : "root:5:0:7:0:5",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -114,9 +114,9 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
-      "dialog" : true,
       "id" : "root:5:0:7:0:6",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

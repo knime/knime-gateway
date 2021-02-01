@@ -109,6 +109,8 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -159,8 +161,6 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -510,11 +510,11 @@ public final class EntityBuilderUtil {
 
     private static NodeEnt buildNodeEntWithInfoOnAllowedActions(final NodeIDEnt id, final NodeContainer nc,
         final DependentNodeProperties depNodeProps, final BuildContext buildContext) {
-        return buildNodeEnt(id, nc, buildAllowedActionsEnt(nc, depNodeProps), buildContext);
+        return buildNodeEnt(id, nc, buildAllowedNodeActionsEnt(nc, depNodeProps), buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final BuildContext buildContext) {
         if (nc instanceof NativeNodeContainer) {
             return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, buildContext);
         } else if (nc instanceof WorkflowManager) {
@@ -527,14 +527,16 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static AllowedActionsEnt buildAllowedActionsEnt(final NodeContainer nc,
+    private static AllowedNodeActionsEnt buildAllowedNodeActionsEnt(final NodeContainer nc,
         final DependentNodeProperties depNodeProps) {
         WorkflowManager parent = nc.getParent();
         NodeID id = nc.getID();
-        return builder(AllowedActionsEntBuilder.class)
+        return builder(AllowedNodeActionsEntBuilder.class)
                 .setCanExecute(depNodeProps.canExecuteNode(id))
                 .setCanReset(depNodeProps.canResetNode(id))
                 .setCanCancel(parent.canCancelNode(id))
+                .setCanOpenDialog(nc.hasDialog() ? Boolean.TRUE : null)
+                .setCanOpenView(hasAndCanOpenNodeView(nc))
                 .build();
     }
 
@@ -546,7 +548,7 @@ public final class EntityBuilderUtil {
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,
-        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final BuildContext buildContext) {
         return builder(MetaNodeEntBuilder.class).setName(wm.getName()).setId(id)//
             .setOutPorts(buildMetaNodePortEnts(wm, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))//
@@ -556,7 +558,6 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.METANODE)//
             .setLink(getTemplateLink(wm))//
             .setAllowedActions(allowedActions)//
-            .setDialog(wm.hasDialog() ? Boolean.TRUE : null)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm)).build();
     }
 
@@ -596,7 +597,7 @@ public final class EntityBuilderUtil {
     }
 
     private static ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
-        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final BuildContext buildContext) {
         ComponentMetadata metadata = nc.getMetadata();
         String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
@@ -611,32 +612,23 @@ public final class EntityBuilderUtil {
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
-            .setView(buildNodeViewEnt(nc))//
             .setAllowedActions(allowedActions)//
-            .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)).build();
     }
 
-    private static NodeViewEnt buildNodeViewEnt(final SubNodeContainer nc) {
-        if (nc.getInteractiveWebViews().size() > 0) {
-            return buildNodeViewEnt("Interactive View: " + nc.getName(),
-                nc.getNodeContainerState().isExecuted());
-        } else {
-            return null;
+    /*
+     * Returns null if the node has no node view; false, if there is a node view but there is nothing to display,
+     * true, if there is a node view which also has something to display.
+     */
+    private static Boolean hasAndCanOpenNodeView(final NodeContainer nc) {
+        if (nc instanceof SubNodeContainer || nc instanceof NativeNodeContainer) {
+            if (nc.getInteractiveWebViews().size() > 0) {
+                return nc.getNodeContainerState().isExecuted();
+            } else {
+                //
+            }
         }
-    }
-
-    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nc) {
-        InteractiveWebViewsResult interactiveWebViews = nc.getInteractiveWebViews();
-        if (interactiveWebViews.size() == 1) {
-            return buildNodeViewEnt(interactiveWebViews.get(0).getViewName(), nc.getNodeContainerState().isExecuted());
-        } else {
-            return null;
-        }
-    }
-
-    private static NodeViewEnt buildNodeViewEnt(final String name, final boolean isAvailable) {
-        return builder(NodeViewEntBuilder.class).setName(name).setAvailable(isAvailable).build();
+        return null; // NOSONAR
     }
 
     private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts,
@@ -735,7 +727,7 @@ public final class EntityBuilderUtil {
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NodeIDEnt id, final NativeNodeContainer nc,
-        final AllowedActionsEnt allowedActions, final BuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final BuildContext buildContext) {
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
@@ -746,8 +738,6 @@ public final class EntityBuilderUtil {
             .setState(buildNodeStateEnt(nc))//
             .setTemplateId(createTemplateId(nc.getNode().getFactory()))//
             .setAllowedActions(allowedActions)//
-            .setView(buildNodeViewEnt(nc))//
-            .setDialog(nc.hasDialog() ? Boolean.TRUE : null)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .build();
     }

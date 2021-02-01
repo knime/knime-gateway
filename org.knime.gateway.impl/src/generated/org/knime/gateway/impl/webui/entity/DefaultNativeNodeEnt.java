@@ -50,12 +50,11 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -70,17 +69,15 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 public class DefaultNativeNodeEnt implements NativeNodeEnt {
 
   protected org.knime.gateway.api.entity.NodeIDEnt m_id;
-  protected Boolean m_dialog;
   protected java.util.List<? extends NodePortEnt> m_inPorts;
   protected java.util.List<? extends NodePortEnt> m_outPorts;
   protected NodeAnnotationEnt m_annotation;
   protected XYEnt m_position;
   protected KindEnum m_kind;
-  protected AllowedActionsEnt m_allowedActions;
+  protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
   protected String m_templateId;
   protected NodeStateEnt m_state;
-  protected NodeViewEnt m_view;
   
   protected DefaultNativeNodeEnt() {
     //for sub-classes
@@ -97,7 +94,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         throw new IllegalArgumentException("id must not be null.");
     }
     m_id = immutable(builder.m_id);
-    m_dialog = immutable(builder.m_dialog);
     if(builder.m_inPorts == null) {
         throw new IllegalArgumentException("inPorts must not be null.");
     }
@@ -122,7 +118,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     }
     m_templateId = immutable(builder.m_templateId);
     m_state = immutable(builder.m_state);
-    m_view = immutable(builder.m_view);
   }
   
    /**
@@ -140,7 +135,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_view, ent.m_view);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state);
     }
 
 
@@ -152,7 +147,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_id)
-               .append(m_dialog)
                .append(m_inPorts)
                .append(m_outPorts)
                .append(m_annotation)
@@ -162,7 +156,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                .append(m_executionInfo)
                .append(m_templateId)
                .append(m_state)
-               .append(m_view)
                .toHashCode();
    }
   
@@ -171,11 +164,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getId() {
         return m_id;
-  }
-    
-  @Override
-  public Boolean isDialog() {
-        return m_dialog;
   }
     
   @Override
@@ -204,7 +192,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   }
     
   @Override
-  public AllowedActionsEnt getAllowedActions() {
+  public AllowedNodeActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
     
@@ -223,11 +211,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         return m_state;
   }
     
-  @Override
-  public NodeViewEnt getView() {
-        return m_view;
-  }
-    
   
     public static class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {
     
@@ -236,17 +219,15 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         }
     
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
-        private Boolean m_dialog;
         private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
         private java.util.List<? extends NodePortEnt> m_outPorts = new java.util.ArrayList<>();
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
-        private AllowedActionsEnt m_allowedActions;
+        private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
         private String m_templateId;
         private NodeStateEnt m_state;
-        private NodeViewEnt m_view;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -254,12 +235,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                  throw new IllegalArgumentException("id must not be null.");
              }
              m_id = id;
-             return this;
-        }
-
-        @Override
-        public DefaultNativeNodeEntBuilder setDialog(Boolean dialog) {
-             m_dialog = dialog;
              return this;
         }
 
@@ -306,7 +281,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions) {
+        public DefaultNativeNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
         }
@@ -329,12 +304,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setState(NodeStateEnt state) {
              m_state = state;
-             return this;
-        }
-
-        @Override
-        public DefaultNativeNodeEntBuilder setView(NodeViewEnt view) {
-             m_view = view;
              return this;
         }
 

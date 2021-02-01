@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -94,12 +94,6 @@ public interface NodeEnt extends GatewayEntity {
   public org.knime.gateway.api.entity.NodeIDEnt getId();
 
   /**
-   * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
-   * @return dialog 
-   **/
-  public Boolean isDialog();
-
-  /**
    * The list of inputs.
    * @return inPorts , never <code>null</code>
    **/
@@ -133,7 +127,7 @@ public interface NodeEnt extends GatewayEntity {
    * Get allowedActions
    * @return allowedActions 
    **/
-  public AllowedActionsEnt getAllowedActions();
+  public AllowedNodeActionsEnt getAllowedActions();
 
   /**
    * Get executionInfo
@@ -154,14 +148,6 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
-         * 
-         * @param dialog the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeEntBuilder setDialog(Boolean dialog);
         
         /**
          * The list of inputs.
@@ -209,7 +195,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        NodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
         
         /**
    		 * Set executionInfo

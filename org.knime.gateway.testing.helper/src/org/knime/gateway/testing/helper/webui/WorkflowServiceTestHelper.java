@@ -96,7 +96,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // check un-executed
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
         cr(workflow, "workflowent_root");
 
         // get a metanode's workflow
@@ -109,7 +109,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // check executed
         executeWorkflow(wfId);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
         cr(workflow, "workflowent_root_executed");
 
         // get a workflow of a linked component

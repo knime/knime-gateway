@@ -59,9 +59,9 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
-      "dialog" : true,
       "id" : "root:8",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -107,6 +107,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -114,7 +115,6 @@
         "text" : "",
         "textAlign" : "center"
       },
-      "dialog" : true,
       "id" : "root:5",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -143,9 +143,9 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
-      "dialog" : true,
       "id" : "root:6",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -182,9 +182,9 @@
       "allowedActions" : {
         "canCancel" : false,
         "canExecute" : true,
+        "canOpenDialog" : true,
         "canReset" : false
       },
-      "dialog" : true,
       "id" : "root:7",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

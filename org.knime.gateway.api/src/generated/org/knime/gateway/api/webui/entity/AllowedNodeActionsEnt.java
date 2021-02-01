@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,47 +52,71 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Information to describe a node&#39;s view.
+ * Set of actions allowed specific to nodes.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeViewEnt extends GatewayEntity {
+public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt {
 
 
   /**
-   * The view&#39;s name.
-   * @return name , never <code>null</code>
+   * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the poperty is absent, no dialog is available altogether.
+   * @return canOpenDialog 
    **/
-  public String getName();
+  public Boolean isCanOpenDialog();
 
   /**
-   * Determines whether the node view is available. I.e. the node has a view, but it is currently not available.
-   * @return available , never <code>null</code>
+   * Indicates whether the (legacy!) node view can opened (extra window) or not. If the property is absent, no node view is available altogether.
+   * @return canOpenView 
    **/
-  public Boolean isAvailable();
+  public Boolean isCanOpenView();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodeViewEntBuilder extends GatewayEntityBuilder<NodeViewEnt> {
+    public interface AllowedNodeActionsEntBuilder extends GatewayEntityBuilder<AllowedNodeActionsEnt> {
 
         /**
-         * The view&#39;s name.
+         * Whether the node can be executed which depenends on the node state and the states of the node&#39;s predecessors.
          * 
-         * @param name the property value, NOT <code>null</code>! 
+         * @param canExecute the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeViewEntBuilder setName(String name);
+        AllowedNodeActionsEntBuilder setCanExecute(Boolean canExecute);
         
         /**
-         * Determines whether the node view is available. I.e. the node has a view, but it is currently not available.
+         * Whether the node can be cancelled.
          * 
-         * @param available the property value, NOT <code>null</code>! 
+         * @param canCancel the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeViewEntBuilder setAvailable(Boolean available);
+        AllowedNodeActionsEntBuilder setCanCancel(Boolean canCancel);
+        
+        /**
+         * Whether the node can be reset which depends on the node state and the states of the node&#39;s successors. Not given in case of the project workflow (action to reset all is not supported there).
+         * 
+         * @param canReset the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanReset(Boolean canReset);
+        
+        /**
+         * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the poperty is absent, no dialog is available altogether.
+         * 
+         * @param canOpenDialog the property value,  
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanOpenDialog(Boolean canOpenDialog);
+        
+        /**
+         * Indicates whether the (legacy!) node view can opened (extra window) or not. If the property is absent, no node view is available altogether.
+         * 
+         * @param canOpenView the property value,  
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanOpenView(Boolean canOpenView);
         
         
         /**
@@ -101,7 +126,7 @@ public interface NodeViewEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeViewEnt build();
+        AllowedNodeActionsEnt build();
     
     }
 

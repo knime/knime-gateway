@@ -44,14 +44,13 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -80,12 +79,6 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
    **/
   public String getLink();
 
-  /**
-   * Get view
-   * @return view 
-   **/
-  public NodeViewEnt getView();
-
 
     /**
      * The builder for the entity.
@@ -99,14 +92,6 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
-         * 
-         * @param dialog the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setDialog(Boolean dialog);
         
         /**
          * The list of inputs.
@@ -154,7 +139,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        ComponentNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
         
         /**
    		 * Set executionInfo
@@ -203,14 +188,6 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setLink(String link);
-        
-        /**
-   		 * Set view
-         * 
-         * @param view the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setView(NodeViewEnt view);
         
         
         /**

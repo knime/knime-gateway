@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -79,10 +79,6 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("dialog")
-    public Boolean isDialog();
-    
-    @Override
     @JsonProperty("inPorts")
     public java.util.List<MetaNodePortEnt> getInPorts();
     
@@ -104,7 +100,7 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     
     @Override
     @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
+    public AllowedNodeActionsEnt getAllowedActions();
     
     @Override
     @JsonProperty("executionInfo")
@@ -140,10 +136,6 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         public MetaNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
         @Override
-        @JsonProperty("dialog")
-        public MetaNodeEntMixInBuilder setDialog(final Boolean dialog);
-        
-        @Override
         @JsonProperty("inPorts")
         public MetaNodeEntMixInBuilder setInPorts(final java.util.List<MetaNodePortEnt> inPorts);
         
@@ -165,7 +157,7 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         
         @Override
         @JsonProperty("allowedActions")
-        public MetaNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        public MetaNodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
         
         @Override
         @JsonProperty("executionInfo")

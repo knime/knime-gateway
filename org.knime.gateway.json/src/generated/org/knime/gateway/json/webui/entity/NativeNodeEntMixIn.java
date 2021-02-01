@@ -44,12 +44,11 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -80,10 +79,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("dialog")
-    public Boolean isDialog();
-    
-    @Override
     @JsonProperty("inPorts")
     public java.util.List<? extends NodePortEnt> getInPorts();
     
@@ -105,7 +100,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     
     @Override
     @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
+    public AllowedNodeActionsEnt getAllowedActions();
     
     @Override
     @JsonProperty("executionInfo")
@@ -118,10 +113,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @Override
     @JsonProperty("state")
     public NodeStateEnt getState();
-    
-    @Override
-    @JsonProperty("view")
-    public NodeViewEnt getView();
     
 
     /**
@@ -139,10 +130,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("id")
         public NativeNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        @Override
-        @JsonProperty("dialog")
-        public NativeNodeEntMixInBuilder setDialog(final Boolean dialog);
         
         @Override
         @JsonProperty("inPorts")
@@ -166,7 +153,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         
         @Override
         @JsonProperty("allowedActions")
-        public NativeNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        public NativeNodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
         
         @Override
         @JsonProperty("executionInfo")
@@ -179,10 +166,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("state")
         public NativeNodeEntMixInBuilder setState(final NodeStateEnt state);
-        
-        @Override
-        @JsonProperty("view")
-        public NativeNodeEntMixInBuilder setView(final NodeViewEnt view);
         
     }
 

@@ -44,13 +44,12 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -79,12 +78,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public NodeStateEnt getState();
 
-  /**
-   * Get view
-   * @return view 
-   **/
-  public NodeViewEnt getView();
-
 
     /**
      * The builder for the entity.
@@ -98,14 +91,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
-         * 
-         * @param dialog the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setDialog(Boolean dialog);
         
         /**
          * The list of inputs.
@@ -153,7 +138,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        NativeNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
         
         /**
    		 * Set executionInfo
@@ -178,14 +163,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setState(NodeStateEnt state);
-        
-        /**
-   		 * Set view
-         * 
-         * @param view the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setView(NodeViewEnt view);
         
         
         /**

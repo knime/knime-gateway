@@ -54,7 +54,6 @@
   },
   "nodes" : {
     "root:183:0:18" : {
-      "dialog" : true,
       "executionInfo" : {
         "streamable" : true
       },
@@ -99,7 +98,6 @@
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:ba827aa8"
     },
     "root:183:0:17" : {
-      "dialog" : true,
       "executionInfo" : {
         "streamable" : true
       },
@@ -142,7 +140,6 @@
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:51ca6eb2"
     },
     "root:183:0:14" : {
-      "dialog" : true,
       "executionInfo" : {
         "streamable" : false
       },

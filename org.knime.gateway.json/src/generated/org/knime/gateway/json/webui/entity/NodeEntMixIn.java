@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -98,10 +98,6 @@ public interface NodeEntMixIn extends NodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("dialog")
-    public Boolean isDialog();
-    
-    @Override
     @JsonProperty("inPorts")
     public java.util.List<? extends NodePortEnt> getInPorts();
     
@@ -123,7 +119,7 @@ public interface NodeEntMixIn extends NodeEnt {
     
     @Override
     @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
+    public AllowedNodeActionsEnt getAllowedActions();
     
     @Override
     @JsonProperty("executionInfo")
@@ -161,10 +157,6 @@ public interface NodeEntMixIn extends NodeEnt {
         public NodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
         
         @Override
-        @JsonProperty("dialog")
-        public NodeEntMixInBuilder setDialog(final Boolean dialog);
-        
-        @Override
         @JsonProperty("inPorts")
         public NodeEntMixInBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts);
         
@@ -186,7 +178,7 @@ public interface NodeEntMixIn extends NodeEnt {
         
         @Override
         @JsonProperty("allowedActions")
-        public NodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        public NodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
         
         @Override
         @JsonProperty("executionInfo")

@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
@@ -73,7 +74,6 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
@@ -112,6 +112,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEnt.class);
+        res.add(AllowedNodeActionsEnt.class);
         res.add(AnnotationEnt.class);
         res.add(AppStateEnt.class);
         res.add(BoundsEnt.class);
@@ -140,7 +141,6 @@ public class ListEntities {
         res.add(NodePortTemplateEnt.class);
         res.add(NodeStateEnt.class);
         res.add(NodeViewDescriptionEnt.class);
-        res.add(NodeViewEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
         res.add(PortViewEnt.class);
@@ -164,6 +164,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
+        res.add(AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder.class);
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
@@ -192,7 +193,6 @@ public class ListEntities {
         res.add(NodePortTemplateEnt.NodePortTemplateEntBuilder.class);
         res.add(NodeStateEnt.NodeStateEntBuilder.class);
         res.add(NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder.class);
-        res.add(NodeViewEnt.NodeViewEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
         res.add(PortViewEnt.PortViewEntBuilder.class);

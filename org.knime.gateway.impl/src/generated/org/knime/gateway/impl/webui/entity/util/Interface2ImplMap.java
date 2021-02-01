@@ -46,6 +46,8 @@ package org.knime.gateway.impl.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
@@ -102,8 +104,6 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -154,6 +154,9 @@ public class Interface2ImplMap {
     public static <B extends GatewayEntityBuilder> B create(final Class<B> clazz) {
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
+        }        
+        if(clazz == AllowedNodeActionsEntBuilder.class) {
+            return (B)new DefaultAllowedNodeActionsEnt.DefaultAllowedNodeActionsEntBuilder();
         }        
         if(clazz == AnnotationEntBuilder.class) {
             return (B)new DefaultAnnotationEnt.DefaultAnnotationEntBuilder();
@@ -238,9 +241,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeViewDescriptionEntBuilder.class) {
             return (B)new DefaultNodeViewDescriptionEnt.DefaultNodeViewDescriptionEntBuilder();
-        }        
-        if(clazz == NodeViewEntBuilder.class) {
-            return (B)new DefaultNodeViewEnt.DefaultNodeViewEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();

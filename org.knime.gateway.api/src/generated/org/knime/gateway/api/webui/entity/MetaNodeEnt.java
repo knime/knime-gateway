@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -111,14 +111,6 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
         MetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
-         * Indicates whether the node has a dialog (if set to true). If absent or false, no dialog is available. (might carry more information in the future, e.g. whether it&#39;s a data-aware dialog etc.)
-         * 
-         * @param dialog the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodeEntBuilder setDialog(Boolean dialog);
-        
-        /**
          * The list of inputs.
          * 
          * @param inPorts the property value, NOT <code>null</code>! 
@@ -164,7 +156,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setAllowedActions(AllowedActionsEnt allowedActions);
+        MetaNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
         
         /**
    		 * Set executionInfo

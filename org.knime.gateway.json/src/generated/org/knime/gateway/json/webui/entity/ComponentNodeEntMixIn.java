@@ -44,12 +44,11 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
@@ -81,10 +80,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public org.knime.gateway.api.entity.NodeIDEnt getId();
     
     @Override
-    @JsonProperty("dialog")
-    public Boolean isDialog();
-    
-    @Override
     @JsonProperty("inPorts")
     public java.util.List<? extends NodePortEnt> getInPorts();
     
@@ -106,7 +101,7 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     
     @Override
     @JsonProperty("allowedActions")
-    public AllowedActionsEnt getAllowedActions();
+    public AllowedNodeActionsEnt getAllowedActions();
     
     @Override
     @JsonProperty("executionInfo")
@@ -132,10 +127,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @JsonProperty("link")
     public String getLink();
     
-    @Override
-    @JsonProperty("view")
-    public NodeViewEnt getView();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -152,10 +143,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("id")
         public ComponentNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        @Override
-        @JsonProperty("dialog")
-        public ComponentNodeEntMixInBuilder setDialog(final Boolean dialog);
         
         @Override
         @JsonProperty("inPorts")
@@ -179,7 +166,7 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         
         @Override
         @JsonProperty("allowedActions")
-        public ComponentNodeEntMixInBuilder setAllowedActions(final AllowedActionsEnt allowedActions);
+        public ComponentNodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
         
         @Override
         @JsonProperty("executionInfo")
@@ -204,10 +191,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("link")
         public ComponentNodeEntMixInBuilder setLink(final String link);
-        
-        @Override
-        @JsonProperty("view")
-        public ComponentNodeEntMixInBuilder setView(final NodeViewEnt view);
         
     }
 
