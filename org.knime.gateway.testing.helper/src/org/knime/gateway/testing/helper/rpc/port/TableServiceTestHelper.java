@@ -46,7 +46,7 @@
  * History
  *   Oct 26, 2020 (hornm): created
  */
-package org.knime.gateway.testing.helper.rpc;
+package org.knime.gateway.testing.helper.rpc.port;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

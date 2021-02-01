@@ -50,7 +50,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.knime.gateway.impl.rpc.table.DefaultTableService;
 import org.knime.gateway.impl.rpc.table.TableService;
-import org.knime.gateway.testing.helper.rpc.TableServiceTestHelper;
+import org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper;
 
 /**
  * Tests expected behavior of {@link TableService}-methods.

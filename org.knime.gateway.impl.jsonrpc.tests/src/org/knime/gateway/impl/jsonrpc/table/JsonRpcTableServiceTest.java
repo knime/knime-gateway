@@ -63,7 +63,7 @@ import org.knime.core.rpc.json.JsonRpcTestUtil;
 import org.knime.gateway.impl.rpc.table.DefaultTableService;
 import org.knime.gateway.impl.rpc.table.Table;
 import org.knime.gateway.impl.rpc.table.TableService;
-import org.knime.gateway.testing.helper.rpc.TableServiceTestHelper;
+import org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

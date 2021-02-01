@@ -134,6 +134,13 @@ public interface Table {
             return null; // NOSONAR
         }
         try {
+            if (table.getRowCount() == 0l) {
+                return Collections.emptyList();
+            }
+        } catch (UnknownRowCountException ex) { // NOSONAR
+            //
+        }
+        try {
             return table.getRows(Math.max(start, 0), size, null).stream().map(r -> Row.create(r, spec))
                 .collect(Collectors.toList());
         } catch (IndexOutOfBoundsException | CanceledExecutionException ex) {

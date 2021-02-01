@@ -48,29 +48,42 @@
  */
 package org.knime.gateway.impl.rpc;
 
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.extension.NodeFactoryExtensionManager;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowContext;
+import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.rpc.RpcServer;
+import org.knime.core.util.FileUtil;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.rpc.node.SingleRpcNodeFactory;
 
 /**
  * Tests for {@link RpcServerManager}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class RpcServiceManagerTest {
+public class RpcServerManagerTest {
 
     /**
      * Tests the {@link RpcServerManager#doRpc(NodeContainer, int, String)} for rpc requests on ports. Makes especially
@@ -87,19 +100,19 @@ public class RpcServiceManagerTest {
         String rpcRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}";
 
         String rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkRpcResponse(rpcResponse, 5, -1);
+        checkPortRpcResponse(rpcResponse, 5, -1);
 
         // change config and check again
         changeDataGenConfig(wfm, dataGen.getID(), 1);
         rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkRpcResponse(rpcResponse, 3, -1);
+        checkPortRpcResponse(rpcResponse, 3, -1);
 
         /* test with data (i.e. executed node) */
 
         wfm.executeUpToHere(dataGen.getID());
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkRpcResponse(rpcResponse, 3, 8);
+        checkPortRpcResponse(rpcResponse, 3, 8);
 
         // change config and check again
         wfm.resetAndConfigureNode(dataGen.getID());
@@ -107,22 +120,47 @@ public class RpcServiceManagerTest {
         wfm.executeUpToHere(dataGen.getID());
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         rpcResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
-        checkRpcResponse(rpcResponse, 5, 8);
+        checkPortRpcResponse(rpcResponse, 5, 8);
+
+        // check number of cached port rpc servers before and after gc just to make sure that all the
+        // RpcServer-instances are only weakly referenced and are removed from memory
+        Map<Integer, WeakReference<RpcServer>> portRpcServerCache = RpcServerManager.getInstance().m_portRpcServerCache;
+        assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(2));
+        System.gc(); // NOSONAR
+        assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
+        RpcServerManager.getInstance().doRpc(dataGen, 1, rpcRequest);
+        assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(1));
+        assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() != null));
 
         loader.disposeWorkflows();
+    }
 
-        // check number of cached port rpc servers before and after gc
-        // Explanation: The RpcServerManager caches the port rpc servers in a map from PortObject to RpcServer, where
-        // the keys (PortObject) are weak references to not hinder their removal from memory.
-        // However, the RpcServer implementation for BufferedDataTable (a PortObject), e.g., also holds a reference
-        // which must be a weak reference, too! Thus, those lines below essentially make sure that no RpcServer keeps
-        // a solid reference on the PortObject they are operating on.
-        assertThat("unexpected number of cached port rpc servers",
-            RpcServerManager.getInstance().getNumCachedPortRpcServers(), is(2));
+    /**
+     * Test for {@link RpcServerManager#doRpc(NodeContainer, int, String)}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDoNodeRpc() throws Exception {
+        WorkflowManager wfm = createEmptyWorkflow();
+        NodeFactory<?> factory = NodeFactoryExtensionManager.getInstance()
+            .createNodeFactory(SingleRpcNodeFactory.class.getName()).orElse(null);
+        NodeID id = wfm.createAndAddNode(factory);
+
+        String rpcReq = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"method\"}";
+        String rpcRes = RpcServerManager.getInstance().doRpc((NativeNodeContainer)wfm.getNodeContainer(id), rpcReq);
+        assertThat(rpcRes, is("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"result1234\"}\n"));
+
+        // check number of cached node rpc servers before and after gc just to make sure that they are properly removed
+        // from memory
+        Map<Integer, WeakReference<RpcServer>> nodeRpcServerCache = RpcServerManager.getInstance().m_nodeRpcServerCache;
+        assertThat("unexpected number of cached node rpc servers", nodeRpcServerCache.size(), is(1));
         System.gc(); // NOSONAR
-        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> assertThat("port rpc server cache expected to be empty",
-                RpcServerManager.getInstance().getNumCachedPortRpcServers(), is(0)));
+        assertTrue(nodeRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
+        RpcServerManager.getInstance().doRpc((NativeNodeContainer)wfm.getNodeContainer(id), rpcReq);
+        assertTrue(nodeRpcServerCache.values().stream().allMatch(ref -> ref.get() != null));
+
+        wfm.getParent().removeProject(wfm.getID());
     }
 
     private static void changeDataGenConfig(final WorkflowManager wfm, final NodeID id, final int universeSize)
@@ -136,9 +174,24 @@ public class RpcServiceManagerTest {
         wfm.loadNodeSettings(id, ns);
     }
 
-    private static void checkRpcResponse(final String res, final int colCount, final int rowCount) {
+    private static void checkPortRpcResponse(final String res, final int colCount, final int rowCount) {
         assertThat("wrong number of expected columns", res, containsString("\"totalNumColumns\":" + colCount));
         assertThat("wrong number of expected rows", res, containsString("\"totalNumRows\":" + rowCount));
     }
+
+    private static WorkflowManager createEmptyWorkflow() throws IOException {
+        File dir = FileUtil.createTempDir("workflow");
+        File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
+        if (workflowFile.createNewFile()) {
+            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper();
+            WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowFile.getParentFile());
+            creationHelper.setWorkflowContext(fac.createContext());
+
+            return WorkflowManager.ROOT.createAndAddProject("workflow", creationHelper);
+        } else {
+            throw new IllegalStateException("Creating empty workflow failed");
+        }
+    }
+
 
 }

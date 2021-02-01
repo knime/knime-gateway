@@ -66,7 +66,7 @@ import org.knime.core.node.workflow.NodeOutPort;
  */
 public class DefaultTableService implements TableService {
 
-    private final WeakReference<DirectAccessTable> m_table;
+    private final DirectAccessTable m_table;
 
     private final DataTableSpec m_spec;
 
@@ -80,11 +80,11 @@ public class DefaultTableService implements TableService {
         if (DataTableSpec.class.isAssignableFrom(portType.getPortObjectSpecClass())
             && BufferedDataTable.class.equals(portType.getPortObjectClass())) {
             BufferedDataTable btable = (BufferedDataTable)port.getPortObject();
-            m_table = new WeakReference<>(btable != null ? new WindowCacheTable(btable) : null);
+            m_table = btable != null ? new WindowCacheTable(btable) : null;
             m_spec = (DataTableSpec)port.getPortObjectSpec();
         } else if (DataTableSpecProvider.class.isAssignableFrom(portType.getPortObjectSpecClass())
             && DirectAccessTable.class.isAssignableFrom(portType.getPortObjectClass())) {
-            m_table = new WeakReference<>((DirectAccessTable)port.getPortObject());
+            m_table = (DirectAccessTable)port.getPortObject();
             m_spec = ((DataTableSpecProvider)port.getPortObjectSpec()).getDataTableSpec();
         } else {
             throw new IllegalArgumentException("No table can be served from port type " + portType.getName());
@@ -93,12 +93,12 @@ public class DefaultTableService implements TableService {
 
     @Override
     public Table getTable(final long start, final int size) {
-        return Table.create(m_spec, m_table.get(), start, size);
+        return Table.create(m_spec, m_table, start, size);
     }
 
     @Override
     public List<Row> getRows(final long start, final int size) {
-        return Table.getRows(m_table.get(), start, size, m_spec);
+        return Table.getRows(m_table, start, size, m_spec);
     }
 
 }

@@ -48,8 +48,8 @@
  */
 package org.knime.gateway.impl.jsonrpc.table;
 
-import static org.knime.gateway.testing.helper.rpc.TableServiceTestHelper.createTable;
-import static org.knime.gateway.testing.helper.rpc.TableServiceTestHelper.mockNodeOutPort;
+import static org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper.createTable;
+import static org.knime.gateway.testing.helper.rpc.port.TableServiceTestHelper.mockNodeOutPort;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;

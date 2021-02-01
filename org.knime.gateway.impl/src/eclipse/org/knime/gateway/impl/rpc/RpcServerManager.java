@@ -51,13 +51,15 @@ package org.knime.gateway.impl.rpc;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.WeakHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,10 +95,20 @@ public final class RpcServerManager {
 
     private static RpcServerManager instance;
 
-    private final Map<NativeNodeContainer, RpcServer> m_nodeRpcServerCache =
-        Collections.synchronizedMap(new WeakHashMap<>());
+    // Synchronized 'identity' map with weak values (for brief explanation see port rpc server cache).
+    // The map keys are identity hash codes of NodeContainers.
+    // (package scope for testing)
+    final Map<Integer, WeakReference<RpcServer>> m_nodeRpcServerCache = Collections.synchronizedMap(new HashMap<>());
 
-    private final Map<PortObject, RpcServer> m_portRpcServerCache = Collections.synchronizedMap(new WeakHashMap<>());
+    // Synchronized 'identity' map with weak values, because:
+    // * thread-safety
+    // * to not rely on the PortObject equals method (the map-key is the PortObject identity hash code)
+    // * to allow RpcServer-instances to be removed from memory to avoid memory leaks, e.g. the DefaultTableService,
+    //   referenced from a RpcServer-impl, buffers table data (TODO soft references would maybe be preferable but
+    //   that would keep the PortObjects from being garbage collected when not needed anymore in case they indirectly
+    //   referenced by the RpcServer)
+    // (package scope for testing)
+    final Map<Integer, WeakReference<RpcServer>> m_portRpcServerCache = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Returns the singleton instance for this service.
@@ -175,8 +187,8 @@ public final class RpcServerManager {
     private RpcServer getRpcServer(final NativeNodeContainer nc) {
         NodeRpcServerFactory factory = getRpcServerFactoryForNode(nc).orElse(null);
         if (factory != null) {
-            return m_nodeRpcServerCache.computeIfAbsent(nc,
-                nnc -> factory.createRpcServer(nnc.getNode().getNodeModel()));
+            return getFromCacheOrCreate(nc, m_nodeRpcServerCache,
+                () -> factory.createRpcServer(nc.getNode().getNodeModel()));
         } else {
             throw new IllegalStateException("The node with id '" + nc.getID() + "' does not provide a rpc server.");
         }
@@ -189,11 +201,30 @@ public final class RpcServerManager {
             if (portObject == null) {
                 return factory.createRpcServer(port);
             } else {
-                return m_portRpcServerCache.computeIfAbsent(port.getPortObject(), p -> factory.createRpcServer(port));
+                return getFromCacheOrCreate(portObject, m_portRpcServerCache, () -> factory.createRpcServer(port));
             }
         } else {
             throw new IllegalStateException(
                 "The port of type '" + port.getPortType().getName() + "' does not provide a rpc server.");
+        }
+    }
+
+    private static <K, V> V getFromCacheOrCreate(final K key, final Map<Integer, WeakReference<V>> map,
+        final Supplier<V> factory) {
+        removeNullReferencesFromMap(map);
+        WeakReference<V> ref = map.get(System.identityHashCode(key)); // NOSONAR
+        V value = ref == null ? null : ref.get();
+        if (value == null) {
+            value = factory.get();
+            map.put(System.identityHashCode(key), new WeakReference<>(value));
+        }
+        return value;
+    }
+
+    private static <V> void removeNullReferencesFromMap(final Map<Integer, WeakReference<V>> map) {
+        Map<Integer, WeakReference<V>> m = map;
+        synchronized (m) {
+            m.values().removeIf(v -> v.get() == null);
         }
     }
 
@@ -217,15 +248,6 @@ public final class RpcServerManager {
                     + "but could not process extension %s: %s", cfe.getContributor().getName(), ex.getMessage()), ex);
         }
         return null;
-    }
-
-    /**
-     * For testing purposes only!
-     *
-     * @return the number of cached port rpc servers
-     */
-    int getNumCachedPortRpcServers() {
-        return m_portRpcServerCache.size();
     }
 
 }

@@ -15,7 +15,7 @@
  * email: contact@knime.com
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.testing.helper.rpc;
+package org.knime.gateway.testing.helper.rpc.port;
 
 import javax.swing.JComponent;
 

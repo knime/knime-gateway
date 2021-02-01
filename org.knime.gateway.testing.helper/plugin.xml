@@ -6,11 +6,24 @@
       <portType
             hidden="false"
             name="DirectAccessTablePortObject (for testing)"
-            objectClass="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObject"
-            objectSerializer="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObject$DirectAccessTablePortObjectSerializer"
-            specClass="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObjectSpec"
-            specSerializer="org.knime.gateway.testing.helper.rpc.DirectAccessTablePortObjectSpec$DirectAccessTablePortObjectSpecSerializer">
+            objectClass="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObject"
+            objectSerializer="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObject$DirectAccessTablePortObjectSerializer"
+            specClass="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObjectSpec"
+            specSerializer="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObjectSpec$DirectAccessTablePortObjectSpecSerializer">
       </portType>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            deprecated="false"
+            factory-class="org.knime.gateway.testing.helper.rpc.node.RpcNodeFactory"
+            hidden="true">
+      </node>
+      <node
+            deprecated="false"
+            factory-class="org.knime.gateway.testing.helper.rpc.node.SingleRpcNodeFactory"
+            hidden="true">
+      </node>
    </extension>
 
 </plugin>
