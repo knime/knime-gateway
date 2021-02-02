@@ -14,27 +14,27 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * The main workflow the web-ui tests are based on.
      */
-    GENERAL_WEB_UI("/files/Test Gateway Workflow", "general_web_ui"),
+    GENERAL_WEB_UI("/files/testflows/Test Gateway Workflow", "general_web_ui"),
 
     /**
      * Workflow to test the execution states.
      */
-    EXECUTION_STATES("/files/Execution States", "execution states"),
+    EXECUTION_STATES("/files/testflows/Execution States", "execution states"),
 
     /**
      * A component project.
      */
-    COMPONENT_PROJECT("/files/Component", "component project"),
+    COMPONENT_PROJECT("/files/testflows/Component", "component project"),
 
     /**
      * Workflow to test workflow and component metadata.
      */
-    METADATA("/files/Workflow Metadata", "workflow_metadata"),
+    METADATA("/files/testflows/Workflow Metadata", "workflow_metadata"),
 
     /**
      * Workflow to test job managers.
      */
-    STREAMING_EXECUTION("/files/Streaming Execution", "streaming_execution");
+    STREAMING_EXECUTION("/files/testflows/Streaming Execution", "streaming_execution");
 
 
     private final String m_workflowDir;
