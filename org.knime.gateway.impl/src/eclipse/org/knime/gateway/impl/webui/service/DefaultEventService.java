@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static java.lang.System.identityHashCode;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEntWithInteractionInfo;
 import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager;
@@ -73,6 +74,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
@@ -109,7 +111,7 @@ public final class DefaultEventService implements EventService {
      */
     private final Map<WorkflowKey, PatchEntCreator> m_patchEntCreators = new HashMap<>();
 
-    private final List<BiConsumer<String, EventEnt>> m_eventConsumer = new ArrayList<>();
+    private final Map<Integer, Consumer<Event>> m_eventConsumer = new HashMap<>();
 
     /*
      * For testing purposes only.
@@ -118,7 +120,10 @@ public final class DefaultEventService implements EventService {
     private Runnable m_preEventCreationCallback = null;
 
     private DefaultEventService() {
-        // singleton
+        WorkflowProjectManager.addWorkflowProjectRemovedListener(projectId -> {
+            m_patchEntCreators.keySet().removeIf(k -> k.getProjectId().equals(projectId));
+            m_workflowChangesListeners.keySet().removeIf(k -> k.getProjectId().equals(projectId));
+        });
     }
 
     /**
@@ -126,7 +131,7 @@ public final class DefaultEventService implements EventService {
      */
     @SuppressWarnings("resource")
     @Override
-    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
+    public void addEventListener(final String projectId, final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
             WorkflowKey key = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
@@ -137,7 +142,7 @@ public final class DefaultEventService implements EventService {
             PatchEntCreator patchEntCreator = new PatchEntCreator(wfEventType.getSnapshotId());
             WorkflowChangedEventEnt workflowChangedEvent = createWorkflowChangedEvent(patchEntCreator, wfm, key);
             if (workflowChangedEvent != null) {
-                sendEvent(workflowChangedEvent);
+                sendEvent(key.getProjectId(), workflowChangedEvent);
             }
 
             // initialize WorkflowChangesListener (if not already)
@@ -157,7 +162,7 @@ public final class DefaultEventService implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void removeEventListener(final EventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final String projectId, final EventTypeEnt eventTypeEnt) {
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
             WorkflowKey wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
@@ -189,8 +194,18 @@ public final class DefaultEventService implements EventService {
      * @param eventConsumer the event consumer to add
      */
     public void addEventConsumer(final BiConsumer<String, EventEnt> eventConsumer) {
-        m_eventConsumer.add(eventConsumer);
+        m_eventConsumer.put(identityHashCode(eventConsumer),
+            e -> eventConsumer.accept(e.getName(), e.getEntity()));
     }
+
+    public void addEventConsumer(final Consumer<Event> eventConsumer) {
+        m_eventConsumer.put(identityHashCode(eventConsumer), eventConsumer);
+    }
+
+    public void removeEventConsumer(final Consumer<Event> eventConsumer) {
+        m_eventConsumer.remove(identityHashCode(eventConsumer));
+    }
+
 
     void setEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer,
         final Runnable preEventCreationCallback) {
@@ -210,7 +225,7 @@ public final class DefaultEventService implements EventService {
      * @param eventConsumer the consumer to remove
      */
     public void removeEventConsumer(final BiConsumer<String, EventEnt> eventConsumer) {
-        m_eventConsumer.remove(eventConsumer); // NOSONAR
+        m_eventConsumer.remove(identityHashCode(eventConsumer)); // NOSONAR
     }
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey key) {
@@ -222,7 +237,7 @@ public final class DefaultEventService implements EventService {
             WorkflowChangedEventEnt event =
                 createWorkflowChangedEvent(m_patchEntCreators.get(key), wfm, key);
             if (event != null) {
-                sendEvent(event);
+                sendEvent(key.getProjectId(), event);
             }
         };
     }
@@ -252,12 +267,30 @@ public final class DefaultEventService implements EventService {
             .setSnapshotId(patchEntCreator.getSnapshotId()).build();
     }
 
-    private void sendEvent(final WorkflowChangedEventEnt event) {
-        sendEvent("WorkflowChangedEvent", event);
+    private void sendEvent(final String projectId, final WorkflowChangedEventEnt event) {
+        sendEvent(projectId, "WorkflowChangedEvent", event);
     }
 
-    private void sendEvent(final String name, final EventEnt event) {
-        m_eventConsumer.forEach(c -> c.accept(name, event));
+    private void sendEvent(final String projectId, final String name, final EventEnt event) {
+        final Event e = new Event() {
+
+            @Override
+            public EventEnt getEntity() {
+                return event;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public String getProjectId() {
+                return projectId;
+            }
+
+        };
+        m_eventConsumer.values().forEach(c -> c.accept(e));
     }
 
     /**
@@ -318,6 +351,15 @@ public final class DefaultEventService implements EventService {
         public PatchEnt create() {
             return new DefaultPatchEntBuilder().setOps(m_ops).build();
         }
+    }
+
+    public static interface Event {
+
+        EventEnt getEntity();
+
+        String getName();
+
+        String getProjectId();
     }
 
 }

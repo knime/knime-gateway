@@ -118,7 +118,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         WorkflowChangedEventTypeEnt eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(wf.getSnapshotId())
             .setTypeId("WorkflowChangedEventType").build();
-        es().addEventListener(eventType);
+        es().addEventListener(wfId, eventType);
 
         DeleteCommandEnt command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
             Collections.emptyList(), Collections.emptyList());
@@ -137,7 +137,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         m_events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.ADD));
         assertThat("patch op value expected", patchOpEnt.getValue(), is(notNullValue()));
-        es().removeEventListener(eventType);
+        es().removeEventListener(wfId, eventType);
     }
 
     private PatchOpEnt waitAndFindPatchOpForPath(final String path) {

@@ -139,7 +139,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
 
         // remove event listener and check successful removal
         testEventConsumer.getEvents().clear();
-        es.removeEventListener(eventType);
+        es.removeEventListener(idAndWfm.getFirst().toString(), eventType);
         WorkflowListener wfListenerMock = mock(WorkflowListener.class);
         wfm.addListener(wfListenerMock); // listener in order to wait for the wf-events to be broadcasted
         wfm.addWorkflowAnnotation(new WorkflowAnnotation());

@@ -88,7 +88,7 @@ public class EventServiceTest extends GatewayServiceTest {
         DefaultEventService es = DefaultEventService.getInstance();
 
         // remove event listener again
-        es.removeEventListener(eventType);
+        es.removeEventListener(idAndWfm.getFirst().toString(), eventType);
 
         checkThatNoEventsAreSent(idAndWfm.getSecond());
     }
@@ -107,7 +107,7 @@ public class EventServiceTest extends GatewayServiceTest {
         DefaultEventService es = DefaultEventService.getInstance();
 
         // add one more event listenr
-        es.addEventListener(eventType);
+        es.addEventListener(idAndWfm.getFirst().toString(), eventType);
 
         es.removeAllEventListeners();
 
@@ -124,7 +124,7 @@ public class EventServiceTest extends GatewayServiceTest {
         WorkflowSnapshotEnt wf = ws.getWorkflow(projectId, wfId, Boolean.TRUE);
         WorkflowChangedEventTypeEnt eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(projectId).setWorkflowId(wfId).setSnapshotId(wf.getSnapshotId()).build();
-        es.addEventListener(eventType);
+        es.addEventListener(projectId, eventType);
         return eventType;
     }
 

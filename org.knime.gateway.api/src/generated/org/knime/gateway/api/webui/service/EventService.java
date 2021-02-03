@@ -58,22 +58,24 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 public interface EventService extends GatewayService {
 
     /**
-     * Adds a new event listener for a certain type of event.
+     * Adds a new event listener for a certain type of event (TODO only workflow events here)
      *
+     * @param projectId ID of the workflow-project.
      * @param eventTypeEnt 
      *
      * 
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    void addEventListener(EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException;
+    void addEventListener(String projectId, EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException;
         
     /**
      * Unregisters event listeners.
      *
+     * @param projectId ID of the workflow-project.
      * @param eventTypeEnt 
      *
      * 
      */
-    void removeEventListener(EventTypeEnt eventTypeEnt) ;
+    void removeEventListener(String projectId, EventTypeEnt eventTypeEnt) ;
         
 }

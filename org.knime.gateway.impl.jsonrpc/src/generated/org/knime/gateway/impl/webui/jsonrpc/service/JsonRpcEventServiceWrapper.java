@@ -80,8 +80,8 @@ public class JsonRpcEventServiceWrapper implements EventService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public void addEventListener(@JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException {
-        m_service.addEventListener(eventTypeEnt);    
+    public void addEventListener(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException {
+        m_service.addEventListener(projectId, eventTypeEnt);    
     }
 
 	/**
@@ -89,8 +89,8 @@ public class JsonRpcEventServiceWrapper implements EventService {
      */
     @Override
     @JsonRpcMethod(value = "removeEventListener")
-    public void removeEventListener(@JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  {
-        m_service.removeEventListener(eventTypeEnt);    
+    public void removeEventListener(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  {
+        m_service.removeEventListener(projectId, eventTypeEnt);    
     }
 
 }
