@@ -61,7 +61,7 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
 
 
   /**
-   * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the poperty is absent, no dialog is available altogether.
+   * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
    * @return canOpenDialog 
    **/
   public Boolean isCanOpenDialog();
@@ -79,7 +79,7 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
     public interface AllowedNodeActionsEntBuilder extends GatewayEntityBuilder<AllowedNodeActionsEnt> {
 
         /**
-         * Whether the node can be executed which depenends on the node state and the states of the node&#39;s predecessors.
+         * Whether the node can be executed which depends on the node state and the states of the node&#39;s predecessors.
          * 
          * @param canExecute the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -103,7 +103,7 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
         AllowedNodeActionsEntBuilder setCanReset(Boolean canReset);
         
         /**
-         * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the poperty is absent, no dialog is available altogether.
+         * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
          * 
          * @param canOpenDialog the property value,  
          * @return this entity builder for chaining

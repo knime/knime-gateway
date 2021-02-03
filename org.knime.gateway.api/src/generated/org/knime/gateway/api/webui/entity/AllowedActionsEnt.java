@@ -60,7 +60,7 @@ public interface AllowedActionsEnt extends GatewayEntity {
 
 
   /**
-   * Whether the node can be executed which depenends on the node state and the states of the node&#39;s predecessors.
+   * Whether the node can be executed which depends on the node state and the states of the node&#39;s predecessors.
    * @return canExecute , never <code>null</code>
    **/
   public Boolean isCanExecute();
@@ -84,7 +84,7 @@ public interface AllowedActionsEnt extends GatewayEntity {
     public interface AllowedActionsEntBuilder extends GatewayEntityBuilder<AllowedActionsEnt> {
 
         /**
-         * Whether the node can be executed which depenends on the node state and the states of the node&#39;s predecessors.
+         * Whether the node can be executed which depends on the node state and the states of the node&#39;s predecessors.
          * 
          * @param canExecute the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
