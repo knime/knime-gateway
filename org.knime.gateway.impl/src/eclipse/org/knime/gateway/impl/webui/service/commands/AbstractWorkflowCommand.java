@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
@@ -75,12 +76,17 @@ abstract class AbstractWorkflowCommand<E extends WorkflowCommandEnt> implements 
         m_wfKey = wfKey;
         m_commandEntity = commandEntity;
         m_wfm = DefaultWorkflowService.getWorkflowManager(wfKey);
-        execute();
+        try (WorkflowLock lock = m_wfm.lock()) {
+            execute();
+        }
     }
 
     /**
      * Executes the command. Use {@link #getCommandEntity()}, {@link #getWorkflowManager()}, or
      * {@link #getWorkflowKey()} to retrieve the data required to execute the command.
+     *
+     * The workflow is locked before this method is called (and released afterwards). I.e. implementing methods don't
+     * need to do that anymore.
      *
      * @throws OperationNotAllowedException
      */
