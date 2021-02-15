@@ -46,7 +46,7 @@
  * History
  *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.operations;
+package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -54,114 +54,115 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.service.WorkflowKey;
 
 /**
- * Allows one to apply, undo and redo workflow operations for workflows. It accordingly keeps undo- and redo-stacks for
- * each workflow an operation is been applied on. Individual types of workflow operations are represented by the
- * implementations of {@link WorkflowOperationEnt}, i.e. different kind of entities of workflow operations.
+ * Allows one to execute, undo and redo workflow commands for workflows. It accordingly keeps undo- and redo-stacks for
+ * each workflow a command has been executed on. Individual types of workflow commands are represented by the
+ * implementations of {@link WorkflowCommandEnt}, i.e. different kind of entities of workflow commands.
  *
  * This is API that might/should be moved closer to the core eventually.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class WorkflowOperations {
+public final class WorkflowCommands {
 
-    private final Map<WorkflowKey, Deque<WorkflowOperation<? extends WorkflowOperationEnt>>> m_redoStacks;
+    private final Map<WorkflowKey, Deque<WorkflowCommand<? extends WorkflowCommandEnt>>> m_redoStacks;
 
-    private final Map<WorkflowKey, Deque<WorkflowOperation<? extends WorkflowOperationEnt>>> m_undoStacks;
+    private final Map<WorkflowKey, Deque<WorkflowCommand<? extends WorkflowCommandEnt>>> m_undoStacks;
 
-    private final int m_maxNumUndoAndRedoOperationsPerWorkflow;
+    private final int m_maxNumUndoAndRedoCommandsPerWorkflow;
 
     /**
      * Creates a new instance with initially empty undo- and redo-stacks.
      *
-     * @param maxNumUndoAndRedoOperationsPerWorkflow the maximum size of undo- and redo-stack for each workflow
+     * @param maxNumUndoAndRedoCommandsPerWorkflow the maximum size of undo- and redo-stack for each workflow
      */
-    public WorkflowOperations(final int maxNumUndoAndRedoOperationsPerWorkflow) {
-        m_maxNumUndoAndRedoOperationsPerWorkflow = maxNumUndoAndRedoOperationsPerWorkflow;
+    public WorkflowCommands(final int maxNumUndoAndRedoCommandsPerWorkflow) {
+        m_maxNumUndoAndRedoCommandsPerWorkflow = maxNumUndoAndRedoCommandsPerWorkflow;
         m_redoStacks = Collections.synchronizedMap(new HashMap<>());
         m_undoStacks = Collections.synchronizedMap(new HashMap<>());
     }
 
     /**
-     * Applies the given workflow operation, represented by the operation entity, to a workflow referenced by the given
+     * Executes the given workflow command, represented by the command entity, to a workflow referenced by the given
      * {@link WorkflowKey}.
      *
-     * @param <E> the type of workflow operation
-     * @param wfKey reference to the workflow to apply the operation on
-     * @param operation the workflow operation entity to apply
+     * @param <E> the type of workflow command
+     * @param wfKey reference to the workflow to execute the command for
+     * @param command the workflow command entity to execute
      *
-     * @throws OperationNotAllowedException if the operation couldn't be applied
+     * @throws OperationNotAllowedException if the command couldn't be executed
      * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
     @SuppressWarnings("unchecked")
-    public <E extends WorkflowOperationEnt> void apply(final WorkflowKey wfKey, final E operation)
+    public <E extends WorkflowCommandEnt> void execute(final WorkflowKey wfKey, final E command)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        WorkflowOperation<E> op;
-        if (operation instanceof TranslateOperationEnt) {
-            op = (WorkflowOperation<E>)new Translate();
+        WorkflowCommand<E> op;
+        if (command instanceof TranslateCommandEnt) {
+            op = (WorkflowCommand<E>)new Translate();
         } else {
             throw new OperationNotAllowedException(
-                "Operation of type " + operation.getClass().getSimpleName() + " cannot be applied. Unknown operation.");
+                "Command of type " + command.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
-        op.apply(wfKey, operation);
-        addOperationToUndoStack(wfKey, op);
+        // lock
+        op.execute(wfKey, command);
+        addCommandToUndoStack(wfKey, op);
         clearRedoStack(wfKey);
     }
 
     /**
      * @param wfKey reference to the workflow to check the undo-state for
-     * @return whether there is at least one operation on the undo-stack
+     * @return whether there is at least one command on the undo-stack
      */
     public boolean canUndo(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> undoStack = m_undoStacks.get(wfKey);
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
         return undoStack != null && !undoStack.isEmpty();
     }
 
     /**
-     * @param wfKey reference to the workflow to undo the last operation for
-     * @throws OperationNotAllowedException if there is no operation to be undone
+     * @param wfKey reference to the workflow to undo the last command for
+     * @throws OperationNotAllowedException if there is no command to be undone
      */
     public void undo(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        WorkflowOperation<? extends WorkflowOperationEnt> op = moveOperationFromUndoToRedoStack(wfKey);
+        WorkflowCommand<? extends WorkflowCommandEnt> op = moveCommandFromUndoToRedoStack(wfKey);
         if (op != null) {
             op.undo();
         } else {
-            throw new OperationNotAllowedException("No operation to undo");
+            throw new OperationNotAllowedException("No command to undo");
         }
     }
 
     /**
      * @param wfKey reference to the workflow to check the redo-state for
-     * @return whether there is at least one operation on the redo-stack
+     * @return whether there is at least one command on the redo-stack
      */
     public boolean canRedo(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> redoStack = m_redoStacks.get(wfKey);
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
         return redoStack != null && !redoStack.isEmpty();
     }
 
     /**
-     * @param wfKey reference to the workflow to redo the last operation for
-     * @throws OperationNotAllowedException if there is no operation to be redone
+     * @param wfKey reference to the workflow to redo the last command for
+     * @throws OperationNotAllowedException if there is no command to be redone
      */
     public void redo(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        WorkflowOperation<? extends WorkflowOperationEnt> op = moveOperationFromRedoToUndoStack(wfKey);
+        WorkflowCommand<? extends WorkflowCommandEnt> op = moveCommandFromRedoToUndoStack(wfKey);
         if (op != null) {
             op.redo();
         } else {
-            throw new OperationNotAllowedException("No operation to redo");
+            throw new OperationNotAllowedException("No command to redo");
         }
     }
 
     /**
-     * Removes all operations from the undo- and redo-stacks for all workflows of a workflow project referenced by its
+     * Removes all commands from the undo- and redo-stacks for all workflows of a workflow project referenced by its
      * project-id.
      *
      * @param projectId the project-id of the workflow to clear all stacks for
@@ -171,53 +172,53 @@ public final class WorkflowOperations {
         m_redoStacks.entrySet().removeIf(e -> e.getKey().getProjectId().equals(projectId));
     }
 
-    private void addOperationToUndoStack(final WorkflowKey wfKey,
-        final WorkflowOperation<? extends WorkflowOperationEnt> op) {
+    private void addCommandToUndoStack(final WorkflowKey wfKey,
+        final WorkflowCommand<? extends WorkflowCommandEnt> op) {
         if (op == null) {
             return;
         }
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> stack =
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack =
             m_undoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
         addAndEnsureMaxSize(stack, op);
     }
 
-    private void addOperationToRedoStack(final WorkflowKey wfKey,
-        final WorkflowOperation<? extends WorkflowOperationEnt> op) {
+    private void addCommandToRedoStack(final WorkflowKey wfKey,
+        final WorkflowCommand<? extends WorkflowCommandEnt> op) {
         if (op == null) {
             return;
         }
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> stack =
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack =
             m_redoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
         addAndEnsureMaxSize(stack, op);
     }
 
     private <T> void addAndEnsureMaxSize(final Deque<T> stack, final T obj) {
         stack.addFirst(obj);
-        if (stack.size() > m_maxNumUndoAndRedoOperationsPerWorkflow) {
+        if (stack.size() > m_maxNumUndoAndRedoCommandsPerWorkflow) {
             stack.removeLast();
         }
     }
 
     private void clearRedoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> stack = m_redoStacks.get(wfKey);
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack = m_redoStacks.get(wfKey);
         if (stack != null) {
             stack.clear();
         }
     }
 
-    private WorkflowOperation<? extends WorkflowOperationEnt>
-        moveOperationFromRedoToUndoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> redoStack = m_redoStacks.get(wfKey);
-        WorkflowOperation<? extends WorkflowOperationEnt> op = redoStack != null ? redoStack.poll() : null;
-        addOperationToUndoStack(wfKey, op);
+    private WorkflowCommand<? extends WorkflowCommandEnt>
+        moveCommandFromRedoToUndoStack(final WorkflowKey wfKey) {
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
+        WorkflowCommand<? extends WorkflowCommandEnt> op = redoStack != null ? redoStack.poll() : null;
+        addCommandToUndoStack(wfKey, op);
         return op;
     }
 
-    private WorkflowOperation<? extends WorkflowOperationEnt>
-        moveOperationFromUndoToRedoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> undoStack = m_undoStacks.get(wfKey);
-        WorkflowOperation<? extends WorkflowOperationEnt> op = undoStack != null ? undoStack.poll() : null;
-        addOperationToRedoStack(wfKey, op);
+    private WorkflowCommand<? extends WorkflowCommandEnt>
+        moveCommandFromUndoToRedoStack(final WorkflowKey wfKey) {
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
+        WorkflowCommand<? extends WorkflowCommandEnt> op = undoStack != null ? undoStack.poll() : null;
+        addCommandToRedoStack(wfKey, op);
         return op;
     }
 
@@ -227,7 +228,7 @@ public final class WorkflowOperations {
      * @return
      */
     int getUndoStackSize(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> undoStack = m_undoStacks.get(wfKey);
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
         return undoStack == null ? -1 : undoStack.size();
     }
 
@@ -237,7 +238,7 @@ public final class WorkflowOperations {
      * @return
      */
     int getRedoStackSize(final WorkflowKey wfKey) {
-        Deque<WorkflowOperation<? extends WorkflowOperationEnt>> redoStack = m_redoStacks.get(wfKey);
+        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
         return redoStack == null ? -1 : redoStack.size();
     }
 

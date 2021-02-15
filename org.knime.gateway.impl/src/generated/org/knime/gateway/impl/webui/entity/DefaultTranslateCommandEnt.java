@@ -51,9 +51,9 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 
 /**
  * Moves workflow nodes and workflow annotations to a defined position.
@@ -61,23 +61,23 @@ import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
+public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
 
   protected KindEnum m_kind;
   protected XYEnt m_position;
   protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIDs;
   protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIDs;
   
-  protected DefaultTranslateOperationEnt() {
+  protected DefaultTranslateCommandEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "TranslateOperation";
+    return "TranslateCommand";
   }
   
-  private DefaultTranslateOperationEnt(DefaultTranslateOperationEntBuilder builder) {
+  private DefaultTranslateCommandEnt(DefaultTranslateCommandEntBuilder builder) {
     super();
     if(builder.m_kind == null) {
         throw new IllegalArgumentException("kind must not be null.");
@@ -111,7 +111,7 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultTranslateOperationEnt ent = (DefaultTranslateOperationEnt)o;
+        DefaultTranslateCommandEnt ent = (DefaultTranslateCommandEnt)o;
         return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeIDs, ent.m_nodeIDs) && Objects.equals(m_annotationIDs, ent.m_annotationIDs);
     }
 
@@ -153,9 +153,9 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
   }
     
   
-    public static class DefaultTranslateOperationEntBuilder implements TranslateOperationEntBuilder {
+    public static class DefaultTranslateCommandEntBuilder implements TranslateCommandEntBuilder {
     
-        public DefaultTranslateOperationEntBuilder(){
+        public DefaultTranslateCommandEntBuilder(){
             super();
         }
     
@@ -165,7 +165,7 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIDs = new java.util.ArrayList<>();
 
         @Override
-        public DefaultTranslateOperationEntBuilder setKind(KindEnum kind) {
+        public DefaultTranslateCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -174,7 +174,7 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
         }
 
         @Override
-        public DefaultTranslateOperationEntBuilder setPosition(XYEnt position) {
+        public DefaultTranslateCommandEntBuilder setPosition(XYEnt position) {
              if(position == null) {
                  throw new IllegalArgumentException("position must not be null.");
              }
@@ -183,7 +183,7 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
         }
 
         @Override
-        public DefaultTranslateOperationEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs) {
+        public DefaultTranslateCommandEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs) {
              if(nodeIDs == null) {
                  throw new IllegalArgumentException("nodeIDs must not be null.");
              }
@@ -192,7 +192,7 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
         }
 
         @Override
-        public DefaultTranslateOperationEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs) {
+        public DefaultTranslateCommandEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs) {
              if(annotationIDs == null) {
                  throw new IllegalArgumentException("annotationIDs must not be null.");
              }
@@ -202,8 +202,8 @@ public class DefaultTranslateOperationEnt implements TranslateOperationEnt {
 
         
         @Override
-        public DefaultTranslateOperationEnt build() {
-            return new DefaultTranslateOperationEnt(this);
+        public DefaultTranslateCommandEnt build() {
+            return new DefaultTranslateCommandEnt(this);
         }
     
     }

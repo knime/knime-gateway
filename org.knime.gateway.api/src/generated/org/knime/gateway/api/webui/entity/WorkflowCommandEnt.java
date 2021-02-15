@@ -42,104 +42,71 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.entity;
-
-import static org.knime.gateway.api.util.EntityUtil.immutable;
-
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+package org.knime.gateway.api.webui.entity;
 
 
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * An operation that can be applied to a workflow to change it.
- *
+ * A command that is executed to change a workflow.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowOperationEnt implements WorkflowOperationEnt {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface WorkflowCommandEnt extends GatewayEntity {
 
-  protected KindEnum m_kind;
-  
-  protected DefaultWorkflowOperationEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowOperation";
-  }
-  
-  private DefaultWorkflowOperationEnt(DefaultWorkflowOperationEntBuilder builder) {
-    
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
+  /**
+   * The kind of command which directly maps to a specific &#39;implementation&#39;.
+   */
+  public enum KindEnum {
+    TRANSLATE("translate");
+
+    private String value;
+
+    KindEnum(String value) {
+      this.value = value;
     }
-    m_kind = immutable(builder.m_kind);
-  }
-  
-   /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultWorkflowOperationEnt ent = (DefaultWorkflowOperationEnt)o;
-        return Objects.equals(m_kind, ent.m_kind);
+    public String toString() {
+      return String.valueOf(value);
     }
 
-
-  
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
   }
-    
-  
-    public static class DefaultWorkflowOperationEntBuilder implements WorkflowOperationEntBuilder {
-    
-        public DefaultWorkflowOperationEntBuilder(){
-            
-        }
-    
-        private KindEnum m_kind;
 
-        @Override
-        public DefaultWorkflowOperationEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
-             }
-             m_kind = kind;
-             return this;
-        }
 
+  /**
+   * The kind of command which directly maps to a specific &#39;implementation&#39;.
+   * @return kind , never <code>null</code>
+   **/
+  public KindEnum getKind();
+
+
+    /**
+     * The builder for the entity.
+     */
+    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+
+        /**
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowCommandEntBuilder setKind(KindEnum kind);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
         @Override
-        public DefaultWorkflowOperationEnt build() {
-            return new DefaultWorkflowOperationEnt(this);
-        }
+        WorkflowCommandEnt build();
     
     }
 

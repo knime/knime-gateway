@@ -55,8 +55,8 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -68,7 +68,7 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.SimpleRepository;
-import org.knime.gateway.impl.webui.service.operations.WorkflowOperations;
+import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -78,7 +78,7 @@ import org.knime.gateway.impl.webui.service.operations.WorkflowOperations;
 public final class DefaultWorkflowService implements WorkflowService {
 
     /**
-     * Determines the number of operations per workflow kept in the undo and redo stacks.
+     * Determines the number of commands per workflow kept in the undo and redo stacks.
      */
     private static final int UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW = 50;
 
@@ -86,7 +86,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final EntityRepository<WorkflowKey, WorkflowEnt> m_entityRepo;
 
-    private final WorkflowOperations m_operations;
+    private final WorkflowCommands m_commands;
 
     /**
      * Returns the singleton instance for this service.
@@ -99,10 +99,10 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private DefaultWorkflowService() {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
-        m_operations = new WorkflowOperations(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
+        m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         WorkflowProjectManager.addWorkflowProjectRemovedListener(id -> {
             m_entityRepo.disposeHistory(k -> k.getProjectId().equals(id));
-            m_operations.disposeUndoAndRedoStacks(id);
+            m_commands.disposeUndoAndRedoStacks(id);
         });
     }
 
@@ -120,7 +120,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         WorkflowManager wfm = getWorkflowManager(wfKey);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEntWithInteractionInfo(wfm,
-                m_operations.canUndo(wfKey), m_operations.canRedo(wfKey)), wfKey);
+                m_commands.canUndo(wfKey), m_commands.canRedo(wfKey)), wfKey);
         } else {
             return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEnt(wfm), wfKey);
         }
@@ -168,37 +168,37 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public void applyWorkflowOperation(final String projectId, final NodeIDEnt workflowId,
-        final WorkflowOperationEnt workflowOperationEnt)
+    public void executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
+        final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        m_operations.apply(new WorkflowKey(projectId, workflowId), workflowOperationEnt);
+        m_commands.execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void undoWorkflowOperation(final String projectId, final NodeIDEnt workflowId)
+    public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        m_operations.undo(new WorkflowKey(projectId, workflowId));
+        m_commands.undo(new WorkflowKey(projectId, workflowId));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void redoWorkflowOperation(final String projectId, final NodeIDEnt workflowId)
+    public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        m_operations.redo(new WorkflowKey(projectId, workflowId));
+        m_commands.redo(new WorkflowKey(projectId, workflowId));
     }
 
     /**
-     * Gives access to the workflow operations instance.
+     * Gives access to the workflow commands instance.
      *
-     * @return the workflow operations instance
+     * @return the workflow commands instance
      */
-    WorkflowOperations getWorkflowOperations() {
-        return m_operations;
+    WorkflowCommands getWorkflowCommands() {
+        return m_commands;
     }
 
 }

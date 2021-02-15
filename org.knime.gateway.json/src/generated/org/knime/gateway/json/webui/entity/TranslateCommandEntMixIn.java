@@ -45,15 +45,15 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.WorkflowOperationEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt.DefaultTranslateOperationEntBuilder;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,9 +61,9 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt.DefaultT
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultTranslateOperationEntBuilder.class)
+@JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TranslateOperationEntMixIn extends TranslateOperationEnt {
+public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
 
     @Override
     @JsonIgnore
@@ -93,26 +93,26 @@ public interface TranslateOperationEntMixIn extends TranslateOperationEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TranslateOperationEntMixInBuilder extends TranslateOperationEntBuilder {
+    public static interface TranslateCommandEntMixInBuilder extends TranslateCommandEntBuilder {
     
         @Override
-        public TranslateOperationEntMixIn build();
+        public TranslateCommandEntMixIn build();
     
         @Override
         @JsonProperty("kind")
-        public TranslateOperationEntMixInBuilder setKind(final KindEnum kind);
+        public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("position")
-        public TranslateOperationEntMixInBuilder setPosition(final XYEnt position);
+        public TranslateCommandEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
         @JsonProperty("nodeIDs")
-        public TranslateOperationEntMixInBuilder setNodeIDs(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
+        public TranslateCommandEntMixInBuilder setNodeIDs(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
         
         @Override
         @JsonProperty("annotationIDs")
-        public TranslateOperationEntMixInBuilder setAnnotationIDs(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
+        public TranslateCommandEntMixInBuilder setAnnotationIDs(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
         
     }
 

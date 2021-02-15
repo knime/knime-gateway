@@ -42,79 +42,105 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt.DefaultWorkflowOperationEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * A command that is executed to change a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultWorkflowOperationEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultWorkflowOperationEnt.class, name="WorkflowOperation")
-,
-  @Type(value = DefaultTranslateOperationEnt.class, name = "translate")
-})
-@JsonDeserialize(builder=DefaultWorkflowOperationEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowOperationEntMixIn extends WorkflowOperationEnt {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultWorkflowCommandEnt implements WorkflowCommandEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
+  protected KindEnum m_kind;
+  
+  protected DefaultWorkflowCommandEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "WorkflowCommand";
+  }
+  
+  private DefaultWorkflowCommandEnt(DefaultWorkflowCommandEntBuilder builder) {
     
-
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
+    }
+    m_kind = immutable(builder.m_kind);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultWorkflowOperationEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultWorkflowOperationEnt.class, name="WorkflowOperation")
-,
-  @Type(value = DefaultTranslateOperationEnt.class, name = "translate")
-})
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowOperationEntMixInBuilder extends WorkflowOperationEntBuilder {
-    
-        @Override
-        public WorkflowOperationEntMixIn build();
-    
-        @Override
-        @JsonProperty("kind")
-        public WorkflowOperationEntMixInBuilder setKind(final KindEnum kind);
-        
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultWorkflowCommandEnt ent = (DefaultWorkflowCommandEnt)o;
+        return Objects.equals(m_kind, ent.m_kind);
     }
 
 
-}
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_kind)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
+  }
+    
+  
+    public static class DefaultWorkflowCommandEntBuilder implements WorkflowCommandEntBuilder {
+    
+        public DefaultWorkflowCommandEntBuilder(){
+            
+        }
+    
+        private KindEnum m_kind;
 
+        @Override
+        public DefaultWorkflowCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
+             }
+             m_kind = kind;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultWorkflowCommandEnt build() {
+            return new DefaultWorkflowCommandEnt(this);
+        }
+    
+    }
+
+}

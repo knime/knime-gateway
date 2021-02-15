@@ -120,20 +120,20 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntB
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt.TranslateOperationEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateOperationEnt;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt.WorkflowOperationEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowOperationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
@@ -276,8 +276,8 @@ public class Interface2ImplMap {
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
         }        
-        if(clazz == TranslateOperationEntBuilder.class) {
-            return (B)new DefaultTranslateOperationEnt.DefaultTranslateOperationEntBuilder();
+        if(clazz == TranslateCommandEntBuilder.class) {
+            return (B)new DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();
@@ -288,14 +288,14 @@ public class Interface2ImplMap {
         if(clazz == WorkflowChangedEventTypeEntBuilder.class) {
             return (B)new DefaultWorkflowChangedEventTypeEnt.DefaultWorkflowChangedEventTypeEntBuilder();
         }        
+        if(clazz == WorkflowCommandEntBuilder.class) {
+            return (B)new DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder();
+        }        
         if(clazz == WorkflowEntBuilder.class) {
             return (B)new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();
         }        
         if(clazz == WorkflowInfoEntBuilder.class) {
             return (B)new DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder();
-        }        
-        if(clazz == WorkflowOperationEntBuilder.class) {
-            return (B)new DefaultWorkflowOperationEnt.DefaultWorkflowOperationEntBuilder();
         }        
         if(clazz == WorkflowProjectEntBuilder.class) {
             return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();

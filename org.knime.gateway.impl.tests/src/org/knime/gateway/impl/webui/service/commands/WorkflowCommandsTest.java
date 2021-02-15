@@ -46,7 +46,7 @@
  * History
  *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.operations;
+package org.knime.gateway.impl.webui.service.commands;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -63,10 +63,10 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt.TranslateOperationEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt.KindEnum;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt.WorkflowOperationEntBuilder;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.WorkflowProject;
@@ -74,11 +74,11 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.service.WorkflowKey;
 
 /**
- * Tests {@link WorkflowOperations}.
+ * Tests {@link WorkflowCommands}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class WorkflowOperationsTest {
+public class WorkflowCommandsTest {
 
     /**
      * Mainly tests the expected sizes of the undo- and redo-stacks after calling apply, undo, redo or
@@ -88,58 +88,58 @@ public class WorkflowOperationsTest {
     public void testUndoAndRedoStackSizes() throws Exception {
         WorkflowProject wp = createEmptyWorkflowProject();
 
-        WorkflowOperations ops = new WorkflowOperations(5);
-        TranslateOperationEnt operationEntity = builder(TranslateOperationEntBuilder.class).setKind(KindEnum.TRANSLATE)
+        WorkflowCommands commands = new WorkflowCommands(5);
+        TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        assertThrows(OperationNotAllowedException.class, () -> ops.undo(wfKey));
-        assertThrows(OperationNotAllowedException.class, () -> ops.redo(wfKey));
+        assertThrows(OperationNotAllowedException.class, () -> commands.undo(wfKey));
+        assertThrows(OperationNotAllowedException.class, () -> commands.redo(wfKey));
 
-        ops.apply(wfKey, operationEntity);
-        ops.apply(wfKey, operationEntity);
-        ops.apply(wfKey, operationEntity);
-        ops.apply(wfKey, operationEntity);
-        ops.apply(wfKey, operationEntity);
-        ops.apply(wfKey, operationEntity);
-        assertThat(ops.getUndoStackSize(wfKey), is(5));
-        assertThat(ops.getRedoStackSize(wfKey), is(-1));
-        assertThat(ops.canUndo(wfKey), is(true));
-        assertThat(ops.canRedo(wfKey), is(false));
-        assertThrows(OperationNotAllowedException.class, () -> ops.redo(wfKey));
+        commands.execute(wfKey, commandEntity);
+        commands.execute(wfKey, commandEntity);
+        commands.execute(wfKey, commandEntity);
+        commands.execute(wfKey, commandEntity);
+        commands.execute(wfKey, commandEntity);
+        commands.execute(wfKey, commandEntity);
+        assertThat(commands.getUndoStackSize(wfKey), is(5));
+        assertThat(commands.getRedoStackSize(wfKey), is(-1));
+        assertThat(commands.canUndo(wfKey), is(true));
+        assertThat(commands.canRedo(wfKey), is(false));
+        assertThrows(OperationNotAllowedException.class, () -> commands.redo(wfKey));
 
-        ops.undo(wfKey);
-        ops.undo(wfKey);
-        assertThat(ops.getUndoStackSize(wfKey), is(3));
-        assertThat(ops.getRedoStackSize(wfKey), is(2));
-        assertThat(ops.canUndo(wfKey), is(true));
-        assertThat(ops.canRedo(wfKey), is(true));
+        commands.undo(wfKey);
+        commands.undo(wfKey);
+        assertThat(commands.getUndoStackSize(wfKey), is(3));
+        assertThat(commands.getRedoStackSize(wfKey), is(2));
+        assertThat(commands.canUndo(wfKey), is(true));
+        assertThat(commands.canRedo(wfKey), is(true));
 
-        ops.redo(wfKey);
-        assertThat(ops.getUndoStackSize(wfKey), is(4));
-        assertThat(ops.getRedoStackSize(wfKey), is(1));
-        assertThat(ops.canUndo(wfKey), is(true));
-        assertThat(ops.canRedo(wfKey), is(true));
+        commands.redo(wfKey);
+        assertThat(commands.getUndoStackSize(wfKey), is(4));
+        assertThat(commands.getRedoStackSize(wfKey), is(1));
+        assertThat(commands.canUndo(wfKey), is(true));
+        assertThat(commands.canRedo(wfKey), is(true));
 
-        ops.undo(wfKey);
-        ops.undo(wfKey);
-        ops.undo(wfKey);
-        ops.undo(wfKey);
-        assertThat(ops.getUndoStackSize(wfKey), is(0));
-        assertThat(ops.getRedoStackSize(wfKey), is(5));
-        assertThat(ops.canUndo(wfKey), is(false));
-        assertThat(ops.canRedo(wfKey), is(true));
-        assertThrows(OperationNotAllowedException.class, () -> ops.undo(wfKey));
+        commands.undo(wfKey);
+        commands.undo(wfKey);
+        commands.undo(wfKey);
+        commands.undo(wfKey);
+        assertThat(commands.getUndoStackSize(wfKey), is(0));
+        assertThat(commands.getRedoStackSize(wfKey), is(5));
+        assertThat(commands.canUndo(wfKey), is(false));
+        assertThat(commands.canRedo(wfKey), is(true));
+        assertThrows(OperationNotAllowedException.class, () -> commands.undo(wfKey));
 
         assertThrows(OperationNotAllowedException.class,
-            () -> ops.apply(null, builder(WorkflowOperationEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
+            () -> commands.execute(null, builder(WorkflowCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
 
-        ops.redo(wfKey);
-        assertThat(ops.getUndoStackSize(wfKey), is(1));
-        assertThat(ops.getRedoStackSize(wfKey), is(4));
-        ops.disposeUndoAndRedoStacks(wfKey.getProjectId());
-        assertThat(ops.getUndoStackSize(wfKey), is(-1));
-        assertThat(ops.getRedoStackSize(wfKey), is(-1));
+        commands.redo(wfKey);
+        assertThat(commands.getUndoStackSize(wfKey), is(1));
+        assertThat(commands.getRedoStackSize(wfKey), is(4));
+        commands.disposeUndoAndRedoStacks(wfKey.getProjectId());
+        assertThat(commands.getUndoStackSize(wfKey), is(-1));
+        assertThat(commands.getRedoStackSize(wfKey), is(-1));
 
         WorkflowProjectManager.removeWorkflowProject(wp.getID());
         WorkflowManager.ROOT.removeProject(wp.openProject().getID());

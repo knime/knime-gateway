@@ -46,7 +46,7 @@
  * History
  *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.operations;
+package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
@@ -61,9 +61,9 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt;
-import org.knime.gateway.api.webui.entity.TranslateOperationEnt.TranslateOperationEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -71,41 +71,41 @@ import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * Workflow operation to translate (i.e. change the position) of nodes and workflow annotations.
+ * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class Translate extends AbstractWorkflowOperation<TranslateOperationEnt> {
+final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
 
     private int[] m_originalPosition;
 
     @Override
-    public void apply() throws OperationNotAllowedException {
-        m_originalPosition = apply(getWorkflowManager(), getWorkflowKey().getProjectId(), getOperationEntity());
+    public void execute() throws OperationNotAllowedException {
+        m_originalPosition = execute(getWorkflowManager(), getWorkflowKey().getProjectId(), getCommandEntity());
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        TranslateOperationEnt operationEntity = getOperationEntity();
-        TranslateOperationEnt inverseOperationEntity = builder(TranslateOperationEntBuilder.class)
-            .setKind(KindEnum.TRANSLATE).setNodeIDs(operationEntity.getNodeIDs())//
-            .setAnnotationIDs(operationEntity.getAnnotationIDs())//
+        TranslateCommandEnt commandEntity = getCommandEntity();
+        TranslateCommandEnt inverseCommandEntity = builder(TranslateCommandEntBuilder.class)
+            .setKind(KindEnum.TRANSLATE).setNodeIDs(commandEntity.getNodeIDs())//
+            .setAnnotationIDs(commandEntity.getAnnotationIDs())//
             .setPosition(builder(XYEntBuilder.class)//
                 .setX(m_originalPosition[0]).setY(m_originalPosition[1]).build())//
             .build();
-        apply(getWorkflowManager(), getWorkflowKey().getProjectId(), inverseOperationEntity);
+        execute(getWorkflowManager(), getWorkflowKey().getProjectId(), inverseCommandEntity);
         m_originalPosition = null;
     }
 
-    private static int[] apply(final WorkflowManager wfm, final String projectId,
-        final TranslateOperationEnt operationEntity) throws OperationNotAllowedException {
+    private static int[] execute(final WorkflowManager wfm, final String projectId,
+        final TranslateCommandEnt commandEntity) throws OperationNotAllowedException {
         List<NodeContainer> nodes;
         List<String> nodesNotFound = null;
         int x = Integer.MAX_VALUE;
         int y = Integer.MAX_VALUE;
-        if (!operationEntity.getNodeIDs().isEmpty()) {
+        if (!commandEntity.getNodeIDs().isEmpty()) {
             nodes = new ArrayList<>();
-            for (NodeIDEnt id : operationEntity.getNodeIDs()) {
+            for (NodeIDEnt id : commandEntity.getNodeIDs()) {
                 try {
                     NodeContainer nc = wfm.getNodeContainer(DefaultServiceUtil.entityToNodeID(projectId, id));
                     int[] bounds = nc.getUIInformation().getBounds();
@@ -122,9 +122,9 @@ class Translate extends AbstractWorkflowOperation<TranslateOperationEnt> {
 
         List<WorkflowAnnotation> annotations;
         List<String> annosNotFound = null;
-        if (!operationEntity.getAnnotationIDs().isEmpty()) {
+        if (!commandEntity.getAnnotationIDs().isEmpty()) {
             annotations = new ArrayList<>();
-            for (AnnotationIDEnt id : operationEntity.getAnnotationIDs()) {
+            for (AnnotationIDEnt id : commandEntity.getAnnotationIDs()) {
                 WorkflowAnnotation[] annos =
                     wfm.getWorkflowAnnotations(DefaultServiceUtil.entityToAnnotationID(projectId, id));
                 if (annos.length == 0 || annos[0] == null) {
@@ -141,11 +141,11 @@ class Translate extends AbstractWorkflowOperation<TranslateOperationEnt> {
 
         checkAndThrowException(nodesNotFound, annosNotFound);
 
-        applyTranslateOperation(operationEntity.getPosition(), nodes, x, y, annotations);
+        executeTranslateCommand(commandEntity.getPosition(), nodes, x, y, annotations);
         return new int[]{x, y + EntityBuilderUtil.NODE_Y_POS_CORRECTION};
     }
 
-    private static void applyTranslateOperation(final XYEnt newPos, final List<NodeContainer> nodes, final int x,
+    private static void executeTranslateCommand(final XYEnt newPos, final List<NodeContainer> nodes, final int x,
         final int y, final List<WorkflowAnnotation> annotations) {
         int[] delta = new int[]{newPos.getX() - x, newPos.getY() - y - EntityBuilderUtil.NODE_Y_POS_CORRECTION};
         for (NodeContainer nc : nodes) {
@@ -159,7 +159,7 @@ class Translate extends AbstractWorkflowOperation<TranslateOperationEnt> {
     private static void checkAndThrowException(final List<String> nodesNotFound, final List<String> annosNotFound)
         throws OperationNotAllowedException {
         if (nodesNotFound != null || annosNotFound != null) {
-            StringBuilder message = new StringBuilder("Failed to apply operation. Workflow parts not found: ");
+            StringBuilder message = new StringBuilder("Failed to execute command. Workflow parts not found: ");
             if (nodesNotFound != null) {
                 message.append("nodes (").append(nodesNotFound.stream().collect(Collectors.joining(","))).append(")");
             }

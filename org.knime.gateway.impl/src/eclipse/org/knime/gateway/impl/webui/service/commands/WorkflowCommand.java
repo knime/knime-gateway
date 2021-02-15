@@ -46,70 +46,48 @@
  * History
  *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.operations;
+package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.impl.webui.service.WorkflowKey;
 
 /**
- * Facilitates the implementation of a {@link WorkflowOperation}.
+ * Unifying interface for all workflow commands. The methods are guaranteed to be called in a fixed order: execute ->
+ * undo -> redo -> undo -> ... .
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-abstract class AbstractWorkflowOperation<E extends WorkflowOperationEnt> implements WorkflowOperation<E> {
-
-    private E m_operationEntity;
-
-    private WorkflowManager m_wfm;
-
-    private WorkflowKey m_wfKey;
-
-    @Override
-    public void apply(final WorkflowKey wfKey, final E operationEntity)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
-        m_wfKey = wfKey;
-        m_operationEntity = operationEntity;
-        m_wfm = DefaultWorkflowService.getWorkflowManager(wfKey);
-        apply();
-    }
+interface WorkflowCommand<E extends WorkflowCommandEnt> {
 
     /**
-     * Applies the operation. Use {@link #getOperationEntity()}, {@link #getWorkflowManager()}, or
-     * {@link #getWorkflowKey()} to retrieve the data required to carry out the operation.
+     * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()}
+     * and {@link #redo()}.
+     *
+     * @param wfKey references the workflow to execute the command for
+     * @param commandEntity representation of the command to be applied
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
+     * @throws OperationNotAllowedException
+     */
+    void execute(WorkflowKey wfKey, E commandEntity)
+        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
+
+    /**
+     * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey, WorkflowCommandEnt)} has
+     * been called before already.
      *
      * @throws OperationNotAllowedException
      */
-    protected abstract void apply() throws OperationNotAllowedException;
-
-    @Override
-    public void redo() throws OperationNotAllowedException {
-        apply();
-    }
+    void undo() throws OperationNotAllowedException;
 
     /**
-     * @return the operation entity that actual represents the operation to be applied (undone, re-done)
+     * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
+     *
+     * @throws OperationNotAllowedException
      */
-    protected E getOperationEntity() {
-        return m_operationEntity;
-    }
-
-    /**
-     * @return the workflow manager to apply (redo, undo) the operation to
-     */
-    protected WorkflowManager getWorkflowManager() {
-        return m_wfm;
-    }
-
-    /**
-     * @return reference to the workflow underlying this operation
-     */
-    protected WorkflowKey getWorkflowKey() {
-        return m_wfKey;
-    }
+    void redo() throws OperationNotAllowedException;
 
 }

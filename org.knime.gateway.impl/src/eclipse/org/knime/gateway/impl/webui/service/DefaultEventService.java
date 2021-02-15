@@ -84,7 +84,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
-import org.knime.gateway.impl.webui.service.operations.WorkflowOperations;
+import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -248,8 +248,9 @@ public final class DefaultEventService implements EventService {
     private static WorkflowChangedEventEnt createWorkflowChangedEvent(final PatchEntCreator patchEntCreator,
         final WorkflowManager wfm, final WorkflowKey wfKey) {
         // TODO parameterize the 'includeInteractionInfo'
-        WorkflowOperations ops = DefaultWorkflowService.getInstance().getWorkflowOperations();
-        patchEntCreator.createPatch(buildWorkflowEntWithInteractionInfo(wfm, ops.canUndo(wfKey), ops.canRedo(wfKey)));
+        WorkflowCommands commands = DefaultWorkflowService.getInstance().getWorkflowCommands();
+        patchEntCreator
+            .createPatch(buildWorkflowEntWithInteractionInfo(wfm, commands.canUndo(wfKey), commands.canRedo(wfKey)));
         if (patchEntCreator.getPatch() == null) {
             return null;
         }

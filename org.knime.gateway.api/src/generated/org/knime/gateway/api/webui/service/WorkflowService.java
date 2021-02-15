@@ -47,7 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.WorkflowOperationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 /**
@@ -59,18 +59,18 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 public interface WorkflowService extends GatewayService {
 
     /**
-     * Applies an operation to the referenced workflow. Every request with the same operation is idempotent.
+     * Executed a command on the referenced workflow. Every request with the same operation is idempotent.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a worklow which has the same format as a node-id.
-     * @param workflowOperationEnt An object that describes the operation to be applied.
+     * @param workflowCommandEnt An object that describes the command to be executed.
      *
      * 
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void applyWorkflowOperation(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowOperationEnt workflowOperationEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+    void executeWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowCommandEnt workflowCommandEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Retrieves the complete structure (sub-)workflows.
@@ -86,7 +86,7 @@ public interface WorkflowService extends GatewayService {
     WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
     /**
-     * Re-does the last operation from the redo-stack.
+     * Re-does the last command from the redo-stack.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a worklow which has the same format as a node-id.
@@ -94,10 +94,10 @@ public interface WorkflowService extends GatewayService {
      * 
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void redoWorkflowOperation(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
+    void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
         
     /**
-     * Un-does the last operation from the undo-stack.
+     * Un-does the last command from the undo-stack.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a worklow which has the same format as a node-id.
@@ -105,6 +105,6 @@ public interface WorkflowService extends GatewayService {
      * 
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void undoWorkflowOperation(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
+    void undoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
         
 }
