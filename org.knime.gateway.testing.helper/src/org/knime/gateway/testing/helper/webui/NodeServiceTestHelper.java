@@ -160,7 +160,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // step before first iteration
         ns().changeLoopState(wfId, n4, "step");
         cr(getNativeNodeEnt(wfId, n4).getLoopInfo(), "loop_info_not_executed");
-        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, n4);
             assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
         });
