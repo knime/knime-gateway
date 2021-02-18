@@ -123,9 +123,6 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
     m_name = immutable(builder.m_name);
     m_type = immutable(builder.m_type);
     m_icon = immutable(builder.m_icon);
-    if(builder.m_state == null) {
-        throw new IllegalArgumentException("state must not be null.");
-    }
     m_state = immutable(builder.m_state);
     m_link = immutable(builder.m_link);
   }
@@ -346,9 +343,6 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
 
         @Override
         public DefaultComponentNodeEntBuilder setState(NodeStateEnt state) {
-             if(state == null) {
-                 throw new IllegalArgumentException("state must not be null.");
-             }
              m_state = state;
              return this;
         }

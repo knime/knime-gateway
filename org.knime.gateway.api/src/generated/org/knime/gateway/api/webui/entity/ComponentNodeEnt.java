@@ -69,7 +69,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
 
   /**
    * Get state
-   * @return state , never <code>null</code>
+   * @return state 
    **/
   public NodeStateEnt getState();
 
@@ -176,7 +176,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         /**
    		 * Set state
          * 
-         * @param state the property value, NOT <code>null</code>! 
+         * @param state the property value,  
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setState(NodeStateEnt state);

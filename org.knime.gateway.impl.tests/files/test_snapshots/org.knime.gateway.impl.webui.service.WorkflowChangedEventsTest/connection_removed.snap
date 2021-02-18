@@ -5,7 +5,7 @@
     "value" : false
   }, {
     "op" : "remove",
-    "path" : "/nodes/root:13/outPorts/1/connectedVia/0"
+    "path" : "/nodes/root:13/outPorts/1/connectedVia/1"
   }, {
     "op" : "remove",
     "path" : "/nodes/root:14/inPorts/1/connectedVia/0"

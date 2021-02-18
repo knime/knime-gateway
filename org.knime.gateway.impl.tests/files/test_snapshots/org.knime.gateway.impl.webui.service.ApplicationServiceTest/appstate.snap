@@ -84,6 +84,13 @@
             "sourceNode" : "root:1",
             "sourcePort" : 2
           },
+          "root:185_1" : {
+            "destNode" : "root:185",
+            "destPort" : 1,
+            "flowVariableConnection" : true,
+            "sourceNode" : "root:13",
+            "sourcePort" : 1
+          },
           "root:8_1" : {
             "destNode" : "root:8",
             "destPort" : 1,
@@ -846,6 +853,49 @@
             },
             "type" : "Sink"
           },
+          "root:185" : {
+            "allowedActions" : {
+              "canCancel" : false,
+              "canExecute" : true,
+              "canOpenDialog" : true,
+              "canReset" : false
+            },
+            "annotation" : {
+              "styleRanges" : [ ],
+              "text" : "",
+              "textAlign" : "center"
+            },
+            "id" : "root:185",
+            "inPorts" : [ {
+              "connectedVia" : "[  ]",
+              "index" : 0,
+              "name" : "Variable Inport",
+              "optional" : true,
+              "type" : "flowVariable"
+            }, {
+              "connectedVia" : "[ root:185_1 ]",
+              "index" : 1,
+              "name" : "Inport 1",
+              "optional" : false,
+              "type" : "flowVariable"
+            } ],
+            "kind" : "component",
+            "name" : "Inactive Component",
+            "outPorts" : [ {
+              "connectedVia" : "[  ]",
+              "index" : 0,
+              "name" : "Variable Outport",
+              "type" : "flowVariable"
+            } ],
+            "position" : {
+              "x" : 804,
+              "y" : 663
+            },
+            "state" : {
+              "executionState" : "IDLE",
+              "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+            }
+          },
           "root:25" : {
             "allowedActions" : {
               "canCancel" : false,
@@ -1330,7 +1380,7 @@
               "name" : "Variable Outport",
               "type" : "flowVariable"
             }, {
-              "connectedVia" : "[ root:14_1 ]",
+              "connectedVia" : "[ root:14_1, root:185_1 ]",
               "index" : 1,
               "name" : "Output",
               "type" : "flowVariable"
@@ -1443,8 +1493,8 @@
               }
             } ],
             "position" : {
-              "x" : 784,
-              "y" : 563
+              "x" : 804,
+              "y" : 543
             },
             "state" : {
               "executionState" : "IDLE",
