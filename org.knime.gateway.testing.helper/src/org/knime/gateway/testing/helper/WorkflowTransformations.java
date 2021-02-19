@@ -132,7 +132,7 @@ public final class WorkflowTransformations {
         return asList(
             newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"),
             newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"),
-            newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(14), 1)),
+            newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(26), 1)),
                 "connection_removed"),
             newTransformation(w -> w.removeNode(w.getID().createChild(18)), "node_removed"), newTransformation(w -> {
                 try {
@@ -144,7 +144,7 @@ public final class WorkflowTransformations {
                     throw new IllegalStateException(ex);
                 }
             }, "node_added"),
-            newTransformation(w -> w.addConnection(w.getID().createChild(13), 1, w.getID().createChild(14), 1),
+            newTransformation(w -> w.addConnection(w.getID().createChild(25), 3, w.getID().createChild(26), 1),
                 "connection_added"),
             newTransformation(w -> w.addWorkflowAnnotation(new WorkflowAnnotation()), "workflow_annotation_added"),
             newTransformation(w -> w.removeAnnotation(w.getWorkflowAnnotations().iterator().next()),
