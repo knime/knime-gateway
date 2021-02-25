@@ -5,7 +5,15 @@
     "value" : true
   }, {
     "op" : "replace",
+    "path" : "/nodes/root:3:0:7/allowedActions/canDelete",
+    "value" : true
+  }, {
+    "op" : "replace",
     "path" : "/nodes/root:3:0:5/allowedActions/canReset",
+    "value" : true
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:3:0:5/allowedActions/canDelete",
     "value" : true
   }, {
     "op" : "add",
@@ -20,6 +28,10 @@
     "path" : "/connections/root:3:0:5_1/label",
     "value" : "3"
   }, {
+    "op" : "replace",
+    "path" : "/connections/root:3:0:5_1/canDelete",
+    "value" : true
+  }, {
     "op" : "add",
     "path" : "/connections/root:3:0:7_1/streaming",
     "value" : false
@@ -27,6 +39,10 @@
     "op" : "add",
     "path" : "/connections/root:3:0:7_1/label",
     "value" : "3"
+  }, {
+    "op" : "replace",
+    "path" : "/connections/root:3:0:7_1/canDelete",
+    "value" : true
   }, {
     "op" : "add",
     "path" : "/nodes/root:3:0:5/outPorts/0/info",
@@ -79,6 +95,10 @@
     "op" : "add",
     "path" : "/connections/root:3:0:6_1/label",
     "value" : "2"
+  }, {
+    "op" : "replace",
+    "path" : "/connections/root:3:0:6_1/canDelete",
+    "value" : true
   }, {
     "op" : "replace",
     "path" : "/nodes/root:3:0:3/allowedActions/canReset",

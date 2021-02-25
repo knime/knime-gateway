@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -73,6 +74,8 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
     @Type(value = DefaultWorkflowCommandEnt.class, name="WorkflowCommand")
 ,
   @Type(value = DefaultTranslateCommandEnt.class, name = "translate")
+,
+  @Type(value = DefaultDeleteCommandEnt.class, name = "delete")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -102,6 +105,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
     @Type(value = DefaultWorkflowCommandEnt.class, name="WorkflowCommand")
 ,
   @Type(value = DefaultTranslateCommandEnt.class, name = "translate")
+,
+  @Type(value = DefaultDeleteCommandEnt.class, name = "delete")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

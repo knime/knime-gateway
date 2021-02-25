@@ -67,6 +67,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
   protected Boolean m_canReset;
   protected Boolean m_canOpenDialog;
   protected Boolean m_canOpenView;
+  protected Boolean m_canDelete;
   
   protected DefaultAllowedNodeActionsEnt() {
     //for sub-classes
@@ -93,6 +94,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
     m_canReset = immutable(builder.m_canReset);
     m_canOpenDialog = immutable(builder.m_canOpenDialog);
     m_canOpenView = immutable(builder.m_canOpenView);
+    m_canDelete = immutable(builder.m_canDelete);
   }
   
    /**
@@ -110,7 +112,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
             return false;
         }
         DefaultAllowedNodeActionsEnt ent = (DefaultAllowedNodeActionsEnt)o;
-        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset) && Objects.equals(m_canOpenDialog, ent.m_canOpenDialog) && Objects.equals(m_canOpenView, ent.m_canOpenView);
+        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset) && Objects.equals(m_canOpenDialog, ent.m_canOpenDialog) && Objects.equals(m_canOpenView, ent.m_canOpenView) && Objects.equals(m_canDelete, ent.m_canDelete);
     }
 
 
@@ -126,6 +128,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
                .append(m_canReset)
                .append(m_canOpenDialog)
                .append(m_canOpenView)
+               .append(m_canDelete)
                .toHashCode();
    }
   
@@ -156,6 +159,11 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         return m_canOpenView;
   }
     
+  @Override
+  public Boolean isCanDelete() {
+        return m_canDelete;
+  }
+    
   
     public static class DefaultAllowedNodeActionsEntBuilder implements AllowedNodeActionsEntBuilder {
     
@@ -168,6 +176,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         private Boolean m_canReset;
         private Boolean m_canOpenDialog;
         private Boolean m_canOpenView;
+        private Boolean m_canDelete;
 
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanExecute(Boolean canExecute) {
@@ -205,6 +214,12 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanOpenView(Boolean canOpenView) {
              m_canOpenView = canOpenView;
+             return this;
+        }
+
+        @Override
+        public DefaultAllowedNodeActionsEntBuilder setCanDelete(Boolean canDelete) {
+             m_canDelete = canDelete;
              return this;
         }
 

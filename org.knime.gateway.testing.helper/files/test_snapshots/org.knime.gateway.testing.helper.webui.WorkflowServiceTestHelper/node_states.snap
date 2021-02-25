@@ -3,6 +3,6 @@
   "root:2" : "CONFIGURED",
   "root:3" : "IDLE",
   "root:4" : "CONFIGURED",
-  "root:7" : "CONFIGURED",
+  "root:7" : "IDLE",
   "root:8" : "IDLE"
 }

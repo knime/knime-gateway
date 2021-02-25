@@ -88,6 +88,10 @@ public interface AllowedNodeActionsEntMixIn extends AllowedNodeActionsEnt {
     @JsonProperty("canOpenView")
     public Boolean isCanOpenView();
     
+    @Override
+    @JsonProperty("canDelete")
+    public Boolean isCanDelete();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -120,6 +124,10 @@ public interface AllowedNodeActionsEntMixIn extends AllowedNodeActionsEnt {
         @Override
         @JsonProperty("canOpenView")
         public AllowedNodeActionsEntMixInBuilder setCanOpenView(final Boolean canOpenView);
+        
+        @Override
+        @JsonProperty("canDelete")
+        public AllowedNodeActionsEntMixInBuilder setCanDelete(final Boolean canDelete);
         
     }
 

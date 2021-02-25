@@ -68,6 +68,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
   protected Boolean m_flowVariableConnection;
   protected Boolean m_streaming;
   protected String m_label;
+  protected Boolean m_canDelete;
   
   protected DefaultConnectionEnt() {
     //for sub-classes
@@ -99,6 +100,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
     m_flowVariableConnection = immutable(builder.m_flowVariableConnection);
     m_streaming = immutable(builder.m_streaming);
     m_label = immutable(builder.m_label);
+    m_canDelete = immutable(builder.m_canDelete);
   }
   
    /**
@@ -116,7 +118,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
             return false;
         }
         DefaultConnectionEnt ent = (DefaultConnectionEnt)o;
-        return Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection) && Objects.equals(m_streaming, ent.m_streaming) && Objects.equals(m_label, ent.m_label);
+        return Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection) && Objects.equals(m_streaming, ent.m_streaming) && Objects.equals(m_label, ent.m_label) && Objects.equals(m_canDelete, ent.m_canDelete);
     }
 
 
@@ -134,6 +136,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
                .append(m_flowVariableConnection)
                .append(m_streaming)
                .append(m_label)
+               .append(m_canDelete)
                .toHashCode();
    }
   
@@ -174,6 +177,11 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         return m_label;
   }
     
+  @Override
+  public Boolean isCanDelete() {
+        return m_canDelete;
+  }
+    
   
     public static class DefaultConnectionEntBuilder implements ConnectionEntBuilder {
     
@@ -188,6 +196,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         private Boolean m_flowVariableConnection;
         private Boolean m_streaming;
         private String m_label;
+        private Boolean m_canDelete;
 
         @Override
         public DefaultConnectionEntBuilder setDestNode(org.knime.gateway.api.entity.NodeIDEnt destNode) {
@@ -240,6 +249,12 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         @Override
         public DefaultConnectionEntBuilder setLabel(String label) {
              m_label = label;
+             return this;
+        }
+
+        @Override
+        public DefaultConnectionEntBuilder setCanDelete(Boolean canDelete) {
+             m_canDelete = canDelete;
              return this;
         }
 

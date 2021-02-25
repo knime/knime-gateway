@@ -5,6 +5,7 @@
     "value" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false

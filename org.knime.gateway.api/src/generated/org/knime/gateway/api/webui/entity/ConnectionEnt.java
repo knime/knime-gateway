@@ -101,6 +101,12 @@ public interface ConnectionEnt extends GatewayEntity {
    **/
   public String getLabel();
 
+  /**
+   * Indicates whether this connection can be deleted. Circumstances that prevent the removal are, e.g., a destination node that is executing (or has executing successors). This property is absent if no &#39;interaction info&#39; is supposed to be included in the response.
+   * @return canDelete 
+   **/
+  public Boolean isCanDelete();
+
 
     /**
      * The builder for the entity.
@@ -162,6 +168,14 @@ public interface ConnectionEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ConnectionEntBuilder setLabel(String label);
+        
+        /**
+         * Indicates whether this connection can be deleted. Circumstances that prevent the removal are, e.g., a destination node that is executing (or has executing successors). This property is absent if no &#39;interaction info&#39; is supposed to be included in the response.
+         * 
+         * @param canDelete the property value,  
+         * @return this entity builder for chaining
+         */
+        ConnectionEntBuilder setCanDelete(Boolean canDelete);
         
         
         /**

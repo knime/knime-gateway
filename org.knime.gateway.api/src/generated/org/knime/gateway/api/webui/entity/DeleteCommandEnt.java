@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,46 +52,37 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * Deletes the specified nodes, workflow annotations or connections. Note that there are potentially more connections deleted than specified, i.e. those connected to a node that is to be deleted. If any of the elements can&#39;t be deleted (because it doesn&#39;t exist or the deletion is not allowed) the entire delete operation is aborted (i.e. nothing is deleted).
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface DeleteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * The ids of the nodes referenced.
+   * @return nodeIds , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
+
+  /**
+   * The ids of the workflow annotations referenced.
+   * @return annotationIds , never <code>null</code>
+   **/
+  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
+
+  /**
+   * The ids of the connections referenced.
+   * @return connectionIds , never <code>null</code>
+   **/
+  public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectionIds();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface DeleteCommandEntBuilder extends GatewayEntityBuilder<DeleteCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -98,7 +90,31 @@ public interface WorkflowCommandEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        DeleteCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The ids of the nodes referenced.
+         * 
+         * @param nodeIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        DeleteCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
+        
+        /**
+         * The ids of the workflow annotations referenced.
+         * 
+         * @param annotationIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        DeleteCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
+        
+        /**
+         * The ids of the connections referenced.
+         * 
+         * @param connectionIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        DeleteCommandEntBuilder setConnectionIds(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectionIds);
         
         
         /**
@@ -108,7 +124,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        DeleteCommandEnt build();
     
     }
 

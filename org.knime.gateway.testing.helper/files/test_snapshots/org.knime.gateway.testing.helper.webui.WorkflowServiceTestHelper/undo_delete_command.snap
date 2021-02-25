@@ -2,7 +2,7 @@
   "allowedActions" : {
     "canCancel" : false,
     "canExecute" : true,
-    "canRedo" : false,
+    "canRedo" : true,
     "canReset" : false,
     "canUndo" : false
   },
@@ -1808,21 +1808,6 @@
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#FFFFFF",
-    "borderColor" : "#EF2929",
-    "borderWidth" : 10,
-    "bounds" : {
-      "height" : 140,
-      "width" : 250,
-      "x" : 880,
-      "y" : 20
-    },
-    "defaultFontSize" : 15,
-    "id" : "root_1",
-    "styleRanges" : [ ],
-    "text" : "this is a red workflow annotation",
-    "textAlign" : "left"
-  }, {
-    "backgroundColor" : "#FFFFFF",
     "borderColor" : "#FFD800",
     "borderWidth" : 10,
     "bounds" : {
@@ -2029,5 +2014,20 @@
     } ],
     "text" : "Annotation back\nfoo and bar",
     "textAlign" : "center"
+  }, {
+    "backgroundColor" : "#FFFFFF",
+    "borderColor" : "#EF2929",
+    "borderWidth" : 10,
+    "bounds" : {
+      "height" : 140,
+      "width" : 250,
+      "x" : 880,
+      "y" : 20
+    },
+    "defaultFontSize" : 15,
+    "id" : "root_7",
+    "styleRanges" : [ ],
+    "text" : "this is a red workflow annotation",
+    "textAlign" : "left"
   } ]
 }

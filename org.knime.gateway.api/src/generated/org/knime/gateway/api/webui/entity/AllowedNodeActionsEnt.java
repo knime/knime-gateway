@@ -72,6 +72,12 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
    **/
   public Boolean isCanOpenView();
 
+  /**
+   * Indicates whether this node can be deleted. Circumstances that would prevent a node from being deleted are, e.g., executing state, executing successors, a deletion-lock set on the node, ...
+   * @return canDelete 
+   **/
+  public Boolean isCanDelete();
+
 
     /**
      * The builder for the entity.
@@ -117,6 +123,14 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
          * @return this entity builder for chaining
          */
         AllowedNodeActionsEntBuilder setCanOpenView(Boolean canOpenView);
+        
+        /**
+         * Indicates whether this node can be deleted. Circumstances that would prevent a node from being deleted are, e.g., executing state, executing successors, a deletion-lock set on the node, ...
+         * 
+         * @param canDelete the property value,  
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanDelete(Boolean canDelete);
         
         
         /**

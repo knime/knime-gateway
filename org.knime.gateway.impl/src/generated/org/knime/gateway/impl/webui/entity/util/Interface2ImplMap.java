@@ -68,6 +68,8 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
@@ -197,6 +199,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();
+        }        
+        if(clazz == DeleteCommandEntBuilder.class) {
+            return (B)new DefaultDeleteCommandEnt.DefaultDeleteCommandEntBuilder();
         }        
         if(clazz == EventEntBuilder.class) {
             return (B)new DefaultEventEnt.DefaultEventEntBuilder();

@@ -62,8 +62,8 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

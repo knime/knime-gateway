@@ -1,6 +1,22 @@
 {
   "ops" : [ {
     "op" : "replace",
+    "path" : "/nodes/root:3:0:7/allowedActions/canDelete",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/nodes/root:3:0:5/allowedActions/canDelete",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/connections/root:3:0:5_1/canDelete",
+    "value" : false
+  }, {
+    "op" : "replace",
+    "path" : "/connections/root:3:0:7_1/canDelete",
+    "value" : false
+  }, {
+    "op" : "replace",
     "path" : "/nodes/root:3:0:6/state/executionState",
     "value" : "EXECUTING"
   }, {
@@ -18,6 +34,10 @@
     "op" : "replace",
     "path" : "/nodes/root:3:0:5/state/executionState",
     "value" : "EXECUTING"
+  }, {
+    "op" : "replace",
+    "path" : "/connections/root:3:0:6_1/canDelete",
+    "value" : false
   }, {
     "op" : "replace",
     "path" : "/nodes/root:3:0:7/state/executionState",

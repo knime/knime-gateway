@@ -49,23 +49,30 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
@@ -162,7 +169,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(getNodeStates(workflow), "node_states");
 
         executeWorkflowAsync(wfId);
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             WorkflowEnt w = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
             assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
                 is(ExecutionStateEnum.EXECUTED));
@@ -334,6 +341,86 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                     + "nodes (root:9999), workflow-annotations (root_12345)"));
         }
 
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link DeleteCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testExecuteDeleteCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+
+        // successful deletion
+        DeleteCommandEnt command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
+            asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+        cr(ws().getWorkflow(wfId, getRootID(), true).getWorkflow(), "delete_command");
+
+        // undo deletion
+        ws().undoWorkflowCommand(wfId, getRootID());
+        cr(ws().getWorkflow(wfId, getRootID(), true).getWorkflow(), "undo_delete_command");
+
+        // deletion fails because a node doesn't exist
+        DeleteCommandEnt command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
+        Exception ex = Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
+        assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
+
+        // deletion fails because a connection doesn't exist
+        DeleteCommandEnt command3 =
+            createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(99999999), 0)), emptyList());
+        ex = Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
+        assertThat(ex.getMessage(), is("Some connections don't exist. Delete operation aborted."));
+
+        // deletion fails because a workflow annotation doesn't exist
+        DeleteCommandEnt command4 =
+            createDeleteCommandEnt(emptyList(), emptyList(), asList(new AnnotationIDEnt(getRootID(), 999999999)));
+        ex = Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
+        assertThat(ex.getMessage(), is("Some workflow annotations don't exist. Delete operation aborted."));
+
+        // deletion fails because a node cannot be deleted due to a delete lock
+        DeleteCommandEnt command5 = createDeleteCommandEnt(asList(new NodeIDEnt(23, 0, 8)), emptyList(), emptyList());
+        ex = Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(23), command5));
+        assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
+
+        /* checks for a workflow in execution */
+        String wfId2 = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
+        executeWorkflowAsync(wfId2);
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            WorkflowEnt w = ws().getWorkflow(wfId2, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
+            assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
+                is(ExecutionStateEnum.EXECUTED));
+        });
+        cr(ws().getWorkflow(wfId2, getRootID(), true).getWorkflow(), "can_delete_executing");
+
+        // deletion fails because of a node that cannot be deleted due to executing successors
+        DeleteCommandEnt command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
+        ex = Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId2, getRootID(), command6));
+        assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
+
+        // deletion of a connection fails because because it's connected to an executing node
+        DeleteCommandEnt command7 =
+            createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(7), 0)), emptyList());
+        ex = Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
+        assertThat(ex.getMessage(), is("Some connections can't be deleted. Delete operation aborted."));
+
+    }
+
+    private static DeleteCommandEnt createDeleteCommandEnt(final List<NodeIDEnt> nodeIds,
+        final List<ConnectionIDEnt> connectionIds, final List<AnnotationIDEnt> annotationIds) {
+        return builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE)//
+            .setNodeIds(nodeIds)//
+            .setConnectionIds(connectionIds)//
+            .setAnnotationIds(annotationIds)//
+            .build();
     }
 
 }

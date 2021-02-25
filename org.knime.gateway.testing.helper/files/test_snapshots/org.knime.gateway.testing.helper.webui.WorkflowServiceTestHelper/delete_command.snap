@@ -4,95 +4,29 @@
     "canExecute" : true,
     "canRedo" : false,
     "canReset" : false,
-    "canUndo" : false
+    "canUndo" : true
   },
   "connections" : {
+    "root:20_3" : {
+      "canDelete" : true,
+      "destNode" : "root:20",
+      "destPort" : 3,
+      "sourceNode" : "root:19",
+      "sourcePort" : 1
+    },
+    "root:22_1" : {
+      "canDelete" : true,
+      "destNode" : "root:22",
+      "destPort" : 1,
+      "sourceNode" : "root:10",
+      "sourcePort" : 1
+    },
     "root:11_1" : {
       "canDelete" : true,
       "destNode" : "root:11",
       "destPort" : 1,
       "sourceNode" : "root:2",
       "sourcePort" : 1
-    },
-    "root:12_1" : {
-      "canDelete" : true,
-      "destNode" : "root:12",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 2
-    },
-    "root:10_1" : {
-      "canDelete" : true,
-      "destNode" : "root:10",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:16_1" : {
-      "canDelete" : true,
-      "destNode" : "root:16",
-      "destPort" : 1,
-      "sourceNode" : "root:15",
-      "sourcePort" : 1
-    },
-    "root:13_1" : {
-      "canDelete" : true,
-      "destNode" : "root:13",
-      "destPort" : 1,
-      "flowVariableConnection" : true,
-      "sourceNode" : "root:1",
-      "sourcePort" : 0
-    },
-    "root:14_1" : {
-      "canDelete" : true,
-      "destNode" : "root:14",
-      "destPort" : 1,
-      "flowVariableConnection" : true,
-      "sourceNode" : "root:13",
-      "sourcePort" : 1
-    },
-    "root:4_0" : {
-      "canDelete" : true,
-      "destNode" : "root:4",
-      "destPort" : 0,
-      "flowVariableConnection" : true,
-      "sourceNode" : "root:1",
-      "sourcePort" : 0
-    },
-    "root:2_1" : {
-      "canDelete" : true,
-      "destNode" : "root:2",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:5_1" : {
-      "canDelete" : true,
-      "destNode" : "root:5",
-      "destPort" : 1,
-      "sourceNode" : "root:6",
-      "sourcePort" : 1
-    },
-    "root:6_0" : {
-      "canDelete" : true,
-      "destNode" : "root:6",
-      "destPort" : 0,
-      "sourceNode" : "root:2",
-      "sourcePort" : 1
-    },
-    "root:4_1" : {
-      "canDelete" : true,
-      "destNode" : "root:4",
-      "destPort" : 1,
-      "sourceNode" : "root:6",
-      "sourcePort" : 0
-    },
-    "root:9_1" : {
-      "canDelete" : true,
-      "destNode" : "root:9",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 2
     },
     "root:185_1" : {
       "canDelete" : true,
@@ -109,11 +43,19 @@
       "sourceNode" : "root:9",
       "sourcePort" : 1
     },
-    "root:19_1" : {
+    "root:16_1" : {
       "canDelete" : true,
-      "destNode" : "root:19",
+      "destNode" : "root:16",
       "destPort" : 1,
-      "sourceNode" : "root:1",
+      "sourceNode" : "root:15",
+      "sourcePort" : 1
+    },
+    "root:14_1" : {
+      "canDelete" : true,
+      "destNode" : "root:14",
+      "destPort" : 1,
+      "flowVariableConnection" : true,
+      "sourceNode" : "root:13",
       "sourcePort" : 1
     },
     "root:18_1" : {
@@ -124,95 +66,18 @@
       "sourceNode" : "root:16",
       "sourcePort" : 1
     },
-    "root:20_3" : {
+    "root:5_1" : {
       "canDelete" : true,
-      "destNode" : "root:20",
-      "destPort" : 3,
-      "sourceNode" : "root:19",
-      "sourcePort" : 1
-    },
-    "root:22_1" : {
-      "canDelete" : true,
-      "destNode" : "root:22",
+      "destNode" : "root:5",
       "destPort" : 1,
-      "sourceNode" : "root:10",
+      "sourceNode" : "root:6",
       "sourcePort" : 1
     },
-    "root:22_2" : {
+    "root:6_0" : {
       "canDelete" : true,
-      "destNode" : "root:22",
-      "destPort" : 2,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:23_1" : {
-      "canDelete" : true,
-      "destNode" : "root:23",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 2
-    },
-    "root:20_1" : {
-      "canDelete" : true,
-      "destNode" : "root:20",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:20_2" : {
-      "canDelete" : true,
-      "destNode" : "root:20",
-      "destPort" : 2,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:21_1" : {
-      "canDelete" : true,
-      "destNode" : "root:21",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:26_1" : {
-      "canDelete" : true,
-      "destNode" : "root:26",
-      "destPort" : 1,
-      "sourceNode" : "root:25",
-      "sourcePort" : 3
-    },
-    "root:26_2" : {
-      "canDelete" : true,
-      "destNode" : "root:26",
-      "destPort" : 2,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:27_1" : {
-      "canDelete" : true,
-      "destNode" : "root:27",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:25_1" : {
-      "canDelete" : true,
-      "destNode" : "root:25",
-      "destPort" : 1,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
-    "root:27_2" : {
-      "canDelete" : true,
-      "destNode" : "root:27",
-      "destPort" : 2,
-      "sourceNode" : "root:1",
-      "sourcePort" : 2
-    },
-    "root:27_3" : {
-      "canDelete" : true,
-      "destNode" : "root:27",
-      "destPort" : 3,
-      "sourceNode" : "root:1",
+      "destNode" : "root:6",
+      "destPort" : 0,
+      "sourceNode" : "root:2",
       "sourcePort" : 1
     }
   },
@@ -309,16 +174,6 @@
       "name" : "Column Filter",
       "type" : "Manipulator"
     },
-    "org.knime.base.node.viz.table.TableNodeFactory" : {
-      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTdERkZENzY4REYzMTFFNTg5RTI4N0E0OTUxQ0FFOEIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NEUxRUM2NjQ4REYzMTFFNTg5RTI4N0E0OTUxQ0FFOEIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxODk4MzkyNDM3OTkxMUU1QUEwNEEzNDQxMEQ0QjlGNiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxODk4MzkyNTM3OTkxMUU1QUEwNEEzNDQxMEQ0QjlGNiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PmHY10EAAABRSURBVHjaYmBABSwsLHi4QMAIxB8nWzMQB/hzjzIxkAhI14DpSjyAJMVInv7//z+Cz8iIn0t7DQysrKz/kQAbGxseLlDxcPA06aFEavIGCDAAnLhmdX9SqhAAAAAASUVORK5CYII=",
-      "name" : "Interactive Table (local)",
-      "type" : "Visualizer"
-    },
-    "org.knime.base.node.util.sampledata.SampleDataNodeFactory" : {
-      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkRBMkI1RTE4QTIyMTFFNTkyQzJBQjlCNTFCMUUyMzIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkRBMkI1RTA4QTIyMTFFNTkyQzJBQjlCNTFCMUUyMzIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBM0VBMDE1RTJFMkYxMUU1OUMzRUMzQkRFMzNFNTk1RiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCQTI5MjQyMjJFMkYxMUU1OUMzRUMzQkRFMzNFNTk1RiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pp5Rd2EAAAE8SURBVHjaYmSAAu8WJ242btZ2ZhYmRyZWZn6Q2L/ffz/+/fNv/6+vvyu31uz7ChL7//8/AzJgBBF+HS7qrJwsW0SU+FVYedlQFPz+/Ivhzb2Pd35//+OzqWLPTQwDQDZz8LJdkNQRUWFgZmTACv7+Z3h+5c2dH59/GWyp3vsVWYoJ5GyQzTg1gwBQDqQGpBZdigXkZ2Rnf335neHSottgtl6cKgO3OCeYDVIDUotpACsTP7IASPPzM2/gfMtSPYRD0NSCvcBAIWD5+/vfRyAtCxMAORsbGxyWELVoBgDjGRhVOrBwAPkZ2dnI0QlSi+EFUCIBxTMoqnACoBxIDUgthgGgFAZKJKB4BtmCzWawHFANSC0jI+N/KGYAY1KTMig1I6diRvSkiQuAbMUmTnk0kqCWEZsXKHYBQIABAPVenM3vr81YAAAAAElFTkSuQmCC",
-      "name" : "Data Generator",
-      "type" : "Source"
-    },
     "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkIwNzVGQUE0NUM3MTFFNUFDNkJBNzc0MkI4RTNBMkQiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkIwNzVGQTk0NUM3MTFFNUFDNkJBNzc0MkI4RTNBMkQiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpiMjZmMjcxNS1kZmZiLTRlYTgtYWJjMi0xZDk4N2YzMzE1NzIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+y0Ox5wAAAI1JREFUeNpiZGBg+M9AAWABEf//k2cGIyMjAxMDhWAYGMBIaSzAADsQs1FiAD5X3AXiZ0h8Qaj6VcSGwSwglgRiYyg/FEqvxuUCELsJi43lUD7I5u/oCfA/DsyApAnmDZDmDnwpGCTagCbmAhVPg9LGMAMYSQjod1D6BxBLkRNT5WhhAUlI5OZEGAAIMACB0S5sgw1IUgAAAABJRU5ErkJggg==",
       "name" : "Table Row to Variable (deprecated)",
@@ -326,59 +181,11 @@
     }
   },
   "nodes" : {
-    "root:1" : {
-      "allowedActions" : {
-        "canCancel" : false,
-        "canDelete" : true,
-        "canExecute" : true,
-        "canOpenDialog" : true,
-        "canReset" : false
-      },
-      "id" : "root:1",
-      "inPorts" : [ {
-        "connectedVia" : "[  ]",
-        "index" : 0,
-        "name" : "Variable Inport",
-        "optional" : true,
-        "type" : "flowVariable"
-      } ],
-      "kind" : "node",
-      "outPorts" : [ {
-        "connectedVia" : "[ root:13_1, root:4_0 ]",
-        "index" : 0,
-        "name" : "Variable Outport",
-        "type" : "flowVariable"
-      }, {
-        "connectedVia" : "[ root:10_1, root:19_1, root:20_1, root:20_2, root:21_1, root:22_2, root:25_1, root:26_2, root:27_1, root:27_3, root:2_1 ]",
-        "index" : 1,
-        "name" : "Random data with cluster ID",
-        "type" : "table",
-        "view" : {
-          "type" : "table"
-        }
-      }, {
-        "connectedVia" : "[ root:12_1, root:23_1, root:27_2, root:9_1 ]",
-        "index" : 2,
-        "name" : "Cluster centers",
-        "type" : "table",
-        "view" : {
-          "type" : "table"
-        }
-      } ],
-      "position" : {
-        "x" : 204,
-        "y" : 343
-      },
-      "state" : {
-        "executionState" : "CONFIGURED"
-      },
-      "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
-    },
     "root:2" : {
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -396,7 +203,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:2_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Table to be filtered",
         "optional" : false,
@@ -425,7 +232,7 @@
         "y" : 343
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
     },
@@ -433,7 +240,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -452,7 +259,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:19_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input Table",
         "optional" : false,
@@ -479,56 +286,15 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
-    },
-    "root:4" : {
-      "allowedActions" : {
-        "canCancel" : false,
-        "canDelete" : true,
-        "canExecute" : true,
-        "canOpenDialog" : true,
-        "canReset" : false
-      },
-      "id" : "root:4",
-      "inPorts" : [ {
-        "connectedVia" : "[ root:4_0 ]",
-        "index" : 0,
-        "name" : "Variable Inport",
-        "optional" : true,
-        "type" : "flowVariable"
-      }, {
-        "connectedVia" : "[ root:4_1 ]",
-        "index" : 1,
-        "name" : "Input to display",
-        "optional" : false,
-        "type" : "table",
-        "view" : {
-          "type" : "table"
-        }
-      } ],
-      "kind" : "node",
-      "outPorts" : [ {
-        "connectedVia" : "[  ]",
-        "index" : 0,
-        "name" : "Variable Outport",
-        "type" : "flowVariable"
-      } ],
-      "position" : {
-        "x" : 704,
-        "y" : 203
-      },
-      "state" : {
-        "executionState" : "CONFIGURED"
-      },
-      "templateId" : "org.knime.base.node.viz.table.TableNodeFactory"
     },
     "root:5" : {
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -582,7 +348,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -597,16 +363,16 @@
       "kind" : "metanode",
       "name" : "Metanode",
       "outPorts" : [ {
-        "connectedVia" : "[ root:4_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Connected to: Filtered",
-        "nodeState" : "CONFIGURED",
+        "nodeState" : "IDLE",
         "type" : "table"
       }, {
         "connectedVia" : "[ root:5_1 ]",
         "index" : 1,
         "name" : "Connected to: Filtered Out",
-        "nodeState" : "CONFIGURED",
+        "nodeState" : "IDLE",
         "type" : "table"
       }, {
         "connectedVia" : "[  ]",
@@ -666,7 +432,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -684,7 +450,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:20_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Query table",
         "optional" : false,
@@ -693,7 +459,7 @@
           "type" : "table"
         }
       }, {
-        "connectedVia" : "[ root:20_2 ]",
+        "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Reference table (neighbors)",
         "optional" : false,
@@ -729,7 +495,7 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
     },
@@ -737,7 +503,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -755,7 +521,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:21_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "First table to concatenate",
         "optional" : false,
@@ -811,7 +577,7 @@
         "y" : 23
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
     },
@@ -938,7 +704,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -950,7 +716,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:25_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Table to transform",
         "optional" : false,
@@ -983,7 +749,7 @@
         }
       }, {
         "color" : "#1EB9DC",
-        "connectedVia" : "[ root:26_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 3,
         "name" : "Projection model",
         "type" : "other"
@@ -993,7 +759,7 @@
         "y" : 403
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
     },
@@ -1001,7 +767,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1026,7 +792,7 @@
         "optional" : false,
         "type" : "other"
       }, {
-        "connectedVia" : "[ root:22_2 ]",
+        "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Test data",
         "optional" : false,
@@ -1055,7 +821,7 @@
         "y" : 83
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
     },
@@ -1063,7 +829,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canOpenView" : false,
         "canReset" : false
@@ -1082,7 +848,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:23_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
@@ -1112,15 +878,14 @@
         "y" : 623
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "IDLE"
       }
     },
     "root:26" : {
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1139,13 +904,13 @@
         "type" : "flowVariable"
       }, {
         "color" : "#1EB9DC",
-        "connectedVia" : "[ root:26_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "PCA model",
         "optional" : false,
         "type" : "other"
       }, {
-        "connectedVia" : "[ root:26_2 ]",
+        "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Table to transform",
         "optional" : false,
@@ -1174,7 +939,7 @@
         "y" : 483
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
     },
@@ -1182,7 +947,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1200,7 +965,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:27_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "First table to concatenate",
         "optional" : false,
@@ -1209,7 +974,7 @@
           "type" : "table"
         }
       }, {
-        "connectedVia" : "[ root:27_2 ]",
+        "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Second table to concatenate",
         "optional" : false,
@@ -1218,7 +983,7 @@
           "type" : "table"
         }
       }, {
-        "connectedVia" : "[ root:27_3 ]",
+        "connectedVia" : "[  ]",
         "index" : 3,
         "name" : "Additional table to concatenate",
         "optional" : false,
@@ -1247,7 +1012,7 @@
         "y" : 203
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
     },
@@ -1255,7 +1020,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1273,7 +1038,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:10_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Training data",
         "optional" : false,
@@ -1300,7 +1065,7 @@
         "y" : 163
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
     },
@@ -1347,7 +1112,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1414,7 +1179,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:13_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input",
         "optional" : true,
@@ -1445,7 +1210,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1463,7 +1228,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:9_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
@@ -1493,8 +1258,7 @@
         "y" : 503
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "IDLE"
       },
       "type" : "Visualizer"
     },
@@ -1555,7 +1319,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1596,7 +1360,7 @@
         "y" : 383
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "IDLE"
       },
       "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
     },
@@ -1604,7 +1368,7 @@
       "allowedActions" : {
         "canCancel" : false,
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1621,7 +1385,7 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
-        "connectedVia" : "[ root:12_1 ]",
+        "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
@@ -1651,8 +1415,7 @@
         "y" : 623
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "IDLE"
       }
     },
     "root:18" : {
@@ -1805,21 +1568,6 @@
     "id" : "root_0",
     "styleRanges" : [ ],
     "text" : "this is a workflow annotation",
-    "textAlign" : "left"
-  }, {
-    "backgroundColor" : "#FFFFFF",
-    "borderColor" : "#EF2929",
-    "borderWidth" : 10,
-    "bounds" : {
-      "height" : 140,
-      "width" : 250,
-      "x" : 880,
-      "y" : 20
-    },
-    "defaultFontSize" : 15,
-    "id" : "root_1",
-    "styleRanges" : [ ],
-    "text" : "this is a red workflow annotation",
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#FFFFFF",

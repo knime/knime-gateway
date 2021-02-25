@@ -8,30 +8,35 @@
   },
   "connections" : {
     "root:11_1" : {
+      "canDelete" : true,
       "destNode" : "root:11",
       "destPort" : 1,
       "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:12_1" : {
+      "canDelete" : true,
       "destNode" : "root:12",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 2
     },
     "root:10_1" : {
+      "canDelete" : true,
       "destNode" : "root:10",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:16_1" : {
+      "canDelete" : true,
       "destNode" : "root:16",
       "destPort" : 1,
       "sourceNode" : "root:15",
       "sourcePort" : 1
     },
     "root:13_1" : {
+      "canDelete" : true,
       "destNode" : "root:13",
       "destPort" : 1,
       "flowVariableConnection" : true,
@@ -39,6 +44,7 @@
       "sourcePort" : 0
     },
     "root:14_1" : {
+      "canDelete" : true,
       "destNode" : "root:14",
       "destPort" : 1,
       "flowVariableConnection" : true,
@@ -46,6 +52,7 @@
       "sourcePort" : 1
     },
     "root:4_0" : {
+      "canDelete" : true,
       "destNode" : "root:4",
       "destPort" : 0,
       "flowVariableConnection" : true,
@@ -53,36 +60,42 @@
       "sourcePort" : 0
     },
     "root:2_1" : {
+      "canDelete" : true,
       "destNode" : "root:2",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:5_1" : {
+      "canDelete" : true,
       "destNode" : "root:5",
       "destPort" : 1,
       "sourceNode" : "root:6",
       "sourcePort" : 1
     },
     "root:6_0" : {
+      "canDelete" : true,
       "destNode" : "root:6",
       "destPort" : 0,
       "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:4_1" : {
+      "canDelete" : true,
       "destNode" : "root:4",
       "destPort" : 1,
       "sourceNode" : "root:6",
       "sourcePort" : 0
     },
     "root:9_1" : {
+      "canDelete" : true,
       "destNode" : "root:9",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 2
     },
     "root:185_1" : {
+      "canDelete" : true,
       "destNode" : "root:185",
       "destPort" : 1,
       "flowVariableConnection" : true,
@@ -90,18 +103,21 @@
       "sourcePort" : 1
     },
     "root:8_1" : {
+      "canDelete" : true,
       "destNode" : "root:8",
       "destPort" : 1,
       "sourceNode" : "root:9",
       "sourcePort" : 1
     },
     "root:19_1" : {
+      "canDelete" : true,
       "destNode" : "root:19",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:18_1" : {
+      "canDelete" : true,
       "destNode" : "root:18",
       "destPort" : 1,
       "flowVariableConnection" : true,
@@ -109,78 +125,91 @@
       "sourcePort" : 1
     },
     "root:20_3" : {
+      "canDelete" : true,
       "destNode" : "root:20",
       "destPort" : 3,
       "sourceNode" : "root:19",
       "sourcePort" : 1
     },
     "root:22_1" : {
+      "canDelete" : true,
       "destNode" : "root:22",
       "destPort" : 1,
       "sourceNode" : "root:10",
       "sourcePort" : 1
     },
     "root:22_2" : {
+      "canDelete" : true,
       "destNode" : "root:22",
       "destPort" : 2,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:23_1" : {
+      "canDelete" : true,
       "destNode" : "root:23",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 2
     },
     "root:20_1" : {
+      "canDelete" : true,
       "destNode" : "root:20",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:20_2" : {
+      "canDelete" : true,
       "destNode" : "root:20",
       "destPort" : 2,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:21_1" : {
+      "canDelete" : true,
       "destNode" : "root:21",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:26_1" : {
+      "canDelete" : true,
       "destNode" : "root:26",
       "destPort" : 1,
       "sourceNode" : "root:25",
       "sourcePort" : 3
     },
     "root:26_2" : {
+      "canDelete" : true,
       "destNode" : "root:26",
       "destPort" : 2,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:27_1" : {
+      "canDelete" : true,
       "destNode" : "root:27",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:25_1" : {
+      "canDelete" : true,
       "destNode" : "root:25",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 1
     },
     "root:27_2" : {
+      "canDelete" : true,
       "destNode" : "root:27",
       "destPort" : 2,
       "sourceNode" : "root:1",
       "sourcePort" : 2
     },
     "root:27_3" : {
+      "canDelete" : true,
       "destNode" : "root:27",
       "destPort" : 3,
       "sourceNode" : "root:1",
@@ -300,6 +329,7 @@
     "root:1" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -350,6 +380,7 @@
     "root:2" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -406,6 +437,7 @@
     "root:19" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -461,6 +493,7 @@
     "root:4" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -502,6 +535,7 @@
     "root:5" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
@@ -555,6 +589,7 @@
     "root:6" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -601,6 +636,7 @@
     "root:182" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
@@ -639,6 +675,7 @@
     "root:20" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -711,6 +748,7 @@
     "root:21" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -794,6 +832,7 @@
     "root:183" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
@@ -868,6 +907,7 @@
     "root:185" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -909,6 +949,7 @@
     "root:25" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -975,6 +1016,7 @@
     "root:22" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1038,6 +1080,7 @@
     "root:23" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canOpenView" : true,
@@ -1095,6 +1138,7 @@
     "root:26" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1158,6 +1202,7 @@
     "root:27" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1232,6 +1277,7 @@
     "root:10" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1286,6 +1332,7 @@
     "root:172" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
@@ -1324,6 +1371,7 @@
     "root:8" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1374,6 +1422,7 @@
     "root:13" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1425,6 +1474,7 @@
     "root:9" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1482,6 +1532,7 @@
     "root:14" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1534,6 +1585,7 @@
     "root:11" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
         "canReset" : false
@@ -1583,6 +1635,7 @@
     "root:12" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1637,6 +1690,7 @@
     "root:18" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1687,6 +1741,7 @@
     "root:15" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true
@@ -1728,6 +1783,7 @@
     "root:16" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : true

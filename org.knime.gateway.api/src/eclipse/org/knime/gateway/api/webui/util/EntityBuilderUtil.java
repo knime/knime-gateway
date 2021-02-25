@@ -259,13 +259,12 @@ public final class EntityBuilderUtil {
             }
             final boolean hasComponentProjectParent = wfm.getProjectComponent().isPresent();
             BuildContext buildContext = createBuildContext(id -> new NodeIDEnt(id, hasComponentProjectParent),
-                isInStreamingMode(wfm), includeInteractionInfo);
+                isInStreamingMode(wfm), includeInteractionInfo, depNodeProps);
             for (NodeContainer nc : nodeContainers) {
-                buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, depNodeProps,
-                    buildContext);
+                buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, buildContext);
             }
             Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
-                .map(cc -> buildConnectionEnt(cc, buildContext)).collect(
+                .map(cc -> buildConnectionEnt(cc, wfm, buildContext)).collect(
                     Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations =
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
@@ -515,9 +514,8 @@ public final class EntityBuilderUtil {
     }
 
     private static void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
-        final Map<String, NativeNodeTemplateEnt> templates, final DependentNodeProperties depNodeProps,
-        final BuildContext buildContext) {
-        NodeEnt nodeEnt = buildNodeEnt(id, nc, depNodeProps, buildContext);
+        final Map<String, NativeNodeTemplateEnt> templates, final BuildContext buildContext) {
+        NodeEnt nodeEnt = buildNodeEnt(id, nc, buildContext);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
@@ -526,10 +524,9 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final DependentNodeProperties depNodeProps, final BuildContext buildContext) {
-        return buildNodeEnt(id, nc,
-            buildContext.includeInteractionInfo() ? buildAllowedNodeActionsEnt(nc, depNodeProps) : null, buildContext);
+    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc, final BuildContext buildContext) {
+        return buildNodeEnt(id, nc, buildContext.includeInteractionInfo()
+            ? buildAllowedNodeActionsEnt(nc, buildContext.dependentNodeProperties()) : null, buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
@@ -550,13 +547,34 @@ public final class EntityBuilderUtil {
         final DependentNodeProperties depNodeProps) {
         WorkflowManager parent = nc.getParent();
         NodeID id = nc.getID();
-        return builder(AllowedNodeActionsEntBuilder.class)
-                .setCanExecute(depNodeProps.canExecuteNode(id))
-                .setCanReset(depNodeProps.canResetNode(id))
-                .setCanCancel(parent.canCancelNode(id))
-                .setCanOpenDialog(nc.hasDialog() ? Boolean.TRUE : null)
-                .setCanOpenView(hasAndCanOpenNodeView(nc))
+        return builder(AllowedNodeActionsEntBuilder.class)//
+                .setCanExecute(depNodeProps.canExecuteNode(id))//
+                .setCanReset(depNodeProps.canResetNode(id))//
+                .setCanCancel(parent.canCancelNode(id))//
+                .setCanOpenDialog(nc.hasDialog() ? Boolean.TRUE : null)//
+                .setCanOpenView(hasAndCanOpenNodeView(nc))//
+                .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
                 .build();
+    }
+
+    private static Boolean canDeleteNode(final NodeContainer nc, final NodeID nodeId,
+        final DependentNodeProperties depNodeProps) {
+        if (!nc.isDeletable()) {
+            return Boolean.FALSE;
+        } else {
+            return isNodeResetOrCanBeReset(nc.getNodeContainerState(), nodeId, depNodeProps);
+        }
+    }
+
+    private static Boolean isNodeResetOrCanBeReset(final NodeContainerState state, final NodeID nodeId,
+        final DependentNodeProperties depNodeProps) {
+        if (state.isExecutionInProgress()) {
+            return Boolean.FALSE;
+        } else if (state.isExecuted()) {
+            return depNodeProps.canResetNode(nodeId);
+        } else {
+            return Boolean.TRUE;
+        }
     }
 
     private static AllowedWorkflowActionsEnt buildAllowedWorkflowActionsEnt(final WorkflowManager wfm,
@@ -1110,7 +1128,8 @@ public final class EntityBuilderUtil {
         return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
     }
 
-    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc, final BuildContext buildContext) {
+    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc, final WorkflowManager wfm,
+        final BuildContext buildContext) {
         ConnectionEntBuilder builder = builder(ConnectionEntBuilder.class)
             .setDestNode(buildContext.buildNodeIDEnt(cc.getDest()))//
             .setDestPort(cc.getDestPort())//
@@ -1122,11 +1141,21 @@ public final class EntityBuilderUtil {
                 builder.setLabel(connectionProgress.getMessage()).setStreaming(connectionProgress.inProgress());
             }
         }
+        if (buildContext.includeInteractionInfo()) {
+            if (!cc.isDeletable()) {
+                builder.setCanDelete(Boolean.FALSE);
+            } else {
+                NodeContainer destNode = wfm.getNodeContainer(cc.getDest());
+                builder.setCanDelete(isNodeResetOrCanBeReset(destNode.getNodeContainerState(), destNode.getID(),
+                    buildContext.dependentNodeProperties()));
+            }
+        }
         return builder.build();
     }
 
     private static BuildContext createBuildContext(final Function<NodeID, NodeIDEnt> buildNodeIDEnt,
-        final boolean isInStreamingMode, final boolean includeInteractionInfo) {
+        final boolean isInStreamingMode, final boolean includeInteractionInfo,
+        final DependentNodeProperties depNodeProps) {
         return new BuildContext() {
 
             @Override
@@ -1143,6 +1172,11 @@ public final class EntityBuilderUtil {
             public boolean includeInteractionInfo() {
                 return includeInteractionInfo;
             }
+
+            @Override
+            public DependentNodeProperties dependentNodeProperties() {
+                return depNodeProps;
+            }
         };
     }
 
@@ -1152,6 +1186,8 @@ public final class EntityBuilderUtil {
         boolean isInStreamingMode();
 
         boolean includeInteractionInfo();
+
+        DependentNodeProperties dependentNodeProperties();
     }
 
 }

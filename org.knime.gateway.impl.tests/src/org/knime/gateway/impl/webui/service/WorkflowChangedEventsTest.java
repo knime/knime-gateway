@@ -156,9 +156,9 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
 
 
             // The number of events that arrive at the event consumer are not always deterministic.
-            // Thus, the TestEventConsumer blocks after it received the first event. And now that the workflow to reach
+            // Thus, the TestEventConsumer blocks after it received the first event. And now that the workflow reached
             // a stable state (i.e. no more changes expected) we can unblock the event consumer and (possibly) receive
-            // let the second (and last) event
+            // the second (and last) event
             testEventConsumer.unblock();
 
             // wait for the workflow events to arrive
