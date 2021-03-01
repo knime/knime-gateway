@@ -68,7 +68,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.util.CoreUtil;
 
 /**
  * Summarizes all kind of workflow changes and allows one to register one single listener to all of them.
@@ -114,7 +114,7 @@ public class WorkflowChangesListener implements Closeable {
         });
         m_callback = callback;
 
-        m_isInStreamingMode = EntityBuilderUtil.isInStreamingMode(m_wfm);
+        m_isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         m_connectionListeners = m_isInStreamingMode ? new HashMap<>() : null;
 
         m_workflowListener = startListening();
