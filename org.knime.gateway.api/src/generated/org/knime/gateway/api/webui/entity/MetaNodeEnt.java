@@ -167,6 +167,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
         MetaNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
+         * All successors of this node represented as a bitset. Every bit stands for a node and is &#39;1&#39; if the respective node is a (indirect!) successor. The bitset includes this node, too.
+         * 
+         * @param successors the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setSuccessors(java.util.BitSet successors);
+        
+        /**
    		 * Set name
          * 
          * @param name the property value, NOT <code>null</code>! 

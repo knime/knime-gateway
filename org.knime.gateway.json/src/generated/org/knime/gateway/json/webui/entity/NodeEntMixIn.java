@@ -125,6 +125,10 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonProperty("executionInfo")
     public NodeExecutionInfoEnt getExecutionInfo();
     
+    @Override
+    @JsonProperty("successors")
+    public java.util.BitSet getSuccessors();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -183,6 +187,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public NodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("successors")
+        public NodeEntMixInBuilder setSuccessors(final java.util.BitSet successors);
         
     }
 

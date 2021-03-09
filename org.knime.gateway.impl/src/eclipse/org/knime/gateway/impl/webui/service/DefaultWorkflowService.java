@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
@@ -119,8 +120,9 @@ public final class DefaultWorkflowService implements WorkflowService {
         WorkflowKey wfKey = new WorkflowKey(projectId, workflowId);
         WorkflowManager wfm = getWorkflowManager(wfKey);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEntWithInteractionInfo(wfm,
-                m_commands.canUndo(wfKey), m_commands.canRedo(wfKey)), wfKey);
+            return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEnt(WorkflowBuildContext.builder(wfm)
+                .includeInteractionInfo(true).canUndo(m_commands.canUndo(wfKey)).canRedo(m_commands.canRedo(wfKey))),
+                wfKey);
         } else {
             return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEnt(wfm), wfKey);
         }

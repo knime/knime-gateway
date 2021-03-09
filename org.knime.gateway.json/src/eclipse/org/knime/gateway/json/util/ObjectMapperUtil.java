@@ -45,6 +45,7 @@ public final class ObjectMapperUtil {
         JsonUtil.addWebUIMixIns(mapper);
         JsonUtil.addIDEntityDeSerializer(mapper);
         JsonUtil.addDateTimeDeSerializer(mapper);
+        JsonUtil.addBitSetDeSerializer(mapper);
     }
 
     /**

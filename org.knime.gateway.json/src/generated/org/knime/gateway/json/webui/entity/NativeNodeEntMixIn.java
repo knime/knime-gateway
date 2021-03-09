@@ -108,6 +108,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
+    @JsonProperty("successors")
+    public java.util.BitSet getSuccessors();
+    
+    @Override
     @JsonProperty("templateId")
     public String getTemplateId();
     
@@ -163,6 +167,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public NativeNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("successors")
+        public NativeNodeEntMixInBuilder setSuccessors(final java.util.BitSet successors);
         
         @Override
         @JsonProperty("templateId")

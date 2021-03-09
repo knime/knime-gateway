@@ -47,10 +47,13 @@ package org.knime.gateway.json.util;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -160,5 +163,30 @@ public class JsonUtil {
             }
         });
         mapper.registerModule(dateTimeDeSer);
+    }
+
+    /**
+     * Adds a custom serializer and deserializer for {@link BitSet}s to the given object mapper.
+     *
+     * @param mapper the mapper to add the de-/serializer to
+     */
+    public static void addBitSetDeSerializer(final ObjectMapper mapper) {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(new StdSerializer<BitSet>(BitSet.class) {
+
+            @Override
+            public void serialize(final BitSet value, final JsonGenerator gen, final SerializerProvider provider)
+                throws IOException {
+                gen.writeString(new String(Base64.encodeBase64(value.toByteArray()), StandardCharsets.UTF_8));
+            }
+        });
+        module.addDeserializer(BitSet.class, new StdDeserializer<BitSet>(BitSet.class) {
+
+            @Override
+            public BitSet deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException {
+                return BitSet.valueOf(Base64.decodeBase64(p.getText()));
+            }
+        });
+        mapper.registerModule(module);
     }
 }

@@ -77,6 +77,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   protected KindEnum m_kind;
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
+  protected java.util.BitSet m_successors;
   protected String m_templateId;
   protected NodeStateEnt m_state;
   protected LoopInfoEnt m_loopInfo;
@@ -115,6 +116,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     m_kind = immutable(builder.m_kind);
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
+    m_successors = immutable(builder.m_successors);
     if(builder.m_templateId == null) {
         throw new IllegalArgumentException("templateId must not be null.");
     }
@@ -138,7 +140,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_successors, ent.m_successors) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo);
     }
 
 
@@ -157,6 +159,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                .append(m_kind)
                .append(m_allowedActions)
                .append(m_executionInfo)
+               .append(m_successors)
                .append(m_templateId)
                .append(m_state)
                .append(m_loopInfo)
@@ -206,6 +209,11 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   }
     
   @Override
+  public java.util.BitSet getSuccessors() {
+        return m_successors;
+  }
+    
+  @Override
   public String getTemplateId() {
         return m_templateId;
   }
@@ -235,6 +243,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         private KindEnum m_kind;
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
+        private java.util.BitSet m_successors;
         private String m_templateId;
         private NodeStateEnt m_state;
         private LoopInfoEnt m_loopInfo;
@@ -299,6 +308,12 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo) {
              m_executionInfo = executionInfo;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeEntBuilder setSuccessors(java.util.BitSet successors) {
+             m_successors = successors;
              return this;
         }
 

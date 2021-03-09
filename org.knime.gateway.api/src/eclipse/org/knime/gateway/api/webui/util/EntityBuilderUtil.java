@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -212,6 +213,8 @@ public final class EntityBuilderUtil {
 
     private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
 
+    private static long[] longArray;
+
     private EntityBuilderUtil() {
         //utility class
     }
@@ -227,21 +230,12 @@ public final class EntityBuilderUtil {
     }
 
     /**
-     * Builds a new {@link WorkflowEnt} which also includes information that is required if the user interacts with it,
-     * such as info on allowed actions for nodes or the entire workflow (execute, cancel, reset).
+     * Builds a new {@link WorkflowEnt} instance.
      *
-     * @param wfm the workflow manager to create the entity from
-     * @param canUndo whether an undo is possible at least once on the workflow
-     * @param canRedo whether a redo is possible at least once on the workflow
+     * @param buildContextBuilder contextual information required to build the {@link WorkflowEnt} instance
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEntWithInteractionInfo(final WorkflowManager wfm, final boolean canUndo,
-        final boolean canRedo) {
-        return buildWorkflowEnt(
-            WorkflowBuildContext.builder(wfm).includeInteractionInfo(true).canUndo(canUndo).canRedo(canRedo));
-    }
-
-    private static WorkflowEnt buildWorkflowEnt(final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
         try (WorkflowLock lock = buildContextBuilder.lockWorkflow()) {
             WorkflowBuildContext buildContext = buildContextBuilder.build();
             WorkflowManager wfm = buildContext.wfm();
@@ -570,7 +564,9 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.METANODE)//
             .setLink(getTemplateLink(wm))//
             .setAllowedActions(allowedActions)//
-            .setExecutionInfo(buildNodeExecutionInfoEnt(wm)).build();
+            .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
+            .setSuccessors(getNodeSuccessors(wm.getID(), buildContext))//
+            .build();
     }
 
     private static MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
@@ -625,6 +621,7 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
             .setAllowedActions(allowedActions)//
+            .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)).build();
     }
 
@@ -752,7 +749,12 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
+            .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
             .build();
+    }
+
+    private static BitSet getNodeSuccessors(final NodeID id, final WorkflowBuildContext buildContext) {
+        return buildContext.includeInteractionInfo() ? buildContext.nodeSuccessors().getSuccessors(id) : null;
     }
 
     private static NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {

@@ -48,8 +48,11 @@
  */
 package org.knime.gateway.api.webui.util;
 
+import java.util.function.Supplier;
+
 import org.knime.core.node.workflow.DependentNodeProperties;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeSuccessors;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -73,6 +76,8 @@ public final class WorkflowBuildContext {
 
     private final DependentNodeProperties m_depNodeProps;
 
+    private final NodeSuccessors m_nodeSuccessors;
+
     private final boolean m_isInStreamingMode;
 
     private final boolean m_hasComponentProjectParent;
@@ -81,8 +86,11 @@ public final class WorkflowBuildContext {
 
     private final boolean m_canRedo;
 
+    private int m_nodeCount;
+
     private WorkflowBuildContext(final WorkflowBuildContextBuilder builder, final boolean isInStreamingMode,
-        final boolean hasComponentProjectParent, final DependentNodeProperties depNodeProps) {
+        final boolean hasComponentProjectParent, final DependentNodeProperties depNodeProps,
+        final NodeSuccessors nodeSuccessors, final int nodeCount) {
         m_wfm = builder.m_wfm;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
@@ -90,6 +98,8 @@ public final class WorkflowBuildContext {
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
+        m_nodeSuccessors = nodeSuccessors;
+        m_nodeCount = nodeCount;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -120,6 +130,14 @@ public final class WorkflowBuildContext {
         return m_canRedo;
     }
 
+    NodeSuccessors nodeSuccessors() {
+        return m_nodeSuccessors;
+    }
+
+    int nodeCount() {
+        return m_nodeCount;
+    }
+
     /**
      * Creates a new builder instance.
      *
@@ -142,6 +160,10 @@ public final class WorkflowBuildContext {
         private boolean m_canUndo = false;
 
         private boolean m_canRedo = false;
+
+        private Supplier<DependentNodeProperties> m_depNodeProps;
+
+        private Supplier<NodeSuccessors> m_nodeSuccessors;
 
         private WorkflowBuildContextBuilder(final WorkflowManager wfm) {
             m_wfm = wfm;
@@ -181,6 +203,37 @@ public final class WorkflowBuildContext {
         }
 
         /**
+         * Provides the already calculated dependent node properties. Only relevant if interaction info is to be
+         * included in the resulting workflow entity.
+         *
+         * If no dependent node properties are provided and interaction info supposed to be included, they will be
+         * determined in the {@link #build()}-step.
+         *
+         * @param depNodeProps the pre-calculated dependent node properties
+         * @return this builder instance
+         */
+        public WorkflowBuildContextBuilder
+            dependentNodeProperties(final Supplier<DependentNodeProperties> depNodeProps) {
+            m_depNodeProps = depNodeProps;
+            return this;
+        }
+
+        /**
+         * Provides the already calculated node successors for every node. Only relevant if interaction info is to be
+         * included in the resulting workflow entity.
+         *
+         * If no pre-calculated node successors are provided and interaction info supposed to be included, they will be
+         * determined in the {@link #build()}-step.
+         *
+         * @param nodeSuccessors the pre-calculated node successors
+         * @return this builder instance
+         */
+        public WorkflowBuildContextBuilder nodeSuccessors(final Supplier<NodeSuccessors> nodeSuccessors) {
+            m_nodeSuccessors = nodeSuccessors;
+            return this;
+        }
+
+        /**
          * Builds the workflow context. This might be an operation which is a bit more involved since certain
          * characteristics of the workflow are being determined.
          *
@@ -191,12 +244,14 @@ public final class WorkflowBuildContext {
          */
         WorkflowBuildContext build() {
             assert m_wfm.isLockedByCurrentThread();
-            DependentNodeProperties depNodeProps = null;
+            DependentNodeProperties dnp = null;
+            NodeSuccessors ns = null;
             if (m_includeInteractionInfo) {
-                depNodeProps = m_wfm.determineDependentNodeProperties();
+                dnp = m_depNodeProps == null ? m_wfm.determineDependentNodeProperties() : m_depNodeProps.get();
+                ns = m_nodeSuccessors == null ? m_wfm.determineNodeSuccessors() : m_nodeSuccessors.get();
             }
             return new WorkflowBuildContext(this, CoreUtil.isInStreamingMode(m_wfm),
-                m_wfm.getProjectComponent().isPresent(), depNodeProps);
+                m_wfm.getProjectComponent().isPresent(), dnp, ns, m_wfm.getNodeContainers().size());
         }
 
         /**

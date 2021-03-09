@@ -135,6 +135,12 @@ public interface NodeEnt extends GatewayEntity {
    **/
   public NodeExecutionInfoEnt getExecutionInfo();
 
+  /**
+   * All successors of this node represented as a bitset. Every bit stands for a node and is &#39;1&#39; if the respective node is a (indirect!) successor. The bitset includes this node, too.
+   * @return successors 
+   **/
+  public java.util.BitSet getSuccessors();
+
 
     /**
      * The builder for the entity.
@@ -204,6 +210,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+         * All successors of this node represented as a bitset. Every bit stands for a node and is &#39;1&#39; if the respective node is a (indirect!) successor. The bitset includes this node, too.
+         * 
+         * @param successors the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setSuccessors(java.util.BitSet successors);
         
         
         /**
