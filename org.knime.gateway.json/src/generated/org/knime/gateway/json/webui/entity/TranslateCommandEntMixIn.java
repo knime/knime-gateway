@@ -74,8 +74,8 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
+    @JsonProperty("translation")
+    public XYEnt getTranslation();
     
     @Override
     @JsonProperty("nodeIDs")
@@ -103,8 +103,8 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
         public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("position")
-        public TranslateCommandEntMixInBuilder setPosition(final XYEnt position);
+        @JsonProperty("translation")
+        public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
         
         @Override
         @JsonProperty("nodeIDs")

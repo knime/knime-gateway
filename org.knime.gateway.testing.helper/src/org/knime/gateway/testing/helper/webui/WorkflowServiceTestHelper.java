@@ -255,7 +255,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         AnnotationIDEnt anno3 = new AnnotationIDEnt("root_3");
         TranslateCommandEnt command = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setNodeIDs(asList(node15, node16, node18)).setAnnotationIDs(singletonList(anno3))
-            .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
+            .setTranslation(builder(XYEntBuilder.class).setX(-224).setY(-763).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
         nodes = workflow.getNodes();
@@ -311,7 +311,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         AnnotationIDEnt anno1 = new AnnotationIDEnt("root_1");
         TranslateCommandEnt command2 =
             builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).setAnnotationIDs(singletonList(anno1))
-                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
+                .setTranslation(builder(XYEntBuilder.class).setX(-880).setY(-26).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command2);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         wa = workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno1)).findFirst().orElse(null);
@@ -322,7 +322,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         TranslateCommandEnt command3 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setNodeIDs(singletonList(new NodeIDEnt(9999)))
             .setAnnotationIDs(singletonList(new AnnotationIDEnt("root_12345")))
-            .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
+            .setTranslation(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
         assertThrows(NodeNotFoundException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command3));
         try {

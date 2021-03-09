@@ -77,11 +77,11 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  */
 final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
 
-    private int[] m_originalPosition;
+    private int[] m_inverseTranslation;
 
     @Override
     public void execute() throws OperationNotAllowedException {
-        m_originalPosition = execute(getWorkflowManager(), getWorkflowKey().getProjectId(), getCommandEntity());
+        m_inverseTranslation = execute(getWorkflowManager(), getWorkflowKey().getProjectId(), getCommandEntity());
     }
 
     @Override
@@ -90,27 +90,22 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
         TranslateCommandEnt inverseCommandEntity = builder(TranslateCommandEntBuilder.class)
             .setKind(KindEnum.TRANSLATE).setNodeIDs(commandEntity.getNodeIDs())//
             .setAnnotationIDs(commandEntity.getAnnotationIDs())//
-            .setPosition(builder(XYEntBuilder.class)//
-                .setX(m_originalPosition[0]).setY(m_originalPosition[1]).build())//
+            .setTranslation(builder(XYEntBuilder.class)//
+                .setX(m_inverseTranslation[0]).setY(m_inverseTranslation[1]).build())//
             .build();
         execute(getWorkflowManager(), getWorkflowKey().getProjectId(), inverseCommandEntity);
-        m_originalPosition = null;
+        m_inverseTranslation = null;
     }
 
     private static int[] execute(final WorkflowManager wfm, final String projectId,
         final TranslateCommandEnt commandEntity) throws OperationNotAllowedException {
         List<NodeContainer> nodes;
         List<String> nodesNotFound = null;
-        int x = Integer.MAX_VALUE;
-        int y = Integer.MAX_VALUE;
         if (!commandEntity.getNodeIDs().isEmpty()) {
             nodes = new ArrayList<>();
             for (NodeIDEnt id : commandEntity.getNodeIDs()) {
                 try {
                     NodeContainer nc = wfm.getNodeContainer(DefaultServiceUtil.entityToNodeID(projectId, id));
-                    int[] bounds = nc.getUIInformation().getBounds();
-                    x = Math.min(bounds[0], x);
-                    y = Math.min(bounds[1], y);
                     nodes.add(nc);
                 } catch (IllegalArgumentException e) { // NOSONAR will be thrown further down
                     nodesNotFound = initAndAdd(nodesNotFound, id.toString());
@@ -131,8 +126,6 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
                     annosNotFound = initAndAdd(annosNotFound, id.toString());
                     continue;
                 }
-                x = Math.min(annos[0].getX(), x);
-                y = Math.min(annos[0].getY(), y);
                 annotations.add(annos[0]);
             }
         } else {
@@ -141,13 +134,14 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
 
         checkAndThrowException(nodesNotFound, annosNotFound);
 
-        executeTranslateCommand(commandEntity.getPosition(), nodes, x, y, annotations);
-        return new int[]{x, y + EntityBuilderUtil.NODE_Y_POS_CORRECTION};
+        XYEnt translation = commandEntity.getTranslation();
+        executeTranslateCommand(translation, nodes, annotations);
+        return new int[]{-translation.getX(), -translation.getY()};
     }
 
-    private static void executeTranslateCommand(final XYEnt newPos, final List<NodeContainer> nodes, final int x,
-        final int y, final List<WorkflowAnnotation> annotations) {
-        int[] delta = new int[]{newPos.getX() - x, newPos.getY() - y - EntityBuilderUtil.NODE_Y_POS_CORRECTION};
+    private static void executeTranslateCommand(final XYEnt translation, final List<NodeContainer> nodes,
+        final List<WorkflowAnnotation> annotations) {
+        int[] delta = new int[]{translation.getX(), translation.getY()};
         for (NodeContainer nc : nodes) {
             NodeUIInformation.moveNodeBy(nc, delta);
         }

@@ -90,7 +90,7 @@ public class WorkflowCommandsTest {
 
         WorkflowCommands commands = new WorkflowCommands(5);
         TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
+            .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
         assertThrows(OperationNotAllowedException.class, () -> commands.undo(wfKey));

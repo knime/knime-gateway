@@ -62,10 +62,10 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * Get position
-   * @return position , never <code>null</code>
+   * Get translation
+   * @return translation , never <code>null</code>
    **/
-  public XYEnt getPosition();
+  public XYEnt getTranslation();
 
   /**
    * The ids of the nodes referenced.
@@ -94,12 +94,12 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         TranslateCommandEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set position
+   		 * Set translation
          * 
-         * @param position the property value, NOT <code>null</code>! 
+         * @param translation the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TranslateCommandEntBuilder setPosition(XYEnt position);
+        TranslateCommandEntBuilder setTranslation(XYEnt translation);
         
         /**
          * The ids of the nodes referenced.
