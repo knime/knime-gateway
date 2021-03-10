@@ -52,6 +52,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -73,6 +74,9 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
@@ -464,6 +468,73 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setConnectionIds(connectionIds)//
             .setAnnotationIds(annotationIds)//
             .build();
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link ConnectCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testExecuteConnectCommand() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        Map<String, ConnectionEnt> connections =
+            ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat(connections.size(), is(29));
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+
+        // replace existing connection
+        ConnectCommandEnt command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat(connections.size(), is(29));
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:27"));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat(connections.size(), is(29));
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+
+        // new connection
+        command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat(connections.size(), is(30));
+        assertThat(connections.get("root:21_2").getSourceNode().toString(), is("root:27"));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat(connections.size(), is(29));
+        assertNull(connections.get("root:21_2"));
+
+        // add already existing connection (command is not added to the undo stack)
+        command = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(10), 1);
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+        Exception exception =
+            assertThrows(OperationNotAllowedException.class, () -> ws().undoWorkflowCommand(wfId, getRootID()));
+        assertThat(exception.getMessage(), is("No command to undo"));
+
+        // add a connection to a node that doesn't exist
+        ConnectCommandEnt command2 = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(9999999), 1);
+        exception = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
+        assertThat(exception.getMessage(),
+            containsString("Node ID \"0:9999999\" not contained in workflow, nor it's the workflow itself"));
+
+        // add a connection that can't be added (here: because it creates a cycle)
+        ConnectCommandEnt command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);
+        exception = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
+        assertThat(exception.getMessage(), containsString("Connection can't be added"));
+    }
+
+    private static ConnectCommandEnt buildConnectCommandEnt(final NodeIDEnt source, final Integer sourcePort, final NodeIDEnt dest,
+        final Integer destPort) {
+        return builder(ConnectCommandEntBuilder.class).setKind(KindEnum.CONNECT).setSourceNodeId(source)
+            .setSourcePortIdx(sourcePort).setDestinationNodeId(dest).setDestinationPortIdx(destPort).build();
     }
 
 }

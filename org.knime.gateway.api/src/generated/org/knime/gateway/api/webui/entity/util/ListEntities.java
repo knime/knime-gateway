@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
@@ -127,6 +128,7 @@ public class ListEntities {
         res.add(ComponentNodeAndTemplateEnt.class);
         res.add(ComponentNodeEnt.class);
         res.add(ComponentNodeTemplateEnt.class);
+        res.add(ConnectCommandEnt.class);
         res.add(ConnectionEnt.class);
         res.add(CustomJobManagerEnt.class);
         res.add(DeleteCommandEnt.class);
@@ -185,6 +187,7 @@ public class ListEntities {
         res.add(ComponentNodeAndTemplateEnt.ComponentNodeAndTemplateEntBuilder.class);
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
         res.add(ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder.class);
+        res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(CustomJobManagerEnt.CustomJobManagerEntBuilder.class);
         res.add(DeleteCommandEnt.DeleteCommandEntBuilder.class);

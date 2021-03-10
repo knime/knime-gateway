@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
@@ -110,13 +111,16 @@ public final class WorkflowCommands {
             op = (WorkflowCommand<E>)new Translate();
         } else if (command instanceof DeleteCommandEnt) {
             op = (WorkflowCommand<E>)new Delete();
+        } else if (command instanceof ConnectCommandEnt) {
+            op = (WorkflowCommand<E>)new Connect();
         } else {
             throw new OperationNotAllowedException(
                 "Command of type " + command.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
-        op.execute(wfKey, command);
-        addCommandToUndoStack(wfKey, op);
-        clearRedoStack(wfKey);
+        if (op.execute(wfKey, command)) {
+            addCommandToUndoStack(wfKey, op);
+            clearRedoStack(wfKey);
+        }
     }
 
     /**

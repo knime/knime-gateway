@@ -64,6 +64,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
@@ -193,6 +195,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ComponentNodeTemplateEntBuilder.class) {
             return (B)new DefaultComponentNodeTemplateEnt.DefaultComponentNodeTemplateEntBuilder();
+        }        
+        if(clazz == ConnectCommandEntBuilder.class) {
+            return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
         }        
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();

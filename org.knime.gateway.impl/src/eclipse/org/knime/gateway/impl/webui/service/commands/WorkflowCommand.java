@@ -63,16 +63,18 @@ import org.knime.gateway.impl.webui.service.WorkflowKey;
 interface WorkflowCommand<E extends WorkflowCommandEnt> {
 
     /**
-     * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()}
-     * and {@link #redo()}.
+     * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()} and
+     * {@link #redo()}.
      *
      * @param wfKey references the workflow to execute the command for
      * @param commandEntity representation of the command to be applied
+     * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
+     *         the command didn't do any change to the workflow
      * @throws NodeNotFoundException
      * @throws NotASubWorkflowException
      * @throws OperationNotAllowedException
      */
-    void execute(WorkflowKey wfKey, E commandEntity)
+    boolean execute(WorkflowKey wfKey, E commandEntity)
         throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
     /**

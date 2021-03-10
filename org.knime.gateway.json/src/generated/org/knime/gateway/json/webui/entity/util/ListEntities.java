@@ -54,6 +54,7 @@ import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeTemplateEntMixIn;
+import org.knime.gateway.json.webui.entity.ConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
@@ -126,6 +127,7 @@ public class ListEntities {
         res.add(ComponentNodeAndTemplateEntMixIn.class);
         res.add(ComponentNodeEntMixIn.class);
         res.add(ComponentNodeTemplateEntMixIn.class);
+        res.add(ConnectCommandEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
         res.add(CustomJobManagerEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
@@ -184,6 +186,7 @@ public class ListEntities {
         res.add(ComponentNodeAndTemplateEntMixIn.ComponentNodeAndTemplateEntMixInBuilder.class);
         res.add(ComponentNodeEntMixIn.ComponentNodeEntMixInBuilder.class);
         res.add(ComponentNodeTemplateEntMixIn.ComponentNodeTemplateEntMixInBuilder.class);
+        res.add(ConnectCommandEntMixIn.ConnectCommandEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
         res.add(CustomJobManagerEntMixIn.CustomJobManagerEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);

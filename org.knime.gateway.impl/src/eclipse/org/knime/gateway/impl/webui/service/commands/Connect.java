@@ -48,77 +48,60 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowLock;
+import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
-import org.knime.gateway.impl.webui.service.WorkflowKey;
 
 /**
- * Facilitates the implementation of a {@link WorkflowCommand}.
+ * Workflow command to connect two nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-abstract class AbstractWorkflowCommand<E extends WorkflowCommandEnt> implements WorkflowCommand<E> {
+final class Connect extends AbstractWorkflowCommand<ConnectCommandEnt> {
 
-    private E m_commandEntity;
+    private ConnectionContainer m_newConnection;
 
-    private WorkflowManager m_wfm;
-
-    private WorkflowKey m_wfKey;
+    private ConnectionContainer m_oldConnection;
 
     @Override
-    public boolean execute(final WorkflowKey wfKey, final E commandEntity)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
-        m_wfKey = wfKey;
-        m_commandEntity = commandEntity;
-        m_wfm = DefaultWorkflowService.getWorkflowManager(wfKey);
-        try (WorkflowLock lock = m_wfm.lock()) {
-            return execute();
+    public boolean execute() throws OperationNotAllowedException {
+        ConnectCommandEnt entity = getCommandEntity();
+        WorkflowManager wfm = getWorkflowManager();
+        NodeID source = entity.getSourceNodeId().toNodeID(wfm.getID());
+        NodeID dest = entity.getDestinationNodeId().toNodeID(wfm.getID());
+
+        try {
+            m_oldConnection = wfm.getConnection(new ConnectionID(dest, entity.getDestinationPortIdx()));
+        } catch (IllegalArgumentException e) {
+            throw new OperationNotAllowedException(e.getMessage(), e);
         }
-    }
+        if (m_oldConnection != null && m_oldConnection.getSource().equals(source)
+            && m_oldConnection.getSourcePort() == entity.getSourcePortIdx()) {
+            // it's the very same connection -> no change
+            return false;
+        }
 
-    /**
-     * Executes the command. Use {@link #getCommandEntity()}, {@link #getWorkflowManager()}, or
-     * {@link #getWorkflowKey()} to retrieve the data required to execute the command.
-     *
-     * The workflow is locked before this method is called (and released afterwards). I.e. implementing methods don't
-     * need to do that anymore.
-     *
-     * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
-     *         the command didn't do any change to the workflow
-     *
-     * @throws OperationNotAllowedException
-     */
-    protected abstract boolean execute() throws OperationNotAllowedException;
+        if (!wfm.canAddConnection(source, entity.getSourcePortIdx(), dest, entity.getDestinationPortIdx())) {
+            throw new OperationNotAllowedException("Connection can't be added");
+        }
+
+        m_newConnection = wfm.addConnection(source, entity.getSourcePortIdx(), dest, entity.getDestinationPortIdx());
+        return true;
+    }
 
     @Override
-    public void redo() throws OperationNotAllowedException {
-        execute();
-    }
-
-    /**
-     * @return the command entity that actual represents the command to be applied (undone, re-done)
-     */
-    protected E getCommandEntity() {
-        return m_commandEntity;
-    }
-
-    /**
-     * @return the workflow manager to execute (redo, undo) the command on
-     */
-    protected WorkflowManager getWorkflowManager() {
-        return m_wfm;
-    }
-
-    /**
-     * @return reference to the workflow underlying this command
-     */
-    protected WorkflowKey getWorkflowKey() {
-        return m_wfKey;
+    public void undo() throws OperationNotAllowedException {
+        WorkflowManager wfm = getWorkflowManager();
+        wfm.removeConnection(m_newConnection);
+        if (m_oldConnection != null) {
+            wfm.addConnection(m_oldConnection.getSource(), m_oldConnection.getSourcePort(), m_oldConnection.getDest(),
+                m_oldConnection.getDestPort());
+        }
+        m_newConnection = null;
+        m_oldConnection = null;
     }
 
 }

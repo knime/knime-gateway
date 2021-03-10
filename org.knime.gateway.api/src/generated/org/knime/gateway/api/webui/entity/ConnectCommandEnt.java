@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,48 +52,43 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * Connects two nodes (and by doing that possibly replacing another connection).
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface ConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * Get sourceNodeId
+   * @return sourceNodeId , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
+
+  /**
+   * Get sourcePortIdx
+   * @return sourcePortIdx , never <code>null</code>
+   **/
+  public Integer getSourcePortIdx();
+
+  /**
+   * Get destinationNodeId
+   * @return destinationNodeId , never <code>null</code>
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getDestinationNodeId();
+
+  /**
+   * Get destinationPortIdx
+   * @return destinationPortIdx , never <code>null</code>
+   **/
+  public Integer getDestinationPortIdx();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface ConnectCommandEntBuilder extends GatewayEntityBuilder<ConnectCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -100,7 +96,39 @@ public interface WorkflowCommandEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        ConnectCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set sourceNodeId
+         * 
+         * @param sourceNodeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ConnectCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
+        
+        /**
+   		 * Set sourcePortIdx
+         * 
+         * @param sourcePortIdx the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ConnectCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx);
+        
+        /**
+   		 * Set destinationNodeId
+         * 
+         * @param destinationNodeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ConnectCommandEntBuilder setDestinationNodeId(org.knime.gateway.api.entity.NodeIDEnt destinationNodeId);
+        
+        /**
+   		 * Set destinationPortIdx
+         * 
+         * @param destinationPortIdx the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ConnectCommandEntBuilder setDestinationPortIdx(Integer destinationPortIdx);
         
         
         /**
@@ -110,7 +138,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        ConnectCommandEnt build();
     
     }
 

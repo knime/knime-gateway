@@ -80,8 +80,9 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
     private int[] m_inverseTranslation;
 
     @Override
-    public void execute() throws OperationNotAllowedException {
+    public boolean execute() throws OperationNotAllowedException {
         m_inverseTranslation = execute(getWorkflowManager(), getWorkflowKey().getProjectId(), getCommandEntity());
+        return m_inverseTranslation[0] != 0 && m_inverseTranslation[1] != 0;
     }
 
     @Override
