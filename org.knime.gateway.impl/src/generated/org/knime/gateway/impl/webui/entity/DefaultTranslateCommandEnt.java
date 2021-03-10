@@ -65,8 +65,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
 
   protected KindEnum m_kind;
   protected XYEnt m_translation;
-  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIDs;
-  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIDs;
+  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
+  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
   
   protected DefaultTranslateCommandEnt() {
     //for sub-classes
@@ -87,14 +87,14 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         throw new IllegalArgumentException("translation must not be null.");
     }
     m_translation = immutable(builder.m_translation);
-    if(builder.m_nodeIDs == null) {
-        throw new IllegalArgumentException("nodeIDs must not be null.");
+    if(builder.m_nodeIds == null) {
+        throw new IllegalArgumentException("nodeIds must not be null.");
     }
-    m_nodeIDs = immutable(builder.m_nodeIDs);
-    if(builder.m_annotationIDs == null) {
-        throw new IllegalArgumentException("annotationIDs must not be null.");
+    m_nodeIds = immutable(builder.m_nodeIds);
+    if(builder.m_annotationIds == null) {
+        throw new IllegalArgumentException("annotationIds must not be null.");
     }
-    m_annotationIDs = immutable(builder.m_annotationIDs);
+    m_annotationIds = immutable(builder.m_annotationIds);
   }
   
    /**
@@ -112,7 +112,7 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
             return false;
         }
         DefaultTranslateCommandEnt ent = (DefaultTranslateCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_translation, ent.m_translation) && Objects.equals(m_nodeIDs, ent.m_nodeIDs) && Objects.equals(m_annotationIDs, ent.m_annotationIDs);
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_translation, ent.m_translation) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds);
     }
 
 
@@ -125,8 +125,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
        return new HashCodeBuilder()
                .append(m_kind)
                .append(m_translation)
-               .append(m_nodeIDs)
-               .append(m_annotationIDs)
+               .append(m_nodeIds)
+               .append(m_annotationIds)
                .toHashCode();
    }
   
@@ -143,13 +143,13 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
   }
     
   @Override
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIDs() {
-        return m_nodeIDs;
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
+        return m_nodeIds;
   }
     
   @Override
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIDs() {
-        return m_annotationIDs;
+  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
+        return m_annotationIds;
   }
     
   
@@ -161,8 +161,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
     
         private KindEnum m_kind;
         private XYEnt m_translation;
-        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIDs = new java.util.ArrayList<>();
-        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIDs = new java.util.ArrayList<>();
+        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
+        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
 
         @Override
         public DefaultTranslateCommandEntBuilder setKind(KindEnum kind) {
@@ -183,20 +183,20 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs) {
-             if(nodeIDs == null) {
-                 throw new IllegalArgumentException("nodeIDs must not be null.");
+        public DefaultTranslateCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
+             if(nodeIds == null) {
+                 throw new IllegalArgumentException("nodeIds must not be null.");
              }
-             m_nodeIDs = nodeIDs;
+             m_nodeIds = nodeIds;
              return this;
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs) {
-             if(annotationIDs == null) {
-                 throw new IllegalArgumentException("annotationIDs must not be null.");
+        public DefaultTranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
+             if(annotationIds == null) {
+                 throw new IllegalArgumentException("annotationIds must not be null.");
              }
-             m_annotationIDs = annotationIDs;
+             m_annotationIds = annotationIds;
              return this;
         }
 

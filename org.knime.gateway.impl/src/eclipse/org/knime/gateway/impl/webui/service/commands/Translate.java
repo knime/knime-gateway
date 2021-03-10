@@ -88,8 +88,8 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
     public void undo() throws OperationNotAllowedException {
         TranslateCommandEnt commandEntity = getCommandEntity();
         TranslateCommandEnt inverseCommandEntity = builder(TranslateCommandEntBuilder.class)
-            .setKind(KindEnum.TRANSLATE).setNodeIDs(commandEntity.getNodeIDs())//
-            .setAnnotationIDs(commandEntity.getAnnotationIDs())//
+            .setKind(KindEnum.TRANSLATE).setNodeIds(commandEntity.getNodeIds())//
+            .setAnnotationIds(commandEntity.getAnnotationIds())//
             .setTranslation(builder(XYEntBuilder.class)//
                 .setX(m_inverseTranslation[0]).setY(m_inverseTranslation[1]).build())//
             .build();
@@ -101,9 +101,9 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
         final TranslateCommandEnt commandEntity) throws OperationNotAllowedException {
         List<NodeContainer> nodes;
         List<String> nodesNotFound = null;
-        if (!commandEntity.getNodeIDs().isEmpty()) {
+        if (!commandEntity.getNodeIds().isEmpty()) {
             nodes = new ArrayList<>();
-            for (NodeIDEnt id : commandEntity.getNodeIDs()) {
+            for (NodeIDEnt id : commandEntity.getNodeIds()) {
                 try {
                     NodeContainer nc = wfm.getNodeContainer(DefaultServiceUtil.entityToNodeID(projectId, id));
                     nodes.add(nc);
@@ -117,9 +117,9 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
 
         List<WorkflowAnnotation> annotations;
         List<String> annosNotFound = null;
-        if (!commandEntity.getAnnotationIDs().isEmpty()) {
+        if (!commandEntity.getAnnotationIds().isEmpty()) {
             annotations = new ArrayList<>();
-            for (AnnotationIDEnt id : commandEntity.getAnnotationIDs()) {
+            for (AnnotationIDEnt id : commandEntity.getAnnotationIds()) {
                 WorkflowAnnotation[] annos =
                     wfm.getWorkflowAnnotations(DefaultServiceUtil.entityToAnnotationID(projectId, id));
                 if (annos.length == 0 || annos[0] == null) {

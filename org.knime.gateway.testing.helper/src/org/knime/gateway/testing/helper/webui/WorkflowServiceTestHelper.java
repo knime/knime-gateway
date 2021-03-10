@@ -254,7 +254,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // node and annotation translation
         AnnotationIDEnt anno3 = new AnnotationIDEnt("root_3");
         TranslateCommandEnt command = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setNodeIDs(asList(node15, node16, node18)).setAnnotationIDs(singletonList(anno3))
+            .setNodeIds(asList(node15, node16, node18)).setAnnotationIds(singletonList(anno3))
             .setTranslation(builder(XYEntBuilder.class).setX(-224).setY(-763).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
@@ -310,7 +310,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // annotation translation alone
         AnnotationIDEnt anno1 = new AnnotationIDEnt("root_1");
         TranslateCommandEnt command2 =
-            builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).setAnnotationIDs(singletonList(anno1))
+            builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).setAnnotationIds(singletonList(anno1))
                 .setTranslation(builder(XYEntBuilder.class).setX(-880).setY(-26).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command2);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
@@ -320,8 +320,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // exceptions
         TranslateCommandEnt command3 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setNodeIDs(singletonList(new NodeIDEnt(9999)))
-            .setAnnotationIDs(singletonList(new AnnotationIDEnt("root_12345")))
+            .setNodeIds(singletonList(new NodeIDEnt(9999)))
+            .setAnnotationIds(singletonList(new AnnotationIDEnt("root_12345")))
             .setTranslation(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
         assertThrows(NodeNotFoundException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command3));

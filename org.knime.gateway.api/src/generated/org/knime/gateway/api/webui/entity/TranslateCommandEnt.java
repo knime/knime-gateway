@@ -69,15 +69,15 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
   /**
    * The ids of the nodes referenced.
-   * @return nodeIDs , never <code>null</code>
+   * @return nodeIds , never <code>null</code>
    **/
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIDs();
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
 
   /**
    * The ids of the workflow annotations referenced.
-   * @return annotationIDs , never <code>null</code>
+   * @return annotationIds , never <code>null</code>
    **/
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIDs();
+  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
 
 
     /**
@@ -104,18 +104,18 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         /**
          * The ids of the nodes referenced.
          * 
-         * @param nodeIDs the property value, NOT <code>null</code>! 
+         * @param nodeIds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TranslateCommandEntBuilder setNodeIDs(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
+        TranslateCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
         
         /**
          * The ids of the workflow annotations referenced.
          * 
-         * @param annotationIDs the property value, NOT <code>null</code>! 
+         * @param annotationIds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TranslateCommandEntBuilder setAnnotationIDs(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
+        TranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
         
         /**

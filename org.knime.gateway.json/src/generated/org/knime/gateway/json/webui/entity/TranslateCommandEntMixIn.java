@@ -78,12 +78,12 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
     public XYEnt getTranslation();
     
     @Override
-    @JsonProperty("nodeIDs")
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIDs();
+    @JsonProperty("nodeIds")
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
     
     @Override
-    @JsonProperty("annotationIDs")
-    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIDs();
+    @JsonProperty("annotationIds")
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
     
 
     /**
@@ -107,12 +107,12 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
         public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
         
         @Override
-        @JsonProperty("nodeIDs")
-        public TranslateCommandEntMixInBuilder setNodeIDs(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIDs);
+        @JsonProperty("nodeIds")
+        public TranslateCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
         
         @Override
-        @JsonProperty("annotationIDs")
-        public TranslateCommandEntMixInBuilder setAnnotationIDs(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIDs);
+        @JsonProperty("annotationIds")
+        public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
     }
 
