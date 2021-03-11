@@ -49,6 +49,7 @@
 package org.knime.gateway.testing.helper.webui;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -58,6 +59,8 @@ import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.PatchEnt;
+import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -65,8 +68,8 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.json.util.JsonUtil;
 import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
+import org.knime.gateway.testing.helper.ObjectToString;
 import org.knime.gateway.testing.helper.ResultChecker;
-import org.knime.gateway.testing.helper.ResultChecker.PropertyExceptions;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
@@ -102,16 +105,24 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ResultChecker createResultChecker(final Class<?> testClass) {
-        PropertyExceptions pe = new PropertyExceptions();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonUtil.addWebUIMixIns(mapper);
+        JsonUtil.addIDEntityDeSerializer(mapper);
+        JsonUtil.addDateTimeDeSerializer(mapper);
+        JsonUtil.addBitSetDeSerializer(mapper);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+
+        ObjectToString objToString = new ObjectToString(mapper);
 
         /** Same as above but for the snapshot id. */
-        pe.addException(DefaultWorkflowSnapshotEnt.class, "snapshotId",
+        objToString.addException(DefaultWorkflowSnapshotEnt.class, "snapshotId",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_SNAPSHOT_ID"));
 
         /**
          * The name-field of a workflow varies if the test is executed as part of an it-test or unit-test.
          */
-        pe.addException(MetaNodeEnt.class, "name", (v, gen, e) -> {
+        objToString.addException(MetaNodeEnt.class, "name", (v, gen, e) -> {
             if (e.getId().equals(NodeIDEnt.getRootID())) {
                 gen.writeString("PLACEHOLDER_FOR_NAME");
             } else {
@@ -119,26 +130,30 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
             }
         });
 
-        pe.addException(NodeStateEnt.class, "warning",
+        objToString.addException(NodeStateEnt.class, "warning",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_WARNING_MESSAGE"));
 
         /**
          * Canonical sorting of the connectedVia-list.
          */
-        pe.addException(NodePortEnt.class, "connectedVia",
-            (v, gen, e) -> gen.writeString(
-                "[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
-                    .map(Object::toString).collect(Collectors.joining(", ")) + " ]"));
+        objToString.addException(NodePortEnt.class, "connectedVia", (v, gen, e) ->
+            gen.writeString("[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
+                .map(Object::toString).collect(Collectors.joining(", ")) + " ]")
+        );
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonUtil.addWebUIMixIns(objectMapper);
-        JsonUtil.addIDEntityDeSerializer(objectMapper);
-        JsonUtil.addDateTimeDeSerializer(objectMapper);
-        JsonUtil.addBitSetDeSerializer(objectMapper);
-        objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-        objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        /**
+         * Canonical sorting of the patch operations.
+         */
+        objToString.addException(PatchEnt.class, "ops", (v, gen, e) -> {
+            List<PatchOpEnt> l = ((List<PatchOpEnt>)v).stream()
+                .sorted(Comparator.<PatchOpEnt, String> comparing(o -> o.getOp().toString())
+                    .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))
+                .collect(Collectors.toList());
+            gen.writeRawValue(objToString.toString(l));
+        });
+
         try {
-            return new ResultChecker(pe, objectMapper, resolveToFile("/files/test_snapshots", testClass));
+            return new ResultChecker(objToString, resolveToFile("/files/test_snapshots", testClass));
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); //NOSONAR

@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,11 +56,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.DependentNodeProperties;
-import org.knime.core.node.workflow.NodeSuccessors;
-import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
@@ -71,19 +68,19 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
-import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener.WorkflowChanges;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import org.knime.gateway.impl.webui.WorkflowUtil;
+import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
-import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -94,6 +91,8 @@ public final class DefaultEventService implements EventService {
 
     private static final DefaultEventService INSTANCE = new DefaultEventService();
 
+    private static final WorkflowStatefulUtil WF_UTIL = WorkflowStatefulUtil.getInstance();
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -103,9 +102,9 @@ public final class DefaultEventService implements EventService {
         return INSTANCE;
     }
 
-    private final Map<WorkflowKey, Workflow> m_workflows = new HashMap<>();
-
     private final List<BiConsumer<String, EventEnt>> m_eventConsumer = new ArrayList<>();
+
+    private Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
 
     /*
      * For testing purposes only.
@@ -126,28 +125,44 @@ public final class DefaultEventService implements EventService {
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
             WorkflowKey key = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
-            WorkflowManager wfm = getWorkflowManager(wfEventType.getProjectId(), wfEventType.getWorkflowId());
+            try {
+                WorkflowUtil.assertWorkflowExists(key);
+            } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+                throw new InvalidRequestException(ex.getMessage(), ex);
+            }
 
             // create very first changed event to be send first (and thus catch up with the most recent
             // workflow version)
-            PatchEntCreator patchEntCreator = new PatchEntCreator(wfEventType.getSnapshotId());
-            WorkflowChangedEventEnt workflowChangedEvent = createWorkflowChangedEvent(key,
-                new Workflow(wfm, null, patchEntCreator), WorkflowChanges.UNDEFINED_CHANGES);
-            if (workflowChangedEvent != null) {
-                sendEvent(workflowChangedEvent);
-            }
+            WorkflowChangedEventEnt workflowChangedEvent =
+                WF_UTIL.buildWorkflowChangedEvent(key, new PatchEntCreator(null), wfEventType.getSnapshotId(), true);
+            sendEvent(workflowChangedEvent);
 
-            // initialize WorkflowChangesListener (if not already)
-            m_workflows.computeIfAbsent(key, k -> {
+            // add and keep track of callback added to the workflow changes listener (if not already)
+            m_workflowChangesCallbacks.computeIfAbsent(key, k -> {
                 String latestSnapshotId =
                     workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-                BiConsumer<WorkflowManager, WorkflowChanges> callback = createWorkflowChangesCallback(key);
-                return new Workflow(wfm, new WorkflowChangesListener(wfm, callback),
-                    new PatchEntCreator(latestSnapshotId));
+                WorkflowChangesListener l = WF_UTIL.getWorkflowChangesListener(key);
+                Consumer<WorkflowManager> callback =
+                    createWorkflowChangesCallback(key, new PatchEntCreator(latestSnapshotId));
+                l.addCallback(callback);
+                return callback;
             });
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
+    }
+
+    private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
+        final PatchEntCreator patchEntCreator) {
+        return wfm -> {
+            if (m_preEventCreationCallback != null) {
+                m_preEventCreationCallback.run();
+            }
+            patchEntCreator.clear();
+            WorkflowChangedEventEnt event =
+                WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
+            sendEvent(event);
+        };
     }
 
     /**
@@ -167,14 +182,12 @@ public final class DefaultEventService implements EventService {
      * the registered event consumers.
      */
     public void removeAllEventListeners() {
-        new HashSet<>(m_workflows.keySet()).forEach(this::removeEventListener);
+        new HashSet<>(m_workflowChangesCallbacks.keySet()).forEach(this::removeEventListener);
     }
 
     private void removeEventListener(final WorkflowKey wfKey) {
-        Workflow wf = m_workflows.remove(wfKey);
-        if (wf != null && wf.workflowChangesListener() != null) {
-            wf.workflowChangesListener().close();
-        }
+        Consumer<WorkflowManager> callback = m_workflowChangesCallbacks.remove(wfKey);
+        WF_UTIL.getWorkflowChangesListener(wfKey).removeCallback(callback);
     }
 
     /**
@@ -195,8 +208,12 @@ public final class DefaultEventService implements EventService {
         m_callEventConsumerOnError = true;
     }
 
+    /*
+     * For testing purposes only!
+     */
     boolean checkWorkflowChangesListenerCallbackState(final CallbackState state) {
-        return m_workflows.values().stream().anyMatch(w -> w.workflowChangesListener().getCallbackState() == state);
+        return m_workflowChangesCallbacks.keySet().stream()
+            .anyMatch(k -> WF_UTIL.getWorkflowChangesListener(k).getCallbackState() == state);
     }
 
     /**
@@ -208,100 +225,40 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.remove(eventConsumer); // NOSONAR
     }
 
-    private BiConsumer<WorkflowManager, WorkflowChanges> createWorkflowChangesCallback(final WorkflowKey key) {
-        return (wfm, changes) -> {
-            assertWorkflowAvailable(key);
-            if (m_preEventCreationCallback != null) {
-                m_preEventCreationCallback.run();
-            }
-            WorkflowChangedEventEnt event = createWorkflowChangedEvent(key, m_workflows.get(key), changes);
-            if (event != null) {
-                sendEvent(event);
-            }
-        };
+    private void sendEvent(final WorkflowChangedEventEnt event) {
+        if (event != null) {
+            sendEvent("WorkflowChangedEvent", event);
+        }
     }
 
-    private void assertWorkflowAvailable(final WorkflowKey key) {
-        if (m_workflows.get(key) == null) {
+    private synchronized void sendEvent(final String name, final EventEnt event) {
+        if (m_eventConsumer.isEmpty()) {
             String message =
                 "Workflow change events available but no one is interested. Most likely an implementation error.";
             NodeLogger.getLogger(getClass()).error(message);
             if (m_callEventConsumerOnError) {
-                sendEvent(message, null);
+                m_eventConsumer.forEach(c -> c.accept(message, null));
             }
             throw new IllegalStateException(message);
         }
-    }
-
-    private static WorkflowChangedEventEnt createWorkflowChangedEvent(final WorkflowKey wfKey, final Workflow wf,
-        final WorkflowChanges changes) {
-        // TODO parameterize the 'includeInteractionInfo'
-        WorkflowCommands commands = DefaultWorkflowService.getInstance().getWorkflowCommands();
-        WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder(wf.wfm())//
-            .includeInteractionInfo(true)//
-            .canUndo(commands.canUndo(wfKey))//
-            .canRedo(commands.canRedo(wfKey))//
-            .dependentNodeProperties(() -> wf.dependentNodeProperties(changes))//
-            .nodeSuccessors(() -> wf.nodeSuccessors(changes));
-        PatchEntCreator patchEntCreator = wf.patchEntCreator();
-        WorkflowEnt wfEnt;
-        try (WorkflowLock lock = wf.wfm().lock()) {
-            wfEnt = EntityBuilderUtil.buildWorkflowEnt(buildContextBuilder);
-            // The changes are used in the WorkflowEnt build-step to determine whether the re-calculation of some
-            // properties (e.g. 'dependent node properties' or 'node successors') is necessary - if not
-            // a cached instance is to reduce. Once done, the changes being tracked are reset which needs to happen
-            // in the very same workflow-lock block to not miss any changes.
-            changes.reset();
-        }
-        patchEntCreator.createPatch(wfEnt);
-        if (patchEntCreator.getPatch() == null) {
-            return null;
-        }
-        return builder(WorkflowChangedEventEntBuilder.class).setPatch(patchEntCreator.getPatch())
-            .setSnapshotId(patchEntCreator.getSnapshotId()).build();
-    }
-
-    private void sendEvent(final WorkflowChangedEventEnt event) {
-        sendEvent("WorkflowChangedEvent", event);
-    }
-
-    private void sendEvent(final String name, final EventEnt event) {
         m_eventConsumer.forEach(c -> c.accept(name, event));
     }
 
     /**
      * Creates {@link PatchEnt}s.
+     *
+     * Public scope for testing.
      */
-    public static class PatchEntCreator implements PatchCreator<PatchEnt> {
-
-        private String m_snapshotId;
-
-        private PatchEnt m_patch = null;
+    public static class PatchEntCreator implements PatchCreator<WorkflowChangedEventEnt> {
 
         private final List<PatchOpEnt> m_ops = new ArrayList<>();
+        private String m_lastSnapshotId;
 
         /**
-         * @param initialSnapshotId
+         * @param lastSnapshotId the latest snapshot id
          */
-        public PatchEntCreator(final String initialSnapshotId) {
-            m_snapshotId = initialSnapshotId;
-        }
-
-        private void createPatch(final WorkflowEnt ent) {
-            m_ops.clear();
-            m_patch = DefaultWorkflowService.getInstance().getEntityRepository()
-                .getChangesAndCommit(m_snapshotId, ent, id -> {
-                    m_snapshotId = id;
-                    return this;
-                }).orElse(null);
-        }
-
-        private PatchEnt getPatch() {
-            return m_patch;
-        }
-
-        private String getSnapshotId() {
-            return m_snapshotId;
+        public PatchEntCreator(final String lastSnapshotId) {
+            m_lastSnapshotId = lastSnapshotId;
         }
 
         @Override
@@ -324,62 +281,18 @@ public final class DefaultEventService implements EventService {
         }
 
         @Override
-        public PatchEnt create() {
-            return new DefaultPatchEntBuilder().setOps(m_ops).build();
+        public WorkflowChangedEventEnt create(final String newSnapshotId) {
+            m_lastSnapshotId = newSnapshotId;
+            DefaultPatchEnt patch = new DefaultPatchEntBuilder().setOps(m_ops).build();
+            return builder(WorkflowChangedEventEntBuilder.class).setPatch(patch).setSnapshotId(newSnapshotId).build();
+        }
+
+        void clear() {
+            m_ops.clear();
+        }
+
+        String getLastSnapshotId() {
+            return m_lastSnapshotId;
         }
     }
-
-    /**
-     * Helper class that summarizes all the things that are associated with a single workflow.
-     */
-    private static class Workflow {
-
-        private final WorkflowChangesListener m_workflowChangesListener;
-
-        private final PatchEntCreator m_patchEntCreator;
-
-        private DependentNodeProperties m_depNodeProperties;
-
-        private NodeSuccessors m_nodeSuccessors;
-
-        private final WorkflowManager m_wfm;
-
-        Workflow(final WorkflowManager wfm, final WorkflowChangesListener l, final PatchEntCreator p) {
-            m_wfm = wfm;
-            m_workflowChangesListener = l;
-            m_patchEntCreator = p;
-        }
-
-        WorkflowManager wfm() {
-            return m_wfm;
-        }
-
-        WorkflowChangesListener workflowChangesListener() {
-            return m_workflowChangesListener;
-        }
-
-        PatchEntCreator patchEntCreator() {
-            return m_patchEntCreator;
-        }
-
-        DependentNodeProperties dependentNodeProperties(final WorkflowChanges changes) {
-            // dependent node properties are only re-calculated if there are respective changes
-            // otherwise a cached instance is used
-            if (m_depNodeProperties == null || changes.nodeStateChanges() || changes.nodeOrConnectionAddedOrRemoved()) {
-                m_depNodeProperties = m_wfm.determineDependentNodeProperties();
-            }
-            return m_depNodeProperties;
-        }
-
-        NodeSuccessors nodeSuccessors(final WorkflowChanges changes) {
-            // the node successors are only re-calculated if there are respective changes
-            // otherwise a cached instance is used
-            if (m_nodeSuccessors == null || changes.nodeOrConnectionAddedOrRemoved()) {
-                m_nodeSuccessors = m_wfm.determineNodeSuccessors();
-            }
-            return m_nodeSuccessors;
-        }
-
-    }
-
 }

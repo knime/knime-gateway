@@ -1,21 +1,21 @@
 {
   "ops" : [ {
-    "op" : "add",
-    "path" : "/workflowAnnotations/7",
-    "value" : {
-      "backgroundColor" : "#000000",
-      "borderColor" : "#000000",
-      "borderWidth" : 0,
-      "bounds" : {
-        "height" : 0,
-        "width" : 0,
-        "x" : 0,
-        "y" : 0
-      },
-      "id" : "root_7",
-      "styleRanges" : [ ],
-      "text" : "",
-      "textAlign" : "left"
-    }
-  } ]
+  "op" : "add",
+  "path" : "/workflowAnnotations/7",
+  "value" : {
+    "backgroundColor" : "#000000",
+    "borderColor" : "#000000",
+    "borderWidth" : 0,
+    "bounds" : {
+      "height" : 0,
+      "width" : 0,
+      "x" : 0,
+      "y" : 0
+    },
+    "id" : "root_7",
+    "styleRanges" : [ ],
+    "text" : "",
+    "textAlign" : "left"
+  }
+} ]
 }

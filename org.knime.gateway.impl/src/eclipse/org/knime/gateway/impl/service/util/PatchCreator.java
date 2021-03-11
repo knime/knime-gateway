@@ -77,8 +77,9 @@ public interface PatchCreator<P> {
     void added(String path, Object value);
 
     /**
+     * @param newSnapshotId the new snapshot id of the target object if the resulting patch would be applied
      * @return the object representing the final patch
      */
-    P create();
+    P create(String newSnapshotId);
 
 }

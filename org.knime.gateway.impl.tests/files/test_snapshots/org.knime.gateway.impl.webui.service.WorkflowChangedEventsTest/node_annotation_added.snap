@@ -1,12 +1,12 @@
 {
   "ops" : [ {
-    "op" : "add",
-    "path" : "/nodes/root:1/annotation",
-    "value" : {
-      "backgroundColor" : "#000000",
-      "styleRanges" : [ ],
-      "text" : "new anno text",
-      "textAlign" : "left"
-    }
-  } ]
+  "op" : "add",
+  "path" : "/nodes/root:1/annotation",
+  "value" : {
+    "backgroundColor" : "#000000",
+    "styleRanges" : [ ],
+    "text" : "new anno text",
+    "textAlign" : "left"
+  }
+} ]
 }

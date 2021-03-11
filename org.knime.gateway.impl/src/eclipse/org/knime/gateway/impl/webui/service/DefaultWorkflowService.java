@@ -48,28 +48,16 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
-
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.service.util.EntityRepository;
-import org.knime.gateway.impl.service.util.SimpleRepository;
-import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -78,16 +66,9 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  */
 public final class DefaultWorkflowService implements WorkflowService {
 
-    /**
-     * Determines the number of commands per workflow kept in the undo and redo stacks.
-     */
-    private static final int UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW = 50;
-
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
-    private final EntityRepository<WorkflowKey, WorkflowEnt> m_entityRepo;
-
-    private final WorkflowCommands m_commands;
+    private static final WorkflowStatefulUtil WF_FUNCTIONS = WorkflowStatefulUtil.getInstance();
 
     /**
      * Returns the singleton instance for this service.
@@ -99,16 +80,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     private DefaultWorkflowService() {
-        m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
-        m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
-        WorkflowProjectManager.addWorkflowProjectRemovedListener(id -> {
-            m_entityRepo.disposeHistory(k -> k.getProjectId().equals(id));
-            m_commands.disposeUndoAndRedoStacks(id);
-        });
-    }
-
-    EntityRepository<WorkflowKey, WorkflowEnt> getEntityRepository() {
-        return m_entityRepo;
+        //
     }
 
     /**
@@ -118,52 +90,14 @@ public final class DefaultWorkflowService implements WorkflowService {
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         WorkflowKey wfKey = new WorkflowKey(projectId, workflowId);
-        WorkflowManager wfm = getWorkflowManager(wfKey);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEnt(WorkflowBuildContext.builder(wfm)
-                .includeInteractionInfo(true).canUndo(m_commands.canUndo(wfKey)).canRedo(m_commands.canRedo(wfKey))),
-                wfKey);
+            return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey,
+                () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
+                    .canUndo(WF_FUNCTIONS.canUndoCommand(wfKey)).canRedo(WF_FUNCTIONS.canRedoCommand(wfKey)));
         } else {
-            return buildWorkflowSnapshotEnt(EntityBuilderUtil.buildWorkflowEnt(wfm), wfKey);
+            return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey,
+                () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
         }
-    }
-
-    /**
-     * Helper method to get the workflow manager from a project-id and workflow-id (referencing a sub-workflow or
-     * 'root').
-     *
-     * @param wfKey
-     * @return the workflow manager
-     * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
-     * @throws NotASubWorkflowException if the workflow-id doesn't reference a metanode or a component
-     */
-    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
-        WorkflowManager wfm;
-        try {
-            wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
-        } catch (IllegalArgumentException ex) {
-            throw new NodeNotFoundException(ex.getMessage(), ex);
-        } catch (IllegalStateException ex) {
-            throw new NotASubWorkflowException(ex.getMessage(), ex);
-        }
-        return wfm;
-    }
-
-    WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final WorkflowKey wfKey) {
-        String snapshotId = m_entityRepo.commit(wfKey, workflow);
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
-    }
-
-    private static class SnapshotIdGenerator implements Supplier<String> {
-
-        private AtomicLong m_count = new AtomicLong();
-
-        @Override
-        public String get() {
-            return Long.toString(m_count.getAndIncrement());
-        }
-
     }
 
     /**
@@ -173,7 +107,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        m_commands.execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
+        WF_FUNCTIONS.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
     }
 
     /**
@@ -182,7 +116,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        m_commands.undo(new WorkflowKey(projectId, workflowId));
+        WF_FUNCTIONS.undoCommand(new WorkflowKey(projectId, workflowId));
     }
 
     /**
@@ -191,16 +125,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        m_commands.redo(new WorkflowKey(projectId, workflowId));
-    }
-
-    /**
-     * Gives access to the workflow commands instance.
-     *
-     * @return the workflow commands instance
-     */
-    WorkflowCommands getWorkflowCommands() {
-        return m_commands;
+        WF_FUNCTIONS.redoCommand(new WorkflowKey(projectId, workflowId));
     }
 
 }

@@ -83,8 +83,11 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
     private final PatchCreator<P> m_patchCreator;
 
-    PatchChangeProcessor(final PatchCreator<P> patchCreator) {
+    private String m_newSnapshotId;
+
+    PatchChangeProcessor(final PatchCreator<P> patchCreator, final String newSnapshotId) {
         m_patchCreator = patchCreator;
+        m_newSnapshotId = newSnapshotId;
     }
 
     @Override
@@ -207,7 +210,7 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
     @Override
     public P result() {
         m_newObjects.createPatchOperations(m_patchCreator);
-        return m_patchCreator.create();
+        return m_patchCreator.create(m_newSnapshotId);
     }
 
     /**

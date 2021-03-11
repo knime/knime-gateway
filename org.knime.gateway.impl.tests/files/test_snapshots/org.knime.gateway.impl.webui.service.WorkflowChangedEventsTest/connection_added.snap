@@ -1,5 +1,6 @@
 {
   "ops" : [ {
+<<<<<<< HEAD
     "op" : "add",
     "path" : "/nodes/root:26/inPorts/1/connectedVia/0",
     "value" : "root:26_1"
@@ -22,4 +23,27 @@
       "sourcePort" : 3
     }
   } ]
+=======
+  "op" : "add",
+  "path" : "/connections/root:26_1",
+  "value" : {
+    "destNode" : "root:26",
+    "destPort" : 1,
+    "sourceNode" : "root:25",
+    "sourcePort" : 3
+  }
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:25/outPorts/3/connectedVia/0",
+  "value" : "root:26_1"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:26/inPorts/1/connectedVia/0",
+  "value" : "root:26_1"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:26/state/executionState",
+  "value" : "CONFIGURED"
+} ]
+>>>>>>> NXT-484: Some refactoring
 }

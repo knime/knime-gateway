@@ -86,7 +86,7 @@ public class AbstractJsonRpcSerializationTest<S> {
      */
     @Before
     public void initResultChecker() throws IOException {
-        m_resultChecker = new ResultChecker(null, null, resolveToFile("/files/test_snapshots", this.getClass()));
+        m_resultChecker = new ResultChecker(null, resolveToFile("/files/test_snapshots", this.getClass()));
     }
 
     /**

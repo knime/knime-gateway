@@ -61,7 +61,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. It accordingly keeps undo- and redo-stacks for

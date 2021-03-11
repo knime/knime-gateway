@@ -46,10 +46,13 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.webui.AppState;
 import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -74,7 +77,13 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         cr(appService.getState(), "empty_appstate");
 
         appService.setAppStateSupplier(() -> createAppState(workflowProjectId));
-        cr(appService.getState(), "appstate");
+        AppStateEnt appStateEnt = appService.getState();
+        cr(appStateEnt, "appstate");
+
+        // test that no new workflow entity instance is created (because the workflow didn't change in between)
+        AppStateEnt appStateEnt2 = appService.getState();
+        assertTrue(appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow() == appStateEnt2
+            .getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow());
     }
 
     private static AppState createAppState(final String workflowProjectId) {

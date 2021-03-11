@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -143,7 +142,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
      */
     @Override
     public <P> Optional<P> getChangesAndCommit(final String snapshotID, final E entity,
-        final Function<String, PatchCreator<P>> patchCreator) {
+        final PatchCreator<P> patchCreator) {
         K key = m_snapshotsKeyMap.get(snapshotID);
         LRUCache entityHistory = m_historyPerEntity.get(key);
         E snapshot = null;
@@ -160,10 +159,18 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
             //compared to the latest version in the repository (not necessarily)
             String newSnapshotID = commitInternal(key, entity);
             return Optional.of(m_javers.processChangeList(diff.getChanges(),
-                new PatchChangeProcessor<P>(patchCreator.apply(newSnapshotID))));
+                new PatchChangeProcessor<P>(patchCreator, newSnapshotID)));
         } else {
             return Optional.empty();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Pair<String, E>> getLastCommit(final K key) {
+        return Optional.ofNullable(m_latestSnapshotPerEntity.get(key));
     }
 
     /**

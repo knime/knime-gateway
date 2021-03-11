@@ -66,6 +66,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -206,6 +207,14 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             return m_events;
         }
 
+    }
+
+    /**
+     * Clean-up.
+     */
+    @After
+    public void removeAllEventListener() {
+        DefaultEventService.getInstance().removeAllEventListeners();
     }
 
 }

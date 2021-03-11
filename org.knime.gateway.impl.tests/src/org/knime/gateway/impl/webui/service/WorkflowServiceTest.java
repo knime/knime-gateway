@@ -44,52 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 20, 2021 (hornm): created
+ *   Mar 11, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.impl.webui.service;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowKey;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+
+import org.junit.Test;
+import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
 
 /**
- * Unifying interface for all workflow commands. The methods are guaranteed to be called in a fixed order: execute ->
- * undo -> redo -> undo -> ... .
+ * Test that can only be carried out directly on a {@link DefaultWorkflowService}instance (and can't be tested via the
+ * {@link WorkflowServiceTestHelper}).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-interface WorkflowCommand<E extends WorkflowCommandEnt> {
+public class WorkflowServiceTest extends GatewayServiceTest {
 
     /**
-     * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()} and
-     * {@link #redo()}.
+     * Tests that returned workflow entities are cached (and the same instances returned) if the workflow didn't change.
      *
-     * @param wfKey references the workflow to execute the command for
-     * @param commandEntity representation of the command to be applied
-     * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
-     *         the command didn't do any change to the workflow
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
-     * @throws OperationNotAllowedException
+     * @throws Exception
      */
-    boolean execute(WorkflowKey wfKey, E commandEntity)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
+    @Test
+    public void testThatWorkflowEntitiesAreCached() throws Exception {
+        String wfId = "wf_id";
+        WorkflowManager wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
+        WorkflowSnapshotEnt ent = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
+        WorkflowSnapshotEnt ent2 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
+        assertTrue(ent.getWorkflow() == ent2.getWorkflow());
 
-    /**
-     * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey, WorkflowCommandEnt)} has
-     * been called before already.
-     *
-     * @throws OperationNotAllowedException
-     */
-    void undo() throws OperationNotAllowedException;
+        // change
+        NodeUIInformation.moveNodeBy(wfm.getNodeContainers().iterator().next(), new int[]{10, 10});
 
-    /**
-     * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
-     *
-     * @throws OperationNotAllowedException
-     */
-    void redo() throws OperationNotAllowedException;
-
+        WorkflowSnapshotEnt ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
+        assertFalse(ent2.getWorkflow() == ent3.getWorkflow());
+    }
 }

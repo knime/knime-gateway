@@ -46,50 +46,72 @@
  * History
  *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.impl.webui;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowKey;
+import java.util.Objects;
+
+import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
- * Unifying interface for all workflow commands. The methods are guaranteed to be called in a fixed order: execute ->
- * undo -> redo -> undo -> ... .
+ * Uniquely identifies a workflow by its project-id and the node-id in case its a sub-workflow (the node-id is 'root' if
+ * it's the top-level workflow).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-interface WorkflowCommand<E extends WorkflowCommandEnt> {
+public final class WorkflowKey {
+
+    private final String m_projectId;
+
+    private final NodeIDEnt m_workfowId;
 
     /**
-     * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()} and
-     * {@link #redo()}.
+     * Creates a new key instance.
      *
-     * @param wfKey references the workflow to execute the command for
-     * @param commandEntity representation of the command to be applied
-     * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
-     *         the command didn't do any change to the workflow
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
-     * @throws OperationNotAllowedException
+     * @param projectId the workflow project id
+     * @param workflowId the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level
+     *            workflow
      */
-    boolean execute(WorkflowKey wfKey, E commandEntity)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
+    public WorkflowKey(final String projectId, final NodeIDEnt workflowId) {
+        m_projectId = projectId;
+        m_workfowId = workflowId;
+    }
 
     /**
-     * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey, WorkflowCommandEnt)} has
-     * been called before already.
-     *
-     * @throws OperationNotAllowedException
+     * @return the workflow project id
      */
-    void undo() throws OperationNotAllowedException;
+    public String getProjectId() {
+        return m_projectId;
+    }
 
     /**
-     * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
-     *
-     * @throws OperationNotAllowedException
+     * @return the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level workflow
      */
-    void redo() throws OperationNotAllowedException;
+    public NodeIDEnt getWorkflowId() {
+        return m_workfowId;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (this.getClass() == o.getClass()) {
+            WorkflowKey k = (WorkflowKey)o;
+            return Objects.equals(m_projectId, k.m_projectId) && Objects.equals(m_workfowId, k.m_workfowId);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + m_projectId.hashCode();
+        result = prime * result + m_workfowId.hashCode();
+        return result;
+    }
 
 }

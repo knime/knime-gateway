@@ -1,5 +1,6 @@
 {
   "ops" : [ {
+<<<<<<< HEAD
     "op" : "replace",
     "path" : "/nodes/root:3:0:7/allowedActions/canDelete",
     "value" : false
@@ -43,4 +44,29 @@
     "path" : "/nodes/root:3:0:7/state/executionState",
     "value" : "EXECUTING"
   } ]
+=======
+  "op" : "remove",
+  "path" : "/nodes/root:3:0:3/state/warning"
+}, {
+  "op" : "replace",
+  "path" : "/allowedActions/canCancel",
+  "value" : true
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:3/state/executionState",
+  "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:5/state/executionState",
+  "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:6/state/executionState",
+  "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:7/state/executionState",
+  "value" : "EXECUTING"
+} ]
+>>>>>>> NXT-484: Some refactoring
 }

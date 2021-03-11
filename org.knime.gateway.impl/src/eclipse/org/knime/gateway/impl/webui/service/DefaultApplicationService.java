@@ -65,12 +65,13 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.AppState;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
 
 /**
@@ -139,14 +140,14 @@ public final class DefaultApplicationService implements ApplicationService {
                 }
             }
             if (wfm != null) {
-                builder.setActiveWorkflow(DefaultWorkflowService.getInstance().buildWorkflowSnapshotEnt(
-                    EntityBuilderUtil.buildWorkflowEnt(WorkflowBuildContext.builder(wfm).includeInteractionInfo(true)),
-                    new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID()))));
+                builder.setActiveWorkflow(WorkflowStatefulUtil.getInstance().buildWorkflowSnapshotEntOrGetFromCache(
+                    new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
+                    () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
             } else {
                 NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
                     "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));
             }
-       }
+        }
         return builder.build();
     }
 

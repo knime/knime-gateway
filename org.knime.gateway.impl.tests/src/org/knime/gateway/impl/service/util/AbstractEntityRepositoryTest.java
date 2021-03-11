@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +42,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
-import org.knime.gateway.api.webui.entity.PatchEnt;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
@@ -123,23 +122,21 @@ public abstract class AbstractEntityRepositoryTest {
         wfBuilder.setNodes(nodes);
 
         WorkflowEnt newWfEntity = wfBuilder.build();
-        AtomicReference<String> patch1SnapshotId = new AtomicReference<>();
-        PatchEnt patch1 =
-            repo.getChangesAndCommit(commitRes, newWfEntity, id -> {
-                patch1SnapshotId.set(id);
-                return new PatchEntCreator(id);
-            }).orElse(null);
-        assertThat(patch1.getOps().size(), is(3));
-        assertNotEquals(commitRes, patch1SnapshotId.get());
+        WorkflowChangedEventEnt event =
+            repo.getChangesAndCommit(commitRes, newWfEntity, new PatchEntCreator(null)).orElse(null);
+        assertThat(event.getPatch().getOps().size(), is(3));
+        assertNotEquals(commitRes, event.getSnapshotId());
 
         //get patch for a non-modified entity
-        PatchEnt patch2 =
-            repo.getChangesAndCommit(patch1SnapshotId.get(), wfBuilder.build(), PatchEntCreator::new).orElse(null);
-        Assert.assertNull(patch2);
+        event = repo
+            .getChangesAndCommit(event.getSnapshotId(), wfBuilder.build(), new PatchEntCreator(event.getSnapshotId()))
+            .orElse(null);
+        Assert.assertNull(event);
 
         //make sure that the very first snapshot is still there
-        PatchEnt patch3 = repo.getChangesAndCommit(commitRes, wfBuilder.build(), PatchEntCreator::new).orElse(null);
-        assertThat(patch3.getOps().size(), is(3));
+        event =
+            repo.getChangesAndCommit(commitRes, wfBuilder.build(), new PatchEntCreator(null)).orElse(null);
+        assertThat(event.getPatch().getOps().size(), is(3));
     }
 
     /**
@@ -158,7 +155,7 @@ public abstract class AbstractEntityRepositoryTest {
         repo.disposeHistory(k -> k.getFirst().equals(wfID));
 
         try {
-            repo.getChangesAndCommit(commitRes, wfBuilder.build(), PatchEntCreator::new);
+            repo.getChangesAndCommit(commitRes, wfBuilder.build(), new PatchEntCreator(null));
             fail("Expected a IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
             assertThat(e.getMessage(), containsString("No workflow found for snapshot with ID"));
@@ -214,17 +211,17 @@ public abstract class AbstractEntityRepositoryTest {
 
         // snapshot history size per entity is 2! The first snapshot should be gone now
         assertThrows("workflow is still part of the snapshot history", IllegalArgumentException.class,
-            () -> repo.getChangesAndCommit(id1, wf1, PatchEntCreator::new));
-        assertThat("not an empty patch", repo.getChangesAndCommit(id12, wf12, PatchEntCreator::new),
+            () -> repo.getChangesAndCommit(id1, wf1, new PatchEntCreator(null)));
+        assertThat("not an empty patch", repo.getChangesAndCommit(id12, wf12, new PatchEntCreator(null)),
             is(Optional.empty()));
-        assertThat("not an empty patch", repo.getChangesAndCommit(id13, wf13, PatchEntCreator::new),
+        assertThat("not an empty patch", repo.getChangesAndCommit(id13, wf13, new PatchEntCreator(null)),
             is(Optional.empty()));
 
         assertThrows("workflow is still part of the snapshot history", IllegalArgumentException.class,
-            () -> repo.getChangesAndCommit(id2, wf2, PatchEntCreator::new));
-        assertThat("not an empty patch", repo.getChangesAndCommit(id22, wf22, PatchEntCreator::new),
+            () -> repo.getChangesAndCommit(id2, wf2, new PatchEntCreator(null)));
+        assertThat("not an empty patch", repo.getChangesAndCommit(id22, wf22, new PatchEntCreator(null)),
             is(Optional.empty()));
-        assertThat("not an empty patch", repo.getChangesAndCommit(id23, wf23, PatchEntCreator::new),
+        assertThat("not an empty patch", repo.getChangesAndCommit(id23, wf23, new PatchEntCreator(null)),
             is(Optional.empty()));
     }
 

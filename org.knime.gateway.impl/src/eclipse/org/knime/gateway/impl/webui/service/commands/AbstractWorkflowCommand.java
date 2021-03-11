@@ -54,8 +54,8 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
-import org.knime.gateway.impl.webui.service.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Facilitates the implementation of a {@link WorkflowCommand}.
@@ -75,7 +75,7 @@ abstract class AbstractWorkflowCommand<E extends WorkflowCommandEnt> implements 
         throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
         m_wfKey = wfKey;
         m_commandEntity = commandEntity;
-        m_wfm = DefaultWorkflowService.getWorkflowManager(wfKey);
+        m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try (WorkflowLock lock = m_wfm.lock()) {
             return execute();
         }

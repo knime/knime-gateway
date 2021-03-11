@@ -1,56 +1,56 @@
 {
   "ops" : [ {
-    "op" : "replace",
-    "path" : "/allowedActions/canReset",
-    "value" : false
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:12/state/executionState",
-    "value" : "IDLE"
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:12/state/warning",
-    "value" : "Component Input 0:12:0:8: Component does not have input data, execute upstream nodes first"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:8/state/executionState",
-    "value" : "IDLE"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:23/state/executionState",
-    "value" : "IDLE"
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:23/state/warning",
-    "value" : "Component Input 0:23:0:8: Component does not have input data, execute upstream nodes first"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:1/outPorts/0/info"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:1/outPorts/2/info"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:1/outPorts/1/info"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:1/allowedActions/canExecute",
-    "value" : true
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:1/allowedActions/canReset",
-    "value" : false
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:9/state/executionState",
-    "value" : "IDLE"
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:9/state/warning",
-    "value" : "Component Input 0:9:0:8: Component does not have input data, execute upstream nodes first"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:1/state/executionState",
-    "value" : "CONFIGURED"
-  } ]
+  "op" : "add",
+  "path" : "/nodes/root:12/state/warning",
+  "value" : "Component Input 0:12:0:8: Component does not have input data, execute upstream nodes first"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:23/state/warning",
+  "value" : "Component Input 0:23:0:8: Component does not have input data, execute upstream nodes first"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:9/state/warning",
+  "value" : "Component Input 0:9:0:8: Component does not have input data, execute upstream nodes first"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:1/outPorts/0/info"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:1/outPorts/1/info"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:1/outPorts/2/info"
+}, {
+  "op" : "replace",
+  "path" : "/allowedActions/canReset",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:1/allowedActions/canExecute",
+  "value" : true
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:1/allowedActions/canReset",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:1/state/executionState",
+  "value" : "CONFIGURED"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:12/state/executionState",
+  "value" : "IDLE"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:23/state/executionState",
+  "value" : "IDLE"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:8/state/executionState",
+  "value" : "IDLE"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:9/state/executionState",
+  "value" : "IDLE"
+} ]
 }

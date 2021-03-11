@@ -71,7 +71,7 @@ import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.webui.service.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Tests {@link WorkflowCommands}.

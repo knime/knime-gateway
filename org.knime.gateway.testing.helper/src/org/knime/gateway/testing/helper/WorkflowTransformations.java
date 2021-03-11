@@ -66,7 +66,6 @@ import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -172,10 +171,8 @@ public final class WorkflowTransformations {
 
     private static List<WorkflowTransformation> createTransformationsForStreamingExecution() {
         return singletonList(newTransformation(WorkflowManager::executeAll, "streaming_execution",
-            wfm -> await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
-                NodeContainerState ncs1 =
-                    wfm.findNodeContainer(NodeIDSuffix.fromString("3:0:6").prependParent(wfm.getID()))
-                        .getNodeContainerState();
+            wfm -> await().atMost(5, TimeUnit.SECONDS).pollInterval(300, TimeUnit.MILLISECONDS).until(() -> {
+                NodeContainerState ncs1 = wfm.getNodeContainer(wfm.getID().createChild(3)).getNodeContainerState();
                 NodeContainerState ncs2 = wfm.getNodeContainer(wfm.getID().createChild(5)).getNodeContainerState();
                 return ncs1.isExecuted() && ncs2.isExecutionInProgress() && !ncs2.isWaitingToBeExecuted();
             })));

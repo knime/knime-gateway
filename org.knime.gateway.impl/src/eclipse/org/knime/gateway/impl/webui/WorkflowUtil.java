@@ -44,74 +44,62 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 20, 2021 (hornm): created
+ *   Mar 12, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.webui;
 
-import java.util.Objects;
-
-import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * Uniquely identifies a workflow by its project-id and the node-id in case its a sub-workflow (the node-id is 'root' if
- * it's the top-level workflow).
+ * Utility methods to operate on a workflow represented by a {@link WorkflowKey}.
+ *
+ * The actual {@link WorkflowManager}-instance is accessed via the {@link WorkflowProjectManager}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class WorkflowKey {
+public final class WorkflowUtil {
 
-    private final String m_projectId;
-
-    private final NodeIDEnt m_workfowId;
+    private WorkflowUtil() {
+        // utility class
+    }
 
     /**
-     * Creates a new key instance.
+     * Helper method to get the workflow manager from a project-id and workflow-id (referencing a sub-workflow or
+     * 'root').
      *
-     * @param projectId the workflow project id
-     * @param workflowId the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level
-     *            workflow
+     * @param wfKey
+     * @return the workflow manager
+     * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
+     * @throws NotASubWorkflowException if the workflow-id doesn't reference a metanode or a component
      */
-    public WorkflowKey(final String projectId, final NodeIDEnt workflowId) {
-        m_projectId = projectId;
-        m_workfowId = workflowId;
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException {
+        WorkflowManager wfm;
+        try {
+            wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
+        } catch (IllegalArgumentException ex) {
+            throw new NodeNotFoundException(ex.getMessage(), ex);
+        } catch (IllegalStateException ex) {
+            throw new NotASubWorkflowException(ex.getMessage(), ex);
+        }
+        return wfm;
     }
 
     /**
-     * @return the workflow project id
+     * Asserts that a workflow manager for the given workflow key exists. Otherwise respective exceptions are thrown.
+     *
+     * All other methods assume that a workflow exists and will otherwise fail with a runtime exceptions.
+     *
+     * @param wfKey
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
      */
-    public String getProjectId() {
-        return m_projectId;
-    }
-
-    /**
-     * @return the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level workflow
-     */
-    public NodeIDEnt getWorkflowId() {
-        return m_workfowId;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (this.getClass() == o.getClass()) {
-            WorkflowKey k = (WorkflowKey)o;
-            return Objects.equals(m_projectId, k.m_projectId) && Objects.equals(m_workfowId, k.m_workfowId);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + m_projectId.hashCode();
-        result = prime * result + m_workfowId.hashCode();
-        return result;
+    public static void assertWorkflowExists(final WorkflowKey wfKey) throws NodeNotFoundException, NotASubWorkflowException {
+        getWorkflowManager(wfKey);
     }
 
 }

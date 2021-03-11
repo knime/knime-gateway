@@ -1,16 +1,16 @@
 {
   "ops" : [ {
-    "op" : "remove",
-    "path" : "/nodes/root:26/inPorts/1/connectedVia/0"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:26/state/executionState",
-    "value" : "IDLE"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:25/outPorts/3/connectedVia/0"
-  }, {
-    "op" : "remove",
-    "path" : "/connections/root:26_1"
-  } ]
+  "op" : "remove",
+  "path" : "/connections/root:26_1"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:25/outPorts/3/connectedVia/0"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:26/inPorts/1/connectedVia/0"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:26/state/executionState",
+  "value" : "IDLE"
+} ]
 }

@@ -26,29 +26,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
-import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.Patch;
 
@@ -68,35 +51,21 @@ import com.github.difflib.patch.Patch;
  */
 public class ResultChecker {
 
-    /**
-     * The for the serialization of entities to json-strings for comparison.
-     */
-    private final ObjectMapper m_objectMapper;
-
-    private final PropertyExceptions m_propertyExceptions;
-
     private final File m_resultDirectory;
+
+    private final ObjectToString m_objToString;
 
     /**
      * Creates a new instance of the result checker.
      *
-     * @param propertyExceptions let one define exceptions of how to deal with certain properties for comparison
-     * @param objectMapper the mapper for object serialization for comparison, can be <code>null</code> iff
-     *            {@link #checkString(Class, String, String)} is used exclusively
+     * @param objToString turns objects into strings subsequently used for comparison, if <code>null</code>
+     *            {@link Object#toString()} is used
      * @param resultDirectory the directory to read the result-snapshots from (and write them to, if not present), can
      *            be <code>null</code> if there are no exceptions
      */
-    public ResultChecker(final PropertyExceptions propertyExceptions, final ObjectMapper objectMapper,
-        final File resultDirectory) {
-        m_propertyExceptions = propertyExceptions;
+    public ResultChecker(final ObjectToString objToString, final File resultDirectory) {
+        m_objToString = objToString;
         m_resultDirectory = resultDirectory;
-        m_objectMapper = objectMapper;
-        if (m_objectMapper != null) {
-            // setup object mapper for entity-comparison with property exceptions
-            SimpleModule module = new SimpleModule();
-            module.setSerializerModifier(new PropertyExceptionSerializerModifier());
-            m_objectMapper.registerModule(module);
-        }
     }
 
     /**
@@ -130,7 +99,7 @@ public class ResultChecker {
 
     private void compareWithSnapshotFromFile(final Class<?> testClass, final String snapshotName, final Object obj)
         throws IOException {
-        String actual = objToString(obj);
+        String actual = m_objToString == null ? obj.toString() : m_objToString.toString(obj);
         Path snapFile = getSnapshotFile(testClass, snapshotName);
         if (Files.exists(snapFile)) {
             // load expected snapshot and compare
@@ -150,16 +119,6 @@ public class ResultChecker {
             // just write the snapshot
             Files.createDirectories(snapFile.getParent());
             Files.write(snapFile, actual.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
-        }
-    }
-
-    private String objToString(final Object obj) throws JsonProcessingException {
-        if (obj instanceof String) {
-            return (String)obj;
-        } else {
-            ObjectWriter objectWriter = m_objectMapper
-                .writer(new DefaultPrettyPrinter().withObjectIndenter(new DefaultIndenter().withLinefeed("\n")));
-            return objectWriter.writeValueAsString(obj);
         }
     }
 
@@ -208,140 +167,4 @@ public class ResultChecker {
         return "/" + testClass.getCanonicalName() + "/";
     }
 
-    /**
-     * Guarantees a canonical sorting of the json properties within the serialized string and injects the
-     * {@link PropertyExceptionSerializer}.
-     */
-    private class PropertyExceptionSerializerModifier extends BeanSerializerModifier {
-
-        /**
-         * {@inheritDoc}
-         */
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        @Override
-        public JsonSerializer<?> modifySerializer(final SerializationConfig config, final BeanDescription beanDesc,
-            final JsonSerializer<?> serializer) {
-            return new PropertyExceptionSerializer(serializer);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        @Override
-        public JsonSerializer<?> modifyCollectionSerializer(final SerializationConfig config,
-            final CollectionType valueType, final BeanDescription beanDesc, final JsonSerializer<?> serializer) {
-            return new PropertyExceptionSerializer(serializer);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public List<BeanPropertyWriter> orderProperties(final SerializationConfig config,
-            final BeanDescription beanDesc, final List<BeanPropertyWriter> beanProperties) {
-            //order properties alphabetically
-            beanProperties.sort((b1, b2) -> b1.getName().compareTo(b2.getName()));
-            return super.orderProperties(config, beanDesc, beanProperties);
-        }
-    }
-
-    /**
-     * Uses in most cases the default serializer except for some fields with certain, predefined names.
-     */
-    private class PropertyExceptionSerializer<T> extends JsonSerializer<T> {
-
-        private final JsonSerializer<T> m_defaultSerializer;
-
-        PropertyExceptionSerializer(final JsonSerializer<T> defaultSerializer) {
-            m_defaultSerializer = defaultSerializer;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void serialize(final T value, final JsonGenerator gen, final SerializerProvider serializers)
-            throws IOException {
-            String name = gen.getOutputContext().getCurrentName();
-            if (name == null || m_propertyExceptions == null
-                || !m_propertyExceptions.alternativeSerialization(name, gen, value)) {
-                m_defaultSerializer.serialize(value, gen, serializers);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void serializeWithType(final T value, final JsonGenerator gen, final SerializerProvider serializers,
-            final TypeSerializer typeSer) throws IOException {
-            serialize(value, gen, serializers);
-        }
-    }
-
-    /**
-     * Represents a alternative way of serializing a property specified by a gateway entity and the property name.
-     */
-    public static class PropertyExceptions {
-
-        private final List<Class<?>> m_classes = new ArrayList<>();
-
-        private final List<String> m_propNames = new ArrayList<>();
-
-        private final List<PropertyException<?>> m_altFuncs = new ArrayList<>();
-
-        /**
-         * Adds a new exception.
-         *
-         * @param entityClass the entity to add the exception for
-         * @param propName the actual property name to apply the exception to
-         * @param altFunc how the property should be serialized alternatively
-         */
-        public <E> void addException(final Class<E> entityClass, final String propName,
-            final PropertyException<E> altFunc) {
-            m_classes.add(entityClass);
-            m_propNames.add(propName);
-            m_altFuncs.add(altFunc);
-        }
-
-        /**
-         * @param propName
-         * @param gen
-         * @param value
-         * @return <code>true</code> if property has been serialized, <code>false</code> if no serialization has been
-         *         carried out
-         * @throws IOException
-         */
-        @SuppressWarnings("unchecked")
-        private <E> boolean alternativeSerialization(final String propName, final JsonGenerator gen, final Object value)
-            throws IOException {
-            Class<?> parentEntity = gen.getCurrentValue().getClass();
-            for (int i = 0; i < m_classes.size(); i++) {
-                if (m_classes.get(i).isAssignableFrom(parentEntity) && propName.equals(m_propNames.get(i))) {
-                    PropertyException<E> pe = (PropertyException<E>)m_altFuncs.get(i);
-                    pe.alternativeSerialization(value, gen, (E)gen.getCurrentValue());
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Single serialization exception for an entity property.
-     * @param <E> the type of the entity
-     */
-    @FunctionalInterface
-    public static interface PropertyException<E> {
-        /**
-         * Overwrite to provide an alternative serialization of the specific property.
-         *
-         * @param value
-         * @param gen
-         * @param entity
-         * @throws IOException
-         */
-        void alternativeSerialization(Object value, JsonGenerator gen, E entity) throws IOException;
-    }
 }

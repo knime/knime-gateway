@@ -46,9 +46,9 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
@@ -86,16 +86,24 @@ public interface EntityRepository<K, E extends GatewayEntity> {
      *
      * @param snapshotID id of the snapshot requested from the repository to be compared
      * @param entity the workflow entity to compare the requested snapshot to (and that will possibly be committed)
-     * @param patchCreator callback for the changes after comparison; provided as a function to be (potentially)
-     *            initialized with the new snapshot id
+     * @param patchCreator the patch creator
      * @return the object representing the changes (e.g. a patch) or an empty optional if there are no changes
      * @throws IllegalArgumentException if there is not change history for the given snapshotID combination
      */
-    <P> Optional<P> getChangesAndCommit(String snapshotID, E entity, Function<String, PatchCreator<P>> patchCreator);
+    <P> Optional<P> getChangesAndCommit(String snapshotID, E entity, PatchCreator<P> patchCreator);
+
+    /**
+     * Gives access to the latest commit.
+     *
+     * @param key the entity key
+     * @return the snapshot id and entity of the latest commit or an empty optional if there hasn't been a commit yet
+     *         for that key
+     */
+    Optional<Pair<String, E>> getLastCommit(K key);
 
     /**
      * Disposes the whole history of entities with a certain key. A subsequent
-     * {@link #getChangesAndCommit(String, GatewayEntity, Function)} with the same entity ID will throw an exception.
+     * {@link #getChangesAndCommit(String, GatewayEntity, PatchCreator)} with the same entity ID will throw an exception.
      *
      * @param keyFilter disposes the history if the filter gives <code>true</code> for a certain key
      */

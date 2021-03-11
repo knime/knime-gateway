@@ -1,56 +1,56 @@
 {
   "ops" : [ {
-    "op" : "replace",
-    "path" : "/allowedActions/canReset",
-    "value" : true
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:12/state/executionState",
-    "value" : "CONFIGURED"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:12/state/warning"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:8/state/executionState",
-    "value" : "CONFIGURED"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:23/state/executionState",
-    "value" : "CONFIGURED"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:23/state/warning"
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:1/outPorts/0/info",
-    "value" : "Variables connection"
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:1/outPorts/2/info",
-    "value" : "Rows: 4, Cols: 4"
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:1/outPorts/1/info",
-    "value" : "Rows: 8, Cols: 5"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:1/allowedActions/canExecute",
-    "value" : false
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:1/allowedActions/canReset",
-    "value" : true
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:9/state/executionState",
-    "value" : "CONFIGURED"
-  }, {
-    "op" : "remove",
-    "path" : "/nodes/root:9/state/warning"
-  }, {
-    "op" : "replace",
-    "path" : "/nodes/root:1/state/executionState",
-    "value" : "EXECUTED"
-  } ]
+  "op" : "add",
+  "path" : "/nodes/root:1/outPorts/0/info",
+  "value" : "Variables connection"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:1/outPorts/1/info",
+  "value" : "Rows: 8, Cols: 5"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:1/outPorts/2/info",
+  "value" : "Rows: 4, Cols: 4"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:12/state/warning"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:23/state/warning"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:9/state/warning"
+}, {
+  "op" : "replace",
+  "path" : "/allowedActions/canReset",
+  "value" : true
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:1/allowedActions/canExecute",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:1/allowedActions/canReset",
+  "value" : true
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:1/state/executionState",
+  "value" : "EXECUTED"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:12/state/executionState",
+  "value" : "CONFIGURED"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:23/state/executionState",
+  "value" : "CONFIGURED"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:8/state/executionState",
+  "value" : "CONFIGURED"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:9/state/executionState",
+  "value" : "CONFIGURED"
+} ]
 }

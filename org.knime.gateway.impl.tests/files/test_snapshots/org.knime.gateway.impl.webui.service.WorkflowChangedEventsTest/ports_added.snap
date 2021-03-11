@@ -1,29 +1,29 @@
 {
   "ops" : [ {
-    "op" : "add",
-    "path" : "/nodes/root:186/inPorts/3",
-    "value" : {
-      "connectedVia" : "[  ]",
-      "index" : 3,
-      "name" : "Additional table to concatenate",
-      "optional" : false,
-      "type" : "table",
-      "view" : {
-        "type" : "table"
-      }
+  "op" : "add",
+  "path" : "/nodes/root:186/inPorts/3",
+  "value" : {
+    "connectedVia" : "[  ]",
+    "index" : 3,
+    "name" : "Additional table to concatenate",
+    "optional" : false,
+    "type" : "table",
+    "view" : {
+      "type" : "table"
     }
-  }, {
-    "op" : "add",
-    "path" : "/nodes/root:186/inPorts/4",
-    "value" : {
-      "connectedVia" : "[  ]",
-      "index" : 4,
-      "name" : "Additional table to concatenate",
-      "optional" : false,
-      "type" : "table",
-      "view" : {
-        "type" : "table"
-      }
+  }
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:186/inPorts/4",
+  "value" : {
+    "connectedVia" : "[  ]",
+    "index" : 4,
+    "name" : "Additional table to concatenate",
+    "optional" : false,
+    "type" : "table",
+    "view" : {
+      "type" : "table"
     }
-  } ]
+  }
+} ]
 }

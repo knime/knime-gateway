@@ -53,7 +53,6 @@ import java.util.function.Supplier;
 import org.knime.core.node.workflow.DependentNodeProperties;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeSuccessors;
-import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -88,10 +87,10 @@ public final class WorkflowBuildContext {
 
     private int m_nodeCount;
 
-    private WorkflowBuildContext(final WorkflowBuildContextBuilder builder, final boolean isInStreamingMode,
-        final boolean hasComponentProjectParent, final DependentNodeProperties depNodeProps,
-        final NodeSuccessors nodeSuccessors, final int nodeCount) {
-        m_wfm = builder.m_wfm;
+    private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
+        final boolean isInStreamingMode, final boolean hasComponentProjectParent,
+        final DependentNodeProperties depNodeProps, final NodeSuccessors nodeSuccessors, final int nodeCount) {
+        m_wfm = wfm;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
         m_hasComponentProjectParent = hasComponentProjectParent;
@@ -144,8 +143,8 @@ public final class WorkflowBuildContext {
      * @param wfm the wfm to create the builder instance for
      * @return a new builder instance
      */
-    public static WorkflowBuildContextBuilder builder(final WorkflowManager wfm) {
-        return new WorkflowBuildContextBuilder(wfm);
+    public static WorkflowBuildContextBuilder builder() {
+        return new WorkflowBuildContextBuilder();
     }
 
     /**
@@ -155,8 +154,6 @@ public final class WorkflowBuildContext {
 
         private boolean m_includeInteractionInfo = false;
 
-        private final WorkflowManager m_wfm;
-
         private boolean m_canUndo = false;
 
         private boolean m_canRedo = false;
@@ -165,8 +162,8 @@ public final class WorkflowBuildContext {
 
         private Supplier<NodeSuccessors> m_nodeSuccessors;
 
-        private WorkflowBuildContextBuilder(final WorkflowManager wfm) {
-            m_wfm = wfm;
+        private WorkflowBuildContextBuilder() {
+            //
         }
 
         /**
@@ -237,30 +234,21 @@ public final class WorkflowBuildContext {
          * Builds the workflow context. This might be an operation which is a bit more involved since certain
          * characteristics of the workflow are being determined.
          *
-         * {@link #lockWorkflow()} must be called first, before this is called, in order to lock the underlying
-         * workflow.
+         * Note: the passed workflow manager must be locked, i.e. {@link WorkflowManager#lock()}.
          *
-         * @return
+         * @param wfm the workflow manager to build the workflow entity for
+         * @return the new {@link WorkflowBuildContext} instance
          */
-        WorkflowBuildContext build() {
-            assert m_wfm.isLockedByCurrentThread();
+        WorkflowBuildContext build(final WorkflowManager wfm) {
+            assert wfm.isLockedByCurrentThread();
             DependentNodeProperties dnp = null;
             NodeSuccessors ns = null;
             if (m_includeInteractionInfo) {
-                dnp = m_depNodeProps == null ? m_wfm.determineDependentNodeProperties() : m_depNodeProps.get();
-                ns = m_nodeSuccessors == null ? m_wfm.determineNodeSuccessors() : m_nodeSuccessors.get();
+                dnp = m_depNodeProps == null ? wfm.determineDependentNodeProperties() : m_depNodeProps.get();
+                ns = m_nodeSuccessors == null ? wfm.determineNodeSuccessors() : m_nodeSuccessors.get();
             }
-            return new WorkflowBuildContext(this, CoreUtil.isInStreamingMode(m_wfm),
-                m_wfm.getProjectComponent().isPresent(), dnp, ns, m_wfm.getNodeContainers().size());
-        }
-
-        /**
-         * Locks the underlying workflow and returns the lock.
-         *
-         * @return the workflow lock
-         */
-        WorkflowLock lockWorkflow() {
-            return m_wfm.lock();
+            return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm),
+                wfm.getProjectComponent().isPresent(), dnp, ns, wfm.getNodeContainers().size());
         }
 
     }

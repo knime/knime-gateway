@@ -226,19 +226,20 @@ public final class EntityBuilderUtil {
      * @return the newly created entity
      */
     public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm) {
-        return buildWorkflowEnt(WorkflowBuildContext.builder(wfm));
+        return buildWorkflowEnt(wfm, WorkflowBuildContext.builder());
     }
 
     /**
      * Builds a new {@link WorkflowEnt} instance.
      *
+     * @param wfm the workflow manager to build the workflow entity for
+     *
      * @param buildContextBuilder contextual information required to build the {@link WorkflowEnt} instance
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
-        try (WorkflowLock lock = buildContextBuilder.lockWorkflow()) {
-            WorkflowBuildContext buildContext = buildContextBuilder.build();
-            WorkflowManager wfm = buildContext.wfm();
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
+        try (WorkflowLock lock = wfm.lock()) {
+            WorkflowBuildContext buildContext = buildContextBuilder.build(wfm);
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
 
             // linked hash map to retain iteration order!
@@ -954,6 +955,7 @@ public final class EntityBuilderUtil {
 
     private static NodePortTemplateEnt buildOrGetFromCacheNodePortTemplateEnt(final PortType ptype, final String name,
         final String description) {
+        // TODO remove template?
         NodePortTemplateEntBuilder builder = m_nodePortTemplateBuilderCache.computeIfAbsent(
             ptype.getPortObjectClass().getCanonicalName(), k -> buildNodePortTemplateEntBuilder(ptype));
         builder.setName(isBlank(name) ? null : name);
