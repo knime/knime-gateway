@@ -6,7 +6,7 @@ Bundle-Version: 4.4.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.gateway.json.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.11.0,3.0.0)",
  org.knime.gateway.api;bundle-version="[4.3.0,5.0.0)",
@@ -15,3 +15,4 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.1
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.11.0,3.0.0)",
  de.undercouch.bson4jackson;bundle-version="[2.4.0,3.0.0)",
  org.knime.gateway.impl;bundle-version="[4.3.0,5.0.0)"
+Automatic-Module-Name: org.knime.gateway.json
