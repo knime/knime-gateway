@@ -50,12 +50,12 @@ package org.knime.gateway.api.webui.util;
 
 import java.util.function.Supplier;
 
-import org.knime.core.node.workflow.DependentNodeProperties;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeSuccessors;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.NodeSuccessors;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 /**
@@ -63,7 +63,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * {@link WorkflowManager}. It contains all the information which is not directly available. Some information is simply
  * not part of the {@link WorkflowManager} (or related classes) or needs to be determined first. The determination
  * (calculation) of missing information is done in the context's build step, i.e.
- * {@link WorkflowBuildContextBuilder#build()}.
+ * {@link WorkflowBuildContextBuilder#build(WorkflowManager)}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -244,8 +244,9 @@ public final class WorkflowBuildContext {
             DependentNodeProperties dnp = null;
             NodeSuccessors ns = null;
             if (m_includeInteractionInfo) {
-                dnp = m_depNodeProps == null ? wfm.determineDependentNodeProperties() : m_depNodeProps.get();
-                ns = m_nodeSuccessors == null ? wfm.determineNodeSuccessors() : m_nodeSuccessors.get();
+                dnp = m_depNodeProps == null ? DependentNodeProperties.determineDependentNodeProperties(wfm)
+                    : m_depNodeProps.get();
+                ns = m_nodeSuccessors == null ? NodeSuccessors.determineNodeSuccessors(wfm) : m_nodeSuccessors.get();
             }
             return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm),
                 wfm.getProjectComponent().isPresent(), dnp, ns, wfm.getNodeContainers().size());

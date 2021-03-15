@@ -57,11 +57,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
-import org.knime.core.node.workflow.DependentNodeProperties;
-import org.knime.core.node.workflow.NodeSuccessors;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.NodeSuccessors;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -298,7 +298,7 @@ public final class WorkflowStatefulUtil {
         // otherwise a cached instance is used
         WorkflowState ws = workflowState(wfKey);
         if (ws.m_depNodeProperties == null || changes.nodeStateChanges() || changes.nodeOrConnectionAddedOrRemoved()) {
-            ws.m_depNodeProperties = ws.m_wfm.determineDependentNodeProperties();
+            ws.m_depNodeProperties = DependentNodeProperties.determineDependentNodeProperties(ws.m_wfm);
         }
         return ws.m_depNodeProperties;
     }
@@ -308,7 +308,7 @@ public final class WorkflowStatefulUtil {
         // otherwise a cached instance is used
         WorkflowState ws = workflowState(wfKey);
         if (ws.m_nodeSuccessors == null || changes.nodeOrConnectionAddedOrRemoved()) {
-            ws.m_nodeSuccessors = ws.m_wfm.determineNodeSuccessors();
+            ws.m_nodeSuccessors = NodeSuccessors.determineNodeSuccessors(ws.m_wfm);
         }
         return ws.m_nodeSuccessors;
     }
