@@ -18,9 +18,8 @@
       "type" : "table",
       "typeName" : "Data"
     }, {
-      "color" : "#9B9B9B",
       "optional" : false,
-      "type" : "other",
+      "type" : "generic",
       "typeName" : "Generic Port"
     } ],
     "type" : "Sink"
@@ -74,12 +73,11 @@
           "type" : "table"
         }
       }, {
-        "color" : "#9B9B9B",
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Passed-on Component Output 1",
         "optional" : false,
-        "type" : "other"
+        "type" : "generic"
       } ],
       "kind" : "node",
       "outPorts" : [ {

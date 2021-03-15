@@ -63,6 +63,7 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
 
   protected String m_name;
   protected TypeEnum m_type;
+  protected Integer m_otherTypeId;
   protected String m_color;
   protected Boolean m_optional;
   
@@ -82,6 +83,7 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
         throw new IllegalArgumentException("type must not be null.");
     }
     m_type = immutable(builder.m_type);
+    m_otherTypeId = immutable(builder.m_otherTypeId);
     m_color = immutable(builder.m_color);
     m_optional = immutable(builder.m_optional);
   }
@@ -101,7 +103,7 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
             return false;
         }
         DefaultNodePortAndTemplateEnt ent = (DefaultNodePortAndTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional);
     }
 
 
@@ -114,6 +116,7 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
        return new HashCodeBuilder()
                .append(m_name)
                .append(m_type)
+               .append(m_otherTypeId)
                .append(m_color)
                .append(m_optional)
                .toHashCode();
@@ -129,6 +132,11 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
   @Override
   public TypeEnum getType() {
         return m_type;
+  }
+    
+  @Override
+  public Integer getOtherTypeId() {
+        return m_otherTypeId;
   }
     
   @Override
@@ -150,6 +158,7 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
     
         private String m_name;
         private TypeEnum m_type;
+        private Integer m_otherTypeId;
         private String m_color;
         private Boolean m_optional;
 
@@ -165,6 +174,12 @@ public class DefaultNodePortAndTemplateEnt implements NodePortAndTemplateEnt {
                  throw new IllegalArgumentException("type must not be null.");
              }
              m_type = type;
+             return this;
+        }
+
+        @Override
+        public DefaultNodePortAndTemplateEntBuilder setOtherTypeId(Integer otherTypeId) {
+             m_otherTypeId = otherTypeId;
              return this;
         }
 

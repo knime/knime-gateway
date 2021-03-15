@@ -63,6 +63,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.missing.MissingNodeFactory;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
@@ -213,8 +214,6 @@ public final class EntityBuilderUtil {
 
     private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
 
-    private static long[] longArray;
-
     private EntityBuilderUtil() {
         //utility class
     }
@@ -269,8 +268,36 @@ public final class EntityBuilderUtil {
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(
                     CoreUtil.isComponentWFM(wfm) ? buildComponentNodeTemplateEnt(getParentComponent(wfm)) : null)//
+                .setAmbiguousPortTypes(buildAmbiguousPortTypesMap(buildContext))//
                 .build();
         }
+    }
+
+    private static Map<String, List<Integer>> buildAmbiguousPortTypesMap(final WorkflowBuildContext buildContext) {
+        if (buildContext.inPortTypes() == null || buildContext.outPortTypes() == null) {
+            return null;
+        }
+        Map<String, List<Integer>> res = null;
+        for (PortType source : buildContext.outPortTypes()) {
+            List<Integer> destList = new ArrayList<>();
+            for (PortType dest : buildContext.inPortTypes()) {
+                if (dest.equals(source)) {
+                    continue;
+                }
+                if (source.getPortObjectClass().isAssignableFrom(dest.getPortObjectClass())
+                    || dest.getPortObjectClass().isAssignableFrom(source.getPortObjectClass())) {
+                    destList.add(dest.getPortObjectClass().getName().hashCode());
+                }
+            }
+            if (!destList.isEmpty()) {
+                // the source port type can be additionally connected to at least one other port type than itself
+                if (res == null) {
+                    res = new HashMap<>();
+                }
+                res.put(String.valueOf(source.getPortObjectClass().getName().hashCode()), destList);
+            }
+        }
+        return res;
     }
 
     private static MetaPortsEnt buildMetaPortsEntForWorkflow(final WorkflowManager wfm, final boolean incoming,
@@ -648,17 +675,20 @@ public final class EntityBuilderUtil {
             for (int i = 0; i < nc.getNrInPorts(); i++) {
                 ConnectionContainer connection = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
                 NodeInPort inPort = nc.getInPort(i);
-                res.add(buildNodePortEnt(inPort.getPortType(), inPort.getPortName(), null, i,
-                    inPort.getPortType().isOptional(), null,
+                PortType pt = inPort.getPortType();
+                buildContext.updatePortTypes(pt, true);
+                res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null,
                     connection == null ? Collections.emptyList() : Collections.singletonList(connection),
-                        buildContext));
+                    buildContext));
             }
         } else {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
-                res.add(buildNodePortEnt(outPort.getPortType(), outPort.getPortName(), outPort.getPortSummary(), i,
-                    null, outPort.isInactive() ? outPort.isInactive() : null, connections, buildContext));
+                PortType pt = outPort.getPortType();
+                buildContext.updatePortTypes(pt, false);
+                res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
+                    outPort.isInactive() ? outPort.isInactive() : null, connections, buildContext));
             }
         }
         return res;
@@ -677,6 +707,7 @@ public final class EntityBuilderUtil {
             .setName(name)//
             .setInfo(info)//
             .setType(resPortType)//
+            .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext))//
             .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
             .setView(buildPortViewEnt(ptype))//
             .build();
@@ -692,11 +723,19 @@ public final class EntityBuilderUtil {
         }
     }
 
+    private static Integer getOtherPortTypeId(final PortType ptype, final NodePortAndTemplateEnt.TypeEnum portTypeEnt,
+        final WorkflowBuildContext buildContext) {
+        return buildContext.includeInteractionInfo() && NodePortAndTemplateEnt.TypeEnum.OTHER == portTypeEnt
+            ? ptype.getPortObjectClass().getName().hashCode() : null;
+    }
+
     private static NodePortAndTemplateEnt.TypeEnum getNodePortTemplateType(final PortType ptype) {
         if (BufferedDataTable.TYPE.equals(ptype)) {
             return NodePortAndTemplateEnt.TypeEnum.TABLE;
         } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
             return NodePortAndTemplateEnt.TypeEnum.FLOWVARIABLE;
+        } else if (PortObject.TYPE.equals(ptype)) {
+            return NodePortAndTemplateEnt.TypeEnum.GENERIC;
         } else {
             return NodePortAndTemplateEnt.TypeEnum.OTHER;
         }
@@ -955,7 +994,6 @@ public final class EntityBuilderUtil {
 
     private static NodePortTemplateEnt buildOrGetFromCacheNodePortTemplateEnt(final PortType ptype, final String name,
         final String description) {
-        // TODO remove template?
         NodePortTemplateEntBuilder builder = m_nodePortTemplateBuilderCache.computeIfAbsent(
             ptype.getPortObjectClass().getCanonicalName(), k -> buildNodePortTemplateEntBuilder(ptype));
         builder.setName(isBlank(name) ? null : name);

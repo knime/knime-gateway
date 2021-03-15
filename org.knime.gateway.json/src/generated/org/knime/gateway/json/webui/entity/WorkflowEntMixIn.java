@@ -88,6 +88,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates();
     
     @Override
+    @JsonProperty("ambiguousPortTypes")
+    public java.util.Map<String, java.util.List<Integer>> getAmbiguousPortTypes();
+    
+    @Override
     @JsonProperty("connections")
     public java.util.Map<String, ConnectionEnt> getConnections();
     
@@ -143,6 +147,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("nodeTemplates")
         public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates);
+        
+        @Override
+        @JsonProperty("ambiguousPortTypes")
+        public WorkflowEntMixInBuilder setAmbiguousPortTypes(final java.util.Map<String, java.util.List<Integer>> ambiguousPortTypes);
         
         @Override
         @JsonProperty("connections")

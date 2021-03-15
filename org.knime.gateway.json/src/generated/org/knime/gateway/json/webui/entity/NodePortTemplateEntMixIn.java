@@ -77,6 +77,10 @@ public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
     public TypeEnum getType();
     
     @Override
+    @JsonProperty("otherTypeId")
+    public Integer getOtherTypeId();
+    
+    @Override
     @JsonProperty("color")
     public String getColor();
     
@@ -112,6 +116,10 @@ public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
         @Override
         @JsonProperty("type")
         public NodePortTemplateEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("otherTypeId")
+        public NodePortTemplateEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
         
         @Override
         @JsonProperty("color")

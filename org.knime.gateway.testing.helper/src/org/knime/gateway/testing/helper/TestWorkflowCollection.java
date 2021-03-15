@@ -39,7 +39,13 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow to test loop execution.
      */
-    LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution");
+    LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution"),
+
+    /**
+     * Workflow to test loop execution.
+     */
+    PORT_TYPES("/files/testflows/Port Types", "port types");
+
 
     private final String m_workflowDir;
 

@@ -87,6 +87,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEn
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -241,6 +242,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), Boolean.FALSE).getWorkflow();
         assertNull(workflow.getProjectMetadata());
         assertNull(workflow.getComponentMetadata());
+    }
+
+    /**
+     * Tests that output port types that can be connected to more than one other port type in the workflow are correctly
+     * represented in the workflow.
+     *
+     * @throws Exception
+     */
+    public void testGetWorkflowWithAmbiguousPortTypes() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.PORT_TYPES);
+        WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
+        cr(workflow.getWorkflow().getAmbiguousPortTypes(), "ambiguous_port_types");
     }
 
     /**

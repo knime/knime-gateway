@@ -48,8 +48,14 @@
  */
 package org.knime.gateway.api.webui.util;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -86,6 +92,10 @@ public final class WorkflowBuildContext {
     private final boolean m_canRedo;
 
     private int m_nodeCount;
+
+    private Set<PortType> m_inPortTypes = null;
+
+    private Set<PortType> m_outPortTypes = null;
 
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
@@ -138,9 +148,49 @@ public final class WorkflowBuildContext {
     }
 
     /**
+     * This only method that mutates this build context. Use with care. Helps to avoid redundant work when collecting
+     * all the available input and output port types from a workflow. Ports of type {@link BufferedDataTable},
+     * {@link FlowVariablePortObject} and {@link PortObject} are ignored!
+     *
+     * @param pt
+     * @param isInPort whether it's the port type of the input port or not
+     */
+    void updatePortTypes(final PortType pt, final boolean isInPort) {
+        if (BufferedDataTable.TYPE.equals(pt) || FlowVariablePortObject.TYPE.equals(pt) || PortObject.TYPE.equals(pt)) {
+            return;
+        }
+        if (isInPort) {
+            if (m_inPortTypes == null) {
+                m_inPortTypes = new HashSet<>();
+            }
+            m_inPortTypes.add(pt);
+        } else {
+            if (m_outPortTypes == null) {
+                m_outPortTypes = new HashSet<>();
+            }
+            m_outPortTypes.add(pt);
+        }
+    }
+
+    /**
+     * @return the set of port types a collected via {@link #updatePortTypes(PortType, boolean)}, <code>null</code> if
+     *         empty
+     */
+    Set<PortType> inPortTypes() {
+        return m_inPortTypes;
+    }
+
+    /**
+     * @return the set of port types a collected via {@link #updatePortTypes(PortType, boolean)}, <code>null</code> if
+     *         empty
+     */
+    Set<PortType> outPortTypes() {
+        return m_outPortTypes;
+    }
+
+    /**
      * Creates a new builder instance.
      *
-     * @param wfm the wfm to create the builder instance for
      * @return a new builder instance
      */
     public static WorkflowBuildContextBuilder builder() {

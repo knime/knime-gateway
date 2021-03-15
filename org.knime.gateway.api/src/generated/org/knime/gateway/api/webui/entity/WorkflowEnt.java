@@ -86,6 +86,12 @@ public interface WorkflowEnt extends GatewayEntity {
   public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates();
 
   /**
+   * A map of port types that are part of the workflow and can be connected to multiple other ports (map from port type id to a list of other port type ids). The map does not contain any port types that can only be connected to exactly one other port type (neither does it include the build-in basic port types, i.e. table, flow variable and generic port object). This info is required to determine port compatibility (when connecting two nodes) and is only available if interaction info is supposed to be included.
+   * @return ambiguousPortTypes 
+   **/
+  public java.util.Map<String, java.util.List<Integer>> getAmbiguousPortTypes();
+
+  /**
    * The list of connections.
    * @return connections , never <code>null</code>
    **/
@@ -162,6 +168,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates);
+        
+        /**
+         * A map of port types that are part of the workflow and can be connected to multiple other ports (map from port type id to a list of other port type ids). The map does not contain any port types that can only be connected to exactly one other port type (neither does it include the build-in basic port types, i.e. table, flow variable and generic port object). This info is required to determine port compatibility (when connecting two nodes) and is only available if interaction info is supposed to be included.
+         * 
+         * @param ambiguousPortTypes the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setAmbiguousPortTypes(java.util.Map<String, java.util.List<Integer>> ambiguousPortTypes);
         
         /**
          * The list of connections.

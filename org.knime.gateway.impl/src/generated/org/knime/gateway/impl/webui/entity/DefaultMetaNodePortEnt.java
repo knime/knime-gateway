@@ -65,6 +65,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
 
   protected String m_name;
   protected TypeEnum m_type;
+  protected Integer m_otherTypeId;
   protected String m_color;
   protected Boolean m_optional;
   protected String m_info;
@@ -90,6 +91,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         throw new IllegalArgumentException("type must not be null.");
     }
     m_type = immutable(builder.m_type);
+    m_otherTypeId = immutable(builder.m_otherTypeId);
     m_color = immutable(builder.m_color);
     m_optional = immutable(builder.m_optional);
     m_info = immutable(builder.m_info);
@@ -118,7 +120,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
             return false;
         }
         DefaultMetaNodePortEnt ent = (DefaultMetaNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_nodeState, ent.m_nodeState);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_nodeState, ent.m_nodeState);
     }
 
 
@@ -131,6 +133,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
        return new HashCodeBuilder()
                .append(m_name)
                .append(m_type)
+               .append(m_otherTypeId)
                .append(m_color)
                .append(m_optional)
                .append(m_info)
@@ -152,6 +155,11 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
   @Override
   public TypeEnum getType() {
         return m_type;
+  }
+    
+  @Override
+  public Integer getOtherTypeId() {
+        return m_otherTypeId;
   }
     
   @Override
@@ -203,6 +211,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
     
         private String m_name;
         private TypeEnum m_type;
+        private Integer m_otherTypeId;
         private String m_color;
         private Boolean m_optional;
         private String m_info;
@@ -224,6 +233,12 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
                  throw new IllegalArgumentException("type must not be null.");
              }
              m_type = type;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodePortEntBuilder setOtherTypeId(Integer otherTypeId) {
+             m_otherTypeId = otherTypeId;
              return this;
         }
 

@@ -72,6 +72,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   protected WorkflowInfoEnt m_info;
   protected java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes;
   protected java.util.Map<String, NativeNodeTemplateEnt> m_nodeTemplates;
+  protected java.util.Map<String, java.util.List<Integer>> m_ambiguousPortTypes;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
   protected java.util.List<WorkflowInfoEnt> m_parents;
@@ -104,6 +105,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         throw new IllegalArgumentException("nodeTemplates must not be null.");
     }
     m_nodeTemplates = immutable(builder.m_nodeTemplates);
+    m_ambiguousPortTypes = immutable(builder.m_ambiguousPortTypes);
     if(builder.m_connections == null) {
         throw new IllegalArgumentException("connections must not be null.");
     }
@@ -135,7 +137,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata);
+        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_ambiguousPortTypes, ent.m_ambiguousPortTypes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata);
     }
 
 
@@ -149,6 +151,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
                .append(m_info)
                .append(m_nodes)
                .append(m_nodeTemplates)
+               .append(m_ambiguousPortTypes)
                .append(m_connections)
                .append(m_workflowAnnotations)
                .append(m_parents)
@@ -175,6 +178,11 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   @Override
   public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates() {
         return m_nodeTemplates;
+  }
+    
+  @Override
+  public java.util.Map<String, java.util.List<Integer>> getAmbiguousPortTypes() {
+        return m_ambiguousPortTypes;
   }
     
   @Override
@@ -227,6 +235,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         private WorkflowInfoEnt m_info;
         private java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NativeNodeTemplateEnt> m_nodeTemplates = new java.util.HashMap<>();
+        private java.util.Map<String, java.util.List<Integer>> m_ambiguousPortTypes;
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
         private java.util.List<WorkflowInfoEnt> m_parents;
@@ -260,6 +269,12 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
                  throw new IllegalArgumentException("nodeTemplates must not be null.");
              }
              m_nodeTemplates = nodeTemplates;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowEntBuilder setAmbiguousPortTypes(java.util.Map<String, java.util.List<Integer>> ambiguousPortTypes) {
+             m_ambiguousPortTypes = ambiguousPortTypes;
              return this;
         }
 

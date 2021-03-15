@@ -66,6 +66,8 @@ public interface NodePortAndTemplateEnt extends GatewayEntity {
     
     FLOWVARIABLE("flowVariable"),
     
+    GENERIC("generic"),
+    
     OTHER("other");
 
     private String value;
@@ -93,6 +95,12 @@ public interface NodePortAndTemplateEnt extends GatewayEntity {
    * @return type , never <code>null</code>
    **/
   public TypeEnum getType();
+
+  /**
+   * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
+   * @return otherTypeId 
+   **/
+  public Integer getOtherTypeId();
 
   /**
    * The color of the port in case of type &#39;other&#39;.
@@ -127,6 +135,14 @@ public interface NodePortAndTemplateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodePortAndTemplateEntBuilder setType(TypeEnum type);
+        
+        /**
+         * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
+         * 
+         * @param otherTypeId the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortAndTemplateEntBuilder setOtherTypeId(Integer otherTypeId);
         
         /**
          * The color of the port in case of type &#39;other&#39;.

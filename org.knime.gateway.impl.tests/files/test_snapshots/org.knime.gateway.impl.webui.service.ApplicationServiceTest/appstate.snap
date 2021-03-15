@@ -478,6 +478,7 @@
               "connectedVia" : "[ root:20_3 ]",
               "index" : 1,
               "name" : "Distance Measure",
+              "otherTypeId" : -58553590,
               "type" : "other"
             } ],
             "position" : {
@@ -574,6 +575,7 @@
               "connectedVia" : "[  ]",
               "index" : 1,
               "name" : "Decision Tree Model",
+              "otherTypeId" : -1069222888,
               "type" : "other"
             } ],
             "position" : {
@@ -718,6 +720,7 @@
               "index" : 3,
               "name" : "Distance Measure",
               "optional" : true,
+              "otherTypeId" : -58553590,
               "type" : "other"
             } ],
             "kind" : "node",
@@ -888,11 +891,10 @@
                 "type" : "table"
               }
             }, {
-              "color" : "#9B9B9B",
               "connectedVia" : "[  ]",
               "index" : 2,
               "name" : "Outport 2",
-              "type" : "other"
+              "type" : "generic"
             } ],
             "position" : {
               "x" : 924,
@@ -1001,6 +1003,7 @@
               "connectedVia" : "[ root:26_1 ]",
               "index" : 3,
               "name" : "Projection model",
+              "otherTypeId" : -1676580659,
               "type" : "other"
             } ],
             "position" : {
@@ -1040,6 +1043,7 @@
               "index" : 1,
               "name" : "Weka model",
               "optional" : false,
+              "otherTypeId" : -822968375,
               "type" : "other"
             }, {
               "connectedVia" : "[ root:22_2 ]",
@@ -1161,6 +1165,7 @@
               "index" : 1,
               "name" : "PCA model",
               "optional" : false,
+              "otherTypeId" : -1676580659,
               "type" : "other"
             }, {
               "connectedVia" : "[ root:26_2 ]",
@@ -1313,6 +1318,7 @@
               "connectedVia" : "[ root:22_1 ]",
               "index" : 1,
               "name" : "Trained model",
+              "otherTypeId" : -822968375,
               "type" : "other"
             } ],
             "position" : {
