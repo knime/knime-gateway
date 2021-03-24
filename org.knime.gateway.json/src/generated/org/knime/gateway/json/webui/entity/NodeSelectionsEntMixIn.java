@@ -44,14 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeTemplateEnt.DefaultNativeNodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeSelectionsEnt.DefaultNodeSelectionsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,25 +60,21 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeTemplateEnt.DefaultN
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNativeNodeTemplateEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeSelectionsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NativeNodeTemplateEntMixIn extends NativeNodeTemplateEnt {
+public interface NodeSelectionsEntMixIn extends NodeSelectionsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("selections")
+    public java.util.List<NodeSelectionEnt> getSelections();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
+    @JsonProperty("totalNumSelections")
+    public Integer getTotalNumSelections();
     
 
     /**
@@ -87,22 +84,18 @@ public interface NativeNodeTemplateEntMixIn extends NativeNodeTemplateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeTemplateEntMixInBuilder extends NativeNodeTemplateEntBuilder {
+    public static interface NodeSelectionsEntMixInBuilder extends NodeSelectionsEntBuilder {
     
         @Override
-        public NativeNodeTemplateEntMixIn build();
+        public NodeSelectionsEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public NativeNodeTemplateEntMixInBuilder setName(final String name);
+        @JsonProperty("selections")
+        public NodeSelectionsEntMixInBuilder setSelections(final java.util.List<NodeSelectionEnt> selections);
         
         @Override
-        @JsonProperty("type")
-        public NativeNodeTemplateEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public NativeNodeTemplateEntMixInBuilder setIcon(final String icon);
+        @JsonProperty("totalNumSelections")
+        public NodeSelectionsEntMixInBuilder setTotalNumSelections(final Integer totalNumSelections);
         
     }
 

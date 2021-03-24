@@ -42,43 +42,62 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
+import com.googlecode.jsonrpc4j.JsonRpcService;
+
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import org.knime.gateway.api.service.GatewayService;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+@JsonRpcService(value = "NodeRepositoryService")
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
+public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryService {
 
-    private ListServices() {
-        //utility class
+    private final NodeRepositoryService m_service;
+    
+    public JsonRpcNodeRepositoryServiceWrapper(NodeRepositoryService service) {
+        m_service = service;
     }
 
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+	/**
+     * {@inheritDoc}
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    @Override
+    @JsonRpcMethod(value = "getNodeTemplates")
+    public java.util.Map<String, NodeTemplateEnt> getNodeTemplates(@JsonRpcParam(value="requestBody") java.util.List<String> requestBody)  {
+        return m_service.getNodeTemplates(requestBody);    
     }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "searchNodes")
+    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo)  {
+        return m_service.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "selectNodes")
+    public NodeSelectionsEnt selectNodes(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
+        return m_service.selectNodes(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
+    }
+
 }

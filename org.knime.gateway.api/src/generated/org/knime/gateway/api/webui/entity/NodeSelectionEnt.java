@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,114 +52,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Properties that have NodePort and NodePortTemplate in common.
+ * A selection of nodes.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodePortAndTemplateEnt extends GatewayEntity {
-
-  /**
-   * The port type.
-   */
-  public enum TypeEnum {
-    TABLE("table"),
-    
-    FLOWVARIABLE("flowVariable"),
-    
-    GENERIC("generic"),
-    
-    OTHER("other");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface NodeSelectionEnt extends GatewayEntity {
 
 
   /**
-   * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
-   * @return name 
+   * The tag these nodes are selected for.
+   * @return tag 
    **/
-  public String getName();
+  public String getTag();
 
   /**
-   * The port type.
-   * @return type , never <code>null</code>
+   * The selected nodes in a fixed order (e.g. by popularity).
+   * @return nodes 
    **/
-  public TypeEnum getType();
-
-  /**
-   * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
-   * @return otherTypeId 
-   **/
-  public Integer getOtherTypeId();
-
-  /**
-   * The color of the port in case of type &#39;other&#39;.
-   * @return color 
-   **/
-  public String getColor();
-
-  /**
-   * Whether it&#39;s a optional port or not.
-   * @return optional 
-   **/
-  public Boolean isOptional();
+  public java.util.List<NodeTemplateEnt> getNodes();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodePortAndTemplateEntBuilder extends GatewayEntityBuilder<NodePortAndTemplateEnt> {
+    public interface NodeSelectionEntBuilder extends GatewayEntityBuilder<NodeSelectionEnt> {
 
         /**
-         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
+         * The tag these nodes are selected for.
          * 
-         * @param name the property value,  
+         * @param tag the property value,  
          * @return this entity builder for chaining
          */
-        NodePortAndTemplateEntBuilder setName(String name);
+        NodeSelectionEntBuilder setTag(String tag);
         
         /**
-         * The port type.
+         * The selected nodes in a fixed order (e.g. by popularity).
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param nodes the property value,  
          * @return this entity builder for chaining
          */
-        NodePortAndTemplateEntBuilder setType(TypeEnum type);
-        
-        /**
-         * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
-         * 
-         * @param otherTypeId the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortAndTemplateEntBuilder setOtherTypeId(Integer otherTypeId);
-        
-        /**
-         * The color of the port in case of type &#39;other&#39;.
-         * 
-         * @param color the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortAndTemplateEntBuilder setColor(String color);
-        
-        /**
-         * Whether it&#39;s a optional port or not.
-         * 
-         * @param optional the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortAndTemplateEntBuilder setOptional(Boolean optional);
+        NodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes);
         
         
         /**
@@ -168,7 +102,7 @@ public interface NodePortAndTemplateEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodePortAndTemplateEnt build();
+        NodeSelectionEnt build();
     
     }
 

@@ -44,14 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortAndTemplateEnt.DefaultNodePortAndTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeSearchResultEnt.DefaultNodeSearchResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,33 +60,25 @@ import org.knime.gateway.impl.webui.entity.DefaultNodePortAndTemplateEnt.Default
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodePortAndTemplateEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeSearchResultEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodePortAndTemplateEntMixIn extends NodePortAndTemplateEnt {
+public interface NodeSearchResultEntMixIn extends NodeSearchResultEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("nodes")
+    public java.util.List<NodeTemplateEnt> getNodes();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
+    @JsonProperty("totalNumNodes")
+    public Integer getTotalNumNodes();
     
     @Override
-    @JsonProperty("otherTypeId")
-    public Integer getOtherTypeId();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
-    
-    @Override
-    @JsonProperty("optional")
-    public Boolean isOptional();
+    @JsonProperty("tags")
+    public java.util.List<String> getTags();
     
 
     /**
@@ -95,30 +88,22 @@ public interface NodePortAndTemplateEntMixIn extends NodePortAndTemplateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortAndTemplateEntMixInBuilder extends NodePortAndTemplateEntBuilder {
+    public static interface NodeSearchResultEntMixInBuilder extends NodeSearchResultEntBuilder {
     
         @Override
-        public NodePortAndTemplateEntMixIn build();
+        public NodeSearchResultEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public NodePortAndTemplateEntMixInBuilder setName(final String name);
+        @JsonProperty("nodes")
+        public NodeSearchResultEntMixInBuilder setNodes(final java.util.List<NodeTemplateEnt> nodes);
         
         @Override
-        @JsonProperty("type")
-        public NodePortAndTemplateEntMixInBuilder setType(final TypeEnum type);
+        @JsonProperty("totalNumNodes")
+        public NodeSearchResultEntMixInBuilder setTotalNumNodes(final Integer totalNumNodes);
         
         @Override
-        @JsonProperty("otherTypeId")
-        public NodePortAndTemplateEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
-        
-        @Override
-        @JsonProperty("color")
-        public NodePortAndTemplateEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("optional")
-        public NodePortAndTemplateEntMixInBuilder setOptional(final Boolean optional);
+        @JsonProperty("tags")
+        public NodeSearchResultEntMixInBuilder setTags(final java.util.List<String> tags);
         
     }
 

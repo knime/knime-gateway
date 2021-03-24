@@ -46,6 +46,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -56,6 +58,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
@@ -118,11 +121,11 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkf
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
-import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
-import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
@@ -145,9 +148,9 @@ import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.NativeNodeTemplateEntBuilder;
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.NativeNodeInvariantsEntBuilder;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
@@ -158,14 +161,17 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
-import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt.NodePortInvariantsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
@@ -209,10 +215,9 @@ public final class EntityBuilderUtil {
      */
     private static final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
 
-    private static final Map<String, NativeNodeTemplateEnt> m_nativeNodeTemplateCache = new ConcurrentHashMap<>();
+    private static final Map<String, NativeNodeInvariantsEnt> m_nativeNodeInvariantsCache = new ConcurrentHashMap<>();
 
-    private static final Map<String, NodePortTemplateEntBuilder> m_nodePortTemplateBuilderCache =
-        new ConcurrentHashMap<>();
+    private static final Map<String, NodePortDescriptionEntBuilder> m_nodePortBuilderCache = new ConcurrentHashMap<>();
 
     private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
 
@@ -245,21 +250,20 @@ public final class EntityBuilderUtil {
 
             // linked hash map to retain iteration order!
             Map<String, NodeEnt> nodes = new LinkedHashMap<>();
-            Map<String, NativeNodeTemplateEnt> templates = new HashMap<>();
+            Map<String, NativeNodeInvariantsEnt> invariants = new HashMap<>();
 
             for (NodeContainer nc : nodeContainers) {
-                buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, buildContext);
+                buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
             Map<String, ConnectionEnt> connections =
                 wfm.getConnectionContainers().stream().map(cc -> buildConnectionEnt(cc, buildContext)).collect(
                     Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
-            List<WorkflowAnnotationEnt> annotations =
-                wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)
-                    .collect(Collectors.toList());
+            List<WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
+                .map(EntityBuilderUtil::buildWorkflowAnnotationEnt).collect(Collectors.toList());
             WorkflowInfoEnt info = buildWorkflowInfoEnt(wfm, buildContext);
             return builder(WorkflowEntBuilder.class).setInfo(info)//
                 .setNodes(nodes)//
-                .setNodeTemplates(templates)//
+                .setNodeTemplates(invariants)//
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
                 .setAllowedActions(buildContext.includeInteractionInfo()
@@ -269,7 +273,7 @@ public final class EntityBuilderUtil {
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(
-                    CoreUtil.isComponentWFM(wfm) ? buildComponentNodeTemplateEnt(getParentComponent(wfm)) : null)//
+                    CoreUtil.isComponentWFM(wfm) ? buildComponentNodeDescriptionEnt(getParentComponent(wfm)) : null)//
                 .setAmbiguousPortTypes(buildAmbiguousPortTypesMap(buildContext))//
                 .build();
         }
@@ -300,6 +304,50 @@ public final class EntityBuilderUtil {
             }
         }
         return res;
+    }
+
+    /**
+     * Builds {@link NodeTemplateEnt}-instance that only has a minimal set of properties set. I.e. omitting some
+     * properties such as icon and port infos.
+     *
+     * @param factory the node factory to create the template entity from
+     * @return the new {@link NodeTemplateEnt}-instance
+     */
+    public static NodeTemplateEnt buildMinimalNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
+        NodeTemplateEntBuilder builder = builder(NodeTemplateEntBuilder.class)//
+            .setId(createTemplateId(factory))//
+            .setName(factory.getNodeName())//
+            .setComponent(false)//
+            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase()));
+        return builder.build();
+    }
+
+    /**
+     * Builds a {@link NodeTemplateEnt}-instance.
+     *
+     * @param factory the node factory to create the template entity from
+     * @return the new {@link NodeTemplateEnt}-instance
+     */
+    public static NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
+        Node node = new Node((NodeFactory<NodeModel>)factory);
+        return builder(NodeTemplateEntBuilder.class)//
+            .setId(createTemplateId(factory))//
+            .setName(factory.getNodeName())//
+            .setComponent(false)//
+            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase()))//
+            .setInPorts(
+                buildNodePortInvariantEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
+            .setOutPorts(
+                buildNodePortInvariantEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
+            .setIcon(createIconDataURL(factory)).build();
+    }
+
+    private static List<NodePortInvariantsEnt> buildNodePortInvariantEnts(final Stream<PortType> ptypes) {
+        return ptypes.map(ptype -> {
+            NodePortInvariantsEnt.TypeEnum typeEnt = getNodePortInvariantsEntType(ptype);
+            return builder(NodePortInvariantsEntBuilder.class).setType(typeEnt)
+                .setColor(getPortTypeColor(typeEnt, ptype)).build();
+        }).collect(Collectors.toList());
     }
 
     private static MetaPortsEnt buildMetaPortsEntForWorkflow(final WorkflowManager wfm, final boolean incoming,
@@ -355,8 +403,7 @@ public final class EntityBuilderUtil {
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) == null ? null : Boolean.TRUE)//
-            .setJobManager(buildJobManagerEnt(wfm.findJobManager()))
-            .build();
+            .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
     }
 
     private static String getTemplateLink(final NodeContainerTemplate nct) {
@@ -452,10 +499,10 @@ public final class EntityBuilderUtil {
 
     private static WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
         BoundsEnt bounds = builder(BoundsEntBuilder.class)
-                .setX(wa.getX())
-                .setY(wa.getY())
-                .setWidth(wa.getWidth())
-                .setHeight(wa.getHeight())
+                .setX(wa.getX())//
+                .setY(wa.getY())//
+                .setWidth(wa.getWidth())//
+                .setHeight(wa.getHeight())//
                 .build();
         TextAlignEnum textAlign;
         switch (wa.getAlignment()) {
@@ -474,27 +521,27 @@ public final class EntityBuilderUtil {
         List<StyleRangeEnt> styleRanges =
             Arrays.stream(wa.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt).collect(Collectors.toList());
         return builder(WorkflowAnnotationEntBuilder.class)
-                .setId(new AnnotationIDEnt(wa.getID()))
-                .setTextAlign(textAlign)
-                .setBackgroundColor(hexStringColor(wa.getBgColor()))
-                .setBorderColor(hexStringColor(wa.getBorderColor()))
-                .setBorderWidth(wa.getBorderSize())
-                .setBounds(bounds)
-                .setText(wa.getText())
-                .setStyleRanges(styleRanges)
-                .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? convertFromPtToPx(wa.getDefaultFontSize()) : null)
+                .setId(new AnnotationIDEnt(wa.getID()))//
+                .setTextAlign(textAlign)//
+                .setBackgroundColor(hexStringColor(wa.getBgColor()))//
+                .setBorderColor(hexStringColor(wa.getBorderColor()))//
+                .setBorderWidth(wa.getBorderSize())//
+                .setBounds(bounds)//
+                .setText(wa.getText())//
+                .setStyleRanges(styleRanges)//
+                .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? convertFromPtToPx(wa.getDefaultFontSize()) : null)//
                 .build();
     }
 
     private static Integer convertFromPtToPx(final int size) {
-        return (int) Math.round(size + size / 3.0);
+        return (int)Math.round(size + size / 3.0);
     }
 
     private static StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {
         StyleRangeEntBuilder builder = builder(StyleRangeEntBuilder.class)
-                .setFontSize(convertFromPtToPx(sr.getFontSize()))
-                .setColor(hexStringColor(sr.getFgColor()))
-                .setLength(sr.getLength())
+                .setFontSize(convertFromPtToPx(sr.getFontSize()))//
+                .setColor(hexStringColor(sr.getFgColor()))//
+                .setLength(sr.getLength())//
                 .setStart(sr.getStart());
         if ((sr.getFontStyle() & StyleRange.BOLD) != 0) {
             builder.setBold(Boolean.TRUE);
@@ -510,13 +557,13 @@ public final class EntityBuilderUtil {
     }
 
     private static void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
-        final Map<String, NativeNodeTemplateEnt> templates, final WorkflowBuildContext buildContext) {
+        final Map<String, NativeNodeInvariantsEnt> invariants, final WorkflowBuildContext buildContext) {
         NodeEnt nodeEnt = buildNodeEnt(id, nc, buildContext);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
-            templates.computeIfAbsent(templateId,
-                tid -> buildOrGetFromCacheNativeNodeTemplateEnt(templateId, (NativeNodeContainer)nc));
+            invariants.computeIfAbsent(templateId,
+                tid -> buildOrGetFromCacheNativeNodeInvariantsEnt(templateId, (NativeNodeContainer)nc));
         }
     }
 
@@ -622,15 +669,15 @@ public final class EntityBuilderUtil {
                 nodeState = null;
             }
             return builder(MetaNodePortEntBuilder.class)
-                .setColor(np.getColor())
-                .setConnectedVia(np.getConnectedVia())
-                .setInactive(np.isInactive())
-                .setIndex(np.getIndex())
-                .setInfo(np.getInfo())
-                .setName(np.getName())
-                .setOptional(np.isOptional())
-                .setType(np.getType())
-                .setNodeState(nodeState)
+                .setColor(np.getColor())//
+                .setConnectedVia(np.getConnectedVia())//
+                .setInactive(np.isInactive())//
+                .setIndex(np.getIndex())//
+                .setInfo(np.getInfo())//
+                .setName(np.getName())//
+                .setOptional(np.isOptional())//
+                .setType(np.getType())//
+                .setNodeState(nodeState)//
                 .build();
         }).collect(toList());
     }
@@ -641,8 +688,7 @@ public final class EntityBuilderUtil {
         String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
-            .setType(type == null ? null
-                : org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt.TypeEnum.valueOf(type))//
+            .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
             .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
             .setInPorts(buildNodePortEnts(nc, true, buildContext))//
@@ -720,17 +766,17 @@ public final class EntityBuilderUtil {
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
         final WorkflowBuildContext buildContext) {
-        NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
+        NodePortInvariantsEnt.TypeEnum resPortType = getNodePortInvariantsEntType(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
             .setInactive(isInactive)//
-            .setConnectedVia(connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext))
-                .collect(Collectors.toList()))//
+            .setConnectedVia(
+                connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext)).collect(Collectors.toList()))//
             .setName(name)//
             .setInfo(info)//
             .setType(resPortType)//
             .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext))//
-            .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
+            .setColor(getPortTypeColor(resPortType, ptype))//
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
             .build();
@@ -746,21 +792,25 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static Integer getOtherPortTypeId(final PortType ptype, final NodePortAndTemplateEnt.TypeEnum portTypeEnt,
+    private static Integer getOtherPortTypeId(final PortType ptype, final NodePortInvariantsEnt.TypeEnum portTypeEnt,
         final WorkflowBuildContext buildContext) {
-        return buildContext.includeInteractionInfo() && NodePortAndTemplateEnt.TypeEnum.OTHER == portTypeEnt
+        return buildContext.includeInteractionInfo() && NodePortInvariantsEnt.TypeEnum.OTHER == portTypeEnt
             ? ptype.getPortObjectClass().getName().hashCode() : null;
     }
 
-    private static NodePortAndTemplateEnt.TypeEnum getNodePortTemplateType(final PortType ptype) {
+    private static String getPortTypeColor(final NodePortInvariantsEnt.TypeEnum entType, final PortType ptype) {
+        return entType == NodePortInvariantsEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null;
+    }
+
+    private static NodePortInvariantsEnt.TypeEnum getNodePortInvariantsEntType(final PortType ptype) {
         if (BufferedDataTable.TYPE.equals(ptype)) {
-            return NodePortAndTemplateEnt.TypeEnum.TABLE;
+            return NodePortInvariantsEnt.TypeEnum.TABLE;
         } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
-            return NodePortAndTemplateEnt.TypeEnum.FLOWVARIABLE;
+            return NodePortInvariantsEnt.TypeEnum.FLOWVARIABLE;
         } else if (PortObject.TYPE.equals(ptype)) {
-            return NodePortAndTemplateEnt.TypeEnum.GENERIC;
+            return NodePortInvariantsEnt.TypeEnum.GENERIC;
         } else {
-            return NodePortAndTemplateEnt.TypeEnum.OTHER;
+            return NodePortInvariantsEnt.TypeEnum.OTHER;
         }
     }
 
@@ -789,12 +839,12 @@ public final class EntityBuilderUtil {
         List<StyleRangeEnt> styleRanges =
             Arrays.stream(na.getStyleRanges()).map(EntityBuilderUtil::buildStyleRangeEnt).collect(Collectors.toList());
         return builder(NodeAnnotationEntBuilder.class)
-                .setTextAlign(textAlign)
+                .setTextAlign(textAlign)//
                 .setBackgroundColor(na.getBgColor() == DEFAULT_NODE_ANNOTATION_BG_COLOR ? null : hexStringColor(na
-                    .getBgColor()))
-                .setText(na.getText())
-                .setStyleRanges(styleRanges)
-                .setDefaultFontSize(na.getDefaultFontSize() > 0 ? convertFromPtToPx(na.getDefaultFontSize()) : null)
+                    .getBgColor()))//
+                .setText(na.getText())//
+                .setStyleRanges(styleRanges)//
+                .setDefaultFontSize(na.getDefaultFontSize() > 0 ? convertFromPtToPx(na.getDefaultFontSize()) : null)//
                 .build();
     }
 
@@ -900,14 +950,13 @@ public final class EntityBuilderUtil {
         return (ncState.isExecutionInProgress() && !ncState.isWaitingToBeExecuted()) || ncState.isExecutingRemotely();
     }
 
-
-    private static NativeNodeTemplateEnt buildOrGetFromCacheNativeNodeTemplateEnt(final String templateId,
+    private static NativeNodeInvariantsEnt buildOrGetFromCacheNativeNodeInvariantsEnt(final String templateId,
         final NativeNodeContainer nc) {
-        return m_nativeNodeTemplateCache.computeIfAbsent(templateId, id -> buildNativeNodeTemplateEnt(nc));
+        return m_nativeNodeInvariantsCache.computeIfAbsent(templateId, id -> buildNativeNodeInvariantsEnt(nc));
     }
 
-    private static NativeNodeTemplateEnt buildNativeNodeTemplateEnt(final NativeNodeContainer nc) {
-        NativeNodeTemplateEntBuilder builder = builder(NativeNodeTemplateEntBuilder.class)
+    private static NativeNodeInvariantsEnt buildNativeNodeInvariantsEnt(final NativeNodeContainer nc) {
+        NativeNodeInvariantsEntBuilder builder = builder(NativeNodeInvariantsEntBuilder.class)
             .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()));
         if (nc.getType() != NodeType.Missing) {
             builder.setName(nc.getName()).setIcon(createIconDataURL(nc.getNode().getFactory()));
@@ -919,7 +968,14 @@ public final class EntityBuilderUtil {
         return builder.build();
     }
 
-    private static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
+    /**
+     * Creates an id the uniquely represents a node factory (node matter if it's a normal one or a dynamic node
+     * factory).
+     *
+     * @param nodeFactory the factory to create the id for
+     * @return the new template id
+     */
+    public static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
         String configHash = "";
         if (nodeFactory instanceof DynamicNodeFactory) {
             final NodeSettings settings = new NodeSettings("");
@@ -935,19 +991,19 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static ComponentNodeTemplateEnt buildComponentNodeTemplateEnt(final SubNodeContainer snc) {
+    private static ComponentNodeDescriptionEnt buildComponentNodeDescriptionEnt(final SubNodeContainer snc) {
         if (snc != null) {
             ComponentMetadata metadata = snc.getMetadata();
             String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
-            return builder(ComponentNodeTemplateEntBuilder.class)//
+            return builder(ComponentNodeDescriptionEntBuilder.class)//
                 .setName(snc.getName())//
                 .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
-                .setType(type == null ? null : ComponentNodeAndTemplateEnt.TypeEnum.valueOf(type))//
+                .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
                 .setDescription(metadata.getDescription().orElse(null))//
                 .setOptions(buildNodeDialogOptionsEnts(snc))//
                 .setViews(buildNodeViewDescriptionEnts(snc))//
-                .setInPorts(buildComponentInNodePortTemplateEnts(metadata, snc))//
-                .setOutPorts(buildComponentOutNodePortTemplateEnts(metadata, snc))//
+                .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
+                .setOutPorts(buildComponentOutNodePortDescriptionEnts(metadata, snc))//
                 .build();
         }
         return null;
@@ -985,51 +1041,51 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static List<NodePortTemplateEnt> buildComponentInNodePortTemplateEnts(final ComponentMetadata metadata,
-        final SubNodeContainer snc) {
-        if(snc.getNrInPorts() == 1) {
+    private static List<NodePortDescriptionEnt>
+        buildComponentInNodePortDescriptionEnts(final ComponentMetadata metadata, final SubNodeContainer snc) {
+        if (snc.getNrInPorts() == 1) {
             return null; // NOSONAR
         }
-        List<NodePortTemplateEnt> res = new ArrayList<>();
+        List<NodePortDescriptionEnt> res = new ArrayList<>();
         String[] names = metadata.getInPortNames().orElse(null);
         String[] descs = metadata.getInPortDescriptions().orElse(null);
         for (int i = 1; i < snc.getNrInPorts(); i++) {
-            res.add(buildOrGetFromCacheNodePortTemplateEnt(snc.getInPort(i).getPortType(),
+            res.add(buildOrGetFromCacheNodePortDescriptionEnt(snc.getInPort(i).getPortType(),
                 names == null ? null : names[i - 1], descs == null ? null : descs[i - 1]));
         }
         return res;
     }
 
-    private static List<NodePortTemplateEnt> buildComponentOutNodePortTemplateEnts(final ComponentMetadata metadata,
-        final SubNodeContainer snc) {
-        if(snc.getNrOutPorts() == 1) {
+    private static List<NodePortDescriptionEnt>
+        buildComponentOutNodePortDescriptionEnts(final ComponentMetadata metadata, final SubNodeContainer snc) {
+        if (snc.getNrOutPorts() == 1) {
             return null; // NOSONAR
         }
-        List<NodePortTemplateEnt> res = new ArrayList<>();
+        List<NodePortDescriptionEnt> res = new ArrayList<>();
         String[] names = metadata.getOutPortNames().orElse(null);
         String[] descs = metadata.getOutPortDescriptions().orElse(null);
         for (int i = 1; i < snc.getNrOutPorts(); i++) {
-            res.add(buildOrGetFromCacheNodePortTemplateEnt(snc.getOutPort(i).getPortType(),
+            res.add(buildOrGetFromCacheNodePortDescriptionEnt(snc.getOutPort(i).getPortType(),
                 names == null ? null : names[i - 1], descs == null ? null : descs[i - 1]));
         }
         return res;
     }
 
-    private static NodePortTemplateEnt buildOrGetFromCacheNodePortTemplateEnt(final PortType ptype, final String name,
-        final String description) {
-        NodePortTemplateEntBuilder builder = m_nodePortTemplateBuilderCache.computeIfAbsent(
-            ptype.getPortObjectClass().getCanonicalName(), k -> buildNodePortTemplateEntBuilder(ptype));
+    private static NodePortDescriptionEnt buildOrGetFromCacheNodePortDescriptionEnt(final PortType ptype,
+        final String name, final String description) {
+        NodePortDescriptionEntBuilder builder = m_nodePortBuilderCache.computeIfAbsent(
+            ptype.getPortObjectClass().getCanonicalName(), k -> buildNodePortDescriptionEntBuilder(ptype));
         builder.setName(isBlank(name) ? null : name);
         builder.setDescription(isBlank(description) ? null : description);
         return builder.build();
     }
 
-    private static NodePortTemplateEntBuilder buildNodePortTemplateEntBuilder(final PortType ptype) {
-        NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
-        return builder(NodePortTemplateEntBuilder.class)//
+    private static NodePortDescriptionEntBuilder buildNodePortDescriptionEntBuilder(final PortType ptype) {
+        NodePortInvariantsEnt.TypeEnum resPortType = getNodePortInvariantsEntType(ptype);
+        return builder(NodePortDescriptionEntBuilder.class)//
             .setType(resPortType)//
             .setTypeName(ptype.getName())//
-            .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
+            .setColor(getPortTypeColor(resPortType, ptype))//
             .setOptional(ptype.isOptional());
     }
 
@@ -1111,7 +1167,7 @@ public final class EntityBuilderUtil {
             .build();
     }
 
-    private static String createIconDataURL(final NodeFactory<NodeModel> nodeFactory) {
+    private static String createIconDataURL(final NodeFactory<?> nodeFactory) {
         try {
             return createIconDataURL(nodeFactory.getIcon());
         } catch (IOException ex) {

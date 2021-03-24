@@ -49,7 +49,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 
 /**
- * Operations on individual nodes.
+ * Operations on individual nodes in a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

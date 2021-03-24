@@ -42,43 +42,115 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.service.GatewayService;
+import java.util.Objects;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * A selection of nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
 
-    private ListServices() {
-        //utility class
-    }
-
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+  protected String m_tag;
+  protected java.util.List<NodeTemplateEnt> m_nodes;
+  
+  protected DefaultNodeSelectionEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "NodeSelection";
+  }
+  
+  private DefaultNodeSelectionEnt(DefaultNodeSelectionEntBuilder builder) {
+    
+    m_tag = immutable(builder.m_tag);
+    m_nodes = immutable(builder.m_nodes);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNodeSelectionEnt ent = (DefaultNodeSelectionEnt)o;
+        return Objects.equals(m_tag, ent.m_tag) && Objects.equals(m_nodes, ent.m_nodes);
     }
+
+
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_tag)
+               .append(m_nodes)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public String getTag() {
+        return m_tag;
+  }
+    
+  @Override
+  public java.util.List<NodeTemplateEnt> getNodes() {
+        return m_nodes;
+  }
+    
+  
+    public static class DefaultNodeSelectionEntBuilder implements NodeSelectionEntBuilder {
+    
+        public DefaultNodeSelectionEntBuilder(){
+            
+        }
+    
+        private String m_tag;
+        private java.util.List<NodeTemplateEnt> m_nodes;
+
+        @Override
+        public DefaultNodeSelectionEntBuilder setTag(String tag) {
+             m_tag = tag;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
+             m_nodes = nodes;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultNodeSelectionEnt build() {
+            return new DefaultNodeSelectionEnt(this);
+        }
+    
+    }
+
 }

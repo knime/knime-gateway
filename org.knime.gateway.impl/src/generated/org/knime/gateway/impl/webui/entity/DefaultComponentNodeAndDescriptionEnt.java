@@ -51,38 +51,35 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 
 /**
- * Static properties of a native node which remain the same even if the node is not part of a workflow.
+ * Properties common to ComponentNode and ComponentNodeDescription
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNativeNodeTemplateEnt implements NativeNodeTemplateEnt {
+public class DefaultComponentNodeAndDescriptionEnt implements ComponentNodeAndDescriptionEnt {
 
   protected String m_name;
   protected TypeEnum m_type;
   protected String m_icon;
   
-  protected DefaultNativeNodeTemplateEnt() {
+  protected DefaultComponentNodeAndDescriptionEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "NativeNodeTemplate";
+    return "ComponentNodeAndDescription";
   }
   
-  private DefaultNativeNodeTemplateEnt(DefaultNativeNodeTemplateEntBuilder builder) {
+  private DefaultComponentNodeAndDescriptionEnt(DefaultComponentNodeAndDescriptionEntBuilder builder) {
     
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
-    }
     m_type = immutable(builder.m_type);
     m_icon = immutable(builder.m_icon);
   }
@@ -101,7 +98,7 @@ public class DefaultNativeNodeTemplateEnt implements NativeNodeTemplateEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNativeNodeTemplateEnt ent = (DefaultNativeNodeTemplateEnt)o;
+        DefaultComponentNodeAndDescriptionEnt ent = (DefaultComponentNodeAndDescriptionEnt)o;
         return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon);
     }
 
@@ -137,9 +134,9 @@ public class DefaultNativeNodeTemplateEnt implements NativeNodeTemplateEnt {
   }
     
   
-    public static class DefaultNativeNodeTemplateEntBuilder implements NativeNodeTemplateEntBuilder {
+    public static class DefaultComponentNodeAndDescriptionEntBuilder implements ComponentNodeAndDescriptionEntBuilder {
     
-        public DefaultNativeNodeTemplateEntBuilder(){
+        public DefaultComponentNodeAndDescriptionEntBuilder(){
             
         }
     
@@ -148,7 +145,7 @@ public class DefaultNativeNodeTemplateEnt implements NativeNodeTemplateEnt {
         private String m_icon;
 
         @Override
-        public DefaultNativeNodeTemplateEntBuilder setName(String name) {
+        public DefaultComponentNodeAndDescriptionEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("name must not be null.");
              }
@@ -157,24 +154,21 @@ public class DefaultNativeNodeTemplateEnt implements NativeNodeTemplateEnt {
         }
 
         @Override
-        public DefaultNativeNodeTemplateEntBuilder setType(TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
-             }
+        public DefaultComponentNodeAndDescriptionEntBuilder setType(TypeEnum type) {
              m_type = type;
              return this;
         }
 
         @Override
-        public DefaultNativeNodeTemplateEntBuilder setIcon(String icon) {
+        public DefaultComponentNodeAndDescriptionEntBuilder setIcon(String icon) {
              m_icon = icon;
              return this;
         }
 
         
         @Override
-        public DefaultNativeNodeTemplateEnt build() {
-            return new DefaultNativeNodeTemplateEnt(this);
+        public DefaultComponentNodeAndDescriptionEnt build() {
+            return new DefaultComponentNodeAndDescriptionEnt(this);
         }
     
     }

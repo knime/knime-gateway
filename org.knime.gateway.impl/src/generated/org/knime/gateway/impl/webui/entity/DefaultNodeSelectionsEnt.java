@@ -50,38 +50,34 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
 
 /**
- * Properties common to ComponentNode and ComponentNodeTemplate
+ * A list of node selections.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultComponentNodeAndTemplateEnt implements ComponentNodeAndTemplateEnt {
+public class DefaultNodeSelectionsEnt implements NodeSelectionsEnt {
 
-  protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_icon;
+  protected java.util.List<NodeSelectionEnt> m_selections;
+  protected Integer m_totalNumSelections;
   
-  protected DefaultComponentNodeAndTemplateEnt() {
+  protected DefaultNodeSelectionsEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "ComponentNodeAndTemplate";
+    return "NodeSelections";
   }
   
-  private DefaultComponentNodeAndTemplateEnt(DefaultComponentNodeAndTemplateEntBuilder builder) {
+  private DefaultNodeSelectionsEnt(DefaultNodeSelectionsEntBuilder builder) {
     
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_type = immutable(builder.m_type);
-    m_icon = immutable(builder.m_icon);
+    m_selections = immutable(builder.m_selections);
+    m_totalNumSelections = immutable(builder.m_totalNumSelections);
   }
   
    /**
@@ -98,8 +94,8 @@ public class DefaultComponentNodeAndTemplateEnt implements ComponentNodeAndTempl
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultComponentNodeAndTemplateEnt ent = (DefaultComponentNodeAndTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon);
+        DefaultNodeSelectionsEnt ent = (DefaultNodeSelectionsEnt)o;
+        return Objects.equals(m_selections, ent.m_selections) && Objects.equals(m_totalNumSelections, ent.m_totalNumSelections);
     }
 
 
@@ -110,65 +106,49 @@ public class DefaultComponentNodeAndTemplateEnt implements ComponentNodeAndTempl
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_type)
-               .append(m_icon)
+               .append(m_selections)
+               .append(m_totalNumSelections)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getName() {
-        return m_name;
+  public java.util.List<NodeSelectionEnt> getSelections() {
+        return m_selections;
   }
     
   @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
-    
-  @Override
-  public String getIcon() {
-        return m_icon;
+  public Integer getTotalNumSelections() {
+        return m_totalNumSelections;
   }
     
   
-    public static class DefaultComponentNodeAndTemplateEntBuilder implements ComponentNodeAndTemplateEntBuilder {
+    public static class DefaultNodeSelectionsEntBuilder implements NodeSelectionsEntBuilder {
     
-        public DefaultComponentNodeAndTemplateEntBuilder(){
+        public DefaultNodeSelectionsEntBuilder(){
             
         }
     
-        private String m_name;
-        private TypeEnum m_type;
-        private String m_icon;
+        private java.util.List<NodeSelectionEnt> m_selections;
+        private Integer m_totalNumSelections;
 
         @Override
-        public DefaultComponentNodeAndTemplateEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
-             }
-             m_name = name;
+        public DefaultNodeSelectionsEntBuilder setSelections(java.util.List<NodeSelectionEnt> selections) {
+             m_selections = selections;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeAndTemplateEntBuilder setType(TypeEnum type) {
-             m_type = type;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeAndTemplateEntBuilder setIcon(String icon) {
-             m_icon = icon;
+        public DefaultNodeSelectionsEntBuilder setTotalNumSelections(Integer totalNumSelections) {
+             m_totalNumSelections = totalNumSelections;
              return this;
         }
 
         
         @Override
-        public DefaultComponentNodeAndTemplateEnt build() {
-            return new DefaultComponentNodeAndTemplateEnt(this);
+        public DefaultNodeSelectionsEnt build() {
+            return new DefaultNodeSelectionsEnt(this);
         }
     
     }

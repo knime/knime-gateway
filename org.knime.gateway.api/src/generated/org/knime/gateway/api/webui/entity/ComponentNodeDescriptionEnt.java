@@ -44,14 +44,10 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
+import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -59,111 +55,57 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A node wrapping (referencing) a workflow (also referred to it as component or subnode) that almost behaves as a ordinary node.
+ * Description of certain aspects of a component. This is static information for a component which remain the same even if component is not part of a workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeAndDescriptionEnt {
+public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNodeAndDescriptionEnt {
 
 
   /**
-   * Get state
-   * @return state 
+   * The component description as provided by the component author.
+   * @return description 
    **/
-  public NodeStateEnt getState();
+  public String getDescription();
 
   /**
-   * A URL, if the component is linked.
-   * @return link 
+   * Description for the dialog options, one for each group of options (e.g. a tab).
+   * @return options 
    **/
-  public String getLink();
+  public java.util.List<NodeDialogOptionsEnt> getOptions();
+
+  /**
+   * Descriptions for the node views.
+   * @return views 
+   **/
+  public java.util.List<NodeViewDescriptionEnt> getViews();
+
+  /**
+   * Get inPorts
+   * @return inPorts 
+   **/
+  public java.util.List<NodePortDescriptionEnt> getInPorts();
+
+  /**
+   * Get outPorts
+   * @return outPorts 
+   **/
+  public java.util.List<NodePortDescriptionEnt> getOutPorts();
 
 
     /**
      * The builder for the entity.
      */
-    public interface ComponentNodeEntBuilder extends GatewayEntityBuilder<ComponentNodeEnt> {
+    public interface ComponentNodeDescriptionEntBuilder extends GatewayEntityBuilder<ComponentNodeDescriptionEnt> {
 
-        /**
-         * The id of the node.
-         * 
-         * @param id the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
-        
-        /**
-         * The list of inputs.
-         * 
-         * @param inPorts the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
-        
-        /**
-         * The list of outputs.
-         * 
-         * @param outPorts the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
-        
-        /**
-   		 * Set annotation
-         * 
-         * @param annotation the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
-        
-        /**
-   		 * Set position
-         * 
-         * @param position the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setPosition(XYEnt position);
-        
-        /**
-         * Whether it&#39;s a native node, component or a metanode.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set allowedActions
-         * 
-         * @param allowedActions the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
-        
-        /**
-   		 * Set executionInfo
-         * 
-         * @param executionInfo the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
-        
-        /**
-         * All successors of this node represented as a bitset. Every bit stands for a node and is &#39;1&#39; if the respective node is a (indirect!) successor. The bitset includes this node, too.
-         * 
-         * @param successors the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setSuccessors(java.util.BitSet successors);
-        
         /**
          * The component name.
          * 
          * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setName(String name);
+        ComponentNodeDescriptionEntBuilder setName(String name);
         
         /**
          * Can be missing if nothing was selected by the user
@@ -171,7 +113,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @param type the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setType(TypeEnum type);
+        ComponentNodeDescriptionEntBuilder setType(TypeEnum type);
         
         /**
          * The icon encoded in a data-url. Not available if no icon is set.
@@ -179,23 +121,47 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @param icon the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setIcon(String icon);
+        ComponentNodeDescriptionEntBuilder setIcon(String icon);
         
         /**
-   		 * Set state
+         * The component description as provided by the component author.
          * 
-         * @param state the property value,  
+         * @param description the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setState(NodeStateEnt state);
+        ComponentNodeDescriptionEntBuilder setDescription(String description);
         
         /**
-         * A URL, if the component is linked.
+         * Description for the dialog options, one for each group of options (e.g. a tab).
          * 
-         * @param link the property value,  
+         * @param options the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setLink(String link);
+        ComponentNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionsEnt> options);
+        
+        /**
+         * Descriptions for the node views.
+         * 
+         * @param views the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views);
+        
+        /**
+   		 * Set inPorts
+         * 
+         * @param inPorts the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setInPorts(java.util.List<NodePortDescriptionEnt> inPorts);
+        
+        /**
+   		 * Set outPorts
+         * 
+         * @param outPorts the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts);
         
         
         /**
@@ -205,7 +171,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ComponentNodeEnt build();
+        ComponentNodeDescriptionEnt build();
     
     }
 

@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,72 +41,77 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Mar 17, 2021 (hornm): created
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.service;
 
+import java.util.List;
+import java.util.Map;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt.DefaultComponentNodeAndTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.service.NodeRepositoryService;
+import org.knime.gateway.impl.webui.NodeRepository;
+import org.knime.gateway.impl.webui.NodeSearch;
+import org.knime.gateway.impl.webui.NodeSelection;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * The default implementation of {@link NodeRepositoryService}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+public final class DefaultNodeRepositoryService implements NodeRepositoryService {
+    private static final DefaultNodeRepositoryService INSTANCE = new DefaultNodeRepositoryService();
 
-@JsonDeserialize(builder=DefaultComponentNodeAndTemplateEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentNodeAndTemplateEntMixIn extends ComponentNodeAndTemplateEnt {
+    private final NodeRepository m_nodeRepo;
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+    private final NodeSearch m_nodeSearch;
 
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
+    private final NodeSelection m_nodeSelection;
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     * Returns the singleton instance for this service.
      *
-     * @author Martin Horn, University of Konstanz
+     * @return the singleton instance
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentNodeAndTemplateEntMixInBuilder extends ComponentNodeAndTemplateEntBuilder {
-    
-        @Override
-        public ComponentNodeAndTemplateEntMixIn build();
-    
-        @Override
-        @JsonProperty("name")
-        public ComponentNodeAndTemplateEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("type")
-        public ComponentNodeAndTemplateEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public ComponentNodeAndTemplateEntMixInBuilder setIcon(final String icon);
-        
+    public static DefaultNodeRepositoryService getInstance() {
+        return INSTANCE;
     }
 
+    private DefaultNodeRepositoryService() {
+        m_nodeRepo = new NodeRepository();
+        m_nodeSearch = new NodeSearch(m_nodeRepo);
+        m_nodeSelection = new NodeSelection(m_nodeRepo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeSelectionsEnt selectNodes(final Integer numNodesPerTag, final Integer tagsOffset,
+        final Integer tagsLimit, final Boolean fullTemplateInfo) {
+        return m_nodeSelection.selectNodes(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
+        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo) {
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
+        return m_nodeRepo.getNodeTemplates(templateIds);
+    }
 
 }
-

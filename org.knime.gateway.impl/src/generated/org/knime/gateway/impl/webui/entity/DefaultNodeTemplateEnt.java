@@ -50,50 +50,52 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 /**
- * Static (i.e. state-free) information for a component which remain the same even if component is not part of a workflow.
+ * Contains all the &#39;static&#39; properties of a node or component required to draw the node/component figure.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultComponentNodeTemplateEnt implements ComponentNodeTemplateEnt {
+public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
 
   protected String m_name;
   protected TypeEnum m_type;
   protected String m_icon;
-  protected String m_description;
-  protected java.util.List<NodeDialogOptionsEnt> m_options;
-  protected java.util.List<NodeViewDescriptionEnt> m_views;
-  protected java.util.List<NodePortTemplateEnt> m_inPorts;
-  protected java.util.List<NodePortTemplateEnt> m_outPorts;
+  protected String m_id;
+  protected Boolean m_component;
+  protected java.util.List<NodePortInvariantsEnt> m_inPorts;
+  protected java.util.List<NodePortInvariantsEnt> m_outPorts;
   
-  protected DefaultComponentNodeTemplateEnt() {
+  protected DefaultNodeTemplateEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "ComponentNodeTemplate";
+    return "NodeTemplate";
   }
   
-  private DefaultComponentNodeTemplateEnt(DefaultComponentNodeTemplateEntBuilder builder) {
+  private DefaultNodeTemplateEnt(DefaultNodeTemplateEntBuilder builder) {
     super();
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = immutable(builder.m_type);
     m_icon = immutable(builder.m_icon);
-    m_description = immutable(builder.m_description);
-    m_options = immutable(builder.m_options);
-    m_views = immutable(builder.m_views);
+    if(builder.m_id == null) {
+        throw new IllegalArgumentException("id must not be null.");
+    }
+    m_id = immutable(builder.m_id);
+    m_component = immutable(builder.m_component);
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
   }
@@ -112,8 +114,8 @@ public class DefaultComponentNodeTemplateEnt implements ComponentNodeTemplateEnt
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultComponentNodeTemplateEnt ent = (DefaultComponentNodeTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_options, ent.m_options) && Objects.equals(m_views, ent.m_views) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
+        DefaultNodeTemplateEnt ent = (DefaultNodeTemplateEnt)o;
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_component, ent.m_component) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
     }
 
 
@@ -127,9 +129,8 @@ public class DefaultComponentNodeTemplateEnt implements ComponentNodeTemplateEnt
                .append(m_name)
                .append(m_type)
                .append(m_icon)
-               .append(m_description)
-               .append(m_options)
-               .append(m_views)
+               .append(m_id)
+               .append(m_component)
                .append(m_inPorts)
                .append(m_outPorts)
                .toHashCode();
@@ -153,48 +154,42 @@ public class DefaultComponentNodeTemplateEnt implements ComponentNodeTemplateEnt
   }
     
   @Override
-  public String getDescription() {
-        return m_description;
+  public String getId() {
+        return m_id;
   }
     
   @Override
-  public java.util.List<NodeDialogOptionsEnt> getOptions() {
-        return m_options;
+  public Boolean isComponent() {
+        return m_component;
   }
     
   @Override
-  public java.util.List<NodeViewDescriptionEnt> getViews() {
-        return m_views;
-  }
-    
-  @Override
-  public java.util.List<NodePortTemplateEnt> getInPorts() {
+  public java.util.List<NodePortInvariantsEnt> getInPorts() {
         return m_inPorts;
   }
     
   @Override
-  public java.util.List<NodePortTemplateEnt> getOutPorts() {
+  public java.util.List<NodePortInvariantsEnt> getOutPorts() {
         return m_outPorts;
   }
     
   
-    public static class DefaultComponentNodeTemplateEntBuilder implements ComponentNodeTemplateEntBuilder {
+    public static class DefaultNodeTemplateEntBuilder implements NodeTemplateEntBuilder {
     
-        public DefaultComponentNodeTemplateEntBuilder(){
+        public DefaultNodeTemplateEntBuilder(){
             super();
         }
     
         private String m_name;
         private TypeEnum m_type;
         private String m_icon;
-        private String m_description;
-        private java.util.List<NodeDialogOptionsEnt> m_options;
-        private java.util.List<NodeViewDescriptionEnt> m_views;
-        private java.util.List<NodePortTemplateEnt> m_inPorts;
-        private java.util.List<NodePortTemplateEnt> m_outPorts;
+        private String m_id;
+        private Boolean m_component;
+        private java.util.List<NodePortInvariantsEnt> m_inPorts;
+        private java.util.List<NodePortInvariantsEnt> m_outPorts;
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setName(String name) {
+        public DefaultNodeTemplateEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("name must not be null.");
              }
@@ -203,51 +198,51 @@ public class DefaultComponentNodeTemplateEnt implements ComponentNodeTemplateEnt
         }
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setType(TypeEnum type) {
+        public DefaultNodeTemplateEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setIcon(String icon) {
+        public DefaultNodeTemplateEntBuilder setIcon(String icon) {
              m_icon = icon;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setDescription(String description) {
-             m_description = description;
+        public DefaultNodeTemplateEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("id must not be null.");
+             }
+             m_id = id;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setOptions(java.util.List<NodeDialogOptionsEnt> options) {
-             m_options = options;
+        public DefaultNodeTemplateEntBuilder setComponent(Boolean component) {
+             m_component = component;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views) {
-             m_views = views;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeTemplateEntBuilder setInPorts(java.util.List<NodePortTemplateEnt> inPorts) {
+        public DefaultNodeTemplateEntBuilder setInPorts(java.util.List<NodePortInvariantsEnt> inPorts) {
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
-        public DefaultComponentNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortTemplateEnt> outPorts) {
+        public DefaultNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortInvariantsEnt> outPorts) {
              m_outPorts = outPorts;
              return this;
         }
 
         
         @Override
-        public DefaultComponentNodeTemplateEnt build() {
-            return new DefaultComponentNodeTemplateEnt(this);
+        public DefaultNodeTemplateEnt build() {
+            return new DefaultNodeTemplateEnt(this);
         }
     
     }

@@ -45,10 +45,10 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -85,7 +85,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("nodeTemplates")
-    public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates();
+    public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates();
     
     @Override
     @JsonProperty("ambiguousPortTypes")
@@ -117,7 +117,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     
     @Override
     @JsonProperty("componentMetadata")
-    public ComponentNodeTemplateEnt getComponentMetadata();
+    public ComponentNodeDescriptionEnt getComponentMetadata();
     
     @Override
     @JsonProperty("projectMetadata")
@@ -146,7 +146,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("nodeTemplates")
-        public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates);
+        public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates);
         
         @Override
         @JsonProperty("ambiguousPortTypes")
@@ -178,7 +178,7 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         
         @Override
         @JsonProperty("componentMetadata")
-        public WorkflowEntMixInBuilder setComponentMetadata(final ComponentNodeTemplateEnt componentMetadata);
+        public WorkflowEntMixInBuilder setComponentMetadata(final ComponentNodeDescriptionEnt componentMetadata);
         
         @Override
         @JsonProperty("projectMetadata")

@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,45 +41,78 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Mar 17, 2021 (hornm): created
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui;
 
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import org.knime.gateway.api.service.GatewayService;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * A utility class to calculate the tanimoto bi-gram distance.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Marcel Hanser, KNIME AG, Zurich, Switzerland
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+public final class TanimotoBiGramDistance {
 
-    private ListServices() {
-        //utility class
+    private TanimotoBiGramDistance() {
+        // utility class
     }
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Copied from the Tanimoto BiGram distance from the distmatrix package.
+     *
+     * @param textA
+     * @param textB
+     * @return the distance value
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public static double computeTanimotoBiGramDistance(final String textA, final String textB) {
+
+        Set<String> gramsA = split(textA, 2);
+        Set<String> gramsB = split(textB, 2);
+
+        int nominator = cardinalityOfIntersection(gramsA, gramsB);
+        int inAButNotInB = cardinalityOfRelativeComplement(gramsA, gramsB);
+        int inBButNotInA = cardinalityOfRelativeComplement(gramsB, gramsA);
+
+        int denominator = nominator + inAButNotInB + inBButNotInA;
+
+        if (denominator > 0) {
+            return 1.0 - nominator / (double)denominator;
+        } else {
+            return 1.0;
+        }
+    }
+
+    private static int cardinalityOfIntersection(final Set<String> a, final Set<String> b) {
+        int toReturn = 0;
+        for (String gram : a) {
+            if (b.contains(gram)) {
+                toReturn++;
+            }
+        }
+        return toReturn;
+    }
+
+    private static int cardinalityOfRelativeComplement(final Set<String> a, final Set<String> b) {
+        int toReturn = 0;
+        for (String gram : a) {
+            if (!b.contains(gram)) {
+                toReturn++;
+            }
+        }
+        return toReturn;
+    }
+
+    private static Set<String> split(final String a, final int count) {
+        Set<String> toReturn = new HashSet<>(a.length() > 1 ? (a.length() - 1) : 12);
+
+        for (int i = 0; i < a.length() - count + 1; i++) {
+            toReturn.add(a.substring(i, i + count));
+        }
+        return toReturn;
     }
 }

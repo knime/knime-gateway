@@ -42,110 +42,70 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.DefaultNativeNodeInvariantsEntBuilder;
 
 /**
- * Properties common to ComponentNode and ComponentNodeTemplate
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeAndTemplateEnt extends GatewayEntity {
 
-  /**
-   * Can be missing if nothing was selected by the user
-   */
-  public enum TypeEnum {
-    SOURCE("Source"),
-    
-    SINK("Sink"),
-    
-    LEARNER("Learner"),
-    
-    PREDICTOR("Predictor"),
-    
-    MANIPULATOR("Manipulator"),
-    
-    VISUALIZER("Visualizer");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
+@JsonDeserialize(builder=DefaultNativeNodeInvariantsEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
+    @JsonIgnore
+    public String getTypeID();
 
-  }
-
-
-  /**
-   * The component name.
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * Can be missing if nothing was selected by the user
-   * @return type 
-   **/
-  public TypeEnum getType();
-
-  /**
-   * The icon encoded in a data-url. Not available if no icon is set.
-   * @return icon 
-   **/
-  public String getIcon();
-
+    @Override
+    @JsonProperty("name")
+    public String getName();
+    
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
+    
+    @Override
+    @JsonProperty("icon")
+    public String getIcon();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface ComponentNodeAndTemplateEntBuilder extends GatewayEntityBuilder<ComponentNodeAndTemplateEnt> {
 
-        /**
-         * The component name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeAndTemplateEntBuilder setName(String name);
-        
-        /**
-         * Can be missing if nothing was selected by the user
-         * 
-         * @param type the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeAndTemplateEntBuilder setType(TypeEnum type);
-        
-        /**
-         * The icon encoded in a data-url. Not available if no icon is set.
-         * 
-         * @param icon the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeAndTemplateEntBuilder setIcon(String icon);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        ComponentNodeAndTemplateEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NativeNodeInvariantsEntMixInBuilder extends NativeNodeInvariantsEntBuilder {
     
+        @Override
+        public NativeNodeInvariantsEntMixIn build();
+    
+        @Override
+        @JsonProperty("name")
+        public NativeNodeInvariantsEntMixInBuilder setName(final String name);
+        
+        @Override
+        @JsonProperty("type")
+        public NativeNodeInvariantsEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("icon")
+        public NativeNodeInvariantsEntMixInBuilder setIcon(final String icon);
+        
     }
 
+
 }
+

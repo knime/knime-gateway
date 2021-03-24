@@ -45,10 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -83,7 +83,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * A map from ids to node templates.
    * @return nodeTemplates , never <code>null</code>
    **/
-  public java.util.Map<String, NativeNodeTemplateEnt> getNodeTemplates();
+  public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates();
 
   /**
    * A map of port types that are part of the workflow and can be connected to multiple other ports (map from port type id to a list of other port type ids, not including source port id). The map does not contain any port types that can only be connected to exactly one other port type (neither does it include the build-in basic port types, i.e. table, flow variable and generic port object). This info is required to determine port compatibility (when connecting two nodes) and is only available if interaction info is supposed to be included.
@@ -131,7 +131,7 @@ public interface WorkflowEnt extends GatewayEntity {
    * Get componentMetadata
    * @return componentMetadata 
    **/
-  public ComponentNodeTemplateEnt getComponentMetadata();
+  public ComponentNodeDescriptionEnt getComponentMetadata();
 
   /**
    * Get projectMetadata
@@ -167,7 +167,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param nodeTemplates the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeTemplateEnt> nodeTemplates);
+        WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates);
         
         /**
          * A map of port types that are part of the workflow and can be connected to multiple other ports (map from port type id to a list of other port type ids, not including source port id). The map does not contain any port types that can only be connected to exactly one other port type (neither does it include the build-in basic port types, i.e. table, flow variable and generic port object). This info is required to determine port compatibility (when connecting two nodes) and is only available if interaction info is supposed to be included.
@@ -231,7 +231,7 @@ public interface WorkflowEnt extends GatewayEntity {
          * @param componentMetadata the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setComponentMetadata(ComponentNodeTemplateEnt componentMetadata);
+        WorkflowEntBuilder setComponentMetadata(ComponentNodeDescriptionEnt componentMetadata);
         
         /**
    		 * Set projectMetadata

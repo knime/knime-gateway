@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -53,32 +51,28 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Extension of a node port with extra properties as required to characterise a metanode port.
+ * Properties that remain the same no matter to what node a port belongs.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
+public interface NodePortInvariantsEnt extends GatewayEntity {
 
   /**
-   * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
+   * The port type.
    */
-  public enum NodeStateEnum {
-    IDLE("IDLE"),
+  public enum TypeEnum {
+    TABLE("table"),
     
-    CONFIGURED("CONFIGURED"),
+    FLOWVARIABLE("flowVariable"),
     
-    EXECUTED("EXECUTED"),
+    GENERIC("generic"),
     
-    EXECUTING("EXECUTING"),
-    
-    QUEUED("QUEUED"),
-    
-    HALTED("HALTED");
+    OTHER("other");
 
     private String value;
 
-    NodeStateEnum(String value) {
+    TypeEnum(String value) {
       this.value = value;
     }
 
@@ -91,16 +85,28 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
 
 
   /**
-   * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
-   * @return nodeState 
+   * The port type.
+   * @return type , never <code>null</code>
    **/
-  public NodeStateEnum getNodeState();
+  public TypeEnum getType();
+
+  /**
+   * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
+   * @return otherTypeId 
+   **/
+  public Integer getOtherTypeId();
+
+  /**
+   * The color of the port in case of type &#39;other&#39;.
+   * @return color 
+   **/
+  public String getColor();
 
 
     /**
      * The builder for the entity.
      */
-    public interface MetaNodePortEntBuilder extends GatewayEntityBuilder<MetaNodePortEnt> {
+    public interface NodePortInvariantsEntBuilder extends GatewayEntityBuilder<NodePortInvariantsEnt> {
 
         /**
          * The port type.
@@ -108,7 +114,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        MetaNodePortEntBuilder setType(TypeEnum type);
+        NodePortInvariantsEntBuilder setType(TypeEnum type);
         
         /**
          * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
@@ -116,7 +122,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @param otherTypeId the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodePortEntBuilder setOtherTypeId(Integer otherTypeId);
+        NodePortInvariantsEntBuilder setOtherTypeId(Integer otherTypeId);
         
         /**
          * The color of the port in case of type &#39;other&#39;.
@@ -124,79 +130,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @param color the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodePortEntBuilder setColor(String color);
-        
-        /**
-         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
-         * 
-         * @param name the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setName(String name);
-        
-        /**
-         * Whether it&#39;s a optional port or not.
-         * 
-         * @param optional the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setOptional(Boolean optional);
-        
-        /**
-         * For native nodes, this provides additional information if the port carries data (i.e. if the respective node is executed and the port is active). For components, the port description is taken from the component&#39;s description, if provided by the user.
-         * 
-         * @param info the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setInfo(String info);
-        
-        /**
-         * The index starting at 0.
-         * 
-         * @param index the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setIndex(Integer index);
-        
-        /**
-   		 * Set connectedVia
-         * 
-         * @param connectedVia the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        /**
-   		 * Set inactive
-         * 
-         * @param inactive the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setInactive(Boolean inactive);
-        
-        /**
-   		 * Set view
-         * 
-         * @param view the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setView(PortViewEnt view);
-        
-        /**
-         * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absend if there is no &#39;interaction info&#39; supposed to be included.
-         * 
-         * @param portObjectVersion the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
-        
-        /**
-         * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
-         * 
-         * @param nodeState the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setNodeState(NodeStateEnum nodeState);
+        NodePortInvariantsEntBuilder setColor(String color);
         
         
         /**
@@ -206,7 +140,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        MetaNodePortEnt build();
+        NodePortInvariantsEnt build();
     
     }
 

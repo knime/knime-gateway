@@ -44,18 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
+import org.knime.gateway.json.webui.entity.NodePortInvariantsEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeTemplateEnt.DefaultComponentNodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt.DefaultNodePortAndDescriptionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -63,45 +60,33 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeTemplateEnt.Defau
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultComponentNodeTemplateEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodePortAndDescriptionEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentNodeTemplateEntMixIn extends ComponentNodeTemplateEnt {
+public interface NodePortAndDescriptionEntMixIn extends NodePortAndDescriptionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("type")
     public TypeEnum getType();
     
     @Override
-    @JsonProperty("icon")
-    public String getIcon();
+    @JsonProperty("otherTypeId")
+    public Integer getOtherTypeId();
     
     @Override
-    @JsonProperty("description")
-    public String getDescription();
+    @JsonProperty("color")
+    public String getColor();
     
     @Override
-    @JsonProperty("options")
-    public java.util.List<NodeDialogOptionsEnt> getOptions();
+    @JsonProperty("name")
+    public String getName();
     
     @Override
-    @JsonProperty("views")
-    public java.util.List<NodeViewDescriptionEnt> getViews();
-    
-    @Override
-    @JsonProperty("inPorts")
-    public java.util.List<NodePortTemplateEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<NodePortTemplateEnt> getOutPorts();
+    @JsonProperty("optional")
+    public Boolean isOptional();
     
 
     /**
@@ -111,42 +96,30 @@ public interface ComponentNodeTemplateEntMixIn extends ComponentNodeTemplateEnt 
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentNodeTemplateEntMixInBuilder extends ComponentNodeTemplateEntBuilder {
+    public static interface NodePortAndDescriptionEntMixInBuilder extends NodePortAndDescriptionEntBuilder {
     
         @Override
-        public ComponentNodeTemplateEntMixIn build();
+        public NodePortAndDescriptionEntMixIn build();
     
-        @Override
-        @JsonProperty("name")
-        public ComponentNodeTemplateEntMixInBuilder setName(final String name);
-        
         @Override
         @JsonProperty("type")
-        public ComponentNodeTemplateEntMixInBuilder setType(final TypeEnum type);
+        public NodePortAndDescriptionEntMixInBuilder setType(final TypeEnum type);
         
         @Override
-        @JsonProperty("icon")
-        public ComponentNodeTemplateEntMixInBuilder setIcon(final String icon);
+        @JsonProperty("otherTypeId")
+        public NodePortAndDescriptionEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
         
         @Override
-        @JsonProperty("description")
-        public ComponentNodeTemplateEntMixInBuilder setDescription(final String description);
+        @JsonProperty("color")
+        public NodePortAndDescriptionEntMixInBuilder setColor(final String color);
         
         @Override
-        @JsonProperty("options")
-        public ComponentNodeTemplateEntMixInBuilder setOptions(final java.util.List<NodeDialogOptionsEnt> options);
+        @JsonProperty("name")
+        public NodePortAndDescriptionEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("views")
-        public ComponentNodeTemplateEntMixInBuilder setViews(final java.util.List<NodeViewDescriptionEnt> views);
-        
-        @Override
-        @JsonProperty("inPorts")
-        public ComponentNodeTemplateEntMixInBuilder setInPorts(final java.util.List<NodePortTemplateEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public ComponentNodeTemplateEntMixInBuilder setOutPorts(final java.util.List<NodePortTemplateEnt> outPorts);
+        @JsonProperty("optional")
+        public NodePortAndDescriptionEntMixInBuilder setOptional(final Boolean optional);
         
     }
 

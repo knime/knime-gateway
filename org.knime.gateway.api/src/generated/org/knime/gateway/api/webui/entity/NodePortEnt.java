@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodePortAndTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -58,7 +58,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodePortEnt extends GatewayEntity, NodePortAndTemplateEnt {
+public interface NodePortEnt extends GatewayEntity, NodePortAndDescriptionEnt {
 
 
   /**
@@ -104,14 +104,6 @@ public interface NodePortEnt extends GatewayEntity, NodePortAndTemplateEnt {
     public interface NodePortEntBuilder extends GatewayEntityBuilder<NodePortEnt> {
 
         /**
-         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
-         * 
-         * @param name the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setName(String name);
-        
-        /**
          * The port type.
          * 
          * @param type the property value, NOT <code>null</code>! 
@@ -134,6 +126,14 @@ public interface NodePortEnt extends GatewayEntity, NodePortAndTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setColor(String color);
+        
+        /**
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setName(String name);
         
         /**
          * Whether it&#39;s a optional port or not.

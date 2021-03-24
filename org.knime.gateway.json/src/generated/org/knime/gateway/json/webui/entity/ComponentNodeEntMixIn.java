@@ -50,7 +50,7 @@ import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
+import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 

@@ -50,42 +50,34 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.PortViewEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortInvariantsEnt;
 
-import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
+import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
 
 /**
- * Extension of a node port with extra properties as required to characterise a metanode port.
+ * Properties that have NodePort and NodePortDescription in common.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
+public class DefaultNodePortAndDescriptionEnt implements NodePortAndDescriptionEnt {
 
   protected TypeEnum m_type;
   protected Integer m_otherTypeId;
   protected String m_color;
   protected String m_name;
   protected Boolean m_optional;
-  protected String m_info;
-  protected Integer m_index;
-  protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
-  protected Boolean m_inactive;
-  protected PortViewEnt m_view;
-  protected Integer m_portObjectVersion;
-  protected NodeStateEnum m_nodeState;
   
-  protected DefaultMetaNodePortEnt() {
+  protected DefaultNodePortAndDescriptionEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "MetaNodePort";
+    return "NodePortAndDescription";
   }
   
-  private DefaultMetaNodePortEnt(DefaultMetaNodePortEntBuilder builder) {
+  private DefaultNodePortAndDescriptionEnt(DefaultNodePortAndDescriptionEntBuilder builder) {
     super();
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
@@ -95,16 +87,6 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
     m_color = immutable(builder.m_color);
     m_name = immutable(builder.m_name);
     m_optional = immutable(builder.m_optional);
-    m_info = immutable(builder.m_info);
-    if(builder.m_index == null) {
-        throw new IllegalArgumentException("index must not be null.");
-    }
-    m_index = immutable(builder.m_index);
-    m_connectedVia = immutable(builder.m_connectedVia);
-    m_inactive = immutable(builder.m_inactive);
-    m_view = immutable(builder.m_view);
-    m_portObjectVersion = immutable(builder.m_portObjectVersion);
-    m_nodeState = immutable(builder.m_nodeState);
   }
   
    /**
@@ -121,8 +103,8 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultMetaNodePortEnt ent = (DefaultMetaNodePortEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_nodeState, ent.m_nodeState);
+        DefaultNodePortAndDescriptionEnt ent = (DefaultNodePortAndDescriptionEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_optional, ent.m_optional);
     }
 
 
@@ -138,13 +120,6 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
                .append(m_color)
                .append(m_name)
                .append(m_optional)
-               .append(m_info)
-               .append(m_index)
-               .append(m_connectedVia)
-               .append(m_inactive)
-               .append(m_view)
-               .append(m_portObjectVersion)
-               .append(m_nodeState)
                .toHashCode();
    }
   
@@ -175,45 +150,10 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         return m_optional;
   }
     
-  @Override
-  public String getInfo() {
-        return m_info;
-  }
-    
-  @Override
-  public Integer getIndex() {
-        return m_index;
-  }
-    
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
-        return m_connectedVia;
-  }
-    
-  @Override
-  public Boolean isInactive() {
-        return m_inactive;
-  }
-    
-  @Override
-  public PortViewEnt getView() {
-        return m_view;
-  }
-    
-  @Override
-  public Integer getPortObjectVersion() {
-        return m_portObjectVersion;
-  }
-    
-  @Override
-  public NodeStateEnum getNodeState() {
-        return m_nodeState;
-  }
-    
   
-    public static class DefaultMetaNodePortEntBuilder implements MetaNodePortEntBuilder {
+    public static class DefaultNodePortAndDescriptionEntBuilder implements NodePortAndDescriptionEntBuilder {
     
-        public DefaultMetaNodePortEntBuilder(){
+        public DefaultNodePortAndDescriptionEntBuilder(){
             super();
         }
     
@@ -222,16 +162,9 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         private String m_color;
         private String m_name;
         private Boolean m_optional;
-        private String m_info;
-        private Integer m_index;
-        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
-        private Boolean m_inactive;
-        private PortViewEnt m_view;
-        private Integer m_portObjectVersion;
-        private NodeStateEnum m_nodeState;
 
         @Override
-        public DefaultMetaNodePortEntBuilder setType(TypeEnum type) {
+        public DefaultNodePortAndDescriptionEntBuilder setType(TypeEnum type) {
              if(type == null) {
                  throw new IllegalArgumentException("type must not be null.");
              }
@@ -240,78 +173,33 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setOtherTypeId(Integer otherTypeId) {
+        public DefaultNodePortAndDescriptionEntBuilder setOtherTypeId(Integer otherTypeId) {
              m_otherTypeId = otherTypeId;
              return this;
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setColor(String color) {
+        public DefaultNodePortAndDescriptionEntBuilder setColor(String color) {
              m_color = color;
              return this;
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setName(String name) {
+        public DefaultNodePortAndDescriptionEntBuilder setName(String name) {
              m_name = name;
              return this;
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setOptional(Boolean optional) {
+        public DefaultNodePortAndDescriptionEntBuilder setOptional(Boolean optional) {
              m_optional = optional;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setInfo(String info) {
-             m_info = info;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setIndex(Integer index) {
-             if(index == null) {
-                 throw new IllegalArgumentException("index must not be null.");
-             }
-             m_index = index;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
-             m_connectedVia = connectedVia;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setInactive(Boolean inactive) {
-             m_inactive = inactive;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setView(PortViewEnt view) {
-             m_view = view;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion) {
-             m_portObjectVersion = portObjectVersion;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodePortEntBuilder setNodeState(NodeStateEnum nodeState) {
-             m_nodeState = nodeState;
              return this;
         }
 
         
         @Override
-        public DefaultMetaNodePortEnt build() {
-            return new DefaultMetaNodePortEnt(this);
+        public DefaultNodePortAndDescriptionEnt build() {
+            return new DefaultNodePortAndDescriptionEnt(this);
         }
     
     }

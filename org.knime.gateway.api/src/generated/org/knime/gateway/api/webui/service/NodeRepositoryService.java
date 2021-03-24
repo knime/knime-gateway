@@ -42,138 +42,56 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.api.webui.service;
 
+import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 /**
- * Static properties of a native node which remain the same even if the node is not part of a workflow.
  * 
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeTemplateEnt extends GatewayEntity {
-
-  /**
-   * The type of the node.
-   */
-  public enum TypeEnum {
-    SOURCE("Source"),
-    
-    SINK("Sink"),
-    
-    LEARNER("Learner"),
-    
-    PREDICTOR("Predictor"),
-    
-    MANIPULATOR("Manipulator"),
-    
-    VISUALIZER("Visualizer"),
-    
-    WIDGET("Widget"),
-    
-    LOOPSTART("LoopStart"),
-    
-    LOOPEND("LoopEnd"),
-    
-    SCOPESTART("ScopeStart"),
-    
-    SCOPEEND("ScopeEnd"),
-    
-    QUICKFORM("QuickForm"),
-    
-    CONFIGURATION("Configuration"),
-    
-    OTHER("Other"),
-    
-    MISSING("Missing"),
-    
-    UNKNOWN("Unknown"),
-    
-    SUBNODE("Subnode"),
-    
-    VIRTUALIN("VirtualIn"),
-    
-    VIRTUALOUT("VirtualOut"),
-    
-    CONTAINER("Container");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * The node&#39;s name.
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * The type of the node.
-   * @return type , never <code>null</code>
-   **/
-  public TypeEnum getType();
-
-  /**
-   * The icon encoded in a data-url.
-   * @return icon 
-   **/
-  public String getIcon();
-
+public interface NodeRepositoryService extends GatewayService {
 
     /**
-     * The builder for the entity.
+     * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).
+     *
+     * @param requestBody A list of template ids to request the node templates for.
+     *
+     * @return the result
      */
-    public interface NativeNodeTemplateEntBuilder extends GatewayEntityBuilder<NativeNodeTemplateEnt> {
-
-        /**
-         * The node&#39;s name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeTemplateEntBuilder setName(String name);
+    java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> requestBody) ;
         
-        /**
-         * The type of the node.
-         * 
-         * @param type the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeTemplateEntBuilder setType(TypeEnum type);
+    /**
+     * Searches for nodes (and components) in the node repository.
+     *
+     * @param q The term to search for.
+     * @param tags A list of tags. Only nodes/components having any/all tags will be included in the search result.
+     * @param allTagsMatch If true, only the nodes/components that have all of the given tags are included in the search result. Otherwise nodes/components that have at least one of the given tags are included.
+     * @param nodesOffset Number of nodes/components to be skipped in the search result (for pagination).
+     * @param nodesLimit The maximum number of nodes/components in the search result (mainly for pagination).
+     * @param fullTemplateInfo If true, the search result will contain the full information for nodes/components (such as icon and port infos). Otherwise only minimal information (such as name) will be included and the others ommitted.
+     *
+     * @return the result
+     */
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo) ;
         
-        /**
-         * The icon encoded in a data-url.
-         * 
-         * @param icon the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeTemplateEntBuilder setIcon(String icon);
+    /**
+     * Returns a pre-defined selection tags and nodes per tag (e.g. the most popular tags and nodes).
+     *
+     * @param numNodesPerTag The number of nodes per tag to be returned.
+     * @param tagsOffset The number of tags to be skipped (for pagination).
+     * @param tagsLimit The maximum number of tags to be returned (mainly for pagination).
+     * @param fullTemplateInfo If true, the selection result will contain the full information for nodes/components (such as icon and port infos). Otherwise only minimal information (such as name) will be included and the others ommitted.
+     *
+     * @return the result
+     */
+    NodeSelectionsEnt selectNodes(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo) ;
         
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        NativeNodeTemplateEnt build();
-    
-    }
-
 }

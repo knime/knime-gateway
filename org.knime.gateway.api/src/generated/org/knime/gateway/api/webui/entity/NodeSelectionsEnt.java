@@ -44,10 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -55,113 +52,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Static (i.e. state-free) information for a component which remain the same even if component is not part of a workflow.
+ * A list of node selections.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeTemplateEnt extends GatewayEntity, ComponentNodeAndTemplateEnt {
+public interface NodeSelectionsEnt extends GatewayEntity {
 
 
   /**
-   * The component description as provided by the component author.
-   * @return description 
+   * The list of node selections in a fixed order.
+   * @return selections 
    **/
-  public String getDescription();
+  public java.util.List<NodeSelectionEnt> getSelections();
 
   /**
-   * Description for the dialog options, one for each group of options (e.g. a tab).
-   * @return options 
+   * The total number of selections available. The selections listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
+   * @return totalNumSelections 
    **/
-  public java.util.List<NodeDialogOptionsEnt> getOptions();
-
-  /**
-   * Descriptions for the node views.
-   * @return views 
-   **/
-  public java.util.List<NodeViewDescriptionEnt> getViews();
-
-  /**
-   * Get inPorts
-   * @return inPorts 
-   **/
-  public java.util.List<NodePortTemplateEnt> getInPorts();
-
-  /**
-   * Get outPorts
-   * @return outPorts 
-   **/
-  public java.util.List<NodePortTemplateEnt> getOutPorts();
+  public Integer getTotalNumSelections();
 
 
     /**
      * The builder for the entity.
      */
-    public interface ComponentNodeTemplateEntBuilder extends GatewayEntityBuilder<ComponentNodeTemplateEnt> {
+    public interface NodeSelectionsEntBuilder extends GatewayEntityBuilder<NodeSelectionsEnt> {
 
         /**
-         * The component name.
+         * The list of node selections in a fixed order.
          * 
-         * @param name the property value, NOT <code>null</code>! 
+         * @param selections the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeTemplateEntBuilder setName(String name);
+        NodeSelectionsEntBuilder setSelections(java.util.List<NodeSelectionEnt> selections);
         
         /**
-         * Can be missing if nothing was selected by the user
+         * The total number of selections available. The selections listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
          * 
-         * @param type the property value,  
+         * @param totalNumSelections the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeTemplateEntBuilder setType(TypeEnum type);
-        
-        /**
-         * The icon encoded in a data-url. Not available if no icon is set.
-         * 
-         * @param icon the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeTemplateEntBuilder setIcon(String icon);
-        
-        /**
-         * The component description as provided by the component author.
-         * 
-         * @param description the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeTemplateEntBuilder setDescription(String description);
-        
-        /**
-         * Description for the dialog options, one for each group of options (e.g. a tab).
-         * 
-         * @param options the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeTemplateEntBuilder setOptions(java.util.List<NodeDialogOptionsEnt> options);
-        
-        /**
-         * Descriptions for the node views.
-         * 
-         * @param views the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeTemplateEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views);
-        
-        /**
-   		 * Set inPorts
-         * 
-         * @param inPorts the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeTemplateEntBuilder setInPorts(java.util.List<NodePortTemplateEnt> inPorts);
-        
-        /**
-   		 * Set outPorts
-         * 
-         * @param outPorts the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortTemplateEnt> outPorts);
+        NodeSelectionsEntBuilder setTotalNumSelections(Integer totalNumSelections);
         
         
         /**
@@ -171,7 +102,7 @@ public interface ComponentNodeTemplateEnt extends GatewayEntity, ComponentNodeAn
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ComponentNodeTemplateEnt build();
+        NodeSelectionsEnt build();
     
     }
 
