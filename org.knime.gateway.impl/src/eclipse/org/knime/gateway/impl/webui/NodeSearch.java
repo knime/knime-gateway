@@ -205,4 +205,13 @@ public class NodeSearch {
         }
     }
 
+    /**
+     * For testing purposes only!
+     *
+     * @return the size of the 'found nodes' cache
+     */
+    int cacheSize() {
+        return m_foundNodesCache.size();
+    }
+
 }
