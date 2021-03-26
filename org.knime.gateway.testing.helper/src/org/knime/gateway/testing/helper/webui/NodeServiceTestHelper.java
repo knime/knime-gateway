@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;

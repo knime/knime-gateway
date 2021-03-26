@@ -44,28 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2020 (hornm): created
+ *   Mar 26, 2021 (hornm): created
  */
-package org.knime.gateway.testing.helper.webui;
+package org.knime.gateway.testing.helper;
 
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+import java.util.function.BiConsumer;
+
+import org.knime.gateway.api.webui.entity.EventEnt;
+import org.knime.gateway.api.webui.service.EventService;
 
 /**
- * Provides implementations of all gateway services for the Web-UI.
+ * Provides access to the events issued by the {@link EventService}-implementation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface ServiceProvider {
+public interface EventSource {
 
     /**
-     * @return workflow service implementation
+     * Sets the callback to receive events.
+     *
+     * @param c the callback
      */
-    WorkflowService getWorkflowService();
-
-    /**
-     * @return node service implementation
-     */
-    NodeService getNodeService();
+    void setEventConsumer(BiConsumer<String, EventEnt> c);
 
 }

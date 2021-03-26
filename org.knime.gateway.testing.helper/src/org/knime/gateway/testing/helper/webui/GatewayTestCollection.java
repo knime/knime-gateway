@@ -42,35 +42,37 @@ public final class GatewayTestCollection {
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
         Map<String, GatewayTestRunner> res = new HashMap<>();
         res.put("testGetWorkflow",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetWorkflow());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetWorkflow());
         res.put("testNodeExecutionStates",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testNodeExecutionStates());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testNodeExecutionStates());
         res.put("testGetAllowedActionsInfo",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetAllowedActionsInfo());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetAllowedActionsInfo());
         res.put("testGetComponentProjectWorkflow",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetComponentProjectWorkflow());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetComponentProjectWorkflow());
         res.put("testWorkflowAndComponentMetadata",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testWorkflowAndComponentMetadata());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testWorkflowAndComponentMetadata());
         res.put("testExecuteTranslateCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteTranslateCommand());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteTranslateCommand());
         res.put("testExecuteDeleteCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteDeleteCommand());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteDeleteCommand());
 
         res.put("testChangeNodeState",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
+            (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
         res.put("testChangeNodeStateOfComponentProject",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateOfComponentProject());
+            (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateOfComponentProject());
         res.put("testChangeLoopExecutionState",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionState());
-        res.put("testChangeLoopExecutionStateInSubWorkflow",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionStateInSubWorkflow());
-        res.put("testDoPortRpc",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testDoPortRpc());
+            (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionState());
+        res.put("testChangeLoopExecutionStateInSubWorkflow", (rc, sp, wl, we,
+            es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionStateInSubWorkflow());
+        res.put("testDoPortRpc", (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testDoPortRpc());
 
         res.put("testJobManagerProperty",
-            (rc, sp, wl, we) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testJobManagerProperty());
+            (rc, sp, wl, we, es) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testJobManagerProperty());
         res.put("testStreamedWorkflow",
-            (rc, sp, wl, we) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testStreamedWorkflow());
+            (rc, sp, wl, we, es) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testStreamedWorkflow());
+
+        res.put("testExecuteAndUndoDeleteCommandPatches", (rc, sp, wl, we,
+            es) -> new EventServiceTestHelper(rc, sp, wl, we, es).testExecuteAndUndoDeleteCommandPatches());
 
         return res;
     }

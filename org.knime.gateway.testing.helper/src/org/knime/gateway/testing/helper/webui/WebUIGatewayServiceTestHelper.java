@@ -50,19 +50,24 @@ package org.knime.gateway.testing.helper.webui;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.json.util.JsonUtil;
+import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ResultChecker.PropertyExceptions;
+import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
@@ -76,6 +81,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     private final ServiceProvider m_serviceProvider;
+
+    private EventSource m_eventSource;
 
     /**
      * Helps to create an {@link ResultChecker}-instance.
@@ -118,10 +125,10 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Canonical sorting of the connectedVia-list.
          */
-        pe.addException(NodePortEnt.class, "connectedVia", (v, gen, e) ->
-            gen.writeString("[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
-                .map(Object::toString).collect(Collectors.joining(", ")) + " ]")
-        );
+        pe.addException(NodePortEnt.class, "connectedVia",
+            (v, gen, e) -> gen.writeString(
+                "[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
+                    .map(Object::toString).collect(Collectors.joining(", ")) + " ]"));
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonUtil.addWebUIMixIns(objectMapper);
@@ -157,9 +164,29 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @param workflowExecutor
      */
     protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
-        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor) {
         super(testClass, entityResultChecker, workflowLoader, workflowExecutor);
         m_serviceProvider = serviceProvider;
+    }
+
+    /**
+     * Creates a new abstract service test.
+     *
+     * @param testClass
+     * @param entityResultChecker
+     * @param serviceProvider
+     * @param workflowLoader
+     * @param workflowExecutor
+     * @param eventSource allows one to receive the event service events, can be <code>null</code> if not required by
+     *            the test
+     */
+    protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor, final EventSource eventSource) {
+        super(testClass, entityResultChecker, workflowLoader, workflowExecutor);
+        m_serviceProvider = serviceProvider;
+        m_eventSource = eventSource;
     }
 
     /**
@@ -180,4 +207,21 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         return m_serviceProvider.getNodeService();
     }
 
+    /**
+     * Shortcut to get the event service instance.
+     *
+     * @return an event service instance
+     */
+    protected EventService es() {
+        return m_serviceProvider.getEventService();
+    }
+
+    /**
+     * Sets the event consumer to receive events issued by the event service.
+     *
+     * @param c the callback
+     */
+    protected final void setEventConsumer(final BiConsumer<String, EventEnt> c) {
+        m_eventSource.setEventConsumer(c);
+    }
 }

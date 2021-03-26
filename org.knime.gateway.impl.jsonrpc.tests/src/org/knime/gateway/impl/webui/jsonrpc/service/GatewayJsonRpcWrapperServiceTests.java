@@ -64,18 +64,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
+import org.knime.gateway.impl.webui.service.DefaultEventService;
 import org.knime.gateway.json.util.ObjectMapperUtil;
+import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.webui.GatewayTestCollection;
 import org.knime.gateway.testing.helper.webui.GatewayTestRunner;
-import org.knime.gateway.testing.helper.webui.ServiceProvider;
 import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -108,6 +110,8 @@ public class GatewayJsonRpcWrapperServiceTests {
     private final WorkflowExecutor m_workflowExecutor;
 
     private final ServiceProvider m_serviceProvider;
+
+    private final EventSource m_eventSource;
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
@@ -153,9 +157,15 @@ public class GatewayJsonRpcWrapperServiceTests {
             public NodeService getNodeService() {
                 return createClientProxy(NodeService.class, handler, jsonRpcClient);
             }
+
+            @Override
+            public EventService getEventService() {
+                return createClientProxy(EventService.class, handler, jsonRpcClient);
+            }
         };
 
         m_gatewayTestName = gatewayTestName;
+        m_eventSource = c -> DefaultEventService.getInstance().addEventConsumer(c);
     }
 
     /**
@@ -166,7 +176,7 @@ public class GatewayJsonRpcWrapperServiceTests {
     @Test
     public void test() throws Exception {
         GATEWAY_TESTS.get(m_gatewayTestName).runGatewayTest(resultChecker, m_serviceProvider, m_workflowLoader,
-            m_workflowExecutor);
+            m_workflowExecutor, m_eventSource);
     }
 
     /**

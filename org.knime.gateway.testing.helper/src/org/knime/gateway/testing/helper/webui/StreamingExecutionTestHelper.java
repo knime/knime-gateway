@@ -60,6 +60,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;

@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -310,7 +311,8 @@ public final class DefaultEventService implements EventService {
         public boolean isNewCollectionObjectValid(final Object newObj) {
             return newObj instanceof NodeEnt //NOSONAR
                 || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt
-                || newObj instanceof NodePortEnt || newObj instanceof StyleRangeEnt;
+                || newObj instanceof NodePortEnt || newObj instanceof StyleRangeEnt
+                || newObj instanceof NativeNodeTemplateEnt;
         }
 
         @Override
@@ -326,6 +328,10 @@ public final class DefaultEventService implements EventService {
         @Override
         public void added(final String path, final Object value) {
             m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.ADD).setPath(path).setValue(value).build());
+            if (value == null) {
+                NodeLogger.getLogger(DefaultEventService.class).error(
+                    "An 'ADD' patch operation has been created without a value. Most likely an implementation error.");
+            }
         }
 
         @Override

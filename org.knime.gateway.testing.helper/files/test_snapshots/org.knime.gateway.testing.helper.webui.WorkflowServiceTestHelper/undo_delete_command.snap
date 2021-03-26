@@ -138,19 +138,19 @@
       "sourceNode" : "root:10",
       "sourcePort" : 1
     },
-    "root:22_2" : {
-      "canDelete" : true,
-      "destNode" : "root:22",
-      "destPort" : 2,
-      "sourceNode" : "root:1",
-      "sourcePort" : 1
-    },
     "root:23_1" : {
       "canDelete" : true,
       "destNode" : "root:23",
       "destPort" : 1,
       "sourceNode" : "root:1",
       "sourcePort" : 2
+    },
+    "root:22_2" : {
+      "canDelete" : true,
+      "destNode" : "root:22",
+      "destPort" : 2,
+      "sourceNode" : "root:1",
+      "sourcePort" : 1
     },
     "root:20_1" : {
       "canDelete" : true,

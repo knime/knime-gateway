@@ -87,6 +87,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
@@ -411,10 +412,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
         assertThat(ex.getMessage(), is("Some connections can't be deleted. Delete operation aborted."));
-
     }
 
-    private static DeleteCommandEnt createDeleteCommandEnt(final List<NodeIDEnt> nodeIds,
+    static DeleteCommandEnt createDeleteCommandEnt(final List<NodeIDEnt> nodeIds,
         final List<ConnectionIDEnt> connectionIds, final List<AnnotationIDEnt> annotationIds) {
         return builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE)//
             .setNodeIds(nodeIds)//
