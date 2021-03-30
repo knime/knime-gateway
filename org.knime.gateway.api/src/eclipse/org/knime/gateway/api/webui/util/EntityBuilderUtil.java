@@ -1145,9 +1145,13 @@ public final class EntityBuilderUtil {
             if (!cc.isDeletable()) {
                 builder.setCanDelete(Boolean.FALSE);
             } else {
-                NodeContainer destNode = wfm.getNodeContainer(cc.getDest());
-                builder.setCanDelete(isNodeResetOrCanBeReset(destNode.getNodeContainerState(), destNode.getID(),
-                    buildContext.dependentNodeProperties()));
+                if (cc.getDest().equals(wfm.getID())) {
+                    builder.setCanDelete(wfm.canRemoveConnection(cc));
+                } else {
+                    NodeContainer nc = wfm.getNodeContainer(cc.getDest());
+                    builder.setCanDelete(isNodeResetOrCanBeReset(nc.getNodeContainerState(), nc.getID(),
+                        buildContext.dependentNodeProperties()));
+                }
             }
         }
         return builder.build();

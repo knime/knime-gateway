@@ -53,6 +53,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
@@ -326,15 +328,37 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(wa.getBounds().getX(), is(0)); // NOSONAR wa guaranteed to be non-null
         assertThat(wa.getBounds().getY(), is(0));
 
-        // exceptions
+        // move a node within a component
         TranslateCommandEnt command3 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
+            .setNodeIds(asList(new NodeIDEnt(12, 0, 10))).setAnnotationIds(emptyList())
+            .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
+        NodeEnt nodeBefore =
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10");
+        ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), command3);
+        NodeEnt nodeAfter =
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10");
+        assertThat(nodeAfter.getPosition().getX(), is(nodeBefore.getPosition().getX() + 10));
+        assertThat(nodeAfter.getPosition().getY(), is(nodeBefore.getPosition().getY() + 10));
+
+        // move a node within a metanode
+        TranslateCommandEnt command4 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
+            .setNodeIds(asList(new NodeIDEnt(6, 3))).setAnnotationIds(emptyList())
+            .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
+        nodeBefore = ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3");
+        ws().executeWorkflowCommand(wfId, new NodeIDEnt(6), command4);
+        nodeAfter = ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3");
+        assertThat(nodeAfter.getPosition().getX(), is(nodeBefore.getPosition().getX() + 10));
+        assertThat(nodeAfter.getPosition().getY(), is(nodeBefore.getPosition().getY() + 10));
+
+        // exceptions
+        TranslateCommandEnt command5 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setNodeIds(singletonList(new NodeIDEnt(9999)))
             .setAnnotationIds(singletonList(new AnnotationIDEnt("root_12345")))
             .setTranslation(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
         assertThrows(NodeNotFoundException.class,
-            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command3));
+            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command5));
         try {
-            ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command3);
+            ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command5);
         } catch (Exception e) { // NOSONAR
             assertThat("unexpected exception class", e, Matchers.instanceOf(OperationNotAllowedException.class));
             assertThat("unexpected exception message", e.getMessage(),
@@ -363,6 +387,25 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // undo deletion
         ws().undoWorkflowCommand(wfId, getRootID());
         cr(ws().getWorkflow(wfId, getRootID(), true).getWorkflow(), "undo_delete_command");
+
+        // delete a node within a component
+        assertThat("node expected to be present",
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
+            is(notNullValue()));
+        ws().executeWorkflowCommand(wfId, new NodeIDEnt(12),
+            createDeleteCommandEnt(asList(new NodeIDEnt(12, 0, 10)), emptyList(), emptyList()));
+        assertThat("node expected to be deleted",
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
+            is(nullValue()));
+
+        // delete a node within a metanode
+        assertThat("node expected to be present",
+            ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"),
+            is(notNullValue()));
+        ws().executeWorkflowCommand(wfId, new NodeIDEnt(6),
+            createDeleteCommandEnt(asList(new NodeIDEnt(6, 3)), emptyList(), emptyList()));
+        assertThat("node expected to be deleted",
+            ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"), is(nullValue()));
 
         // deletion fails because a node doesn't exist
         DeleteCommandEnt command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
