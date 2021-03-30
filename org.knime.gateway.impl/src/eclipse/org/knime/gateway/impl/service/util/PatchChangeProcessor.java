@@ -45,9 +45,11 @@
  */
 package org.knime.gateway.impl.service.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.javers.core.changelog.ChangeProcessor;
 import org.javers.core.commit.CommitMetadata;
 import org.javers.core.diff.Change;
@@ -62,7 +64,6 @@ import org.javers.core.diff.changetype.container.ListChange;
 import org.javers.core.diff.changetype.container.SetChange;
 import org.javers.core.diff.changetype.container.ValueAdded;
 import org.javers.core.diff.changetype.container.ValueRemoved;
-import org.javers.core.diff.changetype.map.EntryAdded;
 import org.javers.core.diff.changetype.map.EntryRemoved;
 import org.javers.core.diff.changetype.map.MapChange;
 import org.javers.core.metamodel.object.GlobalId;
@@ -78,7 +79,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  */
 class PatchChangeProcessor<P> implements ChangeProcessor<P> {
 
-    private final Map<String, GatewayEntity> m_newObjects = new HashMap<>();
+    private final NewObjectsMap m_newObjects = new NewObjectsMap();
 
     private final PatchCreator<P> m_patchCreator;
 
@@ -153,18 +154,8 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
     public void onNewObject(final NewObject newObject) {
         Object newObj = newObject.getAffectedObject()
             .orElseThrow(() -> new IllegalStateException("Object expected to be present."));
-        // These are all objects that are newly added to a map or list.
-        // The respective patch operation will be added in the onMapChange- or onListChange-methods.
-        // It needs to be done this way because all sub-objects of an object added to a list or map
-        // are arriving here, too, and we don't want to create an extra patch-operation for each.
-        if (m_patchCreator.isNewCollectionObjectValid(newObj)) {
-            String path = getPath(newObject.getAffectedGlobalId(), null);
-            m_newObjects.put(path, (GatewayEntity)newObj);
-        } else if(m_patchCreator.isNewObjectValid(newObj)) {
-            String path = getPath(newObject.getAffectedGlobalId(), null);
-            m_patchCreator.added(path, newObj);
-        } else {
-            //
+        if (newObj instanceof GatewayEntity) {
+            m_newObjects.put(getPath(newObject.getAffectedGlobalId(), null), (GatewayEntity)newObj);
         }
     }
 
@@ -197,11 +188,10 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         for (ValueAdded va : listChange.getValueAddedChanges()) {
             Object val = va.getValue();
             String elementPath = path + "/" + va.getIndex(); // NOSONAR
-            //NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
-            if (val instanceof ValueObjectId) {
-                val = m_newObjects.get(elementPath);
+            // NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
+            if (!(val instanceof ValueObjectId) && !m_newObjects.contains(path)) {
+                m_patchCreator.added(elementPath, val);
             }
-            m_patchCreator.added(elementPath, val);
         }
     }
 
@@ -212,17 +202,50 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
             String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
             m_patchCreator.removed(path);
         }
-        for (EntryAdded ea : mapChange.getEntryAddedChanges()) {
-            ValueObjectId val = (ValueObjectId)ea.getValue();
-            String path = "/" + val.getFragment().replace("m_", ""); //NOSONAR
-            //NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
-            m_patchCreator.added(path, m_newObjects.get(path));
-        }
     }
 
     @Override
     public P result() {
+        m_newObjects.createPatchOperations(m_patchCreator);
         return m_patchCreator.create();
+    }
+
+    /**
+     * This data structure helps to solve the following problem:
+     *
+     * When turning changes into patch operations, all new objects arrive at
+     * {@link PatchChangeProcessor#onNewObject(NewObject)} (e.g. new properties, map-, or list-entries). Those new
+     * objects, however, also include the sub-objects of other (to be) newly created objects. And we don't want to
+     * create an extra patch operation for sub-objects (e.g. node annotation as a sub-object of a new node).
+     *
+     * I.e. responsibility of this data structure is to remove all sub-objects (identified by their paths) and only turn
+     * the remaining (i.e. top-level) objects into 'add' patch operations.
+     */
+    private static final class NewObjectsMap {
+
+        PatriciaTrie<GatewayEntity> m_tree = new PatriciaTrie<>();
+
+        boolean contains(final String path) {
+            return m_tree.containsKey(path);
+        }
+
+        void put(final String path, final GatewayEntity obj) {
+            m_tree.put(path, obj);
+        }
+
+        <P> void createPatchOperations(final PatchCreator<P> patchCreator) {
+            Set<String> toIgnore = new HashSet<>();
+            for (Entry<String, GatewayEntity> e : m_tree.entrySet()) {
+                String key = e.getKey();
+                // ignore those paths whose 'prefix' has already been added
+                if (!toIgnore.contains(key)) {
+                    patchCreator.added(key, e.getValue());
+                    toIgnore.addAll(m_tree.prefixMap(key).keySet());
+                }
+            }
+            m_tree.clear();
+        }
+
     }
 
 }

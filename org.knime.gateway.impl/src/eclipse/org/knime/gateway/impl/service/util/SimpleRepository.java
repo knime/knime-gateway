@@ -92,8 +92,9 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     /* maps key to entity history (lru-cache of <snapshotID, entity>) */
     private final Map<K, LRUCache> m_historyPerEntity = new HashMap<>();
 
-    private final Javers m_javers = JaversBuilder.javers().registerValue(NodeIDEnt.class)
-        .registerValue(ConnectionIDEnt.class).registerValue(AnnotationIDEnt.class).build();
+    private final Javers m_javers =
+        JaversBuilder.javers().registerValue(NodeIDEnt.class).registerValue(ConnectionIDEnt.class)
+            .registerValue(AnnotationIDEnt.class).withNewObjectsSnapshot(false).build();
 
     private final Supplier<String> m_snapshotIdGenerator;
 

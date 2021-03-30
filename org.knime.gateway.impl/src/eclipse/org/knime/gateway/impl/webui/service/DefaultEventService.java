@@ -62,18 +62,11 @@ import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
@@ -305,19 +298,6 @@ public final class DefaultEventService implements EventService {
         @Override
         public void replaced(final String path, final Object value) {
             m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REPLACE).setPath(path).setValue(value).build());
-        }
-
-        @Override
-        public boolean isNewCollectionObjectValid(final Object newObj) {
-            return newObj instanceof NodeEnt //NOSONAR
-                || newObj instanceof ConnectionEnt || newObj instanceof WorkflowAnnotationEnt
-                || newObj instanceof NodePortEnt || newObj instanceof StyleRangeEnt
-                || newObj instanceof NativeNodeTemplateEnt;
-        }
-
-        @Override
-        public boolean isNewObjectValid(final Object newObj) {
-            return newObj instanceof NodeAnnotationEnt;
         }
 
         @Override

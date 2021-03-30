@@ -52,6 +52,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.util.ArrayList;
@@ -105,7 +106,9 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests the patch created if the delete command is executed and un-done.
+     * Tests the patch created if the delete command is executed and un-done. Makes especially sure that<br>
+     * - the respective node template is removed and added again on undo<br>
+     * - that there are no 'add' patch operations for 'sub-objects' of be added objects (e.g. node annotation)
      *
      * @throws Exception
      */
@@ -116,15 +119,22 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(wf.getSnapshotId())
             .setTypeId("WorkflowChangedEventType").build();
         es().addEventListener(eventType);
-        DeleteCommandEnt command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(21)),
+
+        DeleteCommandEnt command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
             Collections.emptyList(), Collections.emptyList());
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         PatchOpEnt patchOpEnt = waitAndFindPatchOpForPath(
-            "/nodeTemplates/org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory");
+            "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3");
+        m_events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.REMOVE));
+
         ws().undoWorkflowCommand(wfId, getRootID());
         patchOpEnt = waitAndFindPatchOpForPath(
-            "/nodeTemplates/org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory");
+            "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3");
+        // make sure that 'sub-objects' of an object added as a patch op, aren't added again
+        // (e.g. the node annotation of a to be added node)
+        assertThatThereIsNoPathForPatchOp("/nodes/root:5/annotation");
+        m_events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.ADD));
         assertThat("patch op value expected", patchOpEnt.getValue(), is(notNullValue()));
         es().removeEventListener(eventType);
@@ -132,13 +142,18 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private PatchOpEnt waitAndFindPatchOpForPath(final String path) {
         AtomicReference<PatchOpEnt> res = new AtomicReference<>();
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).until(() -> {
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             res.set(m_events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())
                 .filter(op -> op.getPath().equals(path)).findFirst().orElse(null));
-            return res.get() != null;
+            assertThat("No patch op found for path " + path, res.get(), is(notNullValue()));
         });
-        m_events.clear();
         return res.get();
+    }
+
+    private void assertThatThereIsNoPathForPatchOp(final String path) {
+        assertFalse("unexpected patch op for path " + path,
+            m_events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())
+                .anyMatch(op -> op.getPath().equals(path)));
     }
 
 }
