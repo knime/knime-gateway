@@ -50,6 +50,8 @@ package org.knime.gateway.impl.service.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -59,12 +61,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.impl.project.WorkflowProject;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.mockito.Mockito;
 
 /**
@@ -74,66 +83,130 @@ import org.mockito.Mockito;
  */
 public class DefaultServiceUtilTest {
 
+    private WorkflowManager m_wfm;
+
+    private NodeID m_nodeID;
+
+    private String m_wfId;
+
+    private NodeContainer m_nc;
+
     /**
-     * Tests
-     * {@link DefaultServiceUtil#changeNodeStates(WorkflowManager, String, NodeIDEnt...)}
+     * Initializes the mocks.
+     */
+    @Before
+    public void createMocks() {
+        m_wfm = createWorkflowManagerMock();
+        m_nc = mock(NodeContainer.class);
+
+        m_nodeID = NodeID.fromString("0:1");
+        doReturn(new NodeID(0)).when(m_wfm).getID();
+        doReturn(m_wfm).when(m_nc).getParent();
+        doReturn(m_nc).when(m_wfm).findNodeContainer(eq(m_nodeID));
+
+        m_wfId = addWorkflowProject(m_wfm);
+    }
+
+    /**
+     * Tests {@link DefaultServiceUtil#changeNodeStates(String, NodeIDEnt, String, NodeIDEnt...)}
      */
     @Test
-    public void testChangeNodeState() {
-        WorkflowManager wfm = createWorkflowManagerMock();
-        WorkflowManager parent = createWorkflowManagerMock();
-        NodeContainer nc = mock(NodeContainer.class);
-
-        NodeID nodeID = NodeID.fromString("0:1");
-        doReturn(new NodeID(0)).when(wfm).getID();
-        doReturn(parent).when(wfm).getParent();
-        doReturn(parent).when(nc).getParent();
-        doReturn(nc).when(wfm).findNodeContainer(eq(nodeID));
+    public void testChangeNodeStates() {
 
         // action for a node
         NodeIDEnt nodeIDEnt = new NodeIDEnt(1);
-        NodeID resNodeID = DefaultServiceUtil.changeNodeStates(wfm, "execute", nodeIDEnt)[0];
-        assertThat(resNodeID, is(nodeID));
-        verify(parent).executeUpToHere(nodeID);
-        DefaultServiceUtil.changeNodeStates(wfm, "reset", nodeIDEnt);
-        verify(parent).resetAndConfigureNode(nodeID);
-        DefaultServiceUtil.changeNodeStates(wfm, "cancel", nodeIDEnt);
-        verify(parent).cancelExecution(any());
-        verify(wfm, times(3)).findNodeContainer(nodeID);
-        verify(nc, times(3)).getParent();
-        verify(wfm, times(3)).getID();
-        verify(wfm, never()).getParent();
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "execute", nodeIDEnt);
+        verify(m_wfm).executeUpToHere(m_nodeID);
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "reset", nodeIDEnt);
+        verify(m_wfm).resetAndConfigureNode(m_nodeID);
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "cancel", nodeIDEnt);
+        verify(m_wfm).cancelExecution(any());
+        verify(m_wfm, never()).findNodeContainer(m_nodeID);
+        verify(m_nc, never()).getParent();
+        verify(m_wfm, times(3)).getID();
+        verify(m_wfm, never()).getParent();
+
+        // action for a node within a workflow
+        WorkflowManager subWfm = createWorkflowManagerMock();
+        doReturn(subWfm).when(m_wfm).findNodeContainer(eq(NodeID.fromString("0:2")));
+        doReturn(m_nc).when(subWfm).findNodeContainer(eq(m_nodeID));
+        DefaultServiceUtil.changeNodeStates(m_wfId, new NodeIDEnt(2), "execute", nodeIDEnt);
+        verify(subWfm).executeUpToHere(m_nodeID);
+        verify(m_wfm, times(1)).findNodeContainer(NodeID.fromString("0:2"));
 
         // no action given
-        clearInvocations(wfm, parent);
-        DefaultServiceUtil.changeNodeStates(wfm, "", nodeIDEnt);
-        verify(wfm).findNodeContainer(nodeID);
-        verify(parent, never()).executeUpToHere(nodeID);
-        verify(parent, never()).resetAndConfigureNode(nodeID);
-        verify(parent, never()).cancelExecution(any());
+        clearInvocations(m_wfm);
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "", nodeIDEnt);
+        verify(m_wfm, never()).findNodeContainer(m_nodeID);
+        verify(m_wfm, never()).executeUpToHere(m_nodeID);
+        verify(m_wfm, never()).resetAndConfigureNode(m_nodeID);
+        verify(m_wfm, never()).cancelExecution(any());
 
         // execute the root workflow
-        clearInvocations(wfm, parent, nc);
-        nodeIDEnt = NodeIDEnt.getRootID();
-        resNodeID = DefaultServiceUtil.changeNodeStates(wfm, "execute", nodeIDEnt)[0];
-        assertThat(resNodeID, is(new NodeID(0)));
-        verify(parent, never()).executeUpToHere(eq(new NodeID(0)));
-        verify(wfm, never()).getParent();
-        verify(wfm, never()).findNodeContainer(any());
-        verify(wfm).getID();
-        verify(wfm).executeAll();
+        clearInvocations(m_wfm, m_nc);
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "execute");
+        verify(m_wfm, never()).executeUpToHere(eq(new NodeID(0)));
+        verify(m_wfm, never()).getParent();
+        verify(m_wfm, never()).findNodeContainer(any());
+        verify(m_wfm).executeAll();
 
         // check exception if action is nonsense
         Assert.assertThrows("exception expected", IllegalStateException.class,
-            () -> DefaultServiceUtil.changeNodeStates(wfm, "blub", new NodeIDEnt(1)));
+            () -> DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "blub", new NodeIDEnt(1)));
 
-        // check exception if node id's don't refere to nodes on the same workflow level
-        Assert.assertThrows("exception expected", IllegalArgumentException.class,
-            () -> DefaultServiceUtil.changeNodeStates(wfm, "execute", new NodeIDEnt(1, 2), new NodeIDEnt(1)));
+        // check exception if node id's don't refer to nodes on the same workflow level
+        Exception ex =
+            Assert.assertThrows("exception expected", IllegalArgumentException.class, () -> DefaultServiceUtil
+                .changeNodeStates(m_wfId, getRootID(), "execute", new NodeIDEnt(1, 2), new NodeIDEnt(1)));
+        assertThat("unexpected exception message", ex.getMessage(), is("Node ids don't have the same prefix."));
 
-        // no ids in no ids out
-        assertThat(DefaultServiceUtil.changeNodeStates(wfm, "execute").length, is(0));
+    }
 
+    /**
+     * Tests {@link DefaultServiceUtil#changeNodeState(String, NodeIDEnt, String)}.
+     */
+    public void testChangeNodeState() {
+        // action for a node
+        NodeIDEnt nodeIDEnt = new NodeIDEnt(1);
+        NodeContainer nc = DefaultServiceUtil.changeNodeState(m_wfId, nodeIDEnt, "execute");
+        assertTrue(nc == m_nc);
+        verify(m_wfm).executeUpToHere(m_nodeID);
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "reset", nodeIDEnt);
+        verify(m_wfm).resetAndConfigureNode(m_nodeID);
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "cancel", nodeIDEnt);
+        verify(m_wfm).cancelExecution(any());
+        verify(m_wfm, times(3)).findNodeContainer(m_nodeID);
+        verify(m_nc, times(3)).getParent();
+        verify(m_wfm, times(3)).getID();
+        verify(m_wfm, never()).getParent();
+
+        // no action given
+        clearInvocations(m_wfm);
+        nc = DefaultServiceUtil.changeNodeState(m_wfId, nodeIDEnt, "");
+        assertTrue(nc == m_nc);
+        verify(m_wfm).findNodeContainer(m_nodeID);
+        verify(m_wfm, never()).executeUpToHere(m_nodeID);
+        verify(m_wfm, never()).resetAndConfigureNode(m_nodeID);
+        verify(m_wfm, never()).cancelExecution(any());
+
+        // execute the root workflow
+        clearInvocations(m_wfm, m_nc);
+        nc = DefaultServiceUtil.changeNodeState(m_wfId, getRootID(), "execute");
+        assertTrue(nc == m_wfm);
+        verify(m_wfm, never()).executeUpToHere(eq(new NodeID(0)));
+        verify(m_wfm, never()).getParent();
+        verify(m_wfm, never()).findNodeContainer(any());
+        verify(m_wfm).getID();
+        verify(m_wfm).executeAll();
+    }
+
+    /**
+     * Remove workflow projects.
+     */
+    @After
+    public void removeWorkflowProjects() {
+        WorkflowProjectManager.getWorkflowProjects().stream().map(WorkflowProject::getID).collect(Collectors.toList())
+            .forEach(WorkflowProjectManager::removeWorkflowProject);
     }
 
     /*
@@ -146,6 +219,28 @@ public class DefaultServiceUtilTest {
         WorkflowManager wfm = Mockito.mock(WorkflowManager.class);
         Thread.currentThread().setContextClassLoader(loader);
         return wfm;
+    }
+
+    private static String addWorkflowProject(final WorkflowManager wfm) {
+        String wfId = UUID.randomUUID().toString();
+        WorkflowProjectManager.addWorkflowProject(wfId, new WorkflowProject() {
+
+            @Override
+            public WorkflowManager openProject() {
+                return wfm;
+            }
+
+            @Override
+            public String getName() {
+                return wfm.getName();
+            }
+
+            @Override
+            public String getID() {
+                return wfId;
+            }
+        });
+        return wfId;
     }
 
 }

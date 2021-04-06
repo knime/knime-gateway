@@ -47,7 +47,6 @@ package org.knime.gateway.impl.service.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
@@ -234,15 +233,14 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Executes, resets or cancels a node.
+     * Executes, resets or cancels a set of nodes.
      *
-     * @param rootWfm the root/project workflow which contains the node whose state shall be changed
+     * @param projectId the id of the workflow project
+     * @param workflowId the id of the sub-workflow or 'root'
      * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
-     * @param nodeIdEnts the ids of the nodes to change the state for; possibly {@link NodeIDEnt#getRootID()} to change
-     *            the state of the root workflow. All ids must reference nodes on the same workflow level (i.e. all must
-     *            have the same prefix).
-     *
-     * @return the {@link NodeID}s of the nodes the status was supposed to be changed
+     * @param nodeIdEnts the ids of the nodes to change the state for. All ids must reference nodes on the same workflow
+     *            level (i.e. all must have the same prefix). If no node ids are given, the state of the workflow itself
+     *            (referenced by projectId and workflowId) is changed.
      *
      * @throws NoSuchElementException if there is no workflow for the given root workflow id
      * @throws IllegalArgumentException if the is no node for one of the given node ids or the given node ids don't
@@ -250,18 +248,12 @@ public final class DefaultServiceUtil {
      * @throws IllegalStateException if the state transition is not possible, e.g., because there are executing
      *             successors or the provided action is unknown
      */
-    public static NodeID[] changeNodeStates(final WorkflowManager rootWfm, final String action,
+    public static void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final String action,
         final NodeIDEnt... nodeIdEnts) {
-        if (nodeIdEnts.length == 0) {
-            return new NodeID[0];
-        }
-        NodeID[] nodeIDs;
-        WorkflowManager wfm;
-        NodeID rootID = rootWfm.getID();
-        if (Arrays.stream(nodeIdEnts).anyMatch(nodeId -> nodeId.equals(NodeIDEnt.getRootID()))) {
-            nodeIDs = ALL;
-            wfm = rootWfm;
-        } else {
+        NodeID[] nodeIDs = null;
+        WorkflowManager wfm = getWorkflowManager(projectId, workflowId);
+        if (nodeIdEnts != null && nodeIdEnts.length != 0) {
+            NodeID rootID = getRootWorkflowManager(projectId).getID();
             nodeIDs = new NodeID[nodeIdEnts.length];
             nodeIDs[0] = nodeIdEnts[0].toNodeID(rootID);
             NodeID prefix = nodeIDs[0].getPrefix();
@@ -271,20 +263,34 @@ public final class DefaultServiceUtil {
                     throw new IllegalArgumentException("Node ids don't have the same prefix.");
                 }
             }
-            NodeContainer nc = rootWfm.findNodeContainer(nodeIDs[0]);
-            wfm = nc.getParent();
         }
 
-        doChangeNodeState(wfm, action, nodeIDs);
-
-        return nodeIDs == ALL ? new NodeID[]{rootID} : nodeIDs;
+        doChangeNodeStates(wfm, action, nodeIDs);
     }
 
-    private static final NodeID[] ALL = new NodeID[0];
+    /**
+     * Executes, cancels or resets a node.
+     *
+     * @param projectId the id of the workflow project
+     * @param nodeId the id of the node to change the state for
+     * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
+     * @return the node the state has been changed for
+     */
+    public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action) {
+        NodeContainer nc = getNodeContainer(projectId, nodeId);
+        if (nc instanceof SubNodeContainer) {
+            doChangeNodeStates(((SubNodeContainer)nc).getWorkflowManager(), action);
+        } else if (nc instanceof WorkflowManager) {
+            doChangeNodeStates((WorkflowManager)nc, action);
+        } else {
+            doChangeNodeStates(nc.getParent(), action, nc.getID());
+        }
+        return nc;
+    }
 
-    private static void doChangeNodeState(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
+    private static void doChangeNodeStates(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
         if (StringUtils.isBlank(action)) {
-            //if there is no action (null or empty)
+            // if there is no action (null or empty)
         } else if (action.equals("reset")) {
             reset(wfm, nodeIDs);
         } else if (action.equals("cancel")) {
@@ -297,7 +303,7 @@ public final class DefaultServiceUtil {
     }
 
     private static void reset(final WorkflowManager wfm, final NodeID... nodeIDs) {
-        if (nodeIDs == ALL) {
+        if (nodeIDs == null || nodeIDs.length == 0) {
             wfm.resetAndConfigureAll();
         } else {
             for (NodeID nodeID : nodeIDs) {
@@ -307,7 +313,7 @@ public final class DefaultServiceUtil {
     }
 
     private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
-        if (nodeIDs == ALL) {
+        if (nodeIDs == null || nodeIDs.length == 0) {
             wfm.getNodeContainers().stream().filter(nc -> nc.getNodeContainerState().isExecutionInProgress())
                 .forEach(wfm::cancelExecution);
         } else {
@@ -318,7 +324,7 @@ public final class DefaultServiceUtil {
     }
 
     private static void execute(final WorkflowManager wfm, final NodeID... nodeIDs) {
-        if (nodeIDs == ALL) {
+        if (nodeIDs == null || nodeIDs.length == 0) {
             wfm.executeAll();
         } else {
             wfm.executeUpToHere(nodeIDs);

@@ -91,7 +91,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         try {
-            DefaultServiceUtil.changeNodeStates(DefaultServiceUtil.getWorkflowManager(projectId, workflowId), action,
+            DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);

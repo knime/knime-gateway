@@ -60,6 +60,8 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
         res.put("testChangeNodeStateOfComponentProject",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateOfComponentProject());
+        res.put("testChangeNodeStateAllNodes",
+            (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateAllNodes());
         res.put("testChangeLoopExecutionState",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionState());
         res.put("testChangeLoopExecutionStateInSubWorkflow", (rc, sp, wl, we,

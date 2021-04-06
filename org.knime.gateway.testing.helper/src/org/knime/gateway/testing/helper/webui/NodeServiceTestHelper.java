@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -126,6 +127,29 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests to change the node state of all nodes contained in a (sub-)workflow.
+     *
+     * @throws Exception
+     */
+    public void testChangeNodeStateAllNodes() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
+
+        ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE)
+                .getWorkflow().getNodes().get("root:5:0:4");
+            assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
+        });
+
+        ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE).getWorkflow()
+                .getNodes().get("root:5:0:4");
+            assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
+        });
+    }
+
+    /**
      * Tests to change the node execution state on a component project.
      *
      * @throws Exception
@@ -134,7 +158,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadComponent(TestWorkflowCollection.COMPONENT_PROJECT);
 
         // test execution on root level
-        ns().changeNodeStates(wfId, getRootID(), singletonList(getRootID()), "execute");
+        ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
         NodeIDEnt n7 = new NodeIDEnt(7);
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n7);
@@ -142,7 +166,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
 
         // reset on root level
-        ns().changeNodeStates(wfId, getRootID(), singletonList(getRootID()), "reset");
+        ns().changeNodeStates(wfId, getRootID(), emptyList(), "reset");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n7);
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
@@ -197,8 +221,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(getNativeNodeEnt(wfId, subWfId, n4).getLoopInfo(), "loop_info_finished");
 
         // pause execution
-        ns().changeNodeStates(wfId, subWfId, singletonList(new NodeIDEnt(1)), "reset");
-        ns().changeNodeStates(wfId, subWfId, singletonList(NodeIDEnt.getRootID()), "execute");
+        ns().changeNodeStates(wfId, subWfId, singletonList(subWfId.appendNodeID(1)), "reset");
+        ns().changeNodeStates(wfId, subWfId, emptyList(), "execute");
         ns().changeLoopState(wfId, subWfId, n4, "pause");
         await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, subWfId, n4);
