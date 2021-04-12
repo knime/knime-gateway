@@ -47,8 +47,13 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -76,7 +81,12 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         DefaultApplicationService appService = DefaultApplicationService.getInstance();
         cr(appService.getState(), "empty_appstate");
 
-        appService.setAppStateSupplier(() -> createAppState(workflowProjectId));
+        AppState appState = mock(AppState.class);
+        when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
+        Supplier<AppState> appStateSupplier = mock(Supplier.class);
+        when(appStateSupplier.get()).thenReturn(appState);
+
+        appService.setAppStateSupplier(appStateSupplier);
         AppStateEnt appStateEnt = appService.getState();
         cr(appStateEnt, "appstate");
 
@@ -84,10 +94,14 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         AppStateEnt appStateEnt2 = appService.getState();
         assertTrue(appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow() == appStateEnt2
             .getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow());
-    }
 
-    private static AppState createAppState(final String workflowProjectId) {
-        return () -> Collections.singletonList(createOpenedWorkflow(workflowProjectId));
+        // make sure that the app state is cached and only accessed one time
+        verify(appStateSupplier, times(1)).get();
+        // and make sure the 'cache' is cleared
+        appService.clearAppStateSupplier();
+        appService.setAppStateSupplier(appStateSupplier);
+        appService.getState();
+        verify(appStateSupplier, times(2)).get();
     }
 
     private static OpenedWorkflow createOpenedWorkflow(final String workflowProjectId) {

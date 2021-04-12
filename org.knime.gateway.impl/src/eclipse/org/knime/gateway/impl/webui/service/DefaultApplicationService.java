@@ -70,9 +70,9 @@ import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.AppState;
+import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
-import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -83,6 +83,8 @@ public final class DefaultApplicationService implements ApplicationService {
     private static final DefaultApplicationService INSTANCE = new DefaultApplicationService();
 
     private Supplier<AppState> m_appStateSupplier = null;
+
+    private AppState m_cachedAppState = null;
 
     /**
      * Returns the singleton instance for this service.
@@ -106,11 +108,14 @@ public final class DefaultApplicationService implements ApplicationService {
         if (m_appStateSupplier == null) {
             return builder.build();
         }
-        AppState appState = m_appStateSupplier.get();
-        if (appState == null) {
-            return builder.build();
+        if (m_cachedAppState == null) {
+            m_cachedAppState = m_appStateSupplier.get();
+            if (m_cachedAppState == null) {
+                return builder.build();
+            }
         }
-        List<WorkflowProjectEnt> projects = appState.getOpenedWorkflows().stream()
+
+        List<WorkflowProjectEnt> projects = m_cachedAppState.getOpenedWorkflows().stream()
             .map(DefaultApplicationService::buildWorkflowProjectEnt).filter(Objects::nonNull).collect(toList());
         return builder.setOpenedWorkflows(projects).build();
     }
@@ -161,6 +166,7 @@ public final class DefaultApplicationService implements ApplicationService {
         if(m_appStateSupplier != null) {
             throw new IllegalStateException("App state supplier is already set");
         }
+        m_cachedAppState = null;
         m_appStateSupplier = stateSupplier;
     }
 
@@ -170,6 +176,7 @@ public final class DefaultApplicationService implements ApplicationService {
      * Mainly for testing purposes.
      */
     public void clearAppStateSupplier() {
+        m_cachedAppState = null;
         m_appStateSupplier = null;
     }
 }
