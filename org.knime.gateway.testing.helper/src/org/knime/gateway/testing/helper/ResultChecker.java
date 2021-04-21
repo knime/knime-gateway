@@ -129,7 +129,7 @@ public class ResultChecker {
     }
 
     private static Matcher<String> compareWithDiff(final String expected) {
-        return new BaseMatcher<String>() {
+        return new BaseMatcher<String>() { // NOSONAR
 
             @Override
             public boolean matches(final Object item) {
@@ -140,8 +140,13 @@ public class ResultChecker {
             public void describeMismatch(final Object item, final Description description) {
                 if (item instanceof String) {
                     Patch<String> diff = DiffUtils.diff(expected, (String)item, null);
-                    description.appendText("there are differences:\n"
-                        + diff.getDeltas().stream().map(Object::toString).collect(Collectors.joining(",\n")));
+                    description.appendText("there are differences");
+                    if (matchSorted(expected, (String)item)) {
+                        description.appendText(" (NOTE: snapshots match if their lines are sorted!)");
+                    }
+
+                    description.appendText(
+                        ":\n" + diff.getDeltas().stream().map(Object::toString).collect(Collectors.joining(",\n")));
                 } else {
                     description.appendText("not a String");
                 }
@@ -150,6 +155,11 @@ public class ResultChecker {
             @Override
             public void describeTo(final Description description) {
                 description.appendText("Snapshot file content");
+            }
+
+            private boolean matchSorted(final String a, final String b) {
+                return a.lines().sorted().collect(Collectors.joining("\n"))
+                    .equals(b.lines().sorted().collect(Collectors.joining("\n")));
             }
         };
     }

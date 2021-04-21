@@ -55,6 +55,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -75,6 +76,7 @@ import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -112,6 +114,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         JsonUtil.addBitSetDeSerializer(mapper);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
 
         ObjectToString objToString = new ObjectToString(mapper);
 
@@ -152,8 +155,9 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
             gen.writeRawValue(objToString.toString(l));
         });
 
+
         try {
-            return new ResultChecker(objToString, resolveToFile("/files/test_snapshots", testClass));
+            return new ResultChecker(objToString, CoreUtil.resolveToFile("/files/test_snapshots", testClass));
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); //NOSONAR

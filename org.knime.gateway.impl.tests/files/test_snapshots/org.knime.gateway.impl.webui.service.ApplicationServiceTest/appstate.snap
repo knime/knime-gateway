@@ -70,18 +70,18 @@
             "sourceNode" : "root:1",
             "sourcePort" : 1
           },
-          "root:5_1" : {
-            "canDelete" : true,
-            "destNode" : "root:5",
-            "destPort" : 1,
-            "sourceNode" : "root:6",
-            "sourcePort" : 1
-          },
           "root:6_0" : {
             "canDelete" : true,
             "destNode" : "root:6",
             "destPort" : 0,
             "sourceNode" : "root:2",
+            "sourcePort" : 1
+          },
+          "root:5_1" : {
+            "canDelete" : true,
+            "destNode" : "root:5",
+            "destPort" : 1,
+            "sourceNode" : "root:6",
             "sourcePort" : 1
           },
           "root:4_1" : {
@@ -98,19 +98,19 @@
             "sourceNode" : "root:1",
             "sourcePort" : 2
           },
+          "root:8_1" : {
+            "canDelete" : true,
+            "destNode" : "root:8",
+            "destPort" : 1,
+            "sourceNode" : "root:9",
+            "sourcePort" : 1
+          },
           "root:185_1" : {
             "canDelete" : true,
             "destNode" : "root:185",
             "destPort" : 1,
             "flowVariableConnection" : true,
             "sourceNode" : "root:13",
-            "sourcePort" : 1
-          },
-          "root:8_1" : {
-            "canDelete" : true,
-            "destNode" : "root:8",
-            "destPort" : 1,
-            "sourceNode" : "root:9",
             "sourcePort" : 1
           },
           "root:19_1" : {
@@ -128,13 +128,6 @@
             "sourceNode" : "root:16",
             "sourcePort" : 1
           },
-          "root:20_3" : {
-            "canDelete" : true,
-            "destNode" : "root:20",
-            "destPort" : 3,
-            "sourceNode" : "root:19",
-            "sourcePort" : 1
-          },
           "root:22_1" : {
             "canDelete" : true,
             "destNode" : "root:22",
@@ -142,11 +135,11 @@
             "sourceNode" : "root:10",
             "sourcePort" : 1
           },
-          "root:22_2" : {
+          "root:20_3" : {
             "canDelete" : true,
-            "destNode" : "root:22",
-            "destPort" : 2,
-            "sourceNode" : "root:1",
+            "destNode" : "root:20",
+            "destPort" : 3,
+            "sourceNode" : "root:19",
             "sourcePort" : 1
           },
           "root:23_1" : {
@@ -156,9 +149,23 @@
             "sourceNode" : "root:1",
             "sourcePort" : 2
           },
+          "root:22_2" : {
+            "canDelete" : true,
+            "destNode" : "root:22",
+            "destPort" : 2,
+            "sourceNode" : "root:1",
+            "sourcePort" : 1
+          },
           "root:20_1" : {
             "canDelete" : true,
             "destNode" : "root:20",
+            "destPort" : 1,
+            "sourceNode" : "root:1",
+            "sourcePort" : 1
+          },
+          "root:21_1" : {
+            "canDelete" : true,
+            "destNode" : "root:21",
             "destPort" : 1,
             "sourceNode" : "root:1",
             "sourcePort" : 1
@@ -170,13 +177,6 @@
             "sourceNode" : "root:1",
             "sourcePort" : 1
           },
-          "root:21_1" : {
-            "canDelete" : true,
-            "destNode" : "root:21",
-            "destPort" : 1,
-            "sourceNode" : "root:1",
-            "sourcePort" : 1
-          },
           "root:26_1" : {
             "canDelete" : true,
             "destNode" : "root:26",
@@ -184,17 +184,17 @@
             "sourceNode" : "root:25",
             "sourcePort" : 3
           },
-          "root:26_2" : {
-            "canDelete" : true,
-            "destNode" : "root:26",
-            "destPort" : 2,
-            "sourceNode" : "root:1",
-            "sourcePort" : 1
-          },
           "root:27_1" : {
             "canDelete" : true,
             "destNode" : "root:27",
             "destPort" : 1,
+            "sourceNode" : "root:1",
+            "sourcePort" : 1
+          },
+          "root:26_2" : {
+            "canDelete" : true,
+            "destNode" : "root:26",
+            "destPort" : 2,
             "sourceNode" : "root:1",
             "sourcePort" : 1
           },
