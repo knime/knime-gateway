@@ -45,17 +45,7 @@
  */
 package org.knime.gateway.testing.helper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
-
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * Helper to test service implementations. This is usually done by loading a workflow, optionally executing it and then
@@ -153,37 +143,6 @@ public class GatewayServiceTestHelper {
      */
     protected final void cr(final Object obj, final String resultKey) {
         m_entityResultChecker.checkObject(m_testClass, resultKey, obj);
-    }
-
-    /**
-     * Utility method to resolve files in the current plugin.
-     *
-     * @param path a path relative to the plugin's root; must start with "/"
-     * @param clazz a class of the plugin the file is contained in
-     * @return a file object if the file exists
-     * @throws IOException if an I/O error occurs or the file does not exist
-     */
-    public static File resolveToFile(final String path, final Class<?> clazz) throws IOException {
-        URL url = FileLocator.toFileURL(resolveToURL(path, clazz));
-        return new File(url.getPath()); // NOSONAR vulnerability, because it's for testing purposes only
-    }
-
-    /**
-     * Utility method to resolve files in the current plugin.
-     *
-     * @param path a path relative to the plugin's root; must start with "/"
-     * @param clazz a class of the plugin the file is contained in
-     * @return a URL to the resource
-     * @throws IOException if an I/O error occurs or the file does not exist
-     */
-    public static URL resolveToURL(final String path, final Class<?> clazz) throws IOException {
-        Bundle myself = FrameworkUtil.getBundle(clazz);
-        IPath p = new Path(path);
-        URL url = FileLocator.find(myself, p, null);
-        if (url == null) {
-            throw new FileNotFoundException("Path " + path + " does not exist in bundle " + myself.getSymbolicName());
-        }
-        return url;
     }
 
 }

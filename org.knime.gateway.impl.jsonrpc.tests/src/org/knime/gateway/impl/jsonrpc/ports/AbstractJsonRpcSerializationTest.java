@@ -48,12 +48,11 @@
  */
 package org.knime.gateway.impl.jsonrpc.ports;
 
-import static org.knime.gateway.testing.helper.GatewayServiceTestHelper.resolveToFile;
-
 import java.io.IOException;
 
 import org.junit.Before;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.rpc.table.TableService;
 import org.knime.gateway.testing.helper.ResultChecker;
 
@@ -86,7 +85,7 @@ public class AbstractJsonRpcSerializationTest<S> {
      */
     @Before
     public void initResultChecker() throws IOException {
-        m_resultChecker = new ResultChecker(null, resolveToFile("/files/test_snapshots", this.getClass()));
+        m_resultChecker = new ResultChecker(null, CoreUtil.resolveToFile("/files/test_snapshots", this.getClass()));
     }
 
     /**

@@ -45,29 +45,16 @@
  */
 package org.knime.gateway.impl.service.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowContext;
-import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor.WorkflowLoadResult;
-import org.knime.core.util.LoadVersion;
-import org.knime.core.util.LockFailedException;
 import org.knime.core.util.Pair;
-import org.knime.core.util.Version;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -328,66 +315,6 @@ public final class DefaultServiceUtil {
             wfm.executeAll();
         } else {
             wfm.executeUpToHere(nodeIDs);
-        }
-    }
-
-    /**
-     * Loads a workflow into memory. Mainly copied from {@link org.knime.testing.core.ng.WorkflowLoadTest}.
-     *
-     * @param workflowDir
-     * @return the loaded workflow
-     * @throws IOException
-     * @throws InvalidSettingsException
-     * @throws CanceledExecutionException
-     * @throws UnsupportedWorkflowVersionException
-     * @throws LockFailedException
-     */
-    public static WorkflowManager loadWorkflow(final File workflowDir) throws IOException, InvalidSettingsException,
-        CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
-        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper() {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public WorkflowContext getWorkflowContext() {
-                WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowDir);
-                return fac.createContext();
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public UnknownKNIMEVersionLoadPolicy getUnknownKNIMEVersionLoadPolicy(
-                final LoadVersion workflowKNIMEVersion, final Version createdByKNIMEVersion,
-                final boolean isNightlyBuild) {
-                return UnknownKNIMEVersionLoadPolicy.Try;
-            }
-        };
-
-        WorkflowLoadResult loadRes = WorkflowManager.loadProject(workflowDir, new ExecutionMonitor(), loadHelper);
-        return loadRes.getWorkflowManager();
-    }
-
-    /**
-     * Cancels and closes the passed workflow manager.
-     *
-     * @param wfm workflow manager to cancel and close
-     * @throws InterruptedException
-     */
-    public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
-        wfm.getNodeContainers().forEach(wfm::cancelExecution);
-        if (wfm.getNodeContainerState().isExecutionInProgress()) {
-            wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        }
-        if (wfm.isComponentProjectWFM()) {
-            SubNodeContainer snc = (SubNodeContainer)wfm.getDirectNCParent();
-            snc.getParent().removeProject(snc.getID());
-        } else if (wfm.isProject()) {
-            wfm.getParent().removeProject(wfm.getID());
-        } else {
-            throw new IllegalArgumentException("The passed workflow ('" + wfm.getNameWithID()
-                + "' it neither a workflow project nor a component project.");
         }
     }
 

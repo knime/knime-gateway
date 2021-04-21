@@ -61,9 +61,9 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Loads a workflow locally.
@@ -93,7 +93,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
-        WorkflowManager wfm = DefaultServiceUtil.loadWorkflow(workflow.getWorkflowDir());
+        WorkflowManager wfm = CoreUtil.loadWorkflow(workflow.getWorkflowDir());
         addToProjectManager(wfm, workflow.getName(), projectId);
     }
 
@@ -162,7 +162,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         for (String projectId : m_loadedWorkflows) {
             WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(projectId).orElse(null);
             if (wfm != null) {
-                DefaultServiceUtil.cancelAndCloseLoadedWorkflow(wfm);
+                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
                 WorkflowProjectManager.removeWorkflowProject(projectId);
             }
         }

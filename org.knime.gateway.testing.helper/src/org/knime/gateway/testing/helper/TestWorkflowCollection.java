@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import org.knime.gateway.api.util.CoreUtil;
+
 /**
  * Workflows used in the tests.
  *
@@ -74,7 +76,7 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     @Override
     public File getWorkflowDir() {
         try {
-            return GatewayServiceTestHelper.resolveToFile(m_workflowDir, TestWorkflowCollection.class);
+            return CoreUtil.resolveToFile(m_workflowDir, TestWorkflowCollection.class);
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); // NOSONAR

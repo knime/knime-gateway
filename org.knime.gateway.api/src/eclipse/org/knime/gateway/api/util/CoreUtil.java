@@ -48,8 +48,19 @@
  */
 package org.knime.gateway.api.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
@@ -59,8 +70,17 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
+import org.knime.core.node.workflow.WorkflowContext;
+import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor.WorkflowLoadResult;
+import org.knime.core.util.LoadVersion;
+import org.knime.core.util.LockFailedException;
+import org.knime.core.util.Version;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Utility methods for 'core-functionality' (i.e. functionality around {@link WorkflowManager} etc.) required by the
@@ -139,6 +159,97 @@ public final class CoreUtil {
                 .error("Ability to be run in streaming mode couldn't be determined for node " + nodeModelClass, ex);
         }
         return false;
+    }
+
+    /**
+     * Loads a workflow into memory. Mainly copied from {@link org.knime.testing.core.ng.WorkflowLoadTest}.
+     *
+     * @param workflowDir
+     * @return the loaded workflow
+     * @throws IOException
+     * @throws InvalidSettingsException
+     * @throws CanceledExecutionException
+     * @throws UnsupportedWorkflowVersionException
+     * @throws LockFailedException
+     */
+    public static WorkflowManager loadWorkflow(final File workflowDir) throws IOException, InvalidSettingsException,
+        CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
+        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper() {
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public WorkflowContext getWorkflowContext() {
+                WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowDir);
+                return fac.createContext();
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public UnknownKNIMEVersionLoadPolicy getUnknownKNIMEVersionLoadPolicy(
+                final LoadVersion workflowKNIMEVersion, final Version createdByKNIMEVersion,
+                final boolean isNightlyBuild) {
+                return UnknownKNIMEVersionLoadPolicy.Try;
+            }
+        };
+
+        WorkflowLoadResult loadRes = WorkflowManager.loadProject(workflowDir, new ExecutionMonitor(), loadHelper);
+        return loadRes.getWorkflowManager();
+    }
+
+    /**
+     * Cancels and closes the passed workflow manager.
+     *
+     * @param wfm workflow manager to cancel and close
+     * @throws InterruptedException
+     */
+    public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
+        wfm.getNodeContainers().forEach(wfm::cancelExecution);
+        if (wfm.getNodeContainerState().isExecutionInProgress()) {
+            wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
+        }
+        if (wfm.isComponentProjectWFM()) {
+            SubNodeContainer snc = (SubNodeContainer)wfm.getDirectNCParent();
+            snc.getParent().removeProject(snc.getID());
+        } else if (wfm.isProject()) {
+            wfm.getParent().removeProject(wfm.getID());
+        } else {
+            throw new IllegalArgumentException("The passed workflow ('" + wfm.getNameWithID()
+                + "' it neither a workflow project nor a component project.");
+        }
+    }
+
+    /**
+     * Utility method to resolve files in the current plugin.
+     *
+     * @param path a path relative to the plugin's root; must start with "/"
+     * @param clazz a class of the plugin the file is contained in
+     * @return a file object if the file exists
+     * @throws IOException if an I/O error occurs or the file does not exist
+     */
+    public static File resolveToFile(final String path, final Class<?> clazz) throws IOException {
+        URL url = FileLocator.toFileURL(resolveToURL(path, clazz));
+        return new File(url.getPath()); // NOSONAR vulnerability, because it's for testing purposes only
+    }
+
+    /**
+     * Utility method to resolve files in the current plugin.
+     *
+     * @param path a path relative to the plugin's root; must start with "/"
+     * @param clazz a class of the plugin the file is contained in
+     * @return a URL to the resource
+     * @throws IOException if an I/O error occurs or the file does not exist
+     */
+    public static URL resolveToURL(final String path, final Class<?> clazz) throws IOException {
+        Bundle myself = FrameworkUtil.getBundle(clazz);
+        IPath p = new Path(path);
+        URL url = FileLocator.find(myself, p, null);
+        if (url == null) {
+            throw new FileNotFoundException("Path " + path + " does not exist in bundle " + myself.getSymbolicName());
+        }
+        return url;
     }
 
 }
