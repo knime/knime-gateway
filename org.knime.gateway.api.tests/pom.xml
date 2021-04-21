@@ -11,7 +11,7 @@
 	</parent>
 	<artifactId>org.knime.gateway.api.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-  
+
     <properties>
         <revision>4.4.0</revision>
     </properties>
@@ -25,6 +25,11 @@
 				<configuration>
 					<dependency-resolution>
 						<extraRequirements>
+							<requirement>
+								<type>eclipse-feature</type>
+								<id>org.knime.features.testing.application</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
 							<requirement>
 								<type>eclipse-feature</type>
 								<id>org.knime.features.core</id>
