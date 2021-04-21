@@ -100,7 +100,7 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
      * {@inheritDoc}
      */
     @Override
-    protected void execute() throws OperationNotAllowedException {
+    protected boolean execute() throws OperationNotAllowedException {
         WorkflowManager wfm = getWorkflowManager();
         DeleteCommandEnt ent = getCommandEntity();
         String projectId = getWorkflowKey().getProjectId();
@@ -136,7 +136,9 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
         }
 
         m_copy = wfm.copy(true, content);
+        WorkflowAnnotationID[] annoIds = content.getAnnotationIDs();
         remove(wfm, nodesToDelete, m_connections, content.getAnnotationIDs());
+        return !nodesToDelete.isEmpty() || !m_connections.isEmpty() || (annoIds != null && annoIds.length != 0);
     }
 
     private static void addIfConnectedToJustOneNode(final Set<ConnectionContainer> connectionsToAdd,

@@ -51,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
@@ -85,6 +86,7 @@ import org.knime.core.node.workflow.NodeExecutionJobManagerFactory;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
+import org.knime.core.node.workflow.NodeMessage.Type;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
@@ -98,6 +100,7 @@ import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInter
 import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
+import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
 import org.knime.core.util.workflowalizer.Workflowalizer;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -181,9 +184,6 @@ import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.xml.sax.SAXException;
 
-import sun.awt.image.ImageWatched.Link;
-import sun.security.util.IOUtils;
-
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
  *
@@ -248,8 +248,8 @@ public final class EntityBuilderUtil {
             for (NodeContainer nc : nodeContainers) {
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, templates, buildContext);
             }
-            Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
-                .map(cc -> buildConnectionEnt(cc, wfm, buildContext)).collect(
+            Map<String, ConnectionEnt> connections =
+                wfm.getConnectionContainers().stream().map(cc -> buildConnectionEnt(cc, buildContext)).collect(
                     Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations =
                 wfm.getWorkflowAnnotations().stream().map(EntityBuilderUtil::buildWorkflowAnnotationEnt)

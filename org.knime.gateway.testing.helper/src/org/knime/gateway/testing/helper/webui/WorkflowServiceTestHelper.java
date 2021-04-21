@@ -399,11 +399,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         DeleteCommandEnt command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
             asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        cr(ws().getWorkflow(wfId, getRootID(), true).getWorkflow(), "delete_command");
+        cr(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow(), "delete_command");
 
         // undo deletion
         ws().undoWorkflowCommand(wfId, getRootID());
-        cr(ws().getWorkflow(wfId, getRootID(), true).getWorkflow(), "undo_delete_command");
+        cr(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow(), "undo_delete_command");
 
         // delete a node within a component
         assertThat("node expected to be present",
@@ -454,11 +454,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId2 = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
         executeWorkflowAsync(wfId2);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt w = ws().getWorkflow(wfId2, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
+            WorkflowEnt w = ws().getWorkflow(wfId2, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
             assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
                 is(ExecutionStateEnum.EXECUTED));
         });
-        cr(ws().getWorkflow(wfId2, getRootID(), true).getWorkflow(), "can_delete_executing");
+        cr(ws().getWorkflow(wfId2, getRootID(), Boolean.TRUE).getWorkflow(), "can_delete_executing");
 
         // deletion fails because of a node that cannot be deleted due to executing successors
         DeleteCommandEnt command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
