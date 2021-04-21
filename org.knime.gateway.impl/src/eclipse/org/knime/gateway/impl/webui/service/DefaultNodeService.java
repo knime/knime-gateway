@@ -138,6 +138,7 @@ public final class DefaultNodeService implements NodeService {
                 wfm.resumeLoopExecution(nnc, true);
             } else if (wfm.canExecuteNodeDirectly(nnc.getID())) {
                 wfm.executeUpToHere(nnc.getID());
+                assert nnc.getLoopStatus() == LoopStatus.RUNNING;
                 wfm.pauseLoopExecution(nnc);
             } else {
                 //

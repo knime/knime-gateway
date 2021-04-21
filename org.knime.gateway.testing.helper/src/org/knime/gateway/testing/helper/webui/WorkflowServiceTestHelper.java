@@ -53,7 +53,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNull;
@@ -399,11 +401,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         DeleteCommandEnt command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
             asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        cr(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow(), "delete_command");
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        cr(workflow, "delete_command");
+        assertThat(workflow.getNodes().keySet(), not(hasItems("root:1", "root:4")));
+        assertThat(
+            workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
+            not(hasItems("root_1")));
+        assertThat(workflow.getWorkflowAnnotations().size(), is(6));
+        assertThat(workflow.getConnections().keySet(), not(hasItems("root:26_1")));
 
         // undo deletion
         ws().undoWorkflowCommand(wfId, getRootID());
-        cr(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow(), "undo_delete_command");
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertThat(workflow.getNodes().keySet(), hasItems("root:1", "root:4"));
+        assertThat(
+            workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
+            hasItems("root_7"));
+        assertThat(workflow.getWorkflowAnnotations().size(), is(7));
+        assertThat(workflow.getConnections().keySet(), hasItems("root:26_1"));
 
         // delete a node within a component
         assertThat("node expected to be present",
@@ -535,7 +550,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
         assertThat(exception.getMessage(),
-            containsString("Node ID \"0:9999999\" not contained in workflow, nor it's the workflow itself"));
+            containsString("9999999\" not contained in workflow, nor it's the workflow itself"));
 
         // add a connection that can't be added (here: because it creates a cycle)
         ConnectCommandEnt command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);

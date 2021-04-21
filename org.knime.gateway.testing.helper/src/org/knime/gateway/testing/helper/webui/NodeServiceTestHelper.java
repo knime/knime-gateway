@@ -53,18 +53,22 @@ import static java.util.Collections.singletonList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -135,14 +139,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
 
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE)
                 .getWorkflow().getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
 
         ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE).getWorkflow()
                 .getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
@@ -190,23 +194,34 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testChangeLoopExecutionStateInSubWorkflow() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
-        testChangeLoopExecutionState(wfId, new NodeIDEnt(5, 0));
+        NodeIDEnt component = new NodeIDEnt(5,0);
+        testChangeLoopExecutionState(wfId, component);
+        ns().changeNodeStates(wfId, component, Collections.emptyList(), "cancel");
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            WorkflowEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow();
+            assertThat(((ComponentNodeEnt)wf.getNodes().get("root:5")).getState().getExecutionState(),
+                is(not(ExecutionStateEnum.EXECUTING)));
+        });
     }
 
     private void testChangeLoopExecutionState(final String wfId, final NodeIDEnt subWfId) throws Exception {
         NodeIDEnt n4 = subWfId.appendNodeID(4);
+
         // step before first iteration
         ns().changeLoopState(wfId, subWfId, n4, "step");
         cr(getNativeNodeEnt(wfId, subWfId, n4).getLoopInfo(), "loop_info_not_executed");
-        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, subWfId, n4);
             assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
         });
         cr(getNativeNodeEnt(wfId, subWfId, n4).getLoopInfo(), "loop_info_paused");
 
+        // strange race condition causing a NPE otherwise
+        Thread.sleep(1000);
+
         // step while paused
         ns().changeLoopState(wfId, subWfId, n4, "step");
-        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, subWfId, n4);
             assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
         });
@@ -214,7 +229,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // resume
         ns().changeLoopState(wfId, subWfId, n4, "resume");
-        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, subWfId, n4);
             assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.FINISHED));
         });
@@ -224,7 +239,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ns().changeNodeStates(wfId, subWfId, singletonList(subWfId.appendNodeID(1)), "reset");
         ns().changeNodeStates(wfId, subWfId, emptyList(), "execute");
         ns().changeLoopState(wfId, subWfId, n4, "pause");
-        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, subWfId, n4);
             assertThat(node.getLoopInfo().getStatus(), is(StatusEnum.PAUSED));
         });
