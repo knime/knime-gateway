@@ -50,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections4.trie.PatriciaTrie;
+import org.apache.commons.lang3.StringUtils;
 import org.javers.core.changelog.ChangeProcessor;
 import org.javers.core.commit.CommitMetadata;
 import org.javers.core.diff.Change;
@@ -67,7 +68,6 @@ import org.javers.core.diff.changetype.container.ValueRemoved;
 import org.javers.core.diff.changetype.map.EntryRemoved;
 import org.javers.core.diff.changetype.map.MapChange;
 import org.javers.core.metamodel.object.GlobalId;
-import org.javers.core.metamodel.object.UnboundedValueObjectId;
 import org.javers.core.metamodel.object.ValueObjectId;
 import org.knime.gateway.api.entity.GatewayEntity;
 
@@ -142,7 +142,7 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         if (globalId instanceof ValueObjectId) {
             path = "/" + ((ValueObjectId)globalId).getFragment().replace("m_", ""); //NOSONAR
         }
-        if ((propertyName != null && globalId instanceof UnboundedValueObjectId) || propertyName != null) {
+        if (propertyName != null) {
             path += "/" + propertyName.replace("m_", ""); //NOSONAR
         }
         return path;
@@ -239,11 +239,14 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
         <P> void createPatchOperations(final PatchCreator<P> patchCreator) {
             Set<String> toIgnore = new HashSet<>();
             for (Entry<String, GatewayEntity> e : m_tree.entrySet()) {
-                String key = e.getKey();
+                String path = e.getKey();
                 // ignore those paths whose 'prefix' has already been added
-                if (!toIgnore.contains(key)) {
-                    patchCreator.added(key, e.getValue());
-                    toIgnore.addAll(m_tree.prefixMap(key).keySet());
+                if (!toIgnore.contains(path)) {
+                    int pathDepth = StringUtils.countMatches(path, '/');
+                    patchCreator.added(path, e.getValue());
+                    // only ignore paths that are strictly 'sub-paths' of the one we are looking at
+                    m_tree.prefixMap(path).keySet().stream().filter(s -> StringUtils.countMatches(s, '/') > pathDepth)
+                        .forEach(toIgnore::add);
                 }
             }
             m_tree.clear();

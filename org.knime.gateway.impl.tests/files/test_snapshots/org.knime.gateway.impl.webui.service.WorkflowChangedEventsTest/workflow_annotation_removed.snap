@@ -23,6 +23,81 @@
   }
 }, {
   "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/10",
+  "value" : {
+    "color" : "#73D216",
+    "fontSize" : 21,
+    "length" : 1,
+    "start" : 62
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/11",
+  "value" : {
+    "color" : "#000000",
+    "fontSize" : 21,
+    "length" : 202,
+    "start" : 63
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/12",
+  "value" : {
+    "color" : "#CC0000",
+    "fontSize" : 21,
+    "length" : 5,
+    "start" : 265
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/13",
+  "value" : {
+    "bold" : true,
+    "color" : "#4E9A06",
+    "fontSize" : 32,
+    "length" : 11,
+    "start" : 270
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/14",
+  "value" : {
+    "color" : "#000000",
+    "fontSize" : 12,
+    "length" : 7,
+    "start" : 281
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/15",
+  "value" : {
+    "bold" : true,
+    "color" : "#000000",
+    "fontSize" : 17,
+    "italic" : true,
+    "length" : 13,
+    "start" : 288
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/16",
+  "value" : {
+    "color" : "#3465A4",
+    "fontSize" : 27,
+    "length" : 2,
+    "start" : 301
+  }
+}, {
+  "op" : "add",
+  "path" : "/workflowAnnotations/3/styleRanges/17",
+  "value" : {
+    "color" : "#000000",
+    "fontSize" : 21,
+    "length" : 23,
+    "start" : 303
+  }
+}, {
+  "op" : "add",
   "path" : "/workflowAnnotations/3/styleRanges/2",
   "value" : {
     "bold" : true,
