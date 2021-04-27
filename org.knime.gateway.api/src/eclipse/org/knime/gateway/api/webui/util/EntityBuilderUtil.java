@@ -326,7 +326,8 @@ public final class EntityBuilderUtil {
                 Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
-                    port.isInactive() ? Boolean.TRUE : null, connections, buildContext));
+                    port.isInactive() ? Boolean.TRUE : null, connections, getPortObjectVersion(port, buildContext),
+                    buildContext));
             }
         } else {
             int nrPorts = wfm.getNrWorkflowOutgoingPorts();
@@ -334,7 +335,7 @@ public final class EntityBuilderUtil {
                 ConnectionContainer connection = wfm.getIncomingConnectionFor(wfm.getID(), i);
                 NodeInPort port = wfm.getWorkflowOutgoingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null,
-                    connection != null ? singleton(connection) : emptyList(), buildContext));
+                    connection != null ? singleton(connection) : emptyList(), null, buildContext));
             }
         }
         return ports;
@@ -678,7 +679,7 @@ public final class EntityBuilderUtil {
                 PortType pt = inPort.getPortType();
                 buildContext.updatePortTypes(pt, true);
                 res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null,
-                    connection == null ? Collections.emptyList() : Collections.singletonList(connection),
+                    connection == null ? Collections.emptyList() : Collections.singletonList(connection), null,
                     buildContext));
             }
         } else {
@@ -688,16 +689,30 @@ public final class EntityBuilderUtil {
                 PortType pt = outPort.getPortType();
                 buildContext.updatePortTypes(pt, false);
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
-                    outPort.isInactive() ? outPort.isInactive() : null, connections, buildContext));
+                    outPort.isInactive() ? outPort.isInactive() : null, connections,
+                    getPortObjectVersion(outPort, buildContext), buildContext));
             }
         }
         return res;
     }
 
+    private static Integer getPortObjectVersion(final NodeOutPort outPort, final WorkflowBuildContext buildContext) {
+        if (!buildContext.includeInteractionInfo()) {
+            return null;
+        }
+        PortObject po = outPort.getPortObject();
+        if (po instanceof FlowVariablePortObject) {
+            return outPort.getFlowObjectStack().hashCode();
+        } else {
+            return po == null ? null : System.identityHashCode(po);
+        }
+    }
+
     @SuppressWarnings("java:S107") // it's a 'builder'-method, so many parameters are ok
     private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
-        final Collection<ConnectionContainer> connections, final WorkflowBuildContext buildContext) {
+        final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
+        final WorkflowBuildContext buildContext) {
         NodePortAndTemplateEnt.TypeEnum resPortType = getNodePortTemplateType(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
@@ -710,6 +725,7 @@ public final class EntityBuilderUtil {
             .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext))//
             .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
             .setView(buildPortViewEnt(ptype))//
+            .setPortObjectVersion(portObjectVersion)//
             .build();
     }
 

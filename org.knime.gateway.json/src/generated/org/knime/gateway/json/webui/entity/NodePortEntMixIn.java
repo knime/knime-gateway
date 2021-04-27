@@ -109,6 +109,10 @@ public interface NodePortEntMixIn extends NodePortEnt {
     @JsonProperty("view")
     public PortViewEnt getView();
     
+    @Override
+    @JsonProperty("portObjectVersion")
+    public Integer getPortObjectVersion();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -161,6 +165,10 @@ public interface NodePortEntMixIn extends NodePortEnt {
         @Override
         @JsonProperty("view")
         public NodePortEntMixInBuilder setView(final PortViewEnt view);
+        
+        @Override
+        @JsonProperty("portObjectVersion")
+        public NodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
         
     }
 

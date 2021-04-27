@@ -5,12 +5,24 @@
   "value" : "Variables connection"
 }, {
   "op" : "add",
+  "path" : "/nodes/root:1/outPorts/0/portObjectVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "add",
   "path" : "/nodes/root:1/outPorts/1/info",
   "value" : "Rows: 8, Cols: 5"
 }, {
   "op" : "add",
+  "path" : "/nodes/root:1/outPorts/1/portObjectVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "add",
   "path" : "/nodes/root:1/outPorts/2/info",
   "value" : "Rows: 4, Cols: 4"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:1/outPorts/2/portObjectVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "remove",
   "path" : "/nodes/root:12/state/warning"

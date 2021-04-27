@@ -348,12 +348,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:10_1, root:19_1, root:20_1, root:20_2, root:21_1, root:22_2, root:25_1, root:26_2, root:27_1, root:27_3, root:2_1 ]",
         "index" : 1,
         "info" : "Rows: 8, Cols: 5",
         "name" : "Random data with cluster ID",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -363,6 +365,7 @@
         "index" : 2,
         "info" : "Rows: 4, Cols: 4",
         "name" : "Cluster centers",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -415,12 +418,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:11_1, root:6_0 ]",
         "index" : 1,
         "info" : "Rows: 8, Cols: 4",
         "name" : "Filtered table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -474,6 +479,7 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "color" : "#9B9B9B",
@@ -482,6 +488,7 @@
         "info" : "Distance Measure:'Standard Distance (Euclidean/ Manhattan)' of extension: 'org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory'",
         "name" : "Distance Measure",
         "otherTypeId" : -58553590,
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "other"
       } ],
       "position" : {
@@ -525,6 +532,7 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -735,12 +743,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 8, Cols: 8",
         "name" : "Input 1 + columns/rows with neighbor information",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -820,12 +830,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 8, Cols: 5",
         "name" : "Concatenated table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -951,6 +963,7 @@
         "index" : 0,
         "info" : "Inactive Port Object",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -990,12 +1003,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 4, Cols: 4",
         "name" : "Covariance matrix",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1005,6 +1020,7 @@
         "index" : 2,
         "info" : "Rows: 4, Cols: 5",
         "name" : "Spectral decomposition",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1016,6 +1032,7 @@
         "info" : "4 principal components",
         "name" : "Projection model",
         "otherTypeId" : -1676580659,
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "other"
       } ],
       "position" : {
@@ -1073,12 +1090,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 8, Cols: 6",
         "name" : "Classified Test data",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1133,12 +1152,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 4, Cols: 5",
         "name" : "Port 1",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1198,12 +1219,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 8, Cols: 9",
         "name" : "Projected data",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1274,12 +1297,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 20, Cols: 5",
         "name" : "Concatenated table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1332,6 +1357,7 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "color" : "#9B9B9B",
@@ -1340,6 +1366,7 @@
         "info" : "J48",
         "name" : "Trained model",
         "otherTypeId" : -822968375,
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "other"
       } ],
       "position" : {
@@ -1423,12 +1450,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 7, Cols: 14",
         "name" : "Robust Statistics",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1478,6 +1507,7 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:14_1, root:185_1 ]",
@@ -1485,6 +1515,7 @@
         "index" : 1,
         "info" : "Inactive Port Object",
         "name" : "Output",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -1535,12 +1566,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:8_1 ]",
         "index" : 1,
         "info" : "Rows: 4, Cols: 16",
         "name" : "Port 1",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1591,6 +1624,7 @@
         "index" : 0,
         "info" : "Inactive Port Object",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
@@ -1598,6 +1632,7 @@
         "index" : 1,
         "info" : "Inactive Port Object",
         "name" : "Variable table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1751,12 +1786,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Variables connection",
         "name" : "Appended variables",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -1791,12 +1828,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:16_1 ]",
         "index" : 1,
         "info" : "Rows: 1, Cols: 3",
         "name" : "Manually created table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -1843,12 +1882,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:18_1 ]",
         "index" : 1,
         "info" : "Variables connection",
         "name" : "Variables Output",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {

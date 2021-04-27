@@ -183,6 +183,14 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setView(PortViewEnt view);
         
         /**
+         * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absend if there is no &#39;interaction info&#39; supposed to be included.
+         * 
+         * @param portObjectVersion the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
+        
+        /**
          * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.
          * 
          * @param nodeState the property value,  

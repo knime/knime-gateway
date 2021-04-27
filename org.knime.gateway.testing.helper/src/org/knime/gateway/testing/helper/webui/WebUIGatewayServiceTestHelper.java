@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -62,6 +64,7 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
+import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -146,21 +149,37 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
         /**
          * Canonical sorting of the patch operations.
+         * And skip the values of patches for 'portObjectVersion' - non-deterministic.
          */
         objToString.addException(PatchEnt.class, "ops", (v, gen, e) -> {
             List<PatchOpEnt> l = ((List<PatchOpEnt>)v).stream()
+                .map(WebUIGatewayServiceTestHelper::replacePortObjectVersionPatchValue)//
                 .sorted(Comparator.<PatchOpEnt, String> comparing(o -> o.getOp().toString())
-                    .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))
+                    .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))//
                 .collect(Collectors.toList());
             gen.writeRawValue(objToString.toString(l));
         });
 
+        /**
+         * Non-deterministic field.
+         */
+        objToString.addException(NodePortEnt.class, "portObjectVersion",
+            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_VERSION"));
 
         try {
             return new ResultChecker(objToString, CoreUtil.resolveToFile("/files/test_snapshots", testClass));
         } catch (IOException ex) {
             // should never happen
             throw new RuntimeException(ex); //NOSONAR
+        }
+    }
+
+    private static PatchOpEnt replacePortObjectVersionPatchValue(final PatchOpEnt o) {
+        if (o.getPath().contains("portObjectVersion")) {
+            return builder(PatchOpEntBuilder.class).setPath(o.getPath()).setOp(o.getOp())
+                .setValue("PLACEHOLDER_FOR_VERSION").build();
+        } else {
+            return o;
         }
     }
 

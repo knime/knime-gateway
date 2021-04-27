@@ -110,6 +110,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public PortViewEnt getView();
     
     @Override
+    @JsonProperty("portObjectVersion")
+    public Integer getPortObjectVersion();
+    
+    @Override
     @JsonProperty("nodeState")
     public NodeStateEnum getNodeState();
     
@@ -165,6 +169,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         @Override
         @JsonProperty("view")
         public MetaNodePortEntMixInBuilder setView(final PortViewEnt view);
+        
+        @Override
+        @JsonProperty("portObjectVersion")
+        public MetaNodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
         
         @Override
         @JsonProperty("nodeState")

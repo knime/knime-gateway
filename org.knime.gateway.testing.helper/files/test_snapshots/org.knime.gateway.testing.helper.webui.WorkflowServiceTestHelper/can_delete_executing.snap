@@ -239,12 +239,14 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 4, Cols: 5",
         "name" : "Random data with cluster ID",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"
@@ -254,6 +256,7 @@
         "index" : 2,
         "info" : "Rows: 4, Cols: 4",
         "name" : "Cluster centers",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "table",
         "view" : {
           "type" : "table"

@@ -16,10 +16,22 @@
   "path" : "/nodes/root:1/outPorts/0/info"
 }, {
   "op" : "remove",
+  "path" : "/nodes/root:1/outPorts/0/portObjectVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "remove",
   "path" : "/nodes/root:1/outPorts/1/info"
 }, {
   "op" : "remove",
+  "path" : "/nodes/root:1/outPorts/1/portObjectVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "remove",
   "path" : "/nodes/root:1/outPorts/2/info"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:1/outPorts/2/portObjectVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "replace",
   "path" : "/allowedActions/canReset",
