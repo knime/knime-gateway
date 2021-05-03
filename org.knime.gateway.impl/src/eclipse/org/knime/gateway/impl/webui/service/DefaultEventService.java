@@ -187,7 +187,9 @@ public final class DefaultEventService implements EventService {
 
     private void removeEventListener(final WorkflowKey wfKey) {
         Consumer<WorkflowManager> callback = m_workflowChangesCallbacks.remove(wfKey);
-        WF_UTIL.getWorkflowChangesListener(wfKey).removeCallback(callback);
+        if (callback != null && WF_UTIL.hasStateFor(wfKey)) {
+            WF_UTIL.getWorkflowChangesListener(wfKey).removeCallback(callback);
+        }
     }
 
     /**

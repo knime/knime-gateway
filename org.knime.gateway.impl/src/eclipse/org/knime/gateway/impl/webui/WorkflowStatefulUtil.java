@@ -293,6 +293,14 @@ public final class WorkflowStatefulUtil {
         }
     }
 
+    /**
+     * @param wfKey
+     * @return <code>true</code> if there is state cached for the workflow represented by the given workflow key
+     */
+    public boolean hasStateFor(final WorkflowKey wfKey) {
+        return m_workflowCache.containsKey(wfKey);
+    }
+
     private DependentNodeProperties dependentNodeProperties(final WorkflowKey wfKey, final WorkflowChanges changes) {
         // dependent node properties are only re-calculated if there are respective changes
         // otherwise a cached instance is used
