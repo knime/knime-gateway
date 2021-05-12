@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,50 +54,31 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * Adds a new node to the workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * Get position
+   * @return position , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public XYEnt getPosition();
+
+  /**
+   * Get nodeFactory
+   * @return nodeFactory , never <code>null</code>
+   **/
+  public NodeFactoryKeyEnt getNodeFactory();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface AddNodeCommandEntBuilder extends GatewayEntityBuilder<AddNodeCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -102,7 +86,23 @@ public interface WorkflowCommandEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        AddNodeCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AddNodeCommandEntBuilder setPosition(XYEnt position);
+        
+        /**
+   		 * Set nodeFactory
+         * 
+         * @param nodeFactory the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AddNodeCommandEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
         
         
         /**
@@ -112,7 +112,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        AddNodeCommandEnt build();
     
     }
 

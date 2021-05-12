@@ -55,6 +55,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +103,9 @@ public class NodeRepositoryTest {
         assertThat("icon property expected", nodeFromSearch.getIcon(), is(notNullValue()));
         assertThat("in-port property expected", nodeFromSearch.getInPorts(), is(not((empty()))));
         assertThat("out-port property expected", nodeFromSearch.getOutPorts(), is(not((empty()))));
+        assertThat("factory class expected", nodeFromSearch.getNodeFactory().getClassName(),
+            is("org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"));
+        assertThat("no factory settings expected", nodeFromSearch.getNodeFactory().getSettings(), is(nullValue()));
     }
 
     @Test

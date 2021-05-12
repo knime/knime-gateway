@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.impl.webui.entity.util;
 
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder;
@@ -104,6 +106,8 @@ import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt.NodePortAndDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
@@ -176,6 +180,9 @@ public class Interface2ImplMap {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <B extends GatewayEntityBuilder> B create(final Class<B> clazz) {
+        if(clazz == AddNodeCommandEntBuilder.class) {
+            return (B)new DefaultAddNodeCommandEnt.DefaultAddNodeCommandEntBuilder();
+        }        
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
         }        
@@ -265,6 +272,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeExecutionInfoEntBuilder.class) {
             return (B)new DefaultNodeExecutionInfoEnt.DefaultNodeExecutionInfoEntBuilder();
+        }        
+        if(clazz == NodeFactoryKeyEntBuilder.class) {
+            return (B)new DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder();
         }        
         if(clazz == NodePortAndDescriptionEntBuilder.class) {
             return (B)new DefaultNodePortAndDescriptionEnt.DefaultNodePortAndDescriptionEntBuilder();

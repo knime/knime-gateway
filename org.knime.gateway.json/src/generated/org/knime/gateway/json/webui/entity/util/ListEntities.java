@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity.util;
 
+import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedNodeActionsEntMixIn;
@@ -74,6 +75,7 @@ import org.knime.gateway.json.webui.entity.NodeDialogOptionsEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDialogOptions_fieldsEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeExecutionInfoEntMixIn;
+import org.knime.gateway.json.webui.entity.NodeFactoryKeyEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortAndDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
@@ -122,6 +124,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AddNodeCommandEntMixIn.class);
         res.add(AllowedActionsEntMixIn.class);
         res.add(AllowedLoopActionsEntMixIn.class);
         res.add(AllowedNodeActionsEntMixIn.class);
@@ -152,6 +155,7 @@ public class ListEntities {
         res.add(NodeDialogOptions_fieldsEntMixIn.class);
         res.add(NodeEntMixIn.class);
         res.add(NodeExecutionInfoEntMixIn.class);
+        res.add(NodeFactoryKeyEntMixIn.class);
         res.add(NodePortAndDescriptionEntMixIn.class);
         res.add(NodePortDescriptionEntMixIn.class);
         res.add(NodePortEntMixIn.class);
@@ -186,6 +190,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);
         res.add(AllowedNodeActionsEntMixIn.AllowedNodeActionsEntMixInBuilder.class);
@@ -216,6 +221,7 @@ public class ListEntities {
         res.add(NodeDialogOptions_fieldsEntMixIn.NodeDialogOptions_fieldsEntMixInBuilder.class);
         res.add(NodeEntMixIn.NodeEntMixInBuilder.class);
         res.add(NodeExecutionInfoEntMixIn.NodeExecutionInfoEntMixInBuilder.class);
+        res.add(NodeFactoryKeyEntMixIn.NodeFactoryKeyEntMixInBuilder.class);
         res.add(NodePortAndDescriptionEntMixIn.NodePortAndDescriptionEntMixInBuilder.class);
         res.add(NodePortDescriptionEntMixIn.NodePortDescriptionEntMixInBuilder.class);
         res.add(NodePortEntMixIn.NodePortEntMixInBuilder.class);

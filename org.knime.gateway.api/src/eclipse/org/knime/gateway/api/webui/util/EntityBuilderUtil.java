@@ -65,6 +65,8 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.missing.MissingNodeFactory;
@@ -161,6 +163,8 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -339,7 +343,25 @@ public final class EntityBuilderUtil {
                 buildNodePortInvariantEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
             .setOutPorts(
                 buildNodePortInvariantEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
-            .setIcon(createIconDataURL(factory)).build();
+            .setIcon(createIconDataURL(factory))//
+            .setNodeFactory(buildNodeFactoryKeyEnt(factory)).build();
+    }
+
+    private static NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeFactory<? extends NodeModel> factory) {
+        org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder =
+            builder(NodeFactoryKeyEntBuilder.class);
+        if (factory != null) {
+            nodeFactoryKeyBuilder.setClassName(factory.getClass().getCanonicalName());
+            //only set settings in case of a dynamic node factory
+            if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
+                NodeSettings settings = new NodeSettings("settings");
+                factory.saveAdditionalFactorySettings(settings);
+                nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
+            }
+        } else {
+            nodeFactoryKeyBuilder.setClassName("");
+        }
+        return nodeFactoryKeyBuilder.build();
     }
 
     private static List<NodePortInvariantsEnt> buildNodePortInvariantEnts(final Stream<PortType> ptypes) {

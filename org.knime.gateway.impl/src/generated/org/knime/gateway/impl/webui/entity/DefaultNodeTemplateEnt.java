@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
 
@@ -70,6 +71,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
   protected Boolean m_component;
   protected java.util.List<NodePortInvariantsEnt> m_inPorts;
   protected java.util.List<NodePortInvariantsEnt> m_outPorts;
+  protected NodeFactoryKeyEnt m_nodeFactory;
   
   protected DefaultNodeTemplateEnt() {
     //for sub-classes
@@ -98,6 +100,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
     m_component = immutable(builder.m_component);
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
+    m_nodeFactory = immutable(builder.m_nodeFactory);
   }
   
    /**
@@ -115,7 +118,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
             return false;
         }
         DefaultNodeTemplateEnt ent = (DefaultNodeTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_component, ent.m_component) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_component, ent.m_component) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_nodeFactory, ent.m_nodeFactory);
     }
 
 
@@ -133,6 +136,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
                .append(m_component)
                .append(m_inPorts)
                .append(m_outPorts)
+               .append(m_nodeFactory)
                .toHashCode();
    }
   
@@ -173,6 +177,11 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         return m_outPorts;
   }
     
+  @Override
+  public NodeFactoryKeyEnt getNodeFactory() {
+        return m_nodeFactory;
+  }
+    
   
     public static class DefaultNodeTemplateEntBuilder implements NodeTemplateEntBuilder {
     
@@ -187,6 +196,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         private Boolean m_component;
         private java.util.List<NodePortInvariantsEnt> m_inPorts;
         private java.util.List<NodePortInvariantsEnt> m_outPorts;
+        private NodeFactoryKeyEnt m_nodeFactory;
 
         @Override
         public DefaultNodeTemplateEntBuilder setName(String name) {
@@ -236,6 +246,12 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         @Override
         public DefaultNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortInvariantsEnt> outPorts) {
              m_outPorts = outPorts;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory) {
+             m_nodeFactory = nodeFactory;
              return this;
         }
 

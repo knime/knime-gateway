@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 
@@ -79,6 +80,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultDeleteCommandEnt.class, name = "delete")
 ,
   @Type(value = DefaultConnectCommandEnt.class, name = "connect")
+,
+  @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -112,6 +115,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultDeleteCommandEnt.class, name = "delete")
 ,
   @Type(value = DefaultConnectCommandEnt.class, name = "connect")
+,
+  @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

@@ -44,17 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
-import org.knime.gateway.json.webui.entity.NativeNodeInvariantsEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,45 +59,21 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTem
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeTemplateEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeFactoryKeyEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
+public interface NodeFactoryKeyEntMixIn extends NodeFactoryKeyEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("className")
+    public String getClassName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
-    @Override
-    @JsonProperty("id")
-    public String getId();
-    
-    @Override
-    @JsonProperty("component")
-    public Boolean isComponent();
-    
-    @Override
-    @JsonProperty("inPorts")
-    public java.util.List<NodePortInvariantsEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<NodePortInvariantsEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("nodeFactory")
-    public NodeFactoryKeyEnt getNodeFactory();
+    @JsonProperty("settings")
+    public String getSettings();
     
 
     /**
@@ -110,42 +83,18 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeTemplateEntMixInBuilder extends NodeTemplateEntBuilder {
+    public static interface NodeFactoryKeyEntMixInBuilder extends NodeFactoryKeyEntBuilder {
     
         @Override
-        public NodeTemplateEntMixIn build();
+        public NodeFactoryKeyEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public NodeTemplateEntMixInBuilder setName(final String name);
+        @JsonProperty("className")
+        public NodeFactoryKeyEntMixInBuilder setClassName(final String className);
         
         @Override
-        @JsonProperty("type")
-        public NodeTemplateEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public NodeTemplateEntMixInBuilder setIcon(final String icon);
-        
-        @Override
-        @JsonProperty("id")
-        public NodeTemplateEntMixInBuilder setId(final String id);
-        
-        @Override
-        @JsonProperty("component")
-        public NodeTemplateEntMixInBuilder setComponent(final Boolean component);
-        
-        @Override
-        @JsonProperty("inPorts")
-        public NodeTemplateEntMixInBuilder setInPorts(final java.util.List<NodePortInvariantsEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public NodeTemplateEntMixInBuilder setOutPorts(final java.util.List<NodePortInvariantsEnt> outPorts);
-        
-        @Override
-        @JsonProperty("nodeFactory")
-        public NodeTemplateEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
+        @JsonProperty("settings")
+        public NodeFactoryKeyEntMixInBuilder setSettings(final String settings);
         
     }
 

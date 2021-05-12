@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity.util;
 
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
@@ -74,6 +75,7 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -123,6 +125,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AddNodeCommandEnt.class);
         res.add(AllowedActionsEnt.class);
         res.add(AllowedLoopActionsEnt.class);
         res.add(AllowedNodeActionsEnt.class);
@@ -153,6 +156,7 @@ public class ListEntities {
         res.add(NodeDialogOptions_fieldsEnt.class);
         res.add(NodeEnt.class);
         res.add(NodeExecutionInfoEnt.class);
+        res.add(NodeFactoryKeyEnt.class);
         res.add(NodePortAndDescriptionEnt.class);
         res.add(NodePortDescriptionEnt.class);
         res.add(NodePortEnt.class);
@@ -187,6 +191,7 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
         res.add(AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder.class);
         res.add(AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder.class);
@@ -217,6 +222,7 @@ public class ListEntities {
         res.add(NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder.class);
         res.add(NodeEnt.NodeEntBuilder.class);
         res.add(NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder.class);
+        res.add(NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder.class);
         res.add(NodePortAndDescriptionEnt.NodePortAndDescriptionEntBuilder.class);
         res.add(NodePortDescriptionEnt.NodePortDescriptionEntBuilder.class);
         res.add(NodePortEnt.NodePortEntBuilder.class);

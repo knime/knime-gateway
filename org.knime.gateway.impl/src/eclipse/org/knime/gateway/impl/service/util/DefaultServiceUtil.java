@@ -45,12 +45,24 @@
  */
 package org.knime.gateway.impl.service.util;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -217,6 +229,52 @@ public final class DefaultServiceUtil {
     public static ConnectionID entityToConnectionID(final String rootWorkflowID, final ConnectionIDEnt connectionID) {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
+    }
+
+    /**
+     * Creates and adds a node to a workflow.
+     *
+     * @param factoryClassName the node's fully qualified factory class name
+     * @param factorySettings optional factory settings in case of dynamic nodes, otherwise <code>null</code>
+     * @param x the x-coordinate to add the node at
+     * @param y the y-coordinate to add the node at
+     * @param wfm the workflow to add the node to
+     * @return the id of the new node
+     * @throws NoSuchElementException if no node couldn't be found for the given factory class name
+     * @throws IOException if a problem occurred while reading in the factory settings
+     */
+    public static NodeID createAndAddNode(final String factoryClassName, final String factorySettings, final Integer x,
+        final Integer y, final WorkflowManager wfm) throws IOException {
+        NodeFactory<NodeModel> nodeFactory;
+        try {
+            nodeFactory = FileNativeNodeContainerPersistor.loadNodeFactory(factoryClassName);
+        } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException
+                | InvalidSettingsException ex) {
+            String message = "No node found for factory key " + factoryClassName;
+            NodeLogger.getLogger(DefaultServiceUtil.class).warn(message, ex);
+            throw new NoSuchElementException(message);
+        }
+        if (factorySettings != null && !factorySettings.isEmpty()) {
+            try {
+                NodeSettings settings =
+                    JSONConfig.readJSON(new NodeSettings("settings"), new StringReader(factorySettings));
+                nodeFactory.loadAdditionalFactorySettings(settings);
+            } catch (IOException | InvalidSettingsException ex) {
+                throw new IOException(
+                    "Problem reading factory settings while trying to create node from '" + factoryClassName + "'", ex);
+            }
+        } else if (nodeFactory instanceof DynamicNodeFactory) {
+            //no settings stored with a dynamic node factory (which is the, e.g., with the spark nodes)
+            //at least init the node factory in order to have the node description available
+            nodeFactory.init();
+        } else {
+            //
+        }
+        NodeID nodeID = wfm.createAndAddNode(nodeFactory);
+        NodeUIInformation info =
+            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(true).build();
+        wfm.getNodeContainer(nodeID).setUIInformation(info);
+        return nodeID;
     }
 
     /**

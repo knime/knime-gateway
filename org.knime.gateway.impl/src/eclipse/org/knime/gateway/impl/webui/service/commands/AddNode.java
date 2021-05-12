@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,80 +41,53 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   May 11, 2021 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.commands;
 
+import java.io.IOException;
+import java.util.NoSuchElementException;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * A command that is executed to change a workflow.
- * 
+ * Workflow command to add a native node.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
+public class AddNode extends AbstractWorkflowCommand<AddNodeCommandEnt> {
 
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node");
+    private NodeID m_addedNode;
 
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
+    @Override
+    protected boolean execute() throws OperationNotAllowedException {
+        WorkflowManager wfm = getWorkflowManager();
+        AddNodeCommandEnt entity = getCommandEntity();
+        NodeFactoryKeyEnt factoryKey = entity.getNodeFactory();
+        XYEnt pos = entity.getPosition();
+        try {
+            m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKey.getClassName(), factoryKey.getSettings(),
+                pos.getX(), pos.getY() - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm);
+        } catch (IOException | NoSuchElementException e) {
+            throw new OperationNotAllowedException(e.getMessage(), e);
+        }
+        return true;
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-    /**
-     * The builder for the entity.
-     */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
-
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowCommandEnt build();
-    
+    public void undo() throws OperationNotAllowedException {
+        getWorkflowManager().removeNode(m_addedNode);
+        m_addedNode = null;
     }
 
 }

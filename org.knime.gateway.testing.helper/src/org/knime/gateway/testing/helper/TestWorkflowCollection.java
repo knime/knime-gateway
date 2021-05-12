@@ -46,7 +46,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow to test loop execution.
      */
-    PORT_TYPES("/files/testflows/Port Types", "port types");
+    PORT_TYPES("/files/testflows/Port Types", "port types"),
+
+    /**
+     * An without any native nodes, but an empty metanode (#1) and an empty component (#2).
+     */
+    HOLLOW("/files/testflows/Hollow", "hollow");
 
 
     private final String m_workflowDir;

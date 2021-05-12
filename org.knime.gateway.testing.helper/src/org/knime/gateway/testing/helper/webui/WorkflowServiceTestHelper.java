@@ -58,8 +58,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
@@ -75,6 +77,8 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
@@ -83,6 +87,7 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
@@ -563,6 +568,86 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final Integer destPort) {
         return builder(ConnectCommandEntBuilder.class).setKind(KindEnum.CONNECT).setSourceNodeId(source)
             .setSourcePortIdx(sourcePort).setDestinationNodeId(dest).setDestinationPortIdx(destPort).build();
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link AddNodeCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testExecuteAddNodeCommand() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        String rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        NodeIDEnt metanode = new NodeIDEnt(1);
+        NodeIDEnt component = new NodeIDEnt(2);
+
+        // add a node on root-level
+        ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(rowFilterFactory, null, 12, 13));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 12, 13);
+
+        // undo
+        // NOTE: for some reason the undo (i.e. delete node) seems to be carried out asynchronously by the
+        // WorkflowManager
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
+            .untilAsserted(() -> assertTrue(
+                ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().isEmpty()));
+
+        // add node to metanode
+        ws().executeWorkflowCommand(wfId, metanode, buildAddNodeCommand(rowFilterFactory, null, 13, 14));
+        checkForNode(ws().getWorkflow(wfId, metanode, Boolean.FALSE), rowFilterFactory, 13, 14);
+
+        // undo
+        ws().undoWorkflowCommand(wfId, metanode);
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
+            .untilAsserted(() -> assertTrue(
+                ws().getWorkflow(wfId, metanode, Boolean.FALSE).getWorkflow().getNodeTemplates().isEmpty()));
+
+        // add node to component
+        ws().executeWorkflowCommand(wfId, component, buildAddNodeCommand(rowFilterFactory, null, 14, 15));
+        checkForNode(ws().getWorkflow(wfId, component, Boolean.FALSE), rowFilterFactory, 14, 15);
+
+        // undo
+        ws().undoWorkflowCommand(wfId, component);
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
+            .untilAsserted(() -> assertThat(
+                ws().getWorkflow(wfId, component, Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2)));
+
+        // add a dynamic node (i.e. with factory settings)
+        String jsNodeFactory = "org.knime.dynamic.js.v30.DynamicJSNodeFactory";
+        String factorySettings =
+            "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
+        ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + ":8e81ce56", 15, 16);
+
+        // add a node that doesn't exists
+        Exception ex  = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand("non-sense-factory", null, 0, 0)));
+        assertThat(ex.getMessage(), is("No node found for factory key non-sense-factory"));
+
+        // add a dynamic node with non-sense settings
+        ex  = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, "blub", 0, 0)));
+        assertThat(ex.getMessage(), startsWith("Problem reading factory settings while trying to create node from"));
+    }
+
+    private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
+        final int x, final int y) {
+        return builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
+            .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class).setClassName(factoryClassName)
+                .setSettings(factorySettings).build())//
+            .setPosition(builder(XYEntBuilder.class).setX(x).setY(y).build()).build();
+    }
+
+    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y) {
+        assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
+        NodeEnt nodeEnt = wf.getWorkflow().getNodes().values().stream()
+            .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
+            .findFirst().orElseThrow();
+        assertThat(nodeEnt.getPosition().getX(), is(x));
+        assertThat(nodeEnt.getPosition().getY(), is(y));
     }
 
 }

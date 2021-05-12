@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -84,6 +85,12 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
    * @return outPorts 
    **/
   public java.util.List<NodePortInvariantsEnt> getOutPorts();
+
+  /**
+   * Get nodeFactory
+   * @return nodeFactory 
+   **/
+  public NodeFactoryKeyEnt getNodeFactory();
 
 
     /**
@@ -146,6 +153,14 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
          * @return this entity builder for chaining
          */
         NodeTemplateEntBuilder setOutPorts(java.util.List<NodePortInvariantsEnt> outPorts);
+        
+        /**
+   		 * Set nodeFactory
+         * 
+         * @param nodeFactory the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
         
         
         /**
