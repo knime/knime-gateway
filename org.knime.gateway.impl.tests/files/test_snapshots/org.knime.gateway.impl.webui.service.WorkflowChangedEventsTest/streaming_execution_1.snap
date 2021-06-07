@@ -29,10 +29,6 @@
   "value" : "Variables connection"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:3:0:3/outPorts/0/portObjectVersion",
-  "value" : "PLACEHOLDER_FOR_VERSION"
-}, {
-  "op" : "add",
   "path" : "/nodes/root:3:0:3/outPorts/1/info",
   "value" : "Rows: 0, Cols: 1"
 }, {
@@ -43,10 +39,6 @@
   "op" : "add",
   "path" : "/nodes/root:3:0:5/outPorts/0/info",
   "value" : "Variables connection"
-}, {
-  "op" : "add",
-  "path" : "/nodes/root:3:0:5/outPorts/0/portObjectVersion",
-  "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "add",
   "path" : "/nodes/root:3:0:5/outPorts/1/info",
@@ -61,16 +53,8 @@
   "value" : "Variables connection"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:3:0:6/outPorts/0/portObjectVersion",
-  "value" : "PLACEHOLDER_FOR_VERSION"
-}, {
-  "op" : "add",
   "path" : "/nodes/root:3:0:7/outPorts/0/info",
   "value" : "Variables connection"
-}, {
-  "op" : "add",
-  "path" : "/nodes/root:3:0:7/outPorts/0/portObjectVersion",
-  "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "add",
   "path" : "/nodes/root:3:0:7/outPorts/1/info",

@@ -90,6 +90,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
@@ -143,11 +144,13 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:3_1 ]",
         "index" : 1,
         "name" : "Output table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -194,11 +197,13 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:8_0 ]",
         "index" : 1,
         "name" : "Output table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -310,6 +315,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -354,6 +360,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {

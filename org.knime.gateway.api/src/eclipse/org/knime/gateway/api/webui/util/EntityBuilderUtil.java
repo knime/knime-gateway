@@ -52,6 +52,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
@@ -74,6 +75,7 @@ import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionProgress;
+import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
@@ -700,10 +702,15 @@ public final class EntityBuilderUtil {
         if (!buildContext.includeInteractionInfo()) {
             return null;
         }
-        PortObject po = outPort.getPortObject();
-        if (po instanceof FlowVariablePortObject) {
-            return outPort.getFlowObjectStack().hashCode();
+        if (outPort.getPortType().equals(FlowVariablePortObject.TYPE)) {
+            HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+            for (FlowVariable v : outPort.getFlowObjectStack().getAllAvailableFlowVariables().values()) {
+                hashCodeBuilder.append(v.getName());
+                hashCodeBuilder.append(v.getValue(v.getVariableType()).hashCode());
+            }
+            return hashCodeBuilder.build();
         } else {
+            PortObject po = outPort.getPortObject();
             return po == null ? null : System.identityHashCode(po);
         }
     }

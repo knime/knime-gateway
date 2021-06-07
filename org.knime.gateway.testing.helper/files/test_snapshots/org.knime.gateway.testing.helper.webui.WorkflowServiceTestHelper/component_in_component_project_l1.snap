@@ -50,6 +50,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -83,6 +84,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -122,6 +124,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {

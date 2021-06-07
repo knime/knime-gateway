@@ -581,6 +581,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "color" : "#1469AF",
@@ -676,6 +677,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -903,6 +905,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
@@ -1406,6 +1409,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       } ],
       "position" : {
@@ -1675,6 +1679,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
@@ -1732,6 +1737,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[  ]",
