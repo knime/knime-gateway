@@ -47,10 +47,13 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.SingleNodeEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -64,7 +67,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
+public interface NativeNodeEnt extends GatewayEntity, NodeEnt, SingleNodeEnt {
 
 
   /**
@@ -162,6 +165,22 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setSuccessors(java.util.BitSet successors);
+        
+        /**
+   		 * Set dialog
+         * 
+         * @param dialog the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setDialog(NodeDialogEnt dialog);
+        
+        /**
+   		 * Set view
+         * 
+         * @param view the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setView(NodeViewEnt view);
         
         /**
          * The id of the node template this node is an instance of.

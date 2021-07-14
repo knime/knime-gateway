@@ -96,6 +96,8 @@ import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.NativeNodeTempla
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogEnt.NodeDialogEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDialogEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionsEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder;
@@ -114,6 +116,8 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -122,6 +126,8 @@ import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.SingleNodeEnt.SingleNodeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSingleNodeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
@@ -244,6 +250,9 @@ public class Interface2ImplMap {
         if(clazz == NodeAnnotationEntBuilder.class) {
             return (B)new DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder();
         }        
+        if(clazz == NodeDialogEntBuilder.class) {
+            return (B)new DefaultNodeDialogEnt.DefaultNodeDialogEntBuilder();
+        }        
         if(clazz == NodeDialogOptionsEntBuilder.class) {
             return (B)new DefaultNodeDialogOptionsEnt.DefaultNodeDialogOptionsEntBuilder();
         }        
@@ -271,6 +280,9 @@ public class Interface2ImplMap {
         if(clazz == NodeViewDescriptionEntBuilder.class) {
             return (B)new DefaultNodeViewDescriptionEnt.DefaultNodeViewDescriptionEntBuilder();
         }        
+        if(clazz == NodeViewEntBuilder.class) {
+            return (B)new DefaultNodeViewEnt.DefaultNodeViewEntBuilder();
+        }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();
         }        
@@ -282,6 +294,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
+        }        
+        if(clazz == SingleNodeEntBuilder.class) {
+            return (B)new DefaultSingleNodeEnt.DefaultSingleNodeEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();

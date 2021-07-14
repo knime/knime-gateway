@@ -46,12 +46,15 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
+import org.knime.gateway.json.webui.entity.SingleNodeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -110,6 +113,14 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @Override
     @JsonProperty("successors")
     public java.util.BitSet getSuccessors();
+    
+    @Override
+    @JsonProperty("dialog")
+    public NodeDialogEnt getDialog();
+    
+    @Override
+    @JsonProperty("view")
+    public NodeViewEnt getView();
     
     @Override
     @JsonProperty("name")
@@ -179,6 +190,14 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("successors")
         public ComponentNodeEntMixInBuilder setSuccessors(final java.util.BitSet successors);
+        
+        @Override
+        @JsonProperty("dialog")
+        public ComponentNodeEntMixInBuilder setDialog(final NodeDialogEnt dialog);
+        
+        @Override
+        @JsonProperty("view")
+        public ComponentNodeEntMixInBuilder setView(final NodeViewEnt view);
         
         @Override
         @JsonProperty("name")

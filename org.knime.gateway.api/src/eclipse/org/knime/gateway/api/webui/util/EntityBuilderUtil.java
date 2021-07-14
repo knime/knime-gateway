@@ -99,6 +99,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
+import org.knime.core.ui.Page;
+import org.knime.core.ui.UINodeFactory;
+import org.knime.core.ui.UINodeFactoryUtil;
 import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
@@ -150,6 +153,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.NativeNodeTempla
 import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeDialogEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
@@ -168,6 +172,8 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -731,7 +737,7 @@ public final class EntityBuilderUtil {
             .setType(resPortType)//
             .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext))//
             .setColor(resPortType == NodePortAndTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null)//
-            .setView(buildPortViewEnt(ptype))//
+            .setView(buildContext.includeInteractionInfo() ? buildPortViewEnt(ptype) : null)//
             .setPortObjectVersion(portObjectVersion)//
             .build();
     }
@@ -813,7 +819,41 @@ public final class EntityBuilderUtil {
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
             .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
+            .setDialog(buildContext.includeInteractionInfo() ? buildNodeDialogEnt(nc.getNode().getFactory()) : null)//
+            .setView(buildContext.includeInteractionInfo()
+                ? buildNodeViewEnt(nc.getNode().getFactory(), nc.getNodeModel(), nc.getID()) : null)//
             .build();
+    }
+
+    private static NodeDialogEnt buildNodeDialogEnt(final NodeFactory<NodeModel> f) {
+        if (f instanceof UINodeFactory && ((UINodeFactory)f).hasNodeDialog()) {
+            // TODO
+            return null;
+        } else {
+            return null;
+        }
+
+    }
+
+    private static NodeViewEnt buildNodeViewEnt(final NodeFactory<NodeModel> f, final NodeModel nm, final NodeID id) {
+        Page p = UINodeFactoryUtil.createNodeViewPage(f, nm).orElse(null);
+        if (p != null) {
+            // TODO move path prefix into a prominent constant
+            StringBuilder pathPrefix = new StringBuilder("node/view/");
+            if (p.isDynamic()) {
+                // include node id in path prefix (because every node instance has a different page)
+                // TODO we might even need a add random number to invalidate the cache in the FE
+                pathPrefix.append(id.toString());
+                pathPrefix.append("/");
+            }
+            // TODO maybe only append node factory class if not dynamic (because the node id is unique already)
+            pathPrefix.append(f.getClass().getName());
+            pathPrefix.append("/");
+            pathPrefix.append(p.getRelativePath().toString());
+            return builder(NodeViewEntBuilder.class).setIframeSrc(pathPrefix.toString()).build();
+        } else {
+            return null;
+        }
     }
 
     private static BitSet getNodeSuccessors(final NodeID id, final WorkflowBuildContext buildContext) {

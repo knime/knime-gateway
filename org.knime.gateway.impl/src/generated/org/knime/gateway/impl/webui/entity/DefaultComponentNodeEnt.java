@@ -52,12 +52,15 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSingleNodeEnt;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 
@@ -78,6 +81,8 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
   protected java.util.BitSet m_successors;
+  protected NodeDialogEnt m_dialog;
+  protected NodeViewEnt m_view;
   protected String m_name;
   protected TypeEnum m_type;
   protected String m_icon;
@@ -119,6 +124,8 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
     m_successors = immutable(builder.m_successors);
+    m_dialog = immutable(builder.m_dialog);
+    m_view = immutable(builder.m_view);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
@@ -144,7 +151,7 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
             return false;
         }
         DefaultComponentNodeEnt ent = (DefaultComponentNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_successors, ent.m_successors) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_successors, ent.m_successors) && Objects.equals(m_dialog, ent.m_dialog) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
     }
 
 
@@ -164,6 +171,8 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
                .append(m_allowedActions)
                .append(m_executionInfo)
                .append(m_successors)
+               .append(m_dialog)
+               .append(m_view)
                .append(m_name)
                .append(m_type)
                .append(m_icon)
@@ -220,6 +229,16 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
   }
     
   @Override
+  public NodeDialogEnt getDialog() {
+        return m_dialog;
+  }
+    
+  @Override
+  public NodeViewEnt getView() {
+        return m_view;
+  }
+    
+  @Override
   public String getName() {
         return m_name;
   }
@@ -260,6 +279,8 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
         private java.util.BitSet m_successors;
+        private NodeDialogEnt m_dialog;
+        private NodeViewEnt m_view;
         private String m_name;
         private TypeEnum m_type;
         private String m_icon;
@@ -332,6 +353,18 @@ public class DefaultComponentNodeEnt implements ComponentNodeEnt {
         @Override
         public DefaultComponentNodeEntBuilder setSuccessors(java.util.BitSet successors) {
              m_successors = successors;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentNodeEntBuilder setDialog(NodeDialogEnt dialog) {
+             m_dialog = dialog;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentNodeEntBuilder setView(NodeViewEnt view) {
+             m_view = view;
              return this;
         }
 

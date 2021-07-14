@@ -47,10 +47,13 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.SingleNodeEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -64,7 +67,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeAndTemplateEnt {
+public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, SingleNodeEnt, ComponentNodeAndTemplateEnt {
 
 
   /**
@@ -156,6 +159,22 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setSuccessors(java.util.BitSet successors);
+        
+        /**
+   		 * Set dialog
+         * 
+         * @param dialog the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setDialog(NodeDialogEnt dialog);
+        
+        /**
+   		 * Set view
+         * 
+         * @param view the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setView(NodeViewEnt view);
         
         /**
          * The component name.
