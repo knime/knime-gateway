@@ -50,38 +50,49 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt;
 
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt;
 
 /**
- * TODO node view reference
+ * TODO
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeViewEnt implements NodeViewEnt {
+public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
 
   protected TypeEnum m_type;
   protected String m_iframeSrc;
   protected String m_uiComponentId;
+  protected String m_nodeName;
+  protected String m_nodeAnnotation;
+  protected NodeStateEnt m_nodeState;
+  protected ComponentViewInfoEnt m_componentViewInfo;
   
-  protected DefaultNodeViewEnt() {
+  protected DefaultNodeViewWithNodeInfoEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "NodeView";
+    return "NodeViewWithNodeInfo";
   }
   
-  private DefaultNodeViewEnt(DefaultNodeViewEntBuilder builder) {
-    
+  private DefaultNodeViewWithNodeInfoEnt(DefaultNodeViewWithNodeInfoEntBuilder builder) {
+    super();
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
     }
     m_type = immutable(builder.m_type);
     m_iframeSrc = immutable(builder.m_iframeSrc);
     m_uiComponentId = immutable(builder.m_uiComponentId);
+    m_nodeName = immutable(builder.m_nodeName);
+    m_nodeAnnotation = immutable(builder.m_nodeAnnotation);
+    m_nodeState = immutable(builder.m_nodeState);
+    m_componentViewInfo = immutable(builder.m_componentViewInfo);
   }
   
    /**
@@ -98,8 +109,8 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNodeViewEnt ent = (DefaultNodeViewEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_iframeSrc, ent.m_iframeSrc) && Objects.equals(m_uiComponentId, ent.m_uiComponentId);
+        DefaultNodeViewWithNodeInfoEnt ent = (DefaultNodeViewWithNodeInfoEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_iframeSrc, ent.m_iframeSrc) && Objects.equals(m_uiComponentId, ent.m_uiComponentId) && Objects.equals(m_nodeName, ent.m_nodeName) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_componentViewInfo, ent.m_componentViewInfo);
     }
 
 
@@ -113,6 +124,10 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
                .append(m_type)
                .append(m_iframeSrc)
                .append(m_uiComponentId)
+               .append(m_nodeName)
+               .append(m_nodeAnnotation)
+               .append(m_nodeState)
+               .append(m_componentViewInfo)
                .toHashCode();
    }
   
@@ -133,19 +148,43 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
         return m_uiComponentId;
   }
     
-  
-    public static class DefaultNodeViewEntBuilder implements NodeViewEntBuilder {
+  @Override
+  public String getNodeName() {
+        return m_nodeName;
+  }
     
-        public DefaultNodeViewEntBuilder(){
-            
+  @Override
+  public String getNodeAnnotation() {
+        return m_nodeAnnotation;
+  }
+    
+  @Override
+  public NodeStateEnt getNodeState() {
+        return m_nodeState;
+  }
+    
+  @Override
+  public ComponentViewInfoEnt getComponentViewInfo() {
+        return m_componentViewInfo;
+  }
+    
+  
+    public static class DefaultNodeViewWithNodeInfoEntBuilder implements NodeViewWithNodeInfoEntBuilder {
+    
+        public DefaultNodeViewWithNodeInfoEntBuilder(){
+            super();
         }
     
         private TypeEnum m_type;
         private String m_iframeSrc;
         private String m_uiComponentId;
+        private String m_nodeName;
+        private String m_nodeAnnotation;
+        private NodeStateEnt m_nodeState;
+        private ComponentViewInfoEnt m_componentViewInfo;
 
         @Override
-        public DefaultNodeViewEntBuilder setType(TypeEnum type) {
+        public DefaultNodeViewWithNodeInfoEntBuilder setType(TypeEnum type) {
              if(type == null) {
                  throw new IllegalArgumentException("type must not be null.");
              }
@@ -154,21 +193,45 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
         }
 
         @Override
-        public DefaultNodeViewEntBuilder setIframeSrc(String iframeSrc) {
+        public DefaultNodeViewWithNodeInfoEntBuilder setIframeSrc(String iframeSrc) {
              m_iframeSrc = iframeSrc;
              return this;
         }
 
         @Override
-        public DefaultNodeViewEntBuilder setUiComponentId(String uiComponentId) {
+        public DefaultNodeViewWithNodeInfoEntBuilder setUiComponentId(String uiComponentId) {
              m_uiComponentId = uiComponentId;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeViewWithNodeInfoEntBuilder setNodeName(String nodeName) {
+             m_nodeName = nodeName;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeViewWithNodeInfoEntBuilder setNodeAnnotation(String nodeAnnotation) {
+             m_nodeAnnotation = nodeAnnotation;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeViewWithNodeInfoEntBuilder setNodeState(NodeStateEnt nodeState) {
+             m_nodeState = nodeState;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeViewWithNodeInfoEntBuilder setComponentViewInfo(ComponentViewInfoEnt componentViewInfo) {
+             m_componentViewInfo = componentViewInfo;
              return this;
         }
 
         
         @Override
-        public DefaultNodeViewEnt build() {
-            return new DefaultNodeViewEnt(this);
+        public DefaultNodeViewWithNodeInfoEnt build() {
+            return new DefaultNodeViewWithNodeInfoEnt(this);
         }
     
     }

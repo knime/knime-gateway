@@ -44,14 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEntBuilder;
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentViewInfoEnt.DefaultComponentViewInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,25 +60,21 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeViewEntBuilder.class)
+@JsonDeserialize(builder=DefaultComponentViewInfoEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeViewEntMixIn extends NodeViewEnt {
+public interface ComponentViewInfoEntMixIn extends ComponentViewInfoEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
+    @JsonProperty("layout")
+    public String getLayout();
     
     @Override
-    @JsonProperty("iframeSrc")
-    public String getIframeSrc();
-    
-    @Override
-    @JsonProperty("uiComponentId")
-    public String getUiComponentId();
+    @JsonProperty("views")
+    public java.util.Map<String, NodeViewWithNodeInfoEnt> getViews();
     
 
     /**
@@ -87,22 +84,18 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeViewEntMixInBuilder extends NodeViewEntBuilder {
+    public static interface ComponentViewInfoEntMixInBuilder extends ComponentViewInfoEntBuilder {
     
         @Override
-        public NodeViewEntMixIn build();
+        public ComponentViewInfoEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public NodeViewEntMixInBuilder setType(final TypeEnum type);
+        @JsonProperty("layout")
+        public ComponentViewInfoEntMixInBuilder setLayout(final String layout);
         
         @Override
-        @JsonProperty("iframeSrc")
-        public NodeViewEntMixInBuilder setIframeSrc(final String iframeSrc);
-        
-        @Override
-        @JsonProperty("uiComponentId")
-        public NodeViewEntMixInBuilder setUiComponentId(final String uiComponentId);
+        @JsonProperty("views")
+        public ComponentViewInfoEntMixInBuilder setViews(final java.util.Map<String, NodeViewWithNodeInfoEnt> views);
         
     }
 

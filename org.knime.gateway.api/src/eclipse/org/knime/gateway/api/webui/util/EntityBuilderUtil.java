@@ -86,6 +86,7 @@ import org.knime.core.node.workflow.NodeContainerTemplate;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeExecutionJobManagerFactory;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
@@ -126,6 +127,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt.ComponentViewInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
@@ -174,6 +177,8 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt.NodeViewWithNodeInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -659,7 +664,9 @@ public final class EntityBuilderUtil {
             .setLink(getTemplateLink(nc))//
             .setAllowedActions(allowedActions)//
             .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
-            .setExecutionInfo(buildNodeExecutionInfoEnt(nc)).build();
+            .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
+            .setView(buildContext.includeInteractionInfo() ? buildNodeViewEnt(nc) : null)//
+            .build();
     }
 
     /*
@@ -820,8 +827,7 @@ public final class EntityBuilderUtil {
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
             .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
             .setDialog(buildContext.includeInteractionInfo() ? buildNodeDialogEnt(nc.getNode().getFactory()) : null)//
-            .setView(buildContext.includeInteractionInfo()
-                ? buildNodeViewEnt(nc.getNode().getFactory(), nc.getNodeModel(), nc.getID()) : null)//
+            .setView(buildContext.includeInteractionInfo() ? buildNodeViewEnt(nc) : null)//
             .build();
     }
 
@@ -835,7 +841,21 @@ public final class EntityBuilderUtil {
 
     }
 
-    private static NodeViewEnt buildNodeViewEnt(final NodeFactory<NodeModel> f, final NodeModel nm, final NodeID id) {
+    private static NodeViewEnt buildNodeViewEnt(final SubNodeContainer snc) {
+        // TODO check whether there is actually a view! I.e. whether the component contains nodes with a view ...
+        return builder(NodeViewEntBuilder.class)
+            .setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.COMPONENT_VIEW).build();
+    }
+
+    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nnc) {
+        return builder(NodeViewEntBuilder.class).setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME)
+            .setIframeSrc(getIFrameSrc(nnc)).build();
+    }
+
+    private static String getIFrameSrc(final NativeNodeContainer nnc) {
+        NodeFactory<NodeModel> f = nnc.getNode().getFactory();
+        NodeModel nm = nnc.getNodeModel();
+        NodeID id = nnc.getID();
         Page p = UINodeFactoryUtil.createNodeViewPage(f, nm).orElse(null);
         if (p != null) {
             // TODO move path prefix into a prominent constant
@@ -850,10 +870,56 @@ public final class EntityBuilderUtil {
             pathPrefix.append(f.getClass().getName());
             pathPrefix.append("/");
             pathPrefix.append(p.getRelativePath().toString());
-            return builder(NodeViewEntBuilder.class).setIframeSrc(pathPrefix.toString()).build();
+            return pathPrefix.toString();
         } else {
             return null;
         }
+    }
+
+    /**
+     * TODO
+     *
+     * @param snc
+     * @return
+     */
+    public static ComponentViewInfoEnt buildComponentViewInfoEnt(final SubNodeContainer snc) {
+        WorkflowManager projectWfm = snc.getProjectWFM();
+        var views = new HashMap<String, NodeViewWithNodeInfoEnt>();
+        for (NodeContainer nc : snc.getWorkflowManager().getNodeContainers()) {
+            if (nc instanceof SingleNodeContainer) {
+                views.put(NodeIDSuffix.create(projectWfm.getID(), nc.getID()).toString(),
+                    buildNodeViewWithNodeInfoEnt((SingleNodeContainer)nc));
+            }
+        }
+        return builder(ComponentViewInfoEntBuilder.class)//
+            .setLayout(null)// TODO
+            .setViews(views)//
+            .build();
+    }
+
+    private static NodeViewWithNodeInfoEnt buildNodeViewWithNodeInfoEnt(final SingleNodeContainer nc) {
+        String iframeSrc = null;
+        ComponentViewInfoEnt compView = null;
+        org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum type = null;
+        if (nc instanceof NativeNodeContainer) {
+            iframeSrc = getIFrameSrc((NativeNodeContainer)nc);
+            type = org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME;
+
+        } else if (nc instanceof SubNodeContainer) {
+            compView = buildComponentViewInfoEnt((SubNodeContainer)nc);
+            type = org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.COMPONENT_VIEW;
+        }
+        if (type == null) {
+            return null;
+        }
+        return builder(NodeViewWithNodeInfoEntBuilder.class)//
+            .setNodeName(nc.getName())//
+            .setNodeAnnotation(nc.getNodeAnnotation().getText())//
+            .setNodeState(buildNodeStateEnt(nc)).setType(type)//
+            .setIframeSrc(iframeSrc)//
+            .setUiComponentId(null)//
+            .setComponentViewInfo(compView)//
+            .build();
     }
 
     private static BitSet getNodeSuccessors(final NodeID id, final WorkflowBuildContext buildContext) {

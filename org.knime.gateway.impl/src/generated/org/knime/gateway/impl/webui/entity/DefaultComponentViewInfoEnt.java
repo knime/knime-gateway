@@ -42,70 +42,115 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt;
+
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * TODO
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultComponentViewInfoEnt implements ComponentViewInfoEnt {
 
-@JsonDeserialize(builder=DefaultNodeViewEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeViewEntMixIn extends NodeViewEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
+  protected String m_layout;
+  protected java.util.Map<String, NodeViewWithNodeInfoEnt> m_views;
+  
+  protected DefaultComponentViewInfoEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "ComponentViewInfo";
+  }
+  
+  private DefaultComponentViewInfoEnt(DefaultComponentViewInfoEntBuilder builder) {
     
-    @Override
-    @JsonProperty("iframeSrc")
-    public String getIframeSrc();
-    
-    @Override
-    @JsonProperty("uiComponentId")
-    public String getUiComponentId();
-    
-
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+    m_layout = immutable(builder.m_layout);
+    m_views = immutable(builder.m_views);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeViewEntMixInBuilder extends NodeViewEntBuilder {
-    
-        @Override
-        public NodeViewEntMixIn build();
-    
-        @Override
-        @JsonProperty("type")
-        public NodeViewEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("iframeSrc")
-        public NodeViewEntMixInBuilder setIframeSrc(final String iframeSrc);
-        
-        @Override
-        @JsonProperty("uiComponentId")
-        public NodeViewEntMixInBuilder setUiComponentId(final String uiComponentId);
-        
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultComponentViewInfoEnt ent = (DefaultComponentViewInfoEnt)o;
+        return Objects.equals(m_layout, ent.m_layout) && Objects.equals(m_views, ent.m_views);
     }
 
 
-}
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_layout)
+               .append(m_views)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public String getLayout() {
+        return m_layout;
+  }
+    
+  @Override
+  public java.util.Map<String, NodeViewWithNodeInfoEnt> getViews() {
+        return m_views;
+  }
+    
+  
+    public static class DefaultComponentViewInfoEntBuilder implements ComponentViewInfoEntBuilder {
+    
+        public DefaultComponentViewInfoEntBuilder(){
+            
+        }
+    
+        private String m_layout;
+        private java.util.Map<String, NodeViewWithNodeInfoEnt> m_views;
 
+        @Override
+        public DefaultComponentViewInfoEntBuilder setLayout(String layout) {
+             m_layout = layout;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentViewInfoEntBuilder setViews(java.util.Map<String, NodeViewWithNodeInfoEnt> views) {
+             m_views = views;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultComponentViewInfoEnt build() {
+            return new DefaultComponentViewInfoEnt(this);
+        }
+    
+    }
+
+}

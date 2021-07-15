@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,60 +54,43 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * TODO node view reference
+ * TODO
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeViewEnt extends GatewayEntity {
-
-  /**
-   * The type of node view.
-   */
-  public enum TypeEnum {
-    IFRAME("iframe"),
-    
-    UI_COMPONENT("ui-component"),
-    
-    COMPONENT_VIEW("component-view");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface NodeViewWithNodeInfoEnt extends GatewayEntity, NodeViewEnt {
 
 
   /**
-   * The type of node view.
-   * @return type , never <code>null</code>
+   * Get nodeName
+   * @return nodeName 
    **/
-  public TypeEnum getType();
+  public String getNodeName();
 
   /**
-   * Relative or absolute path to the html document representing the node view. TODO e.g. for debugging an absolute path is provided Note that this property is only present if type is &#39;iframe&#39;.
-   * @return iframeSrc 
+   * Get nodeAnnotation
+   * @return nodeAnnotation 
    **/
-  public String getIframeSrc();
+  public String getNodeAnnotation();
 
   /**
-   * Id of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
-   * @return uiComponentId 
+   * Get nodeState
+   * @return nodeState 
    **/
-  public String getUiComponentId();
+  public NodeStateEnt getNodeState();
+
+  /**
+   * Get componentViewInfo
+   * @return componentViewInfo 
+   **/
+  public ComponentViewInfoEnt getComponentViewInfo();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NodeViewEntBuilder extends GatewayEntityBuilder<NodeViewEnt> {
+    public interface NodeViewWithNodeInfoEntBuilder extends GatewayEntityBuilder<NodeViewWithNodeInfoEnt> {
 
         /**
          * The type of node view.
@@ -112,7 +98,7 @@ public interface NodeViewEnt extends GatewayEntity {
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeViewEntBuilder setType(TypeEnum type);
+        NodeViewWithNodeInfoEntBuilder setType(TypeEnum type);
         
         /**
          * Relative or absolute path to the html document representing the node view. TODO e.g. for debugging an absolute path is provided Note that this property is only present if type is &#39;iframe&#39;.
@@ -120,7 +106,7 @@ public interface NodeViewEnt extends GatewayEntity {
          * @param iframeSrc the property value,  
          * @return this entity builder for chaining
          */
-        NodeViewEntBuilder setIframeSrc(String iframeSrc);
+        NodeViewWithNodeInfoEntBuilder setIframeSrc(String iframeSrc);
         
         /**
          * Id of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
@@ -128,7 +114,39 @@ public interface NodeViewEnt extends GatewayEntity {
          * @param uiComponentId the property value,  
          * @return this entity builder for chaining
          */
-        NodeViewEntBuilder setUiComponentId(String uiComponentId);
+        NodeViewWithNodeInfoEntBuilder setUiComponentId(String uiComponentId);
+        
+        /**
+   		 * Set nodeName
+         * 
+         * @param nodeName the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setNodeName(String nodeName);
+        
+        /**
+   		 * Set nodeAnnotation
+         * 
+         * @param nodeAnnotation the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setNodeAnnotation(String nodeAnnotation);
+        
+        /**
+   		 * Set nodeState
+         * 
+         * @param nodeState the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setNodeState(NodeStateEnt nodeState);
+        
+        /**
+   		 * Set componentViewInfo
+         * 
+         * @param componentViewInfo the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setComponentViewInfo(ComponentViewInfoEnt componentViewInfo);
         
         
         /**
@@ -138,7 +156,7 @@ public interface NodeViewEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeViewEnt build();
+        NodeViewWithNodeInfoEnt build();
     
     }
 

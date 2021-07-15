@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndTemplateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
@@ -81,6 +82,7 @@ import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
@@ -131,6 +133,7 @@ public class ListEntities {
         res.add(ComponentNodeAndTemplateEnt.class);
         res.add(ComponentNodeEnt.class);
         res.add(ComponentNodeTemplateEnt.class);
+        res.add(ComponentViewInfoEnt.class);
         res.add(ConnectCommandEnt.class);
         res.add(ConnectionEnt.class);
         res.add(CustomJobManagerEnt.class);
@@ -158,6 +161,7 @@ public class ListEntities {
         res.add(NodeStateEnt.class);
         res.add(NodeViewDescriptionEnt.class);
         res.add(NodeViewEnt.class);
+        res.add(NodeViewWithNodeInfoEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
         res.add(PortViewEnt.class);
@@ -193,6 +197,7 @@ public class ListEntities {
         res.add(ComponentNodeAndTemplateEnt.ComponentNodeAndTemplateEntBuilder.class);
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
         res.add(ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder.class);
+        res.add(ComponentViewInfoEnt.ComponentViewInfoEntBuilder.class);
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(CustomJobManagerEnt.CustomJobManagerEntBuilder.class);
@@ -220,6 +225,7 @@ public class ListEntities {
         res.add(NodeStateEnt.NodeStateEntBuilder.class);
         res.add(NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder.class);
         res.add(NodeViewEnt.NodeViewEntBuilder.class);
+        res.add(NodeViewWithNodeInfoEnt.NodeViewWithNodeInfoEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
         res.add(PortViewEnt.PortViewEntBuilder.class);

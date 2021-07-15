@@ -64,6 +64,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeTemplateEnt.ComponentNodeTemplateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt.ComponentViewInfoEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentViewInfoEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
@@ -118,6 +120,8 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescrip
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewEnt.NodeViewEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt.NodeViewWithNodeInfoEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewWithNodeInfoEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -202,6 +206,9 @@ public class Interface2ImplMap {
         if(clazz == ComponentNodeTemplateEntBuilder.class) {
             return (B)new DefaultComponentNodeTemplateEnt.DefaultComponentNodeTemplateEntBuilder();
         }        
+        if(clazz == ComponentViewInfoEntBuilder.class) {
+            return (B)new DefaultComponentViewInfoEnt.DefaultComponentViewInfoEntBuilder();
+        }        
         if(clazz == ConnectCommandEntBuilder.class) {
             return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
         }        
@@ -282,6 +289,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeViewEntBuilder.class) {
             return (B)new DefaultNodeViewEnt.DefaultNodeViewEntBuilder();
+        }        
+        if(clazz == NodeViewWithNodeInfoEntBuilder.class) {
+            return (B)new DefaultNodeViewWithNodeInfoEnt.DefaultNodeViewWithNodeInfoEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();

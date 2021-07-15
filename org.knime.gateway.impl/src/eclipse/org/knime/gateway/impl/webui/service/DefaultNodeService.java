@@ -54,12 +54,15 @@ import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.rpc.RpcServerManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
@@ -146,6 +149,25 @@ public final class DefaultNodeService implements NodeService {
         } else {
             throw new OperationNotAllowedException("Unknown action '" + action + "'");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ComponentViewInfoEnt getComponentViewInfo(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws NodeNotFoundException {
+        NodeContainer nc;
+        try {
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+        if (!(nc instanceof SubNodeContainer)) {
+            // TODO other exception type?
+            throw new NodeNotFoundException("Not a component!");
+        }
+        return EntityBuilderUtil.buildComponentViewInfoEnt((SubNodeContainer)nc);
     }
 
     /**

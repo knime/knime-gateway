@@ -44,14 +44,17 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.json.webui.entity.NodeViewEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodeViewEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeViewWithNodeInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeViewWithNodeInfoEnt.DefaultNodeViewWithNodeInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,9 +62,9 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeViewEnt.DefaultNodeViewEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeViewEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodeViewWithNodeInfoEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeViewEntMixIn extends NodeViewEnt {
+public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
 
     @Override
     @JsonIgnore
@@ -79,6 +82,22 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
     @JsonProperty("uiComponentId")
     public String getUiComponentId();
     
+    @Override
+    @JsonProperty("nodeName")
+    public String getNodeName();
+    
+    @Override
+    @JsonProperty("nodeAnnotation")
+    public String getNodeAnnotation();
+    
+    @Override
+    @JsonProperty("nodeState")
+    public NodeStateEnt getNodeState();
+    
+    @Override
+    @JsonProperty("componentViewInfo")
+    public ComponentViewInfoEnt getComponentViewInfo();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -87,22 +106,38 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeViewEntMixInBuilder extends NodeViewEntBuilder {
+    public static interface NodeViewWithNodeInfoEntMixInBuilder extends NodeViewWithNodeInfoEntBuilder {
     
         @Override
-        public NodeViewEntMixIn build();
+        public NodeViewWithNodeInfoEntMixIn build();
     
         @Override
         @JsonProperty("type")
-        public NodeViewEntMixInBuilder setType(final TypeEnum type);
+        public NodeViewWithNodeInfoEntMixInBuilder setType(final TypeEnum type);
         
         @Override
         @JsonProperty("iframeSrc")
-        public NodeViewEntMixInBuilder setIframeSrc(final String iframeSrc);
+        public NodeViewWithNodeInfoEntMixInBuilder setIframeSrc(final String iframeSrc);
         
         @Override
         @JsonProperty("uiComponentId")
-        public NodeViewEntMixInBuilder setUiComponentId(final String uiComponentId);
+        public NodeViewWithNodeInfoEntMixInBuilder setUiComponentId(final String uiComponentId);
+        
+        @Override
+        @JsonProperty("nodeName")
+        public NodeViewWithNodeInfoEntMixInBuilder setNodeName(final String nodeName);
+        
+        @Override
+        @JsonProperty("nodeAnnotation")
+        public NodeViewWithNodeInfoEntMixInBuilder setNodeAnnotation(final String nodeAnnotation);
+        
+        @Override
+        @JsonProperty("nodeState")
+        public NodeViewWithNodeInfoEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
+        
+        @Override
+        @JsonProperty("componentViewInfo")
+        public NodeViewWithNodeInfoEntMixInBuilder setComponentViewInfo(final ComponentViewInfoEnt componentViewInfo);
         
     }
 
