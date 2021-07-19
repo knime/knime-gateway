@@ -147,7 +147,8 @@ public final class DefaultApplicationService implements ApplicationService {
             if (wfm != null) {
                 builder.setActiveWorkflow(WorkflowStatefulUtil.getInstance().buildWorkflowSnapshotEntOrGetFromCache(
                     new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
-                    () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
+                    () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
+                        .nodeViewDebugUrl(DefaultWorkflowService.getInstance().getNodeViewDebugUrl())));
             } else {
                 NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
                     "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));

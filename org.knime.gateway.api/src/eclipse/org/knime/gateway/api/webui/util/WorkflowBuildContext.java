@@ -58,6 +58,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
@@ -97,9 +98,12 @@ public final class WorkflowBuildContext {
 
     private Set<PortType> m_outPortTypes = null;
 
+    private Pair<String, String> m_nodeViewDebugUrl;
+
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
-        final DependentNodeProperties depNodeProps, final NodeSuccessors nodeSuccessors, final int nodeCount) {
+        final DependentNodeProperties depNodeProps, final NodeSuccessors nodeSuccessors, final int nodeCount,
+        final Pair<String, String> nodeViewDebugUrl) {
         m_wfm = wfm;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
@@ -109,6 +113,7 @@ public final class WorkflowBuildContext {
         m_canRedo = builder.m_canRedo;
         m_nodeSuccessors = nodeSuccessors;
         m_nodeCount = nodeCount;
+        m_nodeViewDebugUrl = nodeViewDebugUrl;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -145,6 +150,10 @@ public final class WorkflowBuildContext {
 
     int nodeCount() {
         return m_nodeCount;
+    }
+
+    Pair<String, String> nodeViewDebugUrl() {
+        return m_nodeViewDebugUrl;
     }
 
     /**
@@ -211,6 +220,8 @@ public final class WorkflowBuildContext {
         private Supplier<DependentNodeProperties> m_depNodeProps;
 
         private Supplier<NodeSuccessors> m_nodeSuccessors;
+
+        private Pair<String, String> m_nodeViewDebugUrl;
 
         private WorkflowBuildContextBuilder() {
             //
@@ -281,6 +292,17 @@ public final class WorkflowBuildContext {
         }
 
         /**
+         * TODO
+         *
+         * @param debugUrl
+         * @return
+         */
+        public WorkflowBuildContextBuilder nodeViewDebugUrl(final Pair<String, String> debugUrl) {
+            m_nodeViewDebugUrl = debugUrl;
+            return this;
+        }
+
+        /**
          * Builds the workflow context. This might be an operation which is a bit more involved since certain
          * characteristics of the workflow are being determined.
          *
@@ -299,7 +321,7 @@ public final class WorkflowBuildContext {
                 ns = m_nodeSuccessors == null ? NodeSuccessors.determineNodeSuccessors(wfm) : m_nodeSuccessors.get();
             }
             return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm),
-                wfm.getProjectComponent().isPresent(), dnp, ns, wfm.getNodeContainers().size());
+                wfm.getProjectComponent().isPresent(), dnp, ns, wfm.getNodeContainers().size(), m_nodeViewDebugUrl);
         }
 
     }

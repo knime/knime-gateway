@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -827,7 +828,7 @@ public final class EntityBuilderUtil {
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
             .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
             .setDialog(buildContext.includeInteractionInfo() ? buildNodeDialogEnt(nc.getNode().getFactory()) : null)//
-            .setView(buildContext.includeInteractionInfo() ? buildNodeViewEnt(nc) : null)//
+            .setView(buildContext.includeInteractionInfo() ? buildNodeViewEnt(nc, buildContext) : null)//
             .build();
     }
 
@@ -847,9 +848,17 @@ public final class EntityBuilderUtil {
             .setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.COMPONENT_VIEW).build();
     }
 
-    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nnc) {
+    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext) {
+        String iframeSrc;
+        var nodeViewDebugUrl = buildContext.nodeViewDebugUrl();
+        String factoryClassName = nnc.getNode().getFactory().getClass().getName();
+        if (nodeViewDebugUrl != null && Pattern.matches(nodeViewDebugUrl.getFirst(), factoryClassName)) {
+            iframeSrc = nodeViewDebugUrl.getSecond();
+        } else {
+            iframeSrc = getIFrameSrc(nnc);
+        }
         return builder(NodeViewEntBuilder.class).setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME)
-            .setIframeSrc(getIFrameSrc(nnc)).build();
+            .setIframeSrc(iframeSrc).build();
     }
 
     private static String getIFrameSrc(final NativeNodeContainer nnc) {

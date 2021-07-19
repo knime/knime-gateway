@@ -269,13 +269,14 @@ public final class WorkflowStatefulUtil {
      * @param patchEntCreator creator for the patch which is supplied with the {@link WorkflowChangedEventEnt}
      * @param snapshotId the latest snapshot id
      * @param includeInteractioInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
+     * @param nodeViewDebugUrl TODO
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchCreator<WorkflowChangedEventEnt> patchEntCreator, final String snapshotId,
-        final boolean includeInteractioInfo) {
+        final boolean includeInteractioInfo, final Pair<String, String> nodeViewDebugUrl) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
-            .includeInteractionInfo(includeInteractioInfo);
+            .includeInteractionInfo(includeInteractioInfo).nodeViewDebugUrl(nodeViewDebugUrl);
         WorkflowState ws = workflowState(wfKey);
         WorkflowChanges changes = ws.changesListener().getChanges();
         if (includeInteractioInfo) {

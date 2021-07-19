@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
@@ -69,6 +70,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
 
     private static final WorkflowStatefulUtil WF_FUNCTIONS = WorkflowStatefulUtil.getInstance();
+
+    private Pair<String, String> m_nodeViewDebugUrl;
 
     /**
      * Returns the singleton instance for this service.
@@ -92,11 +95,11 @@ public final class DefaultWorkflowService implements WorkflowService {
         WorkflowKey wfKey = new WorkflowKey(projectId, workflowId);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey,
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
+                () -> WorkflowBuildContext.builder().includeInteractionInfo(true).nodeViewDebugUrl(m_nodeViewDebugUrl)
                     .canUndo(WF_FUNCTIONS.canUndoCommand(wfKey)).canRedo(WF_FUNCTIONS.canRedoCommand(wfKey)));
         } else {
-            return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey,
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
+            return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey, () -> WorkflowBuildContext.builder()
+                .includeInteractionInfo(false).nodeViewDebugUrl(m_nodeViewDebugUrl));
         }
     }
 
@@ -126,6 +129,17 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
         WF_FUNCTIONS.redoCommand(new WorkflowKey(projectId, workflowId));
+    }
+
+    /**
+     * TODO
+     */
+    public void setNodeViewDebugUrl(final String nodeFactoryPattern, final String url) {
+        m_nodeViewDebugUrl = Pair.create(nodeFactoryPattern, url);
+    }
+
+    Pair<String, String> getNodeViewDebugUrl() {
+        return m_nodeViewDebugUrl;
     }
 
 }

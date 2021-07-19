@@ -134,7 +134,8 @@ public final class DefaultEventService implements EventService {
             // create very first changed event to be send first (and thus catch up with the most recent
             // workflow version)
             WorkflowChangedEventEnt workflowChangedEvent =
-                WF_UTIL.buildWorkflowChangedEvent(key, new PatchEntCreator(null), wfEventType.getSnapshotId(), true);
+                WF_UTIL.buildWorkflowChangedEvent(key, new PatchEntCreator(null), wfEventType.getSnapshotId(), true,
+                    DefaultWorkflowService.getInstance().getNodeViewDebugUrl());
             sendEvent(workflowChangedEvent);
 
             // add and keep track of callback added to the workflow changes listener (if not already)
@@ -159,8 +160,8 @@ public final class DefaultEventService implements EventService {
                 m_preEventCreationCallback.run();
             }
             patchEntCreator.clear();
-            WorkflowChangedEventEnt event =
-                WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
+            WorkflowChangedEventEnt event = WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator,
+                patchEntCreator.getLastSnapshotId(), true, DefaultWorkflowService.getInstance().getNodeViewDebugUrl());
             sendEvent(event);
         };
     }
