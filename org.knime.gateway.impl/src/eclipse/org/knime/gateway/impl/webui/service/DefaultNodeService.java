@@ -174,6 +174,27 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
+    public String doNodeRpc(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String body) throws NodeNotFoundException, InvalidRequestException {
+        NodeContainer nc;
+        try {
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+
+        try {
+            // TODO check nc-type
+            return RpcServerManager.getInstance().doRpc((NativeNodeContainer)nc, body);
+        } catch (IOException | IllegalStateException ex) {
+            throw new InvalidRequestException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String doPortRpc(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId, final Integer portIdx,
         final String body) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
