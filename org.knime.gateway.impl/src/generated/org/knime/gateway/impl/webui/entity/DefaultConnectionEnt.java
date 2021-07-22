@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 
@@ -61,6 +62,7 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultConnectionEnt implements ConnectionEnt {
 
+  protected org.knime.gateway.api.entity.ConnectionIDEnt m_id;
   protected org.knime.gateway.api.entity.NodeIDEnt m_destNode;
   protected Integer m_destPort;
   protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
@@ -68,7 +70,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
   protected Boolean m_flowVariableConnection;
   protected Boolean m_streaming;
   protected String m_label;
-  protected Boolean m_canDelete;
+  protected AllowedConnectionActionsEnt m_allowedActions;
   
   protected DefaultConnectionEnt() {
     //for sub-classes
@@ -81,6 +83,10 @@ public class DefaultConnectionEnt implements ConnectionEnt {
   
   private DefaultConnectionEnt(DefaultConnectionEntBuilder builder) {
     
+    if(builder.m_id == null) {
+        throw new IllegalArgumentException("id must not be null.");
+    }
+    m_id = immutable(builder.m_id);
     if(builder.m_destNode == null) {
         throw new IllegalArgumentException("destNode must not be null.");
     }
@@ -100,7 +106,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
     m_flowVariableConnection = immutable(builder.m_flowVariableConnection);
     m_streaming = immutable(builder.m_streaming);
     m_label = immutable(builder.m_label);
-    m_canDelete = immutable(builder.m_canDelete);
+    m_allowedActions = immutable(builder.m_allowedActions);
   }
   
    /**
@@ -118,7 +124,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
             return false;
         }
         DefaultConnectionEnt ent = (DefaultConnectionEnt)o;
-        return Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection) && Objects.equals(m_streaming, ent.m_streaming) && Objects.equals(m_label, ent.m_label) && Objects.equals(m_canDelete, ent.m_canDelete);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection) && Objects.equals(m_streaming, ent.m_streaming) && Objects.equals(m_label, ent.m_label) && Objects.equals(m_allowedActions, ent.m_allowedActions);
     }
 
 
@@ -129,6 +135,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
+               .append(m_id)
                .append(m_destNode)
                .append(m_destPort)
                .append(m_sourceNode)
@@ -136,12 +143,17 @@ public class DefaultConnectionEnt implements ConnectionEnt {
                .append(m_flowVariableConnection)
                .append(m_streaming)
                .append(m_label)
-               .append(m_canDelete)
+               .append(m_allowedActions)
                .toHashCode();
    }
   
 	
 	
+  @Override
+  public org.knime.gateway.api.entity.ConnectionIDEnt getId() {
+        return m_id;
+  }
+    
   @Override
   public org.knime.gateway.api.entity.NodeIDEnt getDestNode() {
         return m_destNode;
@@ -178,8 +190,8 @@ public class DefaultConnectionEnt implements ConnectionEnt {
   }
     
   @Override
-  public Boolean isCanDelete() {
-        return m_canDelete;
+  public AllowedConnectionActionsEnt getAllowedActions() {
+        return m_allowedActions;
   }
     
   
@@ -189,6 +201,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
             
         }
     
+        private org.knime.gateway.api.entity.ConnectionIDEnt m_id;
         private org.knime.gateway.api.entity.NodeIDEnt m_destNode;
         private Integer m_destPort;
         private org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
@@ -196,7 +209,16 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         private Boolean m_flowVariableConnection;
         private Boolean m_streaming;
         private String m_label;
-        private Boolean m_canDelete;
+        private AllowedConnectionActionsEnt m_allowedActions;
+
+        @Override
+        public DefaultConnectionEntBuilder setId(org.knime.gateway.api.entity.ConnectionIDEnt id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("id must not be null.");
+             }
+             m_id = id;
+             return this;
+        }
 
         @Override
         public DefaultConnectionEntBuilder setDestNode(org.knime.gateway.api.entity.NodeIDEnt destNode) {
@@ -253,8 +275,8 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         }
 
         @Override
-        public DefaultConnectionEntBuilder setCanDelete(Boolean canDelete) {
-             m_canDelete = canDelete;
+        public DefaultConnectionEntBuilder setAllowedActions(AllowedConnectionActionsEnt allowedActions) {
+             m_allowedActions = allowedActions;
              return this;
         }
 

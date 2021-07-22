@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -58,6 +59,12 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ConnectionEnt extends GatewayEntity {
 
+
+  /**
+   * The connection id.
+   * @return id , never <code>null</code>
+   **/
+  public org.knime.gateway.api.entity.ConnectionIDEnt getId();
 
   /**
    * The destination node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
@@ -102,10 +109,10 @@ public interface ConnectionEnt extends GatewayEntity {
   public String getLabel();
 
   /**
-   * Indicates whether this connection can be deleted. Circumstances that prevent the removal are, e.g., a destination node that is executing (or has executing successors). This property is absent if no &#39;interaction info&#39; is supposed to be included in the response.
-   * @return canDelete 
+   * Get allowedActions
+   * @return allowedActions 
    **/
-  public Boolean isCanDelete();
+  public AllowedConnectionActionsEnt getAllowedActions();
 
 
     /**
@@ -113,6 +120,14 @@ public interface ConnectionEnt extends GatewayEntity {
      */
     public interface ConnectionEntBuilder extends GatewayEntityBuilder<ConnectionEnt> {
 
+        /**
+         * The connection id.
+         * 
+         * @param id the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ConnectionEntBuilder setId(org.knime.gateway.api.entity.ConnectionIDEnt id);
+        
         /**
          * The destination node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
          * 
@@ -170,12 +185,12 @@ public interface ConnectionEnt extends GatewayEntity {
         ConnectionEntBuilder setLabel(String label);
         
         /**
-         * Indicates whether this connection can be deleted. Circumstances that prevent the removal are, e.g., a destination node that is executing (or has executing successors). This property is absent if no &#39;interaction info&#39; is supposed to be included in the response.
+   		 * Set allowedActions
          * 
-         * @param canDelete the property value,  
+         * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        ConnectionEntBuilder setCanDelete(Boolean canDelete);
+        ConnectionEntBuilder setAllowedActions(AllowedConnectionActionsEnt allowedActions);
         
         
         /**

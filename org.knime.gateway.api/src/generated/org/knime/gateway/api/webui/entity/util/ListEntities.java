@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
@@ -127,6 +128,7 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEnt.class);
         res.add(AllowedActionsEnt.class);
+        res.add(AllowedConnectionActionsEnt.class);
         res.add(AllowedLoopActionsEnt.class);
         res.add(AllowedNodeActionsEnt.class);
         res.add(AllowedWorkflowActionsEnt.class);
@@ -193,6 +195,7 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
+        res.add(AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder.class);
         res.add(AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder.class);
         res.add(AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder.class);
         res.add(AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder.class);

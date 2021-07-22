@@ -22,16 +22,22 @@
   },
   "connections" : {
     "root:7_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:7",
       "destPort" : 1,
+      "id" : "root:7_1",
       "sourceNode" : "root:8",
       "sourcePort" : 1
     },
     "root:8_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:8",
       "destPort" : 1,
+      "id" : "root:8_1",
       "sourceNode" : "root:6",
       "sourcePort" : 1
     }

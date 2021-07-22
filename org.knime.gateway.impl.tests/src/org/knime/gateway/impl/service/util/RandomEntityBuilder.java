@@ -59,6 +59,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -141,6 +142,8 @@ public final class RandomEntityBuilder {
             return new NodeIDEnt(RANDOM.nextInt());
         } else if (clazz.equals(AnnotationIDEnt.class)) {
             return new AnnotationIDEnt(new NodeIDEnt(RANDOM.nextInt()), RANDOM.nextInt());
+        } else if (clazz.equals(ConnectionIDEnt.class)) {
+            return new ConnectionIDEnt(new NodeIDEnt(RANDOM.nextInt()), RANDOM.nextInt());
         } else if (GatewayEntity.class.isAssignableFrom(clazz)) {
             return buildRandomEntityBuilder(getBuilderInterfaceForEntity((Class<GatewayEntity>)clazz)).build();
         } else {

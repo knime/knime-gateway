@@ -44,15 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt.DefaultConnectionEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedConnectionActionsEnt.DefaultAllowedConnectionActionsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,49 +59,17 @@ import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt.DefaultConnectio
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultConnectionEntBuilder.class)
+@JsonDeserialize(builder=DefaultAllowedConnectionActionsEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ConnectionEntMixIn extends ConnectionEnt {
+public interface AllowedConnectionActionsEntMixIn extends AllowedConnectionActionsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.ConnectionIDEnt getId();
-    
-    @Override
-    @JsonProperty("destNode")
-    public org.knime.gateway.api.entity.NodeIDEnt getDestNode();
-    
-    @Override
-    @JsonProperty("destPort")
-    public Integer getDestPort();
-    
-    @Override
-    @JsonProperty("sourceNode")
-    public org.knime.gateway.api.entity.NodeIDEnt getSourceNode();
-    
-    @Override
-    @JsonProperty("sourcePort")
-    public Integer getSourcePort();
-    
-    @Override
-    @JsonProperty("flowVariableConnection")
-    public Boolean isFlowVariableConnection();
-    
-    @Override
-    @JsonProperty("streaming")
-    public Boolean isStreaming();
-    
-    @Override
-    @JsonProperty("label")
-    public String getLabel();
-    
-    @Override
-    @JsonProperty("allowedActions")
-    public AllowedConnectionActionsEnt getAllowedActions();
+    @JsonProperty("canDelete")
+    public Boolean isCanDelete();
     
 
     /**
@@ -112,46 +79,14 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ConnectionEntMixInBuilder extends ConnectionEntBuilder {
+    public static interface AllowedConnectionActionsEntMixInBuilder extends AllowedConnectionActionsEntBuilder {
     
         @Override
-        public ConnectionEntMixIn build();
+        public AllowedConnectionActionsEntMixIn build();
     
         @Override
-        @JsonProperty("id")
-        public ConnectionEntMixInBuilder setId(final org.knime.gateway.api.entity.ConnectionIDEnt id);
-        
-        @Override
-        @JsonProperty("destNode")
-        public ConnectionEntMixInBuilder setDestNode(final org.knime.gateway.api.entity.NodeIDEnt destNode);
-        
-        @Override
-        @JsonProperty("destPort")
-        public ConnectionEntMixInBuilder setDestPort(final Integer destPort);
-        
-        @Override
-        @JsonProperty("sourceNode")
-        public ConnectionEntMixInBuilder setSourceNode(final org.knime.gateway.api.entity.NodeIDEnt sourceNode);
-        
-        @Override
-        @JsonProperty("sourcePort")
-        public ConnectionEntMixInBuilder setSourcePort(final Integer sourcePort);
-        
-        @Override
-        @JsonProperty("flowVariableConnection")
-        public ConnectionEntMixInBuilder setFlowVariableConnection(final Boolean flowVariableConnection);
-        
-        @Override
-        @JsonProperty("streaming")
-        public ConnectionEntMixInBuilder setStreaming(final Boolean streaming);
-        
-        @Override
-        @JsonProperty("label")
-        public ConnectionEntMixInBuilder setLabel(final String label);
-        
-        @Override
-        @JsonProperty("allowedActions")
-        public ConnectionEntMixInBuilder setAllowedActions(final AllowedConnectionActionsEnt allowedActions);
+        @JsonProperty("canDelete")
+        public AllowedConnectionActionsEntMixInBuilder setCanDelete(final Boolean canDelete);
         
     }
 

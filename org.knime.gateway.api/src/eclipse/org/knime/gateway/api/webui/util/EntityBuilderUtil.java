@@ -114,6 +114,8 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
@@ -259,9 +261,9 @@ public final class EntityBuilderUtil {
             for (NodeContainer nc : nodeContainers) {
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
-            Map<String, ConnectionEnt> connections =
-                wfm.getConnectionContainers().stream().map(cc -> buildConnectionEnt(cc, buildContext)).collect(
-                    Collectors.toMap(c -> new ConnectionIDEnt(c.getDestNode(), c.getDestPort()).toString(), c -> c)); // NOSONAR
+            Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
+                .map(cc -> buildConnectionEnt(buildConnectionIDEnt(cc, buildContext), cc, buildContext))
+                .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
                 .map(EntityBuilderUtil::buildWorkflowAnnotationEnt).collect(Collectors.toList());
             WorkflowInfoEnt info = buildWorkflowInfoEnt(wfm, buildContext);
@@ -1223,10 +1225,11 @@ public final class EntityBuilderUtil {
         return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
     }
 
-    private static ConnectionEnt buildConnectionEnt(final ConnectionContainer cc,
+    private static ConnectionEnt buildConnectionEnt(final ConnectionIDEnt id, final ConnectionContainer cc,
         final WorkflowBuildContext buildContext) {
-        ConnectionEntBuilder builder = builder(ConnectionEntBuilder.class)
-            .setDestNode(buildContext.buildNodeIDEnt(cc.getDest()))//
+        ConnectionEntBuilder builder = builder(ConnectionEntBuilder.class)//
+            .setId(id)//
+            .setDestNode(id.getDestNodeIDEnt())//
             .setDestPort(cc.getDestPort())//
             .setSourceNode(buildContext.buildNodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())//
             .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null);
@@ -1237,20 +1240,27 @@ public final class EntityBuilderUtil {
             }
         }
         if (buildContext.includeInteractionInfo()) {
-            if (!cc.isDeletable()) {
-                builder.setCanDelete(Boolean.FALSE);
-            } else {
-                WorkflowManager wfm = buildContext.wfm();
-                if (cc.getDest().equals(wfm.getID())) {
-                    builder.setCanDelete(wfm.canRemoveConnection(cc));
-                } else {
-                    NodeContainer nc = wfm.getNodeContainer(cc.getDest());
-                    builder.setCanDelete(isNodeResetOrCanBeReset(nc.getNodeContainerState(), nc.getID(),
-                        buildContext.dependentNodeProperties()));
-                }
-            }
+            builder.setAllowedActions(buildAllowedConnectionActionsEnt(cc, buildContext));
         }
         return builder.build();
+    }
+
+    private static AllowedConnectionActionsEnt buildAllowedConnectionActionsEnt(final ConnectionContainer cc,
+        final WorkflowBuildContext buildContext) {
+        boolean canDelete;
+        if (!cc.isDeletable()) {
+            canDelete = false;
+        } else {
+            WorkflowManager wfm = buildContext.wfm();
+            if (cc.getDest().equals(wfm.getID())) {
+                canDelete = wfm.canRemoveConnection(cc);
+            } else {
+                NodeContainer nc = wfm.getNodeContainer(cc.getDest());
+                canDelete = isNodeResetOrCanBeReset(nc.getNodeContainerState(), nc.getID(),
+                    buildContext.dependentNodeProperties());
+            }
+        }
+        return builder(AllowedConnectionActionsEntBuilder.class).setCanDelete(canDelete).build();
     }
 
 }

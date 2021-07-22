@@ -22,12 +22,14 @@
     "root:23:0:9_1" : {
       "destNode" : "root:23:0:9",
       "destPort" : 1,
+      "id" : "root:23:0:9_1",
       "sourceNode" : "root:23:0:10",
       "sourcePort" : 1
     },
     "root:23:0:10_1" : {
       "destNode" : "root:23:0:10",
       "destPort" : 1,
+      "id" : "root:23:0:10_1",
       "sourceNode" : "root:23:0:8",
       "sourcePort" : 1
     }

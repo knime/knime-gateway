@@ -48,6 +48,8 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBui
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
+import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
@@ -185,6 +187,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
+        }        
+        if(clazz == AllowedConnectionActionsEntBuilder.class) {
+            return (B)new DefaultAllowedConnectionActionsEnt.DefaultAllowedConnectionActionsEntBuilder();
         }        
         if(clazz == AllowedLoopActionsEntBuilder.class) {
             return (B)new DefaultAllowedLoopActionsEnt.DefaultAllowedLoopActionsEntBuilder();

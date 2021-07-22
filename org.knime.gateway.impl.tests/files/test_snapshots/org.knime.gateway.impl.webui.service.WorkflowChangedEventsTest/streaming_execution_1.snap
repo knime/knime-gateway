@@ -73,15 +73,15 @@
   "value" : true
 }, {
   "op" : "replace",
-  "path" : "/connections/root:3:0:5_1/canDelete",
+  "path" : "/connections/root:3:0:5_1/allowedActions/canDelete",
   "value" : true
 }, {
   "op" : "replace",
-  "path" : "/connections/root:3:0:6_1/canDelete",
+  "path" : "/connections/root:3:0:6_1/allowedActions/canDelete",
   "value" : true
 }, {
   "op" : "replace",
-  "path" : "/connections/root:3:0:7_1/canDelete",
+  "path" : "/connections/root:3:0:7_1/allowedActions/canDelete",
   "value" : true
 }, {
   "op" : "replace",

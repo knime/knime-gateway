@@ -8,75 +8,105 @@
   },
   "connections" : {
     "root:11_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:11",
       "destPort" : 1,
+      "id" : "root:11_1",
       "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:22_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:22",
       "destPort" : 1,
+      "id" : "root:22_1",
       "sourceNode" : "root:10",
       "sourcePort" : 1
     },
     "root:20_3" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:20",
       "destPort" : 3,
+      "id" : "root:20_3",
       "sourceNode" : "root:19",
       "sourcePort" : 1
     },
     "root:8_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:8",
       "destPort" : 1,
+      "id" : "root:8_1",
       "sourceNode" : "root:9",
       "sourcePort" : 1
     },
     "root:185_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:185",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:185_1",
       "sourceNode" : "root:13",
       "sourcePort" : 1
     },
     "root:16_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:16",
       "destPort" : 1,
+      "id" : "root:16_1",
       "sourceNode" : "root:15",
       "sourcePort" : 1
     },
     "root:14_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:14",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:14_1",
       "sourceNode" : "root:13",
       "sourcePort" : 1
     },
     "root:18_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:18",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:18_1",
       "sourceNode" : "root:16",
       "sourcePort" : 1
     },
     "root:6_0" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:6",
       "destPort" : 0,
+      "id" : "root:6_0",
       "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:5_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:5",
       "destPort" : 1,
+      "id" : "root:5_1",
       "sourceNode" : "root:6",
       "sourcePort" : 1
     }

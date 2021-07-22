@@ -3,9 +3,12 @@
   "op" : "add",
   "path" : "/connections/root:26_1",
   "value" : {
-    "canDelete" : true,
+    "allowedActions" : {
+      "canDelete" : true
+    },
     "destNode" : "root:26",
     "destPort" : 1,
+    "id" : "root:26_1",
     "sourceNode" : "root:25",
     "sourcePort" : 3
   }

@@ -8,26 +8,35 @@
   },
   "connections" : {
     "root:8_0" : {
-      "canDelete" : false,
+      "allowedActions" : {
+        "canDelete" : false
+      },
       "destNode" : "root:8",
       "destPort" : 0,
       "flowVariableConnection" : true,
+      "id" : "root:8_0",
       "sourceNode" : "root:3",
       "sourcePort" : 1
     },
     "root:7_0" : {
-      "canDelete" : false,
+      "allowedActions" : {
+        "canDelete" : false
+      },
       "destNode" : "root:7",
       "destPort" : 0,
       "flowVariableConnection" : true,
+      "id" : "root:7_0",
       "sourceNode" : "root:4",
       "sourcePort" : 0
     },
     "root:3_1" : {
-      "canDelete" : false,
+      "allowedActions" : {
+        "canDelete" : false
+      },
       "destNode" : "root:3",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:3_1",
       "sourceNode" : "root:2",
       "sourcePort" : 1
     }
