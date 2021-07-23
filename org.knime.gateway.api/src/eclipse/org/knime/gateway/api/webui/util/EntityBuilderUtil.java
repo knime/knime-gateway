@@ -849,16 +849,24 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext) {
+        NodeFactory<NodeModel> nodeFactory = nnc.getNode().getFactory();
+        if (!hasNodeView(nodeFactory)) {
+            return null;
+        }
         String iframeSrc;
         var nodeViewDebugUrl = buildContext.nodeViewDebugUrl();
-        String factoryClassName = nnc.getNode().getFactory().getClass().getName();
-        if (nodeViewDebugUrl != null && Pattern.matches(nodeViewDebugUrl.getFirst(), factoryClassName)) {
+        if (nodeViewDebugUrl != null
+            && Pattern.matches(nodeViewDebugUrl.getFirst(), nodeFactory.getClass().getName())) {
             iframeSrc = nodeViewDebugUrl.getSecond();
         } else {
             iframeSrc = getIFrameSrc(nnc);
         }
         return builder(NodeViewEntBuilder.class).setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME)
             .setIframeSrc(iframeSrc).build();
+    }
+
+    private static boolean hasNodeView(final NodeFactory<NodeModel> f) {
+        return f instanceof UINodeFactory && ((UINodeFactory)f).hasNodeView();
     }
 
     private static String getIFrameSrc(final NativeNodeContainer nnc) {
