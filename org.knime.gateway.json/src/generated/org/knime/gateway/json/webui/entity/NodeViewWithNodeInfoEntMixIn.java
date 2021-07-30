@@ -79,8 +79,8 @@ public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
     public String getIframeSrc();
     
     @Override
-    @JsonProperty("uiComponentId")
-    public String getUiComponentId();
+    @JsonProperty("uiComponentSrc")
+    public String getUiComponentSrc();
     
     @Override
     @JsonProperty("nodeName")
@@ -120,8 +120,8 @@ public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
         public NodeViewWithNodeInfoEntMixInBuilder setIframeSrc(final String iframeSrc);
         
         @Override
-        @JsonProperty("uiComponentId")
-        public NodeViewWithNodeInfoEntMixInBuilder setUiComponentId(final String uiComponentId);
+        @JsonProperty("uiComponentSrc")
+        public NodeViewWithNodeInfoEntMixInBuilder setUiComponentSrc(final String uiComponentSrc);
         
         @Override
         @JsonProperty("nodeName")

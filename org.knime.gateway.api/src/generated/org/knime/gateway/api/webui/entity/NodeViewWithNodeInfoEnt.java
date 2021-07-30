@@ -109,12 +109,12 @@ public interface NodeViewWithNodeInfoEnt extends GatewayEntity, NodeViewEnt {
         NodeViewWithNodeInfoEntBuilder setIframeSrc(String iframeSrc);
         
         /**
-         * Id of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
+         * Source of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
          * 
-         * @param uiComponentId the property value,  
+         * @param uiComponentSrc the property value,  
          * @return this entity builder for chaining
          */
-        NodeViewWithNodeInfoEntBuilder setUiComponentId(String uiComponentId);
+        NodeViewWithNodeInfoEntBuilder setUiComponentSrc(String uiComponentSrc);
         
         /**
    		 * Set nodeName

@@ -76,8 +76,8 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
     public String getIframeSrc();
     
     @Override
-    @JsonProperty("uiComponentId")
-    public String getUiComponentId();
+    @JsonProperty("uiComponentSrc")
+    public String getUiComponentSrc();
     
 
     /**
@@ -101,8 +101,8 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
         public NodeViewEntMixInBuilder setIframeSrc(final String iframeSrc);
         
         @Override
-        @JsonProperty("uiComponentId")
-        public NodeViewEntMixInBuilder setUiComponentId(final String uiComponentId);
+        @JsonProperty("uiComponentSrc")
+        public NodeViewEntMixInBuilder setUiComponentSrc(final String uiComponentSrc);
         
     }
 

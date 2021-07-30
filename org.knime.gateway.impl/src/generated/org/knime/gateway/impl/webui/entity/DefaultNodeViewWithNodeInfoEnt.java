@@ -66,7 +66,7 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
 
   protected TypeEnum m_type;
   protected String m_iframeSrc;
-  protected String m_uiComponentId;
+  protected String m_uiComponentSrc;
   protected String m_nodeName;
   protected String m_nodeAnnotation;
   protected NodeStateEnt m_nodeState;
@@ -88,7 +88,7 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
     }
     m_type = immutable(builder.m_type);
     m_iframeSrc = immutable(builder.m_iframeSrc);
-    m_uiComponentId = immutable(builder.m_uiComponentId);
+    m_uiComponentSrc = immutable(builder.m_uiComponentSrc);
     m_nodeName = immutable(builder.m_nodeName);
     m_nodeAnnotation = immutable(builder.m_nodeAnnotation);
     m_nodeState = immutable(builder.m_nodeState);
@@ -110,7 +110,7 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
             return false;
         }
         DefaultNodeViewWithNodeInfoEnt ent = (DefaultNodeViewWithNodeInfoEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_iframeSrc, ent.m_iframeSrc) && Objects.equals(m_uiComponentId, ent.m_uiComponentId) && Objects.equals(m_nodeName, ent.m_nodeName) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_componentViewInfo, ent.m_componentViewInfo);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_iframeSrc, ent.m_iframeSrc) && Objects.equals(m_uiComponentSrc, ent.m_uiComponentSrc) && Objects.equals(m_nodeName, ent.m_nodeName) && Objects.equals(m_nodeAnnotation, ent.m_nodeAnnotation) && Objects.equals(m_nodeState, ent.m_nodeState) && Objects.equals(m_componentViewInfo, ent.m_componentViewInfo);
     }
 
 
@@ -123,7 +123,7 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
        return new HashCodeBuilder()
                .append(m_type)
                .append(m_iframeSrc)
-               .append(m_uiComponentId)
+               .append(m_uiComponentSrc)
                .append(m_nodeName)
                .append(m_nodeAnnotation)
                .append(m_nodeState)
@@ -144,8 +144,8 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
   }
     
   @Override
-  public String getUiComponentId() {
-        return m_uiComponentId;
+  public String getUiComponentSrc() {
+        return m_uiComponentSrc;
   }
     
   @Override
@@ -177,7 +177,7 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
     
         private TypeEnum m_type;
         private String m_iframeSrc;
-        private String m_uiComponentId;
+        private String m_uiComponentSrc;
         private String m_nodeName;
         private String m_nodeAnnotation;
         private NodeStateEnt m_nodeState;
@@ -199,8 +199,8 @@ public class DefaultNodeViewWithNodeInfoEnt implements NodeViewWithNodeInfoEnt {
         }
 
         @Override
-        public DefaultNodeViewWithNodeInfoEntBuilder setUiComponentId(String uiComponentId) {
-             m_uiComponentId = uiComponentId;
+        public DefaultNodeViewWithNodeInfoEntBuilder setUiComponentSrc(String uiComponentSrc) {
+             m_uiComponentSrc = uiComponentSrc;
              return this;
         }
 

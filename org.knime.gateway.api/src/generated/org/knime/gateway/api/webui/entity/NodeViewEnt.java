@@ -95,10 +95,10 @@ public interface NodeViewEnt extends GatewayEntity {
   public String getIframeSrc();
 
   /**
-   * Id of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
-   * @return uiComponentId 
+   * Source of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
+   * @return uiComponentSrc 
    **/
-  public String getUiComponentId();
+  public String getUiComponentSrc();
 
 
     /**
@@ -123,12 +123,12 @@ public interface NodeViewEnt extends GatewayEntity {
         NodeViewEntBuilder setIframeSrc(String iframeSrc);
         
         /**
-         * Id of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
+         * Source of the (vue) component to be used for the node view. Note that this property is only present if type is &#39;ui-component&#39;.
          * 
-         * @param uiComponentId the property value,  
+         * @param uiComponentSrc the property value,  
          * @return this entity builder for chaining
          */
-        NodeViewEntBuilder setUiComponentId(String uiComponentId);
+        NodeViewEntBuilder setUiComponentSrc(String uiComponentSrc);
         
         
         /**

@@ -101,6 +101,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
+import org.knime.core.ui.InternalUINodeFactory;
 import org.knime.core.ui.Page;
 import org.knime.core.ui.UINodeFactory;
 import org.knime.core.ui.UINodeFactoryUtil;
@@ -848,21 +849,31 @@ public final class EntityBuilderUtil {
             .setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.COMPONENT_VIEW).build();
     }
 
-    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext) {
+    private static NodeViewEnt buildNodeViewEnt(final NativeNodeContainer nnc,
+        final WorkflowBuildContext buildContext) {
         NodeFactory<NodeModel> nodeFactory = nnc.getNode().getFactory();
         if (!hasNodeView(nodeFactory)) {
             return null;
         }
-        String iframeSrc;
-        var nodeViewDebugUrl = buildContext.nodeViewDebugUrl();
-        if (nodeViewDebugUrl != null
-            && Pattern.matches(nodeViewDebugUrl.getFirst(), nodeFactory.getClass().getName())) {
-            iframeSrc = nodeViewDebugUrl.getSecond();
+
+        String iframeSrc = null;
+        String componentSrc = null;
+        org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum viewType;
+        if (nodeFactory instanceof InternalUINodeFactory) {
+            componentSrc = "TODO:component-src";
+            viewType = org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.UI_COMPONENT;
         } else {
-            iframeSrc = getIFrameSrc(nnc);
+            var nodeViewDebugUrl = buildContext.nodeViewDebugUrl();
+            if (nodeViewDebugUrl != null
+                && Pattern.matches(nodeViewDebugUrl.getFirst(), nodeFactory.getClass().getName())) {
+                iframeSrc = nodeViewDebugUrl.getSecond();
+            } else {
+                iframeSrc = getIFrameSrc(nnc);
+            }
+            viewType = org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME;
         }
-        return builder(NodeViewEntBuilder.class).setType(org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME)
-            .setIframeSrc(iframeSrc).build();
+        return builder(NodeViewEntBuilder.class).setType(viewType).setIframeSrc(iframeSrc)
+            .setUiComponentSrc(componentSrc).build();
     }
 
     private static boolean hasNodeView(final NodeFactory<NodeModel> f) {
@@ -934,7 +945,7 @@ public final class EntityBuilderUtil {
             .setNodeAnnotation(nc.getNodeAnnotation().getText())//
             .setNodeState(buildNodeStateEnt(nc)).setType(type)//
             .setIframeSrc(iframeSrc)//
-            .setUiComponentId(null)//
+            .setUiComponentSrc(null)//
             .setComponentViewInfo(compView)//
             .build();
     }
