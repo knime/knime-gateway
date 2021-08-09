@@ -54,15 +54,15 @@
       "name" : "Column Filter",
       "type" : "Manipulator"
     },
-    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76" : {
-      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
-      "name" : "Component Output",
-      "type" : "VirtualOut"
-    },
     "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Input",
       "type" : "VirtualIn"
+    },
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Output",
+      "type" : "VirtualOut"
     }
   },
   "nodes" : {
@@ -241,6 +241,57 @@
         "executionState" : "CONFIGURED"
       },
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76"
+    },
+    "root:8" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canDelete" : true,
+        "canExecute" : true,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "id" : "root:8",
+      "inPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[ root:8_1 ]",
+        "index" : 1,
+        "name" : "Table to be filtered",
+        "optional" : false,
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "type" : "flowVariable"
+      }, {
+        "connectedVia" : "[ root:7_1 ]",
+        "index" : 1,
+        "name" : "Filtered table",
+        "type" : "table",
+        "view" : {
+          "type" : "table"
+        }
+      } ],
+      "position" : {
+        "x" : 153,
+        "y" : 126
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      },
+      "successors" : "DA==",
+      "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
     }
   },
   "workflowAnnotations" : [ ]

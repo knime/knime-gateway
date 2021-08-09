@@ -25,5 +25,13 @@
     "sourceNode" : "root:3:0:7",
     "sourcePort" : 1,
     "streaming" : false
+  },
+  "root:3:0:7_1" : {
+    "destNode" : "root:3:0:7",
+    "destPort" : 1,
+    "label" : "3",
+    "sourceNode" : "root:3:0:5",
+    "sourcePort" : 1,
+    "streaming" : false
   }
 }
