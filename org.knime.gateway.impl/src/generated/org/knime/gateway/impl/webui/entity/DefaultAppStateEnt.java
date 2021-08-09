@@ -55,7 +55,7 @@ import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 
 /**
- * Represents the global application state. 
+ * Represents the global application state.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

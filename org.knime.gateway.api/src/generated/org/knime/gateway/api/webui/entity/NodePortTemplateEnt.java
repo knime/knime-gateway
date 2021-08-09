@@ -79,7 +79,7 @@ public interface NodePortTemplateEnt extends GatewayEntity, NodePortAndTemplateE
     public interface NodePortTemplateEntBuilder extends GatewayEntityBuilder<NodePortTemplateEnt> {
 
         /**
-         * A descriptive name for the port. For native nodes, this name is taken from the node description. For  components, the port name is taken from the component&#39;s description, if provided by the user.
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
          * 
          * @param name the property value,  
          * @return this entity builder for chaining

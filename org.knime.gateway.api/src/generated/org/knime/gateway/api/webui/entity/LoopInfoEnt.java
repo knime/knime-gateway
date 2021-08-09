@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Loop info. Only present on loop end nodes. 
+ * Loop info. Only present on loop end nodes.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

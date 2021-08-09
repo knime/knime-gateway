@@ -104,7 +104,7 @@ public interface WorkflowEnt extends GatewayEntity {
   public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
 
   /**
-   * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent.  Not available if this workflow is the root already.
+   * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent. Not available if this workflow is the root already.
    * @return parents 
    **/
   public java.util.List<WorkflowInfoEnt> getParents();
@@ -194,7 +194,7 @@ public interface WorkflowEnt extends GatewayEntity {
         WorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
         
         /**
-         * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent.  Not available if this workflow is the root already.
+         * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent. Not available if this workflow is the root already.
          * 
          * @param parents the property value,  
          * @return this entity builder for chaining

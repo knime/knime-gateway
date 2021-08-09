@@ -85,7 +85,7 @@ public interface NodePortAndTemplateEnt extends GatewayEntity {
 
 
   /**
-   * A descriptive name for the port. For native nodes, this name is taken from the node description. For  components, the port name is taken from the component&#39;s description, if provided by the user.
+   * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
    * @return name 
    **/
   public String getName();
@@ -121,7 +121,7 @@ public interface NodePortAndTemplateEnt extends GatewayEntity {
     public interface NodePortAndTemplateEntBuilder extends GatewayEntityBuilder<NodePortAndTemplateEnt> {
 
         /**
-         * A descriptive name for the port. For native nodes, this name is taken from the node description. For  components, the port name is taken from the component&#39;s description, if provided by the user.
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
          * 
          * @param name the property value,  
          * @return this entity builder for chaining

@@ -75,7 +75,7 @@ public interface NodeService extends GatewayService {
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a worklow which has the same format as a node-id.
-     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level. If no node ids are given the state of the parent workflow (i.e. the one referenced by workflow-id)  is changed which is equivalent to change the states of all contained nodes.
+     * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level. If no node ids are given the state of the parent workflow (i.e. the one referenced by workflow-id) is changed which is equivalent to change the states of all contained nodes.
      * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
      * 

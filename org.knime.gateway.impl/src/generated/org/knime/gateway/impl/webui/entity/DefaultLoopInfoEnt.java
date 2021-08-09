@@ -55,7 +55,7 @@ import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 
 /**
- * Loop info. Only present on loop end nodes. 
+ * Loop info. Only present on loop end nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
