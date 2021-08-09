@@ -110,6 +110,7 @@ import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
 import org.knime.core.util.workflowalizer.Workflowalizer;
+import org.knime.core.wizard.CompositeViewPageManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -197,7 +198,11 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
+import org.knime.js.core.JSONViewContent;
+import org.knime.js.core.JSONWebNodePage;
 import org.xml.sax.SAXException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
@@ -919,8 +924,16 @@ public final class EntityBuilderUtil {
                     buildNodeViewWithNodeInfoEnt((SingleNodeContainer)nc));
             }
         }
+        String pageString = "";
+        try {
+            CompositeViewPageManager cpm = CompositeViewPageManager.of(projectWfm);
+            JSONWebNodePage page = cpm.createWizardPage(snc.getID());
+            pageString = JSONViewContent.createObjectMapper().writeValueAsString(page);
+        } catch (IOException ex) {
+            // TODO
+        }
         return builder(ComponentViewInfoEntBuilder.class)//
-            .setLayout(null)// TODO
+            .setLayout(pageString)// TODO
             .setViews(views)//
             .build();
     }
