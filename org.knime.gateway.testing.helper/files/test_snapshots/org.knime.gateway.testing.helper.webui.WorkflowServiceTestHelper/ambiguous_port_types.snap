@@ -1,4 +1,12 @@
 {
-  "784199704" : [ -642254954 ],
-  "-642254954" : [ 784199704 ]
+  "org.knime.core.node.port.database.DatabaseConnectionPortObject" : {
+    "color" : "#FF4B4B",
+    "compatibleTypes" : [ "org.knime.core.node.port.database.DatabasePortObject" ],
+    "name" : "Database Connection"
+  },
+  "org.knime.core.node.port.database.DatabasePortObject" : {
+    "color" : "#800000",
+    "compatibleTypes" : [ "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
+    "name" : "Database Query"
+  }
 }

@@ -44,16 +44,12 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Properties shared between NodePort and NodePortDescription
- * 
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", ""})
@@ -62,13 +58,13 @@ public interface NodePortAndDescriptionEnt extends GatewayEntity, NodePortInvari
 
   /**
    * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
-   * @return name 
+   * @return name
    **/
   public String getName();
 
   /**
    * Whether it&#39;s a optional port or not.
-   * @return optional 
+   * @return optional
    **/
   public Boolean isOptional();
 
@@ -80,54 +76,54 @@ public interface NodePortAndDescriptionEnt extends GatewayEntity, NodePortInvari
 
         /**
          * The port type.
-         * 
-         * @param type the property value, NOT <code>null</code>! 
+         *
+         * @param type the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         NodePortAndDescriptionEntBuilder setType(TypeEnum type);
-        
+
         /**
-         * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
-         * 
-         * @param otherTypeId the property value,  
+         * A unique port type id if it&#39;s a port of type &#39;other&#39;.
+         *
+         * @param otherTypeId the property value,
          * @return this entity builder for chaining
          */
         NodePortAndDescriptionEntBuilder setOtherTypeId(Integer otherTypeId);
-        
+
         /**
          * The color of the port in case of type &#39;other&#39;.
-         * 
-         * @param color the property value,  
+         *
+         * @param color the property value,
          * @return this entity builder for chaining
          */
         NodePortAndDescriptionEntBuilder setColor(String color);
-        
+
         /**
          * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
-         * 
-         * @param name the property value,  
+         *
+         * @param name the property value,
          * @return this entity builder for chaining
          */
         NodePortAndDescriptionEntBuilder setName(String name);
-        
+
         /**
          * Whether it&#39;s a optional port or not.
-         * 
-         * @param optional the property value,  
+         *
+         * @param optional the property value,
          * @return this entity builder for chaining
          */
         NodePortAndDescriptionEntBuilder setOptional(Boolean optional);
-        
-        
+
+
         /**
         * Creates the entity from the builder.
-        * 
+        *
         * @return the entity
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
         NodePortAndDescriptionEnt build();
-    
+
     }
 
 }

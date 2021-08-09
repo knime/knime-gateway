@@ -50,8 +50,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,9 +59,9 @@ import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt.DefaultNod
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodePortTemplateEntBuilder.class)
+@JsonDeserialize(builder=DefaultPortTypeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
+public interface PortTypeEntMixIn extends PortTypeEnt {
 
     @Override
     @JsonIgnore
@@ -72,16 +72,12 @@ public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
     public String getName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
+    @JsonProperty("color")
+    public String getColor();
     
     @Override
-    @JsonProperty("otherTypeId")
-    public String getOtherTypeId();
-    
-    @Override
-    @JsonProperty("optional")
-    public Boolean isOptional();
+    @JsonProperty("compatibleTypes")
+    public java.util.List<String> getCompatibleTypes();
     
 
     /**
@@ -91,26 +87,22 @@ public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortTemplateEntMixInBuilder extends NodePortTemplateEntBuilder {
+    public static interface PortTypeEntMixInBuilder extends PortTypeEntBuilder {
     
         @Override
-        public NodePortTemplateEntMixIn build();
+        public PortTypeEntMixIn build();
     
         @Override
         @JsonProperty("name")
-        public NodePortTemplateEntMixInBuilder setName(final String name);
+        public PortTypeEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("type")
-        public NodePortTemplateEntMixInBuilder setType(final TypeEnum type);
+        @JsonProperty("color")
+        public PortTypeEntMixInBuilder setColor(final String color);
         
         @Override
-        @JsonProperty("otherTypeId")
-        public NodePortTemplateEntMixInBuilder setOtherTypeId(final String otherTypeId);
-        
-        @Override
-        @JsonProperty("optional")
-        public NodePortTemplateEntMixInBuilder setOptional(final Boolean optional);
+        @JsonProperty("compatibleTypes")
+        public PortTypeEntMixInBuilder setCompatibleTypes(final java.util.List<String> compatibleTypes);
         
     }
 

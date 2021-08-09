@@ -49,17 +49,16 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
-
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -78,55 +77,55 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @Override
     @JsonProperty("info")
     public WorkflowInfoEnt getInfo();
-    
+
     @Override
     @JsonProperty("nodes")
     public java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> getNodes();
-    
+
     @Override
     @JsonProperty("nodeTemplates")
     public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates();
-    
+
     @Override
-    @JsonProperty("ambiguousPortTypes")
-    public java.util.Map<String, java.util.List<Integer>> getAmbiguousPortTypes();
-    
+    @JsonProperty("portTypes")
+    public java.util.Map<String, PortTypeEnt> getPortTypes();
+
     @Override
     @JsonProperty("connections")
     public java.util.Map<String, ConnectionEnt> getConnections();
-    
+
     @Override
     @JsonProperty("workflowAnnotations")
     public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations();
-    
+
     @Override
     @JsonProperty("parents")
     public java.util.List<WorkflowInfoEnt> getParents();
-    
+
     @Override
     @JsonProperty("metaInPorts")
     public MetaPortsEnt getMetaInPorts();
-    
+
     @Override
     @JsonProperty("metaOutPorts")
     public MetaPortsEnt getMetaOutPorts();
-    
+
     @Override
     @JsonProperty("allowedActions")
     public AllowedWorkflowActionsEnt getAllowedActions();
-    
+
     @Override
     @JsonProperty("componentMetadata")
     public ComponentNodeDescriptionEnt getComponentMetadata();
-    
+
     @Override
     @JsonProperty("projectMetadata")
     public ProjectMetadataEnt getProjectMetadata();
-    
+
     @Override
     @JsonProperty("dirty")
     public Boolean isDirty();
-    
+
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -136,62 +135,62 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowEntMixInBuilder extends WorkflowEntBuilder {
-    
+
         @Override
         public WorkflowEntMixIn build();
-    
+
         @Override
         @JsonProperty("info")
         public WorkflowEntMixInBuilder setInfo(final WorkflowInfoEnt info);
-        
+
         @Override
         @JsonProperty("nodes")
         public WorkflowEntMixInBuilder setNodes(final java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> nodes);
-        
+
         @Override
         @JsonProperty("nodeTemplates")
         public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates);
-        
+
         @Override
-        @JsonProperty("ambiguousPortTypes")
-        public WorkflowEntMixInBuilder setAmbiguousPortTypes(final java.util.Map<String, java.util.List<Integer>> ambiguousPortTypes);
-        
+        @JsonProperty("portTypes")
+        public WorkflowEntMixInBuilder setPortTypes(final java.util.Map<String, PortTypeEnt> portTypes);
+
         @Override
         @JsonProperty("connections")
         public WorkflowEntMixInBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections);
-        
+
         @Override
         @JsonProperty("workflowAnnotations")
         public WorkflowEntMixInBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
-        
+
         @Override
         @JsonProperty("parents")
         public WorkflowEntMixInBuilder setParents(final java.util.List<WorkflowInfoEnt> parents);
-        
+
         @Override
         @JsonProperty("metaInPorts")
         public WorkflowEntMixInBuilder setMetaInPorts(final MetaPortsEnt metaInPorts);
-        
+
         @Override
         @JsonProperty("metaOutPorts")
         public WorkflowEntMixInBuilder setMetaOutPorts(final MetaPortsEnt metaOutPorts);
-        
+
         @Override
         @JsonProperty("allowedActions")
         public WorkflowEntMixInBuilder setAllowedActions(final AllowedWorkflowActionsEnt allowedActions);
-        
+
         @Override
         @JsonProperty("componentMetadata")
         public WorkflowEntMixInBuilder setComponentMetadata(final ComponentNodeDescriptionEnt componentMetadata);
-        
+
         @Override
         @JsonProperty("projectMetadata")
         public WorkflowEntMixInBuilder setProjectMetadata(final ProjectMetadataEnt projectMetadata);
-        
+
         @Override
         @JsonProperty("dirty")
         public WorkflowEntMixInBuilder setDirty(final Boolean dirty);
-        
+
     }
 
 

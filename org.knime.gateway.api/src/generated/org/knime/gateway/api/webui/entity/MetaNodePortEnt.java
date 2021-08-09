@@ -119,20 +119,12 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setType(TypeEnum type);
         
         /**
-         * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
+         * A unique port type id if it&#39;s a port of type &#39;other&#39;.
          * 
          * @param otherTypeId the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodePortEntBuilder setOtherTypeId(Integer otherTypeId);
-        
-        /**
-         * The color of the port in case of type &#39;other&#39;.
-         * 
-         * @param color the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setColor(String color);
+        MetaNodePortEntBuilder setOtherTypeId(String otherTypeId);
         
         /**
          * Whether it&#39;s a optional port or not.

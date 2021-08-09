@@ -44,23 +44,12 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
-import org.knime.gateway.api.webui.entity.ConnectionEnt;
-import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
-import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * The structure of a workflow.
- * 
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
@@ -86,10 +75,10 @@ public interface WorkflowEnt extends GatewayEntity {
   public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates();
 
   /**
-   * A map of port types that are part of the workflow and can be connected to multiple other ports (map from port type id to a list of other port type ids, not including source port id). The map does not contain any port types that can only be connected to exactly one other port type (neither does it include the build-in basic port types, i.e. table, flow variable and generic port object). This info is required to determine port compatibility (when connecting two nodes) and is only available if interaction info is supposed to be included.
-   * @return ambiguousPortTypes 
+   * A map of all the non-built-in port types used in the workflow. Kept here to avoid repetition. The map keys are port type ids.
+   * @return portTypes
    **/
-  public java.util.Map<String, java.util.List<Integer>> getAmbiguousPortTypes();
+  public java.util.Map<String, PortTypeEnt> getPortTypes();
 
   /**
    * The list of connections.
@@ -105,37 +94,37 @@ public interface WorkflowEnt extends GatewayEntity {
 
   /**
    * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent. Not available if this workflow is the root already.
-   * @return parents 
+   * @return parents
    **/
   public java.util.List<WorkflowInfoEnt> getParents();
 
   /**
    * Get metaInPorts
-   * @return metaInPorts 
+   * @return metaInPorts
    **/
   public MetaPortsEnt getMetaInPorts();
 
   /**
    * Get metaOutPorts
-   * @return metaOutPorts 
+   * @return metaOutPorts
    **/
   public MetaPortsEnt getMetaOutPorts();
 
   /**
    * Get allowedActions
-   * @return allowedActions 
+   * @return allowedActions
    **/
   public AllowedWorkflowActionsEnt getAllowedActions();
 
   /**
    * Get componentMetadata
-   * @return componentMetadata 
+   * @return componentMetadata
    **/
   public ComponentNodeDescriptionEnt getComponentMetadata();
 
   /**
    * Get projectMetadata
-   * @return projectMetadata 
+   * @return projectMetadata
    **/
   public ProjectMetadataEnt getProjectMetadata();
 
@@ -153,118 +142,118 @@ public interface WorkflowEnt extends GatewayEntity {
 
         /**
    		 * Set info
-         * 
-         * @param info the property value, NOT <code>null</code>! 
+         *
+         * @param info the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setInfo(WorkflowInfoEnt info);
-        
+
         /**
          * The node map.
-         * 
-         * @param nodes the property value, NOT <code>null</code>! 
+         *
+         * @param nodes the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodes(java.util.Map<String, NodeEnt> nodes);
-        
+
         /**
          * A map from ids to node templates.
-         * 
-         * @param nodeTemplates the property value, NOT <code>null</code>! 
+         *
+         * @param nodeTemplates the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates);
-        
+
         /**
-         * A map of port types that are part of the workflow and can be connected to multiple other ports (map from port type id to a list of other port type ids, not including source port id). The map does not contain any port types that can only be connected to exactly one other port type (neither does it include the build-in basic port types, i.e. table, flow variable and generic port object). This info is required to determine port compatibility (when connecting two nodes) and is only available if interaction info is supposed to be included.
-         * 
-         * @param ambiguousPortTypes the property value,  
+         * A map of all the non-built-in port types used in the workflow. Kept here to avoid repetition. The map keys are port type ids.
+         *
+         * @param portTypes the property value,
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setAmbiguousPortTypes(java.util.Map<String, java.util.List<Integer>> ambiguousPortTypes);
-        
+        WorkflowEntBuilder setPortTypes(java.util.Map<String, PortTypeEnt> portTypes);
+
         /**
          * The list of connections.
-         * 
-         * @param connections the property value, NOT <code>null</code>! 
+         *
+         * @param connections the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections);
-        
+
         /**
          * List of all workflow annotations. The list order determines the z-order. Annotations at the end of the list are rendered on top.
-         * 
-         * @param workflowAnnotations the property value, NOT <code>null</code>! 
+         *
+         * @param workflowAnnotations the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations);
-        
+
         /**
          * The workflow parent hierarchy. The first in the list represents the root workflow, the last the direct parent. Not available if this workflow is the root already.
-         * 
-         * @param parents the property value,  
+         *
+         * @param parents the property value,
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setParents(java.util.List<WorkflowInfoEnt> parents);
-        
+
         /**
    		 * Set metaInPorts
-         * 
-         * @param metaInPorts the property value,  
+         *
+         * @param metaInPorts the property value,
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setMetaInPorts(MetaPortsEnt metaInPorts);
-        
+
         /**
    		 * Set metaOutPorts
-         * 
-         * @param metaOutPorts the property value,  
+         *
+         * @param metaOutPorts the property value,
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setMetaOutPorts(MetaPortsEnt metaOutPorts);
-        
+
         /**
    		 * Set allowedActions
-         * 
-         * @param allowedActions the property value,  
+         *
+         * @param allowedActions the property value,
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setAllowedActions(AllowedWorkflowActionsEnt allowedActions);
-        
+
         /**
    		 * Set componentMetadata
-         * 
-         * @param componentMetadata the property value,  
+         *
+         * @param componentMetadata the property value,
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setComponentMetadata(ComponentNodeDescriptionEnt componentMetadata);
-        
+
         /**
    		 * Set projectMetadata
-         * 
-         * @param projectMetadata the property value,  
+         *
+         * @param projectMetadata the property value,
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata);
-        
+
         /**
          * Flag indicating whether the workflow is in a dirty state, i.e. contains unsaved changes.
-         * 
-         * @param dirty the property value, NOT <code>null</code>! 
+         *
+         * @param dirty the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setDirty(Boolean dirty);
-        
-        
+
+
         /**
         * Creates the entity from the builder.
-        * 
+        *
         * @return the entity
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
         WorkflowEnt build();
-    
+
     }
 
 }

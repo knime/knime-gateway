@@ -49,41 +49,38 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+
+
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 
 /**
- * Properties that have NodePort and NodePortDescription in common. Or, put differently, the properties required to render a node port in the node repository (i.e. without port information specific to a node-instance).
+ * Decribes the type of a port (if the port type is _not_ a built-in port type).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
+public class DefaultPortTypeEnt implements PortTypeEnt {
 
   protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_otherTypeId;
-  protected Boolean m_optional;
-
-  protected DefaultNodePortTemplateEnt() {
+  protected String m_color;
+  protected java.util.List<String> m_compatibleTypes;
+  
+  protected DefaultPortTypeEnt() {
     //for sub-classes
   }
-
+  
   @Override
   public String getTypeID() {
-    return "NodePortTemplate";
+    return "PortType";
   }
-
-  private DefaultNodePortTemplateEnt(final DefaultNodePortTemplateEntBuilder builder) {
-
+  
+  private DefaultPortTypeEnt(DefaultPortTypeEntBuilder builder) {
+    
     m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
-    }
-    m_type = immutable(builder.m_type);
-    m_otherTypeId = immutable(builder.m_otherTypeId);
-    m_optional = immutable(builder.m_optional);
+    m_color = immutable(builder.m_color);
+    m_compatibleTypes = immutable(builder.m_compatibleTypes);
   }
-
+  
    /**
      * {@inheritDoc}
      */
@@ -98,12 +95,12 @@ public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNodePortTemplateEnt ent = (DefaultNodePortTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional);
+        DefaultPortTypeEnt ent = (DefaultPortTypeEnt)o;
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes);
     }
 
 
-
+  
    /**
     * {@inheritDoc}
     */
@@ -111,79 +108,63 @@ public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_name)
-               .append(m_type)
-               .append(m_otherTypeId)
-               .append(m_optional)
+               .append(m_color)
+               .append(m_compatibleTypes)
                .toHashCode();
    }
-
-
-
+  
+	
+	
   @Override
   public String getName() {
         return m_name;
   }
-
+    
   @Override
-  public TypeEnum getType() {
-        return m_type;
+  public String getColor() {
+        return m_color;
   }
-
+    
   @Override
-  public String getOtherTypeId() {
-        return m_otherTypeId;
+  public java.util.List<String> getCompatibleTypes() {
+        return m_compatibleTypes;
   }
-
-  @Override
-  public Boolean isOptional() {
-        return m_optional;
-  }
-
-
-    public static class DefaultNodePortTemplateEntBuilder implements NodePortTemplateEntBuilder {
-
-        public DefaultNodePortTemplateEntBuilder(){
-
+    
+  
+    public static class DefaultPortTypeEntBuilder implements PortTypeEntBuilder {
+    
+        public DefaultPortTypeEntBuilder(){
+            
         }
-
+    
         private String m_name;
-        private TypeEnum m_type;
-        private String m_otherTypeId;
-        private Boolean m_optional;
+        private String m_color;
+        private java.util.List<String> m_compatibleTypes;
 
         @Override
-        public DefaultNodePortTemplateEntBuilder setName(final String name) {
+        public DefaultPortTypeEntBuilder setName(String name) {
              m_name = name;
              return this;
         }
 
         @Override
-        public DefaultNodePortTemplateEntBuilder setType(final TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
-             }
-             m_type = type;
+        public DefaultPortTypeEntBuilder setColor(String color) {
+             m_color = color;
              return this;
         }
 
         @Override
-        public DefaultNodePortTemplateEntBuilder setOtherTypeId(final String otherTypeId) {
-             m_otherTypeId = otherTypeId;
+        public DefaultPortTypeEntBuilder setCompatibleTypes(java.util.List<String> compatibleTypes) {
+             m_compatibleTypes = compatibleTypes;
              return this;
         }
 
+        
         @Override
-        public DefaultNodePortTemplateEntBuilder setOptional(final Boolean optional) {
-             m_optional = optional;
-             return this;
+        public DefaultPortTypeEnt build() {
+            return new DefaultPortTypeEnt(this);
         }
-
-
-        @Override
-        public DefaultNodePortTemplateEnt build() {
-            return new DefaultNodePortTemplateEnt(this);
-        }
-
+    
     }
 
 }

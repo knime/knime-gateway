@@ -42,78 +42,81 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
 
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * Decribes the type of a port (if the port type is _not_ a built-in port type).
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface PortTypeEnt extends GatewayEntity {
 
-@JsonDeserialize(builder=DefaultNodePortTemplateEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * A human-readable name for the port type.
+   * @return name 
+   **/
+  public String getName();
 
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("otherTypeId")
-    public String getOtherTypeId();
-    
-    @Override
-    @JsonProperty("optional")
-    public Boolean isOptional();
-    
+  /**
+   * The color of the port.
+   * @return color 
+   **/
+  public String getColor();
+
+  /**
+   * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included.
+   * @return compatibleTypes 
+   **/
+  public java.util.List<String> getCompatibleTypes();
+
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface PortTypeEntBuilder extends GatewayEntityBuilder<PortTypeEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortTemplateEntMixInBuilder extends NodePortTemplateEntBuilder {
+        /**
+         * A human-readable name for the port type.
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setName(String name);
+        
+        /**
+         * The color of the port.
+         * 
+         * @param color the property value,  
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setColor(String color);
+        
+        /**
+         * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included.
+         * 
+         * @param compatibleTypes the property value,  
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setCompatibleTypes(java.util.List<String> compatibleTypes);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        PortTypeEnt build();
     
-        @Override
-        public NodePortTemplateEntMixIn build();
-    
-        @Override
-        @JsonProperty("name")
-        public NodePortTemplateEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("type")
-        public NodePortTemplateEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("otherTypeId")
-        public NodePortTemplateEntMixInBuilder setOtherTypeId(final String otherTypeId);
-        
-        @Override
-        @JsonProperty("optional")
-        public NodePortTemplateEntMixInBuilder setOptional(final Boolean optional);
-        
     }
 
-
 }
-

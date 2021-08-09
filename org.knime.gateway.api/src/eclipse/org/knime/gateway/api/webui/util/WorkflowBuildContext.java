@@ -90,9 +90,7 @@ public final class WorkflowBuildContext {
 
     private int m_nodeCount;
 
-    private Set<PortType> m_inPortTypes = null;
-
-    private Set<PortType> m_outPortTypes = null;
+    private Set<PortType> m_portTypes = null;
 
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
@@ -145,39 +143,23 @@ public final class WorkflowBuildContext {
      * {@link FlowVariablePortObject} and {@link PortObject} are ignored!
      *
      * @param pt
-     * @param isInPort whether it's the port type of the input port or not
      */
-    void updatePortTypes(final PortType pt, final boolean isInPort) {
+    void updatePortTypes(final PortType pt) {
         if (BufferedDataTable.TYPE.equals(pt) || FlowVariablePortObject.TYPE.equals(pt) || PortObject.TYPE.equals(pt)) {
             return;
         }
-        if (isInPort) {
-            if (m_inPortTypes == null) {
-                m_inPortTypes = new HashSet<>();
-            }
-            m_inPortTypes.add(pt);
-        } else {
-            if (m_outPortTypes == null) {
-                m_outPortTypes = new HashSet<>();
-            }
-            m_outPortTypes.add(pt);
+        if (m_portTypes == null) {
+            m_portTypes = new HashSet<>();
         }
+        m_portTypes.add(pt);
     }
 
     /**
      * @return the set of port types a collected via {@link #updatePortTypes(PortType, boolean)}, <code>null</code> if
      *         empty
      */
-    Set<PortType> inPortTypes() {
-        return m_inPortTypes;
-    }
-
-    /**
-     * @return the set of port types a collected via {@link #updatePortTypes(PortType, boolean)}, <code>null</code> if
-     *         empty
-     */
-    Set<PortType> outPortTypes() {
-        return m_outPortTypes;
+    Set<PortType> portTypes() {
+        return m_portTypes;
     }
 
     /**

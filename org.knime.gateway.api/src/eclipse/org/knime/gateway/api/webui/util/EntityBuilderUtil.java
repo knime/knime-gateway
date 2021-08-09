@@ -193,6 +193,8 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -271,7 +273,7 @@ public final class EntityBuilderUtil {
             // linked hash map to retain iteration order!
             Map<String, NodeEnt> nodes = new LinkedHashMap<>();
             Map<String, NativeNodeInvariantsEnt> invariants = new HashMap<>();
-
+            Map<String, NativeNodeTemplateEnt> templates = new HashMap<>();
             for (NodeContainer nc : nodeContainers) {
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
@@ -284,6 +286,7 @@ public final class EntityBuilderUtil {
             return builder(WorkflowEntBuilder.class).setInfo(info)//
                 .setNodes(nodes)//
                 .setNodeTemplates(invariants)//
+                .setPortTypes(buildPortTypeEntsMap(buildContext))//
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
                 .setAllowedActions(buildContext.includeInteractionInfo()
@@ -294,37 +297,36 @@ public final class EntityBuilderUtil {
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(
                     CoreUtil.isComponentWFM(wfm) ? buildComponentNodeDescriptionEnt(getParentComponent(wfm)) : null)//
-                .setAmbiguousPortTypes(buildAmbiguousPortTypesMap(buildContext))//
                 .setDirty(wfm.isDirty())
                 .build();
         }
     }
 
-    private static Map<String, List<Integer>> buildAmbiguousPortTypesMap(final WorkflowBuildContext buildContext) {
-        if (buildContext.inPortTypes() == null || buildContext.outPortTypes() == null) {
+    private static Map<String, PortTypeEnt> buildPortTypeEntsMap(final WorkflowBuildContext buildContext) {
+        if (buildContext.portTypes() == null) {
             return null;
         }
-        Map<String, List<Integer>> res = null;
-        for (PortType source : buildContext.outPortTypes()) {
-            List<Integer> destList = new ArrayList<>();
-            for (PortType dest : buildContext.inPortTypes()) {
-                if (dest.equals(source)) {
-                    continue;
-                }
-                if (source.getPortObjectClass().isAssignableFrom(dest.getPortObjectClass())
-                    || dest.getPortObjectClass().isAssignableFrom(source.getPortObjectClass())) {
-                    destList.add(dest.getPortObjectClass().getName().hashCode());
-                }
-            }
-            if (!destList.isEmpty()) {
-                // the source port type can be additionally connected to at least one other port type than itself
-                if (res == null) {
-                    res = new HashMap<>();
-                }
-                res.put(String.valueOf(source.getPortObjectClass().getName().hashCode()), destList);
-            }
-        }
-        return res;
+        Set<PortType> portTypes = buildContext.portTypes();
+        return portTypes.stream()
+            .collect(Collectors.toMap(EntityBuilderUtil::getPortTypeId, t -> buildPortTypeEnt(t, portTypes)));
+    }
+
+    private static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
+        List<String> compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
+            .map(EntityBuilderUtil::getPortTypeId).collect(Collectors.toList());
+        return builder(PortTypeEntBuilder.class)//
+            .setName(ptype.getName()).setColor(hexStringColor(ptype.getColor()))//
+            .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
+            .build();
+    }
+
+    private static String getPortTypeId(final PortType ptype) {
+        return ptype.getPortObjectClass().getName();
+    }
+
+    private static boolean portTypesAreDifferentButCompatible(final PortType p1, final PortType p2) {
+        return !p1.equals(p2) && (p1.getPortObjectClass().isAssignableFrom(p2.getPortObjectClass())
+            || p2.getPortObjectClass().isAssignableFrom(p1.getPortObjectClass()));
     }
 
     /**
@@ -783,13 +785,14 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final WorkflowBuildContext buildContext) {
-        return buildNodeEnt(id, nc, buildContext.includeInteractionInfo()
-            ? buildAllowedNodeActionsEnt(nc, buildContext) : null, buildContext);
+        final Map<String, PortTypeEnt> portTypes, final WorkflowBuildContext buildContext) {
+        return buildNodeEnt(id, nc, buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
+        final WorkflowBuildContext buildContext) {
+        AllowedNodeActionsEnt allowedActions =
+            buildContext.includeInteractionInfo() ? buildAllowedNodeActionsEnt(nc, buildContext) : null;
         if (nc instanceof NativeNodeContainer) {
             return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, buildContext);
         } else if (nc instanceof WorkflowManager) {
@@ -931,8 +934,8 @@ public final class EntityBuilderUtil {
             } else {
                 nodeState = null;
             }
-            return builder(MetaNodePortEntBuilder.class)
-                .setColor(np.getColor())//
+            return builder(MetaNodePortEntBuilder.class)//
+                .setOtherTypeId(np.getOtherTypeId())//
                 .setConnectedVia(np.getConnectedVia())//
                 .setInactive(np.isInactive())//
                 .setIndex(np.getIndex())//
@@ -940,6 +943,8 @@ public final class EntityBuilderUtil {
                 .setName(np.getName())//
                 .setOptional(np.isOptional())//
                 .setType(np.getType())//
+                .setView(np.getView())//
+                .setPortObjectVersion(np.getPortObjectVersion())//
                 .setNodeState(nodeState)//
                 .build();
         }).collect(toList());
@@ -987,7 +992,6 @@ public final class EntityBuilderUtil {
                 ConnectionContainer connection = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
                 NodeInPort inPort = nc.getInPort(i);
                 PortType pt = inPort.getPortType();
-                buildContext.updatePortTypes(pt, true);
                 res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null,
                     connection == null ? Collections.emptyList() : Collections.singletonList(connection), null,
                     buildContext));
@@ -997,7 +1001,6 @@ public final class EntityBuilderUtil {
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
                 PortType pt = outPort.getPortType();
-                buildContext.updatePortTypes(pt, false);
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, connections,
                     getPortObjectVersion(outPort, buildContext), buildContext));
@@ -1032,6 +1035,7 @@ public final class EntityBuilderUtil {
         final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
         final WorkflowBuildContext buildContext) {
         NodePortTemplateEnt.TypeEnum resPortType = getNodePortTemplateEntType(ptype);
+        buildContext.updatePortTypes(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
             .setInactive(isInactive)//
@@ -1040,8 +1044,7 @@ public final class EntityBuilderUtil {
             .setName(name)//
             .setInfo(info)//
             .setType(resPortType)//
-            .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext.includeInteractionInfo()))//
-            .setColor(getPortTypeColor(resPortType, ptype))//
+            .setOtherTypeId(getOtherPortTypeId(ptype, resPortType))//
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
             .build();
@@ -1057,10 +1060,8 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static Integer getOtherPortTypeId(final PortType ptype, final NodePortTemplateEnt.TypeEnum portTypeEnt,
-        final boolean includeInteractionInfo) {
-        return includeInteractionInfo && NodePortTemplateEnt.TypeEnum.OTHER == portTypeEnt
-            ? ptype.getPortObjectClass().getName().hashCode() : null;
+    private static String getOtherPortTypeId(final PortType ptype, final NodePortTemplateEnt.TypeEnum portTypeEnt) {
+        return NodePortTemplateEnt.TypeEnum.OTHER == portTypeEnt ? getPortTypeId(ptype) : null;
     }
 
     private static String getPortTypeColor(final NodePortTemplateEnt.TypeEnum entType, final PortType ptype) {

@@ -277,7 +277,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testGetWorkflowWithAmbiguousPortTypes() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.PORT_TYPES);
         WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
-        cr(workflow.getWorkflow().getAmbiguousPortTypes(), "ambiguous_port_types");
+        cr(workflow.getWorkflow().getPortTypes(), "ambiguous_port_types");
     }
 
     /**

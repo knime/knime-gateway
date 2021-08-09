@@ -49,11 +49,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import org.knime.gateway.api.webui.entity.PortViewEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
-
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 /**
  * A single port of a node.
@@ -66,7 +63,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
   protected String m_name;
   protected TypeEnum m_type;
   protected Integer m_otherTypeId;
-  protected String m_color;
   protected Boolean m_optional;
   protected String m_info;
   protected Integer m_index;
@@ -74,17 +70,17 @@ public class DefaultNodePortEnt implements NodePortEnt {
   protected Boolean m_inactive;
   protected PortViewEnt m_view;
   protected Integer m_portObjectVersion;
-  
+
   protected DefaultNodePortEnt() {
     //for sub-classes
   }
-  
+
   @Override
   public String getTypeID() {
     return "NodePort";
   }
-  
-  private DefaultNodePortEnt(DefaultNodePortEntBuilder builder) {
+
+  private DefaultNodePortEnt(final DefaultNodePortEntBuilder builder) {
     super();
     m_name = immutable(builder.m_name);
     if(builder.m_type == null) {
@@ -92,7 +88,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
     }
     m_type = immutable(builder.m_type);
     m_otherTypeId = immutable(builder.m_otherTypeId);
-    m_color = immutable(builder.m_color);
     m_optional = immutable(builder.m_optional);
     m_info = immutable(builder.m_info);
     if(builder.m_index == null) {
@@ -104,7 +99,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
     m_view = immutable(builder.m_view);
     m_portObjectVersion = immutable(builder.m_portObjectVersion);
   }
-  
+
    /**
      * {@inheritDoc}
      */
@@ -120,11 +115,11 @@ public class DefaultNodePortEnt implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion);
     }
 
 
-  
+
    /**
     * {@inheritDoc}
     */
@@ -134,7 +129,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
                .append(m_name)
                .append(m_type)
                .append(m_otherTypeId)
-               .append(m_color)
                .append(m_optional)
                .append(m_info)
                .append(m_index)
@@ -144,75 +138,69 @@ public class DefaultNodePortEnt implements NodePortEnt {
                .append(m_portObjectVersion)
                .toHashCode();
    }
-  
-	
-	
+
+
+
   @Override
   public String getName() {
         return m_name;
   }
-    
+
   @Override
   public TypeEnum getType() {
         return m_type;
   }
-    
+
   @Override
   public Integer getOtherTypeId() {
         return m_otherTypeId;
   }
-    
-  @Override
-  public String getColor() {
-        return m_color;
-  }
-    
+
   @Override
   public Boolean isOptional() {
         return m_optional;
   }
-    
+
   @Override
   public String getInfo() {
         return m_info;
   }
-    
+
   @Override
   public Integer getIndex() {
         return m_index;
   }
-    
+
   @Override
   public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
         return m_connectedVia;
   }
-    
+
   @Override
   public Boolean isInactive() {
         return m_inactive;
   }
-    
+
   @Override
   public PortViewEnt getView() {
         return m_view;
   }
-    
+
   @Override
   public Integer getPortObjectVersion() {
         return m_portObjectVersion;
   }
-    
-  
+
+
     public static class DefaultNodePortEntBuilder implements NodePortEntBuilder {
-    
+
         public DefaultNodePortEntBuilder(){
             super();
         }
-    
+
         private String m_name;
         private TypeEnum m_type;
         private Integer m_otherTypeId;
-        private String m_color;
         private Boolean m_optional;
         private String m_info;
         private Integer m_index;
@@ -222,13 +210,13 @@ public class DefaultNodePortEnt implements NodePortEnt {
         private Integer m_portObjectVersion;
 
         @Override
-        public DefaultNodePortEntBuilder setName(String name) {
+        public DefaultNodePortEntBuilder setName(final String name) {
              m_name = name;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setType(TypeEnum type) {
+        public DefaultNodePortEntBuilder setType(final TypeEnum type) {
              if(type == null) {
                  throw new IllegalArgumentException("type must not be null.");
              }
@@ -236,32 +224,26 @@ public class DefaultNodePortEnt implements NodePortEnt {
              return this;
         }
 
-        @Override
-        public DefaultNodePortEntBuilder setOtherTypeId(Integer otherTypeId) {
+
+        public DefaultNodePortEntBuilder setOtherTypeId(final Integer otherTypeId) {
              m_otherTypeId = otherTypeId;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setColor(String color) {
-             m_color = color;
-             return this;
-        }
-
-        @Override
-        public DefaultNodePortEntBuilder setOptional(Boolean optional) {
+        public DefaultNodePortEntBuilder setOptional(final Boolean optional) {
              m_optional = optional;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setInfo(String info) {
+        public DefaultNodePortEntBuilder setInfo(final String info) {
              m_info = info;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setIndex(Integer index) {
+        public DefaultNodePortEntBuilder setIndex(final Integer index) {
              if(index == null) {
                  throw new IllegalArgumentException("index must not be null.");
              }
@@ -270,35 +252,53 @@ public class DefaultNodePortEnt implements NodePortEnt {
         }
 
         @Override
-        public DefaultNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
+        public DefaultNodePortEntBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
              m_connectedVia = connectedVia;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setInactive(Boolean inactive) {
+        public DefaultNodePortEntBuilder setInactive(final Boolean inactive) {
              m_inactive = inactive;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setView(PortViewEnt view) {
+        public DefaultNodePortEntBuilder setView(final PortViewEnt view) {
              m_view = view;
              return this;
         }
 
         @Override
-        public DefaultNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion) {
+        public DefaultNodePortEntBuilder setPortObjectVersion(final Integer portObjectVersion) {
              m_portObjectVersion = portObjectVersion;
              return this;
         }
 
-        
+
         @Override
         public DefaultNodePortEnt build() {
             return new DefaultNodePortEnt(this);
         }
-    
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public NodePortEntBuilder setOtherTypeId(final String otherTypeId) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getColor() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

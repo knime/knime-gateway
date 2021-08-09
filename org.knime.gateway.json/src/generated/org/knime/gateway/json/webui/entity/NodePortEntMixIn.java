@@ -79,11 +79,7 @@ public interface NodePortEntMixIn extends NodePortEnt {
     
     @Override
     @JsonProperty("otherTypeId")
-    public Integer getOtherTypeId();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
+    public String getOtherTypeId();
     
     @Override
     @JsonProperty("optional")
@@ -136,11 +132,7 @@ public interface NodePortEntMixIn extends NodePortEnt {
         
         @Override
         @JsonProperty("otherTypeId")
-        public NodePortEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
-        
-        @Override
-        @JsonProperty("color")
-        public NodePortEntMixInBuilder setColor(final String color);
+        public NodePortEntMixInBuilder setOtherTypeId(final String otherTypeId);
         
         @Override
         @JsonProperty("optional")

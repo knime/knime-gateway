@@ -44,15 +44,12 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.NodePortInvariantsEntMixIn;
-
+import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt.DefaultNodePortAndDescriptionEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt.DefaultNodePortAndDescriptionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -71,23 +68,19 @@ public interface NodePortAndDescriptionEntMixIn extends NodePortAndDescriptionEn
     @Override
     @JsonProperty("type")
     public TypeEnum getType();
-    
+
     @Override
     @JsonProperty("otherTypeId")
-    public Integer getOtherTypeId();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
-    
+    public String getOtherTypeId();
+
     @Override
     @JsonProperty("name")
     public String getName();
-    
+
     @Override
     @JsonProperty("optional")
     public Boolean isOptional();
-    
+
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -97,30 +90,30 @@ public interface NodePortAndDescriptionEntMixIn extends NodePortAndDescriptionEn
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodePortAndDescriptionEntMixInBuilder extends NodePortAndDescriptionEntBuilder {
-    
+
         @Override
         public NodePortAndDescriptionEntMixIn build();
-    
+
         @Override
         @JsonProperty("type")
         public NodePortAndDescriptionEntMixInBuilder setType(final TypeEnum type);
-        
+
         @Override
         @JsonProperty("otherTypeId")
         public NodePortAndDescriptionEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
-        
+
         @Override
         @JsonProperty("color")
         public NodePortAndDescriptionEntMixInBuilder setColor(final String color);
-        
+
         @Override
         @JsonProperty("name")
         public NodePortAndDescriptionEntMixInBuilder setName(final String name);
-        
+
         @Override
         @JsonProperty("optional")
         public NodePortAndDescriptionEntMixInBuilder setOptional(final Boolean optional);
-        
+
     }
 
 
