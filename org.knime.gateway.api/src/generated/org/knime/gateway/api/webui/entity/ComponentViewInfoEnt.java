@@ -67,7 +67,7 @@ public interface ComponentViewInfoEnt extends GatewayEntity {
   public String getLayout();
 
   /**
-   * A map from node-id prefixes to node views.
+   * A map from project-relative node-ids to node views.
    * @return views 
    **/
   public java.util.Map<String, NodeViewWithNodeInfoEnt> getViews();
@@ -87,7 +87,7 @@ public interface ComponentViewInfoEnt extends GatewayEntity {
         ComponentViewInfoEntBuilder setLayout(String layout);
         
         /**
-         * A map from node-id prefixes to node views.
+         * A map from project-relative node-ids to node views.
          * 
          * @param views the property value,  
          * @return this entity builder for chaining

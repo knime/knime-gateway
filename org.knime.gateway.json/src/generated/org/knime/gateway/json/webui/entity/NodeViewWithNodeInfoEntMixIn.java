@@ -83,6 +83,14 @@ public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
     public String getUiComponentSrc();
     
     @Override
+    @JsonProperty("widget")
+    public Boolean isWidget();
+    
+    @Override
+    @JsonProperty("reexecutable")
+    public Boolean isReexecutable();
+    
+    @Override
     @JsonProperty("nodeName")
     public String getNodeName();
     
@@ -93,6 +101,10 @@ public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
     @Override
     @JsonProperty("nodeState")
     public NodeStateEnt getNodeState();
+    
+    @Override
+    @JsonProperty("data")
+    public String getData();
     
     @Override
     @JsonProperty("componentViewInfo")
@@ -124,6 +136,14 @@ public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
         public NodeViewWithNodeInfoEntMixInBuilder setUiComponentSrc(final String uiComponentSrc);
         
         @Override
+        @JsonProperty("widget")
+        public NodeViewWithNodeInfoEntMixInBuilder setWidget(final Boolean widget);
+        
+        @Override
+        @JsonProperty("reexecutable")
+        public NodeViewWithNodeInfoEntMixInBuilder setReexecutable(final Boolean reexecutable);
+        
+        @Override
         @JsonProperty("nodeName")
         public NodeViewWithNodeInfoEntMixInBuilder setNodeName(final String nodeName);
         
@@ -134,6 +154,10 @@ public interface NodeViewWithNodeInfoEntMixIn extends NodeViewWithNodeInfoEnt {
         @Override
         @JsonProperty("nodeState")
         public NodeViewWithNodeInfoEntMixInBuilder setNodeState(final NodeStateEnt nodeState);
+        
+        @Override
+        @JsonProperty("data")
+        public NodeViewWithNodeInfoEntMixInBuilder setData(final String data);
         
         @Override
         @JsonProperty("componentViewInfo")

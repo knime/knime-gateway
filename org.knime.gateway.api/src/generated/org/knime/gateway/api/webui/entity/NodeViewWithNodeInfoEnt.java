@@ -81,6 +81,12 @@ public interface NodeViewWithNodeInfoEnt extends GatewayEntity, NodeViewEnt {
   public NodeStateEnt getNodeState();
 
   /**
+   * initial data - optional for optimisation
+   * @return data 
+   **/
+  public String getData();
+
+  /**
    * Get componentViewInfo
    * @return componentViewInfo 
    **/
@@ -117,6 +123,22 @@ public interface NodeViewWithNodeInfoEnt extends GatewayEntity, NodeViewEnt {
         NodeViewWithNodeInfoEntBuilder setUiComponentSrc(String uiComponentSrc);
         
         /**
+         * whether this is a widget and, e.g., only be shown in the webportal but not in the node view panel
+         * 
+         * @param widget the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setWidget(Boolean widget);
+        
+        /**
+         * TODO
+         * 
+         * @param reexecutable the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setReexecutable(Boolean reexecutable);
+        
+        /**
    		 * Set nodeName
          * 
          * @param nodeName the property value,  
@@ -139,6 +161,14 @@ public interface NodeViewWithNodeInfoEnt extends GatewayEntity, NodeViewEnt {
          * @return this entity builder for chaining
          */
         NodeViewWithNodeInfoEntBuilder setNodeState(NodeStateEnt nodeState);
+        
+        /**
+         * initial data - optional for optimisation
+         * 
+         * @param data the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewWithNodeInfoEntBuilder setData(String data);
         
         /**
    		 * Set componentViewInfo

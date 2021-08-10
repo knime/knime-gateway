@@ -103,6 +103,7 @@ import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
 import org.knime.core.ui.InternalUINodeFactory;
 import org.knime.core.ui.Page;
+import org.knime.core.ui.ReexecutableUINodeFactory;
 import org.knime.core.ui.UINodeFactory;
 import org.knime.core.ui.UINodeFactoryUtil;
 import org.knime.core.util.ConfigUtils;
@@ -877,8 +878,12 @@ public final class EntityBuilderUtil {
             }
             viewType = org.knime.gateway.api.webui.entity.NodeViewEnt.TypeEnum.IFRAME;
         }
-        return builder(NodeViewEntBuilder.class).setType(viewType).setIframeSrc(iframeSrc)
-            .setUiComponentSrc(componentSrc).build();
+        return builder(NodeViewEntBuilder.class)//
+            .setType(viewType)//
+            .setIframeSrc(iframeSrc)//
+            .setUiComponentSrc(componentSrc)//
+            .setReexecutable(nodeFactory instanceof ReexecutableUINodeFactory)//
+            .build();
     }
 
     private static boolean hasNodeView(final NodeFactory<NodeModel> f) {

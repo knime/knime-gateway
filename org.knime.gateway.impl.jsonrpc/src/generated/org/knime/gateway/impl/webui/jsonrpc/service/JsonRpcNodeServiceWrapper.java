@@ -144,4 +144,34 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         return m_service.getComponentViewInfo(projectId, workflowId, nodeId);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "reexecuteComponent")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public void reexecuteComponent(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, org.knime.gateway.api.entity.NodeIDEnt nodeIdToReset, @JsonRpcParam(value="body") String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        m_service.reexecuteComponent(projectId, workflowId, nodeId, nodeIdToReset, body);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "reexecuteNode")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public void reexecuteNode(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="body") String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        m_service.reexecuteNode(projectId, workflowId, nodeId, body);    
+    }
+
 }

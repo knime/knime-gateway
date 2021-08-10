@@ -50,12 +50,18 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.interactive.DefaultReexecutionCallback;
+import org.knime.core.node.interactive.ViewContent;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.ui.Reexecutable;
+import org.knime.core.ui.ReexecutableUINodeFactory;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentViewInfoEnt;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -209,6 +215,46 @@ public final class DefaultNodeService implements NodeService {
         } catch (IOException | IllegalStateException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
+    public void reexecuteNode(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String body) throws NodeNotFoundException, InvalidRequestException {
+        NodeContainer nc;
+        try {
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+        if (!(nc instanceof NativeNodeContainer)) {
+            throw new InvalidRequestException("Not a native node");
+        }
+        NativeNodeContainer nnc = (NativeNodeContainer)nc;
+        NodeModel nodeModel = nnc.getNodeModel();
+        NodeFactory<NodeModel> nodeFactory = nnc.getNode().getFactory();
+        if (!(nodeFactory instanceof ReexecutableUINodeFactory)) {
+            throw new InvalidRequestException("Not a re-executable node (factory)");
+        }
+        if (!(nodeModel instanceof Reexecutable)) {
+            throw new InvalidRequestException("Not a re-executable node (model)");
+        }
+
+        ViewContent data = ((ReexecutableUINodeFactory)nodeFactory).deserialize(body);
+        ((Reexecutable)nodeModel).preReexecute(data);
+        nc.getParent().reExecuteNode(nc.getID(), data, false, new DefaultReexecutionCallback());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reexecuteComponent(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final NodeIDEnt nodeIdToReset, final String body) throws NodeNotFoundException, InvalidRequestException {
+        // TODO
     }
 
 }

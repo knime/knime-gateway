@@ -79,6 +79,14 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
     @JsonProperty("uiComponentSrc")
     public String getUiComponentSrc();
     
+    @Override
+    @JsonProperty("widget")
+    public Boolean isWidget();
+    
+    @Override
+    @JsonProperty("reexecutable")
+    public Boolean isReexecutable();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -103,6 +111,14 @@ public interface NodeViewEntMixIn extends NodeViewEnt {
         @Override
         @JsonProperty("uiComponentSrc")
         public NodeViewEntMixInBuilder setUiComponentSrc(final String uiComponentSrc);
+        
+        @Override
+        @JsonProperty("widget")
+        public NodeViewEntMixInBuilder setWidget(final Boolean widget);
+        
+        @Override
+        @JsonProperty("reexecutable")
+        public NodeViewEntMixInBuilder setReexecutable(final Boolean reexecutable);
         
     }
 

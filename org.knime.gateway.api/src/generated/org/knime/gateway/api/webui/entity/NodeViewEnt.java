@@ -100,6 +100,18 @@ public interface NodeViewEnt extends GatewayEntity {
    **/
   public String getUiComponentSrc();
 
+  /**
+   * whether this is a widget and, e.g., only be shown in the webportal but not in the node view panel
+   * @return widget 
+   **/
+  public Boolean isWidget();
+
+  /**
+   * TODO
+   * @return reexecutable 
+   **/
+  public Boolean isReexecutable();
+
 
     /**
      * The builder for the entity.
@@ -129,6 +141,22 @@ public interface NodeViewEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeViewEntBuilder setUiComponentSrc(String uiComponentSrc);
+        
+        /**
+         * whether this is a widget and, e.g., only be shown in the webportal but not in the node view panel
+         * 
+         * @param widget the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewEntBuilder setWidget(Boolean widget);
+        
+        /**
+         * TODO
+         * 
+         * @param reexecutable the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeViewEntBuilder setReexecutable(Boolean reexecutable);
         
         
         /**

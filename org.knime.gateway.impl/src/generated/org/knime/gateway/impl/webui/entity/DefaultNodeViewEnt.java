@@ -64,6 +64,8 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
   protected TypeEnum m_type;
   protected String m_iframeSrc;
   protected String m_uiComponentSrc;
+  protected Boolean m_widget;
+  protected Boolean m_reexecutable;
   
   protected DefaultNodeViewEnt() {
     //for sub-classes
@@ -82,6 +84,8 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
     m_type = immutable(builder.m_type);
     m_iframeSrc = immutable(builder.m_iframeSrc);
     m_uiComponentSrc = immutable(builder.m_uiComponentSrc);
+    m_widget = immutable(builder.m_widget);
+    m_reexecutable = immutable(builder.m_reexecutable);
   }
   
    /**
@@ -99,7 +103,7 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
             return false;
         }
         DefaultNodeViewEnt ent = (DefaultNodeViewEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_iframeSrc, ent.m_iframeSrc) && Objects.equals(m_uiComponentSrc, ent.m_uiComponentSrc);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_iframeSrc, ent.m_iframeSrc) && Objects.equals(m_uiComponentSrc, ent.m_uiComponentSrc) && Objects.equals(m_widget, ent.m_widget) && Objects.equals(m_reexecutable, ent.m_reexecutable);
     }
 
 
@@ -113,6 +117,8 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
                .append(m_type)
                .append(m_iframeSrc)
                .append(m_uiComponentSrc)
+               .append(m_widget)
+               .append(m_reexecutable)
                .toHashCode();
    }
   
@@ -133,6 +139,16 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
         return m_uiComponentSrc;
   }
     
+  @Override
+  public Boolean isWidget() {
+        return m_widget;
+  }
+    
+  @Override
+  public Boolean isReexecutable() {
+        return m_reexecutable;
+  }
+    
   
     public static class DefaultNodeViewEntBuilder implements NodeViewEntBuilder {
     
@@ -143,6 +159,8 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
         private TypeEnum m_type;
         private String m_iframeSrc;
         private String m_uiComponentSrc;
+        private Boolean m_widget;
+        private Boolean m_reexecutable;
 
         @Override
         public DefaultNodeViewEntBuilder setType(TypeEnum type) {
@@ -162,6 +180,18 @@ public class DefaultNodeViewEnt implements NodeViewEnt {
         @Override
         public DefaultNodeViewEntBuilder setUiComponentSrc(String uiComponentSrc) {
              m_uiComponentSrc = uiComponentSrc;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeViewEntBuilder setWidget(Boolean widget) {
+             m_widget = widget;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeViewEntBuilder setReexecutable(Boolean reexecutable) {
+             m_reexecutable = reexecutable;
              return this;
         }
 
