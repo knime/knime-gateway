@@ -36,7 +36,7 @@ import org.knime.core.rpc.json.JsonRpcServer;
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class RpcNodeFactory extends NodeFactory<NodeModel> implements NodeRpcServerFactory {
+public class RpcNodeFactory extends NodeFactory<NodeModel> implements NodeRpcServerFactory<NodeModel> {
 
     @Override
     public RpcServer createRpcServer(final NodeModel nodeModel) {

@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.knime.gateway.impl.NodePortRpcServerFactory">
+         point="org.knime.core.rpc.NodePortRpcServerFactory">
       <NodePortRpcServerFactory
             impl="org.knime.gateway.impl.jsonrpc.ports.JsonRpcTableServerFactory">
       </NodePortRpcServerFactory>

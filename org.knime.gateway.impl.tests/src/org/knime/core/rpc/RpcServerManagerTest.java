@@ -46,7 +46,7 @@
  * History
  *   Jan 11, 2021 (hornm): created
  */
-package org.knime.gateway.impl.rpc;
+package org.knime.core.rpc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
