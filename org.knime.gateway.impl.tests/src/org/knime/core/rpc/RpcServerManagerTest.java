@@ -133,7 +133,7 @@ public class RpcServerManagerTest {
 
         // check number of cached port rpc servers before and after gc just to make sure that all the
         // RpcServer-instances are only weakly referenced and are removed from memory
-        Map<Integer, WeakReference<RpcServer>> portRpcServerCache = RpcServerManager.getInstance().m_portRpcServerCache;
+        Map<Integer, WeakReference<RpcServer>> portRpcServerCache = RpcServerManager.getInstance().getPortRpcServerCache();
         assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(2));
         System.gc(); // NOSONAR
         assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
@@ -162,7 +162,7 @@ public class RpcServerManagerTest {
 
         // check number of cached node rpc servers before and after gc just to make sure that they are properly removed
         // from memory
-        Map<Integer, WeakReference<RpcServer>> nodeRpcServerCache = RpcServerManager.getInstance().m_nodeRpcServerCache;
+        Map<Integer, WeakReference<RpcServer>> nodeRpcServerCache = RpcServerManager.getInstance().getNodeRpcServerCache();
         assertThat("unexpected number of cached node rpc servers", nodeRpcServerCache.size(), is(1));
         System.gc(); // NOSONAR
         assertTrue(nodeRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
