@@ -62,19 +62,19 @@ public interface NodeSearchResultEnt extends GatewayEntity {
 
   /**
    * The found nodes. If a non-empty search query has been given for the search, the nodes are sorted by their &#39;search score&#39; (i.e. how well it &#39;fits&#39; the query). If there is no search query but, e.g., only a list of tags (which is then more a &#39;node filter result&#39;), the nodes are sorted by their pre-defined weight (the weight might be, e.g., the nodes general popularity).
-   * @return nodes 
+   * @return nodes , never <code>null</code>
    **/
   public java.util.List<NodeTemplateEnt> getNodes();
 
   /**
    * The total number of found nodes (depending on the actual search query). Not all nodes might be included because of used offsets or limits (pagination) used for the search.
-   * @return totalNumNodes 
+   * @return totalNumNodes , never <code>null</code>
    **/
   public Integer getTotalNumNodes();
 
   /**
    * The union of the tags of all the nodes in the search result (i.e. also including the nodes that might not be explicitly listed as part of this search result instance). The tags are sorted by their frequency of how many nodes nodes (in the search result) carry that particular tag.
-   * @return tags 
+   * @return tags , never <code>null</code>
    **/
   public java.util.List<String> getTags();
 
@@ -87,7 +87,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
         /**
          * The found nodes. If a non-empty search query has been given for the search, the nodes are sorted by their &#39;search score&#39; (i.e. how well it &#39;fits&#39; the query). If there is no search query but, e.g., only a list of tags (which is then more a &#39;node filter result&#39;), the nodes are sorted by their pre-defined weight (the weight might be, e.g., the nodes general popularity).
          * 
-         * @param nodes the property value,  
+         * @param nodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSearchResultEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes);
@@ -95,7 +95,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
         /**
          * The total number of found nodes (depending on the actual search query). Not all nodes might be included because of used offsets or limits (pagination) used for the search.
          * 
-         * @param totalNumNodes the property value,  
+         * @param totalNumNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSearchResultEntBuilder setTotalNumNodes(Integer totalNumNodes);
@@ -103,7 +103,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
         /**
          * The union of the tags of all the nodes in the search result (i.e. also including the nodes that might not be explicitly listed as part of this search result instance). The tags are sorted by their frequency of how many nodes nodes (in the search result) carry that particular tag.
          * 
-         * @param tags the property value,  
+         * @param tags the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSearchResultEntBuilder setTags(java.util.List<String> tags);

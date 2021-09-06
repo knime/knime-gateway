@@ -76,7 +76,13 @@ public class DefaultNodeSelectionsEnt implements NodeSelectionsEnt {
   
   private DefaultNodeSelectionsEnt(DefaultNodeSelectionsEntBuilder builder) {
     
+    if(builder.m_selections == null) {
+        throw new IllegalArgumentException("selections must not be null.");
+    }
     m_selections = immutable(builder.m_selections);
+    if(builder.m_totalNumSelections == null) {
+        throw new IllegalArgumentException("totalNumSelections must not be null.");
+    }
     m_totalNumSelections = immutable(builder.m_totalNumSelections);
   }
   
@@ -130,17 +136,23 @@ public class DefaultNodeSelectionsEnt implements NodeSelectionsEnt {
             
         }
     
-        private java.util.List<NodeSelectionEnt> m_selections;
+        private java.util.List<NodeSelectionEnt> m_selections = new java.util.ArrayList<>();
         private Integer m_totalNumSelections;
 
         @Override
         public DefaultNodeSelectionsEntBuilder setSelections(java.util.List<NodeSelectionEnt> selections) {
+             if(selections == null) {
+                 throw new IllegalArgumentException("selections must not be null.");
+             }
              m_selections = selections;
              return this;
         }
 
         @Override
         public DefaultNodeSelectionsEntBuilder setTotalNumSelections(Integer totalNumSelections) {
+             if(totalNumSelections == null) {
+                 throw new IllegalArgumentException("totalNumSelections must not be null.");
+             }
              m_totalNumSelections = totalNumSelections;
              return this;
         }

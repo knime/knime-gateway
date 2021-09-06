@@ -62,13 +62,13 @@ public interface NodeSelectionEnt extends GatewayEntity {
 
   /**
    * The tag these nodes are selected for.
-   * @return tag 
+   * @return tag , never <code>null</code>
    **/
   public String getTag();
 
   /**
    * The selected nodes in a fixed order (e.g. by popularity).
-   * @return nodes 
+   * @return nodes , never <code>null</code>
    **/
   public java.util.List<NodeTemplateEnt> getNodes();
 
@@ -81,7 +81,7 @@ public interface NodeSelectionEnt extends GatewayEntity {
         /**
          * The tag these nodes are selected for.
          * 
-         * @param tag the property value,  
+         * @param tag the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSelectionEntBuilder setTag(String tag);
@@ -89,7 +89,7 @@ public interface NodeSelectionEnt extends GatewayEntity {
         /**
          * The selected nodes in a fixed order (e.g. by popularity).
          * 
-         * @param nodes the property value,  
+         * @param nodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes);

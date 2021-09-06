@@ -76,7 +76,13 @@ public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
   
   private DefaultNodeSelectionEnt(DefaultNodeSelectionEntBuilder builder) {
     
+    if(builder.m_tag == null) {
+        throw new IllegalArgumentException("tag must not be null.");
+    }
     m_tag = immutable(builder.m_tag);
+    if(builder.m_nodes == null) {
+        throw new IllegalArgumentException("nodes must not be null.");
+    }
     m_nodes = immutable(builder.m_nodes);
   }
   
@@ -131,16 +137,22 @@ public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
         }
     
         private String m_tag;
-        private java.util.List<NodeTemplateEnt> m_nodes;
+        private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
 
         @Override
         public DefaultNodeSelectionEntBuilder setTag(String tag) {
+             if(tag == null) {
+                 throw new IllegalArgumentException("tag must not be null.");
+             }
              m_tag = tag;
              return this;
         }
 
         @Override
         public DefaultNodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
+             if(nodes == null) {
+                 throw new IllegalArgumentException("nodes must not be null.");
+             }
              m_nodes = nodes;
              return this;
         }

@@ -62,13 +62,13 @@ public interface NodeSelectionsEnt extends GatewayEntity {
 
   /**
    * The list of node selections in a fixed order.
-   * @return selections 
+   * @return selections , never <code>null</code>
    **/
   public java.util.List<NodeSelectionEnt> getSelections();
 
   /**
    * The total number of selections available. The selections listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
-   * @return totalNumSelections 
+   * @return totalNumSelections , never <code>null</code>
    **/
   public Integer getTotalNumSelections();
 
@@ -81,7 +81,7 @@ public interface NodeSelectionsEnt extends GatewayEntity {
         /**
          * The list of node selections in a fixed order.
          * 
-         * @param selections the property value,  
+         * @param selections the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSelectionsEntBuilder setSelections(java.util.List<NodeSelectionEnt> selections);
@@ -89,7 +89,7 @@ public interface NodeSelectionsEnt extends GatewayEntity {
         /**
          * The total number of selections available. The selections listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
          * 
-         * @param totalNumSelections the property value,  
+         * @param totalNumSelections the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSelectionsEntBuilder setTotalNumSelections(Integer totalNumSelections);

@@ -77,8 +77,17 @@ public class DefaultNodeSearchResultEnt implements NodeSearchResultEnt {
   
   private DefaultNodeSearchResultEnt(DefaultNodeSearchResultEntBuilder builder) {
     
+    if(builder.m_nodes == null) {
+        throw new IllegalArgumentException("nodes must not be null.");
+    }
     m_nodes = immutable(builder.m_nodes);
+    if(builder.m_totalNumNodes == null) {
+        throw new IllegalArgumentException("totalNumNodes must not be null.");
+    }
     m_totalNumNodes = immutable(builder.m_totalNumNodes);
+    if(builder.m_tags == null) {
+        throw new IllegalArgumentException("tags must not be null.");
+    }
     m_tags = immutable(builder.m_tags);
   }
   
@@ -138,24 +147,33 @@ public class DefaultNodeSearchResultEnt implements NodeSearchResultEnt {
             
         }
     
-        private java.util.List<NodeTemplateEnt> m_nodes;
+        private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
         private Integer m_totalNumNodes;
-        private java.util.List<String> m_tags;
+        private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
         @Override
         public DefaultNodeSearchResultEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
+             if(nodes == null) {
+                 throw new IllegalArgumentException("nodes must not be null.");
+             }
              m_nodes = nodes;
              return this;
         }
 
         @Override
         public DefaultNodeSearchResultEntBuilder setTotalNumNodes(Integer totalNumNodes) {
+             if(totalNumNodes == null) {
+                 throw new IllegalArgumentException("totalNumNodes must not be null.");
+             }
              m_totalNumNodes = totalNumNodes;
              return this;
         }
 
         @Override
         public DefaultNodeSearchResultEntBuilder setTags(java.util.List<String> tags) {
+             if(tags == null) {
+                 throw new IllegalArgumentException("tags must not be null.");
+             }
              m_tags = tags;
              return this;
         }
