@@ -192,7 +192,7 @@ public final class NodeRepository {
                 n.factory = factory;
                 n.name = factory.getNodeName();
                 n.path = normalizeCategoryPath(ext.getCategoryPath());
-                n.tags = getTagsFromCategoryPath(n.path, categories);
+                n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
                 nodes.put(n.templateId, n);
             }
         }
@@ -216,20 +216,23 @@ public final class NodeRepository {
                 n.factory = factory;
                 n.name = factory.getNodeName();
                 n.path = normalizeCategoryPath(ext.getCategoryPath(factoryId));
-                n.tags = getTagsFromCategoryPath(n.path, categories);
+                n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
                 nodes.put(n.templateId, n);
             }
         }
     }
 
     private static Set<String> getTagsFromCategoryPath(final String catPath,
-        final Map<String, CategoryExtension> cats) {
+        final Map<String, CategoryExtension> cats, final String nodeName) {
         String path = catPath;
         Set<String> tags = new HashSet<>();
         while (!path.isEmpty() && !path.equals("/")) {
             CategoryExtension cat = cats.get(path);
             if (cat != null) {
                 tags.add(cat.getName());
+            } else {
+                LOGGER.warn(
+                    "No category registered for path '" + path + "'. Ignored as tag for node '" + nodeName + "'.");
             }
             path = path.substring(0, path.lastIndexOf('/'));
         }

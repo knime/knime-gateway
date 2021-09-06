@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +81,9 @@ public final class NodeSelection {
 
     private final NodeRepository m_nodeRepo;
 
-    private Map<String, List<Node>> m_nodesPerCategoryCache = new HashMap<>();
+    private Map<String, List<Node>> m_nodesPerCategory;
+
+    private List<Pair<String, String>> m_topLevelCats;
 
     /**
      * Creates a new instance.
@@ -103,17 +106,23 @@ public final class NodeSelection {
      */
     public NodeSelectionsEnt selectNodes(final Integer numNodesPerTag, final Integer tagsOffset,
         final Integer tagsLimit, final Boolean fullTemplateInfo) {
-        Map<String, CategoryExtension> cats = CategoryExtensionManager.getInstance().getCategoryExtensions();
-        List<Pair<String, String>> topLevelCats = getSortedCategoriesAtLevel("/", cats.values());
-        int numNonEmptyCategories = categorizeNodes(topLevelCats);
-        List<NodeSelectionEnt> selections = topLevelCats.stream()//
+        initNodesAndCategories();
+        List<NodeSelectionEnt> selections = m_topLevelCats.stream()//
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
-            .map(p -> buildeNodeSelectionEnt(p.getFirst(), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
+            .map(p -> buildNodeSelectionEnt(p.getFirst(), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
         return builder(NodeSelectionsEntBuilder.class).setSelections(selections)
-            .setTotalNumSelections(numNonEmptyCategories).build();
+            .setTotalNumSelections(m_nodesPerCategory.size()).build();
+    }
+
+    private synchronized void initNodesAndCategories() {
+        if (m_nodesPerCategory == null) {
+            Map<String, CategoryExtension> cats = CategoryExtensionManager.getInstance().getCategoryExtensions();
+            m_topLevelCats = Collections.synchronizedList(getSortedCategoriesAtLevel("/", cats.values()));
+            m_nodesPerCategory = Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
+        }
     }
 
     private static List<Pair<String, String>> getSortedCategoriesAtLevel(final String levelId,
@@ -127,24 +136,25 @@ public final class NodeSelection {
             .collect(Collectors.toList());
     }
 
-    private int categorizeNodes(final List<Pair<String, String>> categories) {
-        int numNonEmptyCategories = 0;
+    private static Map<String, List<Node>> categorizeNodes(final Collection<Node> allNodes,
+        final List<Pair<String, String>> categories) {
+        Map<String, List<Node>> res = new HashMap<>();
         for (Pair<String, String> c : categories) {
-            List<Node> nodes = m_nodesPerCategoryCache.computeIfAbsent(c.getFirst(), k -> m_nodeRepo.getNodes().stream()//
-                .filter(n -> n.path.startsWith(k))//
+            List<Node> nodes = allNodes.stream()//
+                .filter(n -> n.path.startsWith(c.getFirst()))//
                 .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
             if (!nodes.isEmpty()) {
-                numNonEmptyCategories++;
+                res.put(c.getFirst(), nodes);
             }
         }
-        return numNonEmptyCategories;
+        return res;
     }
 
-    private NodeSelectionEnt buildeNodeSelectionEnt(final String completePath, final String name,
+    private NodeSelectionEnt buildNodeSelectionEnt(final String completePath, final String name,
         final Integer numNodesPerTag, final Boolean fullTemplateInfo) {
-        List<Node> nodesPerCategory = m_nodesPerCategoryCache.get(completePath);
-        if (nodesPerCategory.isEmpty()) {
+        List<Node> nodesPerCategory = m_nodesPerCategory.get(completePath);
+        if (nodesPerCategory == null || nodesPerCategory.isEmpty()) {
             return null;
         }
         List<NodeTemplateEnt> res = nodesPerCategory.stream()//

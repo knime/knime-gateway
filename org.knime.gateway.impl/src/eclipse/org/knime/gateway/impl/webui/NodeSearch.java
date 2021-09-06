@@ -59,8 +59,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
@@ -82,9 +84,9 @@ public class NodeSearch {
     private static final double DISTANCE_THRESHOLD = 0.85;
 
     /*
-     * Maps a search query (i.e. its hash) to the list of found nodes.
+     * Maps a search query to the list of found nodes.
      */
-    private final Map<Integer, List<Node>> m_foundNodesCache = Collections.synchronizedMap(new LRUCache<>(100));
+    private final Map<SearchQuery, List<Node>> m_foundNodesCache = Collections.synchronizedMap(new LRUCache<>(100));
 
     private final NodeRepository m_nodeRepo;
 
@@ -127,9 +129,8 @@ public class NodeSearch {
             query = q;
         }
 
-        Integer searchQueryHash = new HashCodeBuilder().append(q).append(tags).append(allTagsMatch).build();
-        List<Node> foundNodes =
-            m_foundNodesCache.computeIfAbsent(searchQueryHash, key -> searchNodes(allNodes, query, tags, allTagsMatch));
+        List<Node> foundNodes = m_foundNodesCache.computeIfAbsent(new SearchQuery(q, tags, allTagsMatch),
+            key -> searchNodes(allNodes, query, tags, allTagsMatch));
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
@@ -161,20 +162,24 @@ public class NodeSearch {
         if (!isSearchQueryGiven && (tags == null || tags.isEmpty())) {
             foundNodes = new ArrayList<>(nodes);
         } else {
-            final String upperCaseQuery = q == null ? "" : q.toUpperCase();
-            foundNodes = nodes.stream()//
-                .filter(n -> filterByTags(n, tags, allTagsMatch))//
-                .map(n -> {
+            Stream<Node> tagFiltered = nodes.stream()//
+                .filter(n -> filterByTags(n, tags, allTagsMatch));
+            if (isSearchQueryGiven) {
+                final String upperCaseQuery = q.toUpperCase();
+                foundNodes = tagFiltered.map(n -> {
                     String upperCaseName = n.name.toUpperCase();
                     double score = upperCaseName.contains(upperCaseQuery) ? 0.0
-                        : TanimotoBiGramDistance.computeTanimotoBiGramDistance(n.name.toUpperCase(), upperCaseQuery);
+                        : TanimotoBiGramDistance.computeTanimotoBiGramDistance(upperCaseName, upperCaseQuery);
                     return new FoundNode(n, score);
                 })//
-                .filter(n -> !isSearchQueryGiven || n.score < DISTANCE_THRESHOLD)
-                .sorted(Comparator.<FoundNode> comparingDouble(n -> isSearchQueryGiven ? n.score : 0)
-                    .thenComparingInt(n -> -n.node.weight))//
-                .map(wn -> wn.node)//
-                .collect(Collectors.toList());
+                    .filter(n -> n.score < DISTANCE_THRESHOLD)//
+                    .sorted(Comparator.<FoundNode> comparingDouble(n -> n.score).thenComparingInt(n -> -n.node.weight))//
+                    .map(wn -> wn.node)//
+                    .collect(Collectors.toList());
+            } else {
+                foundNodes =
+                    tagFiltered.sorted(Comparator.<Node> comparingInt(n -> -n.weight)).collect(Collectors.toList());
+            }
         }
         return foundNodes;
     }
@@ -203,6 +208,45 @@ public class NodeSearch {
             this.node = node;
             this.score = score;
         }
+    }
+
+    private static class SearchQuery {
+
+        private String m_q;
+
+        private List<String> m_tags;
+
+        private Boolean m_allTagsMatch;
+
+        @SuppressWarnings("hiding")
+        SearchQuery(final String q, final List<String> tags, final Boolean allTagsMatch) {
+            m_q = q;
+            m_tags = tags;
+            m_allTagsMatch = allTagsMatch;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder().append(m_q).append(m_tags).append(m_allTagsMatch).build();
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (this.getClass() == obj.getClass()) {
+                SearchQuery sq = (SearchQuery)obj;
+                return new EqualsBuilder().append(m_q, sq.m_q).append(m_tags, sq.m_tags)
+                    .append(m_allTagsMatch, sq.m_allTagsMatch).build();
+            }
+            return false;
+        }
+
     }
 
     /**
