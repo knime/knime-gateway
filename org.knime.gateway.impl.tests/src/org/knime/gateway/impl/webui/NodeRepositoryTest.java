@@ -56,9 +56,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
@@ -127,11 +131,39 @@ public class NodeRepositoryTest {
 
         NodeSelectionsEnt selectRes = select.selectNodes(null, null, null, null);
         NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null);
-        long selectNodeCount = selectRes.getSelections().stream().flatMap(s -> s.getNodes().stream()).count();
-        long searchNodeCount = searchRes.getTotalNumNodes();
 
-        assertThat("same number of nodes expected from selection and search if not contrained", selectNodeCount,
-            is(searchNodeCount));
+        Map<String, NodeTemplateEnt> overplus = new HashMap<>();
+        for (NodeTemplateEnt n1 : selectRes.getSelections().stream().flatMap(s -> s.getNodes().stream())
+            .collect(Collectors.toList())) {
+            if (overplus.containsKey(n1.getId() + "_search")) {
+                overplus.remove(n1.getId() + "_search");
+            } else {
+                overplus.put(n1.getId() + "_select", n1);
+                for (NodeTemplateEnt n2 : searchRes.getNodes()) {
+                    if (overplus.containsKey(n2.getId() + "_select")) {
+                        overplus.remove(n2.getId() + "_select");
+                    } else {
+                        overplus.put(n2.getId() + "_search", n2);
+                    }
+                }
+            }
+        }
+        if (!overplus.isEmpty()) {
+            StringBuilder sb = new StringBuilder(
+                "Same select- and search-results expected if selection and search are not constrained!\n");
+            sb.append("But there are differences:\n");
+            for (Entry<String, NodeTemplateEnt> entry : overplus.entrySet()) {
+                sb.append("NODE ");
+                sb.append(entry.getKey());
+                sb.append(";name: ");
+                sb.append(entry.getValue().getName());
+                sb.append(";path: ");
+                sb.append(repo.getNodes().stream().filter(node -> node.templateId.equals(entry.getValue().getId()))
+                    .map(node -> node.path).findFirst().orElse(null));
+                sb.append("\n");
+            }
+            Assert.fail(sb.toString());
+        }
     }
 
 }

@@ -54,9 +54,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +80,14 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class NodeSelection {
+
+    private static final String UNCATEGORIZED_KEY = "/uncategorized";
+
+    /*
+     * ('top-level') tag for nodes that are at root-level, that are without a category or
+     * that reference a (first-level) category that is not registered (via the category-extension point).
+     */
+    private static final String UNCATEGORIZED_NAME = "Uncategorized";
 
     private final NodeRepository m_nodeRepo;
 
@@ -120,8 +130,15 @@ public final class NodeSelection {
     private synchronized void initNodesAndCategories() {
         if (m_nodesPerCategory == null) {
             Map<String, CategoryExtension> cats = CategoryExtensionManager.getInstance().getCategoryExtensions();
-            m_topLevelCats = Collections.synchronizedList(getSortedCategoriesAtLevel("/", cats.values()));
-            m_nodesPerCategory = Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
+            List<Pair<String, String>> topLevelCats = getSortedCategoriesAtLevel("/", cats.values());
+            Pair<String, String> uncat = Pair.create(UNCATEGORIZED_KEY, UNCATEGORIZED_NAME);
+            if (!topLevelCats.contains(uncat)) {
+                topLevelCats.add(uncat);
+            }
+            Map<String, List<Node>> nodesPerCategory = categorizeNodes(m_nodeRepo.getNodes(), topLevelCats);
+
+            m_topLevelCats = Collections.synchronizedList(topLevelCats);
+            m_nodesPerCategory = Collections.synchronizedMap(nodesPerCategory);
         }
     }
 
@@ -139,14 +156,32 @@ public final class NodeSelection {
     private static Map<String, List<Node>> categorizeNodes(final Collection<Node> allNodes,
         final List<Pair<String, String>> categories) {
         Map<String, List<Node>> res = new HashMap<>();
+        Set<String> categorized = new HashSet<>();
         for (Pair<String, String> c : categories) {
+            String catPath = c.getFirst();
+            if (catPath.equals(UNCATEGORIZED_KEY)) {
+                // 'uncategorized' nodes are handled below
+                continue;
+            }
             List<Node> nodes = allNodes.stream()//
-                .filter(n -> n.path.startsWith(c.getFirst()))//
+                .filter(n -> n.path.equals(catPath) || n.path.startsWith(catPath + "/"))//
                 .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
+                .map(n -> {
+                    categorized.add(n.templateId);
+                    return n;
+                })//
                 .collect(Collectors.toList());
             if (!nodes.isEmpty()) {
-                res.put(c.getFirst(), nodes);
+                res.put(catPath, nodes);
             }
+        }
+
+        // collect all nodes that didn't end up in any of the given categories
+        // (e.g. because they are at root level '/' or don't have a category at all)
+        List<Node> uncategorizedNodes =
+            allNodes.stream().filter(n -> !categorized.contains(n.templateId)).collect(Collectors.toList());
+        if (!uncategorizedNodes.isEmpty()) {
+            res.put(UNCATEGORIZED_KEY, uncategorizedNodes);
         }
         return res;
     }
