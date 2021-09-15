@@ -29,9 +29,9 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
-import org.knime.core.rpc.NodeRpcServerFactory;
-import org.knime.core.rpc.RpcServer;
-import org.knime.core.rpc.json.JsonRpcServer;
+import org.knime.core.webui.data.rpc.NodeRpcServerFactory;
+import org.knime.core.webui.data.rpc.RpcServer;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcServer;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany

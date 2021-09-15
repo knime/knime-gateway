@@ -21,8 +21,8 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.1
  org.mockito.mockito-core;bundle-version="[2.18.3,3.0.0)",
  org.knime.time;bundle-version="[4.3.0,5.0.0)",
  org.knime.testing;bundle-version="[4.3.0,5.0.0)",
- org.knime.core.rpc;bundle-version="[4.3.0,5.0.0)",
  org.knime.gateway.json;bundle-version="[4.4.0,5.0.0)",
- org.knime.dynamic.js.base;bundle-version="[4.5.0,5.0.0)"
+ org.knime.dynamic.js.base;bundle-version="[4.5.0,5.0.0)",
+ org.knime.core.ui;bundle-version="[4.5.0,5.0.0)"
 Bundle-ClassPath: .,
  libs/java-diff-utils.jar

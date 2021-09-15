@@ -53,11 +53,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import org.knime.core.rpc.RpcServer;
-import org.knime.core.rpc.RpcSingleClient;
-import org.knime.core.rpc.RpcTransport;
-import org.knime.core.rpc.json.JsonRpcSingleServer;
-import org.knime.core.rpc.json.JsonRpcTestUtil;
+import org.knime.core.webui.data.rpc.RpcServer;
+import org.knime.core.webui.data.rpc.RpcSingleClient;
+import org.knime.core.webui.data.rpc.RpcTransport;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcTestUtil;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

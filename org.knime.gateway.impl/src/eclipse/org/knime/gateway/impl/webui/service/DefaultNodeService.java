@@ -55,7 +55,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.rpc.RpcServerManager;
+import org.knime.core.webui.data.rpc.RpcServerManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -162,7 +162,7 @@ public final class DefaultNodeService implements NodeService {
         }
 
         try {
-            return RpcServerManager.getInstance().doRpc(nc, portIdx, body);
+            return RpcServerManager.getInstance().doRpc(nc.getOutPort(portIdx), body);
         } catch (IOException | IllegalStateException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }

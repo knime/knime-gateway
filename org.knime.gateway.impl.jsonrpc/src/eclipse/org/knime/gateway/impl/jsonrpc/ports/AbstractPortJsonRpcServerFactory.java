@@ -50,9 +50,9 @@ package org.knime.gateway.impl.jsonrpc.ports;
 
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.rpc.NodePortRpcServerFactory;
-import org.knime.core.rpc.RpcServer;
-import org.knime.core.rpc.json.JsonRpcSingleServer;
+import org.knime.core.webui.data.rpc.NodePortRpcServerFactory;
+import org.knime.core.webui.data.rpc.RpcServer;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
 import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

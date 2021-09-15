@@ -54,7 +54,6 @@ import java.util.Map.Entry;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.json.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,8 +68,9 @@ import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
  */
 public class JsonRpcRequestHandler {
 
-    private JsonRpcMultiServer m_jsonRpcMultiServer;
-    private ExceptionToJsonRpcErrorTranslator m_exceptionTranslator;
+    private final JsonRpcMultiServer m_jsonRpcMultiServer;
+    private final ExceptionToJsonRpcErrorTranslator m_exceptionTranslator;
+    private final ObjectMapper m_mapper;
 
     /**
      * Creates a new request handler.
@@ -81,6 +81,7 @@ public class JsonRpcRequestHandler {
      */
     public JsonRpcRequestHandler(final ObjectMapper mapper, final Map<String, GatewayService> services,
         final ExceptionToJsonRpcErrorTranslator t) {
+        m_mapper = mapper;
         //setup json-rpc server
         m_jsonRpcMultiServer = new JsonRpcMultiServer(mapper);
         m_jsonRpcMultiServer.setErrorResolver(new JsonRpcErrorResolver(t));
@@ -105,11 +106,10 @@ public class JsonRpcRequestHandler {
         } catch (IOException e) {
             NodeLogger.getLogger(getClass()).warn("Problem handling json rpc request", e);
             // turn it into a json error object
-            ObjectMapper mapper = ObjectMapperUtil.getInstance().getBinaryObjectMapper();
-            ObjectNode jsonRpc = mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
+            ObjectNode jsonRpc = m_mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
             jsonRpc.putObject("error").put("code", m_exceptionTranslator.getUnexpectedExceptionErrorCode(e))
                 .put("message", m_exceptionTranslator.getMessage(e))
-                .set("data", mapper.convertValue(m_exceptionTranslator.getData(e), JsonNode.class));
+                .set("data", m_mapper.convertValue(m_exceptionTranslator.getData(e), JsonNode.class));
             return jsonRpc.toPrettyString().getBytes(StandardCharsets.UTF_8);
         }
     }

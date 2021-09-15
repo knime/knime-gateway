@@ -46,17 +46,14 @@
  * History
  *   Jan 11, 2021 (hornm): created
  */
-package org.knime.core.rpc;
+package org.knime.core.webui.data.rpc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -71,7 +68,6 @@ import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
-import org.knime.core.rpc.RpcServer;
 import org.knime.core.util.FileUtil;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
@@ -86,8 +82,9 @@ import org.knime.gateway.testing.helper.rpc.node.SingleRpcNodeFactory;
 public class RpcServerManagerTest {
 
     /**
-     * Tests the {@link RpcServerManager#doRpc(NodeContainer, int, String)} for rpc requests on ports. Makes especially
-     * sure that the response reflects the changed underlying port data (port object, port object spec).
+     * Tests the {@link RpcServerManager#doRpc(org.knime.core.node.workflow.NodeOutPort, String)} for rpc requests on
+     * ports. Makes especially sure that the response reflects the changed underlying port data (port object, port
+     * object spec).
      *
      * @throws Exception
      */
@@ -100,25 +97,25 @@ public class RpcServerManagerTest {
         String rpcTableRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}";
         String rpcFlowVarRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getFlowVariables\"}";
 
-        String rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        String rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
         checkRpcTableResponse(rpcTableResponse, 5, -1);
-        String rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        String rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
         checkRpcFlowVarResponse(rpcFlowVarResponse, "exposed");
 
         // change config and check again
         changeDataGenConfig(wfm, dataGen.getID(), 1, "test1");
-        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
         checkRpcTableResponse(rpcTableResponse, 3, -1);
-        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
         checkRpcFlowVarResponse(rpcFlowVarResponse, "test1");
 
         /* test with data (i.e. executed node) */
 
         wfm.executeUpToHere(dataGen.getID());
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
         checkRpcTableResponse(rpcTableResponse, 3, 8);
-        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
         checkRpcFlowVarResponse(rpcFlowVarResponse, "test1");
 
         // change config and check again
@@ -126,26 +123,16 @@ public class RpcServerManagerTest {
         changeDataGenConfig(wfm, dataGen.getID(), 2, "test2");
         wfm.executeUpToHere(dataGen.getID());
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
+        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
         checkRpcTableResponse(rpcTableResponse, 5, 8);
-        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen, 0, rpcFlowVarRequest);
+        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
         checkRpcFlowVarResponse(rpcFlowVarResponse, "test2");
-
-        // check number of cached port rpc servers before and after gc just to make sure that all the
-        // RpcServer-instances are only weakly referenced and are removed from memory
-        Map<Integer, WeakReference<RpcServer>> portRpcServerCache = RpcServerManager.getInstance().getPortRpcServerCache();
-        assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(2));
-        System.gc(); // NOSONAR
-        assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
-        RpcServerManager.getInstance().doRpc(dataGen, 1, rpcTableRequest);
-        assertThat("unexpected number of cached port rpc servers", portRpcServerCache.size(), is(1));
-        assertTrue(portRpcServerCache.values().stream().allMatch(ref -> ref.get() != null));
 
         loader.disposeWorkflows();
     }
 
     /**
-     * Test for {@link RpcServerManager#doRpc(NodeContainer, int, String)}.
+     * Test for {@link RpcServerManager#doRpc(NativeNodeContainer, String)}.
      *
      * @throws Exception
      */
@@ -159,15 +146,6 @@ public class RpcServerManagerTest {
         String rpcReq = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"method\"}";
         String rpcRes = RpcServerManager.getInstance().doRpc((NativeNodeContainer)wfm.getNodeContainer(id), rpcReq);
         assertThat(rpcRes, is("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"result1234\"}\n"));
-
-        // check number of cached node rpc servers before and after gc just to make sure that they are properly removed
-        // from memory
-        Map<Integer, WeakReference<RpcServer>> nodeRpcServerCache = RpcServerManager.getInstance().getNodeRpcServerCache();
-        assertThat("unexpected number of cached node rpc servers", nodeRpcServerCache.size(), is(1));
-        System.gc(); // NOSONAR
-        assertTrue(nodeRpcServerCache.values().stream().allMatch(ref -> ref.get() == null));
-        RpcServerManager.getInstance().doRpc((NativeNodeContainer)wfm.getNodeContainer(id), rpcReq);
-        assertTrue(nodeRpcServerCache.values().stream().allMatch(ref -> ref.get() != null));
 
         wfm.getParent().removeProject(wfm.getID());
     }
@@ -205,7 +183,6 @@ public class RpcServerManagerTest {
             throw new IllegalStateException("Creating empty workflow failed");
         }
     }
-
 
     private static void checkRpcFlowVarResponse(final String res, final String flowVarName) {
         assertThat("expected flow variable not found", res, containsString("\"name\":\"" + flowVarName));

@@ -51,7 +51,7 @@ package org.knime.gateway.impl.rpc.flowvars;
 import java.util.List;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.rpc.NodePortRpcServerFactory;
+import org.knime.core.webui.data.rpc.NodePortRpcServerFactory;
 
 /**
  * Gives access to the node's flow variables. Provided as a rpc service because it's logic closely related to flow
