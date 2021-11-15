@@ -20,9 +20,12 @@ package org.knime.gateway.testing.helper.rpc.node;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.xmlbeans.XmlException;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NoDescriptionProxy;
+import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -32,6 +35,7 @@ import org.knime.core.node.NodeView;
 import org.knime.core.webui.data.rpc.NodeRpcServerFactory;
 import org.knime.core.webui.data.rpc.RpcServer;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcServer;
+import org.xml.sax.SAXException;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -102,6 +106,11 @@ public class RpcNodeFactory extends NodeFactory<NodeModel> implements NodeRpcSer
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return null;
+    }
+
+    @Override
+    protected NodeDescription createNodeDescription() throws SAXException, IOException, XmlException {
+        return new NoDescriptionProxy(getClass());
     }
 
 }
