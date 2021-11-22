@@ -50,8 +50,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
@@ -68,33 +66,34 @@ final class Connect extends AbstractWorkflowCommand<ConnectCommandEnt> {
 
     @Override
     public boolean execute() throws OperationNotAllowedException {
-        ConnectCommandEnt entity = getCommandEntity();
-        WorkflowManager wfm = getWorkflowManager();
-        NodeID source = entity.getSourceNodeId().toNodeID(wfm.getID());
-        NodeID dest = entity.getDestinationNodeId().toNodeID(wfm.getID());
+        var entity = getCommandEntity();
+        var wfm = getWorkflowManager();
+        var projectWfm = wfm.getProjectWFM();
+        var sourceNodeId = entity.getSourceNodeId().toNodeID(projectWfm.getID());
+        var destNodeId = entity.getDestinationNodeId().toNodeID(projectWfm.getID());
 
         try {
-            m_oldConnection = wfm.getConnection(new ConnectionID(dest, entity.getDestinationPortIdx()));
+            m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, entity.getDestinationPortIdx()));
         } catch (IllegalArgumentException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
-        if (m_oldConnection != null && m_oldConnection.getSource().equals(source)
+        if (m_oldConnection != null && m_oldConnection.getSource().equals(sourceNodeId)
             && m_oldConnection.getSourcePort() == entity.getSourcePortIdx()) {
             // it's the very same connection -> no change
             return false;
         }
 
-        if (!wfm.canAddConnection(source, entity.getSourcePortIdx(), dest, entity.getDestinationPortIdx())) {
+        if (!wfm.canAddConnection(sourceNodeId, entity.getSourcePortIdx(), destNodeId, entity.getDestinationPortIdx())) {
             throw new OperationNotAllowedException("Connection can't be added");
         }
 
-        m_newConnection = wfm.addConnection(source, entity.getSourcePortIdx(), dest, entity.getDestinationPortIdx());
+        m_newConnection = wfm.addConnection(sourceNodeId, entity.getSourcePortIdx(), destNodeId, entity.getDestinationPortIdx());
         return true;
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        WorkflowManager wfm = getWorkflowManager();
+        var wfm = getWorkflowManager();
         wfm.removeConnection(m_newConnection);
         if (m_oldConnection != null) {
             wfm.addConnection(m_oldConnection.getSource(), m_oldConnection.getSourcePort(), m_oldConnection.getDest(),

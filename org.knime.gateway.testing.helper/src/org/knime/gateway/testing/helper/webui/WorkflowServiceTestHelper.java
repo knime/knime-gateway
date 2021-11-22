@@ -562,6 +562,20 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
         assertThat(exception.getMessage(), containsString("Connection can't be added"));
+
+        // add a connection within a sub-workflow (e.g. within a component)
+        var component23Id = new NodeIDEnt(23);
+        var deleteCommand =
+            createDeleteCommandEnt(emptyList(), List.of(new ConnectionIDEnt(new NodeIDEnt(23, 0, 9), 1)), emptyList());
+        ws().executeWorkflowCommand(wfId, component23Id, deleteCommand);
+        var component23ConnectionRemoved = ws().getWorkflow(wfId, component23Id, false);
+        assertThat(component23ConnectionRemoved.getWorkflow().getConnections().size(), is(1));
+        var command4 = buildConnectCommandEnt(new NodeIDEnt(23, 0, 10), 1, new NodeIDEnt(23, 0, 9), 1);
+        ws().executeWorkflowCommand(wfId, component23Id, command4);
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            var component23ConnectionAdded = ws().getWorkflow(wfId, component23Id, false);
+            assertThat(component23ConnectionAdded.getWorkflow().getConnections().size(), is(2));
+        });
     }
 
     private static ConnectCommandEnt buildConnectCommandEnt(final NodeIDEnt source, final Integer sourcePort, final NodeIDEnt dest,
