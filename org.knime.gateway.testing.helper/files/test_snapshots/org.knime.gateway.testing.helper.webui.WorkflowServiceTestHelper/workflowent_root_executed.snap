@@ -1162,7 +1162,7 @@
         "index" : 1,
         "name" : "Weka model",
         "optional" : false,
-        "otherTypeId" : -822968375,
+        "otherTypeId" : -1329700362,
         "type" : "other"
       }, {
         "connectedVia" : "[ root:22_2 ]",
@@ -1455,7 +1455,7 @@
         "index" : 1,
         "info" : "J48",
         "name" : "Trained model",
-        "otherTypeId" : -822968375,
+        "otherTypeId" : -1329700362,
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "other"
       } ],

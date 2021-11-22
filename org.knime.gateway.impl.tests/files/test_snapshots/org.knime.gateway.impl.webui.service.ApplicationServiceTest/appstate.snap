@@ -1141,7 +1141,7 @@
               "index" : 1,
               "name" : "Weka model",
               "optional" : false,
-              "otherTypeId" : -822968375,
+              "otherTypeId" : -1329700362,
               "type" : "other"
             }, {
               "connectedVia" : "[ root:22_2 ]",
@@ -1421,7 +1421,7 @@
               "connectedVia" : "[ root:22_1 ]",
               "index" : 1,
               "name" : "Trained model",
-              "otherTypeId" : -822968375,
+              "otherTypeId" : -1329700362,
               "type" : "other"
             } ],
             "position" : {
