@@ -48,7 +48,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
-import org.knime.gateway.impl.webui.service.DefaultEventService.PatchEntCreator;
+import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource.PatchEntCreator;
 
 /**
  * Tests for {@link EntityRepository}.
@@ -93,7 +93,7 @@ public abstract class AbstractEntityRepositoryTest {
 
     /**
      * Tests the
-     * {@link EntityRepository#getChangesAndCommit(String, org.knime.gateway.api.entity.GatewayEntity, java.util.function.Function)}
+     * {@link EntityRepository#getChangesAndCommit(String, org.knime.gateway.api.entity.GatewayEntity, PatchCreator)}
      * method.
      *
      * @throws Exception

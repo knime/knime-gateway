@@ -48,39 +48,20 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.api.webui.entity.PatchEnt;
-import org.knime.gateway.api.webui.entity.PatchOpEnt;
-import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
-import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
-import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.service.util.PatchCreator;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
-import org.knime.gateway.impl.webui.WorkflowUtil;
-import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
+import org.knime.gateway.impl.webui.service.events.EventSource;
+import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -90,8 +71,6 @@ import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBu
 public final class DefaultEventService implements EventService {
 
     private static final DefaultEventService INSTANCE = new DefaultEventService();
-
-    private static final WorkflowStatefulUtil WF_UTIL = WorkflowStatefulUtil.getInstance();
 
     /**
      * Returns the singleton instance for this service.
@@ -104,13 +83,13 @@ public final class DefaultEventService implements EventService {
 
     private final List<BiConsumer<String, EventEnt>> m_eventConsumer = new ArrayList<>();
 
-    private Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
+    private final Map<Class<? extends EventTypeEnt>, EventSource<? extends EventTypeEnt>> m_eventSources =
+        new HashMap<>();
 
     /*
      * For testing purposes only.
      */
     private boolean m_callEventConsumerOnError = false;
-    private Runnable m_preEventCreationCallback = null;
 
     private DefaultEventService() {
         // singleton
@@ -119,62 +98,29 @@ public final class DefaultEventService implements EventService {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("resource")
+    @SuppressWarnings({"unchecked"})
     @Override
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
+        @SuppressWarnings("rawtypes")
+        EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
-            WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
-            WorkflowKey key = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
-            try {
-                WorkflowUtil.assertWorkflowExists(key);
-            } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-                throw new InvalidRequestException(ex.getMessage(), ex);
-            }
-
-            // create very first changed event to be send first (and thus catch up with the most recent
-            // workflow version)
-            WorkflowChangedEventEnt workflowChangedEvent =
-                WF_UTIL.buildWorkflowChangedEvent(key, new PatchEntCreator(null), wfEventType.getSnapshotId(), true);
-            sendEvent(workflowChangedEvent);
-
-            // add and keep track of callback added to the workflow changes listener (if not already)
-            m_workflowChangesCallbacks.computeIfAbsent(key, k -> {
-                String latestSnapshotId =
-                    workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-                WorkflowChangesListener l = WF_UTIL.getWorkflowChangesListener(key);
-                Consumer<WorkflowManager> callback =
-                    createWorkflowChangesCallback(key, new PatchEntCreator(latestSnapshotId));
-                l.addCallback(callback);
-                return callback;
-            });
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new WorkflowChangedEventSource(this::sendEvent));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
-    }
-
-    private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator) {
-        return wfm -> {
-            if (m_preEventCreationCallback != null) {
-                m_preEventCreationCallback.run();
-            }
-            patchEntCreator.clear();
-            WorkflowChangedEventEnt event =
-                WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
-            sendEvent(event);
-        };
+        eventSource.addEventListener(eventTypeEnt);
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void removeEventListener(final EventTypeEnt eventTypeEnt) {
-        if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
-            WorkflowChangedEventTypeEnt wfEventType = (WorkflowChangedEventTypeEnt)eventTypeEnt;
-            WorkflowKey wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
-            removeEventListener(wfKey);
-        }
+        @SuppressWarnings({"rawtypes"})
+        EventSource eventSource = m_eventSources.get(eventTypeEnt.getClass()); // NOSONAR
+        eventSource.removeEventListener(eventTypeEnt);
     }
 
     /**
@@ -182,14 +128,7 @@ public final class DefaultEventService implements EventService {
      * the registered event consumers.
      */
     public void removeAllEventListeners() {
-        new HashSet<>(m_workflowChangesCallbacks.keySet()).forEach(this::removeEventListener);
-    }
-
-    private void removeEventListener(final WorkflowKey wfKey) {
-        Consumer<WorkflowManager> callback = m_workflowChangesCallbacks.remove(wfKey);
-        if (callback != null && WF_UTIL.hasStateFor(wfKey)) {
-            WF_UTIL.getWorkflowChangesListener(wfKey).removeCallback(callback);
-        }
+        m_eventSources.values().forEach(EventSource::removeAllEventListeners);
     }
 
     /**
@@ -205,17 +144,9 @@ public final class DefaultEventService implements EventService {
     void setEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer,
         final Runnable preEventCreationCallback) {
         m_eventConsumer.clear();
-        m_preEventCreationCallback = preEventCreationCallback;
+        m_eventSources.values().forEach(s -> s.setPreEventCreationCallback(preEventCreationCallback));
         addEventConsumer(eventConsumer);
         m_callEventConsumerOnError = true;
-    }
-
-    /*
-     * For testing purposes only!
-     */
-    boolean checkWorkflowChangesListenerCallbackState(final CallbackState state) {
-        return m_workflowChangesCallbacks.keySet().stream()
-            .anyMatch(k -> WF_UTIL.getWorkflowChangesListener(k).getCallbackState() == state);
     }
 
     /**
@@ -227,16 +158,9 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.remove(eventConsumer); // NOSONAR
     }
 
-    private void sendEvent(final WorkflowChangedEventEnt event) {
-        if (event != null) {
-            sendEvent("WorkflowChangedEvent", event);
-        }
-    }
-
     private synchronized void sendEvent(final String name, final EventEnt event) {
         if (m_eventConsumer.isEmpty()) {
-            String message =
-                "Workflow change events available but no one is interested. Most likely an implementation error.";
+            var message = "Events available but no one is interested. Most likely an implementation error.";
             NodeLogger.getLogger(getClass()).error(message);
             if (m_callEventConsumerOnError) {
                 m_eventConsumer.forEach(c -> c.accept(message, null));
@@ -246,55 +170,11 @@ public final class DefaultEventService implements EventService {
         m_eventConsumer.forEach(c -> c.accept(name, event));
     }
 
-    /**
-     * Creates {@link PatchEnt}s.
-     *
-     * Public scope for testing.
+    /*
+     * For testing purposes only!
      */
-    public static class PatchEntCreator implements PatchCreator<WorkflowChangedEventEnt> {
-
-        private final List<PatchOpEnt> m_ops = new ArrayList<>();
-        private String m_lastSnapshotId;
-
-        /**
-         * @param lastSnapshotId the latest snapshot id
-         */
-        public PatchEntCreator(final String lastSnapshotId) {
-            m_lastSnapshotId = lastSnapshotId;
-        }
-
-        @Override
-        public void replaced(final String path, final Object value) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REPLACE).setPath(path).setValue(value).build());
-        }
-
-        @Override
-        public void removed(final String path) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REMOVE).setPath(path).build());
-        }
-
-        @Override
-        public void added(final String path, final Object value) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.ADD).setPath(path).setValue(value).build());
-            if (value == null) {
-                NodeLogger.getLogger(DefaultEventService.class).error(
-                    "An 'ADD' patch operation has been created without a value. Most likely an implementation error.");
-            }
-        }
-
-        @Override
-        public WorkflowChangedEventEnt create(final String newSnapshotId) {
-            m_lastSnapshotId = newSnapshotId;
-            DefaultPatchEnt patch = new DefaultPatchEntBuilder().setOps(m_ops).build();
-            return builder(WorkflowChangedEventEntBuilder.class).setPatch(patch).setSnapshotId(newSnapshotId).build();
-        }
-
-        void clear() {
-            m_ops.clear();
-        }
-
-        String getLastSnapshotId() {
-            return m_lastSnapshotId;
-        }
+    EventSource<? extends EventTypeEnt> getEventSource(final Class<? extends EventTypeEnt> eventTypeEnt) {
+        return m_eventSources.get(eventTypeEnt);
     }
+
 }

@@ -79,6 +79,8 @@ import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 import org.knime.gateway.testing.helper.WorkflowTransformations.WorkflowTransformation;
 import org.knime.gateway.testing.helper.webui.GatewayTestCollection;
@@ -163,8 +165,11 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             testEventConsumer.unblock();
 
             // wait for the workflow events to arrive
-            await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> assertTrue(
-                DefaultEventService.getInstance().checkWorkflowChangesListenerCallbackState(CallbackState.IDLE)));
+            await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+                WorkflowChangedEventSource es = (WorkflowChangedEventSource)DefaultEventService.getInstance()
+                    .getEventSource(DefaultWorkflowChangedEventTypeEnt.class);
+                assertTrue(es.checkWorkflowChangesListenerCallbackState(CallbackState.IDLE));
+            });
 
             // check the expected patches
             int numEvents = testEventConsumer.getEvents().size();
