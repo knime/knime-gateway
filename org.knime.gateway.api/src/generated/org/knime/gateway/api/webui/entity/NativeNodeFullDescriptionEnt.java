@@ -51,47 +51,33 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * NativeNodeFullDescriptionEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+public interface NativeNodeFullDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * TODO
+   * @return intro 
    **/
-  public String getUrl();
-
-  /**
-   * the text that the user selected to display for the link
-   * @return text 
-   **/
-  public String getText();
+  public String getIntro();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface NativeNodeFullDescriptionEntBuilder extends GatewayEntityBuilder<NativeNodeFullDescriptionEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * TODO
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param intro the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
-        
-        /**
-         * the text that the user selected to display for the link
-         * 
-         * @param text the property value,  
-         * @return this entity builder for chaining
-         */
-        LinkEntBuilder setText(String text);
+        NativeNodeFullDescriptionEntBuilder setIntro(String intro);
         
         
         /**
@@ -101,7 +87,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        NativeNodeFullDescriptionEnt build();
     
     }
 

@@ -44,8 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
@@ -56,59 +56,97 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
+ * Descriptions of aspects of some node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", ""})
+public interface DescribableNodeDescriptionEnt extends GatewayEntity {
 
+
+  /**
+   * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. The description text may contain HTML markup tags.
+   * @return description 
+   **/
+  public String getDescription();
+
+  /**
+   * List of ungrouped dialog options.
+   * @return ungroupedOptions 
+   **/
+  public java.util.List<NodeDialogOptionDescriptionEnt> getUngroupedOptions();
+
+  /**
+   * List of dialog option groups.
+   * @return optionGroups 
+   **/
+  public java.util.List<NodeDialogOptionGroupEnt> getOptionGroups();
+
+  /**
+   * Descriptions for the node views.
+   * @return views 
+   **/
+  public java.util.List<NodeViewDescriptionEnt> getViews();
+
+  /**
+   * Get interactiveView
+   * @return interactiveView 
+   **/
+  public NodeViewDescriptionEnt getInteractiveView();
+
+  /**
+   * Get inPorts
+   * @return inPorts 
+   **/
+  public java.util.List<NodePortDescriptionEnt> getInPorts();
+
+  /**
+   * Get dynamicInPortGroupDescriptions
+   * @return dynamicInPortGroupDescriptions 
+   **/
+  public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions();
+
+  /**
+   * Get outPorts
+   * @return outPorts 
+   **/
+  public java.util.List<NodePortDescriptionEnt> getOutPorts();
+
+  /**
+   * Get dynamicOutPortGroupDescriptions
+   * @return dynamicOutPortGroupDescriptions 
+   **/
+  public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicOutPortGroupDescriptions();
 
 
     /**
      * The builder for the entity.
      */
-    public interface ComponentNodeDescriptionEntBuilder extends GatewayEntityBuilder<ComponentNodeDescriptionEnt> {
+    public interface DescribableNodeDescriptionEntBuilder extends GatewayEntityBuilder<DescribableNodeDescriptionEnt> {
 
         /**
-         * The component name.
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setName(String name);
-        
-        /**
-         * Can be missing if nothing was selected by the user
-         * 
-         * @param type the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setType(TypeEnum type);
-        
-        /**
-         * The icon encoded in a data-url. Not available if no icon is set.
-         * 
-         * @param icon the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setIcon(String icon);
-        
-        /**
-         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
+         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. The description text may contain HTML markup tags.
          * 
          * @param description the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeDescriptionEntBuilder setDescription(String description);
+        DescribableNodeDescriptionEntBuilder setDescription(String description);
         
         /**
-         * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
+         * List of ungrouped dialog options.
          * 
-         * @param options the property value,  
+         * @param ungroupedOptions the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options);
+        DescribableNodeDescriptionEntBuilder setUngroupedOptions(java.util.List<NodeDialogOptionDescriptionEnt> ungroupedOptions);
+        
+        /**
+         * List of dialog option groups.
+         * 
+         * @param optionGroups the property value,  
+         * @return this entity builder for chaining
+         */
+        DescribableNodeDescriptionEntBuilder setOptionGroups(java.util.List<NodeDialogOptionGroupEnt> optionGroups);
         
         /**
          * Descriptions for the node views.
@@ -116,23 +154,47 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
          * @param views the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeDescriptionEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views);
+        DescribableNodeDescriptionEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views);
         
         /**
-         * Descriptions of static input ports.
+   		 * Set interactiveView
+         * 
+         * @param interactiveView the property value,  
+         * @return this entity builder for chaining
+         */
+        DescribableNodeDescriptionEntBuilder setInteractiveView(NodeViewDescriptionEnt interactiveView);
+        
+        /**
+   		 * Set inPorts
          * 
          * @param inPorts the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeDescriptionEntBuilder setInPorts(java.util.List<NodePortDescriptionEnt> inPorts);
+        DescribableNodeDescriptionEntBuilder setInPorts(java.util.List<NodePortDescriptionEnt> inPorts);
         
         /**
-         * Descriptions of static output ports.
+   		 * Set dynamicInPortGroupDescriptions
+         * 
+         * @param dynamicInPortGroupDescriptions the property value,  
+         * @return this entity builder for chaining
+         */
+        DescribableNodeDescriptionEntBuilder setDynamicInPortGroupDescriptions(java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions);
+        
+        /**
+   		 * Set outPorts
          * 
          * @param outPorts the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts);
+        DescribableNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts);
+        
+        /**
+   		 * Set dynamicOutPortGroupDescriptions
+         * 
+         * @param dynamicOutPortGroupDescriptions the property value,  
+         * @return this entity builder for chaining
+         */
+        DescribableNodeDescriptionEntBuilder setDynamicOutPortGroupDescriptions(java.util.List<DynamicPortGroupDescriptionEnt> dynamicOutPortGroupDescriptions);
         
         
         /**
@@ -142,7 +204,7 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ComponentNodeDescriptionEnt build();
+        DescribableNodeDescriptionEnt build();
     
     }
 

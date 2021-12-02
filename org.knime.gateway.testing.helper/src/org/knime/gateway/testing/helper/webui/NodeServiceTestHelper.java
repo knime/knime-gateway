@@ -57,6 +57,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.util.Collections;
@@ -66,10 +67,14 @@ import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptionNotAvailableException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -79,6 +84,7 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.gateway.testing.helper.webui.node.DummyNodeFactory_v41;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -292,6 +298,48 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(json.get("jsonrpc").asText(), is("2.0"));
         assertThat(json.get("id").asInt(), is(1));
         assertThat(json.get("result"), notNullValue());
+    }
+
+    public void testGetNodeDescription() throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+        // example for elements in 4.1 schema and rich formatting
+        testNodeDescriptionSnapshot(DummyNodeFactory_v41.class.getName());
+
+        // example for v2.7 schema, handles optional options differently
+        testNodeDescriptionSnapshot("org.knime.base.node.io.tablecreator.TableCreator2NodeFactory");
+
+        // optional input port
+        testNodeDescriptionSnapshot("org.knime.js.base.node.configuration.input.slider.IntegerSliderDialogNodeFactory");
+
+        // example for dynamic port groups: "Concatenate"
+        testNodeDescriptionSnapshot("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory");
+
+        // example for flow variable output port
+        testNodeDescriptionSnapshot("org.knime.base.node.meta.looper.variable.start.LoopStartVariable3NodeFactory");
+
+        // example for dynamically created node description
+        // note that "correct" behaviour is that a single dialog option is produced
+        // see also org.knime.distance.util.DistanceMeasureDescriptionFactory, works similarly.
+        testNodeDescriptionSnapshot("org.knime.base.node.preproc.pmml.missingval.compute.MissingValueHandlerNodeFactory");
+
+        // dynamic JS node -- have their own schema
+        testNodeDescriptionSnapshot("org.knime.dynamic.js.v30.DynamicJSNodeFactory",
+                "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:barChart\"}}}",
+                "barChart");
+    }
+
+    private void testNodeDescriptionSnapshot(final String classname) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+        testNodeDescriptionSnapshot(classname, null, null);
+    }
+
+    private void testNodeDescriptionSnapshot(final String classname, final String settings, final String settingsReadable) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+        NodeFactoryKeyEnt keyEnt = builder(NodeFactoryKeyEntBuilder.class)
+                .setClassName(classname)
+                .setSettings(settings)
+                .build();
+
+        NativeNodeDescriptionEnt ndEnt = ns().getNodeDescription(keyEnt);
+
+        cr(ndEnt, "node_description_" + classname + (settingsReadable != null ? "_" + settingsReadable : ""));
     }
 
 }

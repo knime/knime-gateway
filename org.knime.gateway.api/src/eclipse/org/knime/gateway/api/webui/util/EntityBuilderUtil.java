@@ -20,7 +20,6 @@ package org.knime.gateway.api.webui.util;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
@@ -41,9 +40,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -57,7 +60,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
+import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.Node;
+import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
@@ -66,6 +71,10 @@ import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
+import org.knime.core.node.context.ports.ConfigurablePortGroup;
+import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
+import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.missing.MissingNodeFactory;
@@ -133,6 +142,7 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
+import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.LinkEnt;
@@ -149,6 +159,8 @@ import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt.NativeNodeDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
@@ -156,10 +168,8 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.NativeNodeInva
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -194,6 +204,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.xml.sax.SAXException;
 
@@ -346,6 +357,178 @@ public final class EntityBuilderUtil {
                 buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
             .setIcon(createIconDataURL(factory))//
             .setNodeFactory(buildNodeFactoryKeyEnt(factory)).build();
+    }
+
+    /**
+     * Construct an entity representing the node description. The node description is potentially dynamically generated.
+     * Information about ports is based on an instance of {@link org.knime.core.node.Node}.
+     * @param coreNode The node instance to obtain information from.
+     * @return an entity representing the node description.
+     * @throws ServiceExceptions.NodeDescriptionNotAvailableException if node description could not be obtained.
+     */
+    public static NativeNodeDescriptionEnt buildNativeNodeDescriptionEnt(Node coreNode)
+            throws ServiceExceptions.NodeDescriptionNotAvailableException {
+
+        NodeDescription nodeDescription = coreNode.invokeGetNodeDescription();
+        if (nodeDescription instanceof NoDescriptionProxy) {
+            // This will be the case when node description could not be read, cf. NodeDescription#init
+            throw new ServiceExceptions.NodeDescriptionNotAvailableException("Could not read node description");
+        }
+
+        // intro and short description
+        NativeNodeDescriptionEntBuilder builder = builder(NativeNodeDescriptionEntBuilder.class) //
+                .setDescription(nodeDescription.getIntro().orElse(null)) //
+                .setShortDescription(nodeDescription.getShortDescription().orElse(null));
+
+        // dialog options
+        builder.setOptions(buildDialogOptionGroupEnts(nodeDescription.getDialogOptionGroups()));
+
+        // static/simple ports
+        // Node#getInputType, #getOutputType, index 0 is the flow variable port, hence +1
+        // Node#getNrInPorts adds 1 for flow variable port, hence -1
+        // NodeDescription#getInportDescription is 0-indexed and does not contain description for flow variable port, hence +1
+        builder.setInPorts(
+                buildNativeNodePortDescriptionEnts(coreNode.getNrInPorts() - 1, nodeDescription::getInportName,
+                        nodeDescription::getInportDescription, i -> coreNode.getInputType(i + 1))
+        );
+        builder.setOutPorts( //
+            buildNativeNodePortDescriptionEnts(coreNode.getNrOutPorts() - 1, nodeDescription::getOutportName,
+                nodeDescription::getOutportDescription, i -> coreNode.getOutputType(i + 1)) //
+        );
+
+        // dynamic port group descriptions (not the dynamically generated individual port descriptions)
+        final Optional<ModifiablePortsConfiguration> portConfigs =
+                coreNode.getCopyOfCreationConfig().flatMap(ModifiableNodeCreationConfiguration::getPortConfig);
+        builder.setDynamicInPortGroupDescriptions( //
+            buildDynamicPortGroupDescriptions(nodeDescription.getDynamicInPortGroups(), portConfigs) //
+        );
+        builder.setDynamicOutPortGroupDescriptions( //
+            buildDynamicPortGroupDescriptions(nodeDescription.getDynamicOutPortGroups(), portConfigs) //
+        );
+
+        // view descriptions
+        builder.setViews(buildNodeViewDescriptionEnts(coreNode.getNrViews(), nodeDescription));
+
+        // interactive view description
+        if (nodeDescription.getInteractiveViewName() != null) {
+            builder.setInteractiveView( //
+                builder(NodeViewDescriptionEntBuilder.class) //
+                    .setName(nodeDescription.getInteractiveViewName()) //
+                    .setDescription(nodeDescription.getInteractiveViewDescription().orElse(null)) //
+                    .build() //
+            );
+        }
+
+        // links
+        builder.setLinks(buildNodeDescriptionLinkEnts(nodeDescription.getLinks()));
+
+        return builder.build();
+    }
+
+    private static List<LinkEnt> buildNodeDescriptionLinkEnts(final List<NodeDescription.DescriptionLink> links) {
+        return listMapOrNull( //
+            links, //
+            el -> builder(LinkEntBuilder.class).setText(el.getText()).setUrl(el.getTarget()).build() //
+        );
+    }
+
+    private static List<NodeViewDescriptionEnt> buildNodeViewDescriptionEnts(final int nrViews,
+        final NodeDescription nodeDescription) {
+        if (nrViews < 1) {
+            return null;
+        }
+        return IntStream.range(0, nrViews).mapToObj(index -> //
+        builder(NodeViewDescriptionEntBuilder.class) //
+            .setName(nodeDescription.getViewName(index)) //
+            .setDescription(nodeDescription.getViewDescription(index)) //
+            .build()) //
+            .collect(toList());
+    }
+
+    private static List<DynamicPortGroupDescriptionEnt> buildDynamicPortGroupDescriptions(
+        final List<NodeDescription.DynamicPortGroupDescription> portGroupDescriptions,
+        final Optional<ModifiablePortsConfiguration> portConfigs) { // NOSONAR
+        return listMapOrNull(portGroupDescriptions, pgd -> { // NOSONAR
+            List<NodePortTemplateEnt> supportedPortTypes = portConfigs.map(pc -> {
+                PortGroupConfiguration group = pc.getGroup(pgd.getGroupIdentifier());
+                if (group instanceof ConfigurablePortGroup) {
+                    ConfigurablePortGroup configurableGroupConfig = (ConfigurablePortGroup)group;
+                    return buildNodePortTemplateEnts(Arrays.stream(configurableGroupConfig.getSupportedPortTypes()));
+                } else {
+                    return null; // map yields empty optional
+                }
+            }).orElse(null);
+
+            return builder(DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder.class) //
+                .setName(pgd.getGroupName()) //
+                .setDescription(pgd.getGroupDescription()) //
+                .setIdentifier(pgd.getGroupIdentifier()) //
+                .setSupportedPortTypes(supportedPortTypes) //
+                .build();
+        });
+    }
+
+    private static List<NodePortDescriptionEnt> buildNativeNodePortDescriptionEnts(final int nrPorts,
+        final IntFunction<String> nameGetter, final IntFunction<String> descGetter,
+        final IntFunction<PortType> typeGetter) {
+        return listMapOrNull(IntStream.range(0, nrPorts).boxed().collect(toList()), //
+            index -> builder(NodePortDescriptionEntBuilder.class) //
+                .setName(nameGetter.apply(index)) //
+                .setDescription(descGetter.apply(index)) //
+                .setType(getNodePortTemplateEntType(typeGetter.apply(index))) //
+                .setOptional(typeGetter.apply(index).isOptional()) //
+                .build());
+    }
+
+    private static List<NodeDialogOptionGroupEnt> buildUngroupedDialogOptionGroupEnt(final List<NodeDialogOptionDescriptionEnt> ungroupedOptionEnts) {
+        if (Objects.isNull(ungroupedOptionEnts) || ungroupedOptionEnts.isEmpty()) {
+            return null;
+        }
+        return Collections.singletonList(
+                builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
+                        .setSectionName(null) //
+                        .setSectionDescription(null) //
+                        .setFields(ungroupedOptionEnts) //
+                        .build()
+        );
+    }
+
+    private static List<NodeDialogOptionGroupEnt> buildDialogOptionGroupEnts(final List<NodeDescription.DialogOptionGroup> groups) {
+        return listMapOrNull(groups, g -> //
+            builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
+                .setSectionName(g.getName()) //
+                .setSectionDescription(g.getDescription().orElse(null)) //
+                .setFields( //
+                    buildDialogOptionDescriptionEnts(g.getOptions()) //
+                ).build()
+        );
+    }
+
+    private static List<NodeDialogOptionDescriptionEnt> buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {
+        return listMapOrNull(opts, o -> //
+            builder(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class) //
+                .setName(o.getName()) //
+                .setDescription(o.getDescription()) //
+                .setOptional(o.isOptional()) //
+                .build()
+        );
+    }
+
+    /**
+     * Map operation over a list with special handling of null values: If the input list is null or empty, the method
+     * returns null.
+     *
+     * @param input List of elements to be transformed
+     * @param transformation Transformation to apply to each element
+     * @param <I> Type of input elements
+     * @param <O> Type of output elemens
+     * @return Transformed list
+     */
+    private static <I, O> List<O> listMapOrNull(final List<I> input, final Function<I, O> transformation) {
+        if (input == null || input.isEmpty()) {
+            return null;
+        }
+        return input.stream().map(transformation).collect(toList());
     }
 
     private static NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeFactory<? extends NodeModel> factory) {
@@ -1023,8 +1206,8 @@ public final class EntityBuilderUtil {
                 .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
                 .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
                 .setDescription(metadata.getDescription().orElse(null))//
-                .setOptions(buildNodeDialogOptionsEnts(snc))//
-                .setViews(buildNodeViewDescriptionEnts(snc))//
+                .setOptions(buildUngroupedDialogOptionGroupEnt(buildComponentDialogOptionsEnts(snc))) //
+                .setViews(buildComponentViewDescriptionEnts(snc))//
                 .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
                 .setOutPorts(buildComponentOutNodePortDescriptionEnts(metadata, snc))//
                 .build();
@@ -1037,20 +1220,21 @@ public final class EntityBuilderUtil {
         return ncParent instanceof SubNodeContainer ? (SubNodeContainer)ncParent : null;
     }
 
-    private static List<NodeDialogOptionsEnt> buildNodeDialogOptionsEnts(final SubNodeContainer snc) {
+    private static List<NodeDialogOptionDescriptionEnt> buildComponentDialogOptionsEnts(final SubNodeContainer snc) {
         List<SubNodeDescriptionProvider<? extends DialogNodeValue>> descs = snc.getDialogDescriptions();
         if (!descs.isEmpty()) {
-            List<NodeDialogOptions_fieldsEnt> fields = descs.stream()
-                .map(d -> builder(NodeDialogOptions_fieldsEntBuilder.class).setName(d.getLabel())
-                    .setDescription(d.getDescription()).build())//
-                .collect(toList());
-            return singletonList(builder(NodeDialogOptionsEntBuilder.class).setFields(fields).build());
+            return descs.stream().map(d ->
+                    builder(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class)
+                        .setName(d.getLabel())
+                        .setDescription(d.getDescription())
+                        .build()
+            ).collect(toList());
         } else {
             return null; // NOSONAR
         }
     }
 
-    private static List<NodeViewDescriptionEnt> buildNodeViewDescriptionEnts(final SubNodeContainer snc) {
+    private static List<NodeViewDescriptionEnt> buildComponentViewDescriptionEnts(final SubNodeContainer snc) {
         InteractiveWebViewsResult interactiveWebViews = snc.getInteractiveWebViews();
         List<NodeViewDescriptionEnt> res = new ArrayList<>();
         if (interactiveWebViews.size() > 0) {

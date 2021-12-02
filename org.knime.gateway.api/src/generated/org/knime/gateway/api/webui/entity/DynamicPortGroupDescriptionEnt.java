@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,47 +52,75 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * The description of a dynamic port group. A dynamic port group is a collection of dynamic ports, grouped by a common identifier, e.g. \&quot;Input\&quot; or \&quot;Output\&quot;.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+public interface DynamicPortGroupDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * The name of the dynamic port group.
+   * @return name , never <code>null</code>
    **/
-  public String getUrl();
+  public String getName();
 
   /**
-   * the text that the user selected to display for the link
-   * @return text 
+   * The identifier of the dynamic port group.
+   * @return identifier , never <code>null</code>
    **/
-  public String getText();
+  public String getIdentifier();
+
+  /**
+   * The description of the dynamic port group. May contain HTML markup tags.
+   * @return description 
+   **/
+  public String getDescription();
+
+  /**
+   * The port types available in this dynamic port group.
+   * @return supportedPortTypes 
+   **/
+  public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface DynamicPortGroupDescriptionEntBuilder extends GatewayEntityBuilder<DynamicPortGroupDescriptionEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * The name of the dynamic port group.
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
+        DynamicPortGroupDescriptionEntBuilder setName(String name);
         
         /**
-         * the text that the user selected to display for the link
+         * The identifier of the dynamic port group.
          * 
-         * @param text the property value,  
+         * @param identifier the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setText(String text);
+        DynamicPortGroupDescriptionEntBuilder setIdentifier(String identifier);
+        
+        /**
+         * The description of the dynamic port group. May contain HTML markup tags.
+         * 
+         * @param description the property value,  
+         * @return this entity builder for chaining
+         */
+        DynamicPortGroupDescriptionEntBuilder setDescription(String description);
+        
+        /**
+         * The port types available in this dynamic port group.
+         * 
+         * @param supportedPortTypes the property value,  
+         * @return this entity builder for chaining
+         */
+        DynamicPortGroupDescriptionEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes);
         
         
         /**
@@ -101,7 +130,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        DynamicPortGroupDescriptionEnt build();
     
     }
 

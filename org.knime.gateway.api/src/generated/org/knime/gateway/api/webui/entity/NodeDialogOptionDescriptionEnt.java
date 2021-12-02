@@ -51,47 +51,61 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * Description of a single node dialog option.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+public interface NodeDialogOptionDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * The dialog option name.
+   * @return name , never <code>null</code>
    **/
-  public String getUrl();
+  public String getName();
 
   /**
-   * the text that the user selected to display for the link
-   * @return text 
+   * The actual description of the dialog option. May contain HTML markup tags.
+   * @return description , never <code>null</code>
    **/
-  public String getText();
+  public String getDescription();
+
+  /**
+   * Whether the dialog option is marked as optional.
+   * @return optional 
+   **/
+  public Boolean isOptional();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface NodeDialogOptionDescriptionEntBuilder extends GatewayEntityBuilder<NodeDialogOptionDescriptionEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * The dialog option name.
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
+        NodeDialogOptionDescriptionEntBuilder setName(String name);
         
         /**
-         * the text that the user selected to display for the link
+         * The actual description of the dialog option. May contain HTML markup tags.
          * 
-         * @param text the property value,  
+         * @param description the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setText(String text);
+        NodeDialogOptionDescriptionEntBuilder setDescription(String description);
+        
+        /**
+         * Whether the dialog option is marked as optional.
+         * 
+         * @param optional the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeDialogOptionDescriptionEntBuilder setOptional(Boolean optional);
         
         
         /**
@@ -101,7 +115,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        NodeDialogOptionDescriptionEnt build();
     
     }
 

@@ -49,39 +49,43 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-
-import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
 
 /**
- * Represents a single link including the URL and link text.
+ * Properties shared between NodePort and NodePortDescription
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultLinkEnt implements LinkEnt {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", ""})
+public class DefaultNodePortAndDescriptionEnt implements NodePortAndDescriptionEnt {
 
-  protected String m_url;
-  protected String m_text;
-  
-  protected DefaultLinkEnt() {
+  protected TypeEnum m_type;
+  protected Integer m_otherTypeId;
+  protected String m_color;
+  protected String m_name;
+  protected Boolean m_optional;
+
+  protected DefaultNodePortAndDescriptionEnt() {
     //for sub-classes
   }
-  
+
   @Override
   public String getTypeID() {
-    return "Link";
+    return "NodePortAndDescription";
   }
-  
-  private DefaultLinkEnt(DefaultLinkEntBuilder builder) {
-    
-    if(builder.m_url == null) {
-        throw new IllegalArgumentException("url must not be null.");
+
+  private DefaultNodePortAndDescriptionEnt(final DefaultNodePortAndDescriptionEntBuilder builder) {
+    super();
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
     }
-    m_url = immutable(builder.m_url);
-    m_text = immutable(builder.m_text);
+    m_type = immutable(builder.m_type);
+    m_otherTypeId = immutable(builder.m_otherTypeId);
+    m_color = immutable(builder.m_color);
+    m_name = immutable(builder.m_name);
+    m_optional = immutable(builder.m_optional);
   }
-  
+
    /**
      * {@inheritDoc}
      */
@@ -96,66 +100,105 @@ public class DefaultLinkEnt implements LinkEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultLinkEnt ent = (DefaultLinkEnt)o;
-        return Objects.equals(m_url, ent.m_url) && Objects.equals(m_text, ent.m_text);
+        DefaultNodePortAndDescriptionEnt ent = (DefaultNodePortAndDescriptionEnt)o;
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_optional, ent.m_optional);
     }
 
 
-  
+
    /**
     * {@inheritDoc}
     */
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_url)
-               .append(m_text)
+               .append(m_type)
+               .append(m_otherTypeId)
+               .append(m_color)
+               .append(m_name)
+               .append(m_optional)
                .toHashCode();
    }
-  
-	
-	
+
+
+
   @Override
-  public String getUrl() {
-        return m_url;
+  public TypeEnum getType() {
+        return m_type;
   }
-    
+
   @Override
-  public String getText() {
-        return m_text;
+  public Integer getOtherTypeId() {
+        return m_otherTypeId;
   }
-    
-  
-    public static class DefaultLinkEntBuilder implements LinkEntBuilder {
-    
-        public DefaultLinkEntBuilder(){
-            
+
+  @Override
+  public String getColor() {
+        return m_color;
+  }
+
+  @Override
+  public String getName() {
+        return m_name;
+  }
+
+  @Override
+  public Boolean isOptional() {
+        return m_optional;
+  }
+
+
+    public static class DefaultNodePortAndDescriptionEntBuilder implements NodePortAndDescriptionEntBuilder {
+
+        public DefaultNodePortAndDescriptionEntBuilder(){
+            super();
         }
-    
-        private String m_url;
-        private String m_text;
+
+        private TypeEnum m_type;
+        private Integer m_otherTypeId;
+        private String m_color;
+        private String m_name;
+        private Boolean m_optional;
 
         @Override
-        public DefaultLinkEntBuilder setUrl(String url) {
-             if(url == null) {
-                 throw new IllegalArgumentException("url must not be null.");
+        public DefaultNodePortAndDescriptionEntBuilder setType(final TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
              }
-             m_url = url;
+             m_type = type;
              return this;
         }
 
         @Override
-        public DefaultLinkEntBuilder setText(String text) {
-             m_text = text;
+        public DefaultNodePortAndDescriptionEntBuilder setOtherTypeId(final Integer otherTypeId) {
+             m_otherTypeId = otherTypeId;
              return this;
         }
 
-        
         @Override
-        public DefaultLinkEnt build() {
-            return new DefaultLinkEnt(this);
+        public DefaultNodePortAndDescriptionEntBuilder setColor(final String color) {
+             m_color = color;
+             return this;
         }
-    
+
+        @Override
+        public DefaultNodePortAndDescriptionEntBuilder setName(final String name) {
+             m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultNodePortAndDescriptionEntBuilder setOptional(final Boolean optional) {
+             m_optional = optional;
+             return this;
+        }
+
+
+        @Override
+        public DefaultNodePortAndDescriptionEnt build() {
+            return new DefaultNodePortAndDescriptionEnt(this);
+        }
+
     }
 
 }

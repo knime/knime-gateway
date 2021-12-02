@@ -1,0 +1,43 @@
+{
+  "description" : "Outputs an integer flow variable with a set value from a component's dialog.",
+  "inPorts" : [ {
+    "description" : "Input table which contains at least one integer column with domain values set, which can be used to control the minimum and maximum values of the slider.",
+    "name" : "Table Input with applicable domain values",
+    "optional" : true,
+    "type" : "table"
+  } ],
+  "options" : [ {
+    "fields" : [ {
+      "description" : "A descriptive label that will be shown in the dialog",
+      "name" : "Label",
+      "optional" : false
+    }, {
+      "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+      "name" : "Description",
+      "optional" : false
+    }, {
+      "description" : "Parameter identifier for external parameterization (e.g. batch execution). This will also be the name of the exported flow variable.",
+      "name" : "Parameter Name",
+      "optional" : false
+    }, {
+      "description" : "An optional integer minimum value.",
+      "name" : "Minimum",
+      "optional" : false
+    }, {
+      "description" : "An optional integer maximum value.",
+      "name" : "Maximum",
+      "optional" : false
+    }, {
+      "description" : "The value that is selected by default.",
+      "name" : "Default Value",
+      "optional" : false
+    } ]
+  } ],
+  "outPorts" : [ {
+    "description" : "Variable output (integer) with the given variable defined.",
+    "name" : "Flow Variable Output",
+    "optional" : false,
+    "type" : "flowVariable"
+  } ],
+  "shortDescription" : "Provides a slider configuration option to an encapsulating component's dialog. Outputs a integer flow variable with the set value."
+}

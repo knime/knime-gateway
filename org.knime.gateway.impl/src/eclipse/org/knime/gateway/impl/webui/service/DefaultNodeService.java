@@ -48,8 +48,14 @@ package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.Node;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
@@ -57,10 +63,14 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.rpc.RpcServerManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -70,6 +80,8 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  */
 public final class DefaultNodeService implements NodeService {
     private static final DefaultNodeService INSTANCE = new DefaultNodeService();
+
+    static final LRUMap<NodeFactoryKeyEnt, NativeNodeDescriptionEnt> m_nodeDescriptionCache = new LRUMap<>(100);
 
     /**
      * Returns the singleton instance for this service.
@@ -166,6 +178,32 @@ public final class DefaultNodeService implements NodeService {
         } catch (IOException | IllegalStateException ex) {
             throw new InvalidRequestException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey) throws NodeNotFoundException,
+            ServiceExceptions.NodeDescriptionNotAvailableException {
+        if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
+            NodeFactory<NodeModel> fac;
+            try {
+                fac = DefaultServiceUtil.getNodeFactory(
+                        factoryKey.getClassName(),
+                        factoryKey.getSettings()
+                );
+            } catch (NoSuchElementException | IOException e) { // NOSONAR: exceptions are handled
+                NodeLogger.getLogger(this.getClass()).error(e.getStackTrace());
+                throw new NodeNotFoundException("Could not read node description", e);
+            }
+
+            final Node coreNode = new Node(fac);  // needed to init information on ports
+            NativeNodeDescriptionEnt description = EntityBuilderUtil.buildNativeNodeDescriptionEnt(coreNode);
+            m_nodeDescriptionCache.put(factoryKey, description);
+            return description;
+        }
+        return m_nodeDescriptionCache.get(factoryKey);
     }
 
 }

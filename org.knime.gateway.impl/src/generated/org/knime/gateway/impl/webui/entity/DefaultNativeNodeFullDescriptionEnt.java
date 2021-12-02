@@ -42,66 +42,98 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.NativeNodeFullDescriptionEnt;
 
 /**
- * Represents a single link including the URL and link text.
- * 
+ * DefaultNativeNodeFullDescriptionEnt
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultNativeNodeFullDescriptionEnt implements NativeNodeFullDescriptionEnt {
 
-
-  /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
-   **/
-  public String getUrl();
-
-  /**
-   * the text that the user selected to display for the link
-   * @return text 
-   **/
-  public String getText();
-
-
-    /**
-     * The builder for the entity.
+  protected String m_intro;
+  
+  protected DefaultNativeNodeFullDescriptionEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "NativeNodeFullDescription";
+  }
+  
+  private DefaultNativeNodeFullDescriptionEnt(DefaultNativeNodeFullDescriptionEntBuilder builder) {
+    
+    m_intro = immutable(builder.m_intro);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultNativeNodeFullDescriptionEnt ent = (DefaultNativeNodeFullDescriptionEnt)o;
+        return Objects.equals(m_intro, ent.m_intro);
+    }
 
-        /**
-         * the uniform resource locator the user has specified
-         * 
-         * @param url the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        LinkEntBuilder setUrl(String url);
-        
-        /**
-         * the text that the user selected to display for the link
-         * 
-         * @param text the property value,  
-         * @return this entity builder for chaining
-         */
-        LinkEntBuilder setText(String text);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_intro)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public String getIntro() {
+        return m_intro;
+  }
+    
+  
+    public static class DefaultNativeNodeFullDescriptionEntBuilder implements NativeNodeFullDescriptionEntBuilder {
+    
+        public DefaultNativeNodeFullDescriptionEntBuilder(){
+            
+        }
+    
+        private String m_intro;
+
         @Override
-        LinkEnt build();
+        public DefaultNativeNodeFullDescriptionEntBuilder setIntro(String intro) {
+             m_intro = intro;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultNativeNodeFullDescriptionEnt build() {
+            return new DefaultNativeNodeFullDescriptionEnt(this);
+        }
     
     }
 

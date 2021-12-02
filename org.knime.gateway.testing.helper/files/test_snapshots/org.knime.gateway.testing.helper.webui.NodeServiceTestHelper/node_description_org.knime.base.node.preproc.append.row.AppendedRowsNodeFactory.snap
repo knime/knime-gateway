@@ -1,0 +1,61 @@
+{
+  "description" : "This node concatenates two tables. The table at inport 0 is given as the first input table (top input port), the table at inport 1 is the second table, resp. Columns with equal names are concatenated (if the column types differ the column type is the common base type of both input column types). If one input table contains column names that the other table does not, the columns can either be filled with missing values or filtered out, i.e. they will not be in the output table. The dialog allows setting the following parameters:",
+  "dynamicInPortGroupDescriptions" : [ {
+    "description" : "Table contributing subsequent rows.",
+    "identifier" : "input",
+    "name" : "Additional table to concatenate",
+    "supportedPortTypes" : [ {
+      "optional" : false,
+      "type" : "table"
+    } ]
+  } ],
+  "inPorts" : [ {
+    "description" : "Table contributing the rows of the first part of the output table.",
+    "name" : "First table to concatenate",
+    "optional" : false,
+    "type" : "table"
+  }, {
+    "description" : "Table contributing the rows of the second part of the output table.",
+    "name" : "Second table to concatenate",
+    "optional" : false,
+    "type" : "table"
+  } ],
+  "links" : [ {
+    "text" : "KNIME E-Learning Course: Concatenation",
+    "url" : "https://www.knime.com/knime-introductory-course/chapter3/section3/concatenation"
+  } ],
+  "options" : [ {
+    "fields" : [ {
+      "description" : "Duplicate row identifiers (RowID) occurring in the second table are not appended to the output table. This option is relatively memory intensive as it needs to cache the row IDs in order to find duplicates. Furthermore a full data duplication is needed.",
+      "name" : "Skip Rows",
+      "optional" : false
+    }, {
+      "description" : "The output table will contain all rows, but duplicate row identifiers are labeled with a suffix. Similar to the \"Skip Rows\" option this method is also memory intensive.",
+      "name" : "Append suffix",
+      "optional" : false
+    }, {
+      "description" : "The node will fail during execution if duplicate row IDs are encountered. This option is efficient while checking uniqueness.",
+      "name" : "Fail",
+      "optional" : false
+    }, {
+      "description" : "Use only the columns that appear in both input tables. Any other column is ignored and won't appear in the output table.",
+      "name" : "Use intersection of columns",
+      "optional" : false
+    }, {
+      "description" : "Use all columns available in the input tables. Fill rows with missing values if they miss cells for some columns.",
+      "name" : "Use union of columns",
+      "optional" : false
+    }, {
+      "description" : "Enables hiliting between both inputs and the concatenated output table.",
+      "name" : "Enable hiliting",
+      "optional" : false
+    } ]
+  } ],
+  "outPorts" : [ {
+    "description" : "Table with rows from both tables.",
+    "name" : "Concatenated table",
+    "optional" : false,
+    "type" : "table"
+  } ],
+  "shortDescription" : "Concatenates two tables row-wise."
+}

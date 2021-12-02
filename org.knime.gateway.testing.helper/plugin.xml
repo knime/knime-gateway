@@ -24,6 +24,12 @@
             factory-class="org.knime.gateway.testing.helper.rpc.node.SingleRpcNodeFactory"
             hidden="true">
       </node>
+      <node
+              deprecated="false"
+              factory-class="org.knime.gateway.testing.helper.webui.node.DummyNodeFactory_v41"
+              hidden="true">
+      </node>
+
    </extension>
 
 </plugin>

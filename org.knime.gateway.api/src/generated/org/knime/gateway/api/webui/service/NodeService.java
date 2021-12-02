@@ -47,6 +47,8 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 /**
  * Operations on individual nodes in a workflow.
@@ -98,5 +100,16 @@ public interface NodeService extends GatewayService {
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
     String doPortRpc(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+        
+    /**
+     * Obtain the description of a given node.
+     *
+     * @param nodeFactoryKeyEnt The key identifying the node.
+     *
+     * @return the result
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.NodeDescriptionNotAvailableException A description for a given node could not be determined.
+     */
+    NativeNodeDescriptionEnt getNodeDescription(NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException;
         
 }

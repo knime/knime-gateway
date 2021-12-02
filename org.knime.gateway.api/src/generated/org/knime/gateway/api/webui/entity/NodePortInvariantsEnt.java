@@ -51,47 +51,86 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * Properties that remain the same no matter to what node a port belongs.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", ""})
+public interface NodePortInvariantsEnt extends GatewayEntity {
+
+  /**
+   * The port type.
+   */
+  public enum TypeEnum {
+    TABLE("table"),
+    
+    FLOWVARIABLE("flowVariable"),
+    
+    GENERIC("generic"),
+    
+    OTHER("other");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * The port type.
+   * @return type , never <code>null</code>
    **/
-  public String getUrl();
+  public TypeEnum getType();
 
   /**
-   * the text that the user selected to display for the link
-   * @return text 
+   * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
+   * @return otherTypeId 
    **/
-  public String getText();
+  public Integer getOtherTypeId();
+
+  /**
+   * The color of the port in case of type &#39;other&#39;.
+   * @return color 
+   **/
+  public String getColor();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface NodePortInvariantsEntBuilder extends GatewayEntityBuilder<NodePortInvariantsEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * The port type.
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
+        NodePortInvariantsEntBuilder setType(TypeEnum type);
         
         /**
-         * the text that the user selected to display for the link
+         * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
          * 
-         * @param text the property value,  
+         * @param otherTypeId the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setText(String text);
+        NodePortInvariantsEntBuilder setOtherTypeId(Integer otherTypeId);
+        
+        /**
+         * The color of the port in case of type &#39;other&#39;.
+         * 
+         * @param color the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortInvariantsEntBuilder setColor(String color);
         
         
         /**
@@ -101,7 +140,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        NodePortInvariantsEnt build();
     
     }
 

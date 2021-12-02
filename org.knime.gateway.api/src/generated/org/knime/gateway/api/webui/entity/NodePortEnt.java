@@ -92,7 +92,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
   public PortViewEnt getView();
 
   /**
-   * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absend if there is no &#39;interaction info&#39; supposed to be included.
+   * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.
    * @return portObjectVersion 
    **/
   public Integer getPortObjectVersion();
@@ -184,7 +184,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         NodePortEntBuilder setView(PortViewEnt view);
         
         /**
-         * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absend if there is no &#39;interaction info&#39; supposed to be included.
+         * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.
          * 
          * @param portObjectVersion the property value,  
          * @return this entity builder for chaining

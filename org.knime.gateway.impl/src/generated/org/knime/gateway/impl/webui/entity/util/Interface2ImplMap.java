@@ -76,6 +76,8 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEn
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
+import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
@@ -94,16 +96,20 @@ import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaPortsEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt.NativeNodeDescriptionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.NativeNodeInvariantsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptionsEnt.NodeDialogOptionsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionsEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptions_fieldsEnt.NodeDialogOptions_fieldsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptions_fieldsEnt;
+import org.knime.gateway.api.webui.entity.NodeDescriptionEnt.NodeDescriptionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
@@ -228,6 +234,9 @@ public class Interface2ImplMap {
         if(clazz == DeleteCommandEntBuilder.class) {
             return (B)new DefaultDeleteCommandEnt.DefaultDeleteCommandEntBuilder();
         }        
+        if(clazz == DynamicPortGroupDescriptionEntBuilder.class) {
+            return (B)new DefaultDynamicPortGroupDescriptionEnt.DefaultDynamicPortGroupDescriptionEntBuilder();
+        }        
         if(clazz == EventEntBuilder.class) {
             return (B)new DefaultEventEnt.DefaultEventEntBuilder();
         }        
@@ -255,6 +264,9 @@ public class Interface2ImplMap {
         if(clazz == MetaPortsEntBuilder.class) {
             return (B)new DefaultMetaPortsEnt.DefaultMetaPortsEntBuilder();
         }        
+        if(clazz == NativeNodeDescriptionEntBuilder.class) {
+            return (B)new DefaultNativeNodeDescriptionEnt.DefaultNativeNodeDescriptionEntBuilder();
+        }        
         if(clazz == NativeNodeEntBuilder.class) {
             return (B)new DefaultNativeNodeEnt.DefaultNativeNodeEntBuilder();
         }        
@@ -264,11 +276,14 @@ public class Interface2ImplMap {
         if(clazz == NodeAnnotationEntBuilder.class) {
             return (B)new DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder();
         }        
-        if(clazz == NodeDialogOptionsEntBuilder.class) {
-            return (B)new DefaultNodeDialogOptionsEnt.DefaultNodeDialogOptionsEntBuilder();
+        if(clazz == NodeDescriptionEntBuilder.class) {
+            return (B)new DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder();
         }        
-        if(clazz == NodeDialogOptions_fieldsEntBuilder.class) {
-            return (B)new DefaultNodeDialogOptions_fieldsEnt.DefaultNodeDialogOptions_fieldsEntBuilder();
+        if(clazz == NodeDialogOptionDescriptionEntBuilder.class) {
+            return (B)new DefaultNodeDialogOptionDescriptionEnt.DefaultNodeDialogOptionDescriptionEntBuilder();
+        }        
+        if(clazz == NodeDialogOptionGroupEntBuilder.class) {
+            return (B)new DefaultNodeDialogOptionGroupEnt.DefaultNodeDialogOptionGroupEntBuilder();
         }        
         if(clazz == NodeEntBuilder.class) {
             return (B)new DefaultNodeEnt.DefaultNodeEntBuilder();

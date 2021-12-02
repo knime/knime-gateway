@@ -1,0 +1,21 @@
+{
+  "description" : "Allows the manual creation of a data table. The data can entered in a spreadsheet like table.",
+  "options" : [ {
+    "fields" : [ {
+      "description" : "<b>Name</b> and <b>type</b> can be changed. A pattern can be entered that will cause a <b>missing cell</b>. Additionally, possible values of the column domain can be updated by selecting <b>Domain</b>. And, you can choose to <b>skip this column</b> entirely, i.e. it will not be included in the output table then.",
+      "name" : "Column Properties (context menu of the column header)",
+      "optional" : false
+    }, {
+      "description" : "Use this to change the naming of all row IDs. The row IDs are built of a consecutive number with a <b>prefix</b> and a <b>suffix</b>. Beside the prefix and suffix you can specify the index of the first row.",
+      "name" : "Row ID Properties (context menu of the row header)",
+      "optional" : false
+    } ]
+  } ],
+  "outPorts" : [ {
+    "description" : "Manually created table",
+    "name" : "Manually created table",
+    "optional" : false,
+    "type" : "table"
+  } ],
+  "shortDescription" : "Allows the manual creation of a data table with any number of rows and columns."
+}

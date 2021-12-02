@@ -53,6 +53,19 @@ package org.knime.gateway.api.webui.service.util;
 public final class ServiceExceptions {
 
    /**
+    * A description for a given node could not be determined.
+    */
+    public static class NodeDescriptionNotAvailableException extends Exception {
+        public NodeDescriptionNotAvailableException(String message) {
+            super(message);
+        }
+        
+        public NodeDescriptionNotAvailableException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+   /**
     * The requested node was not found.
     */
     public static class NodeNotFoundException extends Exception {

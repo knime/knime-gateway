@@ -50,36 +50,36 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
-import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 
 /**
- * Represents a single link including the URL and link text.
+ * A group of node dialog options.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultLinkEnt implements LinkEnt {
+public class DefaultNodeDialogOptionGroupEnt implements NodeDialogOptionGroupEnt {
 
-  protected String m_url;
-  protected String m_text;
+  protected String m_sectionName;
+  protected String m_sectionDescription;
+  protected java.util.List<NodeDialogOptionDescriptionEnt> m_fields;
   
-  protected DefaultLinkEnt() {
+  protected DefaultNodeDialogOptionGroupEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "Link";
+    return "NodeDialogOptionGroup";
   }
   
-  private DefaultLinkEnt(DefaultLinkEntBuilder builder) {
+  private DefaultNodeDialogOptionGroupEnt(DefaultNodeDialogOptionGroupEntBuilder builder) {
     
-    if(builder.m_url == null) {
-        throw new IllegalArgumentException("url must not be null.");
-    }
-    m_url = immutable(builder.m_url);
-    m_text = immutable(builder.m_text);
+    m_sectionName = immutable(builder.m_sectionName);
+    m_sectionDescription = immutable(builder.m_sectionDescription);
+    m_fields = immutable(builder.m_fields);
   }
   
    /**
@@ -96,8 +96,8 @@ public class DefaultLinkEnt implements LinkEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultLinkEnt ent = (DefaultLinkEnt)o;
-        return Objects.equals(m_url, ent.m_url) && Objects.equals(m_text, ent.m_text);
+        DefaultNodeDialogOptionGroupEnt ent = (DefaultNodeDialogOptionGroupEnt)o;
+        return Objects.equals(m_sectionName, ent.m_sectionName) && Objects.equals(m_sectionDescription, ent.m_sectionDescription) && Objects.equals(m_fields, ent.m_fields);
     }
 
 
@@ -108,52 +108,62 @@ public class DefaultLinkEnt implements LinkEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_url)
-               .append(m_text)
+               .append(m_sectionName)
+               .append(m_sectionDescription)
+               .append(m_fields)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getUrl() {
-        return m_url;
+  public String getSectionName() {
+        return m_sectionName;
   }
     
   @Override
-  public String getText() {
-        return m_text;
+  public String getSectionDescription() {
+        return m_sectionDescription;
+  }
+    
+  @Override
+  public java.util.List<NodeDialogOptionDescriptionEnt> getFields() {
+        return m_fields;
   }
     
   
-    public static class DefaultLinkEntBuilder implements LinkEntBuilder {
+    public static class DefaultNodeDialogOptionGroupEntBuilder implements NodeDialogOptionGroupEntBuilder {
     
-        public DefaultLinkEntBuilder(){
+        public DefaultNodeDialogOptionGroupEntBuilder(){
             
         }
     
-        private String m_url;
-        private String m_text;
+        private String m_sectionName;
+        private String m_sectionDescription;
+        private java.util.List<NodeDialogOptionDescriptionEnt> m_fields;
 
         @Override
-        public DefaultLinkEntBuilder setUrl(String url) {
-             if(url == null) {
-                 throw new IllegalArgumentException("url must not be null.");
-             }
-             m_url = url;
+        public DefaultNodeDialogOptionGroupEntBuilder setSectionName(String sectionName) {
+             m_sectionName = sectionName;
              return this;
         }
 
         @Override
-        public DefaultLinkEntBuilder setText(String text) {
-             m_text = text;
+        public DefaultNodeDialogOptionGroupEntBuilder setSectionDescription(String sectionDescription) {
+             m_sectionDescription = sectionDescription;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeDialogOptionGroupEntBuilder setFields(java.util.List<NodeDialogOptionDescriptionEnt> fields) {
+             m_fields = fields;
              return this;
         }
 
         
         @Override
-        public DefaultLinkEnt build() {
-            return new DefaultLinkEnt(this);
+        public DefaultNodeDialogOptionGroupEnt build() {
+            return new DefaultNodeDialogOptionGroupEnt(this);
         }
     
     }

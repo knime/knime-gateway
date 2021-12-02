@@ -247,6 +247,23 @@ public final class DefaultServiceUtil {
      */
     public static NodeID createAndAddNode(final String factoryClassName, final String factorySettings, final Integer x,
         final Integer y, final WorkflowManager wfm, final boolean centerNode) throws IOException {
+        NodeFactory<NodeModel> nodeFactory = getNodeFactory(factoryClassName, factorySettings);
+        NodeID nodeID = wfm.createAndAddNode(nodeFactory);
+        NodeUIInformation info =
+                NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(centerNode).build();
+        wfm.getNodeContainer(nodeID).setUIInformation(info);
+        return nodeID;
+    }
+
+    /**
+     * Obtain a {@link NodeFactory} instance for a node identified by its class name and settings string.
+     * @param factoryClassName The class name of the node factory (e.g. `org.knime.[...].MyNodeFactory`)
+     * @param factorySettings Additional string to identify node, e.g. for dynamic JS nodes. May be null.
+     * @return A {@link NodeFactory} instance.
+     * @throws IOException If node factory settings could not be read.
+     * @throws NoSuchElementException If no node is found for this factory class name.
+     */
+    public static NodeFactory<NodeModel> getNodeFactory(String factoryClassName, String factorySettings) throws IOException, NoSuchElementException {
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = FileNativeNodeContainerPersistor.loadNodeFactory(factoryClassName);
@@ -272,11 +289,7 @@ public final class DefaultServiceUtil {
         } else {
             //
         }
-        NodeID nodeID = wfm.createAndAddNode(nodeFactory);
-        NodeUIInformation info =
-            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(centerNode).build();
-        wfm.getNodeContainer(nodeID).setUIInformation(info);
-        return nodeID;
+        return nodeFactory;
     }
 
     /**

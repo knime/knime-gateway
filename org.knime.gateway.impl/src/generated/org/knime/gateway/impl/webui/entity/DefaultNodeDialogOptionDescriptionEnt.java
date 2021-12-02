@@ -51,35 +51,40 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
 /**
- * Represents a single link including the URL and link text.
+ * Description of a single node dialog option.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultLinkEnt implements LinkEnt {
+public class DefaultNodeDialogOptionDescriptionEnt implements NodeDialogOptionDescriptionEnt {
 
-  protected String m_url;
-  protected String m_text;
+  protected String m_name;
+  protected String m_description;
+  protected Boolean m_optional;
   
-  protected DefaultLinkEnt() {
+  protected DefaultNodeDialogOptionDescriptionEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "Link";
+    return "NodeDialogOptionDescription";
   }
   
-  private DefaultLinkEnt(DefaultLinkEntBuilder builder) {
+  private DefaultNodeDialogOptionDescriptionEnt(DefaultNodeDialogOptionDescriptionEntBuilder builder) {
     
-    if(builder.m_url == null) {
-        throw new IllegalArgumentException("url must not be null.");
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
     }
-    m_url = immutable(builder.m_url);
-    m_text = immutable(builder.m_text);
+    m_name = immutable(builder.m_name);
+    if(builder.m_description == null) {
+        throw new IllegalArgumentException("description must not be null.");
+    }
+    m_description = immutable(builder.m_description);
+    m_optional = immutable(builder.m_optional);
   }
   
    /**
@@ -96,8 +101,8 @@ public class DefaultLinkEnt implements LinkEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultLinkEnt ent = (DefaultLinkEnt)o;
-        return Objects.equals(m_url, ent.m_url) && Objects.equals(m_text, ent.m_text);
+        DefaultNodeDialogOptionDescriptionEnt ent = (DefaultNodeDialogOptionDescriptionEnt)o;
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_optional, ent.m_optional);
     }
 
 
@@ -108,52 +113,68 @@ public class DefaultLinkEnt implements LinkEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_url)
-               .append(m_text)
+               .append(m_name)
+               .append(m_description)
+               .append(m_optional)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getUrl() {
-        return m_url;
+  public String getName() {
+        return m_name;
   }
     
   @Override
-  public String getText() {
-        return m_text;
+  public String getDescription() {
+        return m_description;
+  }
+    
+  @Override
+  public Boolean isOptional() {
+        return m_optional;
   }
     
   
-    public static class DefaultLinkEntBuilder implements LinkEntBuilder {
+    public static class DefaultNodeDialogOptionDescriptionEntBuilder implements NodeDialogOptionDescriptionEntBuilder {
     
-        public DefaultLinkEntBuilder(){
+        public DefaultNodeDialogOptionDescriptionEntBuilder(){
             
         }
     
-        private String m_url;
-        private String m_text;
+        private String m_name;
+        private String m_description;
+        private Boolean m_optional;
 
         @Override
-        public DefaultLinkEntBuilder setUrl(String url) {
-             if(url == null) {
-                 throw new IllegalArgumentException("url must not be null.");
+        public DefaultNodeDialogOptionDescriptionEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
              }
-             m_url = url;
+             m_name = name;
              return this;
         }
 
         @Override
-        public DefaultLinkEntBuilder setText(String text) {
-             m_text = text;
+        public DefaultNodeDialogOptionDescriptionEntBuilder setDescription(String description) {
+             if(description == null) {
+                 throw new IllegalArgumentException("description must not be null.");
+             }
+             m_description = description;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeDialogOptionDescriptionEntBuilder setOptional(Boolean optional) {
+             m_optional = optional;
              return this;
         }
 
         
         @Override
-        public DefaultLinkEnt build() {
-            return new DefaultLinkEnt(this);
+        public DefaultNodeDialogOptionDescriptionEnt build() {
+            return new DefaultNodeDialogOptionDescriptionEnt(this);
         }
     
     }

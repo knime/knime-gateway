@@ -8,4 +8,13 @@
       </TestcaseCollector>
    </extension>
 
+   <extension
+           point="org.knime.workbench.repository.nodes">
+      <node
+              deprecated="false"
+              factory-class="org.knime.gateway.impl.webui.service.node.DummyNodeFactory_v41"
+              hidden="true">
+      </node>
+   </extension>
+
 </fragment>

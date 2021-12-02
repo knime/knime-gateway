@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./icon.png" type="Manipulator" xmlns="http://knime.org/node/v4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+    <name>Dummy Node</name>
+    <shortDescription>short description content</shortDescription>
+    <fullDescription>
+        <intro>
+            intro content <b>markup</b>
+            <h4>table</h4>
+
+            <table>
+                <tr>
+                    <th>table head 1</th>
+                    <th>table head 2</th>
+                </tr>
+                <tr>
+                    <td>cell 1.1</td>
+                    <td>cell 1.2</td>
+                </tr>
+                <tr>
+                    <td>cell 2.1</td>
+                    <td>cell 2.2</td>
+                </tr>
+            </table>
+        </intro>
+
+        <tab name="option group one name">
+            <description>option group one description</description>
+            <option name="option one name">
+                option one description <i>markup</i> more text
+            </option>
+            <option name="option two name">
+                option two description
+            </option>
+        </tab>
+
+        <tab name="option group two name">
+            <option name="option three name">...</option>
+            <option name="option four name">...</option>
+        </tab>
+
+        <link href="https://www.knime.com/about#1">
+            link one description
+        </link>
+        <link href="https://www.knime.com/about#2">
+            link two description
+        </link>
+    </fullDescription>
+
+    <interactiveView name="interactive view name">
+        interactive view <i>description</i>.
+        <ol>
+            <li>foo</li>
+            <li>bar</li>
+        </ol>
+    </interactiveView>
+
+    <ports>
+        <inPort index="0" name="static in port one name">static in port one description</inPort>
+        <inPort index="1" name="static in port two name">static in port two description</inPort>
+        <dynInPort insert-before="2" name="dynamic in port group one name"
+                   group-identifier="dynamic in port group one group identifier">
+            dynamic in port group one description with <i>markup</i>
+        </dynInPort>
+        <dynInPort insert-before="2" name="dynamic in port group two name"
+                   group-identifier="dynamic in port group two group identifier">
+            dynamic in port group two description with <i>markup</i>
+        </dynInPort>
+        <outPort index="0" name="static out port one name">static out port one description</outPort>
+        <outPort index="1" name="static out port two name">static out port two description</outPort>
+        <dynOutPort insert-before="2" name="dynamic out port group one name"
+                    group-identifier="dynamic out port group one group identifier">
+            <p>
+                dynamic out port group one description with
+                <ul>
+                    <li>markup</li>
+                </ul>
+            </p>
+        </dynOutPort>
+    </ports>
+
+    <views>
+        <view name="view one name" index="0">view one description with <b>markup</b></view>
+        <view name="view two name" index="1">view two description with <b>markup</b></view>
+    </views>
+
+</knimeNode>

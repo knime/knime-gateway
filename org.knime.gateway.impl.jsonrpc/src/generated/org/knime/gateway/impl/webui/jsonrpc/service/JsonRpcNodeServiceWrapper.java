@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -113,6 +115,21 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     })
     public String doPortRpc(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="body") String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.doPortRpc(projectId, workflowId, nodeId, portIdx, body);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getNodeDescription")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeDescriptionNotAvailableException.class, code = -32600,
+            data = "NodeDescriptionNotAvailableException" /*per convention the data property contains the exception name*/)
+    })
+    public NativeNodeDescriptionEnt getNodeDescription(@JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
+        return m_service.getNodeDescription(nodeFactoryKeyEnt);    
     }
 
 }

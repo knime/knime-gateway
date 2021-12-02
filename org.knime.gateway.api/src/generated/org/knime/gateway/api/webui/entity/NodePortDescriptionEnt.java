@@ -67,7 +67,7 @@ public interface NodePortDescriptionEnt extends GatewayEntity, NodePortTemplateE
   public String getDescription();
 
   /**
-   * A human-readable name for the port type.
+   * A human-readable name for the port type. May contain HTML markup tags.
    * @return typeName 
    **/
   public String getTypeName();
@@ -127,7 +127,7 @@ public interface NodePortDescriptionEnt extends GatewayEntity, NodePortTemplateE
         NodePortDescriptionEntBuilder setDescription(String description);
         
         /**
-         * A human-readable name for the port type.
+         * A human-readable name for the port type. May contain HTML markup tags.
          * 
          * @param typeName the property value,  
          * @return this entity builder for chaining

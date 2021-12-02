@@ -66,7 +66,7 @@ public interface NodeViewDescriptionEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * The actual description of the view.
+   * The actual description of the view. May contain HTML markup tags.
    * @return description 
    **/
   public String getDescription();
@@ -86,7 +86,7 @@ public interface NodeViewDescriptionEnt extends GatewayEntity {
         NodeViewDescriptionEntBuilder setName(String name);
         
         /**
-         * The actual description of the view.
+         * The actual description of the view. May contain HTML markup tags.
          * 
          * @param description the property value,  
          * @return this entity builder for chaining

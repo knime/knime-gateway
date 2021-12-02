@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,47 +52,61 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * A group of node dialog options.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+public interface NodeDialogOptionGroupEnt extends GatewayEntity {
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * The name of the dialog option group.
+   * @return sectionName 
    **/
-  public String getUrl();
+  public String getSectionName();
 
   /**
-   * the text that the user selected to display for the link
-   * @return text 
+   * The description of the dialog option group.
+   * @return sectionDescription 
    **/
-  public String getText();
+  public String getSectionDescription();
+
+  /**
+   * Get fields
+   * @return fields 
+   **/
+  public java.util.List<NodeDialogOptionDescriptionEnt> getFields();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface NodeDialogOptionGroupEntBuilder extends GatewayEntityBuilder<NodeDialogOptionGroupEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * The name of the dialog option group.
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param sectionName the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
+        NodeDialogOptionGroupEntBuilder setSectionName(String sectionName);
         
         /**
-         * the text that the user selected to display for the link
+         * The description of the dialog option group.
          * 
-         * @param text the property value,  
+         * @param sectionDescription the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setText(String text);
+        NodeDialogOptionGroupEntBuilder setSectionDescription(String sectionDescription);
+        
+        /**
+   		 * Set fields
+         * 
+         * @param fields the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeDialogOptionGroupEntBuilder setFields(java.util.List<NodeDialogOptionDescriptionEnt> fields);
         
         
         /**
@@ -101,7 +116,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        NodeDialogOptionGroupEnt build();
     
     }
 

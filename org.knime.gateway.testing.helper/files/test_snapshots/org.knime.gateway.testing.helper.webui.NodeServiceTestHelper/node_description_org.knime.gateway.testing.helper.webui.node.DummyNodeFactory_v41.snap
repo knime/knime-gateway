@@ -1,0 +1,82 @@
+{
+  "description" : "intro content <b>markup</b> <h4>table</h4> <table> <tr> <th>table head 1</th> <th>table head 2</th> </tr> <tr> <td>cell 1.1</td> <td>cell 1.2</td> </tr> <tr> <td>cell 2.1</td> <td>cell 2.2</td> </tr> </table>",
+  "dynamicInPortGroupDescriptions" : [ {
+    "description" : "dynamic in port group one description with <i>markup</i>",
+    "identifier" : "dynamic in port group one group identifier",
+    "name" : "dynamic in port group one name"
+  }, {
+    "description" : "dynamic in port group two description with <i>markup</i>",
+    "identifier" : "dynamic in port group two group identifier",
+    "name" : "dynamic in port group two name"
+  } ],
+  "dynamicOutPortGroupDescriptions" : [ {
+    "description" : "<p> dynamic out port group one description with <ul> <li>markup</li> </ul> </p>",
+    "identifier" : "dynamic out port group one group identifier",
+    "name" : "dynamic out port group one name"
+  } ],
+  "inPorts" : [ {
+    "description" : "static in port one description",
+    "name" : "static in port one name",
+    "optional" : false,
+    "type" : "table"
+  }, {
+    "description" : "static in port two description",
+    "name" : "static in port two name",
+    "optional" : false,
+    "type" : "table"
+  } ],
+  "interactiveView" : {
+    "description" : "interactive view <i>description</i>. <ol> <li>foo</li> <li>bar</li> </ol>",
+    "name" : "interactive view name"
+  },
+  "links" : [ {
+    "text" : "link one description",
+    "url" : "https://www.knime.com/about#1"
+  }, {
+    "text" : "link two description",
+    "url" : "https://www.knime.com/about#2"
+  } ],
+  "options" : [ {
+    "fields" : [ {
+      "description" : "option one description <i>markup</i> more text",
+      "name" : "option one name",
+      "optional" : false
+    }, {
+      "description" : "option two description",
+      "name" : "option two name",
+      "optional" : false
+    } ],
+    "sectionDescription" : "option group one description",
+    "sectionName" : "option group one name"
+  }, {
+    "fields" : [ {
+      "description" : "...",
+      "name" : "option three name",
+      "optional" : false
+    }, {
+      "description" : "...",
+      "name" : "option four name",
+      "optional" : false
+    } ],
+    "sectionName" : "option group two name"
+  } ],
+  "outPorts" : [ {
+    "description" : "static out port one description",
+    "name" : "static out port one name",
+    "optional" : false,
+    "type" : "table"
+  }, {
+    "description" : "static out port two description",
+    "name" : "static out port two name",
+    "optional" : false,
+    "type" : "table"
+  } ],
+  "shortDescription" : "short description content",
+  "views" : [ {
+    "description" : "view one description with <b>markup</b>",
+    "name" : "view one name"
+  }, {
+    "description" : "view two description with <b>markup</b>",
+    "name" : "view two name"
+  } ]
+}

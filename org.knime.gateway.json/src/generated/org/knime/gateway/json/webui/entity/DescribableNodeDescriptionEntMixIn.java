@@ -44,19 +44,19 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
-import org.knime.gateway.json.webui.entity.NodeDescriptionEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt.DefaultComponentNodeDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.DescribableNodeDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultDescribableNodeDescriptionEnt.DefaultDescribableNodeDescriptionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -64,45 +64,49 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt.De
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultComponentNodeDescriptionEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescriptionEnt {
+@JsonDeserialize(builder=DefaultDescribableNodeDescriptionEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", ""})
+public interface DescribableNodeDescriptionEntMixIn extends DescribableNodeDescriptionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
-    @Override
     @JsonProperty("description")
     public String getDescription();
     
     @Override
-    @JsonProperty("options")
-    public java.util.List<NodeDialogOptionGroupEnt> getOptions();
+    @JsonProperty("ungroupedOptions")
+    public java.util.List<NodeDialogOptionDescriptionEnt> getUngroupedOptions();
+    
+    @Override
+    @JsonProperty("optionGroups")
+    public java.util.List<NodeDialogOptionGroupEnt> getOptionGroups();
     
     @Override
     @JsonProperty("views")
     public java.util.List<NodeViewDescriptionEnt> getViews();
     
     @Override
+    @JsonProperty("interactiveView")
+    public NodeViewDescriptionEnt getInteractiveView();
+    
+    @Override
     @JsonProperty("inPorts")
     public java.util.List<NodePortDescriptionEnt> getInPorts();
     
     @Override
+    @JsonProperty("dynamicInPortGroupDescriptions")
+    public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions();
+    
+    @Override
     @JsonProperty("outPorts")
     public java.util.List<NodePortDescriptionEnt> getOutPorts();
+    
+    @Override
+    @JsonProperty("dynamicOutPortGroupDescriptions")
+    public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicOutPortGroupDescriptions();
     
 
     /**
@@ -112,42 +116,46 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentNodeDescriptionEntMixInBuilder extends ComponentNodeDescriptionEntBuilder {
+    public static interface DescribableNodeDescriptionEntMixInBuilder extends DescribableNodeDescriptionEntBuilder {
     
         @Override
-        public ComponentNodeDescriptionEntMixIn build();
+        public DescribableNodeDescriptionEntMixIn build();
     
-        @Override
-        @JsonProperty("name")
-        public ComponentNodeDescriptionEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("type")
-        public ComponentNodeDescriptionEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public ComponentNodeDescriptionEntMixInBuilder setIcon(final String icon);
-        
         @Override
         @JsonProperty("description")
-        public ComponentNodeDescriptionEntMixInBuilder setDescription(final String description);
+        public DescribableNodeDescriptionEntMixInBuilder setDescription(final String description);
         
         @Override
-        @JsonProperty("options")
-        public ComponentNodeDescriptionEntMixInBuilder setOptions(final java.util.List<NodeDialogOptionGroupEnt> options);
+        @JsonProperty("ungroupedOptions")
+        public DescribableNodeDescriptionEntMixInBuilder setUngroupedOptions(final java.util.List<NodeDialogOptionDescriptionEnt> ungroupedOptions);
+        
+        @Override
+        @JsonProperty("optionGroups")
+        public DescribableNodeDescriptionEntMixInBuilder setOptionGroups(final java.util.List<NodeDialogOptionGroupEnt> optionGroups);
         
         @Override
         @JsonProperty("views")
-        public ComponentNodeDescriptionEntMixInBuilder setViews(final java.util.List<NodeViewDescriptionEnt> views);
+        public DescribableNodeDescriptionEntMixInBuilder setViews(final java.util.List<NodeViewDescriptionEnt> views);
+        
+        @Override
+        @JsonProperty("interactiveView")
+        public DescribableNodeDescriptionEntMixInBuilder setInteractiveView(final NodeViewDescriptionEnt interactiveView);
         
         @Override
         @JsonProperty("inPorts")
-        public ComponentNodeDescriptionEntMixInBuilder setInPorts(final java.util.List<NodePortDescriptionEnt> inPorts);
+        public DescribableNodeDescriptionEntMixInBuilder setInPorts(final java.util.List<NodePortDescriptionEnt> inPorts);
+        
+        @Override
+        @JsonProperty("dynamicInPortGroupDescriptions")
+        public DescribableNodeDescriptionEntMixInBuilder setDynamicInPortGroupDescriptions(final java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions);
         
         @Override
         @JsonProperty("outPorts")
-        public ComponentNodeDescriptionEntMixInBuilder setOutPorts(final java.util.List<NodePortDescriptionEnt> outPorts);
+        public DescribableNodeDescriptionEntMixInBuilder setOutPorts(final java.util.List<NodePortDescriptionEnt> outPorts);
+        
+        @Override
+        @JsonProperty("dynamicOutPortGroupDescriptions")
+        public DescribableNodeDescriptionEntMixInBuilder setDynamicOutPortGroupDescriptions(final java.util.List<DynamicPortGroupDescriptionEnt> dynamicOutPortGroupDescriptions);
         
     }
 

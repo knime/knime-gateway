@@ -1,0 +1,171 @@
+{
+  "description" : "<p>A bar chart based on the NVD3 library.</p> <p> The node supports custom CSS styling. You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' in the node configuration dialog. You will find the list of available classes and their description on our <a href=\"https://knime.com/css-styling\">documentation page</a>. </p>",
+  "inPorts" : [ {
+    "description" : "Data table containing the categories and values to be plotted in a bar chart.",
+    "name" : "Display data",
+    "optional" : false,
+    "type" : "table"
+  }, {
+    "description" : "Data table containing one column with the column names of table which has in addition a color assigned. <b>Note:</b> for the \"Occurrence Count\" aggregation method the column name in the color table should be also \"Occurrence Count\".",
+    "name" : "Bar color data",
+    "optional" : true,
+    "type" : "table"
+  } ],
+  "interactiveView" : {
+    "description" : "A bar chart based on the NVD3 library.",
+    "name" : "Grouped Bar Chart"
+  },
+  "options" : [ {
+    "fields" : [ {
+      "description" : "Select the column that contains the category values.",
+      "name" : "Category Column",
+      "optional" : false
+    }, {
+      "description" : "When checked the bars are sorted alphabetically with respect to their label derived from the category column. If not checked the order is derived from the first appearance of the value in the input table.",
+      "name" : "Sort bars alphabetically",
+      "optional" : false
+    }, {
+      "description" : "Select the aggregation method used on the selected frequency columns. In case of <i>Occurence Count</i> the occurence of the unique values of the selected category columns are determined.",
+      "name" : "Aggregation Method",
+      "optional" : false
+    }, {
+      "description" : "Select the columns with frequencies for which you wish to plot bars. <i>Note:</i> Missing values in the frequency column will be ignored with a corresponding warning message.<br/> If, after aggregation, some bars or entire categories contain only missing values, they will be excluded from the view and a warning message will be raised.",
+      "name" : "Frequency columns",
+      "optional" : false
+    }, {
+      "description" : "Process the table in the memory. Requires more memory but is faster since the table needs not to be sorted prior aggregation. The memory consumption depends on the number of unique groups and the chosen aggregation method.",
+      "name" : "Process in memory",
+      "optional" : false
+    }, {
+      "description" : "Check to get the detailed warning messages in the view about missing values and enable 'Missing values' category. If not checked, missing values will be ignored without raising a warning. 'Missing values' category will not be present.",
+      "name" : "Report on missing values",
+      "optional" : false
+    }, {
+      "description" : "If checked, missing values in the category column will form a separate class named \"Missing values\". Otherwise they will be ignored.",
+      "name" : "Include 'Missing values' category",
+      "optional" : false
+    } ],
+    "sectionName" : "Options"
+  }, {
+    "fields" : [ {
+      "description" : "The chart title.",
+      "name" : "Title",
+      "optional" : true
+    }, {
+      "description" : "The chart subtitle.",
+      "name" : "Subtitle",
+      "optional" : true
+    }, {
+      "description" : "The label used for the category axis.",
+      "name" : "Category-axis label",
+      "optional" : true
+    }, {
+      "description" : "The label used for the frequency axis.",
+      "name" : "Frequency-axis label",
+      "optional" : true
+    }, {
+      "description" : "Select how to display the bar chart columns. In <i>Grouped</i> chart one bar indicates a separate value from a column, while in <i>Stacked</i> chart a bar is a stack of all values in a column.",
+      "name" : "Chart type",
+      "optional" : false
+    }, {
+      "description" : "When checked, the bar chart category legend is rendered in a staggered fashion to allow more room for readability for long category names.",
+      "name" : "Stagger labels",
+      "optional" : false
+    }, {
+      "description" : "When checked, the bar chart legend is displayed.",
+      "name" : "Display legend",
+      "optional" : false
+    }, {
+      "description" : "When checked, a rich tooltip is displayed when hovering over the individual bars of the bar chart.",
+      "name" : "Display rich tooltips",
+      "optional" : false
+    }, {
+      "description" : "Check to plot the bar chart horizontally. By default bar chart is plotted with vertical bars.",
+      "name" : "Plot horizontal bar chart",
+      "optional" : false
+    }, {
+      "description" : "Check to display a button which switches the view into fullscreen mode. The button is only available in the KNIME WebPortal.",
+      "name" : "Display fullscreen button",
+      "optional" : false
+    }, {
+      "description" : "Check if the maximum of the Y-Axis should be displayed.",
+      "name" : "Show maximum value",
+      "optional" : false
+    }, {
+      "description" : "Settings for SVG image generation.",
+      "name" : "Image",
+      "optional" : false
+    }, {
+      "description" : "If checked, warning messages will be displayed in the view when they occur.",
+      "name" : "Show warnings in view",
+      "optional" : false
+    } ],
+    "sectionName" : "General Plot Options"
+  }, {
+    "fields" : [ {
+      "description" : "Check to enable controls in the chart.",
+      "name" : "Enable view controls",
+      "optional" : false
+    }, {
+      "description" : "Check to enable the display a control to choose grouped or stacked display of the bars.",
+      "name" : "Enable Grouped/Stacked Chooser",
+      "optional" : false
+    }, {
+      "description" : "Check to enable interactive toggling between a horizontal or vertical bar chart.",
+      "name" : "Enable plot orientation change",
+      "optional" : false
+    }, {
+      "description" : "Check to enable editing whether or not the labels for the category axis are rendered staggered.",
+      "name" : "Enable stagger label change",
+      "optional" : false
+    }, {
+      "description" : "Check to enable the editing of the title within the view.",
+      "name" : "Enable Title editing",
+      "optional" : false
+    }, {
+      "description" : "Check to enable the editing of the subtitle within the view.",
+      "name" : "Enable Subtitle editing",
+      "optional" : false
+    }, {
+      "description" : "Check to enable the editing of the axis titles within the view.",
+      "name" : "Enable Axis title editing",
+      "optional" : false
+    }, {
+      "description" : "Check to enable to show and hide 'Missing values' category in the view.",
+      "name" : "Enable switching 'Missing values' category",
+      "optional" : false
+    }, {
+      "description" : "Check to enable to show and hide maximum value on the y-axis.",
+      "name" : "Enable showing maximum value on y-axis",
+      "optional" : false
+    } ],
+    "sectionName" : "Control Options"
+  }, {
+    "fields" : [ {
+      "description" : "If checked a separate column containing checkboxes is rendered in the view.",
+      "name" : "Enable selection",
+      "optional" : false
+    }, {
+      "description" : "If checked, the view reacts on notifications from other interactive views that the selection has been changed. See also \"Publish selection events\".",
+      "name" : "Subscribe to selection events",
+      "optional" : false
+    }, {
+      "description" : "If checked, notifies other interactive views when user changes the selection in the current view. See also \"Subscribe to selection events\".",
+      "name" : "Publish selection events",
+      "optional" : false
+    }, {
+      "description" : "Displays a button to clear current selection.",
+      "name" : "Display clear selection button",
+      "optional" : false
+    } ],
+    "sectionDescription" : "The JavaScript bar chart view allows for several ways of interactivity. Please use the options below to configure which features will be activated on the view and further configuration of interactive properties.",
+    "sectionName" : "Interactivity"
+  } ],
+  "outPorts" : [ {
+    "description" : "SVG image of the bar chart.",
+    "name" : "Bar chart image",
+    "optional" : false,
+    "type" : "other"
+  } ],
+  "shortDescription" : "A bar chart based on the NVD3 library."
+}

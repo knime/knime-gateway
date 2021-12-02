@@ -42,67 +42,71 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionGroupEnt.DefaultNodeDialogOptionGroupEntBuilder;
 
 /**
- * Represents a single link including the URL and link text.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
 
+@JsonDeserialize(builder=DefaultNodeDialogOptionGroupEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface NodeDialogOptionGroupEntMixIn extends NodeDialogOptionGroupEnt {
 
-  /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
-   **/
-  public String getUrl();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-  /**
-   * the text that the user selected to display for the link
-   * @return text 
-   **/
-  public String getText();
-
+    @Override
+    @JsonProperty("sectionName")
+    public String getSectionName();
+    
+    @Override
+    @JsonProperty("sectionDescription")
+    public String getSectionDescription();
+    
+    @Override
+    @JsonProperty("fields")
+    public java.util.List<NodeDialogOptionDescriptionEnt> getFields();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
 
-        /**
-         * the uniform resource locator the user has specified
-         * 
-         * @param url the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        LinkEntBuilder setUrl(String url);
-        
-        /**
-         * the text that the user selected to display for the link
-         * 
-         * @param text the property value,  
-         * @return this entity builder for chaining
-         */
-        LinkEntBuilder setText(String text);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        LinkEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NodeDialogOptionGroupEntMixInBuilder extends NodeDialogOptionGroupEntBuilder {
     
+        @Override
+        public NodeDialogOptionGroupEntMixIn build();
+    
+        @Override
+        @JsonProperty("sectionName")
+        public NodeDialogOptionGroupEntMixInBuilder setSectionName(final String sectionName);
+        
+        @Override
+        @JsonProperty("sectionDescription")
+        public NodeDialogOptionGroupEntMixInBuilder setSectionDescription(final String sectionDescription);
+        
+        @Override
+        @JsonProperty("fields")
+        public NodeDialogOptionGroupEntMixInBuilder setFields(final java.util.List<NodeDialogOptionDescriptionEnt> fields);
+        
     }
 
+
 }
+

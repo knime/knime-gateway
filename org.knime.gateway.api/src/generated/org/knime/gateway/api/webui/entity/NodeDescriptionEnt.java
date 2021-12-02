@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
+import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,47 +54,89 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * Node description properties that are common to all kinds of nodes. This is static information in the sense that it does not depend on a concrete node instance in a workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+public interface NodeDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
+   * @return description 
    **/
-  public String getUrl();
+  public String getDescription();
 
   /**
-   * the text that the user selected to display for the link
-   * @return text 
+   * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
+   * @return options 
    **/
-  public String getText();
+  public java.util.List<NodeDialogOptionGroupEnt> getOptions();
+
+  /**
+   * Descriptions for the node views.
+   * @return views 
+   **/
+  public java.util.List<NodeViewDescriptionEnt> getViews();
+
+  /**
+   * Descriptions of static input ports.
+   * @return inPorts 
+   **/
+  public java.util.List<NodePortDescriptionEnt> getInPorts();
+
+  /**
+   * Descriptions of static output ports.
+   * @return outPorts 
+   **/
+  public java.util.List<NodePortDescriptionEnt> getOutPorts();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface NodeDescriptionEntBuilder extends GatewayEntityBuilder<NodeDescriptionEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param description the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
+        NodeDescriptionEntBuilder setDescription(String description);
         
         /**
-         * the text that the user selected to display for the link
+         * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
          * 
-         * @param text the property value,  
+         * @param options the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setText(String text);
+        NodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options);
+        
+        /**
+         * Descriptions for the node views.
+         * 
+         * @param views the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeDescriptionEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views);
+        
+        /**
+         * Descriptions of static input ports.
+         * 
+         * @param inPorts the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeDescriptionEntBuilder setInPorts(java.util.List<NodePortDescriptionEnt> inPorts);
+        
+        /**
+         * Descriptions of static output ports.
+         * 
+         * @param outPorts the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts);
         
         
         /**
@@ -101,7 +146,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        NodeDescriptionEnt build();
     
     }
 

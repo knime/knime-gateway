@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,47 +52,71 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a single link including the URL and link text.
+ * Properties shared between NodePort and NodePortDescription
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkEnt extends GatewayEntity {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", ""})
+public interface NodePortAndDescriptionEnt extends GatewayEntity, NodePortInvariantsEnt {
 
 
   /**
-   * the uniform resource locator the user has specified
-   * @return url , never <code>null</code>
+   * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
+   * @return name 
    **/
-  public String getUrl();
+  public String getName();
 
   /**
-   * the text that the user selected to display for the link
-   * @return text 
+   * Whether it&#39;s a optional port or not.
+   * @return optional 
    **/
-  public String getText();
+  public Boolean isOptional();
 
 
     /**
      * The builder for the entity.
      */
-    public interface LinkEntBuilder extends GatewayEntityBuilder<LinkEnt> {
+    public interface NodePortAndDescriptionEntBuilder extends GatewayEntityBuilder<NodePortAndDescriptionEnt> {
 
         /**
-         * the uniform resource locator the user has specified
+         * The port type.
          * 
-         * @param url the property value, NOT <code>null</code>! 
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setUrl(String url);
+        NodePortAndDescriptionEntBuilder setType(TypeEnum type);
         
         /**
-         * the text that the user selected to display for the link
+         * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
          * 
-         * @param text the property value,  
+         * @param otherTypeId the property value,  
          * @return this entity builder for chaining
          */
-        LinkEntBuilder setText(String text);
+        NodePortAndDescriptionEntBuilder setOtherTypeId(Integer otherTypeId);
+        
+        /**
+         * The color of the port in case of type &#39;other&#39;.
+         * 
+         * @param color the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortAndDescriptionEntBuilder setColor(String color);
+        
+        /**
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortAndDescriptionEntBuilder setName(String name);
+        
+        /**
+         * Whether it&#39;s a optional port or not.
+         * 
+         * @param optional the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortAndDescriptionEntBuilder setOptional(Boolean optional);
         
         
         /**
@@ -101,7 +126,7 @@ public interface LinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkEnt build();
+        NodePortAndDescriptionEnt build();
     
     }
 
