@@ -120,8 +120,8 @@ public class WorkflowChangesListener implements Closeable {
         m_isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         m_connectionListeners = m_isInStreamingMode ? new HashMap<>() : null;
 
-        m_workflowListener = startListening();
         m_changes = new WorkflowChanges(wfm, true);
+        m_workflowListener = startListening();
     }
 
     /**
