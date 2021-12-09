@@ -171,8 +171,8 @@ import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt.NodePortInvariantsEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
@@ -342,9 +342,9 @@ public final class EntityBuilderUtil {
             .setComponent(false)//
             .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase()))//
             .setInPorts(
-                buildNodePortInvariantEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
+                buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
             .setOutPorts(
-                buildNodePortInvariantEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
+                buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
             .setIcon(createIconDataURL(factory))//
             .setNodeFactory(buildNodeFactoryKeyEnt(factory)).build();
     }
@@ -366,11 +366,15 @@ public final class EntityBuilderUtil {
         return nodeFactoryKeyBuilder.build();
     }
 
-    private static List<NodePortInvariantsEnt> buildNodePortInvariantEnts(final Stream<PortType> ptypes) {
+    private static List<NodePortTemplateEnt> buildNodePortTemplateEnts(final Stream<PortType> ptypes) {
         return ptypes.map(ptype -> {
-            NodePortInvariantsEnt.TypeEnum typeEnt = getNodePortInvariantsEntType(ptype);
-            return builder(NodePortInvariantsEntBuilder.class).setType(typeEnt)
-                .setColor(getPortTypeColor(typeEnt, ptype)).build();
+            NodePortTemplateEnt.TypeEnum typeEnt = getNodePortTemplateEntType(ptype);
+            return builder(NodePortTemplateEntBuilder.class) //
+                .setName(null) //
+                .setType(typeEnt) //
+                .setOtherTypeId(getOtherPortTypeId(ptype, typeEnt, false)) //
+                .setColor(getPortTypeColor(typeEnt, ptype)) //
+                .setOptional(ptype.isOptional()).build();
         }).collect(Collectors.toList());
     }
 
@@ -790,7 +794,7 @@ public final class EntityBuilderUtil {
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
         final WorkflowBuildContext buildContext) {
-        NodePortInvariantsEnt.TypeEnum resPortType = getNodePortInvariantsEntType(ptype);
+        NodePortTemplateEnt.TypeEnum resPortType = getNodePortTemplateEntType(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
             .setInactive(isInactive)//
@@ -799,7 +803,7 @@ public final class EntityBuilderUtil {
             .setName(name)//
             .setInfo(info)//
             .setType(resPortType)//
-            .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext))//
+            .setOtherTypeId(getOtherPortTypeId(ptype, resPortType, buildContext.includeInteractionInfo()))//
             .setColor(getPortTypeColor(resPortType, ptype))//
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
@@ -816,25 +820,25 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static Integer getOtherPortTypeId(final PortType ptype, final NodePortInvariantsEnt.TypeEnum portTypeEnt,
-        final WorkflowBuildContext buildContext) {
-        return buildContext.includeInteractionInfo() && NodePortInvariantsEnt.TypeEnum.OTHER == portTypeEnt
+    private static Integer getOtherPortTypeId(final PortType ptype, final NodePortTemplateEnt.TypeEnum portTypeEnt,
+        final boolean includeInteractionInfo) {
+        return includeInteractionInfo && NodePortTemplateEnt.TypeEnum.OTHER == portTypeEnt
             ? ptype.getPortObjectClass().getName().hashCode() : null;
     }
 
-    private static String getPortTypeColor(final NodePortInvariantsEnt.TypeEnum entType, final PortType ptype) {
-        return entType == NodePortInvariantsEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null;
+    private static String getPortTypeColor(final NodePortTemplateEnt.TypeEnum entType, final PortType ptype) {
+        return entType == NodePortTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null;
     }
 
-    private static NodePortInvariantsEnt.TypeEnum getNodePortInvariantsEntType(final PortType ptype) {
+    private static NodePortTemplateEnt.TypeEnum getNodePortTemplateEntType(final PortType ptype) {
         if (BufferedDataTable.TYPE.equals(ptype)) {
-            return NodePortInvariantsEnt.TypeEnum.TABLE;
+            return NodePortTemplateEnt.TypeEnum.TABLE;
         } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
-            return NodePortInvariantsEnt.TypeEnum.FLOWVARIABLE;
+            return NodePortTemplateEnt.TypeEnum.FLOWVARIABLE;
         } else if (PortObject.TYPE.equals(ptype)) {
-            return NodePortInvariantsEnt.TypeEnum.GENERIC;
+            return NodePortTemplateEnt.TypeEnum.GENERIC;
         } else {
-            return NodePortInvariantsEnt.TypeEnum.OTHER;
+            return NodePortTemplateEnt.TypeEnum.OTHER;
         }
     }
 
@@ -1105,7 +1109,7 @@ public final class EntityBuilderUtil {
     }
 
     private static NodePortDescriptionEntBuilder buildNodePortDescriptionEntBuilder(final PortType ptype) {
-        NodePortInvariantsEnt.TypeEnum resPortType = getNodePortInvariantsEntType(ptype);
+        NodePortTemplateEnt.TypeEnum resPortType = getNodePortTemplateEntType(ptype);
         return builder(NodePortDescriptionEntBuilder.class)//
             .setType(resPortType)//
             .setTypeName(ptype.getName())//

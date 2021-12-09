@@ -45,7 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.json.webui.entity.NativeNodeInvariantsEntMixIn;
 
 
@@ -92,11 +92,11 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
     
     @Override
     @JsonProperty("inPorts")
-    public java.util.List<NodePortInvariantsEnt> getInPorts();
+    public java.util.List<NodePortTemplateEnt> getInPorts();
     
     @Override
     @JsonProperty("outPorts")
-    public java.util.List<NodePortInvariantsEnt> getOutPorts();
+    public java.util.List<NodePortTemplateEnt> getOutPorts();
     
     @Override
     @JsonProperty("nodeFactory")
@@ -137,11 +137,11 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
         
         @Override
         @JsonProperty("inPorts")
-        public NodeTemplateEntMixInBuilder setInPorts(final java.util.List<NodePortInvariantsEnt> inPorts);
+        public NodeTemplateEntMixInBuilder setInPorts(final java.util.List<NodePortTemplateEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public NodeTemplateEntMixInBuilder setOutPorts(final java.util.List<NodePortInvariantsEnt> outPorts);
+        public NodeTemplateEntMixInBuilder setOutPorts(final java.util.List<NodePortTemplateEnt> outPorts);
         
         @Override
         @JsonProperty("nodeFactory")

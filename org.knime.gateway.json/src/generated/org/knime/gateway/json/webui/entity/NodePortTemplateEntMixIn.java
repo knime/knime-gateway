@@ -44,15 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.NodePortInvariantsEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt.DefaultNodePortAndDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,14 +59,18 @@ import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt.Defa
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodePortAndDescriptionEntBuilder.class)
+@JsonDeserialize(builder=DefaultNodePortTemplateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodePortAndDescriptionEntMixIn extends NodePortAndDescriptionEnt {
+public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
+    @Override
+    @JsonProperty("name")
+    public String getName();
+    
     @Override
     @JsonProperty("type")
     public TypeEnum getType();
@@ -81,10 +84,6 @@ public interface NodePortAndDescriptionEntMixIn extends NodePortAndDescriptionEn
     public String getColor();
     
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("optional")
     public Boolean isOptional();
     
@@ -96,30 +95,30 @@ public interface NodePortAndDescriptionEntMixIn extends NodePortAndDescriptionEn
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortAndDescriptionEntMixInBuilder extends NodePortAndDescriptionEntBuilder {
+    public static interface NodePortTemplateEntMixInBuilder extends NodePortTemplateEntBuilder {
     
         @Override
-        public NodePortAndDescriptionEntMixIn build();
+        public NodePortTemplateEntMixIn build();
     
+        @Override
+        @JsonProperty("name")
+        public NodePortTemplateEntMixInBuilder setName(final String name);
+        
         @Override
         @JsonProperty("type")
-        public NodePortAndDescriptionEntMixInBuilder setType(final TypeEnum type);
+        public NodePortTemplateEntMixInBuilder setType(final TypeEnum type);
         
         @Override
         @JsonProperty("otherTypeId")
-        public NodePortAndDescriptionEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
+        public NodePortTemplateEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
         
         @Override
         @JsonProperty("color")
-        public NodePortAndDescriptionEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("name")
-        public NodePortAndDescriptionEntMixInBuilder setName(final String name);
+        public NodePortTemplateEntMixInBuilder setColor(final String color);
         
         @Override
         @JsonProperty("optional")
-        public NodePortAndDescriptionEntMixInBuilder setOptional(final Boolean optional);
+        public NodePortTemplateEntMixInBuilder setOptional(final Boolean optional);
         
     }
 

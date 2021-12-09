@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.NodePortAndDescriptionEntMixIn;
+import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -69,6 +69,10 @@ public interface NodePortDescriptionEntMixIn extends NodePortDescriptionEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("name")
+    public String getName();
+    
+    @Override
     @JsonProperty("type")
     public TypeEnum getType();
     
@@ -79,10 +83,6 @@ public interface NodePortDescriptionEntMixIn extends NodePortDescriptionEnt {
     @Override
     @JsonProperty("color")
     public String getColor();
-    
-    @Override
-    @JsonProperty("name")
-    public String getName();
     
     @Override
     @JsonProperty("optional")
@@ -110,6 +110,10 @@ public interface NodePortDescriptionEntMixIn extends NodePortDescriptionEnt {
         public NodePortDescriptionEntMixIn build();
     
         @Override
+        @JsonProperty("name")
+        public NodePortDescriptionEntMixInBuilder setName(final String name);
+        
+        @Override
         @JsonProperty("type")
         public NodePortDescriptionEntMixInBuilder setType(final TypeEnum type);
         
@@ -120,10 +124,6 @@ public interface NodePortDescriptionEntMixIn extends NodePortDescriptionEnt {
         @Override
         @JsonProperty("color")
         public NodePortDescriptionEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("name")
-        public NodePortDescriptionEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("optional")

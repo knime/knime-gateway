@@ -50,7 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
 
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 
@@ -62,10 +62,10 @@ import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
 
+  protected String m_name;
   protected TypeEnum m_type;
   protected Integer m_otherTypeId;
   protected String m_color;
-  protected String m_name;
   protected Boolean m_optional;
   protected String m_description;
   protected String m_typeName;
@@ -81,13 +81,13 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
   
   private DefaultNodePortDescriptionEnt(DefaultNodePortDescriptionEntBuilder builder) {
     super();
+    m_name = immutable(builder.m_name);
     if(builder.m_type == null) {
         throw new IllegalArgumentException("type must not be null.");
     }
     m_type = immutable(builder.m_type);
     m_otherTypeId = immutable(builder.m_otherTypeId);
     m_color = immutable(builder.m_color);
-    m_name = immutable(builder.m_name);
     m_optional = immutable(builder.m_optional);
     m_description = immutable(builder.m_description);
     m_typeName = immutable(builder.m_typeName);
@@ -108,7 +108,7 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
             return false;
         }
         DefaultNodePortDescriptionEnt ent = (DefaultNodePortDescriptionEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_typeName, ent.m_typeName);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_typeName, ent.m_typeName);
     }
 
 
@@ -119,10 +119,10 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
+               .append(m_name)
                .append(m_type)
                .append(m_otherTypeId)
                .append(m_color)
-               .append(m_name)
                .append(m_optional)
                .append(m_description)
                .append(m_typeName)
@@ -131,6 +131,11 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
   
 	
 	
+  @Override
+  public String getName() {
+        return m_name;
+  }
+    
   @Override
   public TypeEnum getType() {
         return m_type;
@@ -144,11 +149,6 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
   @Override
   public String getColor() {
         return m_color;
-  }
-    
-  @Override
-  public String getName() {
-        return m_name;
   }
     
   @Override
@@ -173,13 +173,19 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
             super();
         }
     
+        private String m_name;
         private TypeEnum m_type;
         private Integer m_otherTypeId;
         private String m_color;
-        private String m_name;
         private Boolean m_optional;
         private String m_description;
         private String m_typeName;
+
+        @Override
+        public DefaultNodePortDescriptionEntBuilder setName(String name) {
+             m_name = name;
+             return this;
+        }
 
         @Override
         public DefaultNodePortDescriptionEntBuilder setType(TypeEnum type) {
@@ -199,12 +205,6 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
         @Override
         public DefaultNodePortDescriptionEntBuilder setColor(String color) {
              m_color = color;
-             return this;
-        }
-
-        @Override
-        public DefaultNodePortDescriptionEntBuilder setName(String name) {
-             m_name = name;
              return this;
         }
 

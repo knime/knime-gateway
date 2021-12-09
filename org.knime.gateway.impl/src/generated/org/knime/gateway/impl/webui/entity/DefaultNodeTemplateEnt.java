@@ -51,7 +51,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
 
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -69,8 +69,8 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
   protected String m_icon;
   protected String m_id;
   protected Boolean m_component;
-  protected java.util.List<NodePortInvariantsEnt> m_inPorts;
-  protected java.util.List<NodePortInvariantsEnt> m_outPorts;
+  protected java.util.List<NodePortTemplateEnt> m_inPorts;
+  protected java.util.List<NodePortTemplateEnt> m_outPorts;
   protected NodeFactoryKeyEnt m_nodeFactory;
   
   protected DefaultNodeTemplateEnt() {
@@ -168,12 +168,12 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
   }
     
   @Override
-  public java.util.List<NodePortInvariantsEnt> getInPorts() {
+  public java.util.List<NodePortTemplateEnt> getInPorts() {
         return m_inPorts;
   }
     
   @Override
-  public java.util.List<NodePortInvariantsEnt> getOutPorts() {
+  public java.util.List<NodePortTemplateEnt> getOutPorts() {
         return m_outPorts;
   }
     
@@ -194,8 +194,8 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         private String m_icon;
         private String m_id;
         private Boolean m_component;
-        private java.util.List<NodePortInvariantsEnt> m_inPorts;
-        private java.util.List<NodePortInvariantsEnt> m_outPorts;
+        private java.util.List<NodePortTemplateEnt> m_inPorts;
+        private java.util.List<NodePortTemplateEnt> m_outPorts;
         private NodeFactoryKeyEnt m_nodeFactory;
 
         @Override
@@ -238,13 +238,13 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         }
 
         @Override
-        public DefaultNodeTemplateEntBuilder setInPorts(java.util.List<NodePortInvariantsEnt> inPorts) {
+        public DefaultNodeTemplateEntBuilder setInPorts(java.util.List<NodePortTemplateEnt> inPorts) {
              m_inPorts = inPorts;
              return this;
         }
 
         @Override
-        public DefaultNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortInvariantsEnt> outPorts) {
+        public DefaultNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortTemplateEnt> outPorts) {
              m_outPorts = outPorts;
              return this;
         }

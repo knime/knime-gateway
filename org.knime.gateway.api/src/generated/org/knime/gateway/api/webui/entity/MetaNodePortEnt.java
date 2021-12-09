@@ -103,6 +103,14 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
     public interface MetaNodePortEntBuilder extends GatewayEntityBuilder<MetaNodePortEnt> {
 
         /**
+         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setName(String name);
+        
+        /**
          * The port type.
          * 
          * @param type the property value, NOT <code>null</code>! 
@@ -125,14 +133,6 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @return this entity builder for chaining
          */
         MetaNodePortEntBuilder setColor(String color);
-        
-        /**
-         * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
-         * 
-         * @param name the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setName(String name);
         
         /**
          * Whether it&#39;s a optional port or not.

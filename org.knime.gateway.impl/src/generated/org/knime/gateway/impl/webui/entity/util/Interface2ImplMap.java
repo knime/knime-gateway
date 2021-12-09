@@ -110,14 +110,12 @@ import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfo
 import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.NodePortAndDescriptionEnt.NodePortAndDescriptionEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
-import org.knime.gateway.api.webui.entity.NodePortInvariantsEnt.NodePortInvariantsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSelectionEnt.NodeSelectionEntBuilder;
@@ -281,17 +279,14 @@ public class Interface2ImplMap {
         if(clazz == NodeFactoryKeyEntBuilder.class) {
             return (B)new DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder();
         }        
-        if(clazz == NodePortAndDescriptionEntBuilder.class) {
-            return (B)new DefaultNodePortAndDescriptionEnt.DefaultNodePortAndDescriptionEntBuilder();
-        }        
         if(clazz == NodePortDescriptionEntBuilder.class) {
             return (B)new DefaultNodePortDescriptionEnt.DefaultNodePortDescriptionEntBuilder();
         }        
         if(clazz == NodePortEntBuilder.class) {
             return (B)new DefaultNodePortEnt.DefaultNodePortEntBuilder();
         }        
-        if(clazz == NodePortInvariantsEntBuilder.class) {
-            return (B)new DefaultNodePortInvariantsEnt.DefaultNodePortInvariantsEntBuilder();
+        if(clazz == NodePortTemplateEntBuilder.class) {
+            return (B)new DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder();
         }        
         if(clazz == NodeSearchResultEntBuilder.class) {
             return (B)new DefaultNodeSearchResultEnt.DefaultNodeSearchResultEntBuilder();
