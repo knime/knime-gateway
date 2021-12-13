@@ -137,7 +137,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(workflow, "workflowent_root");
 
         // get a metanode's workflow
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6), Boolean.FALSE).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(6), Boolean.TRUE).getWorkflow();
         cr(workflow, "workflowent_6");
 
         // get a component's workflow

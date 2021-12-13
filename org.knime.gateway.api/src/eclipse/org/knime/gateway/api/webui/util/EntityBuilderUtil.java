@@ -778,9 +778,12 @@ public final class EntityBuilderUtil {
         }
         if (outPort.getPortType().equals(FlowVariablePortObject.TYPE)) {
             HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-            for (FlowVariable v : outPort.getFlowObjectStack().getAllAvailableFlowVariables().values()) {
-                hashCodeBuilder.append(v.getName());
-                hashCodeBuilder.append(v.getValue(v.getVariableType()).hashCode());
+            var flowObjectStack = outPort.getFlowObjectStack();
+            if (flowObjectStack != null) {
+                for (FlowVariable v : flowObjectStack.getAllAvailableFlowVariables().values()) {
+                    hashCodeBuilder.append(v.getName());
+                    hashCodeBuilder.append(v.getValue(v.getVariableType()).hashCode());
+                }
             }
             return hashCodeBuilder.build();
         } else {

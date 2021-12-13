@@ -1,6 +1,16 @@
 {
+  "allowedActions" : {
+    "canCancel" : false,
+    "canExecute" : true,
+    "canRedo" : false,
+    "canReset" : false,
+    "canUndo" : false
+  },
   "connections" : {
     "root:6_1" : {
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:6",
       "destPort" : 1,
       "id" : "root:6_1",
@@ -8,6 +18,9 @@
       "sourcePort" : 2
     },
     "root:6:3_1" : {
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:6:3",
       "destPort" : 1,
       "id" : "root:6:3_1",
@@ -15,6 +28,9 @@
       "sourcePort" : 0
     },
     "root:6_0" : {
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:6",
       "destPort" : 0,
       "id" : "root:6_0",
@@ -36,6 +52,12 @@
       "view" : {
         "type" : "table"
       }
+    }, {
+      "connectedVia" : "[  ]",
+      "index" : 1,
+      "name" : "Outport 1",
+      "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+      "type" : "flowVariable"
     } ]
   },
   "metaOutPorts" : {
@@ -75,6 +97,13 @@
   },
   "nodes" : {
     "root:6:3" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canDelete" : true,
+        "canExecute" : true,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
       "id" : "root:6:3",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -97,6 +126,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
         "connectedVia" : "[ root:6_0 ]",
@@ -122,6 +152,7 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
+      "successors" : "AQ==",
       "templateId" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory"
     }
   },

@@ -692,6 +692,12 @@
         "name" : "Inport 0",
         "optional" : false,
         "type" : "table"
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Inport 1",
+        "optional" : false,
+        "type" : "flowVariable"
       } ],
       "kind" : "metanode",
       "name" : "Metanode",
