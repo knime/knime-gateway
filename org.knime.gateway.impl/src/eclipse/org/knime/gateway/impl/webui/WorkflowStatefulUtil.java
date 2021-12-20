@@ -137,21 +137,20 @@ public final class WorkflowStatefulUtil {
     }
 
     /**
-     * Creates a new workflow snapshot entity or returns the once which is cached for the workflow if and only if the
-     * workflow didn't change. Workflow changes are tracked via the {@link WorkflowChangesListener} kept for every
-     * workflow ({@link #getWorkflowChangesListener(WorkflowKey)}).
+     * Creates a new workflow snapshot entity. If there are any changes to the workflow, a new workflow entity is
+     * committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the snapshot id of the
+     * last commit will be used.
      *
      * @param wfKey the workflow to get/create the snapshot for
      * @param buildContextSupplier the information required to build a workflow entity - provided in a lazy manner
      *            because if won't be used if the entity is retrieved from cache
-     * @return a new or cached entity instance
+     * @return a new entity instance
      */
-    public WorkflowSnapshotEnt buildWorkflowSnapshotEntOrGetFromCache(final WorkflowKey wfKey,
+    public WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowKey wfKey,
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
-        WorkflowState ws = workflowState(wfKey);
-        WorkflowChanges c = ws.changesListener().getChanges();
-        WorkflowEnt ent = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextSupplier, c);
-        if (ent == null) {
+        var workflowState = workflowState(wfKey);
+        var workflowEntity = buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
+        if (workflowEntity == null) {
             // no workflow change -> check most recent commit
             Pair<String, WorkflowEnt> last = m_entityRepo.getLastCommit(wfKey).orElse(null);
             if (last != null) {
@@ -159,18 +158,18 @@ public final class WorkflowStatefulUtil {
             }
 
             // no commit, yet
-            ent = buildWorkflowEnt(ws.m_wfm, buildContextSupplier.get());
+            workflowEntity = buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
         }
 
         // commit the new workflow entity and return the snapshot
-        return buildWorkflowSnapshotEnt(ent, m_entityRepo.commit(wfKey, ent));
+        return buildWorkflowSnapshotEnt(workflowEntity, m_entityRepo.commit(wfKey, workflowEntity));
     }
 
     private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier, final WorkflowChanges c) {
         try (WorkflowLock lock = wfm.lock()) {
             if (c.anyChange()) {
-                WorkflowEnt ent = buildWorkflowEnt(wfm, buildContextSupplier.get());
+                var ent = buildWorkflowEnt(wfm, buildContextSupplier.get());
                 c.reset();
                 return ent;
             }

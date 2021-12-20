@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import org.junit.Test;
@@ -68,17 +67,21 @@ import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
 public class WorkflowServiceTest extends GatewayServiceTest {
 
     /**
-     * Tests that returned workflow entities are cached (and the same instances returned) if the workflow didn't change.
+     * Tests that returned workflow entities are NOT cached (and a different instance is returned) if the workflow
+     * didn't change.
+     *
+     * (This test might seem a bit unnecessary. However, the once implemented caching caused some problems (see NXT-866)
+     * that's why we now make sure it's not cached.)
      *
      * @throws Exception
      */
     @Test
-    public void testThatWorkflowEntitiesAreCached() throws Exception {
+    public void testThatWorkflowEntitiesAreNotCached() throws Exception {
         String wfId = "wf_id";
         WorkflowManager wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         WorkflowSnapshotEnt ent = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
         WorkflowSnapshotEnt ent2 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
-        assertTrue(ent.getWorkflow() == ent2.getWorkflow());
+        assertFalse(ent.getWorkflow() == ent2.getWorkflow());
 
         // change
         NodeUIInformation.moveNodeBy(wfm.getNodeContainers().iterator().next(), new int[]{10, 10});

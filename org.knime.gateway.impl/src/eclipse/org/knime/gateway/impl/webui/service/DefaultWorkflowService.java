@@ -89,13 +89,13 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
-        WorkflowKey wfKey = new WorkflowKey(projectId, workflowId);
+        var wfKey = new WorkflowKey(projectId, workflowId);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey,
+            return WF_FUNCTIONS.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
                     .canUndo(WF_FUNCTIONS.canUndoCommand(wfKey)).canRedo(WF_FUNCTIONS.canRedoCommand(wfKey)));
         } else {
-            return WF_FUNCTIONS.buildWorkflowSnapshotEntOrGetFromCache(wfKey,
+            return WF_FUNCTIONS.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
         }
     }

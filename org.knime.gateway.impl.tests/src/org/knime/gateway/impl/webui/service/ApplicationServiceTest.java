@@ -46,7 +46,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -90,9 +90,9 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         AppStateEnt appStateEnt = appService.getState();
         cr(appStateEnt, "appstate");
 
-        // test that no new workflow entity instance is created (because the workflow didn't change in between)
+        // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
         AppStateEnt appStateEnt2 = appService.getState();
-        assertTrue(appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow() == appStateEnt2
+        assertFalse(appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow() == appStateEnt2
             .getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow());
 
         // make sure that the app state is cached and only accessed one time

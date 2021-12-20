@@ -145,7 +145,7 @@ public final class DefaultApplicationService implements ApplicationService {
                 }
             }
             if (wfm != null) {
-                builder.setActiveWorkflow(WorkflowStatefulUtil.getInstance().buildWorkflowSnapshotEntOrGetFromCache(
+                builder.setActiveWorkflow(WorkflowStatefulUtil.getInstance().buildWorkflowSnapshotEnt(
                     new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
                     () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
             } else {
