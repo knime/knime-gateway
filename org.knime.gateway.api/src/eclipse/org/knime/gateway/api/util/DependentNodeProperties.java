@@ -48,10 +48,6 @@
  */
 package org.knime.gateway.api.util;
 
-import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -64,12 +60,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeModel;
 
 /**
  * Represents node properties that depend on other nodes in the workflow graph (i.e. successors or predecessors). This
@@ -205,15 +203,7 @@ public final class DependentNodeProperties {
             return wfm.getIncomingConnectionsFor(id).stream().filter(cc -> !cc.getSource().equals(wfm.getID()))
                 .map(ConnectionContainer::getSource).collect(Collectors.toSet());
         } else {
-            if (isComponentWFM(wfm)) {
-                return singleton(getParentComponent(wfm).getVirtualOutNodeID());
-            } else {
-                // collect all predecessors connected from the within the workflow
-                return wfm.getParent().getIncomingConnectionsFor(id).stream()
-                    .filter(cc -> cc.getSource().equals(wfm.getID()))
-                    .map(cc -> wfm.getIncomingConnectionFor(wfm.getID(), cc.getSourcePort()).getSource())
-                    .collect(toSet());
-            }
+            return Collections.emptySet();
         }
     }
 
@@ -222,75 +212,71 @@ public final class DependentNodeProperties {
             return wfm.getOutgoingConnectionsFor(id).stream().filter(cc -> !cc.getDest().equals(wfm.getID()))
                 .map(ConnectionContainer::getDest).collect(Collectors.toSet());
         } else {
-            if (isComponentWFM(wfm)) {
-                // regard the parent component as successor-free
-                return Collections.emptySet();
-            } else {
-                // collect all successors connected within the workflow
-                return wfm.getParent().getOutgoingConnectionsFor(id).stream()
-                    .filter(cc -> cc.getDest().equals(wfm.getID()))
-                    .map(cc -> wfm.getOutgoingConnectionsFor(wfm.getID(), cc.getDestPort())).flatMap(Collection::stream)
-                    .map(ConnectionContainer::getDest).filter(dest -> !dest.equals(wfm.getID())) // don't include the metanode (wfm) itself
-                    .collect(toSet());
-            }
+            return Collections.emptySet();
         }
     }
 
-    private static void findAndInitStartNodes(final WorkflowManager wfm, final Map<NodeID, Properties> props,
+    private static void findAndInitStartNodes(final WorkflowManager wfm, final Map<NodeID, Properties> propsMap,
         final Queue<NodeID> hasExecutingSuccessors, final Queue<NodeID> hasExecutablePredecessors) {
-
-        findNodesConnectedToTheWorkflowFromTheOutside(wfm, hasExecutingSuccessors, hasExecutablePredecessors);
-
-        // iterate the node within the workflow
         for (NodeContainer nc : wfm.getNodeContainers()) {
-            NodeID id = nc.getID();
-            Properties p = props.computeIfAbsent(id, i -> new Properties());
+            var nodeId = nc.getID();
+            var props = propsMap.computeIfAbsent(nodeId, i -> new Properties());
+            var nodeState = nc.getNodeContainerState();
+            var added = false;
 
-            NodeContainerState s = nc.getNodeContainerState();
-            p.setHasExecutingSuccessors(isExecutionInProgress(s));
-            if (isExecuting(s)) {
-                hasExecutingSuccessors.add(id);
+            props.setHasExecutingSuccessors(isExecutionInProgress(nodeState));
+            if (isExecuting(nodeState)) {
+                hasExecutingSuccessors.add(nodeId);
+                added = true;
             }
 
-            p.setHasExecutablePredecessors(s.isConfigured());
-            if (s.isConfigured()) {
-                hasExecutablePredecessors.add(id);
+            props.setHasExecutablePredecessors(nodeState.isConfigured());
+            if (nodeState.isConfigured()) {
+                hasExecutablePredecessors.add(nodeId);
+                added = true;
+            }
+
+            if (!added) {
+                handleNodesAtComponentAndMetanodeBorders(wfm, hasExecutingSuccessors, hasExecutablePredecessors, nc, nodeId,
+                    props);
             }
         }
 
     }
 
     /*
-     * If the workflow is part of a component: the parent component itself is added to the list of executing successors
-     * if it is executing (but not(!) to the list of executable predecessors because the direct predecessor of a
-     * component needs to be executed anyway for a component to be executable in its entirety)
+     * Special handling of component output nodes: The logical successor of a component output node is the parent
+     * component itself -> that's why it's checked for successors in progress. If there are any, the component output
+     * node is added to the list of executing successors. Component input nodes (and predecessors of the component
+     * itself) don't need to be checked because all direct predecessor of a component need to be executed anyway for a
+     * component to be executable in its entirety.
      *
-     * If this workflow is a metanode: all nodes (in the parent workflow) connected to metanode are added to the list
-     * of 'executing successors' or 'executable predecessors', iff they are executing or executable (parts of the parent
-     * workflow is traversed in order to check that).
+     * Special handling of nodes connected to metanode-incoming or -outgoing ports (i.e. from within the metanode): If
+     * they happen to have executing successors or executable predecessors in the parent workflow (requires an extra
+     * traversal of the parent workflow), they are added to the respective lists.
      */
-    private static void findNodesConnectedToTheWorkflowFromTheOutside(final WorkflowManager wfm, // NOSONAR
-        final Queue<NodeID> hasExecutingSuccessors, final Queue<NodeID> hasExecutablePredecessors) {
-        if (!wfm.isProject() && !wfm.isComponentProjectWFM()) {
-            if (isComponentWFM(wfm)) {
-                SubNodeContainer snc = getParentComponent(wfm);
-                if (snc.getParent().hasSuccessorInProgress(snc.getID())) {
-                    hasExecutingSuccessors.add(snc.getID());
-                }
-            } else {
-                WorkflowManager parent = wfm.getParent();
-                wfm.getParent().getOutgoingConnectionsFor(wfm.getID()).forEach(c -> {
-                    NodeID id = c.getDest();
-                    if (parent.hasSuccessorInProgress(id)) {
-                        hasExecutingSuccessors.add(id);
-                    }
-                });
-                wfm.getParent().getIncomingConnectionsFor(wfm.getID()).forEach(c -> {
-                    NodeID id = c.getSource();
-                    if (parent.hasExecutablePredecessor(id)) {
-                        hasExecutablePredecessors.add(id);
-                    }
-                });
+    private static void handleNodesAtComponentAndMetanodeBorders(final WorkflowManager wfm,
+        final Queue<NodeID> hasExecutingSuccessors, final Queue<NodeID> hasExecutablePredecessors,
+        final NodeContainer nc, final NodeID id, final Properties p) {
+        if (nc instanceof NativeNodeContainer
+            && ((NativeNodeContainer)nc).getNodeModel() instanceof VirtualSubNodeOutputNodeModel) {
+            // special handling of component output nodes
+            var snc = getParentComponent(wfm);
+            if (snc.getParent().hasSuccessorInProgress(snc.getID())) {
+                p.setHasExecutingSuccessors(true);
+                hasExecutingSuccessors.add(snc.getID());
+            }
+        } else {
+            // special handling of nodes connected to metanode incoming or outgoing ports (i.e. from within the metanode)
+            if (wfm.getIncomingConnectionsFor(id).stream().anyMatch(cc -> cc.getSource().equals(wfm.getID())) && //
+                wfm.hasExecutablePredecessor(id)) {
+                p.setHasExecutablePredecessors(true);
+                hasExecutablePredecessors.add(id);
+            }
+            if (wfm.getOutgoingConnectionsFor(id).stream().anyMatch(cc -> cc.getDest().equals(wfm.getID())) && //
+                wfm.hasSuccessorInProgress(id)) {
+                p.setHasExecutingSuccessors(true);
+                hasExecutingSuccessors.add(id);
             }
         }
     }

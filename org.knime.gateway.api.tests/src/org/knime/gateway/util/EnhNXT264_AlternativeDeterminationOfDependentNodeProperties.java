@@ -47,7 +47,6 @@ package org.knime.gateway.util;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -75,7 +74,8 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 
     WorkflowManager m_wfm;
 
-	@Before
+	@SuppressWarnings("javadoc")
+    @Before
     public void loadWorklfow() throws Exception {
         m_wfm = CoreUtil.loadWorkflow(CoreUtil.resolveToFile(
             "/files/testflows/enhNXT264_AlternativeDeterminationOfDependentNodeProperties", this.getClass()));
@@ -94,21 +94,22 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 	@Test
 	public void testCorrectnessOfDependentNodeProperties() throws Exception {
 		NodeID parentId = m_wfm.getID();
-		WorkflowManager metanode_209 = (WorkflowManager) m_wfm.getNodeContainer(parentId.createChild(209));
-		WorkflowManager component_214 = ((SubNodeContainer) m_wfm.getNodeContainer(parentId.createChild(214)))
+		var metanode_209 = (WorkflowManager) m_wfm.getNodeContainer(parentId.createChild(209));
+        var metanode_219 = ((WorkflowManager)m_wfm.getNodeContainer(parentId.createChild(219)));
+		var component_214 = ((SubNodeContainer) m_wfm.getNodeContainer(parentId.createChild(214)))
 				.getWorkflowManager();
-		WorkflowManager component_215 = ((SubNodeContainer) m_wfm.getNodeContainer(parentId.createChild(215)))
+		var component_215 = ((SubNodeContainer) m_wfm.getNodeContainer(parentId.createChild(215)))
 				.getWorkflowManager();
-		WorkflowManager component_212 = ((SubNodeContainer) m_wfm.getNodeContainer(parentId.createChild(212)))
+		var component_212 = ((SubNodeContainer) m_wfm.getNodeContainer(parentId.createChild(212)))
 				.getWorkflowManager();
-		NodeID wait_216 = parentId.createChild(216);
-		NodeID wait_203 = parentId.createChild(203);
-		NodeID wait_195 = parentId.createChild(195);
+		var wait_216 = parentId.createChild(216);
+		var wait_203 = parentId.createChild(203);
+		var wait_195 = parentId.createChild(195);
+		var wait_225 = parentId.createChild(225);
 
 		checkCanExecuteAndCanResetFlagsForAllNodes(m_wfm);
 		checkCanExecuteAndCanResetFlagsForAllNodes(metanode_209);
-		// test disabled, see comment above
-		// checkCanExecuteAndCanResetFlagsForAllNodes(metanode_219);
+		checkCanExecuteAndCanResetFlagsForAllNodes(metanode_219);
 		checkCanExecuteAndCanResetFlagsForAllNodes(component_214);
 		checkCanExecuteAndCanResetFlagsForAllNodes(component_215);
 		checkCanExecuteAndCanResetFlagsForAllNodes(component_212);
@@ -139,30 +140,39 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 		checkCanExecuteAndCanResetFlagsForAllNodes(component_212);
 
 		// Tests that only certain branches within a metanode are regarded as 'executable'
-		// Note: here is a discrepancy with the classic implementation where all
-		// predecessor of a metanode are taken into account at once which is not 100% correct
-        NodeID metanode_219 = parentId.createChild(219);
-        DependentNodeProperties props = DependentNodeProperties
-            .determineDependentNodeProperties(((WorkflowManager)m_wfm.getNodeContainer(metanode_219)));
-        assertFalse(props.canExecuteNode(metanode_219.createChild(196)));
-        assertTrue(props.canExecuteNode(metanode_219.createChild(218)));
+		// Note: all predecessors of a metanode are taken into account at once which is not 100% correct
+        checkCanExecuteAndCanResetFlagsForAllNodes(metanode_219);
 
 		// Test a metanode with a 'through' connection
 		WorkflowManager metanode_25 = (WorkflowManager) m_wfm.getNodeContainer(parentId.createChild(25));
 		checkCanExecuteAndCanResetFlagsForAllNodes(metanode_25);
 
+		// Test a double-nested metanode (with direct connection to the metanode-parent)
+        var metanode_224_23 =
+            (WorkflowManager)m_wfm.findNodeContainer(parentId.createChild(224).createChild(23));
+        checkCanExecuteAndCanResetFlagsForAllNodes(metanode_224_23);
+        // ... with executing successor for metanode 224
+        m_wfm.executeUpToHere(wait_225);
+        var metanode_224 = m_wfm.getNodeContainer(parentId.createChild(224));
+        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            assertTrue(metanode_224.getNodeContainerState().isExecuted());
+        });
+        checkCanExecuteAndCanResetFlagsForAllNodes(metanode_224_23);
+
 		// test exception
-		assertThrows(NoSuchElementException.class, () -> props.canExecuteNode(parentId));
-		assertThrows(NoSuchElementException.class, () -> props.canResetNode(parentId));
+        DependentNodeProperties props = DependentNodeProperties.determineDependentNodeProperties(metanode_25);
+        assertThrows(NoSuchElementException.class, () -> props.canExecuteNode(parentId));
+        assertThrows(NoSuchElementException.class, () -> props.canResetNode(parentId));
 
 	}
 
-	@After
+	@SuppressWarnings("javadoc")
+    @After
     public void cancelWorkflow() throws InterruptedException {
         CoreUtil.cancelAndCloseLoadedWorkflow(m_wfm);
     }
 
-	private void checkCanExecuteAndCanResetFlagsForAllNodes(final WorkflowManager wfm) {
+	private static void checkCanExecuteAndCanResetFlagsForAllNodes(final WorkflowManager wfm) {
 		List<NodeID> nodes = wfm.getNodeContainers().stream().map(nc -> nc.getID()).collect(Collectors.toList());
 
 		List<Boolean> canExecute = nodes.stream().map(wfm::canExecuteNode).collect(Collectors.toList());
