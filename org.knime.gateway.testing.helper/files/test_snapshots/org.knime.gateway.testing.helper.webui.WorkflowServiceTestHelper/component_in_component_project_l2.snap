@@ -81,7 +81,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "AQ==",
       "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
     },
     "root:5:0:7:0:5" : {
@@ -115,7 +114,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "Ag==",
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory"
     },
     "root:5:0:7:0:6" : {
@@ -149,7 +147,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "BA==",
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory"
     }
   },

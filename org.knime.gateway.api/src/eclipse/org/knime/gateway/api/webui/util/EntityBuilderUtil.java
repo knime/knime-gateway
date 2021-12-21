@@ -35,7 +35,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -671,7 +670,6 @@ public final class EntityBuilderUtil {
             .setLink(getTemplateLink(wm))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
-            .setSuccessors(getNodeSuccessors(wm.getID(), buildContext))//
             .build();
     }
 
@@ -726,7 +724,6 @@ public final class EntityBuilderUtil {
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
             .setAllowedActions(allowedActions)//
-            .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)).build();
     }
 
@@ -893,12 +890,7 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
-            .setSuccessors(getNodeSuccessors(nc.getID(), buildContext))//
             .build();
-    }
-
-    private static BitSet getNodeSuccessors(final NodeID id, final WorkflowBuildContext buildContext) {
-        return buildContext.includeInteractionInfo() ? buildContext.nodeSuccessors().getSuccessors(id) : null;
     }
 
     private static NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {

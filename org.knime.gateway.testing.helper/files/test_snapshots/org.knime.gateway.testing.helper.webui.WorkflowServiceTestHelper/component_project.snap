@@ -113,7 +113,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "DA==",
       "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
     },
     "root:5" : {
@@ -152,8 +151,7 @@
       },
       "state" : {
         "executionState" : "CONFIGURED"
-      },
-      "successors" : "AQ=="
+      }
     },
     "root:6" : {
       "allowedActions" : {
@@ -194,7 +192,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "Dg==",
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76"
     },
     "root:7" : {
@@ -237,7 +234,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "BA==",
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76"
     }
   },

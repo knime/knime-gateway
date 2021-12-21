@@ -108,10 +108,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
-    @JsonProperty("successors")
-    public java.util.BitSet getSuccessors();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -175,10 +171,6 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public ComponentNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
-        
-        @Override
-        @JsonProperty("successors")
-        public ComponentNodeEntMixInBuilder setSuccessors(final java.util.BitSet successors);
         
         @Override
         @JsonProperty("name")

@@ -107,10 +107,6 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
-    @JsonProperty("successors")
-    public java.util.BitSet getSuccessors();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -166,10 +162,6 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public MetaNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
-        
-        @Override
-        @JsonProperty("successors")
-        public MetaNodeEntMixInBuilder setSuccessors(final java.util.BitSet successors);
         
         @Override
         @JsonProperty("name")

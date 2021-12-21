@@ -59,7 +59,6 @@
     "state" : {
       "executionState" : "IDLE"
     },
-    "successors" : "AAAABA==",
     "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
   }
 } ]

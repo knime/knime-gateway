@@ -156,14 +156,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
-         * All successors of this node represented as a bitset. Every bit stands for a node and is &#39;1&#39; if the respective node is a (indirect!) successor. The bitset includes this node, too.
-         * 
-         * @param successors the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setSuccessors(java.util.BitSet successors);
-        
-        /**
          * The id of the node template this node is an instance of.
          * 
          * @param templateId the property value, NOT <code>null</code>! 

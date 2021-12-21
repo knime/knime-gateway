@@ -61,7 +61,6 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.DependentNodeProperties;
-import org.knime.gateway.api.util.NodeSuccessors;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -280,8 +279,7 @@ public final class WorkflowStatefulUtil {
         if (includeInteractioInfo) {
             buildContextBuilder.canUndo(canUndoCommand(wfKey))//
                 .canRedo(canRedoCommand(wfKey))//
-                .dependentNodeProperties(() -> dependentNodeProperties(wfKey, changes))//
-                .nodeSuccessors(() -> nodeSuccessors(wfKey, changes));
+                .dependentNodeProperties(() -> dependentNodeProperties(wfKey, changes));
         }
         WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, () -> buildContextBuilder, changes);
         if (wfEnt == null) {
@@ -308,16 +306,6 @@ public final class WorkflowStatefulUtil {
             ws.m_depNodeProperties = DependentNodeProperties.determineDependentNodeProperties(ws.m_wfm);
         }
         return ws.m_depNodeProperties;
-    }
-
-    private NodeSuccessors nodeSuccessors(final WorkflowKey wfKey, final WorkflowChanges changes) {
-        // the node successors are only re-calculated if there are respective changes
-        // otherwise a cached instance is used
-        WorkflowState ws = workflowState(wfKey);
-        if (ws.m_nodeSuccessors == null || changes.nodeOrConnectionAddedOrRemoved()) {
-            ws.m_nodeSuccessors = NodeSuccessors.determineNodeSuccessors(ws.m_wfm);
-        }
-        return ws.m_nodeSuccessors;
     }
 
     private WorkflowState workflowState(final WorkflowKey wfKey) {
@@ -347,8 +335,6 @@ public final class WorkflowStatefulUtil {
     private static final class WorkflowState {
 
         private DependentNodeProperties m_depNodeProperties;
-
-        private NodeSuccessors m_nodeSuccessors;
 
         private WorkflowChangesListener m_changesListener;
 

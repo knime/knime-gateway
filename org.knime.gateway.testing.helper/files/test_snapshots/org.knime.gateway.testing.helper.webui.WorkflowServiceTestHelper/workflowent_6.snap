@@ -152,7 +152,6 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "AQ==",
       "templateId" : "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory"
     }
   },

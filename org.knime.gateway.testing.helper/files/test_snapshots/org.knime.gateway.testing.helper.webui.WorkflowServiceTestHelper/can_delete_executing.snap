@@ -117,7 +117,6 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AQ==",
       "templateId" : "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory"
     },
     "root:2" : {
@@ -170,7 +169,6 @@
         "executionState" : "EXECUTING",
         "progressMessage" : "Waiting for 600 seconds"
       },
-      "successors" : "Jg==",
       "templateId" : "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"
     },
     "root:3" : {
@@ -222,7 +220,6 @@
       "state" : {
         "executionState" : "QUEUED"
       },
-      "successors" : "JA==",
       "templateId" : "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"
     },
     "root:4" : {
@@ -283,7 +280,6 @@
       "state" : {
         "executionState" : "EXECUTED"
       },
-      "successors" : "GA==",
       "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
     },
     "root:7" : {
@@ -333,8 +329,7 @@
       },
       "state" : {
         "executionState" : "EXECUTING"
-      },
-      "successors" : "EA=="
+      }
     },
     "root:8" : {
       "allowedActions" : {
@@ -378,8 +373,7 @@
       },
       "state" : {
         "executionState" : "QUEUED"
-      },
-      "successors" : "IA=="
+      }
     }
   },
   "workflowAnnotations" : [ ]
