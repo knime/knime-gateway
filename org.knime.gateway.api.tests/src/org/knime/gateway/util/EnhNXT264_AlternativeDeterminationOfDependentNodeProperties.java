@@ -139,8 +139,9 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 				1);
 		checkCanExecuteAndCanResetFlagsForAllNodes(component_212);
 
-		// Tests that only certain branches within a metanode are regarded as 'executable'
-		// Note: all predecessors of a metanode are taken into account at once which is not 100% correct
+		// Should actually test that only certain branches within a metanode are regarded as 'executable'.
+		// However, at the moment all predecessors of a metanode are taken into account at once which is not 100% correct
+		// (ticket: NXT-869)
         checkCanExecuteAndCanResetFlagsForAllNodes(metanode_219);
 
 		// Test a metanode with a 'through' connection
