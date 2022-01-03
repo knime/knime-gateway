@@ -239,12 +239,14 @@ public final class DefaultServiceUtil {
      * @param x the x-coordinate to add the node at
      * @param y the y-coordinate to add the node at
      * @param wfm the workflow to add the node to
+     * @param centerNode if {@code true} the node is centered at the given coordinates, otherwise the coordinates refer
+     *            to the upper left corner of the node 'body'
      * @return the id of the new node
      * @throws NoSuchElementException if no node couldn't be found for the given factory class name
      * @throws IOException if a problem occurred while reading in the factory settings
      */
     public static NodeID createAndAddNode(final String factoryClassName, final String factorySettings, final Integer x,
-        final Integer y, final WorkflowManager wfm) throws IOException {
+        final Integer y, final WorkflowManager wfm, final boolean centerNode) throws IOException {
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = FileNativeNodeContainerPersistor.loadNodeFactory(factoryClassName);
@@ -272,7 +274,7 @@ public final class DefaultServiceUtil {
         }
         NodeID nodeID = wfm.createAndAddNode(nodeFactory);
         NodeUIInformation info =
-            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(true).build();
+            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(centerNode).build();
         wfm.getNodeContainer(nodeID).setUIInformation(info);
         return nodeID;
     }

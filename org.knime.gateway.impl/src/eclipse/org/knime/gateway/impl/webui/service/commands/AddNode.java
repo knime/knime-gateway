@@ -77,7 +77,7 @@ public class AddNode extends AbstractWorkflowCommand<AddNodeCommandEnt> {
         XYEnt pos = entity.getPosition();
         try {
             m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKey.getClassName(), factoryKey.getSettings(),
-                pos.getX(), pos.getY() - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm);
+                pos.getX(), pos.getY() - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
         } catch (IOException | NoSuchElementException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
