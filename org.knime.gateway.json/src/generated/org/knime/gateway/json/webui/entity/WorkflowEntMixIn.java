@@ -123,6 +123,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonProperty("projectMetadata")
     public ProjectMetadataEnt getProjectMetadata();
     
+    @Override
+    @JsonProperty("dirty")
+    public Boolean isDirty();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -183,6 +187,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("projectMetadata")
         public WorkflowEntMixInBuilder setProjectMetadata(final ProjectMetadataEnt projectMetadata);
+        
+        @Override
+        @JsonProperty("dirty")
+        public WorkflowEntMixInBuilder setDirty(final Boolean dirty);
         
     }
 

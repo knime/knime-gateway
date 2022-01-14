@@ -139,6 +139,12 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public ProjectMetadataEnt getProjectMetadata();
 
+  /**
+   * Flag indicating whether the workflow is in a dirty state, i.e. contains unsaved changes. TODO foo
+   * @return dirty , never <code>null</code>
+   **/
+  public Boolean isDirty();
+
 
     /**
      * The builder for the entity.
@@ -240,6 +246,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata);
+        
+        /**
+         * Flag indicating whether the workflow is in a dirty state, i.e. contains unsaved changes. TODO foo
+         * 
+         * @param dirty the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setDirty(Boolean dirty);
         
         
         /**

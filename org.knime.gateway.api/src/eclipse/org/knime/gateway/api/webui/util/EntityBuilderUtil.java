@@ -291,6 +291,7 @@ public final class EntityBuilderUtil {
                 .setComponentMetadata(
                     CoreUtil.isComponentWFM(wfm) ? buildComponentNodeDescriptionEnt(getParentComponent(wfm)) : null)//
                 .setAmbiguousPortTypes(buildAmbiguousPortTypesMap(buildContext))//
+                .setDirty(wfm.isDirty())
                 .build();
         }
     }

@@ -137,6 +137,13 @@ final class Translate extends AbstractWorkflowCommand<TranslateCommandEnt> {
 
         XYEnt translation = commandEntity.getTranslation();
         executeTranslateCommand(translation, nodes, annotations);
+
+        for (NodeContainer nc : nodes) {
+             nc.setDirty();  // will propagate upwards
+        }
+        if (!annotations.isEmpty()) {
+            wfm.setDirty();
+        }
         return new int[]{-translation.getX(), -translation.getY()};
     }
 
