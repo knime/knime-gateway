@@ -111,16 +111,20 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
                 "Some nodes can't be deleted or don't exist. Delete operation aborted.");
         }
 
+        // Connections are identified by their destination node ID and port. Connections to metanode outputs are
+        //   represented by pointing to the node ID of the parent metanode.
+        // Filter connections from the command s.t. all connections are guaranteed to exist in this workflow manager.
         m_connections = ent.getConnectionIds().stream()
             .map(id -> new ConnectionID(entityToNodeID(projectId, id.getDestNodeIDEnt()), id.getDestPortIdx()))
-            .filter(id -> wfm.containsNodeContainer(id.getDestinationNode())).map(wfm::getConnection)
+            .filter(id -> wfm.containsNodeContainer(id.getDestinationNode()) || wfm.getID().equals(id.getDestinationNode()))
+            .map(wfm::getConnection)
             .collect(Collectors.toCollection(HashSet::new));
 
         if (m_connections.size() != ent.getConnectionIds().size()) {
             throw new OperationNotAllowedException("Some connections don't exist. Delete operation aborted.");
         }
 
-        // add all connections that have a to be deleted node as source _or_ destination (but _not_ both)
+        // add all connections that have a to-be-deleted-node as source _or_ destination (but _not_ both)
         for (NodeID id : nodesToDelete) {
             addIfConnectedToJustOneNode(wfm.getIncomingConnectionsFor(id), m_connections, nodesToDelete);
             addIfConnectedToJustOneNode(wfm.getOutgoingConnectionsFor(id), m_connections, nodesToDelete);
