@@ -496,7 +496,7 @@ public final class EntityBuilderUtil {
     private static List<NodeDialogOptionGroupEnt> buildDialogOptionGroupEnts(final List<NodeDescription.DialogOptionGroup> groups) {
         return listMapOrNull(groups, g -> //
             builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
-                .setSectionName(g.getName()) //
+                .setSectionName(g.getName().orElse(null)) //
                 .setSectionDescription(g.getDescription().orElse(null)) //
                 .setFields( //
                     buildDialogOptionDescriptionEnts(g.getOptions()) //
