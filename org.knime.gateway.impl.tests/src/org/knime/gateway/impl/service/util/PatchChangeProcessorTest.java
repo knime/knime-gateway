@@ -93,8 +93,9 @@ public class PatchChangeProcessorTest {
         WorkflowEntBuilder workflowBuilder =
             builder(WorkflowEntBuilder.class).setInfo(builder(WorkflowInfoEntBuilder.class).setName("wf-name")
                 .setContainerType(ContainerTypeEnum.PROJECT).build());
-        WorkflowEnt workflow1 = workflowBuilder.setNodes(Collections.emptyMap()).build();
-        WorkflowEnt workflow2 = workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).build();
+        WorkflowEnt workflow1 = workflowBuilder.setNodes(Collections.emptyMap()).setDirty(false).build();
+        WorkflowEnt workflow2 =
+            workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).setDirty(true).build();
 
         Javers javers = JaversBuilder.javers().registerValue(NodeIDEnt.class).registerValue(ConnectionIDEnt.class)
             .registerValue(AnnotationIDEnt.class).withNewObjectsSnapshot(false).build();

@@ -11,6 +11,7 @@
     "name" : "Component L2"
   },
   "connections" : { },
+  "dirty" : true,
   "info" : {
     "containerId" : "root:5:0:7",
     "containerType" : "component",

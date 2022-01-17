@@ -42,6 +42,7 @@
       "sourcePort" : 1
     }
   },
+  "dirty" : true,
   "info" : {
     "containerId" : "root",
     "containerType" : "project",

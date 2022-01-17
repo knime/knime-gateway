@@ -38,6 +38,7 @@
       "sourcePort" : 1
     }
   },
+  "dirty" : false,
   "info" : {
     "containerId" : "root:6",
     "containerType" : "metanode",

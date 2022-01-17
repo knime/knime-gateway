@@ -41,6 +41,7 @@
       "sourcePort" : 1
     }
   },
+  "dirty" : true,
   "info" : {
     "containerType" : "project",
     "name" : "execution states"

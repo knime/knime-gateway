@@ -20,6 +20,10 @@
   "value" : false
 }, {
   "op" : "replace",
+  "path" : "/dirty",
+  "value" : true
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:3:0:3/state/executionState",
   "value" : "EXECUTING"
 }, {

@@ -34,6 +34,7 @@
       "sourcePort" : 1
     }
   },
+  "dirty" : false,
   "info" : {
     "containerId" : "root:23",
     "containerType" : "component",
