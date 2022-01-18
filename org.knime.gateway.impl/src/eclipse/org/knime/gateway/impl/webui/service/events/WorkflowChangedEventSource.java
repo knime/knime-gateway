@@ -55,21 +55,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
@@ -86,7 +86,7 @@ import org.knime.gateway.impl.webui.service.DefaultEventService;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz
  */
-public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt> {
+public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt, WorkflowChangedEventEnt> {
 
     private static final WorkflowStatefulUtil WF_UTIL = WorkflowStatefulUtil.getInstance();
 
@@ -95,8 +95,16 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     /**
      * @param eventConsumer
      */
-    public WorkflowChangedEventSource(final BiConsumer<String, EventEnt> eventConsumer) {
+    public WorkflowChangedEventSource(final BiConsumer<String, Object> eventConsumer) {
         super(eventConsumer);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getName() {
+        return "WorkflowChangedEvent";
     }
 
     /**
@@ -104,19 +112,19 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      */
     @SuppressWarnings("resource")
     @Override
-    public void addEventListener(final WorkflowChangedEventTypeEnt wfEventType) throws InvalidRequestException {
+    public Optional<WorkflowChangedEventEnt>
+        addEventListenerAndGetInitialEvent(final WorkflowChangedEventTypeEnt wfEventType) {
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         try {
             WorkflowUtil.assertWorkflowExists(workflowKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
+            throw new IllegalArgumentException(ex.getMessage(), ex);
         }
 
         // create very first changed event to be send first (and thus catch up with the most recent
         // workflow version)
-        WorkflowChangedEventEnt workflowChangedEvent =
+        var workflowChangedEvent =
             WF_UTIL.buildWorkflowChangedEvent(workflowKey, new PatchEntCreator(null), wfEventType.getSnapshotId(), true);
-        sendEvent(workflowChangedEvent);
 
         // add and keep track of callback added to the workflow changes listener (if not already)
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, k -> {
@@ -128,12 +136,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             workflowChangesListener.addCallback(callback);
             return callback;
         });
-    }
 
-    private void sendEvent(final WorkflowChangedEventEnt event) {
-        if (event != null) {
-            sendEvent("WorkflowChangedEvent", event);
-        }
+        return Optional.ofNullable(workflowChangedEvent);
     }
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
@@ -143,7 +147,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             patchEntCreator.clear();
             WorkflowChangedEventEnt event =
                 WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
-            sendEvent(event);
+            if (event != null) {
+                sendEvent(event);
+            }
         };
     }
 

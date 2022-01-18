@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
@@ -260,7 +259,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      *
      * @param c the callback
      */
-    protected final void setEventConsumer(final BiConsumer<String, EventEnt> c) {
+    protected final void setEventConsumer(final BiConsumer<String, Object> c) {
         m_eventSource.setEventConsumer(c);
     }
 }

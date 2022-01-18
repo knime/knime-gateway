@@ -61,7 +61,6 @@ import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
@@ -133,7 +132,7 @@ public class EventServiceTest extends GatewayServiceTest {
 
         // add event consumer to receive and check the change events
         @SuppressWarnings("unchecked")
-        BiConsumer<String, EventEnt> eventConsumerMock = mock(BiConsumer.class);
+        BiConsumer<String, Object> eventConsumerMock = mock(BiConsumer.class);
         es.setEventConsumerForTesting(eventConsumerMock, null);
 
         // carry out the workflow changes

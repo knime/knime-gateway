@@ -65,7 +65,6 @@ import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -89,7 +88,7 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  */
 public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
-    private final List<EventEnt> m_events = Collections.synchronizedList(new ArrayList<>());
+    private final List<Object> m_events = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * @param entityResultChecker

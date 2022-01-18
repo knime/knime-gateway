@@ -50,7 +50,6 @@ package org.knime.gateway.testing.helper;
 
 import java.util.function.BiConsumer;
 
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.service.EventService;
 
 /**
@@ -65,6 +64,6 @@ public interface EventSource {
      *
      * @param c the callback
      */
-    void setEventConsumer(BiConsumer<String, EventEnt> c);
+    void setEventConsumer(BiConsumer<String, Object> c);
 
 }

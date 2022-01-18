@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.webui.service.events.EventSource;
+import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
 /**
@@ -81,10 +81,9 @@ public final class DefaultEventService implements EventService {
         return INSTANCE;
     }
 
-    private final List<BiConsumer<String, EventEnt>> m_eventConsumer = new ArrayList<>();
+    private final List<BiConsumer<String, Object>> m_eventConsumer = new ArrayList<>();
 
-    private final Map<Class<? extends EventTypeEnt>, EventSource<? extends EventTypeEnt>> m_eventSources =
-        new HashMap<>();
+    private final Map<Class<?>, EventSource<?, ?>> m_eventSources = new HashMap<>();
 
     /*
      * For testing purposes only.
@@ -109,7 +108,11 @@ public final class DefaultEventService implements EventService {
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
-        eventSource.addEventListener(eventTypeEnt);
+        try {
+            eventSource.addEventListener(eventTypeEnt);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -137,11 +140,11 @@ public final class DefaultEventService implements EventService {
      *
      * @param eventConsumer the event consumer to add
      */
-    public void addEventConsumer(final BiConsumer<String, EventEnt> eventConsumer) {
+    public void addEventConsumer(final BiConsumer<String, Object> eventConsumer) {
         m_eventConsumer.add(eventConsumer);
     }
 
-    void setEventConsumerForTesting(final BiConsumer<String, EventEnt> eventConsumer,
+    void setEventConsumerForTesting(final BiConsumer<String, Object> eventConsumer,
         final Runnable preEventCreationCallback) {
         m_eventConsumer.clear();
         m_eventSources.values().forEach(s -> s.setPreEventCreationCallback(preEventCreationCallback));
@@ -154,11 +157,11 @@ public final class DefaultEventService implements EventService {
      *
      * @param eventConsumer the consumer to remove
      */
-    public void removeEventConsumer(final BiConsumer<String, EventEnt> eventConsumer) {
+    public void removeEventConsumer(final BiConsumer<String, Object> eventConsumer) {
         m_eventConsumer.remove(eventConsumer); // NOSONAR
     }
 
-    private synchronized void sendEvent(final String name, final EventEnt event) {
+    private synchronized void sendEvent(final String name, final Object event) {
         if (m_eventConsumer.isEmpty()) {
             var message = "Events available but no one is interested. Most likely an implementation error.";
             NodeLogger.getLogger(getClass()).error(message);
@@ -173,7 +176,7 @@ public final class DefaultEventService implements EventService {
     /*
      * For testing purposes only!
      */
-    EventSource<? extends EventTypeEnt> getEventSource(final Class<? extends EventTypeEnt> eventTypeEnt) {
+    EventSource<?, ?> getEventSource(final Class<? extends EventTypeEnt> eventTypeEnt) {
         return m_eventSources.get(eventTypeEnt);
     }
 

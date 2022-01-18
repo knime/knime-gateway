@@ -75,7 +75,6 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
@@ -183,7 +182,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         }
     }
 
-    private static class TestEventConsumer implements BiConsumer<String, EventEnt> {
+    private static class TestEventConsumer implements BiConsumer<String, Object> {
 
         private List<WorkflowChangedEventEnt> m_events = new ArrayList<>();
 
@@ -194,7 +193,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         }
 
         @Override
-        public void accept(final String t, final EventEnt u) {
+        public void accept(final String t, final Object u) {
             m_events.add((WorkflowChangedEventEnt)u);
             m_lock.lock();
             m_lock.unlock();
