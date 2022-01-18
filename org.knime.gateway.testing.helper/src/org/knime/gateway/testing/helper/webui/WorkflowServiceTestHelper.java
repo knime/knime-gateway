@@ -435,6 +435,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
             is(nullValue()));
 
+        // deletion a connection between a node and a port leaving a metanode
+        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow().getConnections().get("root:6_1"),
+            is(notNullValue()));
+        ws().executeWorkflowCommand(wfId, new NodeIDEnt(6),
+            createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt("root:6_1")), emptyList()));
+        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow().getConnections().get("root:6_1"),
+            is(nullValue()));
+
         // delete a node within a metanode
         assertThat("node expected to be present",
             ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"),
@@ -492,6 +500,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
         assertThat(ex.getMessage(), is("Some connections can't be deleted. Delete operation aborted."));
+
     }
 
     static DeleteCommandEnt createDeleteCommandEnt(final List<NodeIDEnt> nodeIds,
