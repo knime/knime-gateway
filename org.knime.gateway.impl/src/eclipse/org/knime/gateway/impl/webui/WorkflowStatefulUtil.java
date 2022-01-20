@@ -279,7 +279,7 @@ public final class WorkflowStatefulUtil {
         if (includeInteractioInfo) {
             buildContextBuilder.canUndo(canUndoCommand(wfKey))//
                 .canRedo(canRedoCommand(wfKey))//
-                .dependentNodeProperties(() -> dependentNodeProperties(wfKey, changes));
+                .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey, changes));
         }
         WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, () -> buildContextBuilder, changes);
         if (wfEnt == null) {
@@ -298,7 +298,7 @@ public final class WorkflowStatefulUtil {
         return m_workflowCache.containsKey(wfKey);
     }
 
-    private DependentNodeProperties dependentNodeProperties(final WorkflowKey wfKey, final WorkflowChanges changes) {
+    private DependentNodeProperties getDependentNodeProperties(final WorkflowKey wfKey, final WorkflowChanges changes) {
         // dependent node properties are only re-calculated if there are respective changes
         // otherwise a cached instance is used
         WorkflowState ws = workflowState(wfKey);

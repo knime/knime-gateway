@@ -225,7 +225,7 @@ public final class DependentNodeProperties {
             var added = false;
 
             props.setHasExecutingSuccessors(isExecutionInProgress(nodeState));
-            if (isExecuting(nodeState)) {
+            if (isExecuting(nc)) {
                 hasExecutingSuccessors.add(nodeId);
                 added = true;
             }
@@ -285,8 +285,37 @@ public final class DependentNodeProperties {
         return s.isExecutionInProgress() || s.isExecutingRemotely();
     }
 
-    private static boolean isExecuting(final NodeContainerState s) {
-        return (s.isExecutionInProgress() && !s.isWaitingToBeExecuted()) || s.isExecutingRemotely();
+    private static boolean isExecuting(final NodeContainer nc) {
+        var nodeContainerState = nc.getNodeContainerState();
+        if (nodeContainerState.isExecutingRemotely()) {
+            return true;
+        }
+        if (!nodeContainerState.isExecutionInProgress()) {
+            return false;
+        }
+        if (!nodeContainerState.isWaitingToBeExecuted()) {
+            return true;
+        }
+        // Here, we exclude states in `isWaitingToBeExecuted`, since such nodes should generally not be considered start
+        //   nodes for propagating the `hasExecutingSuccessors` property upstream.
+        // However, for some given node, a downstream paused loop-end-node has to be considered an executing successor
+        //   (affecting e.g. whether the node can be reset, cf NXT-641). In other words, such loop-end nodes have to be
+        //   considered "executing" in the sense of this method. The loop-paused property is not modelled in the
+        //   NodeContainerState but instead has to be obtained via the loop context (NativeNodeContainer#getLoopStatus).
+        // In the classic AP UI, determination of executing successors w.r.t allowing reset of a node checks only
+        //  `NodeContainerState#isExecutioninProgress` (which will also apply to paused loop-end nodes), cf `ResetAction`.
+        //   This is sufficient there, since the search is always started from the node of which we want to determine
+        //   executing successors.
+        var nodeLoopState = getLoopStatus(nc);
+        return nodeLoopState == NativeNodeContainer.LoopStatus.PAUSED || nodeLoopState == NativeNodeContainer.LoopStatus.RUNNING;
+    }
+
+    private static NativeNodeContainer.LoopStatus getLoopStatus(final NodeContainer nc) {
+        if (!(nc instanceof NativeNodeContainer)) {
+            return NativeNodeContainer.LoopStatus.NONE;
+        }
+        NativeNodeContainer nnc = (NativeNodeContainer)nc;
+        return nnc.getLoopStatus();
     }
 
     private boolean hasExecutablePredecessorVisitor(final NodeID id) {
