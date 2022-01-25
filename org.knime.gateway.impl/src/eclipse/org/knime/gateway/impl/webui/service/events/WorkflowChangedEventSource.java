@@ -113,7 +113,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     @SuppressWarnings("resource")
     @Override
     public Optional<WorkflowChangedEventEnt>
-        addEventListenerAndGetInitialEvent(final WorkflowChangedEventTypeEnt wfEventType) {
+        addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType) {
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         try {
             WorkflowUtil.assertWorkflowExists(workflowKey);

@@ -109,7 +109,7 @@ public final class DefaultEventService implements EventService {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
         try {
-            eventSource.addEventListener(eventTypeEnt);
+            eventSource.addEventListenerFor(eventTypeEnt);
         } catch (IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         }
