@@ -1,8 +1,8 @@
 {
   "allowedActions" : {
-    "canPause" : false,
-    "canResume" : true,
-    "canStep" : true
+    "canPause" : true,
+    "canResume" : false,
+    "canStep" : false
   },
   "status" : "PAUSED"
 }
