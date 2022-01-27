@@ -53,6 +53,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -66,6 +67,8 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.workflow.FlowLoopContext;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
@@ -252,4 +255,19 @@ public final class CoreUtil {
         return url;
     }
 
+    /**
+     * Obtain the loop context of the given node, if any.
+     * @param nnc The node container to get the loop context for.
+     * @return An Optional containing the loop context if available, else an empty Optional.
+     */
+    static Optional<FlowLoopContext> getLoopContext(final NativeNodeContainer nnc) {
+        // Node#getLoopContext does not suffice since this field is only set after the first
+        //  loop iteration is completed.
+        var loopContext = nnc.getFlowObjectStack().peek(FlowLoopContext.class);
+        if (loopContext == null) {
+            // The loop head node produces the FlowLoopContext, hence it is not available on the stack yet.
+            loopContext = nnc.getOutgoingFlowObjectStack().peek(FlowLoopContext.class);
+        }
+        return Optional.ofNullable(loopContext);
+    }
 }

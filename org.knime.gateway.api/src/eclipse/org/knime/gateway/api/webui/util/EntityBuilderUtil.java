@@ -367,7 +367,7 @@ public final class EntityBuilderUtil {
      * @return an entity representing the node description.
      * @throws ServiceExceptions.NodeDescriptionNotAvailableException if node description could not be obtained.
      */
-    public static NativeNodeDescriptionEnt buildNativeNodeDescriptionEnt(Node coreNode)
+    public static NativeNodeDescriptionEnt buildNativeNodeDescriptionEnt(final Node coreNode)
             throws ServiceExceptions.NodeDescriptionNotAvailableException {
 
         NodeDescription nodeDescription = coreNode.invokeGetNodeDescription();
@@ -1108,11 +1108,30 @@ public final class EntityBuilderUtil {
         StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
         AllowedLoopActionsEnt allowedActions = null;
         if (buildContext.includeInteractionInfo()) {
+            // Resume and step should not be enabled if nodes in the loop body are currently executing (this includes
+            // outgoing branches) ...
+            boolean hasExecutingLoopBody = buildContext.dependentNodeProperties().hasExecutingLoopBody(nc);
+            // ... and not if the tail node is currently waiting due to other reasons, such as (cf. AP-18329)
+            //      - a node upstream of the corresponding head is currently executing
+            //      - a tail node of a nested loop is currently paused
+            // It suffices to check only the direct predecessor since the "waiting" node state is propagated downstream.
+            // We only need to check predecessors in the current workflow: Since scopes cannot leave workflows, for any
+            //  validly constructed loop, both head and tail have to be in the workflow and the tail has to be reachable
+            //  from the head. Consequently, the direct predecessor of a tail cannot be outside the current workflow.
+            boolean hasWaitingPredecessor = buildContext.dependentNodeProperties().hasWaitingPredecessor(nc);
+            boolean isPaused = status == StatusEnum.PAUSED;
+            boolean canExecuteDirectly = nc.getParent().canExecuteNodeDirectly(nc.getID());
+
+            boolean canResume = isPaused && !hasExecutingLoopBody && !hasWaitingPredecessor;
+            boolean canPause = !canResume && nc.getNodeContainerState().isExecutionInProgress();
+            // Either the node is paused or we can execute it directly (then this will be the first step)
+            boolean canStep = canResume || canExecuteDirectly ;
+
             allowedActions = builder(AllowedLoopActionsEntBuilder.class)//
-                .setCanPause(nc.getNodeContainerState().isExecutionInProgress() && status != StatusEnum.PAUSED)//
-                .setCanResume(status == StatusEnum.PAUSED)//
-                // either the node is paused or we can execute it (then this will be the first step)
-                .setCanStep(status == StatusEnum.PAUSED || nc.getParent().canExecuteNodeDirectly(nc.getID())).build();
+                .setCanPause(canPause)//
+                .setCanResume(canResume)//
+                .setCanStep(canStep)
+                .build();
         }
         return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
     }
