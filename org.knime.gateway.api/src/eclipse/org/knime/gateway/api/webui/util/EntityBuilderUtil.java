@@ -1108,32 +1108,103 @@ public final class EntityBuilderUtil {
         StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
         AllowedLoopActionsEnt allowedActions = null;
         if (buildContext.includeInteractionInfo()) {
+            allowedActions = LoopState.getAllowedActions(nc, buildContext.dependentNodeProperties());
+        }
+        return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
+    }
+
+    /**
+     * Characterisations of different loop states for determining allowed actions.
+     * This is not part of the API, see {@link StatusEnum} instead.
+     */
+    private enum LoopState {
+
+        /** Initial state, no loop iteration has been performed yet */
+        READY,
+        /** Loop is currently performing "full" execution (not step) */
+        RUNNING,
+        /** Loop is currently executing and will be paused after this iteration (e.g. due to step execution, or pause action) */
+        PAUSE_PENDING,
+        /** Loop is currently executing and is currently in paused state */
+        PAUSED,
+        /** Loop is fully executed */
+        DONE;
+
+        /**
+         * @param tail The node to consider
+         * @param nodeProps The current dependent node properties
+         * @return The state of the given node.
+         */
+        static LoopState get(final NativeNodeContainer tail, final DependentNodeProperties nodeProps) {
+            boolean canExecuteDirectly = tail.getParent().canExecuteNodeDirectly(tail.getID());
+            NativeNodeContainer.LoopStatus loopStatus = tail.getLoopStatus();
             // Resume and step should not be enabled if nodes in the loop body are currently executing (this includes
             // outgoing branches) ...
-            boolean hasExecutingLoopBody = buildContext.dependentNodeProperties().hasExecutingLoopBody(nc);
-            // ... and not if the tail node is currently waiting due to other reasons, such as (cf. AP-18329)
+            boolean hasExecutingLoopBody = nodeProps.hasExecutingLoopBody(tail);
+            // ... and not if the tail node is currently waiting due to other reasons, such as... (cf. AP-18329)
             //      - a node upstream of the corresponding head is currently executing
             //      - a tail node of a nested loop is currently paused
             // It suffices to check only the direct predecessor since the "waiting" node state is propagated downstream.
             // We only need to check predecessors in the current workflow: Since scopes cannot leave workflows, for any
             //  validly constructed loop, both head and tail have to be in the workflow and the tail has to be reachable
             //  from the head. Consequently, the direct predecessor of a tail cannot be outside the current workflow.
-            boolean hasWaitingPredecessor = buildContext.dependentNodeProperties().hasWaitingPredecessor(nc);
-            boolean isPaused = status == StatusEnum.PAUSED;
-            boolean canExecuteDirectly = nc.getParent().canExecuteNodeDirectly(nc.getID());
-
-            boolean canResume = isPaused && !hasExecutingLoopBody && !hasWaitingPredecessor;
-            boolean canPause = !canResume && nc.getNodeContainerState().isExecutionInProgress();
-            // Either the node is paused or we can execute it directly (then this will be the first step)
-            boolean canStep = canResume || canExecuteDirectly ;
-
-            allowedActions = builder(AllowedLoopActionsEntBuilder.class)//
-                .setCanPause(canPause)//
-                .setCanResume(canResume)//
-                .setCanStep(canStep)
-                .build();
+            boolean hasWaitingPredecessor = nodeProps.hasWaitingPredecessor(tail);
+            boolean loopBodyActive = hasExecutingLoopBody || hasWaitingPredecessor;
+            if (canExecuteDirectly) {
+                return READY;
+            } else if(loopStatus == NativeNodeContainer.LoopStatus.RUNNING) {
+                return RUNNING;
+            } else if (loopStatus == NativeNodeContainer.LoopStatus.PAUSED) {
+                if (loopBodyActive) {
+                    return PAUSE_PENDING;
+                } else {
+                    return PAUSED;
+                }
+            } else {
+                return DONE;
+            }
         }
-        return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
+
+        /**
+         * Determine the loop state of the given node, and based on it determine the allowed actions.
+         * @param tail The node to consider
+         * @param nodeProps The current dependent node properties
+         * @return The allowed actions for the given node
+         */
+        static AllowedLoopActionsEnt getAllowedActions(final NativeNodeContainer tail, final DependentNodeProperties nodeProps) {
+            LoopState loopState = LoopState.get(tail, nodeProps);
+            boolean canPause, canResume, canStep;
+            // Comments indicate state transitions triggered by the corresponding actions (cf. NXT-848).
+            if (loopState == LoopState.READY) {
+                // "execute" action is set by `buildAllowedNodeActionsEnt` -> RUNNING
+                canPause = false;
+                canResume = false;
+                canStep = true;   // -> PAUSE_PENDING
+            } else if (loopState == LoopState.RUNNING) {
+                canPause = true;  // -> PAUSE_PENDING
+                canStep = false;
+                canResume = false;
+            } else if (loopState == LoopState.PAUSE_PENDING) {
+                // backend: -> PAUSED  or  -> DONE
+                canPause = false;
+                canStep = false;
+                canResume = false;
+            } else if (loopState == LoopState.PAUSED) {
+                canPause = false;
+                canStep = true;   // -> PAUSE_PENDING
+                canResume = true; // -> RUNNING
+            } else {
+                canPause = false;
+                canStep = false;
+                canResume = false;
+            }
+
+            return builder(AllowedLoopActionsEntBuilder.class)
+                    .setCanPause(canPause)
+                    .setCanResume(canResume)
+                    .setCanStep(canStep)
+                    .build();
+        }
     }
 
     private static ExecutionStateEnum getNodeExecutionStateEnum(final NodeContainerState ncState) { // NOSONAR
