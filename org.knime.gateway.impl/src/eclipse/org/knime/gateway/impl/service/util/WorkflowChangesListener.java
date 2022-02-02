@@ -51,6 +51,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +61,7 @@ import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionProgressListener;
 import org.knime.core.node.workflow.LoopStatusChangeListener;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessageListener;
@@ -217,9 +219,11 @@ public class WorkflowChangesListener implements Closeable {
         NodeMessageListener nml = e -> callback();
         m_nodeMessageListeners.put(nc.getID(), nml);
         nc.addNodeMessageListener(nml);
-        LoopStatusChangeListener l = this::callback;
-        m_loopStatusChangeListeners.put(nc.getID(), l);
-        nc.getLoopStatusChangeHandler().addLoopPausedListener(l);
+        getNNC(nc).ifPresent(nnc -> nnc.getLoopStatusChangeHandler().ifPresent(h -> {
+            LoopStatusChangeListener l = this::callback;
+            m_loopStatusChangeListeners.put(nc.getID(), l);
+            h.addLoopPausedListener(l);
+        }));
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
@@ -229,12 +233,17 @@ public class WorkflowChangesListener implements Closeable {
         nc.removeUIInformationListener(m_nodeUIListeners.get(id));
         nc.getNodeAnnotation().removeUIInformationListener(m_nodeUIListeners.get(id));
         nc.removeNodeMessageListener(m_nodeMessageListeners.get(id));
-        nc.getLoopStatusChangeHandler().removeLoopPausedListener(m_loopStatusChangeListeners.get(id));
+        getNNC(nc).ifPresent(nnc -> nnc.getLoopStatusChangeHandler()
+            .ifPresent(h -> h.removeLoopPausedListener(m_loopStatusChangeListeners.get(id))));
         m_nodeStateChangeListeners.remove(id);
         m_progressListeners.remove(id);
         m_nodeUIListeners.remove(id);
         m_nodeMessageListeners.remove(id);
         m_loopStatusChangeListeners.remove(id);
+    }
+
+    private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
+        return (nc instanceof NativeNodeContainer) ? Optional.of((NativeNodeContainer)nc) : Optional.empty();
     }
 
     private void addConnectionListener(final ConnectionContainer cc) {

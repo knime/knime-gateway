@@ -1137,7 +1137,7 @@ public final class EntityBuilderUtil {
          */
         static LoopState get(final NativeNodeContainer tail, final WorkflowBuildContext buildContext) {
             boolean canExecuteDirectly = tail.getParent().canExecuteNodeDirectly(tail.getID());
-            NativeNodeContainer.LoopStatus loopStatus = tail.getLoopStatus();
+            var loopStatus = tail.getLoopStatus();
             // Resume and step should not be enabled if nodes in the loop body are currently executing (this includes
             // outgoing dangling branches) ...
             boolean hasExecutingLoopBody = buildContext.dependentNodeProperties().hasExecutingLoopBody(tail);
@@ -1148,7 +1148,7 @@ public final class EntityBuilderUtil {
             // We only need to check predecessors in the current workflow: Since scopes cannot leave workflows, for any
             //  validly constructed loop, both head and tail have to be in the workflow and the tail has to be reachable
             //  from the head. Consequently, the direct predecessor of a tail cannot be outside the current workflow.
-            boolean hasWaitingPredecessor = CoreUtil.hasWaitingPredecessor(tail, buildContext.wfm());
+            boolean hasWaitingPredecessor = CoreUtil.hasWaitingPredecessor(tail.getID(), buildContext.wfm());
             boolean loopBodyActive = hasExecutingLoopBody || hasWaitingPredecessor;
             if (canExecuteDirectly) {
                 return READY;

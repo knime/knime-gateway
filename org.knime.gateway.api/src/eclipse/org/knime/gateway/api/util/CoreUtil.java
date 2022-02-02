@@ -281,18 +281,19 @@ public final class CoreUtil {
     /**
      * Determine whether the given node has a *direct* predecessor that is currently waiting to be executed. Does not
      * check predecessors outside the current workflow (e.g. via connections coming into a metanode).
-     * @param node The node to consider the predecessors of.
+     * @param id The id of the node to consider the predecessors of.
+     * @param wfm the workflow manager containing the node
      * @return {@code true} iff the node has a direct predecessor that is currently waiting to be executed. If the node
      *      is not in the given workflow manager, {@code false} is returned.
      */
-    public static boolean hasWaitingPredecessor(final NativeNodeContainer node, final WorkflowManager wfm) {
-        return predecessors(node.getID(), wfm).stream()
+    public static boolean hasWaitingPredecessor(final NodeID id, final WorkflowManager wfm) {
+        return predecessors(id, wfm).stream()
                 .map(wfm::getNodeContainer)
                 .map(NodeContainer::getNodeContainerState)
                 .anyMatch(NodeContainerState::isWaitingToBeExecuted);
     }
 
-    public static Set<NodeID> predecessors(final NodeID id, final WorkflowManager wfm) {
+    static Set<NodeID> predecessors(final NodeID id, final WorkflowManager wfm) {
         if (wfm.containsNodeContainer(id)) {
             return wfm.getIncomingConnectionsFor(id).stream().map(ConnectionContainer::getSource)
                     .filter(source -> !source.equals(wfm.getID())).collect(Collectors.toSet());
@@ -301,7 +302,7 @@ public final class CoreUtil {
         }
     }
 
-    public static Set<NodeID> successors(final NodeID id, final WorkflowManager wfm) {
+    static Set<NodeID> successors(final NodeID id, final WorkflowManager wfm) {
         if (wfm.containsNodeContainer(id)) {
             return wfm.getOutgoingConnectionsFor(id).stream().map(ConnectionContainer::getDest)
                     .filter(dest -> !dest.equals(wfm.getID())).collect(Collectors.toSet());
