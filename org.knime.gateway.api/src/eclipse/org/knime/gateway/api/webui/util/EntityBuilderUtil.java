@@ -436,7 +436,7 @@ public final class EntityBuilderUtil {
     private static List<NodeViewDescriptionEnt> buildNodeViewDescriptionEnts(final int nrViews,
         final NodeDescription nodeDescription) {
         if (nrViews < 1) {
-            return null;
+            return null;  // NOSONAR: returning null is useful here
         }
         return IntStream.range(0, nrViews).mapToObj(index -> //
         builder(NodeViewDescriptionEntBuilder.class) //
@@ -483,7 +483,7 @@ public final class EntityBuilderUtil {
 
     private static List<NodeDialogOptionGroupEnt> buildUngroupedDialogOptionGroupEnt(final List<NodeDialogOptionDescriptionEnt> ungroupedOptionEnts) {
         if (Objects.isNull(ungroupedOptionEnts) || ungroupedOptionEnts.isEmpty()) {
-            return null;
+            return null;  // NOSONAR: returning null is useful here
         }
         return Collections.singletonList(
                 builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
@@ -527,7 +527,7 @@ public final class EntityBuilderUtil {
      */
     private static <I, O> List<O> listMapOrNull(final List<I> input, final Function<I, O> transformation) {
         if (input == null || input.isEmpty()) {
-            return null;
+            return null;  // NOSONAR: returning null is useful here
         }
         return input.stream().map(transformation).collect(toList());
     }
@@ -1108,7 +1108,7 @@ public final class EntityBuilderUtil {
         StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
         AllowedLoopActionsEnt allowedActions = null;
         if (buildContext.includeInteractionInfo()) {
-            allowedActions = LoopState.getAllowedActions(nc, buildContext.dependentNodeProperties());
+            allowedActions = LoopState.getAllowedActions(nc, buildContext);
         }
         return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
     }
@@ -1132,15 +1132,15 @@ public final class EntityBuilderUtil {
 
         /**
          * @param tail The node to consider
-         * @param nodeProps The current dependent node properties
+         * @param buildContext The workflow build context
          * @return The state of the given node.
          */
-        static LoopState get(final NativeNodeContainer tail, final DependentNodeProperties nodeProps) {
+        static LoopState get(final NativeNodeContainer tail, final WorkflowBuildContext buildContext) {
             boolean canExecuteDirectly = tail.getParent().canExecuteNodeDirectly(tail.getID());
             NativeNodeContainer.LoopStatus loopStatus = tail.getLoopStatus();
             // Resume and step should not be enabled if nodes in the loop body are currently executing (this includes
-            // outgoing branches) ...
-            boolean hasExecutingLoopBody = nodeProps.hasExecutingLoopBody(tail);
+            // outgoing dangling branches) ...
+            boolean hasExecutingLoopBody = buildContext.dependentNodeProperties().hasExecutingLoopBody(tail);
             // ... and not if the tail node is currently waiting due to other reasons, such as... (cf. AP-18329)
             //      - a node upstream of the corresponding head is currently executing
             //      - a tail node of a nested loop is currently paused
@@ -1148,7 +1148,7 @@ public final class EntityBuilderUtil {
             // We only need to check predecessors in the current workflow: Since scopes cannot leave workflows, for any
             //  validly constructed loop, both head and tail have to be in the workflow and the tail has to be reachable
             //  from the head. Consequently, the direct predecessor of a tail cannot be outside the current workflow.
-            boolean hasWaitingPredecessor = nodeProps.hasWaitingPredecessor(tail);
+            boolean hasWaitingPredecessor = CoreUtil.hasWaitingPredecessor(tail, buildContext.wfm());
             boolean loopBodyActive = hasExecutingLoopBody || hasWaitingPredecessor;
             if (canExecuteDirectly) {
                 return READY;
@@ -1168,12 +1168,14 @@ public final class EntityBuilderUtil {
         /**
          * Determine the loop state of the given node, and based on it determine the allowed actions.
          * @param tail The node to consider
-         * @param nodeProps The current dependent node properties
+         * @param buildContext The current dependent node properties
          * @return The allowed actions for the given node
          */
-        static AllowedLoopActionsEnt getAllowedActions(final NativeNodeContainer tail, final DependentNodeProperties nodeProps) {
-            LoopState loopState = LoopState.get(tail, nodeProps);
-            boolean canPause, canResume, canStep;
+        static AllowedLoopActionsEnt getAllowedActions(final NativeNodeContainer tail, final WorkflowBuildContext buildContext) {
+            var loopState = LoopState.get(tail, buildContext);
+            boolean canPause;
+            boolean canResume;
+            boolean canStep;
             // Comments indicate state transitions triggered by the corresponding actions (cf. NXT-848).
             if (loopState == LoopState.READY) {
                 // "execute" action is set by `buildAllowedNodeActionsEnt` -> RUNNING
@@ -1193,7 +1195,7 @@ public final class EntityBuilderUtil {
                 canPause = false;
                 canStep = true;   // -> PAUSE_PENDING
                 canResume = true; // -> RUNNING
-            } else {
+            } else { // DONE -- NOSONAR: readability
                 canPause = false;
                 canStep = false;
                 canResume = false;

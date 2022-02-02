@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.api.util;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -57,9 +56,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
@@ -200,19 +197,15 @@ public final class DependentNodeProperties {
     }
 
     private void updateHasExecutablePredecessorsProperties(final Queue<NodeID> startNodes) {
-        iterateNodes(startNodes, this::hasExecutablePredecessorVisitor, id -> successors(id, m_wfm));
+        iterateNodes(startNodes, this::hasExecutablePredecessorVisitor, id -> CoreUtil.successors(id, m_wfm));
     }
 
     private void updateHasExecutingSuccessorsProperties(final Queue<NodeID> startNodes) {
-        iterateNodes(startNodes, this::hasExecutingSuccessorVisitor, id -> predecessors(id, m_wfm));
+        iterateNodes(startNodes, this::hasExecutingSuccessorVisitor, id -> CoreUtil.predecessors(id, m_wfm));
     }
 
     private void updateHasPausedSuccessorsProperties(final Queue<NodeID> startNodes) {
-        iterateNodes(startNodes, this::hasPausedSuccessorVisitor, id -> predecessors(id, m_wfm));
-    }
-
-    private static boolean isComponentWFM(final WorkflowManager wfm) {
-        return wfm.getDirectNCParent() instanceof SubNodeContainer;
+        iterateNodes(startNodes, this::hasPausedSuccessorVisitor, id -> CoreUtil.predecessors(id, m_wfm));
     }
 
     private static void removeSurplusNodes(final WorkflowManager wfm, final Map<NodeID, Properties> props) {
@@ -231,23 +224,6 @@ public final class DependentNodeProperties {
         }
     }
 
-    private static Set<NodeID> predecessors(final NodeID id, final WorkflowManager wfm) {
-        if (wfm.containsNodeContainer(id)) {
-            return wfm.getIncomingConnectionsFor(id).stream().map(ConnectionContainer::getSource)
-                .filter(source -> !source.equals(wfm.getID())).collect(Collectors.toSet());
-        } else {
-            return Collections.emptySet();
-        }
-    }
-
-    private static Set<NodeID> successors(final NodeID id, final WorkflowManager wfm) {
-        if (wfm.containsNodeContainer(id)) {
-            return wfm.getOutgoingConnectionsFor(id).stream().map(ConnectionContainer::getDest)
-                .filter(dest -> !dest.equals(wfm.getID())).collect(Collectors.toSet());
-        } else {
-            return Collections.emptySet();
-        }
-    }
 
     private static void findAndInitStartNodes(final WorkflowManager wfm, final Map<NodeID, Properties> propsMap, final Queue<NodeID> hasExecutingSuccessors, final Queue<NodeID> hasExecutablePredecessors,
             final LinkedList<NodeID> hasPausedSuccessors) {
@@ -338,19 +314,6 @@ public final class DependentNodeProperties {
         }
         var nnc = (NativeNodeContainer)nc;
         return nnc.isModelCompatibleTo(LoopEndNode.class) && nnc.getLoopStatus() == NativeNodeContainer.LoopStatus.PAUSED;
-    }
-
-    /**
-     * Determine whether the given node has a direct predecessor that is currently waiting to be executed. Does not
-     * check predecessors outside the current workflow (e.g. via connections coming into a metanode).
-     * @param node The node to consider the predecessors of.
-     * @return True iff the node has a direct predecessor that is currently waiting to be executed.
-     */
-    public boolean hasWaitingPredecessor(final NativeNodeContainer node) {
-        return predecessors(node.getID(), m_wfm).stream()
-                .map(m_wfm::getNodeContainer)
-                .map(NodeContainer::getNodeContainerState)
-                .anyMatch(NodeContainerState::isWaitingToBeExecuted);
     }
 
     private boolean hasExecutablePredecessorVisitor(final NodeID id) {

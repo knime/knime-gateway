@@ -53,8 +53,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -67,11 +70,15 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowLoopContext;
+import org.knime.core.node.workflow.LoopStartNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowContext;
@@ -263,11 +270,43 @@ public final class CoreUtil {
     static Optional<FlowLoopContext> getLoopContext(final NativeNodeContainer nnc) {
         // Node#getLoopContext does not suffice since this field is only set after the first
         //  loop iteration is completed.
-        var loopContext = nnc.getFlowObjectStack().peek(FlowLoopContext.class);
-        if (loopContext == null) {
+        if (nnc.isModelCompatibleTo(LoopStartNode.class)) {
             // The loop head node produces the FlowLoopContext, hence it is not available on the stack yet.
-            loopContext = nnc.getOutgoingFlowObjectStack().peek(FlowLoopContext.class);
+            return Optional.ofNullable(nnc.getOutgoingFlowObjectStack().peek(FlowLoopContext.class));
+        } else {
+            return Optional.ofNullable(nnc.getFlowObjectStack().peek(FlowLoopContext.class));
         }
-        return Optional.ofNullable(loopContext);
+    }
+
+    /**
+     * Determine whether the given node has a *direct* predecessor that is currently waiting to be executed. Does not
+     * check predecessors outside the current workflow (e.g. via connections coming into a metanode).
+     * @param node The node to consider the predecessors of.
+     * @return {@code true} iff the node has a direct predecessor that is currently waiting to be executed. If the node
+     *      is not in the given workflow manager, {@code false} is returned.
+     */
+    public static boolean hasWaitingPredecessor(final NativeNodeContainer node, final WorkflowManager wfm) {
+        return predecessors(node.getID(), wfm).stream()
+                .map(wfm::getNodeContainer)
+                .map(NodeContainer::getNodeContainerState)
+                .anyMatch(NodeContainerState::isWaitingToBeExecuted);
+    }
+
+    public static Set<NodeID> predecessors(final NodeID id, final WorkflowManager wfm) {
+        if (wfm.containsNodeContainer(id)) {
+            return wfm.getIncomingConnectionsFor(id).stream().map(ConnectionContainer::getSource)
+                    .filter(source -> !source.equals(wfm.getID())).collect(Collectors.toSet());
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
+    public static Set<NodeID> successors(final NodeID id, final WorkflowManager wfm) {
+        if (wfm.containsNodeContainer(id)) {
+            return wfm.getOutgoingConnectionsFor(id).stream().map(ConnectionContainer::getDest)
+                    .filter(dest -> !dest.equals(wfm.getID())).collect(Collectors.toSet());
+        } else {
+            return Collections.emptySet();
+        }
     }
 }

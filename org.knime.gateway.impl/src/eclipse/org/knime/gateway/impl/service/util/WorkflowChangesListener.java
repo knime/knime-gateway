@@ -59,6 +59,7 @@ import java.util.function.Consumer;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionProgressListener;
+import org.knime.core.node.workflow.LoopStatusChangeListener;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessageListener;
@@ -90,6 +91,8 @@ public class WorkflowChangesListener implements Closeable {
     private final Map<NodeID, NodeUIInformationListener> m_nodeUIListeners = new HashMap<>();
 
     private final Map<NodeID, NodeMessageListener> m_nodeMessageListeners = new HashMap<>();
+
+    private final Map<NodeID, LoopStatusChangeListener> m_loopStatusChangeListeners = new HashMap<>();
 
     private final Map<WorkflowAnnotationID, NodeUIInformationListener> m_workflowAnnotationListeners = new HashMap<>();
 
@@ -214,6 +217,9 @@ public class WorkflowChangesListener implements Closeable {
         NodeMessageListener nml = e -> callback();
         m_nodeMessageListeners.put(nc.getID(), nml);
         nc.addNodeMessageListener(nml);
+        LoopStatusChangeListener l = this::callback;
+        m_loopStatusChangeListeners.put(nc.getID(), l);
+        nc.getLoopStatusChangeHandler().addLoopPausedListener(l);
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
@@ -223,10 +229,12 @@ public class WorkflowChangesListener implements Closeable {
         nc.removeUIInformationListener(m_nodeUIListeners.get(id));
         nc.getNodeAnnotation().removeUIInformationListener(m_nodeUIListeners.get(id));
         nc.removeNodeMessageListener(m_nodeMessageListeners.get(id));
+        nc.getLoopStatusChangeHandler().removeLoopPausedListener(m_loopStatusChangeListeners.get(id));
         m_nodeStateChangeListeners.remove(id);
         m_progressListeners.remove(id);
         m_nodeUIListeners.remove(id);
         m_nodeMessageListeners.remove(id);
+        m_loopStatusChangeListeners.remove(id);
     }
 
     private void addConnectionListener(final ConnectionContainer cc) {
