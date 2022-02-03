@@ -283,7 +283,7 @@ public final class EntityBuilderUtil {
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
                 .setAllowedActions(buildContext.includeInteractionInfo()
-                    ? buildAllowedWorkflowActionsEnt(wfm, buildContext.canUndo(), buildContext.canRedo()) : null)//
+                    ? buildAllowedWorkflowActionsEnt(wfm, buildContext) : null)//
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
@@ -833,13 +833,13 @@ public final class EntityBuilderUtil {
     }
 
     private static AllowedWorkflowActionsEnt buildAllowedWorkflowActionsEnt(final WorkflowManager wfm,
-        final boolean canUndo, final boolean canRedo) {
+            WorkflowBuildContext buildContext) {
         return builder(AllowedWorkflowActionsEntBuilder.class)//
-            .setCanReset(wfm.canResetAll())//
+            .setCanReset(buildContext.dependentNodeProperties().canResetAny())
             .setCanExecute(wfm.canExecuteAll())//
             .setCanCancel(wfm.canCancelAll())//
-            .setCanUndo(canUndo)//
-            .setCanRedo(canRedo).build();
+            .setCanUndo(buildContext.canUndo())//
+            .setCanRedo(buildContext.canRedo()).build();
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,

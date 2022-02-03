@@ -179,6 +179,14 @@ public final class DependentNodeProperties {
 
 
     /**
+     * @return True iff at least one node in the workflow can be reset. Here, reset-ability also considers the context
+     *      of the node, e.g. whether it has executing successors.
+     */
+    public boolean canResetAny() {
+        return m_props.keySet().stream().anyMatch(this::canResetNode);
+    }
+
+    /**
      * Calculates the node dependent properties. The respective workflow need to be locked when the calculation is
      * performed.
      */

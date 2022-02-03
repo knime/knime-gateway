@@ -263,6 +263,22 @@ public final class CoreUtil {
     }
 
     /**
+     * @param wfm The workflow manager to search in
+     * @return The set of nodes in the given {@code wfm} that satisfy at least one of these conditions:
+     * <ul>
+     *    <li>The node does not have any incoming connections</li>
+     *    <li>All incoming connections are from a metanode inport</li>
+     * </ul>
+     */
+    public static Set<NodeContainer> getSourceNodes(WorkflowManager wfm) {
+        return wfm.getNodeContainers().stream().filter(nc -> {
+            var incoming = wfm.getIncomingConnectionsFor(nc.getID());
+            return incoming.isEmpty() || incoming.stream().allMatch(cc -> cc.getSource().equals(wfm.getID()));
+        }).collect(Collectors.toSet());
+    }
+
+
+    /**
      * Obtain the loop context of the given node, if any.
      * @param nnc The node container to get the loop context for.
      * @return An Optional containing the loop context if available, else an empty Optional.

@@ -47,7 +47,9 @@ package org.knime.gateway.impl.service.util;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.DynamicNodeFactory;
@@ -65,11 +67,13 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 
@@ -349,27 +353,34 @@ public final class DefaultServiceUtil {
     }
 
     private static void doChangeNodeStates(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
-        if (StringUtils.isBlank(action)) {
-            // if there is no action (null or empty)
-        } else if (action.equals("reset")) {
-            reset(wfm, nodeIDs);
-        } else if (action.equals("cancel")) {
-            cancel(wfm, nodeIDs);
-        } else if (action.equals("execute")) {
-            execute(wfm, nodeIDs);
-        } else {
-            throw new IllegalStateException("Unknown action '" + action + "'");
+        try (WorkflowLock l = wfm.lock()) {
+            if (StringUtils.isBlank(action)) {
+                // if there is no action (null or empty)
+            } else if (action.equals("reset")) {
+                reset(wfm, nodeIDs);
+            } else if (action.equals("cancel")) {
+                cancel(wfm, nodeIDs);
+            } else if (action.equals("execute")) {
+                execute(wfm, nodeIDs);
+            } else {
+                throw new IllegalStateException("Unknown action '" + action + "'");
+            }
         }
     }
 
     private static void reset(final WorkflowManager wfm, final NodeID... nodeIDs) {
-        if (nodeIDs == null || nodeIDs.length == 0) {
-            wfm.resetAndConfigureAll();
+        Stream<NodeID> toReset;
+        if (nodeIDs != null && nodeIDs.length != 0) {
+            // Reset given nodes
+            toReset = Arrays.stream(nodeIDs);
         } else {
-            for (NodeID nodeID : nodeIDs) {
-                wfm.resetAndConfigureNode(nodeID);
-            }
+            // Reset all nodes that can be reset.
+            // Only need to call on source nodes since `resetAndConfigure` will reset and configure all successors, too.
+            toReset = CoreUtil.getSourceNodes(wfm).stream().map(NodeContainer::getID).filter(wfm::canResetNode);
+            // In case a selection is given, we do not need to filter because if not all nodes can be reset, the
+            //    action is not available in the frontend.
         }
+        toReset.forEach(wfm::resetAndConfigureNode);
     }
 
     private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
