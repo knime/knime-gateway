@@ -172,7 +172,7 @@ public final class DependentNodeProperties {
 
         return CoreUtil.getLoopContext(tail).map(loopContext -> {
             boolean sHead = m_props.get(loopContext.getHeadNode()).hasExecutingSuccessors();
-            boolean sTail = m_props.get(tail.getID()).hasExecutingSuccessors();
+            boolean sTail = CoreUtil.successors(tail.getID(), m_wfm).stream().anyMatch(id -> m_props.get(id).hasExecutingSuccessors());
             return sHead && !sTail;
         }).orElse(false);
     }
@@ -377,7 +377,8 @@ public final class DependentNodeProperties {
 
         /**
          * @return Whether the node has a predecessor that is executable. Also considers predecessors across
-         *  component/metanode borders.
+         *  component/metanode borders. The property is boundary-inclusive: An executable node will also have
+         *  this property.
          */
         boolean hasExecutablePredecessors() {
             return m_hasExecutablePredecessors;
@@ -385,7 +386,8 @@ public final class DependentNodeProperties {
 
         /**
          * @return Whether the node has a successor that is currently executing. Also considers successors across
-         *  component/metanode borders.
+         *  component/metanode borders. The property is boundary-inclusive: A currently executing node will also have
+         *  this property.
          */
         boolean hasExecutingSuccessors() {
             return m_hasExecutingSuccessors;

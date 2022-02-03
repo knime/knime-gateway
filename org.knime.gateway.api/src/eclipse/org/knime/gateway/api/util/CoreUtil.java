@@ -309,6 +309,12 @@ public final class CoreUtil {
                 .anyMatch(NodeContainerState::isWaitingToBeExecuted);
     }
 
+    /**
+     * Obtain the direct predecessors of the given node.
+     * @param id The node to get the direct predecessors of.
+     * @param wfm The containing workflow manager
+     * @return The set of nodes that are linked to the given node through connections coming into the given node.
+     */
     static Set<NodeID> predecessors(final NodeID id, final WorkflowManager wfm) {
         if (wfm.containsNodeContainer(id)) {
             return wfm.getIncomingConnectionsFor(id).stream().map(ConnectionContainer::getSource)
@@ -318,6 +324,12 @@ public final class CoreUtil {
         }
     }
 
+    /**
+     * Obtain the direct successors of the given node.
+     * @param id The node to get the direct successors of
+     * @param wfm The containing workflow manager
+     * @return The set of nodes that are linked to the given node through connections outgoing from the given node.
+     */
     static Set<NodeID> successors(final NodeID id, final WorkflowManager wfm) {
         if (wfm.containsNodeContainer(id)) {
             return wfm.getOutgoingConnectionsFor(id).stream().map(ConnectionContainer::getDest)
