@@ -62,9 +62,6 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
@@ -80,14 +77,7 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
-import org.knime.core.node.workflow.WorkflowContext;
-import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor.WorkflowLoadResult;
-import org.knime.core.util.LoadVersion;
-import org.knime.core.util.LockFailedException;
-import org.knime.core.util.Version;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -169,44 +159,6 @@ public final class CoreUtil {
                 .error("Ability to be run in streaming mode couldn't be determined for node " + nodeModelClass, ex);
         }
         return false;
-    }
-
-    /**
-     * Loads a workflow into memory. Mainly copied from {@link org.knime.testing.core.ng.WorkflowLoadTest}.
-     *
-     * @param workflowDir
-     * @return the loaded workflow
-     * @throws IOException
-     * @throws InvalidSettingsException
-     * @throws CanceledExecutionException
-     * @throws UnsupportedWorkflowVersionException
-     * @throws LockFailedException
-     */
-    public static WorkflowManager loadWorkflow(final File workflowDir) throws IOException, InvalidSettingsException,
-        CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
-        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper() {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public WorkflowContext getWorkflowContext() {
-                WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowDir);
-                return fac.createContext();
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public UnknownKNIMEVersionLoadPolicy getUnknownKNIMEVersionLoadPolicy(
-                final LoadVersion workflowKNIMEVersion, final Version createdByKNIMEVersion,
-                final boolean isNightlyBuild) {
-                return UnknownKNIMEVersionLoadPolicy.Try;
-            }
-        };
-
-        WorkflowLoadResult loadRes = WorkflowManager.loadProject(workflowDir, new ExecutionMonitor(), loadHelper);
-        return loadRes.getWorkflowManager();
     }
 
     /**

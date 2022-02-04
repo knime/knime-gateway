@@ -63,6 +63,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests the correctness of the alternative way to determine node properties
@@ -77,7 +78,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 	@SuppressWarnings("javadoc")
     @Before
     public void loadWorklfow() throws Exception {
-        m_wfm = CoreUtil.loadWorkflow(CoreUtil.resolveToFile(
+        m_wfm = WorkflowManagerUtil.loadWorkflow(CoreUtil.resolveToFile(
             "/files/testflows/enhNXT264_AlternativeDeterminationOfDependentNodeProperties", this.getClass()));
     }
 

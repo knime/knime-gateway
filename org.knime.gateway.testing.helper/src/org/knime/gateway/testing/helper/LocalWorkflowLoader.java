@@ -64,6 +64,7 @@ import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Loads a workflow locally.
@@ -93,7 +94,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
-        WorkflowManager wfm = CoreUtil.loadWorkflow(workflow.getWorkflowDir());
+        WorkflowManager wfm = WorkflowManagerUtil.loadWorkflow(workflow.getWorkflowDir());
         addToProjectManager(wfm, workflow.getName(), projectId);
     }
 
