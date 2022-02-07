@@ -163,7 +163,8 @@ public final class DependentNodeProperties {
      * Here, the loop body is the set of nodes forward-reachable from the loop head, up to the loop tail.
      * Consequently, this includes outgoing branches and does not include incoming branches.
      * @param tail The tail node of the loop, expected to be an instance of {@link LoopEndNode}.
-     * @return A boolean indicating whether nodes in the loop body (as defined above) are currently executing.
+     * @return A boolean indicating whether nodes in the loop body (as defined above) are currently executing. If there
+     *     is no loop body (i.e. no loop head), this method returns {@code false}.
      */
     public boolean hasExecutingLoopBody(final NativeNodeContainer tail) {
         if (!tail.isModelCompatibleTo(LoopEndNode.class)) {
@@ -171,7 +172,14 @@ public final class DependentNodeProperties {
         }
 
         return CoreUtil.getLoopContext(tail).map(loopContext -> {
-            boolean sHead = m_props.get(loopContext.getHeadNode()).hasExecutingSuccessors();
+            var nHead = loopContext.getHeadNode();
+            var props = m_props.get(nHead);
+            if (props == null) {
+                // When a loop head node is removed, the loop context may point to a node ID that is no longer
+                //  contained in the workflow and consquentely the dependent node properties.
+                return false;
+            }
+            boolean sHead = props.hasExecutingSuccessors();
             boolean sTail = CoreUtil.successors(tail.getID(), m_wfm).stream().anyMatch(id -> m_props.get(id).hasExecutingSuccessors());
             return sHead && !sTail;
         }).orElse(false);

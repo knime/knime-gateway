@@ -235,14 +235,14 @@ public final class CoreUtil {
      * @param nnc The node container to get the loop context for.
      * @return An Optional containing the loop context if available, else an empty Optional.
      */
-    static Optional<FlowLoopContext> getLoopContext(final NativeNodeContainer nnc) {
+    public static Optional<FlowLoopContext> getLoopContext(final NativeNodeContainer nnc) {
         // Node#getLoopContext does not suffice since this field is only set after the first
         //  loop iteration is completed.
         if (nnc.isModelCompatibleTo(LoopStartNode.class)) {
             // The loop head node produces the FlowLoopContext, hence it is not available on the stack yet.
-            return Optional.ofNullable(nnc.getOutgoingFlowObjectStack().peek(FlowLoopContext.class));
+            return Optional.ofNullable(nnc.getOutgoingFlowObjectStack()).map(stack -> stack.peek(FlowLoopContext.class));
         } else {
-            return Optional.ofNullable(nnc.getFlowObjectStack().peek(FlowLoopContext.class));
+            return Optional.ofNullable(nnc.getFlowObjectStack()).map(stack -> stack.peek(FlowLoopContext.class));
         }
     }
 

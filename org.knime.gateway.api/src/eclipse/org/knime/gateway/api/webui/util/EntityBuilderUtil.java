@@ -88,6 +88,7 @@ import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionProgress;
+import org.knime.core.node.workflow.FlowScopeContext;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -1114,7 +1115,7 @@ public final class EntityBuilderUtil {
     }
 
     /**
-     * Characterisations of different loop states for determining allowed actions.
+     * Characterization of loop state for determining allowed actions.
      * This is not part of the API, see {@link StatusEnum} instead.
      */
     private enum LoopState {
@@ -1128,14 +1129,23 @@ public final class EntityBuilderUtil {
         /** Loop is currently executing and is currently in paused state */
         PAUSED,
         /** Loop is fully executed */
-        DONE;
+        DONE,
+        /** Status could not be determined (e.g. if there is no valid loop structure) */
+        NONE;
 
         /**
          * @param tail The node to consider
          * @param buildContext The workflow build context
          * @return The state of the given node.
          */
+        @SuppressWarnings("java:S1142")  // number of method returns
         static LoopState get(final NativeNodeContainer tail, final WorkflowBuildContext buildContext) {
+            boolean hasLoopHead = CoreUtil.getLoopContext(tail)
+                    .map(FlowScopeContext::getHeadNode)
+                    // When a loop head node is removed, the loop context may point to a node ID that is no longer
+                    //  present in the workflow.
+                    .map(head -> buildContext.wfm().containsNodeContainer(head))
+                    .orElse(false);
             boolean canExecuteDirectly = tail.getParent().canExecuteNodeDirectly(tail.getID());
             var loopStatus = tail.getLoopStatus();
             // Resume and step should not be enabled if nodes in the loop body are currently executing (this includes
@@ -1150,7 +1160,10 @@ public final class EntityBuilderUtil {
             //  from the head. Consequently, the direct predecessor of a tail cannot be outside the current workflow.
             boolean hasWaitingPredecessor = CoreUtil.hasWaitingPredecessor(tail.getID(), buildContext.wfm());
             boolean loopBodyActive = hasExecutingLoopBody || hasWaitingPredecessor;
-            if (canExecuteDirectly) {
+
+            if (!hasLoopHead) {
+                return NONE;
+            } else if (canExecuteDirectly) {
                 return READY;
             } else if(loopStatus == NativeNodeContainer.LoopStatus.RUNNING) {
                 return RUNNING;
@@ -1176,30 +1189,38 @@ public final class EntityBuilderUtil {
             boolean canPause;
             boolean canResume;
             boolean canStep;
-            // Comments indicate state transitions triggered by the corresponding actions (cf. NXT-848).
-            if (loopState == LoopState.READY) {
-                // "execute" action is set by `buildAllowedNodeActionsEnt` -> RUNNING
-                canPause = false;
-                canResume = false;
-                canStep = true;   // -> PAUSE_PENDING
-            } else if (loopState == LoopState.RUNNING) {
-                canPause = true;  // -> PAUSE_PENDING
-                canStep = false;
-                canResume = false;
-            } else if (loopState == LoopState.PAUSE_PENDING) {
-                // backend: -> PAUSED  or  -> DONE
-                canPause = false;
-                canStep = false;
-                canResume = false;
-            } else if (loopState == LoopState.PAUSED) {
-                canPause = false;
-                canStep = true;   // -> PAUSE_PENDING
-                canResume = true; // -> RUNNING
-            } else { // DONE -- NOSONAR: readability
-                canPause = false;
-                canStep = false;
-                canResume = false;
-            }
+
+           switch (loopState) {
+               // Comments indicate state transitions triggered by the corresponding actions (cf. NXT-848).
+               case READY:
+                   // "execute" action is set by `buildAllowedNodeActionsEnt` -> RUNNING
+                   canPause = false;
+                   canResume = false;
+                   canStep = true;   // -> PAUSE_PENDING
+                   break;
+               case RUNNING:
+                   canPause = true;  // -> PAUSE_PENDING
+                   canStep = false;
+                   canResume = false;
+                   break;
+               case PAUSE_PENDING:
+                   // backend: -> PAUSED  or  -> DONE
+                   canPause = false;
+                   canStep = false;
+                   canResume = false;
+                   break;
+               case PAUSED:
+                   canPause = false;
+                   canStep = true;   // -> PAUSE_PENDING
+                   canResume = true; // -> RUNNING
+                   break;
+               default:  // NOSONAR: duplicate code block for readability
+                   // DONE or NONE
+                   canPause = false;
+                   canStep = false;
+                   canResume = false;
+                   break;
+           }
 
             return builder(AllowedLoopActionsEntBuilder.class)
                     .setCanPause(canPause)
