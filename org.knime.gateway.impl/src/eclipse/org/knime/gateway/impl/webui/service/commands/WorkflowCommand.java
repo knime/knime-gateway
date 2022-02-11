@@ -77,6 +77,15 @@ interface WorkflowCommand<E extends WorkflowCommandEnt> {
     boolean execute(WorkflowKey wfKey, E commandEntity)
         throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
+
+    /**
+     * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
+     * (on every/many workflow changes).
+     *
+     * @return {@code false} if the undo operation can't be carried out
+     */
+    boolean canUndo();
+
     /**
      * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey, WorkflowCommandEnt)} has
      * been called before already.
@@ -84,6 +93,14 @@ interface WorkflowCommand<E extends WorkflowCommandEnt> {
      * @throws OperationNotAllowedException
      */
     void undo() throws OperationNotAllowedException;
+
+    /**
+     * Whether the command can be redone. Must be a rather light operation because it's potentially called repeatedly
+     * (on every/many workflow changes).
+     *
+     * @return {@code false} if the redo operation can't be carried out
+     */
+    boolean canRedo();
 
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.

@@ -132,7 +132,7 @@ public final class WorkflowCommands {
      */
     public boolean canUndo(final WorkflowKey wfKey) {
         Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
-        return undoStack != null && !undoStack.isEmpty();
+        return undoStack != null && !undoStack.isEmpty() && undoStack.peek().canUndo();
     }
 
     /**
@@ -154,7 +154,7 @@ public final class WorkflowCommands {
      */
     public boolean canRedo(final WorkflowKey wfKey) {
         Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
-        return redoStack != null && !redoStack.isEmpty();
+        return redoStack != null && !redoStack.isEmpty() && redoStack.peek().canRedo();
     }
 
     /**

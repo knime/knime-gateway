@@ -96,6 +96,14 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
         }
     }
 
+    @Override
+    public boolean canRedo() {
+        var wfm = getWorkflowManager();
+        // we only need to check the connections here because every node removal will also require a
+        // connection removal - and if the connection can't be removed so can't the node
+        return m_connections != null && m_connections.stream().allMatch(wfm::canRemoveConnection);
+    }
+
     /**
      * {@inheritDoc}
      */

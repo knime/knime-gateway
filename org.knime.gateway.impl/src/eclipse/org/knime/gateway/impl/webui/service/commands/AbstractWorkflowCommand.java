@@ -96,6 +96,16 @@ abstract class AbstractWorkflowCommand<E extends WorkflowCommandEnt> implements 
     protected abstract boolean execute() throws OperationNotAllowedException;
 
     @Override
+    public boolean canUndo() {
+        return true;
+    }
+
+    @Override
+    public boolean canRedo() {
+        return true;
+    }
+
+    @Override
     public void redo() throws OperationNotAllowedException {
         execute();
     }

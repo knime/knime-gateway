@@ -91,6 +91,12 @@ final class Connect extends AbstractWorkflowCommand<ConnectCommandEnt> {
         return true;
     }
 
+
+    @Override
+    public boolean canUndo() {
+        return getWorkflowManager().canRemoveConnection(m_newConnection);
+    }
+
     @Override
     public void undo() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();

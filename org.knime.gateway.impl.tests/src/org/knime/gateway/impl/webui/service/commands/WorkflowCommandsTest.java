@@ -55,14 +55,25 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.Test;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -72,6 +83,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests {@link WorkflowCommands}.
@@ -141,6 +153,60 @@ public class WorkflowCommandsTest {
         assertThat(commands.getUndoStackSize(wfKey), is(-1));
         assertThat(commands.getRedoStackSize(wfKey), is(-1));
 
+        disposeWorkflowProject(wp);
+    }
+
+    /**
+     * Tests that {@link WorkflowCommand#canUndo()} or {@link WorkflowCommand#canRedo()} returns {@code false} for some
+     * commands if the workfow is executing (which, e.g., prohibits the deletion of nodes or connections).
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUndoAndRedoWhileWorkflowIsExecuting() throws Exception {
+        var wp = createEmptyWorkflowProject();
+        var wfm = wp.openProject();
+        var waitNodeID = WorkflowManagerUtil.createAndAddNode(wfm,
+            FileNativeNodeContainerPersistor.loadNodeFactory("org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"))
+            .getID();
+        configureWaitNode(wfm, waitNodeID);
+
+        var addNodeCommand = new AddNode();
+        addNodeCommand.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
+            builder(AddNodeCommandEntBuilder.class)
+                .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class)
+                    .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
+                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build());
+        assertThat(wfm.getNodeContainers().size(), is(2));
+        assertThat(addNodeCommand.canUndo(), is(true));
+
+        var connectCommand = new Connect();
+        connectCommand.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
+            builder(ConnectCommandEntBuilder.class).setSourceNodeId(new NodeIDEnt(2)).setSourcePortIdx(0)
+                .setDestinationNodeId(new NodeIDEnt(1)).setDestinationPortIdx(0).setKind(KindEnum.CONNECT).build());
+        assertThat(wfm.getConnectionContainers().size(), is(1));
+        assertThat(connectCommand.canUndo(), is(true));
+
+        var deleteCommand = new Delete();
+        deleteCommand.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), builder(DeleteCommandEntBuilder.class)
+            .setNodeIds(List.of(new NodeIDEnt(2))).setKind(KindEnum.DELETE).build());
+        assertThat(wfm.getNodeContainers().size(), is(1));
+        deleteCommand.undo();
+        assertThat(wfm.getNodeContainers().size(), is(2));
+        assertThat(deleteCommand.canRedo(), is(true));
+
+        wfm.executeAll();
+        assertThat(addNodeCommand.canUndo(), is(false));
+        assertThat(connectCommand.canUndo(), is(false));
+        assertThat(deleteCommand.canRedo(), is(false));
+
+        wfm.getParent().cancelExecution(wfm);
+        Awaitility.await().pollInterval(100, TimeUnit.MILLISECONDS).atMost(1, TimeUnit.MINUTES)
+            .until(() -> !wfm.getNodeContainerState().isExecutionInProgress());
+        disposeWorkflowProject(wp);
+    }
+
+    private static void disposeWorkflowProject(final WorkflowProject wp) {
         WorkflowProjectManager.removeWorkflowProject(wp.getID());
         WorkflowManager.ROOT.removeProject(wp.openProject().getID());
     }
@@ -180,4 +246,15 @@ public class WorkflowCommandsTest {
         }
     }
 
+    private static void configureWaitNode(final WorkflowManager wfm, final NodeID waitNodeID)
+        throws InvalidSettingsException {
+        var ns = new NodeSettings("test");
+        wfm.saveNodeSettings(waitNodeID, ns);
+        var ms = ns.addNodeSettings("model");
+        ms.addInt("wait_option", 0);
+        ms.addInt("for_hours", 0);
+        ms.addInt("for_minutes", 10);
+        ms.addInt("for_seconds", 0);
+        wfm.loadNodeSettings(waitNodeID, ns);
+    }
 }

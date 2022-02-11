@@ -85,6 +85,11 @@ public class AddNode extends AbstractWorkflowCommand<AddNodeCommandEnt> {
     }
 
     @Override
+    public boolean canUndo() {
+        return getWorkflowManager().canRemoveNode(m_addedNode);
+    }
+
+    @Override
     public void undo() throws OperationNotAllowedException {
         getWorkflowManager().removeNode(m_addedNode);
         m_addedNode = null;
