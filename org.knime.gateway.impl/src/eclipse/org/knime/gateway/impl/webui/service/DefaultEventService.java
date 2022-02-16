@@ -55,12 +55,15 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.service.events.EventSource;
+import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
 /**
@@ -105,6 +108,9 @@ public final class DefaultEventService implements EventService {
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowChangedEventSource(this::sendEvent));
+        } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new AppStateChangedEventSource(this::sendEvent, ServiceDependencies.get(AppStateProvider.class)));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }

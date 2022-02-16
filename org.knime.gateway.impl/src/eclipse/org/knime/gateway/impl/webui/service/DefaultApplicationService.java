@@ -51,9 +51,9 @@ package org.knime.gateway.impl.webui.service;
 import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
@@ -69,22 +69,20 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.AppState;
-import org.knime.gateway.impl.webui.AppState.OpenedWorkflow;
+import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.AppStateProvider.AppState;
+import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
  *
+ * @noextend This class is not intended to be subclassed by clients.
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultApplicationService implements ApplicationService {
+public class DefaultApplicationService implements ApplicationService {  // NOSONAR: non-final for testing purposes
     private static final DefaultApplicationService INSTANCE = new DefaultApplicationService();
-
-    private Supplier<AppState> m_appStateSupplier = null;
-
-    private AppState m_cachedAppState = null;
 
     /**
      * Returns the singleton instance for this service.
@@ -104,20 +102,30 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
-        AppStateEntBuilder builder = builder(AppStateEntBuilder.class);
-        if (m_appStateSupplier == null) {
-            return builder.build();
-        }
-        if (m_cachedAppState == null) {
-            m_cachedAppState = m_appStateSupplier.get();
-            if (m_cachedAppState == null) {
-                return builder.build();
-            }
-        }
+        var provider = getAppStateProvider();
+        return buildAppStateEnt(provider == null ? null : provider.getAppState());
+    }
 
-        List<WorkflowProjectEnt> projects = m_cachedAppState.getOpenedWorkflows().stream()
-            .map(DefaultApplicationService::buildWorkflowProjectEnt).filter(Objects::nonNull).collect(toList());
-        return builder.setOpenedWorkflows(projects).build();
+    /**
+     * Return the current AppStateProvider by querying the provided dependencies. Protected for testing purposes.
+     */
+    protected AppStateProvider getAppStateProvider() {
+        return ServiceDependencies.get(AppStateProvider.class);
+    }
+
+    public static AppStateEnt buildAppStateEnt(final AppState appState) {
+        AppStateEntBuilder builder = builder(AppStateEntBuilder.class);
+        List<WorkflowProjectEnt> projects;
+        if (appState != null) {
+            projects = appState.getOpenedWorkflows().stream()
+                    .map(DefaultApplicationService::buildWorkflowProjectEnt)
+                    .filter(Objects::nonNull)
+                    .collect(toList());
+        } else {
+            projects = Collections.emptyList();
+        }
+        builder.setOpenedWorkflows(projects);
+        return builder.build();
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf) {
@@ -156,27 +164,4 @@ public final class DefaultApplicationService implements ApplicationService {
         return builder.build();
     }
 
-    /**
-     * Sets the state supplier, i.e. a function that can be called to get the current app state.
-     *
-     * @param stateSupplier the app state supplier
-     * @throws IllegalStateException if the app state supplier is already set
-     */
-    public void setAppStateSupplier(final Supplier<AppState> stateSupplier) {
-        if(m_appStateSupplier != null) {
-            throw new IllegalStateException("App state supplier is already set");
-        }
-        m_cachedAppState = null;
-        m_appStateSupplier = stateSupplier;
-    }
-
-    /**
-     * Removes the application state supplier that has been set via {@link #setAppStateSupplier(Supplier)}.
-     *
-     * Mainly for testing purposes.
-     */
-    public void clearAppStateSupplier() {
-        m_cachedAppState = null;
-        m_appStateSupplier = null;
-    }
 }

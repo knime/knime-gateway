@@ -42,84 +42,100 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
+
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * Event type to register for &#x60;AppStateChangedEvent&#x60;s
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "typeId",
-    visible = true,
-    defaultImpl = DefaultEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventTypeEnt.class, name="EventType")
-,
-  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
-,
-  @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
-})
-@JsonDeserialize(builder=DefaultEventTypeEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface EventTypeEntMixIn extends EventTypeEnt {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultAppStateChangedEventTypeEnt implements AppStateChangedEventTypeEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("typeId")
-    public String getTypeId();
-    
-
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+  protected String m_typeId;
+  
+  protected DefaultAppStateChangedEventTypeEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "AppStateChangedEventType";
+  }
+  
+  private DefaultAppStateChangedEventTypeEnt(DefaultAppStateChangedEventTypeEntBuilder builder) {
+    super();
+    m_typeId = immutable(builder.m_typeId);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "typeId",
-    visible = true,
-    defaultImpl = DefaultEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventTypeEnt.class, name="EventType")
-,
-  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
-,
-  @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
-})
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface EventTypeEntMixInBuilder extends EventTypeEntBuilder {
-    
-        @Override
-        public EventTypeEntMixIn build();
-    
-        @Override
-        @JsonProperty("typeId")
-        public EventTypeEntMixInBuilder setTypeId(final String typeId);
-        
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultAppStateChangedEventTypeEnt ent = (DefaultAppStateChangedEventTypeEnt)o;
+        return Objects.equals(m_typeId, ent.m_typeId);
     }
 
 
-}
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_typeId)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public String getTypeId() {
+        return m_typeId;
+  }
+    
+  
+    public static class DefaultAppStateChangedEventTypeEntBuilder implements AppStateChangedEventTypeEntBuilder {
+    
+        public DefaultAppStateChangedEventTypeEntBuilder(){
+            super();
+        }
+    
+        private String m_typeId;
 
+        @Override
+        public DefaultAppStateChangedEventTypeEntBuilder setTypeId(String typeId) {
+             m_typeId = typeId;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultAppStateChangedEventTypeEnt build() {
+            return new DefaultAppStateChangedEventTypeEnt(this);
+        }
+    
+    }
+
+}

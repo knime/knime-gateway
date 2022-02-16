@@ -43,80 +43,50 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Aug 21, 2020 (hornm): created
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.junit.Assert.assertNotSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.List;
-
-import org.junit.Test;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.webui.AppStateProvider;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
-import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
 /**
- * Tests for the {@link DefaultApplicationService}-implementation.
+ * Static registry to provide dependencies (specific class instances) to service implementations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class ApplicationServiceTest extends GatewayServiceTest {
+public final class ServiceDependencies {
+
+    private static final Map<Class<?>, Object> DEPENDENCIES = new HashMap<>();
+
+    static <T> T get(final Class<T> key) {
+        return (T)DEPENDENCIES.get(key);
+    }
 
     /**
-     * Test to get the app state.
-     *
-     * @throws Exception
+     * Make a dependency available
+     * @param clazz The class characterising the dependency
+     * @param impl The implementation of `clazz` to be served as the dependency
+     * @param <T> The concrete type of the dependency instance
      */
-    @Test
-    public void testGetAppState() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, workflowProjectId);
-
-        AppState appState = mock(AppState.class);
-        AppStateProvider appStateProvider = mock(AppStateProvider.class);
-        when(appStateProvider.getAppState()).thenReturn(appState);
-        // Use spying for partial mocking on real instance.
-        DefaultApplicationService appService = spy(DefaultApplicationService.getInstance());
-        when(appService.getAppStateProvider()).thenReturn(appStateProvider);
-
-        cr(appService.getState(), "empty_appstate");
-
-        when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
-        AppStateEnt appStateEnt = appService.getState();
-        cr(appStateEnt, "appstate");
-
-        // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
-        AppStateEnt appStateEnt2 = appService.getState();
-        assertNotSame(
-            appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow(),
-            appStateEnt2.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow()
-        );
-
+    public static <T> void add(final Class<T> clazz, final Object impl) {
+        if (DEPENDENCIES.containsKey(clazz)) {
+            throw new IllegalStateException("Only one dependency can be registered at a time");
+        }
+        DEPENDENCIES.put(clazz, impl);
     }
 
-    private static OpenedWorkflow createOpenedWorkflow(final String workflowProjectId) {
-        return new OpenedWorkflow() {
-
-            @Override
-            public String getProjectId() {
-                return workflowProjectId;
-            }
-
-            @Override
-            public String getWorkflowId() {
-                return NodeIDEnt.getRootID().toString();
-            }
-
-            @Override
-            public boolean isVisible() {
-                return true;
-            }
-        };
+    /**
+     * Remove a dependency from this registry.
+     * @param clazz The class characterising the dependency.
+     */
+    public static void remove(final Class<AppStateProvider> clazz) {
+        DEPENDENCIES.remove(clazz);
     }
 }
+
+

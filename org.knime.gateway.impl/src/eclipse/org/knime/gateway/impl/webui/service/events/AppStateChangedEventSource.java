@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,79 +44,65 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.webui.service.events;
 
-import static org.junit.Assert.assertNotSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-import java.util.List;
-
-import org.junit.Test;
-import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.entity.EntityBuilderManager;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.AppStateProvider.AppState;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
-import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.impl.webui.service.DefaultApplicationService;
 
 /**
- * Tests for the {@link DefaultApplicationService}-implementation.
+ * Event source that emits events whenever the cached application state changes.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class ApplicationServiceTest extends GatewayServiceTest {
+public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, AppStateChangedEventEnt> {
+
+    private final Consumer<AppState> m_callback = appState ->
+            sendEvent(buildEventEnt(DefaultApplicationService.buildAppStateEnt(appState)));
+    private final AppStateProvider m_appStateProvider;
 
     /**
-     * Test to get the app state.
-     *
-     * @throws Exception
+     * @param eventConsumer consumes the emitted events
+     * @param appStateProvider
      */
-    @Test
-    public void testGetAppState() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, workflowProjectId);
-
-        AppState appState = mock(AppState.class);
-        AppStateProvider appStateProvider = mock(AppStateProvider.class);
-        when(appStateProvider.getAppState()).thenReturn(appState);
-        // Use spying for partial mocking on real instance.
-        DefaultApplicationService appService = spy(DefaultApplicationService.getInstance());
-        when(appService.getAppStateProvider()).thenReturn(appStateProvider);
-
-        cr(appService.getState(), "empty_appstate");
-
-        when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
-        AppStateEnt appStateEnt = appService.getState();
-        cr(appStateEnt, "appstate");
-
-        // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
-        AppStateEnt appStateEnt2 = appService.getState();
-        assertNotSame(
-            appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow(),
-            appStateEnt2.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow()
-        );
-
+    public AppStateChangedEventSource(final BiConsumer<String, Object> eventConsumer,
+        final AppStateProvider appStateProvider) {
+        super(eventConsumer);
+        m_appStateProvider = appStateProvider;
     }
 
-    private static OpenedWorkflow createOpenedWorkflow(final String workflowProjectId) {
-        return new OpenedWorkflow() {
+    @Override
+    public Optional<AppStateChangedEventEnt> addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
+        m_appStateProvider.addAppStateChangedListener(m_callback);
+        return Optional.of(buildEventEnt(DefaultApplicationService.buildAppStateEnt(m_appStateProvider.getAppState())));
+    }
 
-            @Override
-            public String getProjectId() {
-                return workflowProjectId;
-            }
+    private static AppStateChangedEventEnt buildEventEnt(final AppStateEnt newAppStateEnt) {
+        return EntityBuilderManager.builder(AppStateChangedEventEnt.AppStateChangedEventEntBuilder.class)
+            .setAppState(newAppStateEnt).build();
+    }
 
-            @Override
-            public String getWorkflowId() {
-                return NodeIDEnt.getRootID().toString();
-            }
+    @Override
+    public void removeEventListener(final AppStateChangedEventTypeEnt eventTypeEnt) {
+        m_appStateProvider.removeAppStateChangedListener(m_callback);
+    }
 
-            @Override
-            public boolean isVisible() {
-                return true;
-            }
-        };
+    @Override
+    public void removeAllEventListeners() {
+        removeEventListener(null);
+    }
+
+    @Override
+    protected String getName() {
+        return "AppStateChangedEvent";
     }
 }

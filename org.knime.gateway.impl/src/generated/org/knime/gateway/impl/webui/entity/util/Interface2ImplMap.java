@@ -58,6 +58,10 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkf
 import org.knime.gateway.impl.webui.entity.DefaultAllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt.AppStateChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -206,6 +210,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == AnnotationEntBuilder.class) {
             return (B)new DefaultAnnotationEnt.DefaultAnnotationEntBuilder();
+        }        
+        if(clazz == AppStateChangedEventEntBuilder.class) {
+            return (B)new DefaultAppStateChangedEventEnt.DefaultAppStateChangedEventEntBuilder();
+        }        
+        if(clazz == AppStateChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultAppStateChangedEventTypeEnt.DefaultAppStateChangedEventTypeEntBuilder();
         }        
         if(clazz == AppStateEntBuilder.class) {
             return (B)new DefaultAppStateEnt.DefaultAppStateEntBuilder();

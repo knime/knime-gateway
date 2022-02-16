@@ -51,6 +51,8 @@ import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
@@ -135,6 +137,8 @@ public class ListEntities {
         res.add(AllowedNodeActionsEnt.class);
         res.add(AllowedWorkflowActionsEnt.class);
         res.add(AnnotationEnt.class);
+        res.add(AppStateChangedEventEnt.class);
+        res.add(AppStateChangedEventTypeEnt.class);
         res.add(AppStateEnt.class);
         res.add(BoundsEnt.class);
         res.add(ComponentNodeAndDescriptionEnt.class);
@@ -204,6 +208,8 @@ public class ListEntities {
         res.add(AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder.class);
         res.add(AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder.class);
         res.add(AnnotationEnt.AnnotationEntBuilder.class);
+        res.add(AppStateChangedEventEnt.AppStateChangedEventEntBuilder.class);
+        res.add(AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
         res.add(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class);

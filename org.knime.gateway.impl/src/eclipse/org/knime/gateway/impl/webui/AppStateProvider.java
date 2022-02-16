@@ -44,45 +44,102 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 21, 2020 (hornm): created
+ *   Feb 18, 2022 (hornm): created
  */
 package org.knime.gateway.impl.webui;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
- * Represents the state of the Web UI Application which is, e.g., persisted in the back-end.
- *
- * Maybe to be moved into knime.core eventually.
+ * Provides information about the state of the application. The application state is modelled by a reference to a
+ * supplier.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public interface AppState {
+public class AppStateProvider {
+
+    private final Supplier<AppState> m_appStateSupplier;
+
+    private final Set<Consumer<AppState>> m_listeners = new HashSet<>();
 
     /**
-     * @return list of all opened workflows
+     * Create a new instance.
+     *
+     * @param supplier A callable supplying the application state
      */
-    List<OpenedWorkflow> getOpenedWorkflows();
+    public AppStateProvider(final Supplier<AppState> supplier) {
+        m_appStateSupplier = supplier;
+    }
 
     /**
-     * Represents an opened workflow.
+     * @return The current application state.
      */
-    public interface OpenedWorkflow {
+    public AppState getAppState() {
+        return m_appStateSupplier.get();
+    }
+
+    /**
+     * Obtain the current application state and pass it to any listeners, regardless of whether the state has changed.
+     */
+    public void updateAppState() {
+        var newAppState = m_appStateSupplier.get();
+        m_listeners.forEach(l -> l.accept(newAppState));
+    }
+
+    /**
+     * Subscribe a listener to updates of the application state. Do nothing if the listener is already registered.
+     *
+     * @param consumer The callback to be called with the new application state
+     */
+    public void addAppStateChangedListener(final Consumer<AppState> consumer) {
+        m_listeners.add(consumer);
+    }
+
+    /**
+     * Remove a subscribed listener
+     *
+     * @param consumer The callback to be removed from the set of listeners.
+     */
+    public void removeAppStateChangedListener(final Consumer<AppState> consumer) {
+        m_listeners.remove(consumer);
+    }
+
+    /**
+     * Describes the state of the application, such as e.g. currently open workflows.
+     */
+    public interface AppState {
 
         /**
-         * @return the workflow project id
+         * @return list of all currently open workflows.
          */
-        String getProjectId();
+        List<OpenedWorkflow> getOpenedWorkflows();
 
         /**
-         * @return the id representing the actual (sub-)workflow that is opened
+         * Represents an opened workflow.
          */
-        String getWorkflowId();
+        interface OpenedWorkflow {
 
-        /**
-         * @return <code>true</code> if the workflow is visible, otherwise <code>false</code>
-         */
-        boolean isVisible();
+            /**
+             * @return the workflow project id
+             */
+            String getProjectId();
+
+            /**
+             * @return the id representing the actual (sub-)workflow that is opened
+             */
+            String getWorkflowId();
+
+            /**
+             * @return <code>true</code> if the workflow is visible, otherwise <code>false</code>
+             */
+            boolean isVisible();
+
+        }
 
     }
 
