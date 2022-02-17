@@ -1107,10 +1107,18 @@ public final class EntityBuilderUtil {
             return null;
         }
         StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
+        if (LoopState.get(nc, buildContext) == LoopState.PAUSE_PENDING) {
+            // NativeNodeContainer.LoopStatus does not distinguish between PAUSED and PAUSE_PENDING
+            // In case of PAUSE_PENDING, however, the tail node should display "queued". By not setting a value here,
+            //  the frontend will fall back to displaying the NodeState. See NXT-900.
+            status = null;
+        }
+
         AllowedLoopActionsEnt allowedActions = null;
         if (buildContext.includeInteractionInfo()) {
             allowedActions = LoopState.getAllowedActions(nc, buildContext);
         }
+
         return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
     }
 
