@@ -54,7 +54,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
 /**
- * Properties that have NodePort and NodePortDescription in common. Or, put differently, the properties required to render a node port in the node repository (i.e. without port infos specific to a node-instance).
+ * Properties that have NodePort and NodePortDescription in common. Or, put differently, the properties required to render a node port in the node repository (i.e. without port information specific to a node-instance).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

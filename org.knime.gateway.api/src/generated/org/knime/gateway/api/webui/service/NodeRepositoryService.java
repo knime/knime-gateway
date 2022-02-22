@@ -76,7 +76,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @param allTagsMatch If true, only the nodes/components that have all of the given tags are included in the search result. Otherwise nodes/components that have at least one of the given tags are included.
      * @param nodesOffset Number of nodes/components to be skipped in the search result (for pagination).
      * @param nodesLimit The maximum number of nodes/components in the search result (mainly for pagination).
-     * @param fullTemplateInfo If true, the search result will contain the full information for nodes/components (such as icon and port infos). Otherwise only minimal information (such as name) will be included and the others ommitted.
+     * @param fullTemplateInfo If true, the search result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
      */
@@ -88,7 +88,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @param numNodesPerTag The number of nodes per tag to be returned.
      * @param tagsOffset The number of tags to be skipped (for pagination).
      * @param tagsLimit The maximum number of tags to be returned (mainly for pagination).
-     * @param fullTemplateInfo If true, the selection result will contain the full information for nodes/components (such as icon and port infos). Otherwise only minimal information (such as name) will be included and the others ommitted.
+     * @param fullTemplateInfo If true, the selection result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
      */

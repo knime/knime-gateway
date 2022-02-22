@@ -62,7 +62,7 @@ public interface WorkflowService extends GatewayService {
      * Executed a command on the referenced workflow. Every request with the same operation is idempotent.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param workflowCommandEnt An object that describes the command to be executed.
      *
      * 
@@ -76,7 +76,7 @@ public interface WorkflowService extends GatewayService {
      * Retrieves the complete structure (sub-)workflows.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param includeInteractionInfo Whether to enclose information that is required when the user is interacting with the returned workflow. E.g. the allowed actions (reset, execute, cancel) for contained nodes and the entire workflow itself.
      *
      * @return the result
@@ -89,7 +89,7 @@ public interface WorkflowService extends GatewayService {
      * Re-does the last command from the redo-stack.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * 
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
@@ -100,7 +100,7 @@ public interface WorkflowService extends GatewayService {
      * Un-does the last command from the undo-stack.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * 
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.

@@ -62,8 +62,8 @@ public interface NodeService extends GatewayService {
      * Changes state of a loop. The provided node-id must reference a loop-end node.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param action The action (pause, resume, step) to be performed in order to change the loop state.
      *
      * 
@@ -76,7 +76,7 @@ public interface NodeService extends GatewayService {
      * Changes the node state of multiple nodes represented by a list of node-ids.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeIds The list of node ids of the nodes to be changed. All ids must reference nodes on the same workflow level. If no node ids are given the state of the parent workflow (i.e. the one referenced by workflow-id) is changed which is equivalent to change the states of all contained nodes.
      * @param action The action (reset, cancel, execute) to be performed in order to change the node&#39;s state.
      *
@@ -87,11 +87,11 @@ public interface NodeService extends GatewayService {
     void changeNodeStates(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
         
     /**
-     * Performs text-based remote procedure calls for ports. The format of the rpc request and response depends on the port type that is being adressed.
+     * Performs text-based remote procedure calls for ports. The format of the rpc request and response depends on the port type that is being addressed.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a worklow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; refering to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param portIdx The port index to get the table for.
      * @param body 
      *
