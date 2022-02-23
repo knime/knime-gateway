@@ -75,28 +75,28 @@ public class WrapWithJsonRpcService {
     /**
      * Wraps a service instance with a JsonRpc-wrapper (that brings the json-rpc annotations).
      *
-     * @param service the service to be wrapped
+     * @param service the service-supplier to be wrapped
      * @param serviceInterface the service interface to select the right wrapper
      *
      * @return the service wrapper
      */
     @SuppressWarnings("unchecked")
-    public static <S extends GatewayService> S wrap(final S service, final Class<S> serviceInterface) {
+    public static <S extends GatewayService> S wrap(final java.util.function.Supplier<S> service, final Class<S> serviceInterface) {
         try {
             if(serviceInterface == NodeService.class) {
-                return (S)JsonRpcNodeServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcNodeServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
             }
             if(serviceInterface == NodeRepositoryService.class) {
-                return (S)JsonRpcNodeRepositoryServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcNodeRepositoryServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
             }
             if(serviceInterface == EventService.class) {
-                return (S)JsonRpcEventServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcEventServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
             }
             if(serviceInterface == WorkflowService.class) {
-                return (S)JsonRpcWorkflowServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcWorkflowServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
             }
             if(serviceInterface == ApplicationService.class) {
-                return (S)JsonRpcApplicationServiceWrapper.class.getConstructor(serviceInterface).newInstance(service);
+                return (S)JsonRpcApplicationServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException ex) {

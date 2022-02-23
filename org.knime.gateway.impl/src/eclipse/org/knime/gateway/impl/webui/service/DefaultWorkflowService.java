@@ -66,8 +66,6 @@ import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
  */
 public final class DefaultWorkflowService implements WorkflowService {
 
-    private static final DefaultWorkflowService INSTANCE = new DefaultWorkflowService();
-
     private static final WorkflowStatefulUtil WF_FUNCTIONS = WorkflowStatefulUtil.getInstance();
 
     /**
@@ -76,10 +74,10 @@ public final class DefaultWorkflowService implements WorkflowService {
      * @return the singleton instance
      */
     public static DefaultWorkflowService getInstance() {
-        return INSTANCE;
+        return DefaultServices.getDefaultServiceInstance(DefaultWorkflowService.class);
     }
 
-    private DefaultWorkflowService() {
+    DefaultWorkflowService() {
         //
     }
 

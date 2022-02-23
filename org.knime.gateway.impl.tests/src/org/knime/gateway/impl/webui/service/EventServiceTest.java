@@ -56,7 +56,10 @@ import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -64,6 +67,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 
@@ -73,6 +77,18 @@ import org.knime.gateway.testing.helper.WorkflowTransformations;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class EventServiceTest extends GatewayServiceTest {
+
+    @SuppressWarnings("javadoc")
+    @BeforeClass
+    public static void setupServiceDependencies() {
+        DefaultServices.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+    }
+
+    @SuppressWarnings("javadoc")
+    @AfterClass
+    public static void disposeServices() {
+        DefaultServices.disposeAllServicesInstances();
+    }
 
     /**
      * Tests that no more listeners are registered with the workflow once they have been removed.
@@ -105,7 +121,7 @@ public class EventServiceTest extends GatewayServiceTest {
 
         DefaultEventService es = DefaultEventService.getInstance();
 
-        // add one more event listenr
+        // add one more event listener
         es.addEventListener(eventType);
 
         es.removeAllEventListeners();

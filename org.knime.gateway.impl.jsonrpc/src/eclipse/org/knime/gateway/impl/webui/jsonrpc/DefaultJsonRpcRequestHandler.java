@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.service.GatewayService;
@@ -81,12 +82,13 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
     /**
      * For testing purposes only.
      */
-    DefaultJsonRpcRequestHandler(final Map<Class<? extends GatewayService>, GatewayService> serviceImpls) {
+    DefaultJsonRpcRequestHandler(
+        final Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceImpls) {
         super(ObjectMapperUtil.getInstance().getObjectMapper(), wrapWithJsonRpcServices(serviceImpls),
             new DefaultExceptionToJsonRpcErrorTranslator());
     }
 
-    private static Map<Class<? extends GatewayService>, GatewayService> getDefaultServiceImpls() {
+    private static Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> getDefaultServiceImpls() {
         // default web-ui service implementations
         List<Class<? extends GatewayService>> serviceInterfaces =
             org.knime.gateway.api.webui.service.util.ListServices.listServiceInterfaces();
@@ -94,10 +96,12 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
     }
 
     private static Map<String, GatewayService>
-        wrapWithJsonRpcServices(final Map<Class<? extends GatewayService>, GatewayService> serviceImpls) {
+        wrapWithJsonRpcServices(
+            final Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceImpls) {
         Map<String, GatewayService> wrappedServices = new HashMap<>();
 
-        for (Entry<Class<? extends GatewayService>, GatewayService> entry : serviceImpls.entrySet()) { // NOSONAR
+        for (Entry<Class<? extends GatewayService>, Supplier<? extends GatewayService>> entry : serviceImpls
+            .entrySet()) { // NOSONAR
             @SuppressWarnings("rawtypes")
             Class key = entry.getKey(); // NOSONAR
             @SuppressWarnings("unchecked")

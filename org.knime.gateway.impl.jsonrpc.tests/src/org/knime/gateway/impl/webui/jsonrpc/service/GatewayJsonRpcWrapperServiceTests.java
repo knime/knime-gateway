@@ -59,6 +59,7 @@ import java.util.Map;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,8 +69,10 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
 import org.knime.gateway.impl.webui.service.DefaultEventService;
+import org.knime.gateway.impl.webui.service.DefaultServices;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
@@ -195,6 +198,18 @@ public class GatewayJsonRpcWrapperServiceTests {
     @BeforeClass
     public static void initResultChecker() {
         resultChecker = WebUIGatewayServiceTestHelper.createResultChecker();
+    }
+
+    @SuppressWarnings("javadoc")
+    @BeforeClass
+    public static void setupServiceDependencies() {
+        DefaultServices.setServiceDependency(AppStateProvider.class, null);
+    }
+
+    @SuppressWarnings("javadoc")
+    @AfterClass
+    public static void disposeServices() {
+        DefaultServices.disposeAllServicesInstances();
     }
 
     /**

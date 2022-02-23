@@ -56,7 +56,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -81,8 +80,10 @@ import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
  * @noextend This class is not intended to be subclassed by clients.
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultApplicationService implements ApplicationService {  // NOSONAR: non-final for testing purposes
-    private static final DefaultApplicationService INSTANCE = new DefaultApplicationService();
+public final class DefaultApplicationService implements ApplicationService {
+
+    private final AppStateProvider m_appStateProvider =
+        DefaultServices.getServiceDependency(AppStateProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -90,10 +91,10 @@ public class DefaultApplicationService implements ApplicationService {  // NOSON
      * @return the singleton instance
      */
     public static DefaultApplicationService getInstance() {
-        return INSTANCE;
+        return DefaultServices.getDefaultServiceInstance(DefaultApplicationService.class);
     }
 
-    private DefaultApplicationService() {
+    DefaultApplicationService() {
         // singleton
     }
 
@@ -102,25 +103,21 @@ public class DefaultApplicationService implements ApplicationService {  // NOSON
      */
     @Override
     public AppStateEnt getState() {
-        var provider = getAppStateProvider();
-        return buildAppStateEnt(provider == null ? null : provider.getAppState());
+        return buildAppStateEnt(m_appStateProvider.getAppState());
     }
 
     /**
-     * Return the current AppStateProvider by querying the provided dependencies. Protected for testing purposes.
+     * Helper to create a {@link AppStateEnt}-instance from an {@link AppState}.
+     *
+     * @param appState
+     * @return a new entity instance
      */
-    protected AppStateProvider getAppStateProvider() {
-        return ServiceDependencies.get(AppStateProvider.class);
-    }
-
     public static AppStateEnt buildAppStateEnt(final AppState appState) {
         AppStateEntBuilder builder = builder(AppStateEntBuilder.class);
         List<WorkflowProjectEnt> projects;
         if (appState != null) {
-            projects = appState.getOpenedWorkflows().stream()
-                    .map(DefaultApplicationService::buildWorkflowProjectEnt)
-                    .filter(Objects::nonNull)
-                    .collect(toList());
+            projects = appState.getOpenedWorkflows().stream().map(DefaultApplicationService::buildWorkflowProjectEnt)
+                .filter(Objects::nonNull).collect(toList());
         } else {
             projects = Collections.emptyList();
         }
@@ -142,7 +139,7 @@ public class DefaultApplicationService implements ApplicationService {  // NOSON
             String wfId = wf.getWorkflowId();
             WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(wf.getProjectId()).orElse(null);
             if (wfm != null && !wfId.equals(NodeIDEnt.getRootID().toString())) {
-                NodeContainer nc =
+                var nc =
                     wfm.findNodeContainer(DefaultServiceUtil.entityToNodeID(wf.getProjectId(), new NodeIDEnt(wfId)));
                 if (nc instanceof SubNodeContainer) {
                     wfm = ((SubNodeContainer)nc).getWorkflowManager();

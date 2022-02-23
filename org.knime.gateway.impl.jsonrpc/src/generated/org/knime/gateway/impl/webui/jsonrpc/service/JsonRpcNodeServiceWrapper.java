@@ -66,9 +66,9 @@ import org.knime.gateway.api.webui.service.NodeService;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcNodeServiceWrapper implements NodeService {
 
-    private final NodeService m_service;
+    private final java.util.function.Supplier<NodeService> m_service;
     
-    public JsonRpcNodeServiceWrapper(NodeService service) {
+    public JsonRpcNodeServiceWrapper(java.util.function.Supplier<NodeService> service) {
         m_service = service;
     }
 
@@ -84,7 +84,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public void changeLoopState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
-        m_service.changeLoopState(projectId, workflowId, nodeId, action);    
+        m_service.get().changeLoopState(projectId, workflowId, nodeId, action);    
     }
 
 	/**
@@ -99,7 +99,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
-        m_service.changeNodeStates(projectId, workflowId, nodeIds, action);    
+        m_service.get().changeNodeStates(projectId, workflowId, nodeIds, action);    
     }
 
 	/**
@@ -114,7 +114,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public String doPortRpc(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="body") String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.doPortRpc(projectId, workflowId, nodeId, portIdx, body);    
+        return m_service.get().doPortRpc(projectId, workflowId, nodeId, portIdx, body);    
     }
 
 	/**
@@ -129,7 +129,7 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
             data = "NodeDescriptionNotAvailableException" /*per convention the data property contains the exception name*/)
     })
     public NativeNodeDescriptionEnt getNodeDescription(@JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
-        return m_service.getNodeDescription(nodeFactoryKeyEnt);    
+        return m_service.get().getNodeDescription(nodeFactoryKeyEnt);    
     }
 
 }

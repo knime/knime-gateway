@@ -73,27 +73,28 @@ import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
  */
 public final class DefaultEventService implements EventService {
 
-    private static final DefaultEventService INSTANCE = new DefaultEventService();
-
     /**
      * Returns the singleton instance for this service.
      *
      * @return the singleton instance
      */
     public static DefaultEventService getInstance() {
-        return INSTANCE;
+        return DefaultServices.getDefaultServiceInstance(DefaultEventService.class);
     }
 
     private final List<BiConsumer<String, Object>> m_eventConsumer = new ArrayList<>();
 
     private final Map<Class<?>, EventSource<?, ?>> m_eventSources = new HashMap<>();
 
+    private final AppStateProvider m_appStateProvider =
+        DefaultServices.getServiceDependency(AppStateProvider.class, true);
+
     /*
      * For testing purposes only.
      */
     private boolean m_callEventConsumerOnError = false;
 
-    private DefaultEventService() {
+    DefaultEventService() {
         // singleton
     }
 
@@ -110,7 +111,7 @@ public final class DefaultEventService implements EventService {
                 t -> new WorkflowChangedEventSource(this::sendEvent));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(this::sendEvent, ServiceDependencies.get(AppStateProvider.class)));
+                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -146,6 +147,7 @@ public final class DefaultEventService implements EventService {
      *
      * @param eventConsumer the event consumer to add
      */
+    // TODO provide event consumer as a 'service dependency' instead (NXT-927)
     public void addEventConsumer(final BiConsumer<String, Object> eventConsumer) {
         m_eventConsumer.add(eventConsumer);
     }
@@ -184,6 +186,12 @@ public final class DefaultEventService implements EventService {
      */
     EventSource<?, ?> getEventSource(final Class<? extends EventTypeEnt> eventTypeEnt) {
         return m_eventSources.get(eventTypeEnt);
+    }
+
+    @Override
+    public void dispose() {
+        removeAllEventListeners();
+        m_eventConsumer.clear();
     }
 
 }

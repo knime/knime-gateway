@@ -67,9 +67,9 @@ import org.knime.gateway.api.webui.service.NodeRepositoryService;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryService {
 
-    private final NodeRepositoryService m_service;
+    private final java.util.function.Supplier<NodeRepositoryService> m_service;
     
-    public JsonRpcNodeRepositoryServiceWrapper(NodeRepositoryService service) {
+    public JsonRpcNodeRepositoryServiceWrapper(java.util.function.Supplier<NodeRepositoryService> service) {
         m_service = service;
     }
 
@@ -79,7 +79,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "getNodeTemplates")
     public java.util.Map<String, NodeTemplateEnt> getNodeTemplates(@JsonRpcParam(value="requestBody") java.util.List<String> requestBody)  {
-        return m_service.getNodeTemplates(requestBody);    
+        return m_service.get().getNodeTemplates(requestBody);    
     }
 
 	/**
@@ -88,7 +88,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "searchNodes")
     public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo)  {
-        return m_service.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);    
+        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);    
     }
 
 	/**
@@ -97,7 +97,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "selectNodes")
     public NodeSelectionsEnt selectNodes(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
-        return m_service.selectNodes(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
+        return m_service.get().selectNodes(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
     }
 
 }

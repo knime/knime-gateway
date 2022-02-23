@@ -66,9 +66,9 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
 
-    private final WorkflowService m_service;
+    private final java.util.function.Supplier<WorkflowService> m_service;
     
-    public JsonRpcWorkflowServiceWrapper(WorkflowService service) {
+    public JsonRpcWorkflowServiceWrapper(java.util.function.Supplier<WorkflowService> service) {
         m_service = service;
     }
 
@@ -86,7 +86,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public void executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommandEnt") WorkflowCommandEnt workflowCommandEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
-        m_service.executeWorkflowCommand(projectId, workflowId, workflowCommandEnt);    
+        m_service.get().executeWorkflowCommand(projectId, workflowId, workflowCommandEnt);    
     }
 
 	/**
@@ -101,7 +101,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
     public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
-        return m_service.getWorkflow(projectId, workflowId, includeInteractionInfo);    
+        return m_service.get().getWorkflow(projectId, workflowId, includeInteractionInfo);    
     }
 
 	/**
@@ -114,7 +114,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public void redoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException {
-        m_service.redoWorkflowCommand(projectId, workflowId);    
+        m_service.get().redoWorkflowCommand(projectId, workflowId);    
     }
 
 	/**
@@ -127,7 +127,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
     public void undoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException {
-        m_service.undoWorkflowCommand(projectId, workflowId);    
+        m_service.get().undoWorkflowCommand(projectId, workflowId);    
     }
 
 }

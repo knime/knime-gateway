@@ -56,6 +56,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -84,11 +85,11 @@ public class UnexpectedJsonRpcErrorTest {
      */
     @Test
     public void testUnexpectedJsonRpcError() throws NotASubWorkflowException, NodeNotFoundException {
-        Map<Class<? extends GatewayService>, GatewayService> serviceMocks = new HashMap<>();
+        Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceMocks = new HashMap<>();
         WorkflowService workflowServiceMock = mock(WorkflowService.class);
         when(workflowServiceMock.getWorkflow(any(), any(), any()))
             .thenThrow(new UnsupportedOperationException("an unexpected exception"));
-        serviceMocks.put(WorkflowService.class, workflowServiceMock);
+        serviceMocks.put(WorkflowService.class, () -> workflowServiceMock);
         DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler(serviceMocks);
         ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         JsonRpcClient jsonRpcClient = new JsonRpcClient(mapper,

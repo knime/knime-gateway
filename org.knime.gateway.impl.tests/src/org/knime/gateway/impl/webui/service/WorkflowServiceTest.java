@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -89,4 +90,11 @@ public class WorkflowServiceTest extends GatewayServiceTest {
         WorkflowSnapshotEnt ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
         assertFalse(ent2.getWorkflow() == ent3.getWorkflow());
     }
+
+    @SuppressWarnings("javadoc")
+    @AfterClass
+    public static void disposeServices() {
+        DefaultServices.disposeAllServicesInstances();
+    }
+
 }

@@ -61,7 +61,7 @@ import java.util.function.Supplier;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class AppStateProvider {
+public final class AppStateProvider {
 
     private final Supplier<AppState> m_appStateSupplier;
 

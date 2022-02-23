@@ -65,9 +65,9 @@ import org.knime.gateway.api.webui.service.ApplicationService;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcApplicationServiceWrapper implements ApplicationService {
 
-    private final ApplicationService m_service;
+    private final java.util.function.Supplier<ApplicationService> m_service;
     
-    public JsonRpcApplicationServiceWrapper(ApplicationService service) {
+    public JsonRpcApplicationServiceWrapper(java.util.function.Supplier<ApplicationService> service) {
         m_service = service;
     }
 
@@ -77,7 +77,7 @@ public class JsonRpcApplicationServiceWrapper implements ApplicationService {
     @Override
     @JsonRpcMethod(value = "getState")
     public AppStateEnt getState()  {
-        return m_service.getState();    
+        return m_service.get().getState();    
     }
 
 }

@@ -79,7 +79,6 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class DefaultNodeService implements NodeService {
-    private static final DefaultNodeService INSTANCE = new DefaultNodeService();
 
     static final LRUMap<NodeFactoryKeyEnt, NativeNodeDescriptionEnt> m_nodeDescriptionCache = new LRUMap<>(100);
 
@@ -89,10 +88,10 @@ public final class DefaultNodeService implements NodeService {
      * @return the singleton instance
      */
     public static DefaultNodeService getInstance() {
-        return INSTANCE;
+        return DefaultServices.getDefaultServiceInstance(DefaultNodeService.class);
     }
 
-    private DefaultNodeService() {
+    DefaultNodeService() {
         // singleton
     }
 
@@ -204,6 +203,11 @@ public final class DefaultNodeService implements NodeService {
             return description;
         }
         return m_nodeDescriptionCache.get(factoryKey);
+    }
+
+    @Override
+    public void dispose() {
+        m_nodeDescriptionCache.clear();
     }
 
 }

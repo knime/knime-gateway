@@ -60,4 +60,11 @@ import org.knime.gateway.api.entity.GatewayEntity;
  */
 public interface GatewayService {
 
+    /**
+     * Cleans up the service instance.
+     */
+    default void dispose() {
+        //
+    }
+
 }

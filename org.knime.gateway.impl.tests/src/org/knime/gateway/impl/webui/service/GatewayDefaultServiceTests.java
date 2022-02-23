@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +58,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -160,8 +162,6 @@ public class GatewayDefaultServiceTests {
     @After
     public void disposeWorkflows() throws InterruptedException {
         m_workflowLoader.disposeWorkflows();
-        // TODO remove event consumer
-        // TODO remove all event listeners
     }
 
     /**
@@ -170,6 +170,18 @@ public class GatewayDefaultServiceTests {
     @BeforeClass
     public static void initResultChecker() {
         resultChecker = WebUIGatewayServiceTestHelper.createResultChecker();
+    }
+
+    @SuppressWarnings("javadoc")
+    @BeforeClass
+    public static void setupServiceDependencies() {
+        DefaultServices.setServiceDependency(AppStateProvider.class, null);
+    }
+
+    @SuppressWarnings("javadoc")
+    @AfterClass
+    public static void disposeServices() {
+        DefaultServices.disposeAllServicesInstances();
     }
 
 }

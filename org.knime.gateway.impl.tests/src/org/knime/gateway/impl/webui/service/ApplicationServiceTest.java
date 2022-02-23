@@ -48,10 +48,10 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -79,11 +79,12 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, workflowProjectId);
 
         AppState appState = mock(AppState.class);
-        AppStateProvider appStateProvider = mock(AppStateProvider.class);
-        when(appStateProvider.getAppState()).thenReturn(appState);
-        // Use spying for partial mocking on real instance.
-        DefaultApplicationService appService = spy(DefaultApplicationService.getInstance());
-        when(appService.getAppStateProvider()).thenReturn(appStateProvider);
+        Supplier<AppState> appStateSupplier = mock(Supplier.class);
+        AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
+        when(appStateSupplier.get()).thenReturn(appState);
+        DefaultServices.setServiceDependency(AppStateProvider.class, appStateProvider);
+
+        var appService = DefaultApplicationService.getInstance();
 
         cr(appService.getState(), "empty_appstate");
 
@@ -97,6 +98,8 @@ public class ApplicationServiceTest extends GatewayServiceTest {
             appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow(),
             appStateEnt2.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow()
         );
+
+        DefaultServices.disposeAllServicesInstances();
 
     }
 

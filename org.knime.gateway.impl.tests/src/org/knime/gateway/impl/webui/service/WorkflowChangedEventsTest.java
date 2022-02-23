@@ -65,8 +65,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -78,6 +81,7 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
+import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
@@ -109,6 +113,18 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
      */
     public WorkflowChangedEventsTest(final WorkflowTransformations transformations) {
         m_transformations = transformations;
+    }
+
+    @SuppressWarnings("javadoc")
+    @BeforeClass
+    public static void setupServiceDependencies() {
+        DefaultServices.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+    }
+
+    @SuppressWarnings("javadoc")
+    @AfterClass
+    public static void disposeServices() {
+        DefaultServices.disposeAllServicesInstances();
     }
 
     /**

@@ -65,9 +65,9 @@ import org.knime.gateway.api.webui.service.EventService;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcEventServiceWrapper implements EventService {
 
-    private final EventService m_service;
+    private final java.util.function.Supplier<EventService> m_service;
     
-    public JsonRpcEventServiceWrapper(EventService service) {
+    public JsonRpcEventServiceWrapper(java.util.function.Supplier<EventService> service) {
         m_service = service;
     }
 
@@ -81,7 +81,7 @@ public class JsonRpcEventServiceWrapper implements EventService {
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
     public void addEventListener(@JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException {
-        m_service.addEventListener(eventTypeEnt);    
+        m_service.get().addEventListener(eventTypeEnt);    
     }
 
 	/**
@@ -90,7 +90,7 @@ public class JsonRpcEventServiceWrapper implements EventService {
     @Override
     @JsonRpcMethod(value = "removeEventListener")
     public void removeEventListener(@JsonRpcParam(value="eventTypeEnt") EventTypeEnt eventTypeEnt)  {
-        m_service.removeEventListener(eventTypeEnt);    
+        m_service.get().removeEventListener(eventTypeEnt);    
     }
 
 }

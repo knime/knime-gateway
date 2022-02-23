@@ -65,7 +65,6 @@ import org.knime.gateway.impl.webui.NodeSelection;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class DefaultNodeRepositoryService implements NodeRepositoryService {
-    private static final DefaultNodeRepositoryService INSTANCE = new DefaultNodeRepositoryService();
 
     private final NodeRepository m_nodeRepo;
 
@@ -79,10 +78,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * @return the singleton instance
      */
     public static DefaultNodeRepositoryService getInstance() {
-        return INSTANCE;
+        return DefaultServices.getDefaultServiceInstance(DefaultNodeRepositoryService.class);
     }
 
-    private DefaultNodeRepositoryService() {
+    DefaultNodeRepositoryService() {
         m_nodeRepo = new NodeRepository();
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeSelection = new NodeSelection(m_nodeRepo);
