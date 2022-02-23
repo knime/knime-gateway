@@ -1,35 +1,35 @@
 {
-  "description" : "This node uses each row of a data table to define new variable values for each loop iteration. The names of the variables are defined by the column names.",
+  "description" : "\n\t\t\tThis node uses each row of a data table to define new variable values for each loop iteration. The names of\n\t\t\tthe variables are defined by the column names.\n\t\t",
   "inPorts" : [ {
-    "description" : "The table whose rows will constitute variables' values for each iteration.",
+    "description" : "\n\t\t\tThe table whose rows will constitute variables' values for each iteration.\n\t\t",
     "name" : "Parameters table",
     "optional" : false,
     "type" : "table"
   } ],
   "links" : [ {
-    "text" : "KNIME Analytics Platform for Data Scientists (Advanced): Lesson 2. Flow Variables &amp; Components",
+    "text" : "\n\t\t\tKNIME Analytics Platform for Data Scientists (Advanced): Lesson 2. Flow Variables &amp; Components\n\t\t",
     "url" : "https://www.knime.com/self-paced-course/l2-ds-knime-analytics-platform-for-data-scientists-advanced/lesson2"
   } ],
   "options" : [ {
     "fields" : [ {
-      "description" : "Allows to specify how to cope with missing values. Note that an empty table is treated as if it would contain only missing values. <ul> <li> <i>Fail:</i> Ensures that the node will fail during execution if the input table is empty or contains missing values in the columns to convert </li> <li> <i>Use defaults if available:</i> Replaces any missing value by the (configured) defaults. In case no default value is associated with the missing cell's type the execution will fail. </li> <li> <i>Omit:</i> Missing cells will not be converted and therefore be omitted from the output. </li> </ul>",
+      "description" : "\n\t\t\tAllows to specify how to cope with missing values. Note that an empty table is treated as if it would\n\t\t\tcontain only missing values.\n\t\t\t<ul>\n\t\t\t\t<li>\n\t\t\t\t\t<i>Fail:</i>\n\t\t\t\t\tEnsures that the node will fail during execution if the input table is empty or contains missing\n\t\t\t\t\tvalues in the columns to convert\n\t\t\t\t</li>\n\t\t\t\t<li>\n\t\t\t\t\t<i>Use defaults if available:</i>\n\t\t\t\t\tReplaces any missing value by the (configured) defaults. In case no default value is associated with\n\t\t\t\t\tthe missing cell's type the execution will fail.\n\t\t\t\t</li>\n\t\t\t\t<li>\n\t\t\t\t\t<i>Omit:</i>\n\t\t\t\t\tMissing cells will not be converted and therefore be omitted from the output.\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t",
       "name" : "Missing value handling",
       "optional" : false
     }, {
-      "description" : "Allows to specify the defaults for <tt>String</tt>, <tt>Boolean</tt>, <tt>Integer</tt>, <tt>Long</tt> and <tt>Double</tt> cells.",
+      "description" : "\n\t\t\tAllows to specify the defaults for <tt>String</tt>, <tt>Boolean</tt>, <tt>Integer</tt>, <tt>Long</tt> and\n\t\t\t<tt>Double</tt> cells.\n\t\t",
       "name" : "Defaults",
       "optional" : false
     }, {
-      "description" : "Allows the selection of the those columns whose cells must be converted to flow variables.",
+      "description" : "\n\t\t\tAllows the selection of the those columns whose cells must be converted to flow variables.\n\t\t",
       "name" : "Column selection",
       "optional" : false
     } ]
   } ],
   "outPorts" : [ {
-    "description" : "Connection carrying on the variables.",
+    "description" : "\n\t\t\tConnection carrying on the variables.\n\t\t",
     "name" : "Variable connection",
     "optional" : false,
     "type" : "flowVariable"
   } ],
-  "shortDescription" : "Iterates over an input data table, whereby each row defines an iteration with variable settings taken from the values in that row"
+  "shortDescription" : "\n        Iterates over an input data table, whereby each row defines an iteration with variable settings taken from the\n        values in that row  \n    "
 }

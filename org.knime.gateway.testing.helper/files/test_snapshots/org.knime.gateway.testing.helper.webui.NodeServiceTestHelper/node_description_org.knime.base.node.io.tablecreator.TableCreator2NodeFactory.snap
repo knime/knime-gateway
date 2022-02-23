@@ -1,12 +1,12 @@
 {
-  "description" : "Allows the manual creation of a data table. The data can entered in a spreadsheet like table.",
+  "description" : "\n            Allows the manual creation of a data table. The data can entered \n            in a spreadsheet like table.\n        ",
   "options" : [ {
     "fields" : [ {
-      "description" : "<b>Name</b> and <b>type</b> can be changed. A pattern can be entered that will cause a <b>missing cell</b>. Additionally, possible values of the column domain can be updated by selecting <b>Domain</b>. And, you can choose to <b>skip this column</b> entirely, i.e. it will not be included in the output table then.",
+      "description" : "\n        <b>Name</b> and <b>type</b> can be changed. A pattern can be entered \n        that will cause a <b>missing cell</b>. Additionally, possible values of \n        the column domain can be updated by selecting <b>Domain</b>. And, \n        you can choose to <b>skip this column</b> entirely, i.e. it will \n        not be included in the output table then.\n        ",
       "name" : "Column Properties (context menu of the column header)",
       "optional" : false
     }, {
-      "description" : "Use this to change the naming of all row IDs. The row IDs are built of a consecutive number with a <b>prefix</b> and a <b>suffix</b>. Beside the prefix and suffix you can specify the index of the first row.",
+      "description" : "\n        Use this to change the naming of all row IDs. The row IDs are built of\n        a consecutive number with a <b>prefix</b> and a <b>suffix</b>. Beside\n        the prefix and suffix you can specify the index of the first row.\n        ",
       "name" : "Row ID Properties (context menu of the row header)",
       "optional" : false
     } ]
@@ -17,5 +17,5 @@
     "optional" : false,
     "type" : "table"
   } ],
-  "shortDescription" : "Allows the manual creation of a data table with any number of rows and columns."
+  "shortDescription" : "\n        Allows the manual creation of a data table with any number of rows and\n        columns.\n    "
 }

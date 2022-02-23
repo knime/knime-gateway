@@ -1,43 +1,43 @@
 {
   "description" : "Outputs an integer flow variable with a set value from a component's dialog.",
   "inPorts" : [ {
-    "description" : "Input table which contains at least one integer column with domain values set, which can be used to control the minimum and maximum values of the slider.",
+    "description" : "Input table which contains at least one integer\n\t\t\tcolumn with\tdomain values set, which can be used to control the\n\t\t\tminimum and\tmaximum values of the slider.\n\t\t",
     "name" : "Table Input with applicable domain values",
     "optional" : true,
     "type" : "table"
   } ],
   "options" : [ {
     "fields" : [ {
-      "description" : "A descriptive label that will be shown in the dialog",
+      "description" : "\n\t\t  A descriptive label that will be shown in the dialog\n\t\t",
       "name" : "Label",
       "optional" : false
     }, {
-      "description" : "Some lines of description that will be shown for instance in the node description of the component exposing a dialog.",
+      "description" : "\n\t\t  Some lines of description that will be shown for instance in the node description of the component exposing a\n\t\t  dialog.\n\t\t",
       "name" : "Description",
       "optional" : false
     }, {
-      "description" : "Parameter identifier for external parameterization (e.g. batch execution). This will also be the name of the exported flow variable.",
+      "description" : "Parameter identifier for external parameterization (e.g. batch execution). \n\t\t  This will also be the name of the exported flow variable.",
       "name" : "Parameter Name",
       "optional" : false
     }, {
-      "description" : "An optional integer minimum value.",
+      "description" : "\n\t\t  An optional integer minimum value.\n\t\t",
       "name" : "Minimum",
       "optional" : false
     }, {
-      "description" : "An optional integer maximum value.",
+      "description" : "\n          An optional integer maximum value.\n        ",
       "name" : "Maximum",
       "optional" : false
     }, {
-      "description" : "The value that is selected by default.",
+      "description" : "\n          The value that is selected by default.\n        ",
       "name" : "Default Value",
       "optional" : false
     } ]
   } ],
   "outPorts" : [ {
-    "description" : "Variable output (integer) with the given variable defined.",
+    "description" : "\n\t\t  Variable output (integer) with the given variable defined.\n\t\t",
     "name" : "Flow Variable Output",
     "optional" : false,
     "type" : "flowVariable"
   } ],
-  "shortDescription" : "Provides a slider configuration option to an encapsulating component's dialog. Outputs a integer flow variable with the set value."
+  "shortDescription" : "\n\t   Provides a slider configuration option to an encapsulating component's dialog. \n\t   Outputs a integer flow variable with the set value.\n\t"
 }

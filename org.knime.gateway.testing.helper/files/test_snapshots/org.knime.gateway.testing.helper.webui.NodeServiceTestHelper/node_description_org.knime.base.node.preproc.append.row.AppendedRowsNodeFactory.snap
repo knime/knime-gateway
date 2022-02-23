@@ -1,7 +1,7 @@
 {
-  "description" : "This node concatenates two tables. The table at inport 0 is given as the first input table (top input port), the table at inport 1 is the second table, resp. Columns with equal names are concatenated (if the column types differ the column type is the common base type of both input column types). If one input table contains column names that the other table does not, the columns can either be filled with missing values or filtered out, i.e. they will not be in the output table. The dialog allows setting the following parameters:",
+  "description" : "\n            This node concatenates two tables. The table at inport 0 is given as the first\n            input table (top input port), the table at inport 1 is the second table, resp. \n\t\t\tColumns with equal names are concatenated (if the column types differ \n\t\t\tthe column type is the common base type of both input column types). \n\t\t\tIf one input table contains column names that the other table does not, the\n\t\t\tcolumns can either be filled with missing values or\n\t\t\tfiltered out, i.e. they will not be in the output table.\n\t\t\tThe dialog allows setting the following parameters:\n\t\t",
   "dynamicInPortGroupDescriptions" : [ {
-    "description" : "Table contributing subsequent rows.",
+    "description" : "\n        \tTable contributing subsequent rows.\n        ",
     "identifier" : "input",
     "name" : "Additional table to concatenate",
     "supportedPortTypes" : [ {
@@ -21,32 +21,32 @@
     "type" : "table"
   } ],
   "links" : [ {
-    "text" : "KNIME E-Learning Course: Concatenation",
+    "text" : "\n\t\t\tKNIME E-Learning Course: Concatenation\n\t\t",
     "url" : "https://www.knime.com/knime-introductory-course/chapter3/section3/concatenation"
   } ],
   "options" : [ {
     "fields" : [ {
-      "description" : "Duplicate row identifiers (RowID) occurring in the second table are not appended to the output table. This option is relatively memory intensive as it needs to cache the row IDs in order to find duplicates. Furthermore a full data duplication is needed.",
+      "description" : " Duplicate row identifiers (RowID) occurring in the \n\t        second table are not appended to the output table. This option is \n\t        relatively memory intensive as it needs to cache the row IDs in\n\t        order to find duplicates. Furthermore a full data\n\t\t\tduplication is needed.",
       "name" : "Skip Rows",
       "optional" : false
     }, {
-      "description" : "The output table will contain all rows, but duplicate row identifiers are labeled with a suffix. Similar to the \"Skip Rows\" option this method is also memory intensive.",
+      "description" : " The output table will contain all rows, but\n            duplicate row identifiers are labeled with a suffix. Similar to\n            the \"Skip Rows\" option this method is also memory intensive. ",
       "name" : "Append suffix",
       "optional" : false
     }, {
-      "description" : "The node will fail during execution if duplicate row IDs are encountered. This option is efficient while checking uniqueness.",
+      "description" : "The node will fail during execution if duplicate \n            row IDs are encountered. This option is efficient while checking \n            uniqueness.",
       "name" : "Fail",
       "optional" : false
     }, {
-      "description" : "Use only the columns that appear in both input tables. Any other column is ignored and won't appear in the output table.",
+      "description" : "\n        \tUse only the columns that appear in both input tables. Any other\n        \tcolumn is ignored and won't appear in the output table.\n        ",
       "name" : "Use intersection of columns",
       "optional" : false
     }, {
-      "description" : "Use all columns available in the input tables. Fill rows with missing values if they miss cells for some columns.",
+      "description" : "\n        \tUse all columns available in the input tables. Fill rows with \n        \tmissing values if they miss cells for some columns.\n        ",
       "name" : "Use union of columns",
       "optional" : false
     }, {
-      "description" : "Enables hiliting between both inputs and the concatenated output table.",
+      "description" : "\n            Enables hiliting between both inputs and the concatenated output\n            table.\n        ",
       "name" : "Enable hiliting",
       "optional" : false
     } ]
