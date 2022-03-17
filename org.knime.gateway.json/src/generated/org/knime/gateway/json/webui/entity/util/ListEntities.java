@@ -97,6 +97,7 @@ import org.knime.gateway.json.webui.entity.PortViewEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventTypeEntMixIn;
@@ -182,6 +183,7 @@ public class ListEntities {
         res.add(ProjectMetadataEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
+        res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowChangedEventEntMixIn.class);
         res.add(WorkflowChangedEventTypeEntMixIn.class);
@@ -253,6 +255,7 @@ public class ListEntities {
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
+        res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowChangedEventEntMixIn.WorkflowChangedEventEntMixInBuilder.class);
         res.add(WorkflowChangedEventTypeEntMixIn.WorkflowChangedEventTypeEntMixInBuilder.class);

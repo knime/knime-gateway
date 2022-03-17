@@ -1,0 +1,7 @@
+{
+  "ops" : [ {
+  "op" : "replace",
+  "path" : "/nodes/root:23/name",
+  "value" : "New Name"
+} ]
+}

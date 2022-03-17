@@ -64,9 +64,9 @@ import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -129,8 +129,7 @@ public final class WorkflowTransformations {
     }
 
     private static List<WorkflowTransformation> createTransformationsForGeneral() {
-        return asList(
-            newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"),
+        return asList(newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"),
             newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"),
             newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(26), 1)),
                 "connection_removed"),
@@ -150,14 +149,14 @@ public final class WorkflowTransformations {
             newTransformation(w -> w.removeAnnotation(w.getWorkflowAnnotations().iterator().next()),
                 "workflow_annotation_removed"),
             newTransformation(w -> {
-                AnnotationData newAnno = new AnnotationData();
+                var newAnno = new AnnotationData();
                 w.getWorkflowAnnotations().iterator().next().copyFrom(newAnno, false);
             }, "workflow_annotation_changed"), newTransformation(w -> {
-                AnnotationData newAnno = new AnnotationData();
+                var newAnno = new AnnotationData();
                 newAnno.setText("new anno text");
                 w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
             }, "node_annotation_added"), newTransformation(w -> {
-                AnnotationData newAnno = new AnnotationData();
+                var newAnno = new AnnotationData();
                 newAnno.setText("yet another text");
                 w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
             }, "node_annotation_changed"), newTransformation(w -> {
@@ -166,14 +165,18 @@ public final class WorkflowTransformations {
                 creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
                 creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
                 w.replaceNode(oldNC.getID(), creationConfig);
-            }, "ports_added"));
+            }, "ports_added"),
+            newTransformation(w -> ((WorkflowManager)w.getNodeContainer(w.getID().createChild(6))).setName("New Name"),
+                "metanode_renamed"),
+            newTransformation(w -> ((SubNodeContainer)w.getNodeContainer(w.getID().createChild(23))).setName("New Name"),
+                "component_renamed"));
     }
 
     private static List<WorkflowTransformation> createTransformationsForStreamingExecution() {
         return singletonList(newTransformation(WorkflowManager::executeAll, "streaming_execution",
             wfm -> await().atMost(5, TimeUnit.SECONDS).pollInterval(300, TimeUnit.MILLISECONDS).until(() -> {
-                NodeContainerState ncs1 = wfm.getNodeContainer(wfm.getID().createChild(3)).getNodeContainerState();
-                NodeContainerState ncs2 = wfm.getNodeContainer(wfm.getID().createChild(5)).getNodeContainerState();
+                var ncs1 = wfm.getNodeContainer(wfm.getID().createChild(3)).getNodeContainerState();
+                var ncs2 = wfm.getNodeContainer(wfm.getID().createChild(5)).getNodeContainerState();
                 return ncs1.isExecuted() && ncs2.isExecutionInProgress() && !ncs2.isWaitingToBeExecuted();
             })));
     }

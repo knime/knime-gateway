@@ -150,6 +150,8 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -348,6 +350,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == TranslateCommandEntBuilder.class) {
             return (B)new DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder();
+        }        
+        if(clazz == UpdateComponentOrMetanodeNameCommandEntBuilder.class) {
+            return (B)new DefaultUpdateComponentOrMetanodeNameCommandEnt.DefaultUpdateComponentOrMetanodeNameCommandEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();

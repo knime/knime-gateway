@@ -61,6 +61,8 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteConnectCommand());
         res.put("testExecuteAddNodeCommand",
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddNodeCommand());
+        res.put("testExecuteUpdateComponentOrMetanodeNameCommand",
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteUpdateComponentOrMetanodeNameCommand());
 
         res.put("testChangeNodeState",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());

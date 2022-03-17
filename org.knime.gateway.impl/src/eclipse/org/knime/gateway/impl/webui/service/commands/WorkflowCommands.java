@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -116,6 +117,8 @@ public final class WorkflowCommands {
             op = (WorkflowCommand<E>)new Connect();
         } else if (command instanceof AddNodeCommandEnt) {
             op = (WorkflowCommand<E>)new AddNode();
+        } else if(command instanceof UpdateComponentOrMetanodeNameCommandEnt) {
+            op = (WorkflowCommand<E>)new UpdateComponentOrMetanodeNameCommand();
         } else {
             throw new OperationNotAllowedException(
                 "Command of type " + command.getClass().getSimpleName() + " cannot be executed. Unknown command.");

@@ -65,6 +65,7 @@ import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -85,12 +86,15 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBui
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -671,6 +675,71 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .findFirst().orElseThrow();
         assertThat(nodeEnt.getPosition().getX(), is(x));
         assertThat(nodeEnt.getPosition().getY(), is(y));
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called {@link UpdateComponentOrMetanodeNameCommandEnt}
+     *
+     * @throws Exception
+     */
+    public void testExecuteUpdateComponentOrMetanodeNameCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        final var newName = "New Name";
+        final var nativeNode = new NodeIDEnt(2);
+        final var metanode = new NodeIDEnt(6);
+        final var component = new NodeIDEnt(23);
+
+        // successfully rename metanode
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        final String oldMetaNodeName = ((MetaNodeEnt)workflow.getNodes().get(metanode.toString())).getName();
+        final var command1 = buildUpdateComponentOrMetanodeNameCommandEnt(metanode, newName);
+        ws().executeWorkflowCommand(wfId, getRootID(), command1);
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertThat(((MetaNodeEnt)workflow.getNodes().get(metanode.toString())).getName(), is(newName));
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertThat(((MetaNodeEnt)workflow.getNodes().get(metanode.toString())).getName(), is(oldMetaNodeName));
+
+        // successfully rename component
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        final String oldComponentName = ((ComponentNodeEnt)workflow.getNodes().get(component.toString())).getName();
+        final var command2 = buildUpdateComponentOrMetanodeNameCommandEnt(component, newName);
+        ws().executeWorkflowCommand(wfId, getRootID(), command2);
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get(component.toString())).getName(), is(newName));
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get(component.toString())).getName(), is(oldComponentName));
+
+        // fail to rename metanode or component
+        final List<NodeIDEnt> nodeIds = Arrays.asList(metanode, component);
+        final List<String> emptyNames = Arrays.asList("", " ", "   ");
+        emptyNames.forEach(name -> nodeIds.forEach(nodeId -> {
+            final var command3 = buildUpdateComponentOrMetanodeNameCommandEnt(nodeId, name);
+            Exception exception = assertThrows(OperationNotAllowedException.class,
+                () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
+            assertThat(exception.getMessage(), containsString("Illegal new name"));
+        }));
+
+        // fail to rename native node
+        final var command4 = buildUpdateComponentOrMetanodeNameCommandEnt(nativeNode, newName);
+        Exception exception = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
+        assertThat(exception.getMessage(), containsString("cannot be renamed"));
+
+    }
+
+    private static UpdateComponentOrMetanodeNameCommandEnt
+        buildUpdateComponentOrMetanodeNameCommandEnt(final NodeIDEnt nodeId, final String name) {
+        return builder(UpdateComponentOrMetanodeNameCommandEntBuilder.class)
+            .setKind(KindEnum.UPDATE_COMPONENT_OR_METANODE_NAME)//
+            .setName(name)//
+            .setNodeId(nodeId)//
+            .build();
     }
 
 }

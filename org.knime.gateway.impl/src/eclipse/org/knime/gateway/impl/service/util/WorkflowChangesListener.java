@@ -66,6 +66,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessageListener;
 import org.knime.core.node.workflow.NodeProgressListener;
+import org.knime.core.node.workflow.NodePropertyChangedListener;
 import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -93,6 +94,8 @@ public class WorkflowChangesListener implements Closeable {
     private final Map<NodeID, NodeUIInformationListener> m_nodeUIListeners = new HashMap<>();
 
     private final Map<NodeID, NodeMessageListener> m_nodeMessageListeners = new HashMap<>();
+
+    private final Map<NodeID, NodePropertyChangedListener> m_nodePropertyChangedListeners = new HashMap<>();
 
     private final Map<NodeID, LoopStatusChangeListener> m_loopStatusChangeListeners = new HashMap<>();
 
@@ -224,6 +227,9 @@ public class WorkflowChangesListener implements Closeable {
             m_loopStatusChangeListeners.put(nc.getID(), l);
             h.addLoopPausedListener(l);
         }));
+        NodePropertyChangedListener cl = e -> callback();
+        m_nodePropertyChangedListeners.put(nc.getID(), cl);
+        nc.addNodePropertyChangedListener(cl);
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
@@ -235,11 +241,13 @@ public class WorkflowChangesListener implements Closeable {
         nc.removeNodeMessageListener(m_nodeMessageListeners.get(id));
         getNNC(nc).ifPresent(nnc -> nnc.getLoopStatusChangeHandler()
             .ifPresent(h -> h.removeLoopPausedListener(m_loopStatusChangeListeners.get(id))));
+        nc.removeNodePropertyChangedListener(m_nodePropertyChangedListeners.get(id));
         m_nodeStateChangeListeners.remove(id);
         m_progressListeners.remove(id);
         m_nodeUIListeners.remove(id);
         m_nodeMessageListeners.remove(id);
         m_loopStatusChangeListeners.remove(id);
+        m_nodePropertyChangedListeners.remove(id);
     }
 
     private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
