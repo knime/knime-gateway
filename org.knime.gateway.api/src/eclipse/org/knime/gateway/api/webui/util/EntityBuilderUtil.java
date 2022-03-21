@@ -118,6 +118,8 @@ import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
 import org.knime.core.util.workflowalizer.Workflowalizer;
+import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -803,14 +805,16 @@ public final class EntityBuilderUtil {
         final DependentNodeProperties depNodeProps) {
         WorkflowManager parent = nc.getParent();
         NodeID id = nc.getID();
+        boolean hasNodeDialog = NodeDialogManager.hasNodeDialog(nc);
         return builder(AllowedNodeActionsEntBuilder.class)//
-                .setCanExecute(depNodeProps.canExecuteNode(id))//
-                .setCanReset(depNodeProps.canResetNode(id))//
-                .setCanCancel(parent.canCancelNode(id))//
-                .setCanOpenDialog(nc.hasDialog() ? Boolean.TRUE : null)//
-                .setCanOpenView(hasAndCanOpenNodeView(nc))//
-                .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
-                .build();
+            .setCanExecute(depNodeProps.canExecuteNode(id))//
+            .setCanReset(depNodeProps.canResetNode(id))//
+            .setCanCancel(parent.canCancelNode(id))//
+            .setCanOpenDialog(nc.hasDialog() || hasNodeDialog ? Boolean.TRUE : null)//
+            .setCanOpenLegacyFlowVariableDialog(hasNodeDialog ? Boolean.TRUE : null)//
+            .setCanOpenView(hasAndCanOpenNodeView(nc))//
+            .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
+            .build();
     }
 
     private static Boolean canDeleteNode(final NodeContainer nc, final NodeID nodeId,
@@ -834,7 +838,7 @@ public final class EntityBuilderUtil {
     }
 
     private static AllowedWorkflowActionsEnt buildAllowedWorkflowActionsEnt(final WorkflowManager wfm,
-            WorkflowBuildContext buildContext) {
+            final WorkflowBuildContext buildContext) {
         return builder(AllowedWorkflowActionsEntBuilder.class)//
             .setCanReset(buildContext.dependentNodeProperties().canResetAny())
             .setCanExecute(wfm.canExecuteAll())//
@@ -917,8 +921,9 @@ public final class EntityBuilderUtil {
      * true, if there is a node view which also has something to display.
      */
     private static Boolean hasAndCanOpenNodeView(final NodeContainer nc) {
-        if (nc instanceof SubNodeContainer || nc instanceof NativeNodeContainer) {
-            if (nc.getInteractiveWebViews().size() > 0) {
+        if (nc instanceof SingleNodeContainer) {
+            // TODO component with new type of view nodes
+            if (nc.getInteractiveWebViews().size() > 0 || NodeViewManager.hasNodeView(nc)) {
                 return nc.getNodeContainerState().isExecuted();
             } else {
                 //

@@ -61,13 +61,19 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
 
 
   /**
-   * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
+   * Indicates whether the dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
    * @return canOpenDialog 
    **/
   public Boolean isCanOpenDialog();
 
   /**
-   * Indicates whether the (legacy!) node view can opened (extra window) or not. If the property is absent, no node view is available altogether.
+   * Indicates  whether a legacy flow variable dialog can be opened. If the property is absent, there is no legacy flow variable dialog.
+   * @return canOpenLegacyFlowVariableDialog 
+   **/
+  public Boolean isCanOpenLegacyFlowVariableDialog();
+
+  /**
+   * Indicates whether the node view can opened (extra window) or not. If the property is absent, no node view is available altogether.
    * @return canOpenView 
    **/
   public Boolean isCanOpenView();
@@ -109,7 +115,7 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
         AllowedNodeActionsEntBuilder setCanReset(Boolean canReset);
         
         /**
-         * Indicates whether the (legacy!) dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
+         * Indicates whether the dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
          * 
          * @param canOpenDialog the property value,  
          * @return this entity builder for chaining
@@ -117,7 +123,15 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
         AllowedNodeActionsEntBuilder setCanOpenDialog(Boolean canOpenDialog);
         
         /**
-         * Indicates whether the (legacy!) node view can opened (extra window) or not. If the property is absent, no node view is available altogether.
+         * Indicates  whether a legacy flow variable dialog can be opened. If the property is absent, there is no legacy flow variable dialog.
+         * 
+         * @param canOpenLegacyFlowVariableDialog the property value,  
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanOpenLegacyFlowVariableDialog(Boolean canOpenLegacyFlowVariableDialog);
+        
+        /**
+         * Indicates whether the node view can opened (extra window) or not. If the property is absent, no node view is available altogether.
          * 
          * @param canOpenView the property value,  
          * @return this entity builder for chaining
