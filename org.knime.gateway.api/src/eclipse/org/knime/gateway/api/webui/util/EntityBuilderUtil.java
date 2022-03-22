@@ -82,6 +82,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ComponentMetadata;
@@ -806,11 +807,12 @@ public final class EntityBuilderUtil {
         WorkflowManager parent = nc.getParent();
         NodeID id = nc.getID();
         boolean hasNodeDialog = NodeDialogManager.hasNodeDialog(nc);
+        boolean hasLegacyNodeDialog = nc.hasDialog();
         return builder(AllowedNodeActionsEntBuilder.class)//
             .setCanExecute(depNodeProps.canExecuteNode(id))//
             .setCanReset(depNodeProps.canResetNode(id))//
             .setCanCancel(parent.canCancelNode(id))//
-            .setCanOpenDialog(nc.hasDialog() || hasNodeDialog ? Boolean.TRUE : null)//
+            .setCanOpenDialog((hasLegacyNodeDialog || hasNodeDialog) ? Boolean.TRUE : null)//
             .setCanOpenLegacyFlowVariableDialog(hasNodeDialog ? Boolean.TRUE : null)//
             .setCanOpenView(hasAndCanOpenNodeView(nc))//
             .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
@@ -921,13 +923,12 @@ public final class EntityBuilderUtil {
      * true, if there is a node view which also has something to display.
      */
     private static Boolean hasAndCanOpenNodeView(final NodeContainer nc) {
-        if (nc instanceof SingleNodeContainer) {
-            // TODO component with new type of view nodes
-            if (nc.getInteractiveWebViews().size() > 0 || NodeViewManager.hasNodeView(nc)) {
-                return nc.getNodeContainerState().isExecuted();
-            } else {
-                //
-            }
+        var hasNodeView = NodeViewManager.hasNodeView(nc);
+        var hasCompositeView =
+            nc instanceof SubNodeContainer && WizardPageUtil.isWizardPage(nc.getParent(), nc.getID());
+        var hasLegacyJSNodeView = nc instanceof NativeNodeContainer && nc.getInteractiveWebViews().size() > 0;
+        if (hasNodeView || hasCompositeView || hasLegacyJSNodeView) {
+            return nc.getNodeContainerState().isExecuted();
         }
         return null; // NOSONAR
     }

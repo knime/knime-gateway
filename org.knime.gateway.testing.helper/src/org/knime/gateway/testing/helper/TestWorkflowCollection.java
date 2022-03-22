@@ -51,7 +51,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * An without any native nodes, but an empty metanode (#1) and an empty component (#2).
      */
-    HOLLOW("/files/testflows/Hollow", "hollow");
+    HOLLOW("/files/testflows/Hollow", "hollow"),
+
+    /**
+     * Workflow with different types of nodes having a view.
+     */
+    VIEW_NODES("/files/testflows/View Nodes", "view nodes");
 
 
     private final String m_workflowDir;

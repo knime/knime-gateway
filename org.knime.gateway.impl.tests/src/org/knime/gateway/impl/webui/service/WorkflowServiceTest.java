@@ -51,6 +51,9 @@ package org.knime.gateway.impl.webui.service;
 import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -89,6 +92,30 @@ public class WorkflowServiceTest extends GatewayServiceTest {
 
         WorkflowSnapshotEnt ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
         assertFalse(ent2.getWorkflow() == ent3.getWorkflow());
+    }
+
+    /**
+     * Checks the expected allowed action properties for nodes and components with a view of different kinds (contrasted
+     * with nodes without a view). The main focus of this tests lies on the 'canOpenView'-property (and related).
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAllowedNodeActionsForViewNodes() throws Exception { // NOSONAR 'cr' does the check
+        var wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, "wf_id");
+        var workflowService = DefaultWorkflowService.getInstance();
+
+        var allowedActionsMap = workflowService.getWorkflow(wfId.toString(), getRootID(), true).getWorkflow().getNodes()
+            .entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
+        cr(allowedActionsMap, "allowed_actions_for_view_nodes");
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var allowedActionsMapExecuted =
+            workflowService.getWorkflow(wfId.toString(), getRootID(), true).getWorkflow().getNodes().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
+        cr(allowedActionsMapExecuted, "allowed_actions_for_view_nodes_executed");
     }
 
     @SuppressWarnings("javadoc")
