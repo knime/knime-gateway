@@ -92,6 +92,10 @@
       "name" : "Show maximum value",
       "optional" : false
     }, {
+      "description" : "\n                    Check if the value of each bar should be displayed next to the bar.\n                ",
+      "name" : "Show static bar values",
+      "optional" : false
+    }, {
       "description" : "\n\t\t\t\t\tSettings for SVG image generation.\n\t\t\t\t",
       "name" : "Image",
       "optional" : false
@@ -137,6 +141,10 @@
     }, {
       "description" : "\n                    Check to enable to show and hide maximum value on the y-axis.\n                ",
       "name" : "Enable showing maximum value on y-axis",
+      "optional" : false
+    }, {
+      "description" : "\n\t\t\t\t\tCheck to enable to show and hide the static bar values within the view.\n\t\t\t\t",
+      "name" : "Enable showing static bar values",
       "optional" : false
     } ],
     "sectionName" : "Control Options"
