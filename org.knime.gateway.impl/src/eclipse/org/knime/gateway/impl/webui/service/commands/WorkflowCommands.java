@@ -52,7 +52,10 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
@@ -76,9 +79,9 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 public final class WorkflowCommands {
 
-    private final Map<WorkflowKey, Deque<WorkflowCommand<? extends WorkflowCommandEnt>>> m_redoStacks;
+    private final Map<WorkflowKey, CommandStack> m_redoStacks;
 
-    private final Map<WorkflowKey, Deque<WorkflowCommand<? extends WorkflowCommandEnt>>> m_undoStacks;
+    private final Map<WorkflowKey, CommandStack> m_undoStacks;
 
     private final int m_maxNumUndoAndRedoCommandsPerWorkflow;
 
@@ -117,16 +120,36 @@ public final class WorkflowCommands {
             op = (WorkflowCommand<E>)new Connect();
         } else if (command instanceof AddNodeCommandEnt) {
             op = (WorkflowCommand<E>)new AddNode();
-        } else if(command instanceof UpdateComponentOrMetanodeNameCommandEnt) {
+        } else if (command instanceof UpdateComponentOrMetanodeNameCommandEnt) {
             op = (WorkflowCommand<E>)new UpdateComponentOrMetanodeNameCommand();
         } else {
             throw new OperationNotAllowedException(
                 "Command of type " + command.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
-        if (op.execute(wfKey, command)) {
-            addCommandToUndoStack(wfKey, op);
-            clearRedoStack(wfKey);
+
+        var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
+        var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
+
+        try (var lock1 = undoStack.lock(); var lock2 = redoStack.lock()) {
+            // The undo- and redo-stacks need to be updated before the command is being executed.
+            // That's because during the command-execution events are fired which in turn access the
+            // canUndo- and canRedo-methods in here. If the stacks would be updated after the command-execution
+            // there is a chance, that canUndo or canRedo don't return the correct values, yet (race-condition).
+            // (see NXT-965)
+            undoStack.add(op);
+            redoStack.clear();
+            if (op.execute(wfKey, command)) {
+                // acknowledge the changes made to the stacks
+                undoStack.commitPendingChange();
+                redoStack.commitPendingChange();
+            }
         }
+
+    }
+
+    private CommandStack getOrCreateCommandStackFor(final WorkflowKey wfKey,
+        final Map<WorkflowKey, CommandStack> stacks) {
+        return stacks.computeIfAbsent(wfKey, k -> new CommandStack(m_maxNumUndoAndRedoCommandsPerWorkflow));
     }
 
     /**
@@ -134,8 +157,8 @@ public final class WorkflowCommands {
      * @return whether there is at least one command on the undo-stack
      */
     public boolean canUndo(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
-        return undoStack != null && !undoStack.isEmpty() && undoStack.peek().canUndo();
+        var stack = m_undoStacks.get(wfKey);
+        return stack != null && stack.peek().map(WorkflowCommand::canUndo).orElse(Boolean.FALSE);
     }
 
     /**
@@ -143,9 +166,9 @@ public final class WorkflowCommands {
      * @throws OperationNotAllowedException if there is no command to be undone
      */
     public void undo(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        WorkflowCommand<? extends WorkflowCommandEnt> op = moveCommandFromUndoToRedoStack(wfKey);
-        if (op != null) {
-            op.undo();
+        var undoStack = m_undoStacks.get(wfKey);
+        if (undoStack != null && !undoStack.isEmpty()) {
+            undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
         } else {
             throw new OperationNotAllowedException("No command to undo");
         }
@@ -156,8 +179,8 @@ public final class WorkflowCommands {
      * @return whether there is at least one command on the redo-stack
      */
     public boolean canRedo(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
-        return redoStack != null && !redoStack.isEmpty() && redoStack.peek().canRedo();
+        var stack = m_redoStacks.get(wfKey);
+        return stack != null && stack.peek().map(WorkflowCommand::canRedo).orElse(Boolean.FALSE);
     }
 
     /**
@@ -165,9 +188,9 @@ public final class WorkflowCommands {
      * @throws OperationNotAllowedException if there is no command to be redone
      */
     public void redo(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        WorkflowCommand<? extends WorkflowCommandEnt> op = moveCommandFromRedoToUndoStack(wfKey);
-        if (op != null) {
-            op.redo();
+        var redoStack = m_redoStacks.get(wfKey);
+        if (redoStack != null && !redoStack.isEmpty()) {
+            redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
         } else {
             throw new OperationNotAllowedException("No command to redo");
         }
@@ -184,64 +207,14 @@ public final class WorkflowCommands {
         m_redoStacks.entrySet().removeIf(e -> e.getKey().getProjectId().equals(projectId));
     }
 
-    private void addCommandToUndoStack(final WorkflowKey wfKey,
-        final WorkflowCommand<? extends WorkflowCommandEnt> op) {
-        if (op == null) {
-            return;
-        }
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack =
-            m_undoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
-        addAndEnsureMaxSize(stack, op);
-    }
-
-    private void addCommandToRedoStack(final WorkflowKey wfKey,
-        final WorkflowCommand<? extends WorkflowCommandEnt> op) {
-        if (op == null) {
-            return;
-        }
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack =
-            m_redoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
-        addAndEnsureMaxSize(stack, op);
-    }
-
-    private <T> void addAndEnsureMaxSize(final Deque<T> stack, final T obj) {
-        stack.addFirst(obj);
-        if (stack.size() > m_maxNumUndoAndRedoCommandsPerWorkflow) {
-            stack.removeLast();
-        }
-    }
-
-    private void clearRedoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack = m_redoStacks.get(wfKey);
-        if (stack != null) {
-            stack.clear();
-        }
-    }
-
-    private WorkflowCommand<? extends WorkflowCommandEnt>
-        moveCommandFromRedoToUndoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
-        WorkflowCommand<? extends WorkflowCommandEnt> op = redoStack != null ? redoStack.poll() : null;
-        addCommandToUndoStack(wfKey, op);
-        return op;
-    }
-
-    private WorkflowCommand<? extends WorkflowCommandEnt>
-        moveCommandFromUndoToRedoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
-        WorkflowCommand<? extends WorkflowCommandEnt> op = undoStack != null ? undoStack.poll() : null;
-        addCommandToRedoStack(wfKey, op);
-        return op;
-    }
-
     /**
      * For testing purposes only!
      *
      * @return
      */
     int getUndoStackSize(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
-        return undoStack == null ? -1 : undoStack.size();
+        CommandStack undoStack = m_undoStacks.get(wfKey);
+        return undoStack == null ? 0 : undoStack.size();
     }
 
     /**
@@ -250,8 +223,143 @@ public final class WorkflowCommands {
      * @return
      */
     int getRedoStackSize(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
-        return redoStack == null ? -1 : redoStack.size();
+        CommandStack redoStack = m_redoStacks.get(wfKey);
+        return redoStack == null ? 0 : redoStack.size();
+    }
+
+    private static final class CommandStack {
+
+        private final Deque<WorkflowCommand<?>> m_stack;
+
+        private WorkflowCommand<?> m_pendingCommand;
+
+        private boolean m_pendingCommit;
+
+        private final int m_maxStackSize;
+
+        private final ReentrantLock m_stackModifyLock = new ReentrantLock();
+
+        CommandStack(final int maxStackSize) {
+            m_stack = new ConcurrentLinkedDeque<>();
+            m_maxStackSize = maxStackSize;
+        }
+
+        /**
+         * Adds a command to the stack. Must be acknowledged via {@link #commitPendingChange()} before any other change
+         * can be made to the stack.
+         *
+         * The stack always needs to be locked before it can be modified, see {@link #lock()}.
+         */
+        void add(final WorkflowCommand<?> command) {
+            assertLocked();
+            assertNoPendingCommit();
+            m_pendingCommand = command;
+            m_pendingCommit = true;
+        }
+
+        /**
+         * Clears all the commands from the stack. Must be acknowledged via {@link #commitPendingChange()} before any
+         * other change can be made to the stack.
+         *
+         * The stack always needs to be locked before it can be modified, see {@link #lock()}.
+         */
+        void clear() {
+            assertLocked();
+            assertNoPendingCommit();
+            assert m_pendingCommand == null;
+            m_pendingCommit = true;
+        }
+
+        private void assertNoPendingCommit() {
+            if (m_pendingCommit) {
+                throw new IllegalStateException(
+                    "Any change to the command stack must be committed first before another change can be made");
+            }
+        }
+
+        private void assertLocked() {
+            if (!m_stackModifyLock.isLocked()) {
+                throw new IllegalStateException(
+                    "Stack modificiations must be carried out while the stack is locked from modifications");
+            }
+        }
+
+        /**
+         * Acknowledges a modification ({@link #add(WorkflowCommand)} or {@link #clear()}) done to the stack.
+         *
+         * The stack always needs to be locked before it can be modified or pending changes can be commited, see
+         * {@link #lock()}.
+         */
+        void commitPendingChange() {
+            assertLocked();
+            if (!m_pendingCommit) {
+                throw new IllegalStateException("Nothing to commit");
+            }
+            if (m_pendingCommand == null) {
+                m_stack.clear();
+            } else {
+                m_stack.addFirst(m_pendingCommand);
+                ensureMaxStackSize();
+                m_pendingCommand = null;
+            }
+            m_pendingCommit = false;
+        }
+
+        private void ensureMaxStackSize() {
+            if (m_stack.size() > m_maxStackSize) { // NOSONAR - stack size is small enough to not have a performance impact
+                m_stack.removeLast();
+            }
+        }
+
+        @SuppressWarnings("java:S1452")
+        Optional<WorkflowCommand<?>> peek() {
+            return Optional.ofNullable(m_pendingCommit ? m_pendingCommand : m_stack.peek());
+        }
+
+        @SuppressWarnings("java:S1452")
+        WorkflowCommand<?> getHeadAndTransferTo(final CommandStack otherCommandStack) {
+            var c = m_stack.poll();
+            if (c == null) {
+                throw new NoSuchElementException("Stack is empty");
+            }
+            otherCommandStack.m_stack.add(c);
+            return c;
+        }
+
+        int size() {
+            return m_stack.size(); // NOSONAR - stack size is small enough to not have a performance impact
+        }
+
+        boolean isEmpty() {
+            return (m_pendingCommit && m_pendingCommand != null) || m_stack.isEmpty();
+        }
+
+        /**
+         * Locks the stack from being modified by other threads.
+         *
+         * When the lock is being released (through the returned {@link AutoCloseable}), it will also revert any pending
+         * changes (if there are any).
+         *
+         * @return an {@link AutoCloseable} which allows one to release the lock in a try-block
+         */
+        CommandStackModifyLock lock() {
+            m_stackModifyLock.lock();
+            return () -> {
+                if (m_pendingCommit) {
+                    m_pendingCommand = null;
+                    m_pendingCommit = false;
+                }
+                m_stackModifyLock.unlock();
+            };
+        }
+
+    }
+
+    private interface CommandStackModifyLock extends AutoCloseable {
+
+        @Override
+        void close();
+
     }
 
 }
