@@ -55,7 +55,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.junit.AfterClass;
@@ -67,7 +66,9 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 
@@ -81,13 +82,14 @@ public class EventServiceTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @BeforeClass
     public static void setupServiceDependencies() {
-        DefaultServices.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
     }
 
     @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        DefaultServices.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServicesInstances();
     }
 
     /**
@@ -144,19 +146,18 @@ public class EventServiceTest extends GatewayServiceTest {
     }
 
     private static void checkThatNoEventsAreSent(final WorkflowManager wfm) {
-        DefaultEventService es = DefaultEventService.getInstance();
-
         // add event consumer to receive and check the change events
-        @SuppressWarnings("unchecked")
-        BiConsumer<String, Object> eventConsumerMock = mock(BiConsumer.class);
-        es.setEventConsumerForTesting(eventConsumerMock, null);
+        var testConsumer = mock(EventConsumer.class);
+        ServiceDependencies.setServiceDependencyForTesting(EventConsumer.class, testConsumer);
+        DefaultEventService es = DefaultEventService.getInstance();
+        es.setPreEventCreationCallbackForTesting(null);
 
         // carry out the workflow changes
         WorkflowTransformations.createWorkflowTransformations(TestWorkflowCollection.GENERAL_WEB_UI)
             .forEach(t -> t.apply(wfm));
 
         // check that there weren't any events
-        verify(eventConsumerMock, times(0)).accept(any(), any());
+        verify(testConsumer, times(0)).accept(any(), any());
     }
 
 }

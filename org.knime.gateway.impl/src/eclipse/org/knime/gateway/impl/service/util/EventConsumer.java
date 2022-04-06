@@ -44,25 +44,20 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 26, 2021 (hornm): created
+ *   Mar 29, 2022 (Kai Franze, KNIME GmbH): created
  */
-package org.knime.gateway.testing.helper;
+package org.knime.gateway.impl.service.util;
+
+import java.util.function.BiConsumer;
 
 import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.impl.service.util.EventConsumer;
 
 /**
- * Provides access to the events issued by the {@link EventService}-implementation.
+ * Event consumers are dependencies that can be injected into
+ * {@link EventService}
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-public interface EventSource {
-
-    /**
-     * Sets the callback to receive events.
-     *
-     * @param c the callback
-     */
-    void setEventConsumer(EventConsumer c);
+public interface EventConsumer extends BiConsumer<String, Object> {
 
 }

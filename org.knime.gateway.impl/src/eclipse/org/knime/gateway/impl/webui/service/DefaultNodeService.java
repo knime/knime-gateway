@@ -88,7 +88,7 @@ public final class DefaultNodeService implements NodeService {
      * @return the singleton instance
      */
     public static DefaultNodeService getInstance() {
-        return DefaultServices.getDefaultServiceInstance(DefaultNodeService.class);
+        return ServiceInstances.getDefaultServiceInstance(DefaultNodeService.class);
     }
 
     DefaultNodeService() {
@@ -133,6 +133,7 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
+    // TODO: Why is it static?
     private static void changeLoopState(final String action, final NativeNodeContainer nnc)
         throws OperationNotAllowedException {
         WorkflowManager wfm = nnc.getParent();

@@ -47,7 +47,6 @@
 package org.knime.gateway.impl.webui.service.events;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.knime.gateway.api.entity.EntityBuilderManager;
@@ -55,6 +54,7 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.service.events.EventSource;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.AppStateProvider.AppState;
 import org.knime.gateway.impl.webui.service.DefaultApplicationService;
@@ -74,7 +74,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
      * @param eventConsumer consumes the emitted events
      * @param appStateProvider
      */
-    public AppStateChangedEventSource(final BiConsumer<String, Object> eventConsumer,
+    public AppStateChangedEventSource(final EventConsumer eventConsumer,
         final AppStateProvider appStateProvider) {
         super(eventConsumer);
         m_appStateProvider = appStateProvider;

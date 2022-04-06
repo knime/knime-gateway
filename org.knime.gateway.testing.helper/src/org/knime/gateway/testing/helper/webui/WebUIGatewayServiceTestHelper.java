@@ -53,7 +53,6 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -67,6 +66,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.json.util.JsonUtil;
 import org.knime.gateway.testing.helper.EventSource;
@@ -109,7 +109,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ResultChecker createResultChecker(final Class<?> testClass) {
-        ObjectMapper mapper = new ObjectMapper();
+        var mapper = new ObjectMapper();
         JsonUtil.addWebUIMixIns(mapper);
         JsonUtil.addIDEntityDeSerializer(mapper);
         JsonUtil.addDateTimeDeSerializer(mapper);
@@ -118,7 +118,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
 
-        ObjectToString objToString = new ObjectToString(mapper);
+        var objToString = new ObjectToString(mapper);
 
         /** Same as above but for the snapshot id. */
         objToString.addException(DefaultWorkflowSnapshotEnt.class, "snapshotId",
@@ -259,7 +259,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      *
      * @param c the callback
      */
-    protected final void setEventConsumer(final BiConsumer<String, Object> c) {
+    protected final void setEventConsumer(final EventConsumer c) {
         m_eventSource.setEventConsumer(c);
     }
 }

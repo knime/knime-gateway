@@ -58,8 +58,8 @@ import java.util.stream.Collectors;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.jsonrpc.DefaultExceptionToJsonRpcErrorTranslator;
 import org.knime.gateway.impl.jsonrpc.JsonRpcRequestHandler;
-import org.knime.gateway.impl.webui.service.DefaultServices;
 import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
+import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
 /**
@@ -92,7 +92,7 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
         // default web-ui service implementations
         List<Class<? extends GatewayService>> serviceInterfaces =
             org.knime.gateway.api.webui.service.util.ListServices.listServiceInterfaces();
-        return serviceInterfaces.stream().collect(Collectors.toMap(i -> i, DefaultServices::getDefaultService));
+        return serviceInterfaces.stream().collect(Collectors.toMap(i -> i, ServiceInstances::getDefaultService));
     }
 
     private static Map<String, GatewayService>

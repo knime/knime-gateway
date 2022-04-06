@@ -64,7 +64,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.junit.After;
@@ -80,8 +79,10 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
@@ -107,6 +108,8 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
 
     private WorkflowTransformations m_transformations;
 
+    private static final TestEventConsumer TEST_EVENT_CONSUMER = new TestEventConsumer();
+
     /**
      * @param transformations the workflow transformations (representing the workflow to be tested and the list of
      *            transformations to be carried out) to be tested
@@ -118,13 +121,15 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @BeforeClass
     public static void setupServiceDependencies() {
-        DefaultServices.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(EventConsumer.class, TEST_EVENT_CONSUMER);
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
     }
 
     @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        DefaultServices.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServicesInstances();
     }
 
     /**
@@ -139,10 +144,9 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         WorkflowChangedEventTypeEnt eventType =
             EventServiceTest.registerEventListener(idAndWfm.getFirst().toString(), m_transformations.getWorkflowId());
 
-        // add event consumer to receive and check the change events
+        // set callback for testing
         DefaultEventService es = DefaultEventService.getInstance();
-        TestEventConsumer testEventConsumer = new TestEventConsumer();
-        es.setEventConsumerForTesting(testEventConsumer, () -> {
+        es.setPreEventCreationCallbackForTesting(() -> {
             // slightly delays the creation of the events to increase
             // the determinism of the event patches
             try {
@@ -153,17 +157,17 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         });
 
         WorkflowManager wfm = idAndWfm.getSecond();
-        checkWorkflowChangeEvents(wfm, testEventConsumer, m_transformations.getTransformations());
+        checkWorkflowChangeEvents(wfm, TEST_EVENT_CONSUMER, m_transformations.getTransformations());
 
         // remove event listener and check successful removal
-        testEventConsumer.getEvents().clear();
+        TEST_EVENT_CONSUMER.getEvents().clear();
         es.removeEventListener(eventType);
         WorkflowListener wfListenerMock = mock(WorkflowListener.class);
         wfm.addListener(wfListenerMock); // listener in order to wait for the wf-events to be broadcasted
         wfm.addWorkflowAnnotation(new WorkflowAnnotation());
         await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> verify(wfListenerMock, times(1)).workflowChanged(any()));
-        assertThat(testEventConsumer.getEvents(), is(empty()));
+        assertThat(TEST_EVENT_CONSUMER.getEvents(), is(empty()));
     }
 
     private void checkWorkflowChangeEvents(final WorkflowManager wfm, final TestEventConsumer testEventConsumer,
@@ -178,6 +182,8 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             // a stable state (i.e. no more changes expected) we can unblock the event consumer and (possibly) receive
             // the second (and last) event
             testEventConsumer.unblock();
+
+            // TODO: This doesn't work
 
             // wait for the workflow events to arrive
             await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
@@ -198,7 +204,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         }
     }
 
-    private static class TestEventConsumer implements BiConsumer<String, Object> {
+    private static class TestEventConsumer implements EventConsumer {
 
         private List<WorkflowChangedEventEnt> m_events = new ArrayList<>();
 

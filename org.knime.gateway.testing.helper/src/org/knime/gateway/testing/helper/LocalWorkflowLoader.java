@@ -99,7 +99,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
-        WorkflowProjectManager.addWorkflowProject(projectId, new WorkflowProject() {
+        WorkflowProjectManager.getInstance().addWorkflowProject(projectId, new WorkflowProject() {
 
             @Override
             public WorkflowManager openProject() {
@@ -161,10 +161,10 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void disposeWorkflows() throws InterruptedException {
         for (String projectId : m_loadedWorkflows) {
-            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(projectId).orElse(null);
+            WorkflowManager wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(projectId).orElse(null);
             if (wfm != null) {
                 CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-                WorkflowProjectManager.removeWorkflowProject(projectId);
+                WorkflowProjectManager.getInstance().removeWorkflowProject(projectId);
             }
         }
     }

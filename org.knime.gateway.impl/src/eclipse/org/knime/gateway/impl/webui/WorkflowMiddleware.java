@@ -91,9 +91,9 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class WorkflowStatefulUtil {
+public final class WorkflowMiddleware {
 
-    private static final WorkflowStatefulUtil INSTANCE = new WorkflowStatefulUtil();
+    private static final WorkflowMiddleware INSTANCE = new WorkflowMiddleware();
 
     /**
      * Determines the number of commands per workflow kept in the undo and redo stacks.
@@ -109,15 +109,15 @@ public final class WorkflowStatefulUtil {
     /**
      * @return the singleton instance
      */
-    public static WorkflowStatefulUtil getInstance() {
+    public static WorkflowMiddleware getInstance() {
         return INSTANCE;
     }
 
-    private WorkflowStatefulUtil() {
+    private WorkflowMiddleware() {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowCache = Collections.synchronizedMap(new HashMap<>());
-        WorkflowProjectManager.addWorkflowProjectRemovedListener(this::clearWorkflowState);
+        WorkflowProjectManager.getInstance().addWorkflowProjectRemovedListener(this::clearWorkflowState);
     }
 
     private void clearWorkflowState(final String projectId) {

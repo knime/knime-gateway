@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -66,7 +66,8 @@ import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
  */
 public final class DefaultWorkflowService implements WorkflowService {
 
-    private static final WorkflowStatefulUtil WF_FUNCTIONS = WorkflowStatefulUtil.getInstance();
+    private static final WorkflowMiddleware WF_MIDDLEWARE =
+        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -74,7 +75,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * @return the singleton instance
      */
     public static DefaultWorkflowService getInstance() {
-        return DefaultServices.getDefaultServiceInstance(DefaultWorkflowService.class);
+        return ServiceInstances.getDefaultServiceInstance(DefaultWorkflowService.class);
     }
 
     DefaultWorkflowService() {
@@ -89,11 +90,11 @@ public final class DefaultWorkflowService implements WorkflowService {
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         var wfKey = new WorkflowKey(projectId, workflowId);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return WF_FUNCTIONS.buildWorkflowSnapshotEnt(wfKey,
+            return WF_MIDDLEWARE.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
-                    .canUndo(WF_FUNCTIONS.canUndoCommand(wfKey)).canRedo(WF_FUNCTIONS.canRedoCommand(wfKey)));
+                    .canUndo(WF_MIDDLEWARE.canUndoCommand(wfKey)).canRedo(WF_MIDDLEWARE.canRedoCommand(wfKey)));
         } else {
-            return WF_FUNCTIONS.buildWorkflowSnapshotEnt(wfKey,
+            return WF_MIDDLEWARE.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
         }
     }
@@ -105,7 +106,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        WF_FUNCTIONS.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
+        WF_MIDDLEWARE.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
     }
 
     /**
@@ -114,7 +115,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        WF_FUNCTIONS.undoCommand(new WorkflowKey(projectId, workflowId));
+        WF_MIDDLEWARE.undoCommand(new WorkflowKey(projectId, workflowId));
     }
 
     /**
@@ -123,7 +124,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        WF_FUNCTIONS.redoCommand(new WorkflowKey(projectId, workflowId));
+        WF_MIDDLEWARE.redoCommand(new WorkflowKey(projectId, workflowId));
     }
 
 }

@@ -92,7 +92,7 @@ public class RpcServerManagerTest {
     public void testDoPortRpc() throws Exception {
         LocalWorkflowLoader loader = new LocalWorkflowLoader();
         String wfId = loader.loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(wfId).orElse(null);
+        WorkflowManager wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId).orElse(null);
         NodeContainer dataGen = wfm.getNodeContainer(wfm.getID().createChild(1)); // NOSONAR wfm never null
         String rpcTableRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}";
         String rpcFlowVarRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getFlowVariables\"}";

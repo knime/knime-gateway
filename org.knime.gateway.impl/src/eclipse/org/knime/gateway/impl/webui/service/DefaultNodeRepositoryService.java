@@ -78,7 +78,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * @return the singleton instance
      */
     public static DefaultNodeRepositoryService getInstance() {
-        return DefaultServices.getDefaultServiceInstance(DefaultNodeRepositoryService.class);
+        return ServiceInstances.getDefaultServiceInstance(DefaultNodeRepositoryService.class);
     }
 
     DefaultNodeRepositoryService() {

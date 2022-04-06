@@ -72,7 +72,7 @@ import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.AppStateProvider.AppState;
 import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -83,7 +83,13 @@ import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 public final class DefaultApplicationService implements ApplicationService {
 
     private final AppStateProvider m_appStateProvider =
-        DefaultServices.getServiceDependency(AppStateProvider.class, true);
+        ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
+
+    private static final WorkflowMiddleware WF_MIDDLEWARE =
+        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private static final WorkflowProjectManager WF_PROJECT_MANAGER =
+        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -91,7 +97,7 @@ public final class DefaultApplicationService implements ApplicationService {
      * @return the singleton instance
      */
     public static DefaultApplicationService getInstance() {
-        return DefaultServices.getDefaultServiceInstance(DefaultApplicationService.class);
+        return ServiceInstances.getDefaultServiceInstance(DefaultApplicationService.class);
     }
 
     DefaultApplicationService() {
@@ -126,7 +132,7 @@ public final class DefaultApplicationService implements ApplicationService {
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf) {
-        WorkflowProject wp = WorkflowProjectManager.getWorkflowProject(wf.getProjectId()).orElse(null);
+        WorkflowProject wp = WF_PROJECT_MANAGER.getWorkflowProject(wf.getProjectId()).orElse(null);
         if (wp == null) {
             return null;
         }
@@ -137,7 +143,7 @@ public final class DefaultApplicationService implements ApplicationService {
         // optionally set an active workflow for this workflow project
         if (wf.isVisible()) {
             String wfId = wf.getWorkflowId();
-            WorkflowManager wfm = WorkflowProjectManager.openAndCacheWorkflow(wf.getProjectId()).orElse(null);
+            WorkflowManager wfm = WF_PROJECT_MANAGER.openAndCacheWorkflow(wf.getProjectId()).orElse(null);
             if (wfm != null && !wfId.equals(NodeIDEnt.getRootID().toString())) {
                 var nc =
                     wfm.findNodeContainer(DefaultServiceUtil.entityToNodeID(wf.getProjectId(), new NodeIDEnt(wfId)));
@@ -150,7 +156,7 @@ public final class DefaultApplicationService implements ApplicationService {
                 }
             }
             if (wfm != null) {
-                builder.setActiveWorkflow(WorkflowStatefulUtil.getInstance().buildWorkflowSnapshotEnt(
+                builder.setActiveWorkflow(WF_MIDDLEWARE.buildWorkflowSnapshotEnt(
                     new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
                     () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
             } else {

@@ -261,7 +261,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     }
 
     private static void disposeWorkflowProject(final WorkflowProject wp) {
-        WorkflowProjectManager.removeWorkflowProject(wp.getID());
+        WorkflowProjectManager.getInstance().removeWorkflowProject(wp.getID());
         WorkflowManager.ROOT.removeProject(wp.openProject().getID());
     }
 
@@ -293,7 +293,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
                 }
 
             };
-            WorkflowProjectManager.addWorkflowProject(id, workflowProject);
+            WorkflowProjectManager.getInstance().addWorkflowProject(id, workflowProject);
             return workflowProject;
         } else {
             throw new IllegalStateException("Creating empty workflow failed");
