@@ -249,8 +249,7 @@ public final class WorkflowBuildContext {
          * @param depNodeProps the pre-calculated dependent node properties
          * @return this builder instance
          */
-        public WorkflowBuildContextBuilder
-            dependentNodeProperties(final Supplier<DependentNodeProperties> depNodeProps) {
+        public WorkflowBuildContextBuilder setDependentNodeProperties(final Supplier<DependentNodeProperties> depNodeProps) {
             m_depNodeProps = depNodeProps;
             return this;
         }

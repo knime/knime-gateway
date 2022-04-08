@@ -102,7 +102,7 @@ public final class WorkflowStatefulUtil {
 
     private final EntityRepository<WorkflowKey, WorkflowEnt> m_entityRepo;
 
-    private final Map<WorkflowKey, WorkflowState> m_workflowCache;
+    private final Map<WorkflowKey, WorkflowState> m_workflowStateCache;
 
     private final WorkflowCommands m_commands;
 
@@ -116,14 +116,14 @@ public final class WorkflowStatefulUtil {
     private WorkflowStatefulUtil() {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
-        m_workflowCache = Collections.synchronizedMap(new HashMap<>());
+        m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
         WorkflowProjectManager.addWorkflowProjectRemovedListener(this::clearWorkflowState);
     }
 
     private void clearWorkflowState(final String projectId) {
         m_entityRepo.disposeHistory(k -> k.getProjectId().equals(projectId));
         m_commands.disposeUndoAndRedoStacks(projectId);
-        m_workflowCache.entrySet().removeIf(e -> {
+        m_workflowStateCache.entrySet().removeIf(e -> {
             if (e.getKey().getProjectId().equals(projectId)) {
                 if (e.getValue().m_changesListener != null) {
                     e.getValue().m_changesListener.close();
@@ -147,7 +147,7 @@ public final class WorkflowStatefulUtil {
      */
     public WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowKey wfKey,
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
-        var workflowState = workflowState(wfKey);
+        var workflowState = getWorkflowState(wfKey);
         var workflowEntity = buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
         if (workflowEntity == null) {
             // no workflow change -> check most recent commit
@@ -245,7 +245,7 @@ public final class WorkflowStatefulUtil {
      * @return the changes listener, never <code>null</code>
      */
     public WorkflowChangesListener getWorkflowChangesListener(final WorkflowKey wfKey) {
-        WorkflowState ws = workflowState(wfKey);
+        WorkflowState ws = getWorkflowState(wfKey);
         return ws.changesListener();
     }
 
@@ -266,7 +266,7 @@ public final class WorkflowStatefulUtil {
      * @param wfKey the workflow to create the changed event for
      * @param patchEntCreator creator for the patch which is supplied with the {@link WorkflowChangedEventEnt}
      * @param snapshotId the latest snapshot id
-     * @param includeInteractioInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
+     * @param includeInteractionInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
