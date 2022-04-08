@@ -48,19 +48,32 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Optional;
+
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.EventTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Unifying interface for all workflow commands. The methods are guaranteed to be called in a fixed order: execute ->
- * undo -> redo -> undo -> ... .
+ * Unifying interface for all workflow commands. The methods are guaranteed to be called in a fixed order:
+ * <ul>
+ *     <li>
+ *         {@link WorkflowCommand#execute()} is called before
+ *         any number of repetitions of sequence of {@link WorkflowCommand#undo()} and {@link WorkflowCommand#redo()}
+ *     </li>
+ *     <li>
+ *          {@link WorkflowCommand#execute()} is called before {@link WorkflowCommand#getResult()} ()}
+ *     </li>
+ * </ul>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-interface WorkflowCommand<E extends WorkflowCommandEnt> {
+public interface WorkflowCommand {
 
     /**
      * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()} and
@@ -74,9 +87,8 @@ interface WorkflowCommand<E extends WorkflowCommandEnt> {
      * @throws NotASubWorkflowException
      * @throws OperationNotAllowedException
      */
-    boolean execute(WorkflowKey wfKey, E commandEntity)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
+    boolean execute() throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
     /**
      * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
@@ -108,5 +120,47 @@ interface WorkflowCommand<E extends WorkflowCommandEnt> {
      * @throws OperationNotAllowedException
      */
     void redo() throws OperationNotAllowedException;
+
+
+    /**
+     * @return Whether the command provides a result.
+     * @apiNote This is potentially accessed before the command is executed.
+     * @implNote This property is typically static for basic commands. However, for higher-order commands such as
+     * {@link Tee}, this property needs to be determined dynamically based on the command's configuration.
+     */
+    boolean providesResult();
+
+    /**
+     * @return The result of the command, if available.
+     */
+    default Optional<CommandResult> getResult() {
+        return Optional.empty();
+    }
+
+    /**
+     * Get the event that indicates some effect of the workflow command execution.
+     * @apiNote This is potentially accessed before the command is executed.
+     */
+    default Optional<EventTracker.Event> getTrackedEvent() {
+        return Optional.empty();
+    }
+
+    /**
+     * Response of a workflow command.
+     *
+     * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+     */
+    interface CommandResult {
+
+        /**
+         *
+         * @param snapshotId A workflow snapshot id for which holds that any snapshot with equal-or-greater id
+         *                   reflects the changes performed by this command.
+         * @return The result entity
+         */
+        CommandResultEnt buildEntity(String snapshotId);
+
+
+    }
 
 }

@@ -52,23 +52,31 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.TrackingSemaphore;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
- * Allows one to execute, undo and redo workflow commands for workflows. It accordingly keeps undo- and redo-stacks for
- * each workflow a command has been executed on. Individual types of workflow commands are represented by the
- * implementations of {@link WorkflowCommandEnt}, i.e. different kind of entities of workflow commands.
+ * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
+ * sequentially. It accordingly keeps undo- and redo-stacks for each workflow a command has been executed on.
+ * Individual types of workflow commands are represented by the implementations of {@link WorkflowCommandEnt},
+ * i.e. different kind of entities of workflow commands.
  *
  * This is API that might/should be moved closer to the core eventually.
  *
@@ -76,9 +84,9 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 public final class WorkflowCommands {
 
-    private final Map<WorkflowKey, Deque<WorkflowCommand<? extends WorkflowCommandEnt>>> m_redoStacks;
+    private final Map<WorkflowKey, Deque<WorkflowCommand>> m_redoStacks;
 
-    private final Map<WorkflowKey, Deque<WorkflowCommand<? extends WorkflowCommandEnt>>> m_undoStacks;
+    private final Map<WorkflowKey, Deque<WorkflowCommand>> m_undoStacks;
 
     private final int m_maxNumUndoAndRedoCommandsPerWorkflow;
 
@@ -99,34 +107,54 @@ public final class WorkflowCommands {
      *
      * @param <E> the type of workflow command
      * @param wfKey reference to the workflow to execute the command for
-     * @param command the workflow command entity to execute
+     * @param commandEnt the workflow command entity to execute
+     *
+     * @return The instance of the executed command
      *
      * @throws OperationNotAllowedException if the command couldn't be executed
      * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
     @SuppressWarnings("unchecked")
-    public <E extends WorkflowCommandEnt> void execute(final WorkflowKey wfKey, final E command)
+    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        WorkflowCommand<E> op;
-        if (command instanceof TranslateCommandEnt) {
-            op = (WorkflowCommand<E>)new Translate();
-        } else if (command instanceof DeleteCommandEnt) {
-            op = (WorkflowCommand<E>)new Delete();
-        } else if (command instanceof ConnectCommandEnt) {
-            op = (WorkflowCommand<E>)new Connect();
-        } else if (command instanceof AddNodeCommandEnt) {
-            op = (WorkflowCommand<E>)new AddNode();
-        } else if(command instanceof UpdateComponentOrMetanodeNameCommandEnt) {
-            op = (WorkflowCommand<E>)new UpdateComponentOrMetanodeNameCommand();
+        WorkflowCommand command;
+        if (commandEnt instanceof TranslateCommandEnt) {
+            command = new Translate(wfKey, (TranslateCommandEnt)commandEnt);
+        } else if (commandEnt instanceof DeleteCommandEnt) {
+            command = new Delete(wfKey, (DeleteCommandEnt)commandEnt);
+        } else if (commandEnt instanceof ConnectCommandEnt) {
+            command = new Connect(wfKey, (ConnectCommandEnt)commandEnt);
+        } else if (commandEnt instanceof AddNodeCommandEnt) {
+            command = new AddNode(wfKey, (AddNodeCommandEnt)commandEnt);
+        } else if(commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
+            command = new UpdateComponentOrMetanodeNameCommand(wfKey, (UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
+        } else if (commandEnt instanceof CollapseCommandEnt) {
+            command = new CollapseTeeing(wfKey, (CollapseCommandEnt)commandEnt);
+        } else if (commandEnt instanceof ExpandCommandEnt) {
+            command = new ExpandTeeing(wfKey, (ExpandCommandEnt)commandEnt);
         } else {
             throw new OperationNotAllowedException(
-                "Command of type " + command.getClass().getSimpleName() + " cannot be executed. Unknown command.");
+                "Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
-        if (op.execute(wfKey, command)) {
-            addCommandToUndoStack(wfKey, op);
+
+        Optional<TrackingSemaphore> eventSyncSemaphore = Optional.empty();
+        if (command.providesResult()) {
+            eventSyncSemaphore = Optional.of(new TrackingSemaphore(command.getTrackedEvent().orElseThrow(), wfKey));
+        }
+        if (command.execute()) {
+            addCommandToUndoStack(wfKey, command);
             clearRedoStack(wfKey);
         }
+        if (eventSyncSemaphore.isPresent()) {
+            eventSyncSemaphore.get().acquire();
+        }
+
+        return command.getResult().map(r -> {
+            var latestCommit = WorkflowStatefulUtil.getInstance().getEntityRepository().getLastCommit(wfKey);
+            var latestSnapshotId = latestCommit.map(Pair::getFirst).orElse(null);
+            return r.buildEntity(latestSnapshotId);
+        }).orElse(null);
     }
 
     /**
@@ -134,7 +162,7 @@ public final class WorkflowCommands {
      * @return whether there is at least one command on the undo-stack
      */
     public boolean canUndo(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
+        var undoStack = m_undoStacks.get(wfKey);
         return undoStack != null && !undoStack.isEmpty() && undoStack.peek().canUndo();
     }
 
@@ -143,7 +171,7 @@ public final class WorkflowCommands {
      * @throws OperationNotAllowedException if there is no command to be undone
      */
     public void undo(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        WorkflowCommand<? extends WorkflowCommandEnt> op = moveCommandFromUndoToRedoStack(wfKey);
+        WorkflowCommand op = moveCommandFromUndoToRedoStack(wfKey);
         if (op != null) {
             op.undo();
         } else {
@@ -156,7 +184,7 @@ public final class WorkflowCommands {
      * @return whether there is at least one command on the redo-stack
      */
     public boolean canRedo(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
+        var redoStack = m_redoStacks.get(wfKey);
         return redoStack != null && !redoStack.isEmpty() && redoStack.peek().canRedo();
     }
 
@@ -165,7 +193,7 @@ public final class WorkflowCommands {
      * @throws OperationNotAllowedException if there is no command to be redone
      */
     public void redo(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        WorkflowCommand<? extends WorkflowCommandEnt> op = moveCommandFromRedoToUndoStack(wfKey);
+        WorkflowCommand op = moveCommandFromRedoToUndoStack(wfKey);
         if (op != null) {
             op.redo();
         } else {
@@ -185,22 +213,20 @@ public final class WorkflowCommands {
     }
 
     private void addCommandToUndoStack(final WorkflowKey wfKey,
-        final WorkflowCommand<? extends WorkflowCommandEnt> op) {
+        final WorkflowCommand op) {
         if (op == null) {
             return;
         }
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack =
-            m_undoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
+        var stack = m_undoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
         addAndEnsureMaxSize(stack, op);
     }
 
     private void addCommandToRedoStack(final WorkflowKey wfKey,
-        final WorkflowCommand<? extends WorkflowCommandEnt> op) {
+        final WorkflowCommand op) {
         if (op == null) {
             return;
         }
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack =
-            m_redoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
+        var stack = m_redoStacks.computeIfAbsent(wfKey, p -> new ConcurrentLinkedDeque<>());
         addAndEnsureMaxSize(stack, op);
     }
 
@@ -212,24 +238,22 @@ public final class WorkflowCommands {
     }
 
     private void clearRedoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> stack = m_redoStacks.get(wfKey);
+        var stack = m_redoStacks.get(wfKey);
         if (stack != null) {
             stack.clear();
         }
     }
 
-    private WorkflowCommand<? extends WorkflowCommandEnt>
-        moveCommandFromRedoToUndoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
-        WorkflowCommand<? extends WorkflowCommandEnt> op = redoStack != null ? redoStack.poll() : null;
+    private WorkflowCommand moveCommandFromRedoToUndoStack(final WorkflowKey wfKey) {
+        var redoStack = m_redoStacks.get(wfKey);
+        var op = redoStack != null ? redoStack.poll() : null;
         addCommandToUndoStack(wfKey, op);
         return op;
     }
 
-    private WorkflowCommand<? extends WorkflowCommandEnt>
-        moveCommandFromUndoToRedoStack(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
-        WorkflowCommand<? extends WorkflowCommandEnt> op = undoStack != null ? undoStack.poll() : null;
+    private WorkflowCommand moveCommandFromUndoToRedoStack(final WorkflowKey wfKey) {
+        var undoStack = m_undoStacks.get(wfKey);
+        var op = undoStack != null ? undoStack.poll() : null;
         addCommandToRedoStack(wfKey, op);
         return op;
     }
@@ -240,7 +264,7 @@ public final class WorkflowCommands {
      * @return
      */
     int getUndoStackSize(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> undoStack = m_undoStacks.get(wfKey);
+        var undoStack = m_undoStacks.get(wfKey);
         return undoStack == null ? -1 : undoStack.size();
     }
 
@@ -250,7 +274,7 @@ public final class WorkflowCommands {
      * @return
      */
     int getRedoStackSize(final WorkflowKey wfKey) {
-        Deque<WorkflowCommand<? extends WorkflowCommandEnt>> redoStack = m_redoStacks.get(wfKey);
+        var redoStack = m_redoStacks.get(wfKey);
         return redoStack == null ? -1 : redoStack.size();
     }
 

@@ -48,31 +48,42 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command to update the name of a component or metnode.
  *
  * @author Kai Franze, KNIME GmbH
  */
-public final class UpdateComponentOrMetanodeNameCommand
-    extends AbstractWorkflowCommand<UpdateComponentOrMetanodeNameCommandEnt> {
+public final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand {
 
     private String m_oldName;
 
+    private final String m_newName;
+
+    private final NodeID m_nodeId;
+
+    public UpdateComponentOrMetanodeNameCommand(final WorkflowKey wfKey, final UpdateComponentOrMetanodeNameCommandEnt commandEnt)
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
+        super(wfKey);
+        var wfm = getWorkflowManager();
+        var projectWfm = wfm.getProjectWFM();
+        m_newName = commandEnt.getName();
+        m_nodeId = commandEnt.getNodeId().toNodeID(projectWfm.getID());
+    }
+
     @Override
     public void undo() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        var entity = getCommandEntity();
-        var projectWfm = wfm.getProjectWFM();
-        var nodeId = entity.getNodeId().toNodeID(projectWfm.getID());
-        var container = wfm.getNodeContainer(nodeId);
+        var container = getWorkflowManager().getNodeContainer(m_nodeId);
         if (container instanceof WorkflowManager) {
-            var metaNode = (WorkflowManager)container;
-            metaNode.setName(m_oldName);
+            var metanode = (WorkflowManager)container;
+            metanode.setName(m_oldName);
         } else {
             var component = (SubNodeContainer)container;
             component.setName(m_oldName);
@@ -80,15 +91,11 @@ public final class UpdateComponentOrMetanodeNameCommand
     }
 
     @Override
-    protected boolean execute() throws OperationNotAllowedException {
+    protected boolean executeImpl() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var entity = getCommandEntity();
-        var projectWfm = wfm.getProjectWFM();
-        var nodeId = entity.getNodeId().toNodeID(projectWfm.getID());
-        var container = wfm.getNodeContainer(nodeId);
-        String newName = entity.getName();
-        if (newName.isBlank()) {
-            throw new OperationNotAllowedException("Illegal new name: <" + newName + ">");
+        var container = wfm.getNodeContainer(m_nodeId);
+        if (m_newName.isBlank()) {
+            throw new OperationNotAllowedException("Illegal new name: <" + m_newName + ">");
         }
         if (container instanceof WorkflowManager) {
             var metaNode = (WorkflowManager)container;
@@ -96,17 +103,25 @@ public final class UpdateComponentOrMetanodeNameCommand
                 throw new OperationNotAllowedException("Workflow projects cannot be renamed like this");
             }
             m_oldName = metaNode.getName();
-            metaNode.setName(newName);
+            metaNode.setName(m_newName);
             return true;
         } else if (container instanceof SubNodeContainer) {
             var component = (SubNodeContainer)container;
             m_oldName = component.getName();
-            component.setName(entity.getName());
+            component.setName(m_newName);
             return true;
         } else {
             String className = container.getClass().getSimpleName();
             throw new OperationNotAllowedException("<" + className + "> cannot be renamed");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean providesResult() {
+        return false;
     }
 
 }

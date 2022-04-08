@@ -43,92 +43,83 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   May 11, 2021 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Workflow command to add a native node.
+ * Workflow command based on workflow parts (i.e. nodes and annotations).
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class AddNode extends AbstractWorkflowCommand {
+public abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand {
 
-    private final int[] m_targetPosition;
+    private final Set<NodeID> m_nodesQueried;
+    private final Set<WorkflowAnnotationID> m_annotationsQueried;
 
-    private NodeID m_addedNode;
-
-    private final NodeFactoryKey m_factoryKey;
-
-    public AddNode(final WorkflowKey wfKey, final AddNodeCommandEnt commandEntity)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
+    protected AbstractPartBasedWorkflowCommand(final WorkflowKey wfKey, final PartBasedCommandEnt commandEntity)
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
+            ServiceExceptions.OperationNotAllowedException {
         super(wfKey);
-        var factoryKeyEnt = commandEntity.getNodeFactory();
-        m_factoryKey = new NodeFactoryKey(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings());
-        var positionEnt = commandEntity.getPosition();
-        m_targetPosition = new int[] {positionEnt.getX(), positionEnt.getY()};
-    }
+        var projectId = getWorkflowKey().getProjectId();
 
-    @Override
-    protected boolean executeImpl() throws OperationNotAllowedException {
+        var nodesQueried = commandEntity.getNodeIds().stream().map(id -> DefaultServiceUtil.entityToNodeID(projectId, id))
+                .collect(Collectors.toSet());
+        var annotationsQueried = commandEntity.getAnnotationIds().stream()
+                .map(id -> DefaultServiceUtil.entityToAnnotationID(projectId, id)).collect(Collectors.toSet());
+
+        m_nodesQueried = nodesQueried;
+        m_annotationsQueried = annotationsQueried;
+
         var wfm = getWorkflowManager();
-        try {
-            m_addedNode = DefaultServiceUtil.createAndAddNode(m_factoryKey.getClassName(), m_factoryKey.getSettings(),
-                m_targetPosition[0], m_targetPosition[1] - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
-        } catch (IOException | NoSuchElementException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
-        return true;
+        var nodes = nodesQueried.stream()
+                .map(id -> Pair.of(
+                        id,
+                        WorkflowCommandUtils.getNodeContainer(id, wfm)
+                ))
+                .collect(Collectors.toSet());
+
+        var annotations = annotationsQueried.stream()
+                .map(id -> Pair.of(
+                        id,
+                        WorkflowCommandUtils.getAnnotation(id, wfm)
+                ))
+                .collect(Collectors.toSet());
+
+        WorkflowCommandUtils.checkPartsPresentElseThrow(nodes, annotations);
+
     }
 
-    @Override
-    public boolean canUndo() {
-        return getWorkflowManager().canRemoveNode(m_addedNode);
+    Set<NodeContainer> getNodeContainers()  {
+        return m_nodesQueried.stream()
+                .map(id -> WorkflowCommandUtils.getNodeContainer(id, getWorkflowManager()).orElseThrow())
+                .collect(Collectors.toSet());
     }
 
-    @Override
-    public void undo() throws OperationNotAllowedException {
-        getWorkflowManager().removeNode(m_addedNode);
-        m_addedNode = null;
+    Set<WorkflowAnnotation> getAnnotations() {
+        return m_annotationsQueried.stream()
+                .map(id -> WorkflowCommandUtils.getAnnotation(id, getWorkflowManager()).orElseThrow())
+                .collect(Collectors.toSet());
     }
 
-    private static class NodeFactoryKey {
-        private final String m_className;
-
-        private final String m_settings;
-
-        public NodeFactoryKey(final String className, final String settings) {
-            this.m_className = className;
-            this.m_settings = settings;
-        }
-
-        public String getClassName() {
-            return m_className;
-        }
-
-        public String getSettings() {
-            return m_settings;
-        }
+    Set<NodeID> getNodeIDs() {
+        return getNodeContainers().stream().map(NodeContainer::getID).collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean providesResult() {
-        return false;
+    NodeID[] getNodeIDsArray() {
+        return getNodeIDs().toArray(NodeID[]::new);
     }
 
 }

@@ -66,15 +66,26 @@ import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.gateway.api.entity.ConnectionIDEnt;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
  * Workflow command to delete nodes, connections or workflow annotations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
+final class Delete extends AbstractWorkflowCommand {
+
+    private final List<ConnectionIDEnt> m_connectionIdsQueried;
+
+    private final List<AnnotationIDEnt> m_annotationIdsQueried;
+
+    private final List<NodeIDEnt> m_nodeIdsQueried;
 
     private WorkflowPersistor m_copy;
 
@@ -83,6 +94,14 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
      * persistor (persistor only covers connections whose source and destination are part of the persistor too).
      */
     private Set<ConnectionContainer> m_connections;
+
+    public Delete(final WorkflowKey wfKey, final DeleteCommandEnt commandEnt)
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
+        super(wfKey);
+        m_nodeIdsQueried = commandEnt.getNodeIds();
+        m_annotationIdsQueried = commandEnt.getAnnotationIds();
+        m_connectionIdsQueried = commandEnt.getConnectionIds();
+    }
 
     /**
      * {@inheritDoc}
@@ -108,11 +127,10 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
      * {@inheritDoc}
      */
     @Override
-    protected boolean execute() throws OperationNotAllowedException {
+    protected boolean executeImpl() throws OperationNotAllowedException {
         WorkflowManager wfm = getWorkflowManager();
-        DeleteCommandEnt ent = getCommandEntity();
         String projectId = getWorkflowKey().getProjectId();
-        Set<NodeID> nodesToDelete = ent.getNodeIds().stream()
+        Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
             .map(id -> entityToNodeID(projectId, id)).collect(Collectors.toSet());
         if (!canRemoveAllNodes(wfm, nodesToDelete)) {
             throw new OperationNotAllowedException(
@@ -122,13 +140,13 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
         // Connections are identified by their destination node ID and port. Connections to metanode outputs are
         //   represented by pointing to the node ID of the parent metanode.
         // Filter connections from the command s.t. all connections are guaranteed to exist in this workflow manager.
-        m_connections = ent.getConnectionIds().stream()
+        m_connections = m_connectionIdsQueried.stream()
             .map(id -> new ConnectionID(entityToNodeID(projectId, id.getDestNodeIDEnt()), id.getDestPortIdx()))
             .filter(id -> wfm.containsNodeContainer(id.getDestinationNode()) || wfm.getID().equals(id.getDestinationNode()))
             .map(wfm::getConnection)
             .collect(Collectors.toCollection(HashSet::new));
 
-        if (m_connections.size() != ent.getConnectionIds().size()) {
+        if (m_connections.size() != m_connectionIdsQueried.size()) {
             throw new OperationNotAllowedException("Some connections don't exist. Delete operation aborted.");
         }
 
@@ -142,14 +160,14 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
             throw new OperationNotAllowedException("Some connections can't be deleted. Delete operation aborted.");
         }
 
-        WorkflowCopyContent content = createWorkflowCopyContent(wfm.getID(), nodesToDelete, ent.getAnnotationIds());
+        WorkflowCopyContent content = createWorkflowCopyContent(wfm.getID(), nodesToDelete, m_annotationIdsQueried);
         if (!checkThatAllWorkflowAnnotationsExist(wfm, content.getAnnotationIDs())) {
             throw new OperationNotAllowedException("Some workflow annotations don't exist. Delete operation aborted.");
         }
 
         m_copy = wfm.copy(true, content);
         WorkflowAnnotationID[] annoIds = content.getAnnotationIDs();
-        remove(wfm, nodesToDelete, m_connections, content.getAnnotationIDs());
+        remove(wfm, nodesToDelete, m_connections, content.getAnnotationIDs(), getWorkflowKey());
         return !nodesToDelete.isEmpty() || !m_connections.isEmpty() || (annoIds != null && annoIds.length != 0);
     }
 
@@ -163,10 +181,11 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
     }
 
     private static void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
-        final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs) {
+        final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs, final WorkflowKey wfKey) {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
+                WorkflowStatefulUtil.getInstance().dispose(new WorkflowKey(wfKey.getProjectId(), id));
             }
         }
         if (connections != null) {
@@ -213,6 +232,15 @@ final class Delete extends AbstractWorkflowCommand<DeleteCommandEnt> {
                 .map(id -> new WorkflowAnnotationID(id.getNodeIDEnt().toNodeID(wfmId), id.getIndex()))
                 .toArray(size -> new WorkflowAnnotationID[size]))
             .build();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean providesResult() {
+        return false;
     }
 
 }

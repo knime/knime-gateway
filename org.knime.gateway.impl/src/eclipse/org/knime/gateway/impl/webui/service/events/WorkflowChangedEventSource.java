@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.service.events.EventSource;
+import org.knime.gateway.impl.service.util.EventTracker;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
@@ -90,7 +91,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private static final WorkflowStatefulUtil WF_UTIL = WorkflowStatefulUtil.getInstance();
 
-    private Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
+    private final Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
+
+    private final Map<WorkflowKey, EventTracker> m_trackers = new HashMap<>();
 
     /**
      * @param eventConsumer
@@ -115,25 +118,38 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     public Optional<WorkflowChangedEventEnt>
         addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType) {
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
+        var workflowChangesListener = WF_UTIL.getWorkflowChangesListener(workflowKey);
+
         try {
             WorkflowUtil.assertWorkflowExists(workflowKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
 
-        // create very first changed event to be send first (and thus catch up with the most recent
+        var wfChangesTracker = m_trackers.computeIfAbsent(workflowKey, k -> {
+            var tracker = new EventTracker(true);
+            workflowChangesListener.registerEventTracker(tracker);
+            return tracker;
+        });
+
+        // create very first changed event to be sent first (and thus catch up with the most recent
         // workflow version)
         var workflowChangedEvent =
-            WF_UTIL.buildWorkflowChangedEvent(workflowKey, new PatchEntCreator(null), wfEventType.getSnapshotId(), true);
+                WF_UTIL.buildWorkflowChangedEvent(
+                        workflowKey,
+                        new PatchEntCreator(null),
+                        wfEventType.getSnapshotId(),
+                        true,
+                        wfChangesTracker
+                );
 
         // add and keep track of callback added to the workflow changes listener (if not already)
-        m_workflowChangesCallbacks.computeIfAbsent(workflowKey, k -> {
+        m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {
             String latestSnapshotId =
                 workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-            var workflowChangesListener = WF_UTIL.getWorkflowChangesListener(workflowKey);
             Consumer<WorkflowManager> callback =
-                createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
-            workflowChangesListener.addCallback(callback);
+                createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId), wfChangesTracker);
+            workflowChangesListener.addWorkflowChangeCallback(callback);
             return callback;
         });
 
@@ -141,12 +157,12 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator) {
+        final PatchEntCreator patchEntCreator, final EventTracker tracker) {
         return wfm -> {
             preEventCreation();
             patchEntCreator.clear();
             WorkflowChangedEventEnt event =
-                WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
+                WF_UTIL.buildWorkflowChangedEvent(wfKey, patchEntCreator, patchEntCreator.getLastSnapshotId(), true, tracker);
             if (event != null) {
                 sendEvent(event);
             }
@@ -160,6 +176,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     public void removeEventListener(final WorkflowChangedEventTypeEnt wfEventType) {
         var wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         removeEventListener(wfKey);
+        removeTracker(wfKey);
     }
 
     @SuppressWarnings("resource")
@@ -170,12 +187,17 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
     }
 
+    private void removeTracker(final WorkflowKey wfKey) {
+        m_trackers.remove(wfKey);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void removeAllEventListeners() {
         new HashSet<>(m_workflowChangesCallbacks.keySet()).forEach(this::removeEventListener);
+        new HashSet<>(m_trackers.keySet()).forEach(this::removeEventListener);
     }
 
     /**

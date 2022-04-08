@@ -43,99 +43,30 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Jan 20, 2021 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Set;
-
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeUIInformation;
-import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Workflow command to expand the queried container. Determines the container type (e.g. metanode, component) and
+ * executes the according workflow command.
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-final class Translate extends AbstractPartBasedWorkflowCommand {
-
-    private final int[] m_delta;
-
-    public Translate(final WorkflowKey wfKey, final TranslateCommandEnt commandEnt)
+public class ExpandTeeing extends Tee {
+    public ExpandTeeing(WorkflowKey wfKey, ExpandCommandEnt commandEnt)
             throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            OperationNotAllowedException {
-        super(wfKey, commandEnt);
-        XYEnt translationEnt = commandEnt.getTranslation();
-        m_delta = new int[] { translationEnt.getX(), translationEnt.getY() };
-    }
-
-    @Override
-    public boolean executeImpl() throws OperationNotAllowedException {
-        if (m_delta[0] == 0 && m_delta[1] == 0)  {
-            return false;
-        }
-        performTranslation(
-                getWorkflowManager(),
-                getNodeContainers(),
-                getAnnotations(),
-                m_delta
-        );
-        return true;
-    }
-
-    @Override
-    public void undo() throws OperationNotAllowedException {
-        performTranslation(
-                getWorkflowManager(),
-                getNodeContainers(),
-                getAnnotations(),
-                invert(m_delta)
+            ServiceExceptions.OperationNotAllowedException {
+        super(wfKey,
+                () -> {
+                    var containerType = WorkflowCommandUtils.getContainerType(wfKey, commandEnt.getNodeId()).orElseThrow();
+                    return containerType == WorkflowCommandUtils.ContainerType.METANODE;
+                },
+                () -> new ExpandMetanode(wfKey, commandEnt),
+                () -> new ExpandComponent(wfKey, commandEnt)
         );
     }
-
-    private static void performTranslation(
-            final WorkflowManager wfm,
-            final Set<NodeContainer> nodes,
-            final Set<WorkflowAnnotation> annotations,
-            final int[] delta
-            ) {
-
-        for (NodeContainer nc : nodes) {
-            NodeUIInformation.moveNodeBy(nc, delta);
-        }
-        for (WorkflowAnnotation wa : annotations) {
-            wa.shiftPosition(delta[0], delta[1] + EntityBuilderUtil.NODE_Y_POS_CORRECTION);
-        }
-
-        for (NodeContainer nc : nodes) {
-             nc.setDirty();  // will propagate upwards
-        }
-        if (!annotations.isEmpty()) {
-            wfm.setDirty();
-        }
-    }
-
-    private static int[] invert(final int[] source) {
-        return new int[] { -1 * source[0], -1 * source[1] };
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean providesResult() {
-        return false;
-    }
-
-
 
 }

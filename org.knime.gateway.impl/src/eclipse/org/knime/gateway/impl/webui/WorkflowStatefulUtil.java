@@ -54,6 +54,7 @@ import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEn
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
@@ -61,6 +62,7 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -72,11 +74,12 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
+import org.knime.gateway.impl.service.util.EventTracker;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener.WorkflowChanges;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 
 /**
@@ -136,6 +139,17 @@ public final class WorkflowStatefulUtil {
     }
 
     /**
+     * Notify this class that a sub-workflow has been disposed.
+     * @param wfKey The sub-workflow
+     */
+    public void dispose(final WorkflowKey wfKey) {
+        var removed = m_workflowStateCache.remove(wfKey);
+        if (removed != null) {
+            removed.dispose();
+        }
+    }
+
+    /**
      * Creates a new workflow snapshot entity. If there are any changes to the workflow, a new workflow entity is
      * committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the snapshot id of the
      * last commit will be used.
@@ -165,11 +179,11 @@ public final class WorkflowStatefulUtil {
     }
 
     private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
-        final Supplier<WorkflowBuildContextBuilder> buildContextSupplier, final WorkflowChanges c) {
+        final Supplier<WorkflowBuildContextBuilder> buildContextSupplier, final EventTracker tracker) {
         try (WorkflowLock lock = wfm.lock()) {
-            if (c.anyChange()) {
+            if (tracker.hasOccurred(EventTracker.Event.ANY)) {
                 var ent = buildWorkflowEnt(wfm, buildContextSupplier.get());
-                c.reset();
+                tracker.reset();
                 return ent;
             }
             return null;
@@ -181,17 +195,25 @@ public final class WorkflowStatefulUtil {
     }
 
     /**
+     * @return The workflow snapshot entity repository
+     */
+    public EntityRepository<WorkflowKey, WorkflowEnt> getEntityRepository() {
+        return m_entityRepo;
+    }
+
+    /**
      * See {@link WorkflowCommands#execute(WorkflowKey, WorkflowCommandEnt)}.
      *
      * @param wfKey
-     * @param command
+     * @param commandEnt
      * @throws OperationNotAllowedException
      * @throws NotASubWorkflowException
      * @throws NodeNotFoundException
+     * @return The result of the command execution
      */
-    public void executeCommand(final WorkflowKey wfKey, final WorkflowCommandEnt command)
+    public CommandResultEnt executeCommand(final WorkflowKey wfKey, final WorkflowCommandEnt commandEnt)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        m_commands.execute(wfKey, command);
+        return m_commands.execute(wfKey, commandEnt);
     }
 
     /**
@@ -271,15 +293,14 @@ public final class WorkflowStatefulUtil {
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchCreator<WorkflowChangedEventEnt> patchEntCreator, final String snapshotId,
-        final boolean includeInteractioInfo) {
+        final boolean includeInteractionInfo, final EventTracker changes) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
-            .includeInteractionInfo(includeInteractioInfo);
-        WorkflowState ws = workflowState(wfKey);
-        WorkflowChanges changes = ws.changesListener().getChanges();
-        if (includeInteractioInfo) {
+            .includeInteractionInfo(includeInteractionInfo);
+        WorkflowState ws = getWorkflowState(wfKey);
+        if (includeInteractionInfo) {
             buildContextBuilder.canUndo(canUndoCommand(wfKey))//
                 .canRedo(canRedoCommand(wfKey))//
-                .dependentNodeProperties(() -> dependentNodeProperties(wfKey, changes));
+                .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
         WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, () -> buildContextBuilder, changes);
         if (wfEnt == null) {
@@ -295,27 +316,21 @@ public final class WorkflowStatefulUtil {
      * @return <code>true</code> if there is state cached for the workflow represented by the given workflow key
      */
     public boolean hasStateFor(final WorkflowKey wfKey) {
-        return m_workflowCache.containsKey(wfKey);
+        return m_workflowStateCache.containsKey(wfKey);
     }
 
-    private DependentNodeProperties dependentNodeProperties(final WorkflowKey wfKey, final WorkflowChanges changes) {
-        // dependent node properties are only re-calculated if there are respective changes
-        // otherwise a cached instance is used
-        WorkflowState ws = workflowState(wfKey);
-        if (ws.m_depNodeProperties == null || changes.nodeStateChanges() || changes.nodeOrConnectionAddedOrRemoved()) {
-            ws.m_depNodeProperties = DependentNodeProperties.determineDependentNodeProperties(ws.m_wfm);
-        }
-        return ws.m_depNodeProperties;
+    /**
+     * Obtain the dependent node properties for the given workflow. Recalculate if the the workflow has pending
+     * changes or use cached data otherwise.
+     * @param wfKey The workflow key characterising the workflow
+     * @return recent {@code DependentNodeProperties}
+     */
+    public DependentNodeProperties getDependentNodeProperties(final WorkflowKey wfKey) {
+        return getWorkflowState(wfKey).getDependentNodeProperties();
     }
 
-    private WorkflowState workflowState(final WorkflowKey wfKey) {
-        return m_workflowCache.computeIfAbsent(wfKey, k -> {
-            try {
-                return new WorkflowState(WorkflowUtil.getWorkflowManager(wfKey));
-            } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-                throw new IllegalStateException(ex);
-            }
-        });
+    private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
+        return m_workflowStateCache.computeIfAbsent(wfKey, WorkflowState::new);
     }
 
     private static class SnapshotIdGenerator implements Supplier<String> {
@@ -334,14 +349,24 @@ public final class WorkflowStatefulUtil {
      */
     private static final class WorkflowState {
 
-        private DependentNodeProperties m_depNodeProperties;
-
-        private WorkflowChangesListener m_changesListener;
+        private final WorkflowKey m_wfKey;
 
         private final WorkflowManager m_wfm;
 
-        private WorkflowState(final WorkflowManager wfm) {
-            m_wfm = wfm;
+        private CachedDependentNodeProperties m_depNodeProperties;
+
+        private WorkflowChangesListener m_changesListener;
+
+        private WorkflowState(final WorkflowKey wfKey)  {
+            m_wfKey = wfKey;
+            m_wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
+        }
+
+        DependentNodeProperties getDependentNodeProperties() {
+            if (m_depNodeProperties == null) {
+                m_depNodeProperties = new CachedDependentNodeProperties(m_wfKey);
+            }
+            return m_depNodeProperties.get();
         }
 
         WorkflowChangesListener changesListener() {
@@ -349,6 +374,49 @@ public final class WorkflowStatefulUtil {
                 m_changesListener = new WorkflowChangesListener(m_wfm);
             }
             return m_changesListener;
+        }
+
+        void dispose() {
+            if (m_depNodeProperties != null) {
+                m_depNodeProperties.dispose();
+            }
+        }
+
+        /**
+         * Wrapper around {@link DependentNodeProperties} that tracks the given workflow for changes affecting
+         * the dependent node properties and recomputing them if needed.
+         */
+        public static class CachedDependentNodeProperties {
+
+            private final WorkflowKey m_wfKey;
+
+            private DependentNodeProperties m_dependentNodeProperties;
+
+            private final EventTracker m_tracker;
+
+            public CachedDependentNodeProperties(final WorkflowKey wfKey) {
+                m_wfKey = wfKey;
+                var wfChL = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
+                m_tracker = new EventTracker(true);
+                wfChL.registerEventTracker(m_tracker);
+            }
+
+            public DependentNodeProperties get() {
+                var nodeStateChanges = m_tracker.hasOccurred(EventTracker.Event.NODE_STATE_UPDATED);
+                var nodeOrConnectionAddedOrRemoved = m_tracker.hasOccurred(EventTracker.Event.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                var recompute = Objects.isNull(m_dependentNodeProperties) || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+                if (recompute) {
+                    var wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
+                    m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(wfm);
+                    m_tracker.reset();
+                }
+                return m_dependentNodeProperties;
+            }
+
+            void dispose() {
+                var wfChL = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(m_wfKey);
+                wfChL.removeEventTracker(m_tracker);
+            }
         }
 
     }

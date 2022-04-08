@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -102,10 +103,10 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public void executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
+    public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        WF_FUNCTIONS.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
+        return WF_FUNCTIONS.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
     }
 
     /**

@@ -47,12 +47,12 @@
 package org.knime.gateway.impl.service.util;
 
 import java.io.Closeable;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -103,7 +103,11 @@ public class WorkflowChangesListener implements Closeable {
 
     private final Map<ConnectionID, ConnectionProgressListener> m_connectionListeners;
 
-    private final Set<Consumer<WorkflowManager>> m_callbacks;
+    private final Set<Consumer<WorkflowManager>> m_workflowChangedCallbacks;
+
+    private final Set<EventTracker> m_eventTrackers = new CopyOnWriteArraySet<>();
+
+    private final Set<Consumer<WorkflowManager>> m_postProcessCallbacks = new HashSet<>();
 
     private final ExecutorService m_executorService;
 
@@ -111,7 +115,6 @@ public class WorkflowChangesListener implements Closeable {
 
     private final boolean m_isInStreamingMode;
 
-    private final WorkflowChanges m_changes;
 
     /**
      * @param wfm the workflow manager to listen to
@@ -123,12 +126,11 @@ public class WorkflowChangesListener implements Closeable {
             t.setDaemon(true);
             return t;
         });
-        m_callbacks = new HashSet<>();
+        m_workflowChangedCallbacks = new HashSet<>();
 
         m_isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         m_connectionListeners = m_isInStreamingMode ? new HashMap<>() : null;
 
-        m_changes = new WorkflowChanges(wfm, true);
         m_workflowListener = startListening();
     }
 
@@ -137,8 +139,8 @@ public class WorkflowChangesListener implements Closeable {
      *
      * @param callback the callback to call if a change occurs in the workflow manager
      */
-    public void addCallback(final Consumer<WorkflowManager> callback) {
-        m_callbacks.add(callback);
+    public void addWorkflowChangeCallback(final Consumer<WorkflowManager> callback) {
+        m_workflowChangedCallbacks.add(callback);
     }
 
     /**
@@ -147,7 +149,41 @@ public class WorkflowChangesListener implements Closeable {
      * @param callback
      */
     public void removeCallback(final Consumer<WorkflowManager> callback) {
-        m_callbacks.remove(callback);
+        m_workflowChangedCallbacks.remove(callback);
+    }
+
+    /**
+     * @param tracker The tracker to register.
+     */
+    public void registerEventTracker(final EventTracker tracker) {
+        m_eventTrackers.add(tracker);
+    }
+
+    /**
+     * @param tracker The tracker to remove.
+     */
+    public void removeEventTracker(final EventTracker tracker) {
+        m_eventTrackers.remove(tracker);
+    }
+
+    private void updateEventTrackers(final EventTracker.Event event) {
+        m_eventTrackers.forEach(t -> t.track(event));
+    }
+
+    /**
+     * Register a callback to be called after workflow-change callbacks have been processed.
+     * @see this#m_workflowChangedCallbacks
+     * @param listener The callback to add
+     */
+    public void addPostProcessCallback(final Consumer<WorkflowManager> listener) {
+        m_postProcessCallbacks.add(listener);
+    }
+
+    /**
+     * @param listener The callback to remove
+     */
+    public void removePostProcessCallback(final Consumer<WorkflowManager> listener) {
+        m_postProcessCallbacks.remove(listener);
     }
 
     private WorkflowListener startListening() {
@@ -171,7 +207,18 @@ public class WorkflowChangesListener implements Closeable {
             case NODE_REMOVED:
             case CONNECTION_ADDED:
             case CONNECTION_REMOVED:
-                m_changes.trackChange(WorkflowChanges.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                updateEventTrackers(EventTracker.Event.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                break;
+            case NODE_COLLAPSED:
+                updateEventTrackers(EventTracker.Event.NODES_COLLAPSED);
+                break;
+            case NODE_EXPANDED:
+                updateEventTrackers(EventTracker.Event.NODE_EXPANDED);
+                break;
+            case ANNOTATION_ADDED:
+            case ANNOTATION_REMOVED:
+                updateEventTrackers(EventTracker.Event.ANNOTATION_ADDED_OR_REMOVED);
+                break;
             default:
                 //
         }
@@ -180,7 +227,9 @@ public class WorkflowChangesListener implements Closeable {
     private void addOrRemoveListenersFromNodeOrWorkflowAnnotation(final WorkflowEvent e) {
         switch (e.getType()) {
             case NODE_ADDED:
-                addNodeListeners(m_wfm.getNodeContainer(e.getID()));
+                if (m_wfm.containsNodeContainer(e.getID())) {
+                    addNodeListeners(m_wfm.getNodeContainer(e.getID()));
+                }
                 break;
             case NODE_REMOVED:
                 removeNodeListeners((NodeContainer)e.getOldValue());
@@ -200,6 +249,7 @@ public class WorkflowChangesListener implements Closeable {
                 if (m_isInStreamingMode) {
                     removeConnectionListener((ConnectionContainer)e.getOldValue());
                 }
+                break;
             default:
                 //
         }
@@ -207,7 +257,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private void addNodeListeners(final NodeContainer nc) {
         NodeStateChangeListener sl = e -> {
-            m_changes.trackChange(WorkflowChanges.NODE_STATE);
+            updateEventTrackers(EventTracker.Event.NODE_STATE_UPDATED);
             callback();
         };
         m_nodeStateChangeListeners.put(nc.getID(), sl);
@@ -278,11 +328,12 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void callback() {
-        m_changes.trackChange();
+        updateEventTrackers(EventTracker.Event.ANY);
         if (!m_callbackState.checkIsCallbackInProgressAndChangeState()) {
             m_executorService.execute(() -> {
                 do {
-                    m_callbacks.forEach(c -> c.accept(m_wfm));
+                    m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
+                    m_postProcessCallbacks.forEach(c -> c.accept(m_wfm));
                 } while (m_callbackState.checkIsCallbackAwaitingAndChangeState());
             });
         }
@@ -316,15 +367,6 @@ public class WorkflowChangesListener implements Closeable {
      */
     public CallbackState getCallbackState() {
         return m_callbackState.m_state;
-    }
-
-    /**
-     * Gives access to the workflow changes that have been tracked.
-     *
-     * @return an object that allows one to access the workflow changes
-     */
-    public WorkflowChanges getChanges() {
-        return m_changes;
     }
 
     /**
@@ -382,82 +424,5 @@ public class WorkflowChangesListener implements Closeable {
                 return false;
             }
         }
-
     }
-
-    /**
-     * Tracks the changes till the last {@link WorkflowChanges#reset()}. To avoid missing changes, all the methods must
-     * always be called within the very same workflow-lock block.
-     */
-    public static final class WorkflowChanges {
-
-        private final BitSet m_changes;
-
-        private static final int NODE_STATE = 0;
-
-        private static final int NODE_OR_CONNECTION_ADDED_OR_REMOVED = 1;
-
-        private static final int ANY = 2;
-
-        private WorkflowManager m_wfm;
-
-        private WorkflowChanges(final WorkflowManager wfm, final boolean setAll) {
-            m_wfm = wfm;
-            m_changes = new BitSet(3);
-            if (setAll) {
-                m_changes.set(0, 3);
-            }
-        }
-
-        /**
-         * Resets all the tracked changes.
-         *
-         * Must be called with a workflow lock set (i.e. {@link WorkflowManager#lock()} on the associated workflow).
-         */
-        public void reset() {
-            assert m_wfm == null || m_wfm.isLockedByCurrentThread();
-            m_changes.clear();
-        }
-
-        /**
-         * Whether there are node state changes since the last {@link #reset()}. Must be called with a workflow lock set
-         * (i.e. {@link WorkflowManager#lock()} on the associated workflow).
-         *
-         * @return <code>true</code> if there were node state changes since the last reset
-         */
-        public boolean nodeStateChanges() {
-            assert m_wfm == null || m_wfm.isLockedByCurrentThread();
-            return m_changes.get(NODE_STATE);
-        }
-
-        /**
-         * Whether there have been nodes or connection been removed or added since the last {@link #reset()}. Must be
-         * called with a workflow lock set (i.e. {@link WorkflowManager#lock()} on the associated workflow).
-         *
-         * @return <code>true</code> if there are respective changes since the last reset
-         */
-        public boolean nodeOrConnectionAddedOrRemoved() {
-            assert m_wfm == null || m_wfm.isLockedByCurrentThread();
-            return m_changes.get(NODE_OR_CONNECTION_ADDED_OR_REMOVED);
-        }
-
-        /**
-         * @return <code>true</code> if there has been any change to the workflow since the last {@link #reset()},
-         *         otherwise <code>false</code>
-         */
-        public boolean anyChange() {
-            assert m_wfm == null || m_wfm.isLockedByCurrentThread();
-            return m_changes.get(ANY);
-        }
-
-        private synchronized void trackChange(final int change) {
-            m_changes.set(change);
-        }
-
-        private synchronized void trackChange() {
-            m_changes.set(ANY);
-        }
-
-    }
-
 }

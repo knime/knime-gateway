@@ -43,92 +43,38 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   May 11, 2021 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
-
-import org.knime.core.node.workflow.NodeID;
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Workflow command to add a native node.
+ * Workflow command to collapse nodes based on a {@link CollapseCommandEnt}. Determines whether the queried workflow
+ * parts should be collapsed into a metanode or a component and invokes the according command.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class AddNode extends AbstractWorkflowCommand {
-
-    private final int[] m_targetPosition;
-
-    private NodeID m_addedNode;
-
-    private final NodeFactoryKey m_factoryKey;
-
-    public AddNode(final WorkflowKey wfKey, final AddNodeCommandEnt commandEntity)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
-        super(wfKey);
-        var factoryKeyEnt = commandEntity.getNodeFactory();
-        m_factoryKey = new NodeFactoryKey(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings());
-        var positionEnt = commandEntity.getPosition();
-        m_targetPosition = new int[] {positionEnt.getX(), positionEnt.getY()};
-    }
-
-    @Override
-    protected boolean executeImpl() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        try {
-            m_addedNode = DefaultServiceUtil.createAndAddNode(m_factoryKey.getClassName(), m_factoryKey.getSettings(),
-                m_targetPosition[0], m_targetPosition[1] - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
-        } catch (IOException | NoSuchElementException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean canUndo() {
-        return getWorkflowManager().canRemoveNode(m_addedNode);
-    }
-
-    @Override
-    public void undo() throws OperationNotAllowedException {
-        getWorkflowManager().removeNode(m_addedNode);
-        m_addedNode = null;
-    }
-
-    private static class NodeFactoryKey {
-        private final String m_className;
-
-        private final String m_settings;
-
-        public NodeFactoryKey(final String className, final String settings) {
-            this.m_className = className;
-            this.m_settings = settings;
-        }
-
-        public String getClassName() {
-            return m_className;
-        }
-
-        public String getSettings() {
-            return m_settings;
-        }
-    }
+public class CollapseTeeing extends Tee  {
 
     /**
-     * {@inheritDoc}
+     * Initialise the command.
+     * @param wfKey The workflow to operate in
+     * @param commandEnt The command entity
+     * @throws ServiceExceptions.NodeNotFoundException If the workflow to operate in could not be found
+     * @throws ServiceExceptions.NotASubWorkflowException If the specified node id is not a sub-workflow
+     * @throws ServiceExceptions.OperationNotAllowedException If the command could not be initalized
      */
-    @Override
-    public boolean providesResult() {
-        return false;
+    public CollapseTeeing(WorkflowKey wfKey, CollapseCommandEnt commandEnt)
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
+            ServiceExceptions.OperationNotAllowedException {
+        super(
+                wfKey,
+                () -> commandEnt.getContainerType() == CollapseCommandEnt.ContainerTypeEnum.METANODE,
+                () -> new CollapseToMetanode(wfKey, commandEnt),
+                () -> new CollapseToComponent(wfKey, commandEnt)
+        );
     }
 
 }

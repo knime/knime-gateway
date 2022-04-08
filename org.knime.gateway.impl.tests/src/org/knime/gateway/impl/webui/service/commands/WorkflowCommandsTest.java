@@ -170,26 +170,28 @@ public class WorkflowCommandsTest {
             FileNativeNodeContainerPersistor.loadNodeFactory("org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"))
             .getID();
         configureWaitNode(wfm, waitNodeID);
+        var wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        var addNodeCommand = new AddNode();
-        addNodeCommand.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
-            builder(AddNodeCommandEntBuilder.class)
+        var addCommandEnt = builder(AddNodeCommandEntBuilder.class)
                 .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class)
-                    .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
-                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build());
+                        .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
+                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build();
+        var addNodeCommand = new AddNode(wfKey, addCommandEnt);
+        addNodeCommand.execute();
         assertThat(wfm.getNodeContainers().size(), is(2));
         assertThat(addNodeCommand.canUndo(), is(true));
 
-        var connectCommand = new Connect();
-        connectCommand.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
-            builder(ConnectCommandEntBuilder.class).setSourceNodeId(new NodeIDEnt(2)).setSourcePortIdx(0)
-                .setDestinationNodeId(new NodeIDEnt(1)).setDestinationPortIdx(0).setKind(KindEnum.CONNECT).build());
+        var connectCommandEnt = builder(ConnectCommandEntBuilder.class).setSourceNodeId(new NodeIDEnt(2)).setSourcePortIdx(0)
+                .setDestinationNodeId(new NodeIDEnt(1)).setDestinationPortIdx(0).setKind(KindEnum.CONNECT).build();
+        var connectCommand = new Connect(wfKey, connectCommandEnt);
+        connectCommand.execute();
+
         assertThat(wfm.getConnectionContainers().size(), is(1));
         assertThat(connectCommand.canUndo(), is(true));
 
-        var deleteCommand = new Delete();
-        deleteCommand.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), builder(DeleteCommandEntBuilder.class)
-            .setNodeIds(List.of(new NodeIDEnt(2))).setKind(KindEnum.DELETE).build());
+        var deleteCommandEnt = builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(2))).setKind(KindEnum.DELETE).build();
+        var deleteCommand = new Delete(wfKey, deleteCommandEnt);
+        deleteCommand.execute();
         assertThat(wfm.getNodeContainers().size(), is(1));
         deleteCommand.undo();
         assertThat(wfm.getNodeContainers().size(), is(2));

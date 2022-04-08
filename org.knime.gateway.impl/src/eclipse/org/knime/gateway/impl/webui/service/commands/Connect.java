@@ -50,44 +50,62 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command to connect two nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class Connect extends AbstractWorkflowCommand<ConnectCommandEnt> {
+final class Connect extends AbstractWorkflowCommand {
+
+    private final NodeID m_sourceNodeId;
+
+    private final NodeID m_destNodeId;
+
+    private final Integer m_sourcePortIdx;
+
+    private final Integer m_destPortIdx;
 
     private ConnectionContainer m_newConnection;
 
     private ConnectionContainer m_oldConnection;
 
-    @Override
-    public boolean execute() throws OperationNotAllowedException {
-        var entity = getCommandEntity();
+    public Connect(final WorkflowKey wfKey, final ConnectCommandEnt commandEnt)
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
+        super(wfKey);
         var wfm = getWorkflowManager();
         var projectWfm = wfm.getProjectWFM();
-        var sourceNodeId = entity.getSourceNodeId().toNodeID(projectWfm.getID());
-        var destNodeId = entity.getDestinationNodeId().toNodeID(projectWfm.getID());
+        m_sourceNodeId = commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
+        m_sourcePortIdx = commandEnt.getSourcePortIdx();
+        m_destNodeId = commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
+        m_destPortIdx = commandEnt.getDestinationPortIdx();
+    }
+
+    @Override
+    public boolean executeImpl() throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
 
         try {
-            m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, entity.getDestinationPortIdx()));
+            m_oldConnection = wfm.getConnection(new ConnectionID(m_destNodeId, m_destPortIdx));
         } catch (IllegalArgumentException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
-        if (m_oldConnection != null && m_oldConnection.getSource().equals(sourceNodeId)
-            && m_oldConnection.getSourcePort() == entity.getSourcePortIdx()) {
+        if (m_oldConnection != null && m_oldConnection.getSource().equals(m_sourceNodeId)
+            && m_oldConnection.getSourcePort() == m_sourcePortIdx) {
             // it's the very same connection -> no change
             return false;
         }
 
-        if (!wfm.canAddConnection(sourceNodeId, entity.getSourcePortIdx(), destNodeId, entity.getDestinationPortIdx())) {
+        if (!wfm.canAddConnection(m_sourceNodeId, m_sourcePortIdx, m_destNodeId, m_destPortIdx)) {
             throw new OperationNotAllowedException("Connection can't be added");
         }
 
-        m_newConnection = wfm.addConnection(sourceNodeId, entity.getSourcePortIdx(), destNodeId, entity.getDestinationPortIdx());
+        m_newConnection = wfm.addConnection(m_sourceNodeId, m_sourcePortIdx, m_destNodeId, m_destPortIdx);
         return true;
     }
 
@@ -107,6 +125,14 @@ final class Connect extends AbstractWorkflowCommand<ConnectCommandEnt> {
         }
         m_newConnection = null;
         m_oldConnection = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean providesResult() {
+        return false;
     }
 
 }

@@ -43,87 +43,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Jan 20, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.impl.service.util;
 
-import org.knime.core.node.workflow.WorkflowLock;
+import java.util.concurrent.Semaphore;
+import java.util.function.Consumer;
+
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowUtil;
+import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
- * Base class for implementations of {@link WorkflowCommand}s.
+ * Semaphore that is released once a specific workflow change event is tracked.
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  *
- * The command is assumed to be fully configured (i.e. ready for execution) via its constructor.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-abstract class AbstractWorkflowCommand implements WorkflowCommand {
+public class TrackingSemaphore {
 
-    private final WorkflowManager m_wfm;
+    private final WorkflowChangesListener m_wfChangesListener;
 
-    private final WorkflowKey m_wfKey;
+    private final Semaphore m_semaphore;
 
-    @SuppressWarnings({"java:S1130"})  // (superfluous exceptions: implementing classes may throw these)
-    protected AbstractWorkflowCommand(final WorkflowKey wfKey)
-            throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
-        m_wfKey = wfKey;
-        m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
+    private final Consumer<WorkflowManager> m_postProcessCallback;
+
+    private final EventTracker m_tracker;
+
+    /**
+     * Create and configure a new tracking semaphore for the given event on the given workflow.
+     * @param event The event to be tracked by the semaphore
+     * @param wfKey The workflow to track events of
+     */
+    public TrackingSemaphore(final EventTracker.Event event, final WorkflowKey wfKey) {
+        m_wfChangesListener = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
+
+        m_semaphore = new Semaphore(0, true);
+
+        m_tracker = new EventTracker();
+        m_wfChangesListener.registerEventTracker(m_tracker);
+
+        m_postProcessCallback = wfm -> {
+            if (!m_tracker.hasOccurred(event)) {
+                return;
+            }
+            m_semaphore.release();
+        };
+        m_wfChangesListener.addPostProcessCallback(m_postProcessCallback);
+
     }
 
-    @Override
-    public boolean execute() throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
-        try (WorkflowLock ignored = m_wfm.lock()) {
-            return executeImpl();
+    public void acquire() throws OperationNotAllowedException {
+        try {
+            m_semaphore.acquire();
+        } catch (InterruptedException e) {  // NOSONAR exception is thrown
+            throw new OperationNotAllowedException("Could not wait for workflow change event", e);
+        } finally {
+            m_wfChangesListener.removeEventTracker(m_tracker);
+            m_wfChangesListener.removePostProcessCallback(m_postProcessCallback);
         }
-    }
-
-    /**
-     * Executes the command. {@link #getWorkflowManager()}, or {@link #getWorkflowKey()} to retrieve the data required
-     * to execute the command.
-     *
-     * The workflow is locked before this method is called (and released afterwards). I.e. implementing methods don't
-     * need to do that anymore.
-     *
-     * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
-     *         the command didn't do any change to the workflow
-     *
-     * @throws OperationNotAllowedException If the command could not be executed
-     */
-    protected abstract boolean executeImpl() throws OperationNotAllowedException;
-
-    @Override
-    public boolean canUndo() {
-        return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-        return true;
-    }
-
-    @Override
-    public void redo() throws OperationNotAllowedException {
-        executeImpl();
-    }
-
-    /**
-     * @return the workflow manager to execute (redo, undo) the command on
-     */
-    protected final WorkflowManager getWorkflowManager() {
-        return m_wfm;
-    }
-
-    /**
-     * @return reference to the workflow underlying this command
-     */
-    protected final WorkflowKey getWorkflowKey() {
-        return m_wfKey;
     }
 
 }
