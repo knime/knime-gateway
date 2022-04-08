@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,34 +53,24 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * Collapse nodes and annotations into a metanode or a component
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
+public interface CollapseCommandEnt extends GatewayEntity, WorkflowCommandEnt, PartBasedCommandEnt {
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
+   * Gets or Sets containerType
    */
-  public enum KindEnum {
-    TRANSLATE("translate"),
+  public enum ContainerTypeEnum {
+    METANODE("metanode"),
     
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand");
+    COMPONENT("component");
 
     private String value;
 
-    KindEnum(String value) {
+    ContainerTypeEnum(String value) {
       this.value = value;
     }
 
@@ -91,16 +83,22 @@ public interface WorkflowCommandEnt extends GatewayEntity {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * If resettable nodes are among the selected, the selection is collapsed if and only if this flag is set and otherwise an exception is thrown. Assumed to be false if omitted.
+   * @return allowReset 
    **/
-  public KindEnum getKind();
+  public Boolean isAllowReset();
+
+  /**
+   * Get containerType
+   * @return containerType , never <code>null</code>
+   **/
+  public ContainerTypeEnum getContainerType();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface CollapseCommandEntBuilder extends GatewayEntityBuilder<CollapseCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -108,7 +106,39 @@ public interface WorkflowCommandEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        CollapseCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The ids of the nodes referenced.
+         * 
+         * @param nodeIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        CollapseCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
+        
+        /**
+         * The ids of the workflow annotations referenced.
+         * 
+         * @param annotationIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        CollapseCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
+        
+        /**
+         * If resettable nodes are among the selected, the selection is collapsed if and only if this flag is set and otherwise an exception is thrown. Assumed to be false if omitted.
+         * 
+         * @param allowReset the property value,  
+         * @return this entity builder for chaining
+         */
+        CollapseCommandEntBuilder setAllowReset(Boolean allowReset);
+        
+        /**
+   		 * Set containerType
+         * 
+         * @param containerType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        CollapseCommandEntBuilder setContainerType(ContainerTypeEnum containerType);
         
         
         /**
@@ -118,7 +148,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        CollapseCommandEnt build();
     
     }
 

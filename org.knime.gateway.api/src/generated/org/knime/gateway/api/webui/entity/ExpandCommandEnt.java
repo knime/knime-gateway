@@ -42,81 +42,76 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * Expand a metanode or a component
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface ExpandCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
-@JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * If the node container is resettable, it is expanded if and only if this value is true and otherwise and exception is thrown. Assumed to be false if omitted.
+   * @return allowReset 
+   **/
+  public Boolean isAllowReset();
 
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("nodeIds")
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
-    
-    @Override
-    @JsonProperty("annotationIds")
-    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
-    
-    @Override
-    @JsonProperty("translation")
-    public XYEnt getTranslation();
-    
+  /**
+   * Id of node to be expaneded
+   * @return nodeId , never <code>null</code>
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface ExpandCommandEntBuilder extends GatewayEntityBuilder<ExpandCommandEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TranslateCommandEntMixInBuilder extends TranslateCommandEntBuilder {
+        /**
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ExpandCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * If the node container is resettable, it is expanded if and only if this value is true and otherwise and exception is thrown. Assumed to be false if omitted.
+         * 
+         * @param allowReset the property value,  
+         * @return this entity builder for chaining
+         */
+        ExpandCommandEntBuilder setAllowReset(Boolean allowReset);
+        
+        /**
+         * Id of node to be expaneded
+         * 
+         * @param nodeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ExpandCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        ExpandCommandEnt build();
     
-        @Override
-        public TranslateCommandEntMixIn build();
-    
-        @Override
-        @JsonProperty("kind")
-        public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("nodeIds")
-        public TranslateCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
-        
-        @Override
-        @JsonProperty("annotationIds")
-        public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
-        
-        @Override
-        @JsonProperty("translation")
-        public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
-        
     }
 
-
 }
-

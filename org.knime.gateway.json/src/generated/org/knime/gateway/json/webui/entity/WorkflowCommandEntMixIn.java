@@ -57,6 +57,9 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
@@ -85,6 +88,10 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultUpdateComponentOrMetanodeNameCommandEnt.class, name = "update_component_or_metanode_name")
+,
+  @Type(value = DefaultCollapseCommandEnt.class, name = "collapse")
+,
+  @Type(value = DefaultExpandCommandEnt.class, name = "expand")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -122,6 +129,10 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultUpdateComponentOrMetanodeNameCommandEnt.class, name = "update_component_or_metanode_name")
+,
+  @Type(value = DefaultCollapseCommandEnt.class, name = "collapse")
+,
+  @Type(value = DefaultExpandCommandEnt.class, name = "expand")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

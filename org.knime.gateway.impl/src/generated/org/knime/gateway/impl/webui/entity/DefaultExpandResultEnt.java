@@ -50,52 +50,44 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 
 /**
- * Moves workflow nodes and workflow annotations to a defined position.
+ * DefaultExpandResultEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
+public class DefaultExpandResultEnt implements ExpandResultEnt {
 
+  protected String m_snapshotId;
   protected KindEnum m_kind;
-  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
-  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
-  protected XYEnt m_translation;
+  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_expandedNodeIds;
+  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_expandedAnnotationIds;
   
-  protected DefaultTranslateCommandEnt() {
+  protected DefaultExpandResultEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "TranslateCommand";
+    return "ExpandResult";
   }
   
-  private DefaultTranslateCommandEnt(DefaultTranslateCommandEntBuilder builder) {
+  private DefaultExpandResultEnt(DefaultExpandResultEntBuilder builder) {
     super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
+    m_snapshotId = immutable(builder.m_snapshotId);
     m_kind = immutable(builder.m_kind);
-    if(builder.m_nodeIds == null) {
-        throw new IllegalArgumentException("nodeIds must not be null.");
+    if(builder.m_expandedNodeIds == null) {
+        throw new IllegalArgumentException("expandedNodeIds must not be null.");
     }
-    m_nodeIds = immutable(builder.m_nodeIds);
-    if(builder.m_annotationIds == null) {
-        throw new IllegalArgumentException("annotationIds must not be null.");
+    m_expandedNodeIds = immutable(builder.m_expandedNodeIds);
+    if(builder.m_expandedAnnotationIds == null) {
+        throw new IllegalArgumentException("expandedAnnotationIds must not be null.");
     }
-    m_annotationIds = immutable(builder.m_annotationIds);
-    if(builder.m_translation == null) {
-        throw new IllegalArgumentException("translation must not be null.");
-    }
-    m_translation = immutable(builder.m_translation);
+    m_expandedAnnotationIds = immutable(builder.m_expandedAnnotationIds);
   }
   
    /**
@@ -112,8 +104,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultTranslateCommandEnt ent = (DefaultTranslateCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_translation, ent.m_translation);
+        DefaultExpandResultEnt ent = (DefaultExpandResultEnt)o;
+        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_expandedNodeIds, ent.m_expandedNodeIds) && Objects.equals(m_expandedAnnotationIds, ent.m_expandedAnnotationIds);
     }
 
 
@@ -124,87 +116,81 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
+               .append(m_snapshotId)
                .append(m_kind)
-               .append(m_nodeIds)
-               .append(m_annotationIds)
-               .append(m_translation)
+               .append(m_expandedNodeIds)
+               .append(m_expandedAnnotationIds)
                .toHashCode();
    }
   
 	
 	
   @Override
+  public String getSnapshotId() {
+        return m_snapshotId;
+  }
+    
+  @Override
   public KindEnum getKind() {
         return m_kind;
   }
     
   @Override
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
-        return m_nodeIds;
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getExpandedNodeIds() {
+        return m_expandedNodeIds;
   }
     
   @Override
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
-        return m_annotationIds;
-  }
-    
-  @Override
-  public XYEnt getTranslation() {
-        return m_translation;
+  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getExpandedAnnotationIds() {
+        return m_expandedAnnotationIds;
   }
     
   
-    public static class DefaultTranslateCommandEntBuilder implements TranslateCommandEntBuilder {
+    public static class DefaultExpandResultEntBuilder implements ExpandResultEntBuilder {
     
-        public DefaultTranslateCommandEntBuilder(){
+        public DefaultExpandResultEntBuilder(){
             super();
         }
     
+        private String m_snapshotId;
         private KindEnum m_kind;
-        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
-        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
-        private XYEnt m_translation;
+        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_expandedNodeIds = new java.util.ArrayList<>();
+        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_expandedAnnotationIds = new java.util.ArrayList<>();
 
         @Override
-        public DefaultTranslateCommandEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
-             }
+        public DefaultExpandResultEntBuilder setSnapshotId(String snapshotId) {
+             m_snapshotId = snapshotId;
+             return this;
+        }
+
+        @Override
+        public DefaultExpandResultEntBuilder setKind(KindEnum kind) {
              m_kind = kind;
              return this;
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
-             if(nodeIds == null) {
-                 throw new IllegalArgumentException("nodeIds must not be null.");
+        public DefaultExpandResultEntBuilder setExpandedNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> expandedNodeIds) {
+             if(expandedNodeIds == null) {
+                 throw new IllegalArgumentException("expandedNodeIds must not be null.");
              }
-             m_nodeIds = nodeIds;
+             m_expandedNodeIds = expandedNodeIds;
              return this;
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
-             if(annotationIds == null) {
-                 throw new IllegalArgumentException("annotationIds must not be null.");
+        public DefaultExpandResultEntBuilder setExpandedAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> expandedAnnotationIds) {
+             if(expandedAnnotationIds == null) {
+                 throw new IllegalArgumentException("expandedAnnotationIds must not be null.");
              }
-             m_annotationIds = annotationIds;
-             return this;
-        }
-
-        @Override
-        public DefaultTranslateCommandEntBuilder setTranslation(XYEnt translation) {
-             if(translation == null) {
-                 throw new IllegalArgumentException("translation must not be null.");
-             }
-             m_translation = translation;
+             m_expandedAnnotationIds = expandedAnnotationIds;
              return this;
         }
 
         
         @Override
-        public DefaultTranslateCommandEnt build() {
-            return new DefaultTranslateCommandEnt(this);
+        public DefaultExpandResultEnt build() {
+            return new DefaultExpandResultEnt(this);
         }
     
     }

@@ -66,6 +66,12 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
+import org.knime.gateway.api.webui.entity.CollapseResultEnt.CollapseResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt.CommandResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
@@ -76,6 +82,8 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBui
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
+import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt.ConvertContainerResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
@@ -86,6 +94,10 @@ import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.api.webui.entity.ExpandCommandEnt.ExpandCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
+import org.knime.gateway.api.webui.entity.ExpandResultEnt.ExpandResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
@@ -138,6 +150,8 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.PartBasedCommandEnt.PartBasedCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -225,6 +239,15 @@ public class Interface2ImplMap {
         if(clazz == BoundsEntBuilder.class) {
             return (B)new DefaultBoundsEnt.DefaultBoundsEntBuilder();
         }        
+        if(clazz == CollapseCommandEntBuilder.class) {
+            return (B)new DefaultCollapseCommandEnt.DefaultCollapseCommandEntBuilder();
+        }        
+        if(clazz == CollapseResultEntBuilder.class) {
+            return (B)new DefaultCollapseResultEnt.DefaultCollapseResultEntBuilder();
+        }        
+        if(clazz == CommandResultEntBuilder.class) {
+            return (B)new DefaultCommandResultEnt.DefaultCommandResultEntBuilder();
+        }        
         if(clazz == ComponentNodeAndDescriptionEntBuilder.class) {
             return (B)new DefaultComponentNodeAndDescriptionEnt.DefaultComponentNodeAndDescriptionEntBuilder();
         }        
@@ -240,6 +263,9 @@ public class Interface2ImplMap {
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();
         }        
+        if(clazz == ConvertContainerResultEntBuilder.class) {
+            return (B)new DefaultConvertContainerResultEnt.DefaultConvertContainerResultEntBuilder();
+        }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();
         }        
@@ -254,6 +280,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == EventTypeEntBuilder.class) {
             return (B)new DefaultEventTypeEnt.DefaultEventTypeEntBuilder();
+        }        
+        if(clazz == ExpandCommandEntBuilder.class) {
+            return (B)new DefaultExpandCommandEnt.DefaultExpandCommandEntBuilder();
+        }        
+        if(clazz == ExpandResultEntBuilder.class) {
+            return (B)new DefaultExpandResultEnt.DefaultExpandResultEntBuilder();
         }        
         if(clazz == JobManagerEntBuilder.class) {
             return (B)new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
@@ -332,6 +364,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeViewDescriptionEntBuilder.class) {
             return (B)new DefaultNodeViewDescriptionEnt.DefaultNodeViewDescriptionEntBuilder();
+        }        
+        if(clazz == PartBasedCommandEntBuilder.class) {
+            return (B)new DefaultPartBasedCommandEnt.DefaultPartBasedCommandEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();

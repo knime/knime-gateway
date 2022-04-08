@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
@@ -53,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt.DefaultCollapseCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,9 +61,9 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTra
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
+@JsonDeserialize(builder=DefaultCollapseCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
+public interface CollapseCommandEntMixIn extends CollapseCommandEnt {
 
     @Override
     @JsonIgnore
@@ -83,8 +82,12 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
     public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
     
     @Override
-    @JsonProperty("translation")
-    public XYEnt getTranslation();
+    @JsonProperty("allowReset")
+    public Boolean isAllowReset();
+    
+    @Override
+    @JsonProperty("containerType")
+    public ContainerTypeEnum getContainerType();
     
 
     /**
@@ -94,26 +97,30 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TranslateCommandEntMixInBuilder extends TranslateCommandEntBuilder {
+    public static interface CollapseCommandEntMixInBuilder extends CollapseCommandEntBuilder {
     
         @Override
-        public TranslateCommandEntMixIn build();
+        public CollapseCommandEntMixIn build();
     
         @Override
         @JsonProperty("kind")
-        public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
+        public CollapseCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("nodeIds")
-        public TranslateCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
+        public CollapseCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
         
         @Override
         @JsonProperty("annotationIds")
-        public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
+        public CollapseCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
         @Override
-        @JsonProperty("translation")
-        public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
+        @JsonProperty("allowReset")
+        public CollapseCommandEntMixInBuilder setAllowReset(final Boolean allowReset);
+        
+        @Override
+        @JsonProperty("containerType")
+        public CollapseCommandEntMixInBuilder setContainerType(final ContainerTypeEnum containerType);
         
     }
 

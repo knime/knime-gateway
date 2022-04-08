@@ -50,35 +50,32 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 
 /**
- * Moves workflow nodes and workflow annotations to a defined position.
+ * A command that is based on a number of selected workflow parts (nodes or workflow annotations)
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
+public class DefaultPartBasedCommandEnt implements PartBasedCommandEnt {
 
   protected KindEnum m_kind;
   protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
   protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
-  protected XYEnt m_translation;
   
-  protected DefaultTranslateCommandEnt() {
+  protected DefaultPartBasedCommandEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "TranslateCommand";
+    return "PartBasedCommand";
   }
   
-  private DefaultTranslateCommandEnt(DefaultTranslateCommandEntBuilder builder) {
+  private DefaultPartBasedCommandEnt(DefaultPartBasedCommandEntBuilder builder) {
     super();
     if(builder.m_kind == null) {
         throw new IllegalArgumentException("kind must not be null.");
@@ -92,10 +89,6 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         throw new IllegalArgumentException("annotationIds must not be null.");
     }
     m_annotationIds = immutable(builder.m_annotationIds);
-    if(builder.m_translation == null) {
-        throw new IllegalArgumentException("translation must not be null.");
-    }
-    m_translation = immutable(builder.m_translation);
   }
   
    /**
@@ -112,8 +105,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultTranslateCommandEnt ent = (DefaultTranslateCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_translation, ent.m_translation);
+        DefaultPartBasedCommandEnt ent = (DefaultPartBasedCommandEnt)o;
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds);
     }
 
 
@@ -127,7 +120,6 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
                .append(m_kind)
                .append(m_nodeIds)
                .append(m_annotationIds)
-               .append(m_translation)
                .toHashCode();
    }
   
@@ -148,25 +140,19 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         return m_annotationIds;
   }
     
-  @Override
-  public XYEnt getTranslation() {
-        return m_translation;
-  }
-    
   
-    public static class DefaultTranslateCommandEntBuilder implements TranslateCommandEntBuilder {
+    public static class DefaultPartBasedCommandEntBuilder implements PartBasedCommandEntBuilder {
     
-        public DefaultTranslateCommandEntBuilder(){
+        public DefaultPartBasedCommandEntBuilder(){
             super();
         }
     
         private KindEnum m_kind;
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
-        private XYEnt m_translation;
 
         @Override
-        public DefaultTranslateCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultPartBasedCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -175,7 +161,7 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
+        public DefaultPartBasedCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
              if(nodeIds == null) {
                  throw new IllegalArgumentException("nodeIds must not be null.");
              }
@@ -184,7 +170,7 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
+        public DefaultPartBasedCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
              if(annotationIds == null) {
                  throw new IllegalArgumentException("annotationIds must not be null.");
              }
@@ -192,19 +178,10 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
              return this;
         }
 
-        @Override
-        public DefaultTranslateCommandEntBuilder setTranslation(XYEnt translation) {
-             if(translation == null) {
-                 throw new IllegalArgumentException("translation must not be null.");
-             }
-             m_translation = translation;
-             return this;
-        }
-
         
         @Override
-        public DefaultTranslateCommandEnt build() {
-            return new DefaultTranslateCommandEnt(this);
+        public DefaultPartBasedCommandEnt build() {
+            return new DefaultPartBasedCommandEnt(this);
         }
     
     }

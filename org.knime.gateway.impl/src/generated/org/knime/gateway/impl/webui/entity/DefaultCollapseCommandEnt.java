@@ -50,35 +50,35 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 
 /**
- * Moves workflow nodes and workflow annotations to a defined position.
+ * Collapse nodes and annotations into a metanode or a component
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
+public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
 
   protected KindEnum m_kind;
   protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
   protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
-  protected XYEnt m_translation;
+  protected Boolean m_allowReset;
+  protected ContainerTypeEnum m_containerType;
   
-  protected DefaultTranslateCommandEnt() {
+  protected DefaultCollapseCommandEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "TranslateCommand";
+    return "CollapseCommand";
   }
   
-  private DefaultTranslateCommandEnt(DefaultTranslateCommandEntBuilder builder) {
+  private DefaultCollapseCommandEnt(DefaultCollapseCommandEntBuilder builder) {
     super();
     if(builder.m_kind == null) {
         throw new IllegalArgumentException("kind must not be null.");
@@ -92,10 +92,11 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         throw new IllegalArgumentException("annotationIds must not be null.");
     }
     m_annotationIds = immutable(builder.m_annotationIds);
-    if(builder.m_translation == null) {
-        throw new IllegalArgumentException("translation must not be null.");
+    m_allowReset = immutable(builder.m_allowReset);
+    if(builder.m_containerType == null) {
+        throw new IllegalArgumentException("containerType must not be null.");
     }
-    m_translation = immutable(builder.m_translation);
+    m_containerType = immutable(builder.m_containerType);
   }
   
    /**
@@ -112,8 +113,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultTranslateCommandEnt ent = (DefaultTranslateCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_translation, ent.m_translation);
+        DefaultCollapseCommandEnt ent = (DefaultCollapseCommandEnt)o;
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_allowReset, ent.m_allowReset) && Objects.equals(m_containerType, ent.m_containerType);
     }
 
 
@@ -127,7 +128,8 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
                .append(m_kind)
                .append(m_nodeIds)
                .append(m_annotationIds)
-               .append(m_translation)
+               .append(m_allowReset)
+               .append(m_containerType)
                .toHashCode();
    }
   
@@ -149,24 +151,30 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
   }
     
   @Override
-  public XYEnt getTranslation() {
-        return m_translation;
+  public Boolean isAllowReset() {
+        return m_allowReset;
+  }
+    
+  @Override
+  public ContainerTypeEnum getContainerType() {
+        return m_containerType;
   }
     
   
-    public static class DefaultTranslateCommandEntBuilder implements TranslateCommandEntBuilder {
+    public static class DefaultCollapseCommandEntBuilder implements CollapseCommandEntBuilder {
     
-        public DefaultTranslateCommandEntBuilder(){
+        public DefaultCollapseCommandEntBuilder(){
             super();
         }
     
         private KindEnum m_kind;
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
-        private XYEnt m_translation;
+        private Boolean m_allowReset;
+        private ContainerTypeEnum m_containerType;
 
         @Override
-        public DefaultTranslateCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultCollapseCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -175,7 +183,7 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
+        public DefaultCollapseCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
              if(nodeIds == null) {
                  throw new IllegalArgumentException("nodeIds must not be null.");
              }
@@ -184,7 +192,7 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
+        public DefaultCollapseCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
              if(annotationIds == null) {
                  throw new IllegalArgumentException("annotationIds must not be null.");
              }
@@ -193,18 +201,24 @@ public class DefaultTranslateCommandEnt implements TranslateCommandEnt {
         }
 
         @Override
-        public DefaultTranslateCommandEntBuilder setTranslation(XYEnt translation) {
-             if(translation == null) {
-                 throw new IllegalArgumentException("translation must not be null.");
+        public DefaultCollapseCommandEntBuilder setAllowReset(Boolean allowReset) {
+             m_allowReset = allowReset;
+             return this;
+        }
+
+        @Override
+        public DefaultCollapseCommandEntBuilder setContainerType(ContainerTypeEnum containerType) {
+             if(containerType == null) {
+                 throw new IllegalArgumentException("containerType must not be null.");
              }
-             m_translation = translation;
+             m_containerType = containerType;
              return this;
         }
 
         
         @Override
-        public DefaultTranslateCommandEnt build() {
-            return new DefaultTranslateCommandEnt(this);
+        public DefaultCollapseCommandEnt build() {
+            return new DefaultCollapseCommandEnt(this);
         }
     
     }

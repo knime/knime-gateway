@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -58,7 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
+public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt, PartBasedCommandEnt {
 
 
   /**
@@ -66,18 +67,6 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    * @return translation , never <code>null</code>
    **/
   public XYEnt getTranslation();
-
-  /**
-   * The ids of the nodes referenced.
-   * @return nodeIds , never <code>null</code>
-   **/
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
-
-  /**
-   * The ids of the workflow annotations referenced.
-   * @return annotationIds , never <code>null</code>
-   **/
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
 
 
     /**
@@ -94,14 +83,6 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         TranslateCommandEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set translation
-         * 
-         * @param translation the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        TranslateCommandEntBuilder setTranslation(XYEnt translation);
-        
-        /**
          * The ids of the nodes referenced.
          * 
          * @param nodeIds the property value, NOT <code>null</code>! 
@@ -116,6 +97,14 @@ public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         TranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
+        
+        /**
+   		 * Set translation
+         * 
+         * @param translation the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        TranslateCommandEntBuilder setTranslation(XYEnt translation);
         
         
         /**

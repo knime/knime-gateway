@@ -44,17 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.ExpandResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt.DefaultExpandResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,29 +60,29 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTra
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
+@JsonDeserialize(builder=DefaultExpandResultEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
+public interface ExpandResultEntMixIn extends ExpandResultEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
+    @JsonProperty("snapshotId")
+    public String getSnapshotId();
+    
+    @Override
     @JsonProperty("kind")
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("nodeIds")
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
+    @JsonProperty("expandedNodeIds")
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getExpandedNodeIds();
     
     @Override
-    @JsonProperty("annotationIds")
-    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
-    
-    @Override
-    @JsonProperty("translation")
-    public XYEnt getTranslation();
+    @JsonProperty("expandedAnnotationIds")
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getExpandedAnnotationIds();
     
 
     /**
@@ -94,26 +92,26 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TranslateCommandEntMixInBuilder extends TranslateCommandEntBuilder {
+    public static interface ExpandResultEntMixInBuilder extends ExpandResultEntBuilder {
     
         @Override
-        public TranslateCommandEntMixIn build();
+        public ExpandResultEntMixIn build();
     
+        @Override
+        @JsonProperty("snapshotId")
+        public ExpandResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        
         @Override
         @JsonProperty("kind")
-        public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
+        public ExpandResultEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("nodeIds")
-        public TranslateCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
+        @JsonProperty("expandedNodeIds")
+        public ExpandResultEntMixInBuilder setExpandedNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> expandedNodeIds);
         
         @Override
-        @JsonProperty("annotationIds")
-        public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
-        
-        @Override
-        @JsonProperty("translation")
-        public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
+        @JsonProperty("expandedAnnotationIds")
+        public ExpandResultEntMixInBuilder setExpandedAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> expandedAnnotationIds);
         
     }
 

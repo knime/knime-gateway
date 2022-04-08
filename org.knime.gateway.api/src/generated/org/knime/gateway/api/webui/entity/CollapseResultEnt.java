@@ -42,81 +42,70 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * CollapseResultEnt
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface CollapseResultEnt extends GatewayEntity, CommandResultEnt {
 
-@JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * Get newNodeId
+   * @return newNodeId , never <code>null</code>
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
 
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("nodeIds")
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
-    
-    @Override
-    @JsonProperty("annotationIds")
-    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
-    
-    @Override
-    @JsonProperty("translation")
-    public XYEnt getTranslation();
-    
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface CollapseResultEntBuilder extends GatewayEntityBuilder<CollapseResultEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TranslateCommandEntMixInBuilder extends TranslateCommandEntBuilder {
+        /**
+         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
+         * 
+         * @param snapshotId the property value,  
+         * @return this entity builder for chaining
+         */
+        CollapseResultEntBuilder setSnapshotId(String snapshotId);
+        
+        /**
+   		 * Set kind
+         * 
+         * @param kind the property value,  
+         * @return this entity builder for chaining
+         */
+        CollapseResultEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set newNodeId
+         * 
+         * @param newNodeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        CollapseResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        CollapseResultEnt build();
     
-        @Override
-        public TranslateCommandEntMixIn build();
-    
-        @Override
-        @JsonProperty("kind")
-        public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("nodeIds")
-        public TranslateCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
-        
-        @Override
-        @JsonProperty("annotationIds")
-        public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
-        
-        @Override
-        @JsonProperty("translation")
-        public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
-        
     }
 
-
 }
-

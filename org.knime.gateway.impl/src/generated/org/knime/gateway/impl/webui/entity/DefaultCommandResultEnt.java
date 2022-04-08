@@ -42,81 +42,114 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * DefaultCommandResultEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultCommandResultEnt implements CommandResultEnt {
 
-@JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
+  protected String m_snapshotId;
+  protected KindEnum m_kind;
+  
+  protected DefaultCommandResultEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "CommandResult";
+  }
+  
+  private DefaultCommandResultEnt(DefaultCommandResultEntBuilder builder) {
     
-    @Override
-    @JsonProperty("nodeIds")
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
-    
-    @Override
-    @JsonProperty("annotationIds")
-    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
-    
-    @Override
-    @JsonProperty("translation")
-    public XYEnt getTranslation();
-    
-
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+    m_snapshotId = immutable(builder.m_snapshotId);
+    m_kind = immutable(builder.m_kind);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TranslateCommandEntMixInBuilder extends TranslateCommandEntBuilder {
-    
-        @Override
-        public TranslateCommandEntMixIn build();
-    
-        @Override
-        @JsonProperty("kind")
-        public TranslateCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("nodeIds")
-        public TranslateCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
-        
-        @Override
-        @JsonProperty("annotationIds")
-        public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
-        
-        @Override
-        @JsonProperty("translation")
-        public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
-        
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultCommandResultEnt ent = (DefaultCommandResultEnt)o;
+        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind);
     }
 
 
-}
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_snapshotId)
+               .append(m_kind)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public String getSnapshotId() {
+        return m_snapshotId;
+  }
+    
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
+  }
+    
+  
+    public static class DefaultCommandResultEntBuilder implements CommandResultEntBuilder {
+    
+        public DefaultCommandResultEntBuilder(){
+            
+        }
+    
+        private String m_snapshotId;
+        private KindEnum m_kind;
 
+        @Override
+        public DefaultCommandResultEntBuilder setSnapshotId(String snapshotId) {
+             m_snapshotId = snapshotId;
+             return this;
+        }
+
+        @Override
+        public DefaultCommandResultEntBuilder setKind(KindEnum kind) {
+             m_kind = kind;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultCommandResultEnt build() {
+            return new DefaultCommandResultEnt(this);
+        }
+    
+    }
+
+}
