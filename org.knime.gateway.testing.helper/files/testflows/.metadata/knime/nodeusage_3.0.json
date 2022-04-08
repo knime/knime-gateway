@@ -1,0 +1,92 @@
+
+{
+    "version": "4.5.1.v202201200941",
+    "created": "2022-03-23 17:19",
+    "nodestats": {
+        "nodes": [
+            {
+                "id": "org.knime.ext.poi3.node.io.filehandling.excel.reader.ExcelTableReaderNodeFactory#Excel Reader",
+                "nrexecs": 0,
+                "nrfails": 0,
+                "exectime": 0,
+                "nrcreated": 1,
+                "successor": "org.knime.base.node.preproc.joiner3.Joiner3NodeFactory#Joiner"
+            },
+            {
+                "id": "org.knime.base.node.preproc.joiner3.Joiner3NodeFactory#Joiner",
+                "nrexecs": 0,
+                "nrfails": 0,
+                "exectime": 0,
+                "nrcreated": 1,
+                "successor": "n/a"
+            },
+            {
+                "id": "org.knime.base.node.preproc.sorter.SorterNodeFactory#Sorter",
+                "nrexecs": 5,
+                "nrfails": 0,
+                "exectime": 166,
+                "nrcreated": 1,
+                "successor": "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory#Wait..."
+            },
+            {
+                "id": "org.knime.base.node.util.sampledata.SampleDataNodeFactory#Data Generator",
+                "nrexecs": 0,
+                "nrfails": 0,
+                "exectime": 0,
+                "nrcreated": 1,
+                "successor": "n/a"
+            },
+            {
+                "id": "org.knime.testing.node.datagenerator.TestDataNodeFactory#Test Data Generator",
+                "nrexecs": 5,
+                "nrfails": 0,
+                "exectime": 1570,
+                "nrcreated": 1,
+                "successor": "org.knime.base.node.preproc.joiner3.Joiner3NodeFactory#Joiner"
+            },
+            {
+                "id": "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component Output",
+                "nrexecs": 1,
+                "nrfails": 0,
+                "exectime": 2,
+                "nrcreated": 0,
+                "successor": "n/a"
+            },
+            {
+                "id": "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input",
+                "nrexecs": 1,
+                "nrfails": 0,
+                "exectime": 1,
+                "nrcreated": 0,
+                "successor": "n/a"
+            },
+            {
+                "id": "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory#Wait...",
+                "nrexecs": 0,
+                "nrfails": 1,
+                "exectime": 9477,
+                "nrcreated": 2,
+                "successor": "n/a"
+            }
+        ],
+        "metaNodes": {
+        },
+        "wrappedNodes": {
+            "nrexecs": 1,
+            "nrfails": 0,
+            "exectime": 271,
+            "nrcreated": 0
+        }
+    },
+    "uptime": 75916341,
+    "workflowsOpened": 23,
+    "remoteWorkflowsOpened": 9,
+    "columnarStorageWorkflowsOpened": 0,
+    "workflowsImported": 0,
+    "workflowsExported": 0,
+    "launches": 9,
+    "lastApplicationID": "org.knime.product.KNIME_APPLICATION",
+    "timeSinceLastStart": 193024016,
+    "crashes": 0,
+    "properlyShutDown": true
+}

@@ -59,6 +59,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -66,26 +68,37 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
+import org.knime.gateway.api.webui.entity.CollapseResultEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
+import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
+import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
@@ -391,9 +404,444 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             assertThat("unexpected exception class", e, Matchers.instanceOf(OperationNotAllowedException.class));
             assertThat("unexpected exception message", e.getMessage(),
                 is("Failed to execute command. Workflow parts not found: "
-                    + "nodes (root:9999), workflow-annotations (root_12345)"));
+                    + "nodes (0:9999), workflow-annotations (0:12345)"));
         }
 
+    }
+
+    public void testCollapseConfiguredToMetanode() throws Exception {
+        testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.METANODE);
+    }
+
+    public void testCollapseConfiguredToComponent() throws Exception {
+        testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+    }
+
+    public void testCollapseExecutingToMetanode() throws Exception {
+        testCollapseExecuting(CollapseCommandEnt.ContainerTypeEnum.METANODE);
+    }
+
+    public void testCollapseExecutingToComponent() throws Exception {
+        testCollapseExecuting(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+    }
+
+    public void testCollapseResettableToMetanode() throws Exception {
+        testCollapseResettable(CollapseCommandEnt.ContainerTypeEnum.METANODE);
+    }
+
+    public void testCollapseResettableToComponent() throws Exception {
+        testCollapseResettable(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+    }
+
+    public void testCollapseResponseMetanode() throws Exception {
+        testCollapseResponse(CollapseCommandEnt.ContainerTypeEnum.METANODE);
+    }
+
+    public void testCollapseResponseComponent() throws Exception {
+        testCollapseResponse(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+    }
+
+    public void testExpandConfiguredMetanode() throws Exception {
+        var configuredMetanode = 14;
+        textExpandConfigured(configuredMetanode);
+    }
+
+    public void testExpandConfiguredComponent() throws Exception {
+        var configuredComponent = 15;
+        textExpandConfigured(configuredComponent);
+    }
+
+    public void testExpandResettableMetanode() throws Exception {
+        var resettableMetanode = 13;
+        testExpandResettable(resettableMetanode);
+    }
+
+    public void testExpandResettableComponent() throws Exception {
+        var resettableComponent = 10;
+        testExpandResettable(resettableComponent);
+    }
+
+    public void testExpandExecutingMetanode() throws Exception {
+        var metanodeWithExecutingSuccessor = 20;
+        var metanodeExecutingSuccessor = 19;
+        testExpandExecuting(metanodeWithExecutingSuccessor, metanodeExecutingSuccessor);
+    }
+
+    public void testExpandExecutingComponent() throws Exception {
+        var componentWithExecutingSuccessor = 22;
+        var componentExecutingSuccessor = 21;
+        testExpandExecuting(componentWithExecutingSuccessor, componentExecutingSuccessor);
+    }
+
+    public void testExpandResponseMetanode() throws Exception {
+        var configuredMetanode = 14;
+        testExpandResponse(configuredMetanode);
+    }
+    public void testExpandResponseComponent() throws Exception {
+        var configuredComponent = 15;
+        testExpandResponse(configuredComponent);
+    }
+
+    private void testExpandResettable(final int nodeToExpand)
+            throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
+        var commandWithoutReset = buildExpandCommandEnt(nodeToExpandEnt, false);
+        assertThrows(
+                "Expect exception when expanding resettable container without explicit confirmation",
+                OperationNotAllowedException.class,
+                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandWithoutReset)
+        );
+
+        WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertNodesPresent("Expect container to be still be in root workflow", rootWfEnt, List.of(nodeToExpandEnt));
+
+        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, true);
+        ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertExpanded(wfId, commandEnt, responseEnt);
+    }
+
+    private void testExpandExecuting(final int container, final int successor) throws Exception{
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var containerEnt = new NodeIDEnt(container);
+        executeAndWaitUntilExecuting(wfId, successor);
+
+        var commandEnt = buildExpandCommandEnt(containerEnt, false);
+        assertThrows(
+                "Expect exception when expanding node with executing successor",
+                OperationNotAllowedException.class,
+                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)
+        );
+        WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, List.of(containerEnt));
+    }
+
+    private void textExpandConfigured(final int nodeToExpand) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
+
+        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, false);
+        ExpandResultEnt commandResponseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertExpanded(wfId, commandEnt, commandResponseEnt);
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+        WorkflowEnt parentWfAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertNodesPresent(
+            "Container expected to be back in parent workflow after undo",
+            parentWfAfterUndo,
+            List.of(nodeToExpandEnt)
+        );
+        assertNodesNotPresent(
+                "Expanded nodes assumed to no longer be in parent workflow",
+                parentWfAfterUndo,
+                commandResponseEnt.getExpandedNodeIds()
+        );
+
+        ws().redoWorkflowCommand(wfId, getRootID());
+        assertExpanded(wfId, commandEnt, commandResponseEnt);
+    }
+
+    private void assertExpanded(final String wfId, final ExpandCommandEnt commandEnt, final ExpandResultEnt responseEnt) throws Exception {
+        var parentWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        assertNodesNotPresent(
+                "Expanded node expected to have been removed",
+                parentWfEnt, List.of(commandEnt.getNodeId())
+        );
+        assertNodesPresent(
+                "Nodes from container expected to appear in parent workflow",
+                parentWfEnt,
+                responseEnt.getExpandedNodeIds()
+        );
+        assertAnnotationsPresent(
+                "Annotations from container expected to appear in parent workflow",
+                parentWfEnt,
+                responseEnt.getExpandedAnnotationIds()
+        );
+    }
+
+    private void testCollapseExecuting(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var waitNode = 16;
+        var nodesToCollapseInts = List.of(5,3);
+        var annotsToCollapseInts = List.of(0,1);
+        var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
+        var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
+
+        executeAndWaitUntilExecuting(wfId, waitNode);
+        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, false);
+        assertThrows(
+                "Expect exception when collapsing nodes with executing successor",
+                OperationNotAllowedException.class,
+                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)
+        );
+        WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, nodesToCollapseEnts);
+        assertAnnotationsPresent("Expect annotations to still be in root workflow", rootWfEnt, annotsToCollapseEnts);
+    }
+
+    /**
+     * Execute a node and block until we can confirm that it is executing (currently only for nodes in root workflow).
+     * @param wfId The workflow to operate in
+     * @param toExecute The node to execute
+     * @throws Exception
+     */
+    private void executeAndWaitUntilExecuting(final String wfId, final int toExecute) throws Exception {
+        NodeID toExecuteId = NodeID.ROOTID.createChild(0).createChild(toExecute);
+        executeUpToNodesAsync(wfId, new NodeID[]{toExecuteId});
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            WorkflowEnt wfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
+            assertThat(
+                    ((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toExecute).toString())).getState().getExecutionState(),
+                    is(ExecutionStateEnum.EXECUTING)
+            );
+        });
+    }
+
+    private void testCollapseResponse(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodesToCollapseInts = List.of(5,3);
+        var annotsToCollapseInts = List.of(0,1);
+        var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
+        var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
+        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, true);
+        var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+
+        if (commandResponseEnt instanceof CollapseResultEnt) {
+            var collapseResponseEnt = (CollapseResultEnt)commandResponseEnt;
+            assertNotNull(collapseResponseEnt.getNewNodeId());
+        } else if (commandResponseEnt instanceof ConvertContainerResultEnt) {
+            var convertResponseEnt = (ConvertContainerResultEnt)commandResponseEnt;
+            assertNotNull(convertResponseEnt.getConvertedNodeId());
+        } else {
+            throw new NoSuchElementException("Unexpected response entity");
+        }
+    }
+
+    private void testExpandResponse(final int nodeToExpand) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
+
+        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, true);
+        ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+
+        assertNotNull(responseEnt.getExpandedNodeIds());
+        assertNotNull(responseEnt.getExpandedAnnotationIds());
+    }
+
+    private void testCollapseConfigured(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodesToCollapseInts = List.of(5,3);
+        var annotsToCollapseInts = List.of(0,1);
+        var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
+        var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
+
+        WorkflowEnt unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        Set<String> annotationContents = unchangedWfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(
+                Collectors.toSet());
+
+        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, false);
+        var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        var newNode = getNewNodeId(commandResponseEnt);
+
+        assertCollapsed(wfId, commandEnt, commandResponseEnt, annotationContents);
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+
+        WorkflowEnt parentWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        assertNodesPresent(
+                "Nodes expected to be back in parent workflow after undo of collapse",
+                parentWfEnt, nodesToCollapseEnts
+        );
+        // after undo, annotations will re-appear with new ids -- instead compare contents
+        assertAnnotationContentsPresent(
+                "Annotation contents expected to remain unchanged",
+                parentWfEnt,
+                annotationContents
+        );
+        assertNodesNotPresent(
+                "Previously created metanode expected to no longer be in parent workflow",
+                parentWfEnt, List.of(newNode)
+        );
+
+        ws().redoWorkflowCommand(wfId, getRootID());
+        assertCollapsed(wfId, commandEnt, commandResponseEnt, annotationContents);
+    }
+
+    private NodeIDEnt getNewNodeId(final CommandResultEnt commandResultEnt) {
+        if (commandResultEnt instanceof CollapseResultEnt) {
+            var collapseResponseEnt = (CollapseResultEnt)commandResultEnt;
+            return collapseResponseEnt.getNewNodeId();
+        } else if (commandResultEnt instanceof ConvertContainerResultEnt) {
+            var convertResponseEnt = (ConvertContainerResultEnt)commandResultEnt;
+            return convertResponseEnt.getConvertedNodeId();
+        } else {
+            throw new NoSuchElementException("Unexpected response entity");
+        }
+    }
+
+    private void assertCollapsed(final String wfId, final CollapseCommandEnt commandEnt,
+            final CommandResultEnt commandResultEnt, final Set<String> annotationContents) throws Exception {
+        var newNode = getNewNodeId(commandResultEnt);
+        var nodesToCollapseEnts = commandEnt.getNodeIds();
+        var nodesToCollapseInts = nodesToCollapseEnts.stream()
+                .map(NodeIDEnt::getNodeIDs)
+                .map(idArr -> idArr[idArr.length-1])
+                .collect(Collectors.toList());
+        var annotsToCollapseEnts = commandEnt.getAnnotationIds();
+
+        WorkflowEnt parentWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+
+        assertNodesNotPresent(
+                "nodes expected to be removed from top-level workflow",
+                parentWfEnt,
+                nodesToCollapseEnts
+        );
+        assertAnnotationsNotPresent(
+                "annotations expected to be removed from top-level workflow",
+                annotsToCollapseEnts,
+                parentWfEnt
+        );
+
+        assertNodesPresent(
+                "node in command response expected to be in top-level workflow",
+                parentWfEnt,
+                List.of(newNode)
+        );
+
+        WorkflowEnt childWfEnt = ws().getWorkflow(wfId, newNode, true).getWorkflow();
+
+        var effectiveParentNodeEnt = getParentIdEnt(commandEnt.getContainerType(), newNode);
+        assertNodesPresent(
+                "Collapsed nodes expected to be child of new node after collapse",
+                childWfEnt,
+                nodesToCollapseInts.stream()
+                        .map(effectiveParentNodeEnt::appendNodeID)
+                        .collect(Collectors.toList())
+        );
+        // annotation ids are not consistent -- check for contents only as a workaround.
+        assertAnnotationContentsPresent(
+                "Annotation contents expected to be found in child workflow",
+                childWfEnt,
+                annotationContents
+        );
+    }
+
+    private static NodeIDEnt getParentIdEnt(final CollapseCommandEnt.ContainerTypeEnum containerType, final NodeIDEnt parentEnt) {
+        if (containerType == CollapseCommandEnt.ContainerTypeEnum.COMPONENT) {
+            return parentEnt.appendNodeID(0);
+        } else {
+            return parentEnt;
+        }
+    }
+
+
+    private void testCollapseResettable(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodesToCollapseInts = List.of(7,6);
+        var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
+        CollapseCommandEnt commandWithoutReset = buildCollapseCommandEnt(
+                nodesToCollapseEnts,
+                Collections.emptyList(),
+                containerType,
+                false
+        );
+        assertThrows(
+                "Expect exception when collapsing resettable nodes without explicit confirmation",
+                OperationNotAllowedException.class,
+                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandWithoutReset)
+        );
+
+        WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, nodesToCollapseEnts);
+
+        // Expect nodes to be collapsed if explicit confirmation given
+        CollapseCommandEnt commandWithReset = buildCollapseCommandEnt(
+                nodesToCollapseEnts,
+                Collections.emptyList(),
+                containerType,
+                true
+        );
+        var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandWithReset);
+        assertCollapsed(wfId, commandWithReset, commandResponseEnt, Collections.emptySet());
+    }
+
+    static private void assertAnnotationsNotPresent(final String message, final List<AnnotationIDEnt> annots,
+            final WorkflowEnt wfEnt) {
+        if (annots.isEmpty()) {
+            return;
+        }
+        assertThat(
+                message,
+                wfEnt.getWorkflowAnnotations().stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList()),
+                not(hasItems(annots.toArray(AnnotationIDEnt[]::new)))
+        );
+    }
+
+    static private void assertAnnotationContentsPresent(final String message, final WorkflowEnt wfEnt, final Set<String> annotationContents) {
+        if (annotationContents.isEmpty()) {
+            return;
+        }
+        assertEquals(
+                message,
+                annotationContents,
+                wfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(Collectors.toSet())
+        );
+    }
+
+    static private void assertAnnotationsPresent(final String message, final WorkflowEnt wfEnt,
+            final List<AnnotationIDEnt> annots) {
+        if (annots.isEmpty()) {
+            return;
+        }
+        assertThat(
+                message,
+                wfEnt.getWorkflowAnnotations().stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList()),
+                hasItems(annots.toArray(AnnotationIDEnt[]::new))
+        );
+    }
+
+    static private void assertNodesPresent(final String message, final WorkflowEnt wfEnt, final List<NodeIDEnt> nodes) {
+        if (nodes.isEmpty()) {
+            return;
+        }
+        assertThat(
+                message,
+                wfEnt.getNodes().keySet(),
+                hasItems(nodes.stream().map(NodeIDEnt::toString).toArray(String[]::new)
+        ));
+    }
+
+    static private void assertNodesNotPresent(final String message, final WorkflowEnt wfEnt,
+            final List<NodeIDEnt> nodes) {
+        if (nodes.isEmpty()) {
+            return;
+        }
+        assertThat(
+                message,
+                wfEnt.getNodes().keySet(),
+                not(hasItems(nodes.stream().map(NodeIDEnt::toString).toArray(String[]::new)))
+        );
+    }
+
+    static private CollapseCommandEnt buildCollapseCommandEnt(final List<NodeIDEnt> nodes,
+            final List<AnnotationIDEnt> annotationIds,
+            final CollapseCommandEnt.ContainerTypeEnum containerType,
+            final boolean allowReset) {
+        return builder(CollapseCommandEnt.CollapseCommandEntBuilder.class)
+                .setKind(KindEnum.COLLAPSE)
+                .setContainerType(containerType)
+                .setAllowReset(allowReset)
+                .setNodeIds(nodes)
+                .setAnnotationIds(annotationIds)
+                .build();
+    }
+
+    static private ExpandCommandEnt buildExpandCommandEnt(final NodeIDEnt node, final boolean allowReset) {
+        return builder(ExpandCommandEnt.ExpandCommandEntBuilder.class)
+                .setKind(KindEnum.EXPAND)
+                .setAllowReset(allowReset)
+                .setNodeId(node)
+                .build();
     }
 
     /**

@@ -138,6 +138,13 @@ public class GatewayJsonRpcWrapperServiceTests {
             }
 
             @Override
+            public void executeUpToNodesAsync(final String wfId, final org.knime.core.node.workflow.NodeID[] ids) {
+                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                        .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
+                        .executeUpToHere(ids);
+            }
+
+            @Override
             public void executeWorkflow(final String wfId) throws Exception {
                 WorkflowProjectManager.openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))

@@ -64,6 +64,40 @@ public final class GatewayTestCollection {
         res.put("testExecuteUpdateComponentOrMetanodeNameCommand",
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteUpdateComponentOrMetanodeNameCommand());
 
+        res.put("testCollapseConfiguredToMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseConfiguredToMetanode());
+        res.put("testCollapseConfiguredToComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseConfiguredToComponent());
+        res.put("testCollapseExecutingToMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToMetanode());
+        res.put("testCollapseExecutingToComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToComponent());
+        res.put("testCollapseResettableToMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToMetanode());
+        res.put("testCollapseResettableToComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToComponent());
+        res.put("testCollapseResponseMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResponseMetanode());
+        res.put("testCollapseResponseComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResponseComponent());
+
+        res.put("testExpandConfiguredMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandConfiguredMetanode());
+        res.put("testExpandConfiguredComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandConfiguredComponent());
+        res.put("testExpandExecutingMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandExecutingMetanode());
+        res.put("testExpandExecutingComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandExecutingComponent());
+        res.put("testExpandResettableMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResettableMetanode());
+        res.put("testExpandResettableComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResettableComponent());
+        res.put("testExpandResponseMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResponseMetanode());
+        res.put("testExpandResponseComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResponseComponent());
+
         res.put("testChangeNodeState",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
         res.put("testChangeNodeStateOfComponentProject",

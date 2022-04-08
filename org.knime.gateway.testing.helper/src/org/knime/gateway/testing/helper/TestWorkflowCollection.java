@@ -56,7 +56,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Workflow with different types of nodes having a view.
      */
-    VIEW_NODES("/files/testflows/View Nodes", "view nodes");
+    VIEW_NODES("/files/testflows/View Nodes", "view nodes"),
+
+    /**
+     * Contains different kinds of metanodes and components and nodes and annotations that can be collapsed.
+     */
+    METANODES_COMPONENTS("/files/testflows/Metanodes and Components", "metanodes_components");
 
 
     private final String m_workflowDir;
