@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -96,6 +97,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
    * @return portObjectVersion 
    **/
   public Integer getPortObjectVersion();
+
+  /**
+   * TODO only available if &#39;interaction info&#39; is supposed to be included
+   * @return allowedPortActions 
+   **/
+  public java.util.List<PortActionEnt> getAllowedPortActions();
 
 
     /**
@@ -190,6 +197,14 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
+        
+        /**
+         * TODO only available if &#39;interaction info&#39; is supposed to be included
+         * 
+         * @param allowedPortActions the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions);
         
         
         /**

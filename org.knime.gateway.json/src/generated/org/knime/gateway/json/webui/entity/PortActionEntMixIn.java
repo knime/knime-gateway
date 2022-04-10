@@ -44,17 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortActionEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt;
-import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt.DefaultNodePortEntBuilder;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortActionEnt.DefaultPortActionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,61 +59,25 @@ import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt.DefaultNodePortEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodePortEntBuilder.class)
+@JsonDeserialize(builder=DefaultPortActionEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodePortEntMixIn extends NodePortEnt {
+public interface PortActionEntMixIn extends PortActionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
     @JsonProperty("type")
     public TypeEnum getType();
     
     @Override
-    @JsonProperty("otherTypeId")
-    public Integer getOtherTypeId();
+    @JsonProperty("supportedPortTypes")
+    public java.util.List<String> getSupportedPortTypes();
     
     @Override
-    @JsonProperty("color")
-    public String getColor();
-    
-    @Override
-    @JsonProperty("optional")
-    public Boolean isOptional();
-    
-    @Override
-    @JsonProperty("info")
-    public String getInfo();
-    
-    @Override
-    @JsonProperty("index")
-    public Integer getIndex();
-    
-    @Override
-    @JsonProperty("connectedVia")
-    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
-    
-    @Override
-    @JsonProperty("inactive")
-    public Boolean isInactive();
-    
-    @Override
-    @JsonProperty("view")
-    public PortViewEnt getView();
-    
-    @Override
-    @JsonProperty("portObjectVersion")
-    public Integer getPortObjectVersion();
-    
-    @Override
-    @JsonProperty("allowedPortActions")
-    public java.util.List<PortActionEnt> getAllowedPortActions();
+    @JsonProperty("portGroupName")
+    public String getPortGroupName();
     
 
     /**
@@ -126,58 +87,22 @@ public interface NodePortEntMixIn extends NodePortEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodePortEntMixInBuilder extends NodePortEntBuilder {
+    public static interface PortActionEntMixInBuilder extends PortActionEntBuilder {
     
         @Override
-        public NodePortEntMixIn build();
+        public PortActionEntMixIn build();
     
-        @Override
-        @JsonProperty("name")
-        public NodePortEntMixInBuilder setName(final String name);
-        
         @Override
         @JsonProperty("type")
-        public NodePortEntMixInBuilder setType(final TypeEnum type);
+        public PortActionEntMixInBuilder setType(final TypeEnum type);
         
         @Override
-        @JsonProperty("otherTypeId")
-        public NodePortEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
+        @JsonProperty("supportedPortTypes")
+        public PortActionEntMixInBuilder setSupportedPortTypes(final java.util.List<String> supportedPortTypes);
         
         @Override
-        @JsonProperty("color")
-        public NodePortEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("optional")
-        public NodePortEntMixInBuilder setOptional(final Boolean optional);
-        
-        @Override
-        @JsonProperty("info")
-        public NodePortEntMixInBuilder setInfo(final String info);
-        
-        @Override
-        @JsonProperty("index")
-        public NodePortEntMixInBuilder setIndex(final Integer index);
-        
-        @Override
-        @JsonProperty("connectedVia")
-        public NodePortEntMixInBuilder setConnectedVia(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);
-        
-        @Override
-        @JsonProperty("inactive")
-        public NodePortEntMixInBuilder setInactive(final Boolean inactive);
-        
-        @Override
-        @JsonProperty("view")
-        public NodePortEntMixInBuilder setView(final PortViewEnt view);
-        
-        @Override
-        @JsonProperty("portObjectVersion")
-        public NodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
-        
-        @Override
-        @JsonProperty("allowedPortActions")
-        public NodePortEntMixInBuilder setAllowedPortActions(final java.util.List<PortActionEnt> allowedPortActions);
+        @JsonProperty("portGroupName")
+        public PortActionEntMixInBuilder setPortGroupName(final String portGroupName);
         
     }
 

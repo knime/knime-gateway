@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -189,6 +190,14 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @return this entity builder for chaining
          */
         MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
+        
+        /**
+         * TODO only available if &#39;interaction info&#39; is supposed to be included
+         * 
+         * @param allowedPortActions the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions);
         
         /**
          * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.

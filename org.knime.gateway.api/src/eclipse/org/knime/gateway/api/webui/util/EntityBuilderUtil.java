@@ -115,6 +115,7 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
 import org.knime.core.util.ConfigUtils;
+import org.knime.core.util.Pair;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
@@ -193,6 +194,8 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt.PortActionEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -592,7 +595,7 @@ public final class EntityBuilderUtil {
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
                     port.isInactive() ? Boolean.TRUE : null, connections, getPortObjectVersion(port, buildContext),
-                    buildContext));
+                    null, buildContext));
             }
         } else {
             int nrPorts = wfm.getNrWorkflowOutgoingPorts();
@@ -600,7 +603,7 @@ public final class EntityBuilderUtil {
                 ConnectionContainer connection = wfm.getIncomingConnectionFor(wfm.getID(), i);
                 NodeInPort port = wfm.getWorkflowOutgoingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null,
-                    connection != null ? singleton(connection) : emptyList(), null, buildContext));
+                    connection != null ? singleton(connection) : emptyList(), null, null, buildContext));
             }
         }
         return ports;
@@ -878,7 +881,7 @@ public final class EntityBuilderUtil {
 
     private static List<MetaNodePortEnt> buildMetaNodePortEnts(final WorkflowManager wm, final boolean inPorts,
         final WorkflowBuildContext buildContext) {
-        return buildNodePortEnts(wm, inPorts, buildContext).stream().map(np -> { // NOSONAR
+        return buildNodePortEnts(wm, inPorts, null, buildContext).stream().map(np -> { // NOSONAR
             NodeStateEnum nodeState;
             if (!inPorts) {
                 nodeState = getNodeStateEnumForMetaNodePort(wm.getOutPort(np.getIndex()).getNodeState());
@@ -906,9 +909,9 @@ public final class EntityBuilderUtil {
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
             .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
-            .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
+            .setOutPorts(buildNodePortEnts(nc, false, null, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
-            .setInPorts(buildNodePortEnts(nc, true, buildContext))//
+            .setInPorts(buildNodePortEnts(nc, true, null, buildContext))//
             .setPosition(buildXYEnt(nc.getUIInformation()))//
             .setState(buildNodeStateEnt(nc))//
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
@@ -934,7 +937,7 @@ public final class EntityBuilderUtil {
     }
 
     private static List<NodePortEnt> buildNodePortEnts(final NodeContainer nc, final boolean inPorts,
-        final WorkflowBuildContext buildContext) {
+        final PortActionEnt[][] portActions, final WorkflowBuildContext buildContext) {
         List<NodePortEnt> res = new ArrayList<>();
         if (inPorts) {
             for (int i = 0; i < nc.getNrInPorts(); i++) {
@@ -944,7 +947,7 @@ public final class EntityBuilderUtil {
                 buildContext.updatePortTypes(pt, true);
                 res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null,
                     connection == null ? Collections.emptyList() : Collections.singletonList(connection), null,
-                    buildContext));
+                    portActions == null ? null : portActions[i], buildContext));
             }
         } else {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
@@ -954,7 +957,8 @@ public final class EntityBuilderUtil {
                 buildContext.updatePortTypes(pt, false);
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, connections,
-                    getPortObjectVersion(outPort, buildContext), buildContext));
+                    getPortObjectVersion(outPort, buildContext), portActions == null ? null : portActions[i],
+                    buildContext));
             }
         }
         return res;
@@ -984,7 +988,7 @@ public final class EntityBuilderUtil {
     private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
-        final WorkflowBuildContext buildContext) {
+        final PortActionEnt[] portActions, final WorkflowBuildContext buildContext) {
         NodePortTemplateEnt.TypeEnum resPortType = getNodePortTemplateEntType(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
@@ -998,6 +1002,7 @@ public final class EntityBuilderUtil {
             .setColor(getPortTypeColor(resPortType, ptype))//
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
+            .setAllowedPortActions(portActions == null ? null : List.of(portActions))//
             .build();
     }
 
@@ -1069,11 +1074,21 @@ public final class EntityBuilderUtil {
 
     private static NativeNodeEnt buildNativeNodeEnt(final NodeIDEnt id, final NativeNodeContainer nc,
         final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
+        PortActionEnt[][] inputPortActions = null;
+        PortActionEnt[][] outputPortActions = null;
+        if (buildContext.includeInteractionInfo()) {
+            var portActions = buildPortActionEnts(nc);
+            if (portActions != null) {
+                inputPortActions = portActions.getFirst();
+                outputPortActions = portActions.getSecond();
+            }
+        }
+
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
-            .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
+            .setOutPorts(buildNodePortEnts(nc, false, outputPortActions, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
-            .setInPorts(buildNodePortEnts(nc, true, buildContext))//
+            .setInPorts(buildNodePortEnts(nc, true, inputPortActions, buildContext))//
             .setPosition(buildXYEnt(nc.getUIInformation()))//
             .setKind(KindEnum.NODE)//
             .setState(buildNodeStateEnt(nc))//
@@ -1082,6 +1097,88 @@ public final class EntityBuilderUtil {
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
             .build();
+    }
+
+    // TODO split method
+    private static Pair<PortActionEnt[][], PortActionEnt[][]> buildPortActionEnts(final NativeNodeContainer nnc) {
+        var portsConfig = nnc.getNode().getCopyOfCreationConfig()
+            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null);
+        if (portsConfig == null) {
+            return null;
+        }
+        var inputPortActions = new PortActionEnt[nnc.getNode().getNrInPorts()][];
+        var outputPortActions = new PortActionEnt[nnc.getNode().getNrOutPorts()][];
+        var inputPortLocations = portsConfig.getInputPortLocation();
+        var outputPortLocations = portsConfig.getOutputPortLocation();
+
+        for (var extendablePortEntry : portsConfig.getExtendablePorts().entrySet()) {
+            var extendablePortGroup = extendablePortEntry.getValue();
+            var canAddPort = extendablePortGroup.canAddPort();
+            var hasConfiguredPorts = extendablePortGroup.hasConfiguredPorts();
+            var groupName = extendablePortEntry.getKey();
+
+            var numPortActions = (canAddPort ? 1 : 0) + (hasConfiguredPorts ? 1 : 0);
+            var portActions = new PortActionEnt[numPortActions];
+            var actionIdx = 0;
+            if (canAddPort) {
+                portActions[actionIdx] =
+                    buildPortActionEnt(groupName, PortActionEnt.TypeEnum.ADD, extendablePortGroup.getSupportedPortTypes());
+                actionIdx++;
+            }
+            if (hasConfiguredPorts) {
+                portActions[actionIdx] = buildPortActionEnt(groupName, PortActionEnt.TypeEnum.REMOVE, null);
+            }
+
+            if (extendablePortGroup.definesInputPorts()) {
+                // lastPortIdx is 0 if there hasn't been any port added, yet
+                // TODO won't work if there is a fixed port group 'above'
+                var lastPortIdx = max(inputPortLocations.get(groupName)) + 1;
+                inputPortActions[lastPortIdx] = portActions;
+            }
+            if (extendablePortGroup.definesOutputPorts()) {
+                var lastPortIdx = max(outputPortLocations.get(groupName)) + 1;
+                outputPortActions[lastPortIdx] = portActions;
+            }
+        }
+
+        for (var exchangeablePortEntry : portsConfig.getExchangeablePorts().entrySet()) {
+            var exchangeablePortGroup = exchangeablePortEntry.getValue();
+            var groupName = exchangeablePortEntry.getKey();
+            if (exchangeablePortGroup.definesInputPorts()) {
+                for (var portIdx : inputPortLocations.get(groupName)) {
+                    inputPortActions[portIdx + 1] = new PortActionEnt[]{buildPortActionEnt(groupName,
+                        PortActionEnt.TypeEnum.EXCHANGE, exchangeablePortGroup.getSupportedPortTypes())};
+                }
+            }
+            if (exchangeablePortGroup.definesOutputPorts()) {
+                for (var portIdx : outputPortLocations.get(groupName)) {
+                    outputPortActions[portIdx + 1] = new PortActionEnt[]{buildPortActionEnt(groupName,
+                        PortActionEnt.TypeEnum.EXCHANGE, exchangeablePortGroup.getSupportedPortTypes())};
+                }
+            }
+        }
+
+        return Pair.create(inputPortActions, outputPortActions);
+    }
+
+    private static PortActionEnt buildPortActionEnt(final String portGroupName, final PortActionEnt.TypeEnum actionType,
+        final PortType[] supportedTypes) {
+        List<String> supportedTypeNames = null;
+        if (supportedTypes != null) {
+            supportedTypeNames = Arrays.stream(supportedTypes).map(PortType::getName).collect(Collectors.toList());
+        }
+        return builder(PortActionEntBuilder.class) //
+            .setPortGroupName(portGroupName) //
+            .setSupportedPortTypes(supportedTypeNames) //
+            .setType(actionType) //
+            .build();
+    }
+
+    private static int max(final int[] numbers) {
+        if (numbers == null) {
+            return -1;
+        }
+        return Arrays.stream(numbers).max().getAsInt();
     }
 
     private static NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {
