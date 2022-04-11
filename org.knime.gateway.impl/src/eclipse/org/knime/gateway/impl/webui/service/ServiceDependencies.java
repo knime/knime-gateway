@@ -53,12 +53,15 @@ import static java.util.Collections.synchronizedMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.knime.gateway.api.service.GatewayService;
+
 /**
- * Register and unregister service dependencies
+ * Provides and manages specific object instances that are considered to be dependencies for the
+ * implementation of {@link GatewayService}s.
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class ServiceDependencies {
+public final class ServiceDependencies {
 
     private static final Map<Class<?>, Object> DEPENDENCIES = synchronizedMap(new HashMap<>());
 
@@ -99,19 +102,6 @@ public class ServiceDependencies {
         if (DEPENDENCIES.containsKey(clazz)) {
             throw new IllegalStateException("Only one dependency can be registered at a time");
         }
-        DEPENDENCIES.put(clazz, impl);
-    }
-
-    /**
-     * Make a dependency available regardless of services being already initialized
-     * or dependencies being already set. This is needed for {@link GatewayDefaultServiceTests}
-     * and {@link GatewayJsonRpcWrapperServiceTests} to work.
-     *
-     * @param clazz The class characterizing the dependency
-     * @param impl The implementation of `clazz` to be served as the dependency
-     * @param <T> The concrete type of the dependency instance
-     */
-    public static <T> void setServiceDependencyForTesting(final Class<T> clazz, final T impl) {
         DEPENDENCIES.put(clazz, impl);
     }
 

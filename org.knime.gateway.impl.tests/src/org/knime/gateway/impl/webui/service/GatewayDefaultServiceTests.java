@@ -48,7 +48,7 @@ package org.knime.gateway.impl.webui.service;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,7 +143,7 @@ public class GatewayDefaultServiceTests {
         };
         m_gatewayTestName = gatewayTestName;
         m_eventSource = c -> {
-            ServiceDependencies.setServiceDependencyForTesting(EventConsumer.class, c);
+            ServiceDependencies.setServiceDependency(EventConsumer.class, c);
             DefaultEventService.getInstance().setPreEventCreationCallbackForTesting(null);
         };
     }
@@ -177,16 +177,16 @@ public class GatewayDefaultServiceTests {
     }
 
     @SuppressWarnings("javadoc")
-    @BeforeClass
-    public static void setupServiceDependencies() {
+    @Before
+    public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
     }
 
     @SuppressWarnings("javadoc")
-    @AfterClass
-    public static void disposeServices() {
-        ServiceInstances.disposeAllServicesInstances();
+    @After
+    public void disposeServices() {
+        ServiceInstances.disposeAllServicesInstancesAndDependencies();
     }
 
 }

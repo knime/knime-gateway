@@ -69,9 +69,10 @@ import org.knime.gateway.api.webui.service.WorkflowService;
  * Provides the default service implementations for gateway services and utility methods to
  * dispose the service instances.
  *
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-public class ServiceInstances {
+public final class ServiceInstances {
 
     // TODO auto-generate?
     private static final Map<Class<?>, Class<?>> INTERFACE_TO_IMPLEMENTATION_MAP = synchronizedMap(Map.of(//
@@ -140,7 +141,7 @@ public class ServiceInstances {
     /**
      * Disposes all default service instances.
      */
-    public static void disposeAllServicesInstances() {
+    public static void disposeAllServicesInstancesAndDependencies() {
         SERVICE_INITIALIZERS.values().forEach(s -> {
             try {
                 s.get().dispose();

@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -91,12 +90,15 @@ import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.DefaultEventService;
-import org.knime.gateway.impl.webui.service.DefaultServices;
 import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.impl.webui.service.GatewayServiceTest;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -230,19 +232,19 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      */
     @Test
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
-        DefaultServices.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
-
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
+        Semaphore semaphore = new Semaphore(0);
+        AtomicReference<Object> event = new AtomicReference<>();
+        EventConsumer eventConsumer = (n, e) -> {
+            event.set(e);
+            semaphore.release();
+        };
+        ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         String projectId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES).getFirst().toString();
         var snapshotId =
             DefaultWorkflowService.getInstance().getWorkflow(projectId, NodeIDEnt.getRootID(), true).getSnapshotId();
 
-        Semaphore semaphore = new Semaphore(0);
-        AtomicReference<Object> event = new AtomicReference<>();
-        BiConsumer<String, Object> eventConsumer = (n, e) -> {
-            event.set(e);
-            semaphore.release();
-        };
-        DefaultEventService.getInstance().addEventConsumer(eventConsumer);
         DefaultEventService.getInstance()
             .addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
                 .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId).setTypeId("WorkflowChangedEventType")
@@ -256,7 +258,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             assertThat(((WorkflowChangedEventEnt)event.get()).getPatch().getOps().stream().map(op -> op.getPath())
                 .collect(Collectors.toList()), Matchers.hasItem("/allowedActions/canUndo"));
         } finally {
-            DefaultServices.disposeAllServicesInstances();
+            ServiceInstances.disposeAllServicesInstancesAndDependencies();
         }
     }
 

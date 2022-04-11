@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
 
 /**
@@ -63,7 +65,18 @@ import org.knime.core.node.workflow.WorkflowManager;
  */
 public final class WorkflowProjectManager {
 
-    private static final WorkflowProjectManager INSTANCE = new WorkflowProjectManager();
+    private static final LazyInitializer<WorkflowProjectManager> INITIALIZER = new LazyInitializer<>() {
+
+        @Override
+        protected WorkflowProjectManager initialize() throws ConcurrentException {
+            try {
+                return new WorkflowProjectManager();
+            } catch (IllegalArgumentException | SecurityException ex) {
+                throw new IllegalStateException("Could not instatiate <WorkflowProjectManager>", ex);
+            }
+        }
+
+    };
 
     private final Map<String, WorkflowProject> m_workflowProjectMap = new HashMap<>();
 
@@ -82,7 +95,11 @@ public final class WorkflowProjectManager {
      * @return the singleton instance
      */
     public static WorkflowProjectManager getInstance() {
-        return INSTANCE;
+        try {
+            return INITIALIZER.get();
+        } catch (ConcurrentException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**

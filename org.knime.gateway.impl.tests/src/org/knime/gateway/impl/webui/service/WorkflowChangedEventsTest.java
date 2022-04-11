@@ -129,7 +129,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        ServiceInstances.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServicesInstancesAndDependencies();
     }
 
     /**
@@ -182,8 +182,6 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             // a stable state (i.e. no more changes expected) we can unblock the event consumer and (possibly) receive
             // the second (and last) event
             testEventConsumer.unblock();
-
-            // TODO: This doesn't work
 
             // wait for the workflow events to arrive
             await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {

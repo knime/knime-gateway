@@ -103,7 +103,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
             appStateEnt2.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow()
         );
 
-        ServiceInstances.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServicesInstancesAndDependencies();
 
     }
 

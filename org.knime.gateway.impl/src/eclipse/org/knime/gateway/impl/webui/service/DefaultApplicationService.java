@@ -85,12 +85,6 @@ public final class DefaultApplicationService implements ApplicationService {
     private final AppStateProvider m_appStateProvider =
         ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
 
-    private static final WorkflowMiddleware WF_MIDDLEWARE =
-        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
-
-    private static final WorkflowProjectManager WF_PROJECT_MANAGER =
-        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
-
     /**
      * Returns the singleton instance for this service.
      *
@@ -132,7 +126,8 @@ public final class DefaultApplicationService implements ApplicationService {
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf) {
-        WorkflowProject wp = WF_PROJECT_MANAGER.getWorkflowProject(wf.getProjectId()).orElse(null);
+        WorkflowProject wp = ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true)
+            .getWorkflowProject(wf.getProjectId()).orElse(null);
         if (wp == null) {
             return null;
         }
@@ -143,7 +138,8 @@ public final class DefaultApplicationService implements ApplicationService {
         // optionally set an active workflow for this workflow project
         if (wf.isVisible()) {
             String wfId = wf.getWorkflowId();
-            WorkflowManager wfm = WF_PROJECT_MANAGER.openAndCacheWorkflow(wf.getProjectId()).orElse(null);
+            WorkflowManager wfm = ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true)
+                .openAndCacheWorkflow(wf.getProjectId()).orElse(null);
             if (wfm != null && !wfId.equals(NodeIDEnt.getRootID().toString())) {
                 var nc =
                     wfm.findNodeContainer(DefaultServiceUtil.entityToNodeID(wf.getProjectId(), new NodeIDEnt(wfId)));
@@ -156,9 +152,9 @@ public final class DefaultApplicationService implements ApplicationService {
                 }
             }
             if (wfm != null) {
-                builder.setActiveWorkflow(WF_MIDDLEWARE.buildWorkflowSnapshotEnt(
-                    new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
-                    () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
+                builder.setActiveWorkflow(ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true)
+                    .buildWorkflowSnapshotEnt(new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
+                        () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
             } else {
                 NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
                     "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));

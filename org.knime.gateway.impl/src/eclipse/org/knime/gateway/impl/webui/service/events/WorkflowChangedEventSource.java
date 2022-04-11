@@ -88,9 +88,9 @@ import org.knime.gateway.impl.webui.service.DefaultEventService;
  */
 public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt, WorkflowChangedEventEnt> {
 
-    private WorkflowMiddleware m_workflowMiddleware;
+    private final WorkflowMiddleware m_workflowMiddleware;
 
-    private Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
+    private final Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
 
     /**
      * @param eventConsumer

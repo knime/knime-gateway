@@ -70,8 +70,7 @@ import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
  */
 public final class DefaultEventService implements EventService {
 
-    // set to not required for the tests to work
-    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, false);
+    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, true);
 
     private final Map<Class<?>, EventSource<?, ?>> m_eventSources = new HashMap<>();
 

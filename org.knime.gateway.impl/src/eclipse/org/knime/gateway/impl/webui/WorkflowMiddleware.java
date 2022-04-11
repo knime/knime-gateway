@@ -57,6 +57,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -90,10 +92,22 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  * Note: this class not 100% thread-safe, yet (e.g. {@link SimpleRepository})!
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public final class WorkflowMiddleware {
 
-    private static final WorkflowMiddleware INSTANCE = new WorkflowMiddleware();
+    private static final LazyInitializer<WorkflowMiddleware> INITIALIZER = new LazyInitializer<>() {
+
+        @Override
+        protected WorkflowMiddleware initialize() throws ConcurrentException {
+            try {
+                return new WorkflowMiddleware();
+            } catch (IllegalArgumentException | SecurityException ex) {
+                throw new IllegalStateException("Could not instatiate <WorkflowProjectManager>", ex);
+            }
+        }
+
+    };
 
     /**
      * Determines the number of commands per workflow kept in the undo and redo stacks.
@@ -110,7 +124,11 @@ public final class WorkflowMiddleware {
      * @return the singleton instance
      */
     public static WorkflowMiddleware getInstance() {
-        return INSTANCE;
+        try {
+            return INITIALIZER.get();
+        } catch (ConcurrentException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     private WorkflowMiddleware() {

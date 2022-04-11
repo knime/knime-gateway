@@ -59,7 +59,7 @@ import java.util.Map;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -170,7 +170,7 @@ public class GatewayJsonRpcWrapperServiceTests {
         };
 
         m_gatewayTestName = gatewayTestName;
-        m_eventSource = c -> ServiceDependencies.setServiceDependencyForTesting(EventConsumer.class, c);
+        m_eventSource = c -> ServiceDependencies.setServiceDependency(EventConsumer.class, c);
     }
 
     /**
@@ -203,16 +203,16 @@ public class GatewayJsonRpcWrapperServiceTests {
     }
 
     @SuppressWarnings("javadoc")
-    @BeforeClass
-    public static void setupServiceDependencies() {
+    @Before
+    public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
     }
 
     @SuppressWarnings("javadoc")
-    @AfterClass
-    public static void disposeServices() {
-        ServiceInstances.disposeAllServicesInstances();
+    @After
+    public void disposeServices() {
+        ServiceInstances.disposeAllServicesInstancesAndDependencies();
     }
 
     /**

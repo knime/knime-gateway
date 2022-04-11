@@ -79,17 +79,20 @@ import org.knime.gateway.testing.helper.WorkflowTransformations;
  */
 public class EventServiceTest extends GatewayServiceTest {
 
+    private static final EventConsumer TEST_CONSUMER = mock(EventConsumer.class);
+
     @SuppressWarnings("javadoc")
     @BeforeClass
     public static void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
+        ServiceDependencies.setServiceDependency(EventConsumer.class, TEST_CONSUMER);
     }
 
     @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        ServiceInstances.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServicesInstancesAndDependencies();
     }
 
     /**
@@ -146,9 +149,7 @@ public class EventServiceTest extends GatewayServiceTest {
     }
 
     private static void checkThatNoEventsAreSent(final WorkflowManager wfm) {
-        // add event consumer to receive and check the change events
-        var testConsumer = mock(EventConsumer.class);
-        ServiceDependencies.setServiceDependencyForTesting(EventConsumer.class, testConsumer);
+        // set empty callback for testing
         DefaultEventService es = DefaultEventService.getInstance();
         es.setPreEventCreationCallbackForTesting(null);
 
@@ -157,7 +158,7 @@ public class EventServiceTest extends GatewayServiceTest {
             .forEach(t -> t.apply(wfm));
 
         // check that there weren't any events
-        verify(testConsumer, times(0)).accept(any(), any());
+        verify(TEST_CONSUMER, times(0)).accept(any(), any());
     }
 
 }

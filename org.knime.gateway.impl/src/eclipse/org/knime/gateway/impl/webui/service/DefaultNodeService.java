@@ -133,7 +133,6 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    // TODO: Why is it static?
     private static void changeLoopState(final String action, final NativeNodeContainer nnc)
         throws OperationNotAllowedException {
         WorkflowManager wfm = nnc.getParent();
