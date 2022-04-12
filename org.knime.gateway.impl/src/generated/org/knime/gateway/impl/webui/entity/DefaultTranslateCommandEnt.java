@@ -52,7 +52,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 

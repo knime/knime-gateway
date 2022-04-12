@@ -46,32 +46,28 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-/**
- * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
- */
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Utility functions for implementing workflow commands
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-class WorkflowCommandUtils {
+final class WorkflowCommandUtils {
+
+    private WorkflowCommandUtils() {
+
+    }
 
     /**
      * Find a node with given id in the given workflow manager.
@@ -103,63 +99,24 @@ class WorkflowCommandUtils {
         }
     }
 
-    /**
-     * If any of the given optionals is empty, throw an exception and report which exactly are missing.
-     * @param nodes The nodes to check. A pair of node ID and, optionally, the node container of the corresponding node.
-     * @param annotations Workflow annotations to check. A pair of annotation ID and, optionally, the annotation object.
-     */
-    static void checkPartsPresentElseThrow(final Set<Pair<NodeID, Optional<NodeContainer>>> nodes,
-            final Set<Pair<WorkflowAnnotationID, Optional<WorkflowAnnotation>>> annotations)
-            throws ServiceExceptions.OperationNotAllowedException {
-        var nodesNotFound = nodes.stream()
-                .filter(p -> p.getRight().isEmpty())
-                .map(Pair::getLeft)
-                .collect(Collectors.toSet());
-        var annotsNotFound = annotations.stream()
-                .filter(p -> p.getRight().isEmpty())
-                .map(Pair::getLeft)
-                .collect(Collectors.toSet());
-        boolean nodesMissing = !nodesNotFound.isEmpty();
-        boolean annotsMissing = !annotsNotFound.isEmpty();
-        if (nodesMissing || annotsMissing) {
-            StringBuilder message = new StringBuilder("Failed to execute command. Workflow parts not found: ");
-            if (nodesMissing) {
-                message.append("nodes (").append(nodesNotFound.stream().map(NodeID::toString).collect(Collectors.joining(","))).append(")");
-            }
-            if (nodesMissing && annotsMissing) {
-                message.append(", ");
-            }
-            if (annotsMissing) {
-                message.append("workflow-annotations (").append(annotsNotFound.stream().map(WorkflowAnnotationID::toString).collect(Collectors.joining(","))).append(")");
-            }
-            throw new ServiceExceptions.OperationNotAllowedException(message.toString());
-        }
-    }
-
     static void resetNodesOrThrow(final AbstractWorkflowCommand command, final Set<NodeID> nodes, final boolean allowReset)
             throws ServiceExceptions.OperationNotAllowedException {
         var wfm = command.getWorkflowManager();
-        var wfKey = command.getWorkflowKey();
         boolean someResettable = nodes.stream().anyMatch(wfm::canResetNode);
         if (someResettable && !allowReset) {
             throw new ServiceExceptions.OperationNotAllowedException("Resettable nodes in selection but " +
                     "explicit confirmation not given");
         }
-
-        var dependentNodeProperties = WorkflowStatefulUtil.getInstance().getDependentNodeProperties(wfKey);
-        nodes.stream().filter(dependentNodeProperties::canResetNode).forEach(wfm::resetAndConfigureNode);
+        nodes.stream().filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
     }
 
     enum ContainerType {
         METANODE, COMPONENT
     }
 
-
-    static Optional<ContainerType> getContainerType(final WorkflowKey parent, final NodeIDEnt child)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
-        var wfm = WorkflowUtil.getWorkflowManager(parent);
-        var nodeId = child.toNodeID(NodeID.ROOTID.createChild(wfm.getProjectWFM().getID().getIndex()));
-        var nodeContainer = getNodeContainer(nodeId, wfm);
+    static Optional<ContainerType> getContainerType(final WorkflowManager parentWfm, final NodeIDEnt child) {
+        var nodeId = child.toNodeID(NodeID.ROOTID.createChild(parentWfm.getProjectWFM().getID().getIndex()));
+        var nodeContainer = getNodeContainer(nodeId, parentWfm);
         return nodeContainer.map(nc -> {
             if (nc instanceof WorkflowManager) {
                 return ContainerType.METANODE;

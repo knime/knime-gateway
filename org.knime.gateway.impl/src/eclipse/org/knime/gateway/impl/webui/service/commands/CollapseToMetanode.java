@@ -52,31 +52,30 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.CollapseIntoMetaNodeResult;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.service.util.EventTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
+class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
 
     private CollapseIntoMetaNodeResult m_metaNodeCollapseResult;
 
-    private final boolean m_allowReset;
+    private boolean m_allowReset;
 
     static final String DEFAULT_NODE_NAME = "Metanode";
 
@@ -84,19 +83,10 @@ public class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
 
     private Set<WorkflowAnnotationID> m_newAnnotIdsAfterUndo = new HashSet<>();
 
-    /**
-     * Initialise the command.
-     * @param wfKey The workflow to operate in
-     * @param commandEnt The command entity
-     * @throws ServiceExceptions.NodeNotFoundException If the workflow to operate in could not be found
-     * @throws ServiceExceptions.NotASubWorkflowException If the specified node id is not a sub-workflow
-     * @throws ServiceExceptions.OperationNotAllowedException If the command could not be initalized
-     */
-    public CollapseToMetanode(final WorkflowKey wfKey, final CollapseCommandEnt commandEntity)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            ServiceExceptions.OperationNotAllowedException {
-        super(wfKey, commandEntity);
+    CollapseToMetanode configure(final WorkflowKey wfKey, WorkflowManager wfm, final CollapseCommandEnt commandEntity) {
+        super.configure(wfKey, wfm, commandEntity);
         m_allowReset = Optional.ofNullable(commandEntity.isAllowReset()).orElse(false);
+        return this;
     }
 
     @Override
@@ -109,10 +99,10 @@ public class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
         m_newNodeIdsAfterUndo = Set.of(reintroducedParts.getNodeIDs());
         m_newAnnotIdsAfterUndo = Set.of(reintroducedParts.getAnnotationIDs());
 
-        // metanode is removed -- need to remove it from workflowState cache
-        // cannot do this via workflow listeners because these are called async, but have to remove from
-        // cache before doing anything else
-        WorkflowStatefulUtil.getInstance().dispose(new WorkflowKey(getWorkflowKey().getProjectId(), getNewNode().orElseThrow()));
+        WorkflowStatefulUtil.getInstance().clearWorkflowState(k ->
+                k.getProjectId().equals(getWorkflowKey().getProjectId())
+                && k.getWorkflowId().equals(new NodeIDEnt(getNewNode().orElseThrow()))
+        );
     }
 
     @Override
@@ -121,32 +111,26 @@ public class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public boolean providesResult() {
-        return true;
+    public Optional<CommandResultBuilder> getResultBuilder() {
+        return Optional.of(new CollapseResultBuilder());
     }
 
     @Override
-    public Optional<CommandResult> getResult() {
-        return Optional.of(new CollapseResult(getNewNode().orElseThrow()));
-    }
+    protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
+        checkPartsPresentElseThrow();
 
-    @Override
-    public Optional<EventTracker.Event> getTrackedEvent() {
-        return Optional.of(EventTracker.Event.NODES_COLLAPSED);
-    }
-
-    @Override
-    protected boolean executeImpl() throws ServiceExceptions.OperationNotAllowedException {
         WorkflowCommandUtils.resetNodesOrThrow(this, getNodeIDs(), m_allowReset);
 
-        var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(getNodeIDsArray());
+        var nodeIds = getNodeIDs().toArray(NodeID[]::new);
+
+        var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds);
         if (cannotCollapseReason != null) {
             throw new ServiceExceptions.OperationNotAllowedException(cannotCollapseReason);
         }
 
         try {
             m_metaNodeCollapseResult = getWorkflowManager().collapseIntoMetaNode(
-                    getNodeIDsArray(),
+                    nodeIds,
                     getAnnotations().toArray(WorkflowAnnotation[]::new),
                     DEFAULT_NODE_NAME
             );
@@ -157,52 +141,28 @@ public class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    Set<NodeContainer> getNodeContainers() {
-        if (!m_newNodeIdsAfterUndo.isEmpty()) {
-            return m_newNodeIdsAfterUndo.stream()
-                    .map(id -> WorkflowCommandUtils.getNodeContainer(id, getWorkflowManager()).orElseThrow())
-                    .collect(Collectors.toSet());
-        } else {
-            return super.getNodeContainers();
-        }
+    protected Set<NodeID> getNodeIDs() {
+        return !m_newNodeIdsAfterUndo.isEmpty() ? m_newNodeIdsAfterUndo : super.getNodeIDs();
     }
 
     @Override
-    Set<WorkflowAnnotation> getAnnotations() {
-        if (!m_newAnnotIdsAfterUndo.isEmpty()) {
-            return m_newAnnotIdsAfterUndo.stream()
-                    .map(id -> WorkflowCommandUtils.getAnnotation(id, getWorkflowManager()).orElseThrow())
-                    .collect(Collectors.toSet());
-        } else {
-            return super.getAnnotations();
-        }
+    protected Set<WorkflowAnnotationID> getAnnotationIDs() {
+        return !m_newAnnotIdsAfterUndo.isEmpty() ? m_newAnnotIdsAfterUndo : super.getAnnotationIDs();
     }
 
-    private Optional<NodeID> getNewNode() {
+    @Override
+    public boolean canUndo() {
+        return Optional.ofNullable(m_metaNodeCollapseResult).map(CollapseIntoMetaNodeResult::canUndo).orElse(false);
+    }
+
+    Optional<NodeID> getNewNode() {
         return Optional.ofNullable(m_metaNodeCollapseResult).map(CollapseIntoMetaNodeResult::getCollapsedMetanodeID);
     }
 
     /**
      * The result of the collapse command.
      */
-    public static class CollapseResult implements CommandResult {
-
-        private final NodeID m_newNodeId;
-
-        /**
-         * Construct a new result.
-         * @param newNodeID The ID of the newly introduced container.
-         */
-        public CollapseResult(final NodeID newNodeID) {
-            this.m_newNodeId = newNodeID;
-        }
-
-        /**
-         * @return The ID of the newly introduced container
-         */
-        public NodeID getNewNodeId() {
-            return m_newNodeId;
-        }
+    private class CollapseResultBuilder implements CommandResultBuilder {
 
         /**
          * {@inheritDoc}
@@ -212,8 +172,13 @@ public class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
             return builder(CollapseResultEnt.CollapseResultEntBuilder.class)
                     .setKind(CommandResultEnt.KindEnum.COLLAPSERESULT)
                     .setSnapshotId(snapshotId)
-                    .setNewNodeId(new NodeIDEnt(m_newNodeId))
+                    .setNewNodeId(new NodeIDEnt(getNewNode().orElseThrow()))
                     .build();
+        }
+
+        @Override
+        public WorkflowChangesTracker.WorkflowChange getChangeToWaitFor() {
+            return WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED;
         }
     }
 }

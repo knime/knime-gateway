@@ -56,7 +56,6 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -68,18 +67,19 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 final class Translate extends AbstractPartBasedWorkflowCommand {
 
-    private final int[] m_delta;
+    private int[] m_delta;
 
-    public Translate(final WorkflowKey wfKey, final TranslateCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            OperationNotAllowedException {
-        super(wfKey, commandEnt);
+    Translate configure(final WorkflowKey wfKey, final WorkflowManager wfm, final TranslateCommandEnt commandEnt) {
+        super.configure(wfKey, wfm, commandEnt);
         XYEnt translationEnt = commandEnt.getTranslation();
         m_delta = new int[] { translationEnt.getX(), translationEnt.getY() };
+        return this;
     }
 
     @Override
-    public boolean executeImpl() throws OperationNotAllowedException {
+    public boolean execute() throws OperationNotAllowedException {
+        checkPartsPresentElseThrow();
+
         if (m_delta[0] == 0 && m_delta[1] == 0)  {
             return false;
         }
@@ -127,15 +127,5 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     private static int[] invert(final int[] source) {
         return new int[] { -1 * source[0], -1 * source[1] };
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean providesResult() {
-        return false;
-    }
-
-
 
 }

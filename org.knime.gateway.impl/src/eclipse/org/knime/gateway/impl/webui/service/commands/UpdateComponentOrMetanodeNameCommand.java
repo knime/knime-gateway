@@ -52,7 +52,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
@@ -61,21 +60,20 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand {
+final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand {
 
     private String m_oldName;
 
-    private final String m_newName;
+    private String m_newName;
 
-    private final NodeID m_nodeId;
+    private NodeID m_nodeId;
 
-    public UpdateComponentOrMetanodeNameCommand(final WorkflowKey wfKey, final UpdateComponentOrMetanodeNameCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
-        super(wfKey);
-        var wfm = getWorkflowManager();
+    UpdateComponentOrMetanodeNameCommand configure(final WorkflowKey wfKey, final WorkflowManager wfm, final UpdateComponentOrMetanodeNameCommandEnt commandEnt) {
+        super.configure(wfKey, wfm);
         var projectWfm = wfm.getProjectWFM();
         m_newName = commandEnt.getName();
         m_nodeId = commandEnt.getNodeId().toNodeID(projectWfm.getID());
+        return this;
     }
 
     @Override
@@ -91,7 +89,7 @@ public final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflow
     }
 
     @Override
-    protected boolean executeImpl() throws OperationNotAllowedException {
+    protected boolean execute() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         var container = wfm.getNodeContainer(m_nodeId);
         if (m_newName.isBlank()) {
@@ -114,14 +112,6 @@ public final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflow
             String className = container.getClass().getSimpleName();
             throw new OperationNotAllowedException("<" + className + "> cannot be renamed");
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean providesResult() {
-        return false;
     }
 
 }

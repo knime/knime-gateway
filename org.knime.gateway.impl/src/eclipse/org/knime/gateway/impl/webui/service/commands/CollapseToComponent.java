@@ -46,48 +46,31 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Optional;
-
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.service.util.EventTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Collapse the queried workflow parts into a component. This operation is a {@link Sequence} of collapsing to
+ * Collapse the queried workflow parts into a component. This operation is a {@link CommandSequence} of collapsing to
  * a metanode and converting the metanode to a component.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class CollapseToComponent extends Sequence {
+class CollapseToComponent extends CommandSequence {
 
-    /**
-     * Initialise the command.
-     * @param wfKey The workflow to operate in
-     * @param commandEnt The command entity
-     * @throws ServiceExceptions.NodeNotFoundException If the workflow to operate in could not be found
-     * @throws ServiceExceptions.NotASubWorkflowException If the specified node id is not a sub-workflow
-     * @throws ServiceExceptions.OperationNotAllowedException If the command could not be initalized
-     */
-    public CollapseToComponent(WorkflowKey wfKey, CollapseCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            ServiceExceptions.OperationNotAllowedException {
-        super(wfKey,
-                new CollapseToMetanode(wfKey, commandEnt),
-                collapseResponse -> {
-                    var newNodeId = ((CollapseToMetanode.CollapseResult)collapseResponse.orElseThrow()).getNewNodeId();
-                    return new ConvertMetanodeToComponent(wfKey, newNodeId);
-                }
+    CollapseToComponent configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEnt)  {
+        super.configure(wfKey, wfm,
+            new CollapseToMetanode().configure(wfKey, wfm, commandEnt),
+            new Pair<>(
+                    new ConvertMetanodeToComponent(),
+                    (currentCommand, previousCommand) -> {
+                        var currentConvertCommand = (ConvertMetanodeToComponent)currentCommand;
+                        var previousCollapseCommand = (CollapseToMetanode)previousCommand;
+                        return currentConvertCommand.configure(wfKey, wfm, previousCollapseCommand.getNewNode().orElseThrow());
+                    }
+            )
         );
-    }
-
-    @Override
-    public boolean providesResult() {
-        return true;
-    }
-
-    @Override
-    public Optional<EventTracker.Event> getTrackedEvent() {
-        return Optional.of(EventTracker.Event.NODES_COLLAPSED);
+        return this;
     }
 }

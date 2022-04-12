@@ -50,36 +50,30 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Base class for implementations of {@link WorkflowCommand}s.
- *
- * The command is assumed to be fully configured (i.e. ready for execution) via its constructor.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
-    private final WorkflowManager m_wfm;
+    private WorkflowManager m_wfm;
 
-    private final WorkflowKey m_wfKey;
+    private WorkflowKey m_wfKey;
 
-    @SuppressWarnings({"java:S1130"})  // (superfluous exceptions: implementing classes may throw these)
-    protected AbstractWorkflowCommand(final WorkflowKey wfKey)
-            throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
+    @Override
+    public void configure(final WorkflowKey wfKey, final WorkflowManager wfm) {
         m_wfKey = wfKey;
-        m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        m_wfm = wfm;
     }
 
     @Override
-    public boolean execute() throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
-        try (WorkflowLock ignored = m_wfm.lock()) {
-            return executeImpl();
+    public boolean executeWithWorkflowLock() throws OperationNotAllowedException {
+        try (WorkflowLock lock = m_wfm.lock()) {
+            return execute();
         }
     }
 
@@ -95,7 +89,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
      *
      * @throws OperationNotAllowedException If the command could not be executed
      */
-    protected abstract boolean executeImpl() throws OperationNotAllowedException;
+    protected abstract boolean execute() throws OperationNotAllowedException;
 
     @Override
     public boolean canUndo() {
@@ -109,7 +103,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     @Override
     public void redo() throws OperationNotAllowedException {
-        executeImpl();
+        execute();
     }
 
     /**

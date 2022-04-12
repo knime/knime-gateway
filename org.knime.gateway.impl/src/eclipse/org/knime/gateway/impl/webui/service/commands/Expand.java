@@ -46,8 +46,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -55,18 +55,17 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  * executes the according workflow command.
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class ExpandTeeing extends Tee {
-    public ExpandTeeing(WorkflowKey wfKey, ExpandCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            ServiceExceptions.OperationNotAllowedException {
-        super(wfKey,
+final class Expand extends CommandIfElse {
+    Expand configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {
+        super.configure(wfKey, wfm,
                 () -> {
-                    var containerType = WorkflowCommandUtils.getContainerType(wfKey, commandEnt.getNodeId()).orElseThrow();
+                    var containerType = WorkflowCommandUtils.getContainerType(wfm, commandEnt.getNodeId()).orElseThrow();
                     return containerType == WorkflowCommandUtils.ContainerType.METANODE;
                 },
-                () -> new ExpandMetanode(wfKey, commandEnt),
-                () -> new ExpandComponent(wfKey, commandEnt)
+                () -> new ExpandMetanode().configure(wfKey, wfm, commandEnt),
+                () -> new ExpandComponent().configure(wfKey, wfm, commandEnt)
         );
+        return this;
     }
 
 }

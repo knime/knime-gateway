@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -59,7 +58,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface TranslateCommandEnt extends GatewayEntity, WorkflowCommandEnt, PartBasedCommandEnt {
+public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt {
 
 
   /**

@@ -46,35 +46,70 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Workflow command to collapse nodes based on a {@link CollapseCommandEnt}. Determines whether the queried workflow
- * parts should be collapsed into a metanode or a component and invokes the according command.
+ * Higher-order command that executes either one of the child commands based on a given predicate. Other properties
+ * are based on the active child command as well.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class CollapseTeeing extends Tee  {
+abstract class CommandIfElse extends AbstractWorkflowCommand {
+
+    private WorkflowCommand m_activeCommand;
 
     /**
-     * Initialise the command.
-     * @param wfKey The workflow to operate in
-     * @param commandEnt The command entity
-     * @throws ServiceExceptions.NodeNotFoundException If the workflow to operate in could not be found
-     * @throws ServiceExceptions.NotASubWorkflowException If the specified node id is not a sub-workflow
-     * @throws ServiceExceptions.OperationNotAllowedException If the command could not be initalized
+     *
+     * Initialise the command by providing two commands and a predicate to decide which command to execute.
+     * @param wfKey The key of the workflow
+     * @param wfm The workflow manager to operate in
+     * @param predicate If true, execute {@code leftCommand}, otherwise execute {@code rightCommand}
+     * @param leftCommand A supplier that yields a <i>configured</i> instance of the command
+     * @param rightCommand Analogous to `leftCommand`.
      */
-    public CollapseTeeing(WorkflowKey wfKey, CollapseCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            ServiceExceptions.OperationNotAllowedException {
-        super(
-                wfKey,
-                () -> commandEnt.getContainerType() == CollapseCommandEnt.ContainerTypeEnum.METANODE,
-                () -> new CollapseToMetanode(wfKey, commandEnt),
-                () -> new CollapseToComponent(wfKey, commandEnt)
-        );
+    void configure(final WorkflowKey wfKey, final WorkflowManager wfm,
+            final BooleanSupplier predicate,
+            final Supplier<WorkflowCommand> leftCommand,
+            final Supplier<WorkflowCommand> rightCommand
+    ) {
+        super.configure(wfKey, wfm);
+        var takeLeft = predicate.getAsBoolean();
+        m_activeCommand = takeLeft ? leftCommand.get() : rightCommand.get();
+    }
+
+    @Override
+    protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
+        try {
+            return m_activeCommand.executeWithWorkflowLock();
+        } catch (ServiceExceptions.NodeNotFoundException | ServiceExceptions.NotASubWorkflowException e) {
+            throw new ServiceExceptions.OperationNotAllowedException("Error executing nested command", e);
+        }
+    }
+
+    @Override
+    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+        m_activeCommand.undo();
+    }
+
+    @Override
+    public boolean canUndo() {
+        return m_activeCommand.canUndo();
+    }
+
+    @Override
+    public boolean canRedo() {
+        return m_activeCommand.canRedo();
+    }
+
+    @Override
+    public Optional<CommandResultBuilder> getResultBuilder() {
+        return m_activeCommand.getResultBuilder();
     }
 
 }

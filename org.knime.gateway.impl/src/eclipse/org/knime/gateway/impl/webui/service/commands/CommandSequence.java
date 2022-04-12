@@ -49,7 +49,10 @@ package org.knime.gateway.impl.webui.service.commands;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
@@ -59,44 +62,35 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public abstract class Sequence extends AbstractWorkflowCommand {
+abstract class CommandSequence extends AbstractWorkflowCommand {
 
-    private final WorkflowCommand m_initialCommand;
+    private WorkflowCommand m_initialCommand;
 
-    private final ThrowingFunction<Optional<CommandResult>, WorkflowCommand>[] m_otherCommands;
+    private Pair<WorkflowCommand, WorkflowCommandConfigurator>[] m_otherCommands;
 
     private final LinkedList<WorkflowCommand> m_executedCommands = new LinkedList<>();
 
-    /**
-     * Initialise the command.
-     * @param wfKey The workflow to operate in
-     * @param initalCommand The initial command (fully instantiated and configured)
-     * @param otherCommands Other commands to be executed subsequently
-     * @throws ServiceExceptions.NodeNotFoundException If the workflow to operate in could not be found
-     * @throws ServiceExceptions.NotASubWorkflowException If the specified node id is not a sub-workflow
-     * @throws ServiceExceptions.OperationNotAllowedException If the command could not be initalized
-     */
     @SafeVarargs
-    Sequence(final WorkflowKey wfKey,
-            final WorkflowCommand initalCommand,
-            final ThrowingFunction<Optional<CommandResult>, WorkflowCommand>... otherCommands
-    )
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-            ServiceExceptions.OperationNotAllowedException {
-        super(wfKey);
-        m_initialCommand = initalCommand;
+    final void configure(final WorkflowKey wfKey, final WorkflowManager wfm,
+            final WorkflowCommand initialCommand,
+            final Pair<WorkflowCommand, WorkflowCommandConfigurator>... otherCommands) {
+        super.configure(wfKey, wfm);
+        m_initialCommand = initialCommand;
         m_otherCommands = otherCommands;
     }
 
     @Override
-    protected boolean executeImpl() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
         try {
-            boolean wfModified = m_initialCommand.execute();
+            boolean wfModified = m_initialCommand.executeWithWorkflowLock();
             m_executedCommands.add(m_initialCommand);
-            Optional<CommandResult> response = m_initialCommand.getResult();
-            for (ThrowingFunction<Optional<CommandResult>, WorkflowCommand> f : m_otherCommands) {
-                WorkflowCommand nextCommand = f.apply(response);
-                wfModified = nextCommand.execute();
+            WorkflowCommand prevCommand = m_initialCommand;
+            for (Pair<WorkflowCommand, WorkflowCommandConfigurator> nextCommandAndConfigurator : m_otherCommands) {
+                WorkflowCommand nextCommand = nextCommandAndConfigurator.getFirst();
+                WorkflowCommandConfigurator configurator = nextCommandAndConfigurator.getSecond();
+                var configuredCommand = configurator.apply(nextCommand, prevCommand);
+                wfModified = configuredCommand.executeWithWorkflowLock();
+                prevCommand = nextCommand;
                 m_executedCommands.add(nextCommand);
             }
             return wfModified;
@@ -107,8 +101,12 @@ public abstract class Sequence extends AbstractWorkflowCommand {
     }
 
     @Override
-    public Optional<CommandResult> getResult() {
-        return m_executedCommands.getLast().getResult();
+    public Optional<CommandResultBuilder> getResultBuilder() {
+        if (m_otherCommands.length == 0) {
+            return m_initialCommand.getResultBuilder();
+        } else {
+            return m_otherCommands[m_otherCommands.length-1].getFirst().getResultBuilder();
+        }
     }
 
     private void undoAllExecuted() throws ServiceExceptions.OperationNotAllowedException {
@@ -124,8 +122,18 @@ public abstract class Sequence extends AbstractWorkflowCommand {
         undoAllExecuted();
     }
 
-    public interface ThrowingFunction<I, O> {
-        O apply(I in) throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException,
-                ServiceExceptions.OperationNotAllowedException;
+    @Override
+    public boolean canUndo() {
+        return m_executedCommands.stream().allMatch(WorkflowCommand::canUndo);
     }
+
+    @Override
+    public boolean canRedo() {
+        return m_executedCommands.stream().allMatch(WorkflowCommand::canRedo);
+    }
+
+    interface WorkflowCommandConfigurator extends BiFunction<WorkflowCommand, WorkflowCommand, WorkflowCommand> {
+
+    }
+
 }

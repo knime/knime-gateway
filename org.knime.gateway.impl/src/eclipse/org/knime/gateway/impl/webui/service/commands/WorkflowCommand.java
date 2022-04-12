@@ -50,30 +50,44 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Optional;
 
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.EventTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Unifying interface for all workflow commands. The methods are guaranteed to be called in a fixed order:
- * <ul>
+ * Unifying interface for all workflow commands.
+ *
+ * Methods are guaranteed to be called in a fixed order:
+ * <ol>
  *     <li>
- *         {@link WorkflowCommand#execute()} is called before
- *         any number of repetitions of sequence of {@link WorkflowCommand#undo()} and {@link WorkflowCommand#redo()}
+ *         The command is instantiated via its zero-argument constructor.
  *     </li>
  *     <li>
- *          {@link WorkflowCommand#execute()} is called before {@link WorkflowCommand#getResult()} ()}
+ *         The command is configured via {@link WorkflowCommand#configure(WorkflowKey, WorkflowManager)}. This includes
+ *         e.g. providing parameters needed to execute the command.
  *     </li>
- * </ul>
+ *     <li>
+ *         {@link WorkflowCommand#getResultBuilder()} is called.
+ *     </li>
+ *     <li>
+ *         {@link WorkflowCommand#executeWithWorkflowLock()} is called to execute the command.
+ *     </li>
+ *     <li>
+ *         Any number of repetitions of sequence of {@link WorkflowCommand#undo()} and {@link WorkflowCommand#redo()} is called.
+ *     </li>
+ * </ol>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public interface WorkflowCommand {
+
+    void configure(final WorkflowKey wfKey, final WorkflowManager wfm);
 
     /**
      * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()} and
@@ -88,7 +102,7 @@ public interface WorkflowCommand {
      * @throws OperationNotAllowedException
      */
 
-    boolean execute() throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
+    boolean executeWithWorkflowLock() throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
     /**
      * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
@@ -121,36 +135,18 @@ public interface WorkflowCommand {
      */
     void redo() throws OperationNotAllowedException;
 
-
     /**
-     * @return Whether the command provides a result.
-     * @apiNote This is potentially accessed before the command is executed.
-     * @implNote This property is typically static for basic commands. However, for higher-order commands such as
-     * {@link Tee}, this property needs to be determined dynamically based on the command's configuration.
+     * @return An instance of {@link CommandResultBuilder} specific to the executed command, or an empty optional
+     * if the command does not provide a result.
      */
-    boolean providesResult();
-
-    /**
-     * @return The result of the command, if available.
-     */
-    default Optional<CommandResult> getResult() {
+    default Optional<CommandResultBuilder> getResultBuilder() {
         return Optional.empty();
     }
 
     /**
-     * Get the event that indicates some effect of the workflow command execution.
-     * @apiNote This is potentially accessed before the command is executed.
+     * Result of a workflow command.
      */
-    default Optional<EventTracker.Event> getTrackedEvent() {
-        return Optional.empty();
-    }
-
-    /**
-     * Response of a workflow command.
-     *
-     * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
-     */
-    interface CommandResult {
+    interface CommandResultBuilder {
 
         /**
          *
@@ -160,6 +156,7 @@ public interface WorkflowCommand {
          */
         CommandResultEnt buildEntity(String snapshotId);
 
+        WorkflowChangesTracker.WorkflowChange getChangeToWaitFor();
 
     }
 

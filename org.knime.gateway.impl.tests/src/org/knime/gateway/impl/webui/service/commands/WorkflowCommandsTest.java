@@ -176,22 +176,22 @@ public class WorkflowCommandsTest {
                 .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class)
                         .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
                 .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build();
-        var addNodeCommand = new AddNode(wfKey, addCommandEnt);
-        addNodeCommand.execute();
+        var addNodeCommand = new AddNode().configure(wfKey, wfm, addCommandEnt);
+        addNodeCommand.executeWithWorkflowLock();
         assertThat(wfm.getNodeContainers().size(), is(2));
         assertThat(addNodeCommand.canUndo(), is(true));
 
         var connectCommandEnt = builder(ConnectCommandEntBuilder.class).setSourceNodeId(new NodeIDEnt(2)).setSourcePortIdx(0)
                 .setDestinationNodeId(new NodeIDEnt(1)).setDestinationPortIdx(0).setKind(KindEnum.CONNECT).build();
-        var connectCommand = new Connect(wfKey, connectCommandEnt);
-        connectCommand.execute();
+        var connectCommand = new Connect().configure(wfKey, wfm, connectCommandEnt);
+        connectCommand.executeWithWorkflowLock();
 
         assertThat(wfm.getConnectionContainers().size(), is(1));
         assertThat(connectCommand.canUndo(), is(true));
 
         var deleteCommandEnt = builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(2))).setKind(KindEnum.DELETE).build();
-        var deleteCommand = new Delete(wfKey, deleteCommandEnt);
-        deleteCommand.execute();
+        var deleteCommand = new Delete().configure(wfKey, wfm, deleteCommandEnt);
+        deleteCommand.executeWithWorkflowLock();
         assertThat(wfm.getNodeContainers().size(), is(1));
         deleteCommand.undo();
         assertThat(wfm.getNodeContainers().size(), is(2));

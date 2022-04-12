@@ -605,7 +605,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
         CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, true);
         var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-
+        // TODO test for snapshot id once we have NXT-927
         if (commandResponseEnt instanceof CollapseResultEnt) {
             var collapseResponseEnt = (CollapseResultEnt)commandResponseEnt;
             assertNotNull(collapseResponseEnt.getNewNodeId());
@@ -623,6 +623,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, true);
         ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+
+        // TODO test for snapshot id once we have NXT-927
 
         assertNotNull(responseEnt.getExpandedNodeIds());
         assertNotNull(responseEnt.getExpandedAnnotationIds());
@@ -765,7 +767,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertCollapsed(wfId, commandWithReset, commandResponseEnt, Collections.emptySet());
     }
 
-    static private void assertAnnotationsNotPresent(final String message, final List<AnnotationIDEnt> annots,
+    private static void assertAnnotationsNotPresent(final String message, final List<AnnotationIDEnt> annots,
             final WorkflowEnt wfEnt) {
         if (annots.isEmpty()) {
             return;
@@ -777,7 +779,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
     }
 
-    static private void assertAnnotationContentsPresent(final String message, final WorkflowEnt wfEnt, final Set<String> annotationContents) {
+    private static void assertAnnotationContentsPresent(final String message, final WorkflowEnt wfEnt, final Set<String> annotationContents) {
         if (annotationContents.isEmpty()) {
             return;
         }
@@ -788,7 +790,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
     }
 
-    static private void assertAnnotationsPresent(final String message, final WorkflowEnt wfEnt,
+    private static void assertAnnotationsPresent(final String message, final WorkflowEnt wfEnt,
             final List<AnnotationIDEnt> annots) {
         if (annots.isEmpty()) {
             return;
@@ -800,7 +802,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
     }
 
-    static private void assertNodesPresent(final String message, final WorkflowEnt wfEnt, final List<NodeIDEnt> nodes) {
+    private static void assertNodesPresent(final String message, final WorkflowEnt wfEnt, final List<NodeIDEnt> nodes) {
         if (nodes.isEmpty()) {
             return;
         }
@@ -811,7 +813,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ));
     }
 
-    static private void assertNodesNotPresent(final String message, final WorkflowEnt wfEnt,
+    private static void assertNodesNotPresent(final String message, final WorkflowEnt wfEnt,
             final List<NodeIDEnt> nodes) {
         if (nodes.isEmpty()) {
             return;
@@ -823,7 +825,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
     }
 
-    static private CollapseCommandEnt buildCollapseCommandEnt(final List<NodeIDEnt> nodes,
+    private static CollapseCommandEnt buildCollapseCommandEnt(final List<NodeIDEnt> nodes,
             final List<AnnotationIDEnt> annotationIds,
             final CollapseCommandEnt.ContainerTypeEnum containerType,
             final boolean allowReset) {
@@ -836,7 +838,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 .build();
     }
 
-    static private ExpandCommandEnt buildExpandCommandEnt(final NodeIDEnt node, final boolean allowReset) {
+    private static ExpandCommandEnt buildExpandCommandEnt(final NodeIDEnt node, final boolean allowReset) {
         return builder(ExpandCommandEnt.ExpandCommandEntBuilder.class)
                 .setKind(KindEnum.EXPAND)
                 .setAllowReset(allowReset)

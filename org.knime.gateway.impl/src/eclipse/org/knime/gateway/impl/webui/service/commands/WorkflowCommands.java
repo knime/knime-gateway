@@ -52,10 +52,9 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.function.Predicate;
 
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
@@ -68,9 +67,9 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.TrackingSemaphore;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
@@ -118,43 +117,53 @@ public final class WorkflowCommands {
     @SuppressWarnings("unchecked")
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+        var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt) {
-            command = new Translate(wfKey, (TranslateCommandEnt)commandEnt);
+            command = new Translate().configure(wfKey, wfm, (TranslateCommandEnt)commandEnt);
         } else if (commandEnt instanceof DeleteCommandEnt) {
-            command = new Delete(wfKey, (DeleteCommandEnt)commandEnt);
+            command = new Delete().configure(wfKey, wfm, (DeleteCommandEnt)commandEnt);
         } else if (commandEnt instanceof ConnectCommandEnt) {
-            command = new Connect(wfKey, (ConnectCommandEnt)commandEnt);
+            command = new Connect().configure(wfKey, wfm, (ConnectCommandEnt)commandEnt);
         } else if (commandEnt instanceof AddNodeCommandEnt) {
-            command = new AddNode(wfKey, (AddNodeCommandEnt)commandEnt);
+            command = new AddNode().configure(wfKey, wfm, commandEnt);
         } else if(commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
-            command = new UpdateComponentOrMetanodeNameCommand(wfKey, (UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
+            command = new UpdateComponentOrMetanodeNameCommand().configure(wfKey, wfm, (UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
         } else if (commandEnt instanceof CollapseCommandEnt) {
-            command = new CollapseTeeing(wfKey, (CollapseCommandEnt)commandEnt);
+            command = new Collapse().configure(wfKey, wfm, (CollapseCommandEnt)commandEnt);
         } else if (commandEnt instanceof ExpandCommandEnt) {
-            command = new ExpandTeeing(wfKey, (ExpandCommandEnt)commandEnt);
+            command = new Expand().configure(wfKey, wfm, (ExpandCommandEnt)commandEnt);
         } else {
             throw new OperationNotAllowedException(
                 "Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
 
-        Optional<TrackingSemaphore> eventSyncSemaphore = Optional.empty();
-        if (command.providesResult()) {
-            eventSyncSemaphore = Optional.of(new TrackingSemaphore(command.getTrackedEvent().orElseThrow(), wfKey));
-        }
-        if (command.execute()) {
+        var workflowChangesListener = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
+        var resultBuilder = command.getResultBuilder();
+
+        var workflowChangeWaiter = resultBuilder
+                .map(WorkflowCommand.CommandResultBuilder::getChangeToWaitFor)
+                .map(event -> workflowChangesListener.createWorkflowChangeWaiter(wfKey, event));
+
+        var workflowModified = command.executeWithWorkflowLock();
+        if (workflowModified) {
             addCommandToUndoStack(wfKey, command);
             clearRedoStack(wfKey);
         }
-        if (eventSyncSemaphore.isPresent()) {
-            eventSyncSemaphore.get().acquire();
-        }
 
-        return command.getResult().map(r -> {
-            var latestCommit = WorkflowStatefulUtil.getInstance().getEntityRepository().getLastCommit(wfKey);
-            var latestSnapshotId = latestCommit.map(Pair::getFirst).orElse(null);
-            return r.buildEntity(latestSnapshotId);
-        }).orElse(null);
+        if (resultBuilder.isPresent()) {
+            try {
+                workflowChangeWaiter.orElseThrow().blockUntilOccurred();
+            } catch (InterruptedException e) {  // NOSONAR: Exception re-thrown
+                throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
+            }
+            var latestSnapshotId = WorkflowStatefulUtil.getInstance()
+                .getLatestSnapshotId(wfKey).orElse(null);
+            // TODO Can instead throw exception once entity repository can be mocked (NXT-927)
+            return resultBuilder.get().buildEntity(latestSnapshotId);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -208,8 +217,12 @@ public final class WorkflowCommands {
      * @param projectId the project-id of the workflow to clear all stacks for
      */
     public void disposeUndoAndRedoStacks(final String projectId) {
-        m_undoStacks.entrySet().removeIf(e -> e.getKey().getProjectId().equals(projectId));
-        m_redoStacks.entrySet().removeIf(e -> e.getKey().getProjectId().equals(projectId));
+        disposeUndoAndRedoStacks(k -> k.getProjectId().equals(projectId));
+    }
+
+    public void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
+        m_undoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
+        m_redoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
     }
 
     private void addCommandToUndoStack(final WorkflowKey wfKey,

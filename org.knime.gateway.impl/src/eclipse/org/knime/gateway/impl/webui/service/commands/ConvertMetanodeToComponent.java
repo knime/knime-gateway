@@ -52,13 +52,13 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.MetaNodeToSubNodeResult;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.EventTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -66,31 +66,22 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class ConvertMetanodeToComponent extends AbstractWorkflowCommand {
+class ConvertMetanodeToComponent extends AbstractWorkflowCommand {
 
-    private final NodeID m_nodeToConvert;
+    private NodeID m_nodeToConvert;
 
     private MetaNodeToSubNodeResult m_metaNodeToSubNodeResult;
 
     static final String DEFAULT_NODE_NAME = "Component";
 
-    /**
-     * Initialise the command.
-     * @param wfKey The workflow to operate in
-     * @param nodeToConvert The ID of the metanode to convert to a component.
-     * @throws ServiceExceptions.NodeNotFoundException If the workflow to operate in could not be found
-     * @throws ServiceExceptions.NotASubWorkflowException If the specified node id is not a sub-workflow
-     * @throws ServiceExceptions.OperationNotAllowedException If the command could not be initalized
-     */
-    public ConvertMetanodeToComponent(final WorkflowKey wfKey, final NodeID nodeToConvert)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
-        super(wfKey);
-
+    ConvertMetanodeToComponent configure(final WorkflowKey wfKey, final WorkflowManager wfm, final NodeID nodeToConvert) {
+        super.configure(wfKey, wfm);
         m_nodeToConvert = nodeToConvert;
+        return this;
     }
 
     @Override
-    protected boolean executeImpl() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
         try {
             m_metaNodeToSubNodeResult = getWorkflowManager().convertMetaNodeToSubNode(m_nodeToConvert);
             var snc = getWorkflowManager().getNodeContainer(
@@ -107,52 +98,40 @@ public class ConvertMetanodeToComponent extends AbstractWorkflowCommand {
 
     @Override
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        if (!m_metaNodeToSubNodeResult.canUndo()) {
-            throw new ServiceExceptions.OperationNotAllowedException("Can not undo component creation");
-        }
         m_metaNodeToSubNodeResult.undo();
     }
 
     @Override
-    public boolean providesResult() {
-        return true;
+    public boolean canUndo() {
+        return Optional.ofNullable(m_metaNodeToSubNodeResult).map(MetaNodeToSubNodeResult::canUndo).orElse(false);
     }
 
     @Override
-    public Optional<CommandResult> getResult() {
-        return Optional.of(new ConvertResult(getConvertedNode().orElseThrow()));
+    public Optional<CommandResultBuilder> getResultBuilder() {
+        return Optional.of(new ConvertResultBuilder());
     }
 
-    @Override
-    public Optional<EventTracker.Event> getTrackedEvent() {
-        return Optional.of(EventTracker.Event.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
-    }
-
-    private Optional<NodeID> getConvertedNode() {
+    public Optional<NodeID> getConvertedNode() {
         return Optional.ofNullable(m_metaNodeToSubNodeResult).map(MetaNodeToSubNodeResult::getConvertedNodeID);
     }
 
     /**
      * The result of the conversion.
      */
-    public static class ConvertResult implements CommandResult {
+    private class ConvertResultBuilder implements CommandResultBuilder {
 
-        private final NodeID m_convertedNode;
-
-        /**
-         * Create a new result
-         * @param convertedNode The ID of the newly introduced node that is the result of the conversion.
-         */
-        public ConvertResult(final NodeID convertedNode) {
-            m_convertedNode = convertedNode;
-        }
-
-        @Override public CommandResultEnt buildEntity(final String snapshotId) {
+        @Override
+        public CommandResultEnt buildEntity(final String snapshotId) {
             return builder(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class)
                     .setKind(CommandResultEnt.KindEnum.CONVERTRESULT)
                     .setSnapshotId(snapshotId)
-                    .setConvertedNodeId(new NodeIDEnt(m_convertedNode))
+                    .setConvertedNodeId(new NodeIDEnt(getConvertedNode().orElseThrow()))
                     .build();
+        }
+
+        @Override
+        public WorkflowChangesTracker.WorkflowChange getChangeToWaitFor() {
+            return WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED;
         }
     }
 }

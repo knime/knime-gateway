@@ -46,61 +46,70 @@
  */
 package org.knime.gateway.impl.service.util;
 
-import java.util.concurrent.Semaphore;
-import java.util.function.Consumer;
-
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Semaphore that is released once a specific workflow change event is tracked.
- * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * Instances remember specific changes until reset.
  *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class TrackingSemaphore {
+public class WorkflowChangesTracker {
 
-    private final WorkflowChangesListener m_wfChangesListener;
-
-    private final Semaphore m_semaphore;
-
-    private final Consumer<WorkflowManager> m_postProcessCallback;
-
-    private final EventTracker m_tracker;
+    private final Set<WorkflowChange> m_trackedChanges = Collections.synchronizedSet(new HashSet<>());
 
     /**
-     * Create and configure a new tracking semaphore for the given event on the given workflow.
-     * @param event The event to be tracked by the semaphore
-     * @param wfKey The workflow to track events of
+     * Types of changes to occur to a workflow manager.
+     *
+     * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
      */
-    public TrackingSemaphore(final EventTracker.Event event, final WorkflowKey wfKey) {
-        m_wfChangesListener = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
-
-        m_semaphore = new Semaphore(0, true);
-
-        m_tracker = new EventTracker();
-        m_wfChangesListener.registerEventTracker(m_tracker);
-
-        m_postProcessCallback = wfm -> {
-            if (!m_tracker.hasOccurred(event)) {
-                return;
-            }
-            m_semaphore.release();
-        };
-        m_wfChangesListener.addPostProcessCallback(m_postProcessCallback);
-
+    public enum WorkflowChange {
+        NODE_STATE_UPDATED,
+        NODE_OR_CONNECTION_ADDED_OR_REMOVED,
+        NODES_COLLAPSED,
+        NODE_EXPANDED,
+        ANY,
+        ANNOTATION_ADDED_OR_REMOVED
     }
 
-    public void acquire() throws OperationNotAllowedException {
-        try {
-            m_semaphore.acquire();
-        } catch (InterruptedException e) {  // NOSONAR exception is thrown
-            throw new OperationNotAllowedException("Could not wait for workflow change event", e);
-        } finally {
-            m_wfChangesListener.removeEventTracker(m_tracker);
-            m_wfChangesListener.removePostProcessCallback(m_postProcessCallback);
+    /**
+     * @param setAllOccurred If true, set all possible events to "have occurred".
+     */
+    public WorkflowChangesTracker(final boolean setAllOccurred) {
+        if (setAllOccurred) {
+            m_trackedChanges.addAll(Arrays.asList(WorkflowChange.values()));
         }
+    }
+
+    /**
+     * Initialize a new tracker
+     */
+    public WorkflowChangesTracker() {
+        this(false );
+    }
+
+    /**
+     * @param workflowChange Change to remember to have occurred
+     */
+    public void track(final WorkflowChange workflowChange) {
+        m_trackedChanges.add(workflowChange);
+    }
+
+    /**
+     * @param workflowChange The event to check for
+     * @return Whether the given event has occurred
+     */
+    public boolean hasOccurred(final WorkflowChange workflowChange) {
+        return m_trackedChanges.contains(workflowChange);
+    }
+
+    /**
+     * Forget that any event has occurred
+     */
+    public void reset() {
+        m_trackedChanges.clear();
     }
 
 }

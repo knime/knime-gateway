@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.service.events.EventSource;
-import org.knime.gateway.impl.service.util.EventTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
@@ -93,7 +93,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
 
-    private final Map<WorkflowKey, EventTracker> m_trackers = new HashMap<>();
+    private final Map<WorkflowKey, WorkflowChangesTracker> m_trackers = new HashMap<>();
 
     /**
      * @param eventConsumer
@@ -127,8 +127,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
 
         var wfChangesTracker = m_trackers.computeIfAbsent(workflowKey, k -> {
-            var tracker = new EventTracker(true);
-            workflowChangesListener.registerEventTracker(tracker);
+            var tracker = new WorkflowChangesTracker(true);
+            workflowChangesListener.registerWorkflowChangesTracker(tracker);
             return tracker;
         });
 
@@ -157,7 +157,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator, final EventTracker tracker) {
+        final PatchEntCreator patchEntCreator, final WorkflowChangesTracker tracker) {
         return wfm -> {
             preEventCreation();
             patchEntCreator.clear();

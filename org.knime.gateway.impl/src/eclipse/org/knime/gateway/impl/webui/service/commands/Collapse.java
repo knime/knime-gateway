@@ -47,29 +47,23 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Expand a metanode.
+ * Workflow command to collapse nodes based on a {@link CollapseCommandEnt}. Determines whether the queried workflow
+ * parts should be collapsed into a metanode or a component and invokes the according command.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-class ExpandMetanode extends AbstractExpand {
+final class Collapse extends CommandIfElse {
 
-    @Override
-    ExpandMetanode configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {
-        super.configure(wfKey, wfm, commandEnt);
+    Collapse configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEnt) {
+        super.configure(wfKey, wfm,
+                () -> commandEnt.getContainerType() == CollapseCommandEnt.ContainerTypeEnum.METANODE,
+                () -> new CollapseToMetanode().configure(wfKey, wfm, commandEnt),
+                () -> new CollapseToComponent().configure(wfKey, wfm, commandEnt)
+        );
         return this;
-    }
-
-    @Override
-    protected void checkCanExecuteOrThrow() throws ServiceExceptions.OperationNotAllowedException {
-        super.checkCanExecuteOrThrow();
-        var cannotExpandReason = getWorkflowManager().canExpandMetaNode(m_nodeToExpand);
-        if (cannotExpandReason != null) {
-            throw new ServiceExceptions.OperationNotAllowedException(cannotExpandReason);
-        }
     }
 }

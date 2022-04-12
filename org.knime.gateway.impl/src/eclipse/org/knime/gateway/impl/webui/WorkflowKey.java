@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui;
 
 import java.util.Objects;
 
-import org.knime.core.node.workflow.NodeID;
 import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
@@ -75,10 +74,6 @@ public final class WorkflowKey {
     public WorkflowKey(final String projectId, final NodeIDEnt workflowId) {
         m_projectId = projectId;
         m_workfowId = workflowId;
-    }
-
-    public WorkflowKey(final String projectId, final NodeID workflowId) {
-        this(projectId, new NodeIDEnt(workflowId));
     }
 
     /**

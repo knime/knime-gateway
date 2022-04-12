@@ -46,7 +46,6 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

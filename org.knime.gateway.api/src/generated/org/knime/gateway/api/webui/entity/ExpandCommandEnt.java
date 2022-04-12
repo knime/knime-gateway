@@ -67,7 +67,7 @@ public interface ExpandCommandEnt extends GatewayEntity, WorkflowCommandEnt {
   public Boolean isAllowReset();
 
   /**
-   * Id of node to be expaneded
+   * Id of node to be expanded
    * @return nodeId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
@@ -95,7 +95,7 @@ public interface ExpandCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         ExpandCommandEntBuilder setAllowReset(Boolean allowReset);
         
         /**
-         * Id of node to be expaneded
+         * Id of node to be expanded
          * 
          * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

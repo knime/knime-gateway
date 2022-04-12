@@ -51,8 +51,8 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
@@ -63,31 +63,30 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 final class Connect extends AbstractWorkflowCommand {
 
-    private final NodeID m_sourceNodeId;
+    private NodeID m_sourceNodeId;
 
-    private final NodeID m_destNodeId;
+    private NodeID m_destNodeId;
 
-    private final Integer m_sourcePortIdx;
+    private Integer m_sourcePortIdx;
 
-    private final Integer m_destPortIdx;
+    private Integer m_destPortIdx;
 
     private ConnectionContainer m_newConnection;
 
     private ConnectionContainer m_oldConnection;
 
-    public Connect(final WorkflowKey wfKey, final ConnectCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
-        super(wfKey);
-        var wfm = getWorkflowManager();
+    Connect configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ConnectCommandEnt commandEnt) {
+        super.configure(wfKey, wfm);
         var projectWfm = wfm.getProjectWFM();
         m_sourceNodeId = commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
         m_sourcePortIdx = commandEnt.getSourcePortIdx();
         m_destNodeId = commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
         m_destPortIdx = commandEnt.getDestinationPortIdx();
+        return this;
     }
 
     @Override
-    public boolean executeImpl() throws OperationNotAllowedException {
+    public boolean execute() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
 
         try {
@@ -125,14 +124,6 @@ final class Connect extends AbstractWorkflowCommand {
         }
         m_newConnection = null;
         m_oldConnection = null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean providesResult() {
-        return false;
     }
 
 }

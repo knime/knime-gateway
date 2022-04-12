@@ -69,7 +69,6 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
@@ -81,11 +80,11 @@ import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
  */
 final class Delete extends AbstractWorkflowCommand {
 
-    private final List<ConnectionIDEnt> m_connectionIdsQueried;
+    private List<ConnectionIDEnt> m_connectionIdsQueried;
 
-    private final List<AnnotationIDEnt> m_annotationIdsQueried;
+    private List<AnnotationIDEnt> m_annotationIdsQueried;
 
-    private final List<NodeIDEnt> m_nodeIdsQueried;
+    private List<NodeIDEnt> m_nodeIdsQueried;
 
     private WorkflowPersistor m_copy;
 
@@ -95,12 +94,12 @@ final class Delete extends AbstractWorkflowCommand {
      */
     private Set<ConnectionContainer> m_connections;
 
-    public Delete(final WorkflowKey wfKey, final DeleteCommandEnt commandEnt)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, OperationNotAllowedException {
-        super(wfKey);
+    Delete configure(final WorkflowKey wfKey, final WorkflowManager wfm, final DeleteCommandEnt commandEnt) {
+        super.configure(wfKey, wfm);
         m_nodeIdsQueried = commandEnt.getNodeIds();
         m_annotationIdsQueried = commandEnt.getAnnotationIds();
         m_connectionIdsQueried = commandEnt.getConnectionIds();
+        return this;
     }
 
     /**
@@ -127,8 +126,8 @@ final class Delete extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeImpl() throws OperationNotAllowedException {
-        WorkflowManager wfm = getWorkflowManager();
+    protected boolean execute() throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
             .map(id -> entityToNodeID(projectId, id)).collect(Collectors.toSet());
@@ -185,7 +184,10 @@ final class Delete extends AbstractWorkflowCommand {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
-                WorkflowStatefulUtil.getInstance().dispose(new WorkflowKey(wfKey.getProjectId(), id));
+                WorkflowStatefulUtil.getInstance().clearWorkflowState(k ->
+                        k.getProjectId().equals(wfKey.getProjectId())
+                        && k.getWorkflowId().equals(new NodeIDEnt(id))
+                );
             }
         }
         if (connections != null) {
@@ -232,15 +234,6 @@ final class Delete extends AbstractWorkflowCommand {
                 .map(id -> new WorkflowAnnotationID(id.getNodeIDEnt().toNodeID(wfmId), id.getIndex()))
                 .toArray(size -> new WorkflowAnnotationID[size]))
             .build();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean providesResult() {
-        return false;
     }
 
 }

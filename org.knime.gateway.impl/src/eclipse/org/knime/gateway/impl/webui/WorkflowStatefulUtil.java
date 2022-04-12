@@ -54,8 +54,9 @@ import static org.knime.gateway.api.webui.util.EntityBuilderUtil.buildWorkflowEn
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.WorkflowLock;
@@ -76,7 +77,7 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContex
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
-import org.knime.gateway.impl.service.util.EventTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
@@ -120,33 +121,26 @@ public final class WorkflowStatefulUtil {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
-        WorkflowProjectManager.addWorkflowProjectRemovedListener(this::clearWorkflowState);
+        WorkflowProjectManager.addWorkflowProjectRemovedListener(projectId -> {
+            clearWorkflowState(k -> k.getProjectId().equals(projectId));
+        });
     }
 
-    private void clearWorkflowState(final String projectId) {
-        m_entityRepo.disposeHistory(k -> k.getProjectId().equals(projectId));
-        m_commands.disposeUndoAndRedoStacks(projectId);
+    /**
+     * Notify this class that a workflow has been disposed.
+     * @param wfKey The sub-workflow
+     */
+    public void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
+        m_entityRepo.disposeHistory(keyFilter);
+        m_commands.disposeUndoAndRedoStacks(keyFilter);
         m_workflowStateCache.entrySet().removeIf(e -> {
-            if (e.getKey().getProjectId().equals(projectId)) {
-                if (e.getValue().m_changesListener != null) {
-                    e.getValue().m_changesListener.close();
-                }
+            if (keyFilter.test(e.getKey())) {
+                e.getValue().dispose();
                 return true;
             } else {
                 return false;
             }
         });
-    }
-
-    /**
-     * Notify this class that a sub-workflow has been disposed.
-     * @param wfKey The sub-workflow
-     */
-    public void dispose(final WorkflowKey wfKey) {
-        var removed = m_workflowStateCache.remove(wfKey);
-        if (removed != null) {
-            removed.dispose();
-        }
     }
 
     /**
@@ -179,9 +173,9 @@ public final class WorkflowStatefulUtil {
     }
 
     private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
-        final Supplier<WorkflowBuildContextBuilder> buildContextSupplier, final EventTracker tracker) {
+        final Supplier<WorkflowBuildContextBuilder> buildContextSupplier, final WorkflowChangesTracker tracker) {
         try (WorkflowLock lock = wfm.lock()) {
-            if (tracker.hasOccurred(EventTracker.Event.ANY)) {
+            if (tracker.hasOccurred(WorkflowChangesTracker.WorkflowChange.ANY)) {
                 var ent = buildWorkflowEnt(wfm, buildContextSupplier.get());
                 tracker.reset();
                 return ent;
@@ -195,10 +189,12 @@ public final class WorkflowStatefulUtil {
     }
 
     /**
-     * @return The workflow snapshot entity repository
+     * @param wfKey The workflow to query
+     * @return The snapshot-id of the most recent commit, or an empty optional if there are no commits yet.
      */
-    public EntityRepository<WorkflowKey, WorkflowEnt> getEntityRepository() {
-        return m_entityRepo;
+    public Optional<String> getLatestSnapshotId(final WorkflowKey wfKey) {
+        var latestCommit = m_entityRepo.getLastCommit(wfKey);
+        return latestCommit.map(Pair::getFirst);
     }
 
     /**
@@ -289,11 +285,12 @@ public final class WorkflowStatefulUtil {
      * @param patchEntCreator creator for the patch which is supplied with the {@link WorkflowChangedEventEnt}
      * @param snapshotId the latest snapshot id
      * @param includeInteractionInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
+     * @param changes A workflow changes tracker to determine if and how to build the event
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchCreator<WorkflowChangedEventEnt> patchEntCreator, final String snapshotId,
-        final boolean includeInteractionInfo, final EventTracker changes) {
+        final boolean includeInteractionInfo, final WorkflowChangesTracker changes) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         WorkflowState ws = getWorkflowState(wfKey);
@@ -325,7 +322,7 @@ public final class WorkflowStatefulUtil {
      * @param wfKey The workflow key characterising the workflow
      * @return recent {@code DependentNodeProperties}
      */
-    public DependentNodeProperties getDependentNodeProperties(final WorkflowKey wfKey) {
+    private DependentNodeProperties getDependentNodeProperties(final WorkflowKey wfKey) {
         return getWorkflowState(wfKey).getDependentNodeProperties();
     }
 
@@ -380,45 +377,48 @@ public final class WorkflowStatefulUtil {
             if (m_depNodeProperties != null) {
                 m_depNodeProperties.dispose();
             }
-        }
-
-        /**
-         * Wrapper around {@link DependentNodeProperties} that tracks the given workflow for changes affecting
-         * the dependent node properties and recomputing them if needed.
-         */
-        public static class CachedDependentNodeProperties {
-
-            private final WorkflowKey m_wfKey;
-
-            private DependentNodeProperties m_dependentNodeProperties;
-
-            private final EventTracker m_tracker;
-
-            public CachedDependentNodeProperties(final WorkflowKey wfKey) {
-                m_wfKey = wfKey;
-                var wfChL = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
-                m_tracker = new EventTracker(true);
-                wfChL.registerEventTracker(m_tracker);
-            }
-
-            public DependentNodeProperties get() {
-                var nodeStateChanges = m_tracker.hasOccurred(EventTracker.Event.NODE_STATE_UPDATED);
-                var nodeOrConnectionAddedOrRemoved = m_tracker.hasOccurred(EventTracker.Event.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
-                var recompute = Objects.isNull(m_dependentNodeProperties) || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
-                if (recompute) {
-                    var wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
-                    m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(wfm);
-                    m_tracker.reset();
-                }
-                return m_dependentNodeProperties;
-            }
-
-            void dispose() {
-                var wfChL = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(m_wfKey);
-                wfChL.removeEventTracker(m_tracker);
+            if (m_changesListener != null) {
+                m_changesListener.close();
             }
         }
 
+    }
+
+    /**
+     * Wrapper around {@link DependentNodeProperties} that tracks the given workflow for changes affecting
+     * the dependent node properties and recomputes them if needed.
+     */
+    private static final class CachedDependentNodeProperties {
+
+        private final WorkflowKey m_wfKey;
+
+        private DependentNodeProperties m_dependentNodeProperties;
+
+        private final WorkflowChangesTracker m_tracker;
+
+        public CachedDependentNodeProperties(final WorkflowKey wfKey) {
+            m_wfKey = wfKey;
+            var wfChL = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
+            m_tracker = new WorkflowChangesTracker(true);
+            wfChL.registerWorkflowChangesTracker(m_tracker);
+        }
+
+        public DependentNodeProperties get() {
+            var nodeStateChanges = m_tracker.hasOccurred(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
+            var nodeOrConnectionAddedOrRemoved = m_tracker.hasOccurred(WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+            var recompute = m_dependentNodeProperties == null || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+            if (recompute) {
+                var wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
+                m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(wfm);
+                m_tracker.reset();
+            }
+            return m_dependentNodeProperties;
+        }
+
+        void dispose() {
+            var wfChL = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(m_wfKey);
+            wfChL.removeWorkflowChangesTracker(m_tracker);
+        }
     }
 
 }

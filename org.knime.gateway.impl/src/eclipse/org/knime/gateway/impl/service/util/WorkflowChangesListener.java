@@ -47,12 +47,12 @@
 package org.knime.gateway.impl.service.util;
 
 import java.io.Closeable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -75,6 +75,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Summarizes all kind of workflow changes and allows one to register one single listener to all of them.
@@ -105,7 +106,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private final Set<Consumer<WorkflowManager>> m_workflowChangedCallbacks;
 
-    private final Set<EventTracker> m_eventTrackers = new CopyOnWriteArraySet<>();
+    private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
 
     private final Set<Consumer<WorkflowManager>> m_postProcessCallbacks = new HashSet<>();
 
@@ -155,19 +156,29 @@ public class WorkflowChangesListener implements Closeable {
     /**
      * @param tracker The tracker to register.
      */
-    public void registerEventTracker(final EventTracker tracker) {
-        m_eventTrackers.add(tracker);
+    public void registerWorkflowChangesTracker(final WorkflowChangesTracker tracker) {
+        m_workflowChangesTrackers.add(tracker);
     }
 
     /**
      * @param tracker The tracker to remove.
      */
-    public void removeEventTracker(final EventTracker tracker) {
-        m_eventTrackers.remove(tracker);
+    public void removeWorkflowChangesTracker(final WorkflowChangesTracker tracker) {
+        m_workflowChangesTrackers.remove(tracker);
     }
 
-    private void updateEventTrackers(final EventTracker.Event event) {
-        m_eventTrackers.forEach(t -> t.track(event));
+    private void updateWorkflowChangesTrackers(final WorkflowChangesTracker.WorkflowChange workflowChange) {
+        m_workflowChangesTrackers.forEach(t -> t.track(workflowChange));
+    }
+
+    /**
+     * Initialise a waiter for workflow changes. The waiter is aware of changes since its creation.
+     * @param wfKey The workflow to monitor
+     * @param changeToWaitFor The event to track
+     * @return The created and initialised waiter.
+     */
+    public WorkflowChangeWaiter createWorkflowChangeWaiter(final WorkflowKey wfKey, final WorkflowChangesTracker.WorkflowChange changeToWaitFor) {
+        return new WorkflowChangeWaiter(wfKey, changeToWaitFor);
     }
 
     /**
@@ -175,14 +186,14 @@ public class WorkflowChangesListener implements Closeable {
      * @see this#m_workflowChangedCallbacks
      * @param listener The callback to add
      */
-    public void addPostProcessCallback(final Consumer<WorkflowManager> listener) {
+    void addPostProcessCallback(final Consumer<WorkflowManager> listener) {
         m_postProcessCallbacks.add(listener);
     }
 
     /**
      * @param listener The callback to remove
      */
-    public void removePostProcessCallback(final Consumer<WorkflowManager> listener) {
+    void removePostProcessCallback(final Consumer<WorkflowManager> listener) {
         m_postProcessCallbacks.remove(listener);
     }
 
@@ -207,17 +218,17 @@ public class WorkflowChangesListener implements Closeable {
             case NODE_REMOVED:
             case CONNECTION_ADDED:
             case CONNECTION_REMOVED:
-                updateEventTrackers(EventTracker.Event.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
                 break;
             case NODE_COLLAPSED:
-                updateEventTrackers(EventTracker.Event.NODES_COLLAPSED);
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
                 break;
             case NODE_EXPANDED:
-                updateEventTrackers(EventTracker.Event.NODE_EXPANDED);
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
                 break;
             case ANNOTATION_ADDED:
             case ANNOTATION_REMOVED:
-                updateEventTrackers(EventTracker.Event.ANNOTATION_ADDED_OR_REMOVED);
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED_OR_REMOVED);
                 break;
             default:
                 //
@@ -257,7 +268,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private void addNodeListeners(final NodeContainer nc) {
         NodeStateChangeListener sl = e -> {
-            updateEventTrackers(EventTracker.Event.NODE_STATE_UPDATED);
+            updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
             callback();
         };
         m_nodeStateChangeListeners.put(nc.getID(), sl);
@@ -328,7 +339,7 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void callback() {
-        updateEventTrackers(EventTracker.Event.ANY);
+        updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANY);
         if (!m_callbackState.checkIsCallbackInProgressAndChangeState()) {
             m_executorService.execute(() -> {
                 do {
