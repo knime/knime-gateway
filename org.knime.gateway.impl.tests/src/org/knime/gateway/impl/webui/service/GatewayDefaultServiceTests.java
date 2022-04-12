@@ -179,8 +179,10 @@ public class GatewayDefaultServiceTests {
     @SuppressWarnings("javadoc")
     @Before
     public void setupServiceDependencies() {
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
     }
 
     @SuppressWarnings("javadoc")

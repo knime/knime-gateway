@@ -57,8 +57,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -96,19 +94,6 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  */
 public final class WorkflowMiddleware {
 
-    private static final LazyInitializer<WorkflowMiddleware> INITIALIZER = new LazyInitializer<>() {
-
-        @Override
-        protected WorkflowMiddleware initialize() throws ConcurrentException {
-            try {
-                return new WorkflowMiddleware();
-            } catch (IllegalArgumentException | SecurityException ex) {
-                throw new IllegalStateException("Could not instatiate <WorkflowProjectManager>", ex);
-            }
-        }
-
-    };
-
     /**
      * Determines the number of commands per workflow kept in the undo and redo stacks.
      */
@@ -121,21 +106,13 @@ public final class WorkflowMiddleware {
     private final WorkflowCommands m_commands;
 
     /**
-     * @return the singleton instance
+     * @param workflowProjectManager
      */
-    public static WorkflowMiddleware getInstance() {
-        try {
-            return INITIALIZER.get();
-        } catch (ConcurrentException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    private WorkflowMiddleware() {
+    public WorkflowMiddleware(final WorkflowProjectManager workflowProjectManager) {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowCache = Collections.synchronizedMap(new HashMap<>());
-        WorkflowProjectManager.getInstance().addWorkflowProjectRemovedListener(this::clearWorkflowState);
+        workflowProjectManager.addWorkflowProjectRemovedListener(this::clearWorkflowState);
     }
 
     private void clearWorkflowState(final String projectId) {

@@ -206,7 +206,9 @@ public class GatewayJsonRpcWrapperServiceTests {
     @Before
     public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
     }
 
     @SuppressWarnings("javadoc")

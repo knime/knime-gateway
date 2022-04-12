@@ -85,7 +85,8 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
         when(appStateSupplier.get()).thenReturn(appState);
         ServiceDependencies.setServiceDependency(AppStateProvider.class, appStateProvider);
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
 
         var appService = DefaultApplicationService.getInstance();

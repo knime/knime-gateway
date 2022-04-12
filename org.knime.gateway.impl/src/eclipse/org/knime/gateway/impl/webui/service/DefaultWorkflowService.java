@@ -66,7 +66,7 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 public final class DefaultWorkflowService implements WorkflowService {
 
-    private static final WorkflowMiddleware WF_MIDDLEWARE =
+    private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
     /**
@@ -90,11 +90,11 @@ public final class DefaultWorkflowService implements WorkflowService {
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         var wfKey = new WorkflowKey(projectId, workflowId);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return WF_MIDDLEWARE.buildWorkflowSnapshotEnt(wfKey,
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
-                    .canUndo(WF_MIDDLEWARE.canUndoCommand(wfKey)).canRedo(WF_MIDDLEWARE.canRedoCommand(wfKey)));
+                    .canUndo(m_workflowMiddleware.canUndoCommand(wfKey)).canRedo(m_workflowMiddleware.canRedoCommand(wfKey)));
         } else {
-            return WF_MIDDLEWARE.buildWorkflowSnapshotEnt(wfKey,
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
         }
     }
@@ -106,7 +106,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        WF_MIDDLEWARE.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
+        m_workflowMiddleware.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
     }
 
     /**
@@ -115,7 +115,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        WF_MIDDLEWARE.undoCommand(new WorkflowKey(projectId, workflowId));
+        m_workflowMiddleware.undoCommand(new WorkflowKey(projectId, workflowId));
     }
 
     /**
@@ -124,7 +124,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        WF_MIDDLEWARE.redoCommand(new WorkflowKey(projectId, workflowId));
+        m_workflowMiddleware.redoCommand(new WorkflowKey(projectId, workflowId));
     }
 
 }

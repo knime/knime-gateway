@@ -233,7 +233,10 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Test
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
         ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, WorkflowMiddleware.getInstance());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+
         Semaphore semaphore = new Semaphore(0);
         AtomicReference<Object> event = new AtomicReference<>();
         EventConsumer eventConsumer = (n, e) -> {

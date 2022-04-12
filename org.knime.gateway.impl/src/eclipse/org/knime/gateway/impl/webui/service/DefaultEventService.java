@@ -56,6 +56,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
@@ -79,6 +80,9 @@ public final class DefaultEventService implements EventService {
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private final WorkflowProjectManager m_workflowProjectManager =
+        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -106,7 +110,8 @@ public final class DefaultEventService implements EventService {
                 t -> new WorkflowChangedEventSource(this::sendEvent, m_workflowMiddleware));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider));
+                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider, m_workflowProjectManager,
+                    m_workflowMiddleware));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
