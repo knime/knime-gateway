@@ -69,11 +69,7 @@ public final class WorkflowProjectManager {
 
         @Override
         protected WorkflowProjectManager initialize() throws ConcurrentException {
-            try {
-                return new WorkflowProjectManager();
-            } catch (IllegalArgumentException | SecurityException ex) {
-                throw new IllegalStateException("Could not instantiate <WorkflowProjectManager>", ex);
-            }
+            return new WorkflowProjectManager();
         }
 
     };

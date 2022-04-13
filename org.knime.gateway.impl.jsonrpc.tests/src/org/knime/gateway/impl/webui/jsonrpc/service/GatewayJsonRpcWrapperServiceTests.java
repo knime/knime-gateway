@@ -214,7 +214,7 @@ public class GatewayJsonRpcWrapperServiceTests {
     @SuppressWarnings("javadoc")
     @After
     public void disposeServices() {
-        ServiceInstances.disposeAllServicesInstancesAndDependencies();
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
     /**
