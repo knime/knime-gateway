@@ -55,7 +55,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 
 /**
- * Expand a metanode or a component
+ * Resets nodes contained in the metanode or container and expands it.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,7 +63,6 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 public class DefaultExpandCommandEnt implements ExpandCommandEnt {
 
   protected KindEnum m_kind;
-  protected Boolean m_allowReset;
   protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
   
   protected DefaultExpandCommandEnt() {
@@ -81,7 +80,6 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
         throw new IllegalArgumentException("kind must not be null.");
     }
     m_kind = immutable(builder.m_kind);
-    m_allowReset = immutable(builder.m_allowReset);
     if(builder.m_nodeId == null) {
         throw new IllegalArgumentException("nodeId must not be null.");
     }
@@ -103,7 +101,7 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
             return false;
         }
         DefaultExpandCommandEnt ent = (DefaultExpandCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowReset, ent.m_allowReset) && Objects.equals(m_nodeId, ent.m_nodeId);
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
 
@@ -115,7 +113,6 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_kind)
-               .append(m_allowReset)
                .append(m_nodeId)
                .toHashCode();
    }
@@ -125,11 +122,6 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
   @Override
   public KindEnum getKind() {
         return m_kind;
-  }
-    
-  @Override
-  public Boolean isAllowReset() {
-        return m_allowReset;
   }
     
   @Override
@@ -145,7 +137,6 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
         }
     
         private KindEnum m_kind;
-        private Boolean m_allowReset;
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
@@ -154,12 +145,6 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
                  throw new IllegalArgumentException("kind must not be null.");
              }
              m_kind = kind;
-             return this;
-        }
-
-        @Override
-        public DefaultExpandCommandEntBuilder setAllowReset(Boolean allowReset) {
-             m_allowReset = allowReset;
              return this;
         }
 

@@ -52,19 +52,13 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Expand a metanode or a component
+ * Resets nodes contained in the metanode or container and expands it.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ExpandCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
-
-  /**
-   * If the node container is resettable, it is expanded if and only if this value is true and otherwise and exception is thrown. Assumed to be false if omitted.
-   * @return allowReset 
-   **/
-  public Boolean isAllowReset();
 
   /**
    * Id of node to be expanded
@@ -85,14 +79,6 @@ public interface ExpandCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         ExpandCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * If the node container is resettable, it is expanded if and only if this value is true and otherwise and exception is thrown. Assumed to be false if omitted.
-         * 
-         * @param allowReset the property value,  
-         * @return this entity builder for chaining
-         */
-        ExpandCommandEntBuilder setAllowReset(Boolean allowReset);
         
         /**
          * Id of node to be expanded

@@ -73,10 +73,6 @@ public interface ExpandCommandEntMixIn extends ExpandCommandEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("allowReset")
-    public Boolean isAllowReset();
-    
-    @Override
     @JsonProperty("nodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
@@ -96,10 +92,6 @@ public interface ExpandCommandEntMixIn extends ExpandCommandEnt {
         @Override
         @JsonProperty("kind")
         public ExpandCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("allowReset")
-        public ExpandCommandEntMixInBuilder setAllowReset(final Boolean allowReset);
         
         @Override
         @JsonProperty("nodeId")

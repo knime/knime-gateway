@@ -55,7 +55,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 
 /**
- * Collapse nodes and annotations into a metanode or a component
+ * Resets selected nodes and collapses selected nodes and annotations into a metanode or component.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,7 +65,6 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
   protected KindEnum m_kind;
   protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
   protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
-  protected Boolean m_allowReset;
   protected ContainerTypeEnum m_containerType;
   
   protected DefaultCollapseCommandEnt() {
@@ -91,7 +90,6 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
         throw new IllegalArgumentException("annotationIds must not be null.");
     }
     m_annotationIds = immutable(builder.m_annotationIds);
-    m_allowReset = immutable(builder.m_allowReset);
     if(builder.m_containerType == null) {
         throw new IllegalArgumentException("containerType must not be null.");
     }
@@ -113,7 +111,7 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
             return false;
         }
         DefaultCollapseCommandEnt ent = (DefaultCollapseCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_allowReset, ent.m_allowReset) && Objects.equals(m_containerType, ent.m_containerType);
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_containerType, ent.m_containerType);
     }
 
 
@@ -127,7 +125,6 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
                .append(m_kind)
                .append(m_nodeIds)
                .append(m_annotationIds)
-               .append(m_allowReset)
                .append(m_containerType)
                .toHashCode();
    }
@@ -150,11 +147,6 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
   }
     
   @Override
-  public Boolean isAllowReset() {
-        return m_allowReset;
-  }
-    
-  @Override
   public ContainerTypeEnum getContainerType() {
         return m_containerType;
   }
@@ -169,7 +161,6 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
         private KindEnum m_kind;
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
-        private Boolean m_allowReset;
         private ContainerTypeEnum m_containerType;
 
         @Override
@@ -196,12 +187,6 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
                  throw new IllegalArgumentException("annotationIds must not be null.");
              }
              m_annotationIds = annotationIds;
-             return this;
-        }
-
-        @Override
-        public DefaultCollapseCommandEntBuilder setAllowReset(Boolean allowReset) {
-             m_allowReset = allowReset;
              return this;
         }
 

@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Collapse nodes and annotations into a metanode or a component
+ * Resets selected nodes and collapses selected nodes and annotations into a metanode or component.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -80,12 +80,6 @@ public interface CollapseCommandEnt extends GatewayEntity, PartBasedCommandEnt {
 
   }
 
-
-  /**
-   * If resettable nodes are among the selected, the selection is collapsed if and only if this flag is set and otherwise an exception is thrown. Assumed to be false if omitted.
-   * @return allowReset 
-   **/
-  public Boolean isAllowReset();
 
   /**
    * Get containerType
@@ -122,14 +116,6 @@ public interface CollapseCommandEnt extends GatewayEntity, PartBasedCommandEnt {
          * @return this entity builder for chaining
          */
         CollapseCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
-        
-        /**
-         * If resettable nodes are among the selected, the selection is collapsed if and only if this flag is set and otherwise an exception is thrown. Assumed to be false if omitted.
-         * 
-         * @param allowReset the property value,  
-         * @return this entity builder for chaining
-         */
-        CollapseCommandEntBuilder setAllowReset(Boolean allowReset);
         
         /**
    		 * Set containerType

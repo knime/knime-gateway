@@ -81,10 +81,6 @@ public interface CollapseCommandEntMixIn extends CollapseCommandEnt {
     public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
     
     @Override
-    @JsonProperty("allowReset")
-    public Boolean isAllowReset();
-    
-    @Override
     @JsonProperty("containerType")
     public ContainerTypeEnum getContainerType();
     
@@ -112,10 +108,6 @@ public interface CollapseCommandEntMixIn extends CollapseCommandEnt {
         @Override
         @JsonProperty("annotationIds")
         public CollapseCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
-        
-        @Override
-        @JsonProperty("allowReset")
-        public CollapseCommandEntMixInBuilder setAllowReset(final Boolean allowReset);
         
         @Override
         @JsonProperty("containerType")

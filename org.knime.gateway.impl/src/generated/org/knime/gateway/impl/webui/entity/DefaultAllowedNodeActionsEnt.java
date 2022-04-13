@@ -69,6 +69,8 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
   protected Boolean m_canOpenLegacyFlowVariableDialog;
   protected Boolean m_canOpenView;
   protected Boolean m_canDelete;
+  protected CanExpandEnum m_canExpand;
+  protected CanCollapseEnum m_canCollapse;
   
   protected DefaultAllowedNodeActionsEnt() {
     //for sub-classes
@@ -97,6 +99,8 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
     m_canOpenLegacyFlowVariableDialog = immutable(builder.m_canOpenLegacyFlowVariableDialog);
     m_canOpenView = immutable(builder.m_canOpenView);
     m_canDelete = immutable(builder.m_canDelete);
+    m_canExpand = immutable(builder.m_canExpand);
+    m_canCollapse = immutable(builder.m_canCollapse);
   }
   
    /**
@@ -114,7 +118,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
             return false;
         }
         DefaultAllowedNodeActionsEnt ent = (DefaultAllowedNodeActionsEnt)o;
-        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset) && Objects.equals(m_canOpenDialog, ent.m_canOpenDialog) && Objects.equals(m_canOpenLegacyFlowVariableDialog, ent.m_canOpenLegacyFlowVariableDialog) && Objects.equals(m_canOpenView, ent.m_canOpenView) && Objects.equals(m_canDelete, ent.m_canDelete);
+        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset) && Objects.equals(m_canOpenDialog, ent.m_canOpenDialog) && Objects.equals(m_canOpenLegacyFlowVariableDialog, ent.m_canOpenLegacyFlowVariableDialog) && Objects.equals(m_canOpenView, ent.m_canOpenView) && Objects.equals(m_canDelete, ent.m_canDelete) && Objects.equals(m_canExpand, ent.m_canExpand) && Objects.equals(m_canCollapse, ent.m_canCollapse);
     }
 
 
@@ -132,6 +136,8 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
                .append(m_canOpenLegacyFlowVariableDialog)
                .append(m_canOpenView)
                .append(m_canDelete)
+               .append(m_canExpand)
+               .append(m_canCollapse)
                .toHashCode();
    }
   
@@ -172,6 +178,16 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         return m_canDelete;
   }
     
+  @Override
+  public CanExpandEnum getCanExpand() {
+        return m_canExpand;
+  }
+    
+  @Override
+  public CanCollapseEnum getCanCollapse() {
+        return m_canCollapse;
+  }
+    
   
     public static class DefaultAllowedNodeActionsEntBuilder implements AllowedNodeActionsEntBuilder {
     
@@ -186,6 +202,8 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         private Boolean m_canOpenLegacyFlowVariableDialog;
         private Boolean m_canOpenView;
         private Boolean m_canDelete;
+        private CanExpandEnum m_canExpand;
+        private CanCollapseEnum m_canCollapse;
 
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanExecute(Boolean canExecute) {
@@ -235,6 +253,18 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanDelete(Boolean canDelete) {
              m_canDelete = canDelete;
+             return this;
+        }
+
+        @Override
+        public DefaultAllowedNodeActionsEntBuilder setCanExpand(CanExpandEnum canExpand) {
+             m_canExpand = canExpand;
+             return this;
+        }
+
+        @Override
+        public DefaultAllowedNodeActionsEntBuilder setCanCollapse(CanCollapseEnum canCollapse) {
+             m_canCollapse = canCollapse;
              return this;
         }
 

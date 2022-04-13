@@ -59,6 +59,52 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt {
 
+  /**
+   * Only present for components or metanodes. Describes whether the node can be expanded. In case of \&quot;resetRequired\&quot;, the contained nodes have to be reset first.
+   */
+  public enum CanExpandEnum {
+    TRUE("true"),
+    
+    RESETREQUIRED("resetRequired"),
+    
+    FALSE("false");
+
+    private String value;
+
+    CanExpandEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+  /**
+   * Describes whether the selection can be collapsed if it contains this node. In case of \&quot;resetRequired\&quot;, the node has to be reset first.
+   */
+  public enum CanCollapseEnum {
+    TRUE("true"),
+    
+    RESETREQUIRED("resetRequired"),
+    
+    FALSE("false");
+
+    private String value;
+
+    CanCollapseEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Indicates whether the dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
@@ -83,6 +129,18 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
    * @return canDelete 
    **/
   public Boolean isCanDelete();
+
+  /**
+   * Only present for components or metanodes. Describes whether the node can be expanded. In case of \&quot;resetRequired\&quot;, the contained nodes have to be reset first.
+   * @return canExpand 
+   **/
+  public CanExpandEnum getCanExpand();
+
+  /**
+   * Describes whether the selection can be collapsed if it contains this node. In case of \&quot;resetRequired\&quot;, the node has to be reset first.
+   * @return canCollapse 
+   **/
+  public CanCollapseEnum getCanCollapse();
 
 
     /**
@@ -145,6 +203,22 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
          * @return this entity builder for chaining
          */
         AllowedNodeActionsEntBuilder setCanDelete(Boolean canDelete);
+        
+        /**
+         * Only present for components or metanodes. Describes whether the node can be expanded. In case of \&quot;resetRequired\&quot;, the contained nodes have to be reset first.
+         * 
+         * @param canExpand the property value,  
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanExpand(CanExpandEnum canExpand);
+        
+        /**
+         * Describes whether the selection can be collapsed if it contains this node. In case of \&quot;resetRequired\&quot;, the node has to be reset first.
+         * 
+         * @param canCollapse the property value,  
+         * @return this entity builder for chaining
+         */
+        AllowedNodeActionsEntBuilder setCanCollapse(CanCollapseEnum canCollapse);
         
         
         /**
