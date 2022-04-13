@@ -132,7 +132,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        ServiceInstances.disposeAllServicesInstancesAndDependencies();
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
     /**

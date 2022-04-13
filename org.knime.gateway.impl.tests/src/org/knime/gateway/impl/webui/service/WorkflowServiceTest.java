@@ -131,7 +131,7 @@ public class WorkflowServiceTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        ServiceInstances.disposeAllServicesInstancesAndDependencies();
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
 }

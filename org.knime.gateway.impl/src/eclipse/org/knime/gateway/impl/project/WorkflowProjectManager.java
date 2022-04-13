@@ -72,7 +72,7 @@ public final class WorkflowProjectManager {
             try {
                 return new WorkflowProjectManager();
             } catch (IllegalArgumentException | SecurityException ex) {
-                throw new IllegalStateException("Could not instatiate <WorkflowProjectManager>", ex);
+                throw new IllegalStateException("Could not instantiate <WorkflowProjectManager>", ex);
             }
         }
 

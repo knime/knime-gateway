@@ -141,7 +141,7 @@ public final class ServiceInstances {
     /**
      * Disposes all default service instances.
      */
-    public static void disposeAllServicesInstancesAndDependencies() {
+    public static void disposeAllServiceInstancesAndDependencies() {
         SERVICE_INITIALIZERS.values().forEach(s -> {
             try {
                 s.get().dispose();

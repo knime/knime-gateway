@@ -261,7 +261,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             assertThat(((WorkflowChangedEventEnt)event.get()).getPatch().getOps().stream().map(op -> op.getPath())
                 .collect(Collectors.toList()), Matchers.hasItem("/allowedActions/canUndo"));
         } finally {
-            ServiceInstances.disposeAllServicesInstancesAndDependencies();
+            ServiceInstances.disposeAllServiceInstancesAndDependencies();
         }
     }
 

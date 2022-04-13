@@ -188,7 +188,7 @@ public class GatewayDefaultServiceTests {
     @SuppressWarnings("javadoc")
     @After
     public void disposeServices() {
-        ServiceInstances.disposeAllServicesInstancesAndDependencies();
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
 }
