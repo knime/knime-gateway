@@ -38,6 +38,7 @@
     "root:5:0:7:0:4" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -87,6 +88,7 @@
     "root:5:0:7:0:5" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -120,6 +122,7 @@
     "root:5:0:7:0:6" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
         "canOpenDialog" : true,

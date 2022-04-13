@@ -86,6 +86,7 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
@@ -443,12 +444,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testExpandConfiguredMetanode() throws Exception {
         var configuredMetanode = 14;
-        textExpandConfigured(configuredMetanode);
+        testExpandConfigured(configuredMetanode);
     }
 
     public void testExpandConfiguredComponent() throws Exception {
         var configuredComponent = 15;
-        textExpandConfigured(configuredComponent);
+        testExpandConfigured(configuredComponent);
     }
 
     public void testExpandResettableMetanode() throws Exception {
@@ -486,17 +487,19 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
-        var commandWithoutReset = buildExpandCommandEnt(nodeToExpandEnt, false);
-        assertThrows(
-                "Expect exception when expanding resettable container without explicit confirmation",
-                OperationNotAllowedException.class,
-                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandWithoutReset)
+
+        WorkflowEnt wfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertTrue(
+                "Expect selected nodes to have allowed action for collapse set to 'reset required'",
+                getAllowedActionsOfNodes(List.of(nodeToExpandEnt), wfEnt).stream().anyMatch(
+                        actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.RESETREQUIRED
+                )
         );
 
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
         assertNodesPresent("Expect container to be still be in root workflow", rootWfEnt, List.of(nodeToExpandEnt));
 
-        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, true);
+        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         assertExpanded(wfId, commandEnt, responseEnt);
     }
@@ -506,21 +509,31 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var containerEnt = new NodeIDEnt(container);
         executeAndWaitUntilExecuting(wfId, successor);
 
-        var commandEnt = buildExpandCommandEnt(containerEnt, false);
-        assertThrows(
-                "Expect exception when expanding node with executing successor",
-                OperationNotAllowedException.class,
-                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)
-        );
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, List.of(containerEnt));
+
+        assertTrue(
+                "Expect selected nodes to have allowed action for expand to be false",
+                getAllowedActionsOfNodes(List.of(containerEnt), rootWfEnt).stream().anyMatch(
+                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE
+                )
+        );
+
+//        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, List.of(containerEnt));
     }
 
-    private void textExpandConfigured(final int nodeToExpand) throws Exception {
+    private void testExpandConfigured(final int nodeToExpand) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
-        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, false);
+        WorkflowEnt unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        assertTrue(
+                "Expect selected nodes to have allowed action for collapse set to true",
+                getAllowedActionsOfNodes(List.of(nodeToExpandEnt), unchangedWfEnt).stream().anyMatch(
+                        actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.TRUE
+                )
+        );
+
+        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt commandResponseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         assertExpanded(wfId, commandEnt, commandResponseEnt);
 
@@ -563,20 +576,25 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var waitNode = 16;
         var nodesToCollapseInts = List.of(5,3);
-        var annotsToCollapseInts = List.of(0,1);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
-        var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
 
         executeAndWaitUntilExecuting(wfId, waitNode);
-        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, false);
-        assertThrows(
-                "Expect exception when collapsing nodes with executing successor",
-                OperationNotAllowedException.class,
-                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)
-        );
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, nodesToCollapseEnts);
-        assertAnnotationsPresent("Expect annotations to still be in root workflow", rootWfEnt, annotsToCollapseEnts);
+
+        assertTrue(
+                "Expect selected nodes to have allowed action for collapse to be false",
+                getAllowedActionsOfNodes(nodesToCollapseEnts, rootWfEnt).stream().anyMatch(
+                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE
+                )
+        );
+    }
+
+    private List<AllowedNodeActionsEnt> getAllowedActionsOfNodes(final List<NodeIDEnt> nodes, final WorkflowEnt wfEnt) {
+        return nodes.stream()
+                .map(NodeIDEnt::toString)
+                .map(idStr -> wfEnt.getNodes().get(idStr))
+                .map(NodeEnt::getAllowedActions)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -603,7 +621,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotsToCollapseInts = List.of(0,1);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
         var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
-        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, true);
+        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
         var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         // TODO test for snapshot id once we have NXT-927
         if (commandResponseEnt instanceof CollapseResultEnt) {
@@ -621,7 +639,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
-        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt, true);
+        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
 
         // TODO test for snapshot id once we have NXT-927
@@ -641,7 +659,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Set<String> annotationContents = unchangedWfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(
                 Collectors.toSet());
 
-        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType, false);
+        assertTrue(
+                "Expect selected nodes to have allowed action for collapse set to true",
+                getAllowedActionsOfNodes(nodesToCollapseEnts, unchangedWfEnt).stream().anyMatch(
+                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.TRUE
+                )
+        );
+
+        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
         var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         var newNode = getNewNodeId(commandResponseEnt);
 
@@ -741,30 +766,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodesToCollapseInts = List.of(7,6);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
-        CollapseCommandEnt commandWithoutReset = buildCollapseCommandEnt(
-                nodesToCollapseEnts,
-                Collections.emptyList(),
-                containerType,
-                false
-        );
-        assertThrows(
-                "Expect exception when collapsing resettable nodes without explicit confirmation",
-                OperationNotAllowedException.class,
-                () -> ws().executeWorkflowCommand(wfId, getRootID(), commandWithoutReset)
+
+        WorkflowEnt wfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertTrue(
+                "Expect selected nodes to have allowed action for collapse set to 'reset required'",
+                getAllowedActionsOfNodes(nodesToCollapseEnts, wfEnt).stream().anyMatch(
+                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.RESETREQUIRED
+                )
         );
 
-        WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, nodesToCollapseEnts);
-
-        // Expect nodes to be collapsed if explicit confirmation given
-        CollapseCommandEnt commandWithReset = buildCollapseCommandEnt(
-                nodesToCollapseEnts,
-                Collections.emptyList(),
-                containerType,
-                true
-        );
-        var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandWithReset);
-        assertCollapsed(wfId, commandWithReset, commandResponseEnt, Collections.emptySet());
+        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
+        var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertCollapsed(wfId, commandEnt, commandResponseEnt, Collections.emptySet());
     }
 
     private static void assertAnnotationsNotPresent(final String message, final List<AnnotationIDEnt> annots,
@@ -826,22 +839,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static CollapseCommandEnt buildCollapseCommandEnt(final List<NodeIDEnt> nodes,
-            final List<AnnotationIDEnt> annotationIds,
-            final CollapseCommandEnt.ContainerTypeEnum containerType,
-            final boolean allowReset) {
+            final List<AnnotationIDEnt> annotationIds, final CollapseCommandEnt.ContainerTypeEnum containerType) {
         return builder(CollapseCommandEnt.CollapseCommandEntBuilder.class)
                 .setKind(KindEnum.COLLAPSE)
                 .setContainerType(containerType)
-                .setAllowReset(allowReset)
                 .setNodeIds(nodes)
                 .setAnnotationIds(annotationIds)
                 .build();
     }
 
-    private static ExpandCommandEnt buildExpandCommandEnt(final NodeIDEnt node, final boolean allowReset) {
+    private static ExpandCommandEnt buildExpandCommandEnt(final NodeIDEnt node) {
         return builder(ExpandCommandEnt.ExpandCommandEntBuilder.class)
                 .setKind(KindEnum.EXPAND)
-                .setAllowReset(allowReset)
                 .setNodeId(node)
                 .build();
     }

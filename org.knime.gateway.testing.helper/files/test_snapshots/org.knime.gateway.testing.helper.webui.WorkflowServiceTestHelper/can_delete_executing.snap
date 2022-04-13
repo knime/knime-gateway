@@ -67,6 +67,7 @@
     "root:1" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -123,6 +124,7 @@
     "root:2" : {
       "allowedActions" : {
         "canCancel" : true,
+        "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -175,6 +177,7 @@
     "root:3" : {
       "allowedActions" : {
         "canCancel" : true,
+        "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -226,6 +229,7 @@
     "root:4" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -286,8 +290,10 @@
     "root:7" : {
       "allowedActions" : {
         "canCancel" : true,
+        "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
+        "canExpand" : "false",
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -335,8 +341,10 @@
     "root:8" : {
       "allowedActions" : {
         "canCancel" : true,
+        "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
+        "canExpand" : "false",
         "canOpenDialog" : true,
         "canReset" : false
       },
