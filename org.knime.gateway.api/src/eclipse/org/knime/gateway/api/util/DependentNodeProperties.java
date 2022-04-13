@@ -185,6 +185,18 @@ public final class DependentNodeProperties {
         }).orElse(false);
     }
 
+    /**
+     * @return Whether the node has a successor that is currently executing. Also considers successors across
+     *  component/metanode borders. The property is boundary-inclusive: A currently executing node will also have
+     *  this property.
+     */
+    public boolean hasExecutingSuccessor(final NodeID id) {
+        if (!m_props.containsKey(id)) {
+            throw new NoSuchElementException("No pre-calculated has-executing-successor predicate found for node id " + id);
+        }
+        return m_props.get(id).hasExecutingSuccessors();
+    }
+
 
     /**
      * @return True iff at least one node in the workflow can be reset. Here, reset-ability also considers the context

@@ -75,8 +75,6 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
 
     private CollapseIntoMetaNodeResult m_metaNodeCollapseResult;
 
-    private boolean m_allowReset;
-
     static final String DEFAULT_NODE_NAME = "Metanode";
 
     private Set<NodeID> m_newNodeIdsAfterUndo = new HashSet<>();
@@ -85,7 +83,6 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
 
     CollapseToMetanode configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEntity) {
         super.configure(wfKey, wfm, commandEntity);
-        m_allowReset = Optional.ofNullable(commandEntity.isAllowReset()).orElse(false);
         return this;
     }
 
@@ -117,7 +114,8 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
     protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
         checkPartsPresentElseThrow();
 
-        WorkflowCommandUtils.resetNodesOrThrow(this, getNodeIDs(), m_allowReset);
+        var wfm = getWorkflowManager();
+        getNodeIDs().stream().filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 
         var nodeIds = getNodeIDs().toArray(NodeID[]::new);
 

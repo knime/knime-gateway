@@ -48,7 +48,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
@@ -57,7 +56,6 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
  * Utility functions for implementing workflow commands
@@ -97,17 +95,6 @@ final class WorkflowCommandUtils {
         } else {
             return Optional.of(annos[0]);
         }
-    }
-
-    static void resetNodesOrThrow(final AbstractWorkflowCommand command, final Set<NodeID> nodes, final boolean allowReset)
-            throws ServiceExceptions.OperationNotAllowedException {
-        var wfm = command.getWorkflowManager();
-        boolean someResettable = nodes.stream().anyMatch(wfm::canResetNode);
-        if (someResettable && !allowReset) {
-            throw new ServiceExceptions.OperationNotAllowedException("Resettable nodes in selection but " +
-                    "explicit confirmation not given");
-        }
-        nodes.stream().filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
     }
 
     enum ContainerType {

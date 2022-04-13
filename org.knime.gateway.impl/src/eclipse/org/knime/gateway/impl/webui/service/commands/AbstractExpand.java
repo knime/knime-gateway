@@ -84,18 +84,20 @@ class AbstractExpand extends AbstractWorkflowCommand {
 
     private WorkflowPersistor m_expandedNodePersistor;
 
-    private boolean m_allowReset;
 
     AbstractExpand configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {
         super.configure(wfKey, wfm);
         m_nodeToExpand = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), commandEnt.getNodeId());
-        m_allowReset = Optional.ofNullable(commandEnt.isAllowReset()).orElse(false);
         return this;
     }
 
     @Override
     protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
-        WorkflowCommandUtils.resetNodesOrThrow(this, Set.of(m_nodeToExpand), m_allowReset);
+        var wfm = getWorkflowManager();
+        if(wfm.canResetNode(m_nodeToExpand)) {
+            wfm.resetAndConfigureNode(m_nodeToExpand);
+        }
+
         checkCanExecuteOrThrow();
 
         WorkflowCopyContent copyContent = WorkflowCopyContent.builder()

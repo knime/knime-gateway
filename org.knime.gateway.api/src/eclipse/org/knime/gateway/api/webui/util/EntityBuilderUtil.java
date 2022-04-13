@@ -114,6 +114,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
+import org.knime.core.ui.node.workflow.WorkflowManagerUI;
 import org.knime.core.util.ConfigUtils;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
@@ -785,7 +786,7 @@ public final class EntityBuilderUtil {
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
         final WorkflowBuildContext buildContext) {
         return buildNodeEnt(id, nc, buildContext.includeInteractionInfo()
-            ? buildAllowedNodeActionsEnt(nc, buildContext.dependentNodeProperties()) : null, buildContext);
+            ? buildAllowedNodeActionsEnt(nc, buildContext) : null, buildContext);
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
@@ -803,7 +804,8 @@ public final class EntityBuilderUtil {
     }
 
     private static AllowedNodeActionsEnt buildAllowedNodeActionsEnt(final NodeContainer nc,
-        final DependentNodeProperties depNodeProps) {
+        final WorkflowBuildContext buildContext) {
+        DependentNodeProperties depNodeProps = buildContext.dependentNodeProperties();
         WorkflowManager parent = nc.getParent();
         NodeID id = nc.getID();
         boolean hasNodeDialog = NodeDialogManager.hasNodeDialog(nc);
@@ -816,7 +818,60 @@ public final class EntityBuilderUtil {
             .setCanOpenLegacyFlowVariableDialog(hasNodeDialog ? Boolean.TRUE : null)//
             .setCanOpenView(hasAndCanOpenNodeView(nc))//
             .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
+            .setCanCollapse(canCollapseNode(id, buildContext))
+            .setCanExpand(canExpandNode(nc, id, buildContext))
             .build();
+    }
+
+    private static AllowedNodeActionsEnt.CanCollapseEnum canCollapseNode(final NodeID id, final WorkflowBuildContext buildContext) {
+        var isResettable = buildContext.dependentNodeProperties().canResetNode(id);
+        if (isResettable) {
+            return AllowedNodeActionsEnt.CanCollapseEnum.RESETREQUIRED;
+        }
+
+        var hasExcecutingSuccessors = buildContext.dependentNodeProperties().hasExecutingSuccessor(id);
+        var parentWriteProtected = buildContext.wfm().isWriteProtected();
+        if (hasExcecutingSuccessors || parentWriteProtected) {
+            return AllowedNodeActionsEnt.CanCollapseEnum.FALSE;
+        }
+
+        return AllowedNodeActionsEnt.CanCollapseEnum.TRUE;
+    }
+
+    private static AllowedNodeActionsEnt.CanExpandEnum canExpandNode(final NodeContainer nc, final NodeID id,  final WorkflowBuildContext buildContext) {
+        if (!(nc instanceof WorkflowManager || nc instanceof SubNodeContainer)) {
+            return null;
+        }
+
+        var isResettable = buildContext.dependentNodeProperties().canResetNode(id);
+        if (isResettable) {
+            return AllowedNodeActionsEnt.CanExpandEnum.RESETREQUIRED;
+        }
+
+        if (isNodeContainerWriteProtected(nc) || !canExpandNodeContainer(id, nc, buildContext.wfm())) {
+            return AllowedNodeActionsEnt.CanExpandEnum.FALSE;
+        }
+
+        return AllowedNodeActionsEnt.CanExpandEnum.TRUE;
+    }
+
+    private static boolean isNodeContainerWriteProtected(final NodeContainer nc) {
+        if (nc instanceof WorkflowManagerUI) {
+            var wfmui = (WorkflowManagerUI)nc;
+            return wfmui.isWriteProtected();
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean canExpandNodeContainer(final NodeID id, final NodeContainer nc, final WorkflowManager wfm) {
+        String cannotExpandReason = null;
+        if (nc instanceof SubNodeContainer) {
+            cannotExpandReason = wfm.canExpandSubNode(id);
+        } else if (nc instanceof WorkflowManager) {
+            cannotExpandReason = wfm.canExpandMetaNode(id);
+        }
+        return cannotExpandReason == null;
     }
 
     private static Boolean canDeleteNode(final NodeContainer nc, final NodeID nodeId,
