@@ -83,7 +83,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
 
     private Set<WorkflowAnnotationID> m_newAnnotIdsAfterUndo = new HashSet<>();
 
-    CollapseToMetanode configure(final WorkflowKey wfKey, WorkflowManager wfm, final CollapseCommandEnt commandEntity) {
+    CollapseToMetanode configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEntity) {
         super.configure(wfKey, wfm, commandEntity);
         m_allowReset = Optional.ofNullable(commandEntity.isAllowReset()).orElse(false);
         return this;
@@ -99,10 +99,8 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
         m_newNodeIdsAfterUndo = Set.of(reintroducedParts.getNodeIDs());
         m_newAnnotIdsAfterUndo = Set.of(reintroducedParts.getAnnotationIDs());
 
-        WorkflowStatefulUtil.getInstance().clearWorkflowState(k ->
-                k.getProjectId().equals(getWorkflowKey().getProjectId())
-                && k.getWorkflowId().equals(new NodeIDEnt(getNewNode().orElseThrow()))
-        );
+        WorkflowStatefulUtil.getInstance().clearWorkflowState(
+            new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(getNewNode().orElseThrow())));
     }
 
     @Override

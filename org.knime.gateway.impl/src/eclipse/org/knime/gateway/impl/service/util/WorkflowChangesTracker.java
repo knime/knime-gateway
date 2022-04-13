@@ -62,38 +62,35 @@ public class WorkflowChangesTracker {
 
     /**
      * Types of changes to occur to a workflow manager.
-     *
-     * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
      */
     public enum WorkflowChange {
+        /** Tracked on any node state change */
         NODE_STATE_UPDATED,
+        /** Tracked whenever a node or connection has been added or removed */
         NODE_OR_CONNECTION_ADDED_OR_REMOVED,
+        /** Tracked whenever parts of a workflow are collapsed into a metanode/component. */
         NODES_COLLAPSED,
+        /** Tracked whenever a metanode or a component have been expanded */
         NODE_EXPANDED,
+        /** Tracked on any change */
         ANY,
+        /** Tracked whenever a workflow annotation has been removed or added */
         ANNOTATION_ADDED_OR_REMOVED
     }
 
     /**
-     * @param setAllOccurred If true, set all possible events to "have occurred".
+     * @param setAllOccurred If true, set all possible changes to "have occurred".
      */
-    public WorkflowChangesTracker(final boolean setAllOccurred) {
+    WorkflowChangesTracker(final boolean setAllOccurred) {
         if (setAllOccurred) {
             m_trackedChanges.addAll(Arrays.asList(WorkflowChange.values()));
         }
     }
 
     /**
-     * Initialize a new tracker
-     */
-    public WorkflowChangesTracker() {
-        this(false );
-    }
-
-    /**
      * @param workflowChange Change to remember to have occurred
      */
-    public void track(final WorkflowChange workflowChange) {
+    void track(final WorkflowChange workflowChange) {
         m_trackedChanges.add(workflowChange);
     }
 

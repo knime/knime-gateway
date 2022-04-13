@@ -70,10 +70,10 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.service.events.EventSource;
-import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -126,11 +126,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
 
-        var wfChangesTracker = m_trackers.computeIfAbsent(workflowKey, k -> {
-            var tracker = new WorkflowChangesTracker(true);
-            workflowChangesListener.registerWorkflowChangesTracker(tracker);
-            return tracker;
-        });
+        var wfChangesTracker =
+            m_trackers.computeIfAbsent(workflowKey, k -> workflowChangesListener.createWorkflowChangeTracker(true));
 
         // create very first changed event to be sent first (and thus catch up with the most recent
         // workflow version)
@@ -187,8 +184,12 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
     }
 
+    @SuppressWarnings("resource")
     private void removeTracker(final WorkflowKey wfKey) {
-        m_trackers.remove(wfKey);
+        var tracker = m_trackers.remove(wfKey);
+        if (tracker != null && WF_UTIL.hasStateFor(wfKey)) {
+            WF_UTIL.getWorkflowChangesListener(wfKey).removeWorkflowChangesTracker(tracker);
+        }
     }
 
     /**
@@ -197,7 +198,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     @Override
     public void removeAllEventListeners() {
         new HashSet<>(m_workflowChangesCallbacks.keySet()).forEach(this::removeEventListener);
-        new HashSet<>(m_trackers.keySet()).forEach(this::removeEventListener);
+        new HashSet<>(m_trackers.keySet()).forEach(this::removeTracker);
     }
 
     /**

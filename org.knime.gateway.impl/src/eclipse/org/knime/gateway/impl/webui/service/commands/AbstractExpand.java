@@ -106,10 +106,8 @@ class AbstractExpand extends AbstractWorkflowCommand {
 
         m_subNodeExpandResult = getWorkflowManager().expandSubWorkflow(m_nodeToExpand);
 
-        WorkflowStatefulUtil.getInstance().clearWorkflowState(k ->
-                k.getProjectId().equals(getWorkflowKey().getProjectId())
-                && k.getWorkflowId().equals(new NodeIDEnt(m_nodeToExpand))
-        );
+        WorkflowStatefulUtil.getInstance()
+            .clearWorkflowState(new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(m_nodeToExpand)));
 
         return true;
     }

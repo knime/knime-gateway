@@ -156,6 +156,12 @@ public interface WorkflowCommand {
          */
         CommandResultEnt buildEntity(String snapshotId);
 
+        /**
+         * Determines the workflow change to wait for before the command result can be build, see
+         * {@link #buildEntity(String)}.
+         *
+         * @return the workflow change to wait for until the command result can be build
+         */
         WorkflowChangesTracker.WorkflowChange getChangeToWaitFor();
 
     }

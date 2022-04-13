@@ -116,7 +116,6 @@ public class WorkflowChangesListener implements Closeable {
 
     private final boolean m_isInStreamingMode;
 
-
     /**
      * @param wfm the workflow manager to listen to
      */
@@ -154,13 +153,6 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     /**
-     * @param tracker The tracker to register.
-     */
-    public void registerWorkflowChangesTracker(final WorkflowChangesTracker tracker) {
-        m_workflowChangesTrackers.add(tracker);
-    }
-
-    /**
      * @param tracker The tracker to remove.
      */
     public void removeWorkflowChangesTracker(final WorkflowChangesTracker tracker) {
@@ -173,12 +165,36 @@ public class WorkflowChangesListener implements Closeable {
 
     /**
      * Initialise a waiter for workflow changes. The waiter is aware of changes since its creation.
-     * @param wfKey The workflow to monitor
+     *
      * @param changeToWaitFor The event to track
      * @return The created and initialised waiter.
      */
-    public WorkflowChangeWaiter createWorkflowChangeWaiter(final WorkflowKey wfKey, final WorkflowChangesTracker.WorkflowChange changeToWaitFor) {
-        return new WorkflowChangeWaiter(wfKey, changeToWaitFor);
+    public WorkflowChangeWaiter
+        createWorkflowChangeWaiter(final WorkflowChangesTracker.WorkflowChange changeToWaitFor) {
+        return new WorkflowChangeWaiter(changeToWaitFor, this);
+    }
+
+    /**
+     * Creates a new {@link WorkflowChangesTracker}-instance. Once a tracker is not needed anymore it should be
+     * de-registered via {@link #removeWorkflowChangesTracker(WorkflowChangesTracker)}.
+     *
+     * @param setAllOccurred if {@code true}, set all possible changes to "have occurred" for the returned tracker
+     * @return a new instance of a {@link WorkflowChangesTracker} for the workflow referenced by the {@link WorkflowKey}
+     */
+    public WorkflowChangesTracker createWorkflowChangeTracker(final boolean setAllOccurred) {
+        var tracker = new WorkflowChangesTracker(setAllOccurred);
+        m_workflowChangesTrackers.add(tracker);
+        return tracker;
+    }
+
+    /**
+     * Creates a new {@link WorkflowChangesTracker}-instance. Once a tracker is not needed anymore it should be
+     * de-registered via {@link #removeWorkflowChangesTracker(WorkflowChangesTracker)}.
+     *
+     * @return a new instance of a {@link WorkflowChangesTracker} for the workflow referenced by the {@link WorkflowKey}
+     */
+    public WorkflowChangesTracker createWorkflowChangeTracker() {
+        return createWorkflowChangeTracker(false);
     }
 
     /**

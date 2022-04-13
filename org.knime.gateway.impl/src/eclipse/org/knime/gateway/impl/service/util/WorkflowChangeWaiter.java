@@ -50,8 +50,6 @@ import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 
 /**
  * Semaphore that is released once a specific workflow change event is tracked.
@@ -69,17 +67,17 @@ public class WorkflowChangeWaiter {
     private final WorkflowChangesTracker m_tracker;
 
     /**
-     * Create and configure a new tracking semaphore for the given event on the given workflow.
-     * @param wfKey The workflow to track events of
-     * @param workflowChange The event to be tracked by the semaphore
+     * Create and configure a workflow change waiter instance for the given event on the given workflow.
+     *
+     * @param workflowChange The workflow change to wait for
      */
-    WorkflowChangeWaiter(final WorkflowKey wfKey, final WorkflowChangesTracker.WorkflowChange workflowChange) {
-        m_wfChangesListener = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
+    WorkflowChangeWaiter(final WorkflowChangesTracker.WorkflowChange workflowChange,
+        final WorkflowChangesListener wfChangesListener) {
+        m_wfChangesListener = wfChangesListener;
 
         m_semaphore = new Semaphore(0, true);
 
-        m_tracker = new WorkflowChangesTracker();
-        m_wfChangesListener.registerWorkflowChangesTracker(m_tracker);
+        m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
 
         m_postProcessCallback = wfm -> {
             if (!m_tracker.hasOccurred(workflowChange)) {

@@ -184,10 +184,8 @@ final class Delete extends AbstractWorkflowCommand {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
-                WorkflowStatefulUtil.getInstance().clearWorkflowState(k ->
-                        k.getProjectId().equals(wfKey.getProjectId())
-                        && k.getWorkflowId().equals(new NodeIDEnt(id))
-                );
+                WorkflowStatefulUtil.getInstance()
+                    .clearWorkflowState(new WorkflowKey(wfKey.getProjectId(), new NodeIDEnt(id)));
             }
         }
         if (connections != null) {

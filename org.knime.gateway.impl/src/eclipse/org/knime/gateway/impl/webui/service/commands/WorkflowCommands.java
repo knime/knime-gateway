@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -114,7 +115,6 @@ public final class WorkflowCommands {
      * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
-    @SuppressWarnings("unchecked")
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
         var wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -138,12 +138,13 @@ public final class WorkflowCommands {
                 "Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
 
-        var workflowChangesListener = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
-        var resultBuilder = command.getResultBuilder();
-
-        var workflowChangeWaiter = resultBuilder
-                .map(WorkflowCommand.CommandResultBuilder::getChangeToWaitFor)
-                .map(event -> workflowChangesListener.createWorkflowChangeWaiter(wfKey, event));
+        var resultBuilder = command.getResultBuilder().orElse(null);
+        WorkflowChangeWaiter workflowChangeWaiter = null;
+        if (resultBuilder != null) {
+            // TODO access through injected dependency!
+            var wfChangesListener = WorkflowStatefulUtil.getInstance().getWorkflowChangesListener(wfKey);
+            workflowChangeWaiter = wfChangesListener.createWorkflowChangeWaiter(resultBuilder.getChangeToWaitFor());
+        }
 
         var workflowModified = command.executeWithWorkflowLock();
         if (workflowModified) {
@@ -151,16 +152,15 @@ public final class WorkflowCommands {
             clearRedoStack(wfKey);
         }
 
-        if (resultBuilder.isPresent()) {
+        if (resultBuilder != null) {
             try {
-                workflowChangeWaiter.orElseThrow().blockUntilOccurred();
-            } catch (InterruptedException e) {  // NOSONAR: Exception re-thrown
+                workflowChangeWaiter.blockUntilOccurred();
+            } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
                 throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
             }
-            var latestSnapshotId = WorkflowStatefulUtil.getInstance()
-                .getLatestSnapshotId(wfKey).orElse(null);
+            var latestSnapshotId = WorkflowStatefulUtil.getInstance().getLatestSnapshotId(wfKey).orElse(null);
             // TODO Can instead throw exception once entity repository can be mocked (NXT-927)
-            return resultBuilder.get().buildEntity(latestSnapshotId);
+            return resultBuilder.buildEntity(latestSnapshotId);
         } else {
             return null;
         }
@@ -216,10 +216,16 @@ public final class WorkflowCommands {
      *
      * @param projectId the project-id of the workflow to clear all stacks for
      */
-    public void disposeUndoAndRedoStacks(final String projectId) {
+    void disposeUndoAndRedoStacks(final String projectId) {
         disposeUndoAndRedoStacks(k -> k.getProjectId().equals(projectId));
     }
 
+    /**
+     * Removes all commands from the undo- and redo-stacks for all workflows of a workflow project referenced by its
+     * project-id.
+     *
+     * @param keyFilter
+     */
     public void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
         m_undoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
         m_redoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
