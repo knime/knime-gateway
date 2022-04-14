@@ -282,7 +282,7 @@ public final class WorkflowCommands {
 
         private WorkflowCommand m_pendingCommand;
 
-        private boolean m_pendingCommit;
+        private boolean m_hasPendingCommit;
 
         private final int m_maxStackSize;
 
@@ -303,7 +303,7 @@ public final class WorkflowCommands {
             assertLocked();
             assertNoPendingCommit();
             m_pendingCommand = command;
-            m_pendingCommit = true;
+            m_hasPendingCommit = true;
         }
 
         /**
@@ -316,11 +316,11 @@ public final class WorkflowCommands {
             assertLocked();
             assertNoPendingCommit();
             assert m_pendingCommand == null;
-            m_pendingCommit = true;
+            m_hasPendingCommit = true;
         }
 
         private void assertNoPendingCommit() {
-            if (m_pendingCommit) {
+            if (m_hasPendingCommit) {
                 throw new IllegalStateException(
                     "Any change to the command stack must be committed first before another change can be made");
             }
@@ -341,7 +341,7 @@ public final class WorkflowCommands {
          */
         void commitPendingChange() {
             assertLocked();
-            if (!m_pendingCommit) {
+            if (!m_hasPendingCommit) {
                 throw new IllegalStateException("Nothing to commit");
             }
             if (m_pendingCommand == null) {
@@ -351,7 +351,7 @@ public final class WorkflowCommands {
                 ensureMaxStackSize();
                 m_pendingCommand = null;
             }
-            m_pendingCommit = false;
+            m_hasPendingCommit = false;
         }
 
         private void ensureMaxStackSize() {
@@ -362,7 +362,7 @@ public final class WorkflowCommands {
 
         @SuppressWarnings("java:S1452")
         Optional<WorkflowCommand> peek() {
-            return Optional.ofNullable(m_pendingCommit ? m_pendingCommand : m_stack.peek());
+            return Optional.ofNullable(m_hasPendingCommit ? m_pendingCommand : m_stack.peek());
         }
 
         @SuppressWarnings("java:S1452")
@@ -371,7 +371,7 @@ public final class WorkflowCommands {
             if (c == null) {
                 throw new NoSuchElementException("Stack is empty");
             }
-            otherCommandStack.m_stack.add(c);
+            otherCommandStack.m_stack.addFirst(c);
             return c;
         }
 
@@ -380,7 +380,7 @@ public final class WorkflowCommands {
         }
 
         boolean isEmpty() {
-            return (m_pendingCommit && m_pendingCommand != null) || m_stack.isEmpty();
+            return (m_hasPendingCommit && m_pendingCommand != null) || m_stack.isEmpty();
         }
 
         /**
@@ -394,9 +394,9 @@ public final class WorkflowCommands {
         CommandStackModifyLock lock() {
             m_stackModifyLock.lock();
             return () -> {
-                if (m_pendingCommit) {
+                if (m_hasPendingCommit) {
                     m_pendingCommand = null;
-                    m_pendingCommit = false;
+                    m_hasPendingCommit = false;
                 }
                 m_stackModifyLock.unlock();
             };
