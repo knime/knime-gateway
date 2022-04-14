@@ -55,6 +55,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.Matcher;
@@ -65,6 +66,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -140,10 +143,10 @@ public class GatewayJsonRpcWrapperServiceTests {
             }
 
             @Override
-            public void executeUpToNodesAsync(final String wfId, final org.knime.core.node.workflow.NodeID[] ids) {
-                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
-                    .executeUpToHere(ids);
+            public void executeUpToNodesAsync(final String wfId, final List<NodeIDEnt> ids) {
+                var wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId) //
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId));
+                wfm.executeUpToHere(ids.stream().map(id -> id.toNodeID(wfm.getID())).toArray(NodeID[]::new));
             }
 
             @Override

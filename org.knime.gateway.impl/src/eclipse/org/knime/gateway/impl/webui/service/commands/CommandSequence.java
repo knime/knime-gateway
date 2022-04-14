@@ -46,15 +46,17 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.function.BiFunction;
+import static java.util.Arrays.stream;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.Pair;
+import java.util.Optional;
+
+import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * A higher-order workflow command that is composed of a sequence of other workflow commands of which any next command
@@ -62,78 +64,76 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-abstract class CommandSequence extends AbstractWorkflowCommand {
+abstract class CommandSequence extends HigherOrderCommand {
 
-    private WorkflowCommand m_initialCommand;
+    private final WorkflowCommand[] m_commands;
 
-    private Pair<WorkflowCommand, WorkflowCommandConfigurator>[] m_otherCommands;
+    private WorkflowKey m_wfKey;
 
-    private final LinkedList<WorkflowCommand> m_executedCommands = new LinkedList<>();
-
-    @SafeVarargs
-    final void configure(final WorkflowKey wfKey, final WorkflowManager wfm,
-            final WorkflowCommand initialCommand,
-            final Pair<WorkflowCommand, WorkflowCommandConfigurator>... otherCommands) {
-        super.configure(wfKey, wfm);
-        m_initialCommand = initialCommand;
-        m_otherCommands = otherCommands;
-    }
-
-    @Override
-    protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
-        try {
-            boolean wfModified = m_initialCommand.executeWithWorkflowLock();
-            m_executedCommands.add(m_initialCommand);
-            WorkflowCommand prevCommand = m_initialCommand;
-            for (Pair<WorkflowCommand, WorkflowCommandConfigurator> nextCommandAndConfigurator : m_otherCommands) {
-                WorkflowCommand nextCommand = nextCommandAndConfigurator.getFirst();
-                WorkflowCommandConfigurator configurator = nextCommandAndConfigurator.getSecond();
-                var configuredCommand = configurator.apply(nextCommand, prevCommand);
-                wfModified = configuredCommand.executeWithWorkflowLock();
-                prevCommand = nextCommand;
-                m_executedCommands.add(nextCommand);
-            }
-            return wfModified;
-        } catch (ServiceExceptions.NodeNotFoundException | ServiceExceptions.NotASubWorkflowException | ServiceExceptions.OperationNotAllowedException e) {
-            undoAllExecuted();
-            throw new ServiceExceptions.OperationNotAllowedException("Error executing command", e);
+    protected CommandSequence(final WorkflowCommand... commands) {
+        if (commands.length == 0) {
+            throw new IllegalStateException("No commands given");
         }
+        m_commands = commands;
     }
 
     @Override
-    public Optional<CommandResultBuilder> getResultBuilder() {
-        if (m_otherCommands.length == 0) {
-            return m_initialCommand.getResultBuilder();
+    protected Optional<WithResult> preExecuteToGetCommmandWithResult(final WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException {
+        var lastCommand = m_commands[m_commands.length - 1];
+        if (lastCommand instanceof WithResult) {
+            return Optional.of((WithResult)lastCommand);
         } else {
-            return m_otherCommands[m_otherCommands.length-1].getFirst().getResultBuilder();
+            return Optional.empty();
         }
     }
 
-    private void undoAllExecuted() throws ServiceExceptions.OperationNotAllowedException {
-        for (Iterator<WorkflowCommand> it = m_executedCommands.descendingIterator(); it.hasNext(); ) {
-            WorkflowCommand cmd = it.next();
-            cmd.undo();  // may also throw exception
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean execute(final WorkflowKey wfKey)
+        throws ServiceExceptions.OperationNotAllowedException, NodeNotFoundException, NotASubWorkflowException {
+        m_wfKey = wfKey;
+        var wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        var isWorklfowModified = false;
+        try (WorkflowLock lock = wfm.lock()) {
+            for (var command : m_commands) {
+                if (command.execute(wfKey)) {
+                    isWorklfowModified = true;
+                }
+            }
         }
-        m_executedCommands.clear();
+        return isWorklfowModified;
     }
 
     @Override
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        undoAllExecuted();
+        for (int i = m_commands.length - 1; i >= 0; i--) {
+            m_commands[i].undo();
+        }
+    }
+
+    @Override
+    public void redo() throws OperationNotAllowedException {
+        try {
+            execute(m_wfKey);
+        } catch (OperationNotAllowedException | NodeNotFoundException | NotASubWorkflowException ex) {
+            // should never happen because command has been exeucted at least once already
+            throw new IllegalStateException(ex);
+        }
     }
 
     @Override
     public boolean canUndo() {
-        return m_executedCommands.stream().allMatch(WorkflowCommand::canUndo);
+        return stream(m_commands).allMatch(WorkflowCommand::canUndo);
     }
 
     @Override
     public boolean canRedo() {
-        return m_executedCommands.stream().allMatch(WorkflowCommand::canRedo);
-    }
-
-    interface WorkflowCommandConfigurator extends BiFunction<WorkflowCommand, WorkflowCommand, WorkflowCommand> {
-
+        return stream(m_commands).allMatch(WorkflowCommand::canRedo);
     }
 
 }

@@ -46,10 +46,11 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
@@ -59,23 +60,19 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 class ExpandComponent extends AbstractExpand {
 
-    ExpandComponent(final WorkflowMiddleware workflowMiddleware) {
-        super(workflowMiddleware);
+    ExpandComponent(final ExpandCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        super(commandEnt, workflowMiddleware);
     }
 
     @Override
-    ExpandComponent configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {
-        super.configure(wfKey, wfm, commandEnt);
-        return this;
-    }
+    protected void checkCanExpandOrThrow(final WorkflowManager wfm, final NodeID nodeToExpand)
+        throws OperationNotAllowedException {
+        super.checkCanExpandOrThrow(wfm, nodeToExpand);
 
-    @Override
-    protected void checkCanExecuteOrThrow() throws ServiceExceptions.OperationNotAllowedException {
-        super.checkCanExecuteOrThrow();
-
-        var cannotExpandReason = getWorkflowManager().canExpandSubNode(m_nodeToExpand);
+        var cannotExpandReason = wfm.canExpandSubNode(nodeToExpand);
         if (cannotExpandReason != null) {
             throw new ServiceExceptions.OperationNotAllowedException(cannotExpandReason);
         }
     }
+
 }

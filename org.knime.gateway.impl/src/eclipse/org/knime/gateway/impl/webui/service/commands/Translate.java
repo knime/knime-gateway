@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
@@ -69,45 +68,28 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
 
     private int[] m_delta;
 
-    Translate configure(final WorkflowKey wfKey, final WorkflowManager wfm, final TranslateCommandEnt commandEnt) {
-        super.configure(wfKey, wfm, commandEnt);
+    Translate(final TranslateCommandEnt commandEnt) {
+        super(commandEnt);
         XYEnt translationEnt = commandEnt.getTranslation();
-        m_delta = new int[] { translationEnt.getX(), translationEnt.getY() };
-        return this;
+        m_delta = new int[]{translationEnt.getX(), translationEnt.getY()};
     }
 
     @Override
-    public boolean execute() throws OperationNotAllowedException {
-        checkPartsPresentElseThrow();
-
-        if (m_delta[0] == 0 && m_delta[1] == 0)  {
+    public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        if (m_delta[0] == 0 && m_delta[1] == 0) {
             return false;
         }
-        performTranslation(
-                getWorkflowManager(),
-                getNodeContainers(),
-                getAnnotations(),
-                m_delta
-        );
+        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), m_delta);
         return true;
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        performTranslation(
-                getWorkflowManager(),
-                getNodeContainers(),
-                getAnnotations(),
-                invert(m_delta)
-        );
+        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), invert(m_delta));
     }
 
-    private static void performTranslation(
-            final WorkflowManager wfm,
-            final Set<NodeContainer> nodes,
-            final Set<WorkflowAnnotation> annotations,
-            final int[] delta
-            ) {
+    private static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
+        final Set<WorkflowAnnotation> annotations, final int[] delta) {
 
         for (NodeContainer nc : nodes) {
             NodeUIInformation.moveNodeBy(nc, delta);
@@ -117,7 +99,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         }
 
         for (NodeContainer nc : nodes) {
-             nc.setDirty();  // will propagate upwards
+            nc.setDirty(); // will propagate upwards
         }
         if (!annotations.isEmpty()) {
             wfm.setDirty();
@@ -125,7 +107,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     private static int[] invert(final int[] source) {
-        return new int[] { -1 * source[0], -1 * source[1] };
+        return new int[]{-1 * source[0], -1 * source[1]};
     }
 
 }

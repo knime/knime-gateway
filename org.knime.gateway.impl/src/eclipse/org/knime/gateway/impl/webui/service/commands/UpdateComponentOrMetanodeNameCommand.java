@@ -53,7 +53,6 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command to update the name of a component or metnode.
@@ -62,18 +61,14 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand {
 
-    private String m_oldName;
+    private final UpdateComponentOrMetanodeNameCommandEnt m_commandEnt;
 
-    private String m_newName;
+    private String m_oldName;
 
     private NodeID m_nodeId;
 
-    UpdateComponentOrMetanodeNameCommand configure(final WorkflowKey wfKey, final WorkflowManager wfm, final UpdateComponentOrMetanodeNameCommandEnt commandEnt) {
-        super.configure(wfKey, wfm);
-        var projectWfm = wfm.getProjectWFM();
-        m_newName = commandEnt.getName();
-        m_nodeId = commandEnt.getNodeId().toNodeID(projectWfm.getID());
-        return this;
+    UpdateComponentOrMetanodeNameCommand(final UpdateComponentOrMetanodeNameCommandEnt commandEnt) {
+        m_commandEnt = commandEnt;
     }
 
     @Override
@@ -89,11 +84,13 @@ final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand
     }
 
     @Override
-    protected boolean execute() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
+        m_nodeId = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
         var container = wfm.getNodeContainer(m_nodeId);
-        if (m_newName.isBlank()) {
-            throw new OperationNotAllowedException("Illegal new name: <" + m_newName + ">");
+        var newName = m_commandEnt.getName();
+        if (newName.isBlank()) {
+            throw new OperationNotAllowedException("Illegal new name: <" + newName + ">");
         }
         if (container instanceof WorkflowManager) {
             var metaNode = (WorkflowManager)container;
@@ -101,12 +98,12 @@ final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand
                 throw new OperationNotAllowedException("Workflow projects cannot be renamed like this");
             }
             m_oldName = metaNode.getName();
-            metaNode.setName(m_newName);
+            metaNode.setName(newName);
             return true;
         } else if (container instanceof SubNodeContainer) {
             var component = (SubNodeContainer)container;
             m_oldName = component.getName();
-            component.setName(m_newName);
+            component.setName(newName);
             return true;
         } else {
             String className = container.getClass().getSimpleName();

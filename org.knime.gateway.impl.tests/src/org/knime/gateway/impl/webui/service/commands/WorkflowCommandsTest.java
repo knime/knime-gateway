@@ -226,27 +226,27 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         var wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
         var addCommandEnt = builder(AddNodeCommandEntBuilder.class)
-                .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class)
-                        .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
-                .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build();
-        var addNodeCommand = new AddNode().configure(wfKey, wfm, addCommandEnt);
-        addNodeCommand.executeWithWorkflowLock();
+            .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class)
+                .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
+            .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build();
+        var addNodeCommand = new AddNode(addCommandEnt);
+        addNodeCommand.execute(wfKey);
         assertThat(wfm.getNodeContainers().size(), is(2));
         assertThat(addNodeCommand.canUndo(), is(true));
 
-        var connectCommandEnt = builder(ConnectCommandEntBuilder.class).setSourceNodeId(new NodeIDEnt(2)).setSourcePortIdx(0)
+        var connectCommandEnt =
+            builder(ConnectCommandEntBuilder.class).setSourceNodeId(new NodeIDEnt(2)).setSourcePortIdx(0)
                 .setDestinationNodeId(new NodeIDEnt(1)).setDestinationPortIdx(0).setKind(KindEnum.CONNECT).build();
-        var connectCommand = new Connect().configure(wfKey, wfm, connectCommandEnt);
-        connectCommand.executeWithWorkflowLock();
+        var connectCommand = new Connect(connectCommandEnt);
+        connectCommand.execute(wfKey);
 
         assertThat(wfm.getConnectionContainers().size(), is(1));
         assertThat(connectCommand.canUndo(), is(true));
 
         var deleteCommandEnt = builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(2)))
             .setKind(KindEnum.DELETE).build();
-        var deleteCommand = new Delete(new WorkflowMiddleware(WorkflowProjectManager.getInstance())).configure(wfKey,
-            wfm, deleteCommandEnt);
-        deleteCommand.executeWithWorkflowLock();
+        var deleteCommand = new Delete(deleteCommandEnt, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        deleteCommand.execute(wfKey);
         assertThat(wfm.getNodeContainers().size(), is(1));
         deleteCommand.undo();
         assertThat(wfm.getNodeContainers().size(), is(2));

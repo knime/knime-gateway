@@ -46,38 +46,28 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.Pair;
+import java.util.function.Supplier;
+
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
-import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
- * Collapse the queried workflow parts into a component. This operation is a {@link CommandSequence} of collapsing to
- * a metanode and converting the metanode to a component.
+ * Collapse the queried workflow parts into a component. This operation is a {@link CommandSequence} of collapsing to a
+ * metanode and converting the metanode to a component.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 class CollapseToComponent extends CommandSequence {
 
-    private final WorkflowMiddleware m_workflowMiddleware;
-
-    CollapseToComponent(final WorkflowMiddleware workflowMiddleware) {
-        m_workflowMiddleware = workflowMiddleware;
+    CollapseToComponent(final CollapseCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        super(getCommands(commandEnt, workflowMiddleware));
     }
 
-    CollapseToComponent configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEnt)  {
-        super.configure(wfKey, wfm,
-            new CollapseToMetanode(m_workflowMiddleware).configure(wfKey, wfm, commandEnt),
-            new Pair<>(
-                    new ConvertMetanodeToComponent(),
-                    (currentCommand, previousCommand) -> {
-                        var currentConvertCommand = (ConvertMetanodeToComponent)currentCommand;
-                        var previousCollapseCommand = (CollapseToMetanode)previousCommand;
-                        return currentConvertCommand.configure(wfKey, wfm, previousCollapseCommand.getNewNode().orElseThrow());
-                    }
-            )
-        );
-        return this;
+    private static WorkflowCommand[] getCommands(final CollapseCommandEnt commandEnt,
+        final WorkflowMiddleware workflowMiddleware) {
+        var collapseCommand = new CollapseToMetanode(commandEnt, workflowMiddleware);
+        Supplier<NodeIDEnt> newNodeIdSupplier = () -> collapseCommand.buildEntity("").getNewNodeId();
+        return new WorkflowCommand[]{collapseCommand, new ConvertMetanodeToComponent(newNodeIdSupplier)};
     }
 }

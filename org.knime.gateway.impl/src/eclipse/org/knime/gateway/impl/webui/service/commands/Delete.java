@@ -96,16 +96,11 @@ final class Delete extends AbstractWorkflowCommand {
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
-    Delete(final WorkflowMiddleware workflowMiddleware) {
-        m_workflowMiddleware = workflowMiddleware;
-    }
-
-    Delete configure(final WorkflowKey wfKey, final WorkflowManager wfm, final DeleteCommandEnt commandEnt) {
-        super.configure(wfKey, wfm);
+    Delete(final DeleteCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         m_nodeIdsQueried = commandEnt.getNodeIds();
         m_annotationIdsQueried = commandEnt.getAnnotationIds();
         m_connectionIdsQueried = commandEnt.getConnectionIds();
-        return this;
+        m_workflowMiddleware = workflowMiddleware;
     }
 
     /**
@@ -113,7 +108,7 @@ final class Delete extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-        WorkflowManager wfm = getWorkflowManager();
+        var wfm = getWorkflowManager();
         wfm.paste(m_copy);
         for (ConnectionContainer cc : m_connections) {
             wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
@@ -132,7 +127,7 @@ final class Delete extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean execute() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()

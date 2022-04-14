@@ -52,13 +52,10 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command to add a native node.
@@ -67,28 +64,23 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 final class AddNode extends AbstractWorkflowCommand {
 
-    private int[] m_targetPosition;
-
     private NodeID m_addedNode;
 
-    private NodeFactoryKey m_factoryKey;
+    private AddNodeCommandEnt m_commandEnt;
 
-    AddNode configure(final WorkflowKey wfKey, final WorkflowManager wfm, final WorkflowCommandEnt commandEnt) {
-        super.configure(wfKey, wfm);
-        var commandEntity = (AddNodeCommandEnt)commandEnt;
-        var factoryKeyEnt = commandEntity.getNodeFactory();
-        m_factoryKey = new NodeFactoryKey(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings());
-        var positionEnt = commandEntity.getPosition();
-        m_targetPosition = new int[] {positionEnt.getX(), positionEnt.getY()};
-        return this;
+    AddNode(final AddNodeCommandEnt commandEnt) {
+        m_commandEnt = commandEnt;
     }
 
     @Override
-    protected boolean execute() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
+        var positionEnt = m_commandEnt.getPosition();
+        var factoryKeyEnt = m_commandEnt.getNodeFactory();
+        var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
         try {
-            m_addedNode = DefaultServiceUtil.createAndAddNode(m_factoryKey.getClassName(), m_factoryKey.getSettings(),
-                m_targetPosition[0], m_targetPosition[1] - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
+            m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
+                targetPosition[0], targetPosition[1] - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
         } catch (IOException | NoSuchElementException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
@@ -97,6 +89,7 @@ final class AddNode extends AbstractWorkflowCommand {
 
     @Override
     public boolean canUndo() {
+        // TODO NXT-1037
         if (m_addedNode == null) {
             return false;
         }
@@ -107,25 +100,6 @@ final class AddNode extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         getWorkflowManager().removeNode(m_addedNode);
         m_addedNode = null;
-    }
-
-    private static class NodeFactoryKey {
-        private final String m_className;
-
-        private final String m_settings;
-
-        public NodeFactoryKey(final String className, final String settings) {
-            this.m_className = className;
-            this.m_settings = settings;
-        }
-
-        public String getClassName() {
-            return m_className;
-        }
-
-        public String getSettings() {
-            return m_settings;
-        }
     }
 
 }

@@ -71,7 +71,7 @@ public final class GatewayTestCollection {
         res.put("testCollapseExecutingToMetanode",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToMetanode());
         res.put("testCollapseExecutingToComponent",
-                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToComponent());
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToComponent());
         res.put("testCollapseResettableToMetanode",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToMetanode());
         res.put("testCollapseResettableToComponent",

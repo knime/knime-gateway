@@ -50,8 +50,11 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Base class for implementations of {@link WorkflowCommand}s.
@@ -60,20 +63,17 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
-    private WorkflowManager m_wfm;
-
     private WorkflowKey m_wfKey;
 
-    @Override
-    public void configure(final WorkflowKey wfKey, final WorkflowManager wfm) {
-        m_wfKey = wfKey;
-        m_wfm = wfm;
-    }
+    private WorkflowManager m_wfm;
 
     @Override
-    public boolean executeWithWorkflowLock() throws OperationNotAllowedException {
+    public boolean execute(final WorkflowKey wfKey)
+        throws OperationNotAllowedException, NodeNotFoundException, NotASubWorkflowException {
+        m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        m_wfKey = wfKey;
         try (WorkflowLock lock = m_wfm.lock()) {
-            return execute();
+            return executeWithLockedWorkflow();
         }
     }
 
@@ -89,7 +89,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
      *
      * @throws OperationNotAllowedException If the command could not be executed
      */
-    protected abstract boolean execute() throws OperationNotAllowedException;
+    protected abstract boolean executeWithLockedWorkflow() throws OperationNotAllowedException;
 
     @Override
     public boolean canUndo() {
@@ -103,7 +103,9 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     @Override
     public void redo() throws OperationNotAllowedException {
-        execute();
+        try (var lock = m_wfm.lock()) {
+            executeWithLockedWorkflow();
+        }
     }
 
     /**

@@ -50,11 +50,8 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command to connect two nodes.
@@ -63,48 +60,41 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 final class Connect extends AbstractWorkflowCommand {
 
-    private NodeID m_sourceNodeId;
-
-    private NodeID m_destNodeId;
-
-    private Integer m_sourcePortIdx;
-
-    private Integer m_destPortIdx;
+    private final ConnectCommandEnt m_commandEnt;
 
     private ConnectionContainer m_newConnection;
 
     private ConnectionContainer m_oldConnection;
 
-    Connect configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ConnectCommandEnt commandEnt) {
-        super.configure(wfKey, wfm);
-        var projectWfm = wfm.getProjectWFM();
-        m_sourceNodeId = commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
-        m_sourcePortIdx = commandEnt.getSourcePortIdx();
-        m_destNodeId = commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
-        m_destPortIdx = commandEnt.getDestinationPortIdx();
-        return this;
+    Connect(final ConnectCommandEnt commandEnt) {
+        m_commandEnt = commandEnt;
     }
 
     @Override
-    public boolean execute() throws OperationNotAllowedException {
+    public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
+        var projectWfm = wfm.getProjectWFM();
+        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
+        var sourcePortIdx = m_commandEnt.getSourcePortIdx();
+        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
+        var destPortIdx = m_commandEnt.getDestinationPortIdx();
 
         try {
-            m_oldConnection = wfm.getConnection(new ConnectionID(m_destNodeId, m_destPortIdx));
+            m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, destPortIdx));
         } catch (IllegalArgumentException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
-        if (m_oldConnection != null && m_oldConnection.getSource().equals(m_sourceNodeId)
-            && m_oldConnection.getSourcePort() == m_sourcePortIdx) {
+        if (m_oldConnection != null && m_oldConnection.getSource().equals(sourceNodeId)
+            && m_oldConnection.getSourcePort() == sourcePortIdx) {
             // it's the very same connection -> no change
             return false;
         }
 
-        if (!wfm.canAddConnection(m_sourceNodeId, m_sourcePortIdx, m_destNodeId, m_destPortIdx)) {
+        if (!wfm.canAddConnection(sourceNodeId, sourcePortIdx, destNodeId, destPortIdx)) {
             throw new OperationNotAllowedException("Connection can't be added");
         }
 
-        m_newConnection = wfm.addConnection(m_sourceNodeId, m_sourcePortIdx, m_destNodeId, m_destPortIdx);
+        m_newConnection = wfm.addConnection(sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
         return true;
     }
 

@@ -128,29 +128,37 @@ public final class WorkflowCommands {
         var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt) {
-            command = new Translate().configure(wfKey, wfm, (TranslateCommandEnt)commandEnt);
+            command = new Translate((TranslateCommandEnt)commandEnt);
         } else if (commandEnt instanceof DeleteCommandEnt) {
-            command = new Delete(m_workflowMiddleware).configure(wfKey, wfm, (DeleteCommandEnt)commandEnt);
+            command = new Delete((DeleteCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof ConnectCommandEnt) {
-            command = new Connect().configure(wfKey, wfm, (ConnectCommandEnt)commandEnt);
+            command = new Connect((ConnectCommandEnt)commandEnt);
         } else if (commandEnt instanceof AddNodeCommandEnt) {
-            command = new AddNode().configure(wfKey, wfm, commandEnt);
-        } else if(commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
-            command = new UpdateComponentOrMetanodeNameCommand().configure(wfKey, wfm, (UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
+            command = new AddNode((AddNodeCommandEnt)commandEnt);
+        } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
+            command = new UpdateComponentOrMetanodeNameCommand((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
         } else if (commandEnt instanceof CollapseCommandEnt) {
-            command = new Collapse(m_workflowMiddleware).configure(wfKey, wfm, (CollapseCommandEnt)commandEnt);
+            command = new Collapse((CollapseCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof ExpandCommandEnt) {
-            command = new Expand(m_workflowMiddleware).configure(wfKey, wfm, (ExpandCommandEnt)commandEnt);
+            command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
         } else {
             throw new OperationNotAllowedException(
                 "Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed. Unknown command.");
         }
 
-        var resultBuilder = command.getResultBuilder().orElse(null);
         WorkflowChangeWaiter workflowChangeWaiter = null;
-        if (resultBuilder != null) {
-            var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
-            workflowChangeWaiter = wfChangesListener.createWorkflowChangeWaiter(resultBuilder.getChangeToWaitFor());
+        var hasResult = false;
+        if (command instanceof WithResult) {
+            if (command instanceof HigherOrderCommand) {
+                hasResult = ((HigherOrderCommand)command).preExecuteToDetermineCommandResult(wfKey);
+            } else {
+                hasResult = true;
+            }
+            if (hasResult) {
+                var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
+                workflowChangeWaiter =
+                    wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor());
+            }
         }
 
         var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
@@ -164,7 +172,7 @@ public final class WorkflowCommands {
             // (see NXT-965)
             undoStack.add(command);
             redoStack.clear();
-            var workflowModified = command.executeWithWorkflowLock();
+            var workflowModified = command.execute(wfKey);
             if (workflowModified) {
                 // acknowledge the changes made to the stacks
                 undoStack.commitPendingChange();
@@ -172,15 +180,14 @@ public final class WorkflowCommands {
             }
         }
 
-        if (resultBuilder != null) {
+        if (hasResult) {
             try {
                 workflowChangeWaiter.blockUntilOccurred();
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
                 throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
             }
             var latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
-            // TODO Can instead throw exception once entity repository can be mocked (NXT-927)
-            return resultBuilder.buildEntity(latestSnapshotId);
+            return ((WithResult)command).buildEntity(latestSnapshotId);
         } else {
             return null;
         }

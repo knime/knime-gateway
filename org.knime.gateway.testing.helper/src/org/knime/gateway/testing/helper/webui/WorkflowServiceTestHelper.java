@@ -79,7 +79,6 @@ import java.util.stream.Collectors;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -587,6 +586,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                         actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE
                 )
         );
+
+        var commandEnt =
+            buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
+        var exceptionMessage = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)).getMessage();
+        assertThat(exceptionMessage, containsString("Cannot move executed nodes"));
     }
 
     private List<AllowedNodeActionsEnt> getAllowedActionsOfNodes(final List<NodeIDEnt> nodes, final WorkflowEnt wfEnt) {
@@ -604,8 +609,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     private void executeAndWaitUntilExecuting(final String wfId, final int toExecute) throws Exception {
-        NodeID toExecuteId = NodeID.ROOTID.createChild(0).createChild(toExecute);
-        executeUpToNodesAsync(wfId, new NodeID[]{toExecuteId});
+        executeUpToNodesAsync(wfId, Collections.singletonList(new NodeIDEnt(toExecute)));
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             WorkflowEnt wfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
             assertThat(
@@ -650,8 +654,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private void testCollapseConfigured(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
-        var nodesToCollapseInts = List.of(5,3);
-        var annotsToCollapseInts = List.of(0,1);
+        var nodesToCollapseInts = List.of(5, 3);
+        var annotsToCollapseInts = List.of(0, 1);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
         var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
 

@@ -49,7 +49,6 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,138 +75,114 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-class AbstractExpand extends AbstractWorkflowCommand {
+class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
+
+    private final ExpandCommandEnt m_commandEnt;
 
     private ExpandSubnodeResult m_subNodeExpandResult;
-
-    protected NodeID m_nodeToExpand;
 
     private WorkflowPersistor m_expandedNodePersistor;
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
-    AbstractExpand(final WorkflowMiddleware workflowMiddleware) {
+    AbstractExpand(final ExpandCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        m_commandEnt = commandEnt;
         m_workflowMiddleware = workflowMiddleware;
     }
 
-    AbstractExpand configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {
-        super.configure(wfKey, wfm);
-        m_nodeToExpand = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), commandEnt.getNodeId());
-        return this;
-    }
-
     @Override
-    protected boolean execute() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        if(wfm.canResetNode(m_nodeToExpand)) {
-            wfm.resetAndConfigureNode(m_nodeToExpand);
+        var nodeToExpand = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getNodeId());
+        if (wfm.canResetNode(nodeToExpand)) {
+            wfm.resetAndConfigureNode(nodeToExpand);
         }
 
-        checkCanExecuteOrThrow();
+        checkCanExpandOrThrow(wfm, nodeToExpand);
 
-        WorkflowCopyContent copyContent = WorkflowCopyContent.builder()
-                .setNodeIDs(m_nodeToExpand)
-                .setIncludeInOutConnections(true)
-                .build();
-        m_expandedNodePersistor = getWorkflowManager().copy(true, copyContent);
+        WorkflowCopyContent copyContent = WorkflowCopyContent.builder() //
+            .setNodeIDs(nodeToExpand) //
+            .setIncludeInOutConnections(true) //
+            .build();
+        m_expandedNodePersistor = wfm.copy(true, copyContent);
 
-        m_subNodeExpandResult = getWorkflowManager().expandSubWorkflow(m_nodeToExpand);
+        m_subNodeExpandResult = wfm.expandSubWorkflow(nodeToExpand);
 
         m_workflowMiddleware
-            .clearWorkflowState(new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(m_nodeToExpand)));
+            .clearWorkflowState(new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(nodeToExpand)));
 
         return true;
     }
 
-    protected void checkCanExecuteOrThrow() throws ServiceExceptions.OperationNotAllowedException {
-        var containingWfmLocked = getWorkflowManager().isEncrypted() && !getWorkflowManager().isUnlocked();
+    protected void checkCanExpandOrThrow(final WorkflowManager wfm, final NodeID nodeToExpand)
+        throws ServiceExceptions.OperationNotAllowedException {
+        var containingWfmLocked = wfm.isEncrypted() && !wfm.isUnlocked();
         if (containingWfmLocked) {
             throw new ServiceExceptions.OperationNotAllowedException("Cannot expand in locked workflow manager");
         }
 
-        var containerWfm = getWorkflowManager().getNodeContainer(
-                m_nodeToExpand,
-                WorkflowManager.class,
-                false
-        );
+        var containerWfm = wfm.getNodeContainer(nodeToExpand, WorkflowManager.class, false);
         if (containerWfm != null && !containerWfm.isUnlocked()) {
-            throw new ServiceExceptions.OperationNotAllowedException("Password-protected component needs to" +
-                    "be unlocked first");
+            throw new ServiceExceptions.OperationNotAllowedException(
+                "Password-protected component needs to" + "be unlocked first");
         }
 
         if (containerWfm != null && containerWfm.isWriteProtected()) {
-            throw new ServiceExceptions.OperationNotAllowedException("Workflow to be expanded is write-protected" +
-                    " (may be a linked metanode or component)");
+            throw new ServiceExceptions.OperationNotAllowedException(
+                "Workflow to be expanded is write-protected" + " (may be a linked metanode or component)");
         }
     }
 
     @Override
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        Set<NodeID> expandedNodes = getExpandedNodes().orElseThrow();
-        Set<WorkflowAnnotationID> expandedAnnots = getExpandedAnnotations().orElseThrow();
+        var expandedNodes = getExpandedNodes();
+        var expandedAnnots = getExpandedAnnotations();
         expandedNodes.forEach(wfm::removeNode);
         Arrays.stream(wfm.getWorkflowAnnotations(expandedAnnots.toArray(WorkflowAnnotationID[]::new)))
-                .forEach(wfm::removeAnnotation);
+            .forEach(wfm::removeAnnotation);
         wfm.paste(m_expandedNodePersistor);
     }
 
     @Override
     public boolean canUndo() {
         var wfm = getWorkflowManager();
-        return getExpandedNodes().map(nodes -> nodes.stream().allMatch(wfm::canRemoveNode)).orElse(false);
+        return getExpandedNodes().stream().allMatch(wfm::canRemoveNode);
     }
 
     @Override
     public boolean canRedo() {
         try {
-            checkCanExecuteOrThrow();
+            var wfm = getWorkflowManager();
+            checkCanExpandOrThrow(getWorkflowManager(), m_commandEnt.getNodeId().toNodeID(wfm.getID()));
             return true;
-        } catch (OperationNotAllowedException e) {  // NOSONAR
+        } catch (OperationNotAllowedException e) { // NOSONAR
             return false;
         }
     }
 
-    /**
-     * @return The set of node IDs previously contained in the freshly expanded container. Only set if command has
-     * already been executed successfully.
-     */
-    public Optional<Set<NodeID>> getExpandedNodes() {
-        return Optional.ofNullable(m_subNodeExpandResult).map(r -> Set.of(r.getExpandedCopyContent().getNodeIDs()));
+    private Set<NodeID> getExpandedNodes() {
+        return Set.of(m_subNodeExpandResult.getExpandedCopyContent().getNodeIDs());
     }
 
-    /**
-     * @return The set of annotation IDs previously contained in the contained expanded by this command. Onyl set if command
-     * has already been executed successfully.
-     */
-    public Optional<Set<WorkflowAnnotationID>> getExpandedAnnotations() {
-            return Optional.ofNullable(m_subNodeExpandResult).map(r -> Set.of(r.getExpandedCopyContent().getAnnotationIDs()));
+    private Set<WorkflowAnnotationID> getExpandedAnnotations() {
+        return Set.of(m_subNodeExpandResult.getExpandedCopyContent().getAnnotationIDs());
     }
 
     @Override
-    public Optional<CommandResultBuilder> getResultBuilder() {
-        return Optional.of(new ExpandResultBuilder());
+    public CommandResultEnt buildEntity(final String snapshotId) {
+        return builder(ExpandResultEnt.ExpandResultEntBuilder.class) //
+            .setKind(CommandResultEnt.KindEnum.EXPANDRESULT) //
+            .setSnapshotId(snapshotId) //
+            .setExpandedNodeIds(getExpandedNodes().stream().map(NodeIDEnt::new).collect(Collectors.toList())) //
+            .setExpandedAnnotationIds(
+                getExpandedAnnotations().stream().map(AnnotationIDEnt::new).collect(Collectors.toList())) //
+            .build();
     }
 
-    /**
-     * The result of the expand command.
-     */
-    private class ExpandResultBuilder implements CommandResultBuilder {
-
-        @Override
-        public CommandResultEnt buildEntity(final String snapshotId) {
-            return builder(ExpandResultEnt.ExpandResultEntBuilder.class)
-                    .setKind(CommandResultEnt.KindEnum.EXPANDRESULT)
-                    .setSnapshotId(snapshotId)
-                    .setExpandedNodeIds(getExpandedNodes().orElseThrow().stream().map(NodeIDEnt::new).collect(Collectors.toList()))
-                    .setExpandedAnnotationIds(getExpandedAnnotations().orElseThrow().stream().map(AnnotationIDEnt::new).collect(Collectors.toList()))
-                    .build();
-        }
-
-        @Override
-        public WorkflowChangesTracker.WorkflowChange getChangeToWaitFor() {
-            return WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED;
-        }
-
+    @Override
+    public WorkflowChangesTracker.WorkflowChange getChangeToWaitFor() {
+        return WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED;
     }
+
 }

@@ -48,15 +48,9 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Optional;
-
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -64,45 +58,31 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  *
  * Methods are guaranteed to be called in a fixed order:
  * <ol>
- *     <li>
- *         The command is instantiated via its zero-argument constructor.
- *     </li>
- *     <li>
- *         The command is configured via {@link WorkflowCommand#configure(WorkflowKey, WorkflowManager)}. This includes
- *         e.g. providing parameters needed to execute the command.
- *     </li>
- *     <li>
- *         {@link WorkflowCommand#getResultBuilder()} is called.
- *     </li>
- *     <li>
- *         {@link WorkflowCommand#executeWithWorkflowLock()} is called to execute the command.
- *     </li>
- *     <li>
- *         Any number of repetitions of sequence of {@link WorkflowCommand#undo()} and {@link WorkflowCommand#redo()} is called.
- *     </li>
+ * <li>The command is instantiated.</li>
+ * <li>{@link WorkflowCommand#execute(WorkflowKey)} is called to execute the command.</li>
+ * <li>Any number of repetitions of sequence of {@link WorkflowCommand#undo()} and {@link WorkflowCommand#redo()} is
+ * called.</li>
  * </ol>
+ *
+ * If a command is supposed to return a result it additionally needs to implement {@link WithResult}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public interface WorkflowCommand {
 
-    void configure(final WorkflowKey wfKey, final WorkflowManager wfm);
-
     /**
-     * Executes the workflow Command as represented by the command entity. Always called before {@link #undo()} and
-     * {@link #redo()}.
+     * Executes the workflow command as represented. Always called before {@link #undo()} and {@link #redo()}.
      *
      * @param wfKey references the workflow to execute the command for
-     * @param commandEntity representation of the command to be applied
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command didn't do any change to the workflow
      * @throws NodeNotFoundException
      * @throws NotASubWorkflowException
      * @throws OperationNotAllowedException
      */
-
-    boolean executeWithWorkflowLock() throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
+    boolean execute(WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
 
     /**
      * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
@@ -113,8 +93,8 @@ public interface WorkflowCommand {
     boolean canUndo();
 
     /**
-     * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey, WorkflowCommandEnt)} has
-     * been called before already.
+     * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey)} has been called before
+     * already.
      *
      * @throws OperationNotAllowedException
      */
@@ -134,36 +114,5 @@ public interface WorkflowCommand {
      * @throws OperationNotAllowedException
      */
     void redo() throws OperationNotAllowedException;
-
-    /**
-     * @return An instance of {@link CommandResultBuilder} specific to the executed command, or an empty optional
-     * if the command does not provide a result.
-     */
-    default Optional<CommandResultBuilder> getResultBuilder() {
-        return Optional.empty();
-    }
-
-    /**
-     * Result of a workflow command.
-     */
-    interface CommandResultBuilder {
-
-        /**
-         *
-         * @param snapshotId A workflow snapshot id for which holds that any snapshot with equal-or-greater id
-         *                   reflects the changes performed by this command.
-         * @return The result entity
-         */
-        CommandResultEnt buildEntity(String snapshotId);
-
-        /**
-         * Determines the workflow change to wait for before the command result can be build, see
-         * {@link #buildEntity(String)}.
-         *
-         * @return the workflow change to wait for until the command result can be build
-         */
-        WorkflowChangesTracker.WorkflowChange getChangeToWaitFor();
-
-    }
 
 }

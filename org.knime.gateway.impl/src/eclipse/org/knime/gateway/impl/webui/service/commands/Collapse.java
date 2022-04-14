@@ -46,9 +46,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
-import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
@@ -59,18 +57,9 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 final class Collapse extends CommandIfElse {
 
-    private final WorkflowMiddleware m_workflowMiddleware;
-
-    Collapse(final WorkflowMiddleware workflowMiddleware) {
-        m_workflowMiddleware = workflowMiddleware;
-    }
-
-    Collapse configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEnt) {
-        super.configure(wfKey, wfm,
-                () -> commandEnt.getContainerType() == CollapseCommandEnt.ContainerTypeEnum.METANODE,
-                () -> new CollapseToMetanode(m_workflowMiddleware).configure(wfKey, wfm, commandEnt),
-                () -> new CollapseToComponent(m_workflowMiddleware).configure(wfKey, wfm, commandEnt)
-        );
-        return this;
+    Collapse(final CollapseCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        super(wfm -> commandEnt.getContainerType() == CollapseCommandEnt.ContainerTypeEnum.METANODE,
+            new CollapseToMetanode(commandEnt, workflowMiddleware),
+            new CollapseToComponent(commandEnt, workflowMiddleware));
     }
 }

@@ -43,86 +43,76 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Apr 19, 2022 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Optional;
-import java.util.function.Function;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
- * Higher-order command that executes either one of the child commands based on a given predicate. Other properties are
- * based on the active child command as well.
+ * Implemented by commands that receive other commands as parameters.
  *
- * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * It can also dynamically determine whether the resulting higher-order command produces a command result or not.
+ *
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-abstract class CommandIfElse extends HigherOrderCommand {
+abstract class HigherOrderCommand extends AbstractWorkflowCommand implements WithResult {
 
-    private final Function<WorkflowManager, Boolean> m_predicate;
-
-    private final WorkflowCommand m_leftCommand;
-
-    private final WorkflowCommand m_rightCommand;
-
-    private WorkflowCommand m_activeCommand;
+    private WithResult m_commandWithResult;
 
     /**
-     * Initialise the command by providing two commands and a predicate to decide which command to execute.
+     * Optionally returns a {@link WorkflowCommand} that produces a result (i.e. implements {@link WithResult}) which
+     * will also be the result of this higher-order command.
      *
-     * @param wfKey The key of the workflow
-     * @param predicate a function which receives the {@link WorkflowManager} this command operates on and returns
-     *            {@code true} to execute {@code leftCommand}, {@code false} to execute {@code rightCommand}
-     * @param leftCommand the command to be executed if the given predicate returns {@code true}
-     * @param rightCommand the command to be executed if the given predicate returns {@code false}
+     * Guaranteed to be called before {@link #getChangeToWaitFor()} and {@link #buildEntity(String)}
+     *
+     * @param wfKey represents the workflow this command operates on
+     *
+     * @return the command that returns a result or an empty optional if this higher order command doesn't return any
+     *         result
+     * @throws NotASubWorkflowException
+     * @throws NodeNotFoundException
      */
-    CommandIfElse(final Function<WorkflowManager, Boolean> predicate, final WorkflowCommand leftCommand,
-        final WorkflowCommand rightCommand) {
-        m_predicate = predicate;
-        m_leftCommand = leftCommand;
-        m_rightCommand = rightCommand;
-    }
+    protected abstract Optional<WithResult> preExecuteToGetCommmandWithResult(WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException;
 
-    @Override
-    public Optional<WithResult> preExecuteToGetCommmandWithResult(final WorkflowKey wfKey)
+    /**
+     * @param wfKey represents the workflow this command operates on
+     * @return {@code true} if this higher-order command returns a result, otherwise {@code false}
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
+     */
+    final boolean preExecuteToDetermineCommandResult(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
-        var wfm = WorkflowUtil.getWorkflowManager(wfKey);
-        var takeLeft = m_predicate.apply(wfm);
-        m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;
-        if (m_activeCommand instanceof WithResult) {
-            return Optional.of((WithResult)m_activeCommand);
-        } else {
-            return Optional.empty();
+        m_commandWithResult = preExecuteToGetCommmandWithResult(wfKey).orElse(null);
+        if (m_commandWithResult instanceof HigherOrderCommand) {
+            m_commandWithResult =
+                ((HigherOrderCommand)m_commandWithResult).preExecuteToGetCommmandWithResult(wfKey).orElse(null);
         }
+        return m_commandWithResult != null;
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
-        try {
-            return m_activeCommand.execute(getWorkflowKey());
-        } catch (ServiceExceptions.NodeNotFoundException | ServiceExceptions.NotASubWorkflowException e) {
-            throw new ServiceExceptions.OperationNotAllowedException("Error executing nested command", e);
+    public WorkflowChange getChangeToWaitFor() {
+        if (m_commandWithResult == null) {
+            throw new IllegalStateException("Implementation problem. No command with result given.");
         }
+        return m_commandWithResult.getChangeToWaitFor();
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        m_activeCommand.undo();
-    }
-
-    @Override
-    public boolean canUndo() {
-        return m_activeCommand.canUndo();
-    }
-
-    @Override
-    public boolean canRedo() {
-        return m_activeCommand.canRedo();
+    public CommandResultEnt buildEntity(final String snapshotId) {
+        if (m_commandWithResult == null) {
+            throw new IllegalStateException("Implementation problem. No command with result given.");
+        }
+        return m_commandWithResult.buildEntity(snapshotId);
     }
 
 }

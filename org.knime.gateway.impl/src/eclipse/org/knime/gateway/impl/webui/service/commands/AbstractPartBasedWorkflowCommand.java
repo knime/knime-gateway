@@ -46,44 +46,39 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static java.util.Arrays.stream;
+
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Workflow command based on workflow parts (i.e. nodes and annotations).
  *
- * @apiNote Subclasses may override getter methods for nodes and annotations. Thus, it is advised to use
- *  these getters instead of accessing the fields {@link AbstractPartBasedWorkflowCommand#m_nodesQueried} or
- *  {@link AbstractPartBasedWorkflowCommand#m_annotationsQueried}
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand {
 
-    private Set<NodeID> m_nodesQueried;
-    private Set<WorkflowAnnotationID> m_annotationsQueried;
+    private final PartBasedCommandEnt m_commandEnt;
 
-    void configure(final WorkflowKey wfKey, final WorkflowManager wfm, final PartBasedCommandEnt commandEnt) {
-        super.configure(wfKey, wfm);
-        var projectId = getWorkflowKey().getProjectId();
+    private NodeID[] m_nodesQueried;
 
-        var nodesQueried = commandEnt.getNodeIds().stream().map(id -> DefaultServiceUtil.entityToNodeID(projectId, id))
-                .collect(Collectors.toSet());
-        var annotationsQueried = commandEnt.getAnnotationIds().stream()
-                .map(id -> DefaultServiceUtil.entityToAnnotationID(projectId, id)).collect(Collectors.toSet());
+    private WorkflowAnnotationID[] m_annotationsQueried;
 
-        m_nodesQueried = nodesQueried;
-        m_annotationsQueried = annotationsQueried;
+    private boolean m_partsChecked = false;
+
+
+    protected AbstractPartBasedWorkflowCommand(final PartBasedCommandEnt commandEnt) {
+        m_commandEnt = commandEnt;
     }
 
     /**
@@ -94,73 +89,93 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      *
      * @throws ServiceExceptions.OperationNotAllowedException If a workflow part is not available
      */
-    void checkPartsPresentElseThrow() throws ServiceExceptions.OperationNotAllowedException {
-        var nodeLookupResult = getNodeIDs().stream()
-                .map(id -> Pair.of(
-                        id,
-                        WorkflowCommandUtils.getNodeContainer(id, getWorkflowManager())
-                ))
-                .collect(Collectors.toSet());
+    private void checkPartsPresentElseThrow() throws ServiceExceptions.OperationNotAllowedException {
+        if (m_partsChecked) {
+            return;
+        }
 
-        var annotationLookupResult = getAnnotationIDs().stream()
-                .map(id -> Pair.of(
-                        id,
-                        WorkflowCommandUtils.getAnnotation(id, getWorkflowManager())
-                ))
-                .collect(Collectors.toSet());
+        var wfm = getWorkflowManager();
+        Set<NodeID> nodesNotFound = stream(getNodeIDs()) //
+            .filter(id -> WorkflowCommandUtils.getNodeContainer(id, wfm).isEmpty()) //
+            .collect(Collectors.toSet());
 
-        var nodesNotFound = nodeLookupResult.stream()
-                .filter(p -> p.getRight().isEmpty())
-                .map(Pair::getLeft)
-                .collect(Collectors.toSet());
-        var annotsNotFound = annotationLookupResult.stream()
-                .filter(p -> p.getRight().isEmpty())
-                .map(Pair::getLeft)
-                .collect(Collectors.toSet());
+        var annotsNotFound = stream(getAnnotationIDs()) //
+            .filter(id -> WorkflowCommandUtils.getAnnotation(id, wfm).isEmpty()) //
+            .collect(Collectors.toSet());
+
         boolean nodesMissing = !nodesNotFound.isEmpty();
         boolean annotsMissing = !annotsNotFound.isEmpty();
         if (nodesMissing || annotsMissing) {
             var message = new StringBuilder("Failed to execute command. Workflow parts not found: ");
             if (nodesMissing) {
-                message.append("nodes (").append(nodesNotFound.stream().map(NodeID::toString).collect(Collectors.joining(","))).append(")");
+                message.append("nodes (")
+                    .append(nodesNotFound.stream().map(NodeID::toString).collect(Collectors.joining(","))).append(")");
             }
             if (nodesMissing && annotsMissing) {
                 message.append(", ");
             }
             if (annotsMissing) {
-                message.append("workflow-annotations (").append(annotsNotFound.stream().map(WorkflowAnnotationID::toString).collect(Collectors.joining(","))).append(")");
+                message.append("workflow-annotations (")
+                    .append(
+                        annotsNotFound.stream().map(WorkflowAnnotationID::toString).collect(Collectors.joining(",")))
+                    .append(")");
             }
             throw new ServiceExceptions.OperationNotAllowedException(message.toString());
         }
+
+        m_partsChecked = true;
     }
 
     /**
-     * @apiNote This method is assumed to be called after {@link AbstractPartBasedWorkflowCommand#checkPartsPresentElseThrow()}
      * @throws java.util.NoSuchElementException If a node container is not available.
      * @return The node containers for the node ids affected by this command.
+     * @throws OperationNotAllowedException if a workflow part is not available
      */
-    protected Set<NodeContainer> getNodeContainers() {
-        return getNodeIDs().stream()
-                .map(id -> WorkflowCommandUtils.getNodeContainer(id, getWorkflowManager()).orElseThrow())
-                .collect(Collectors.toSet());
+    protected final Set<NodeContainer> getNodeContainers() throws OperationNotAllowedException {
+        checkPartsPresentElseThrow();
+        return stream(getNodeIDs()) //
+            .map(id -> WorkflowCommandUtils.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
+            .collect(Collectors.toSet());
     }
 
     /**
-     * @apiNote This method is assumed to be called after {@link AbstractPartBasedWorkflowCommand#checkPartsPresentElseThrow()}
      * @throws java.util.NoSuchElementException If an annotation is not available.
      * @return The annotation objects for the annotation ids affected by this command.
+     * @throws OperationNotAllowedException if a workflow part is not available
      */
-    protected Set<WorkflowAnnotation> getAnnotations() {
-        return getAnnotationIDs().stream()
-                .map(id -> WorkflowCommandUtils.getAnnotation(id, getWorkflowManager()).orElseThrow())
-                .collect(Collectors.toSet());
+    protected final Set<WorkflowAnnotation> getAnnotations() throws OperationNotAllowedException {
+        checkPartsPresentElseThrow();
+        return getAnnotations(getAnnotationIDs());
     }
 
-    protected Set<NodeID> getNodeIDs() {
+    /**
+     * @param annotationIDs workflow annotation ids to retrieve the actual {@link WorkflowAnnotation
+     *            WorkflowAnnotations} for
+     * @return the workflow annotations for the given annotation ids; except the ones that couldn't be found
+     */
+    protected final Set<WorkflowAnnotation> getAnnotations(final WorkflowAnnotationID... annotationIDs) {
+        var wfm = getWorkflowManager();
+        return stream(annotationIDs) //
+            .map(id -> WorkflowCommandUtils.getAnnotation(id, wfm).orElse(null)) //
+            .filter(Objects::nonNull) //
+            .collect(Collectors.toSet());
+    }
+
+    protected final NodeID[] getNodeIDs() {
+        if (m_nodesQueried == null) {
+            m_nodesQueried = m_commandEnt.getNodeIds().stream() //
+                .map(id -> DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), id)) //
+                .toArray(NodeID[]::new);
+        }
         return m_nodesQueried;
     }
 
-    protected Set<WorkflowAnnotationID> getAnnotationIDs() {
+    protected final WorkflowAnnotationID[] getAnnotationIDs() {
+        if (m_annotationsQueried == null) {
+            m_annotationsQueried = m_commandEnt.getAnnotationIds().stream() //
+                .map(id -> DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), id)) //
+                .toArray(WorkflowAnnotationID[]::new);
+        }
         return m_annotationsQueried;
     }
 
