@@ -9,6 +9,10 @@
   "value" : true
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:1/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:1/allowedActions/canDelete",
   "value" : false
 }, {

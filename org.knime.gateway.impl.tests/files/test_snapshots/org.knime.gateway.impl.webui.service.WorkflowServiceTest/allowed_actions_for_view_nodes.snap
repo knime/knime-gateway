@@ -1,6 +1,7 @@
 {
   "root:1" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
     "canOpenDialog" : true,
@@ -10,6 +11,7 @@
   },
   "root:2" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
     "canOpenDialog" : true,
@@ -17,6 +19,7 @@
   },
   "root:3" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
     "canOpenDialog" : true,
@@ -25,6 +28,7 @@
   },
   "root:4" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
     "canOpenDialog" : true,
@@ -32,37 +36,46 @@
   },
   "root:7" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
+    "canExpand" : "true",
     "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
   "root:8" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
+    "canExpand" : "true",
     "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
   "root:14" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
+    "canExpand" : "true",
     "canOpenDialog" : true,
     "canReset" : false
   },
   "root:11" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
+    "canExpand" : "true",
     "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
   "root:12" : {
     "canCancel" : false,
+    "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
     "canOpenDialog" : true,

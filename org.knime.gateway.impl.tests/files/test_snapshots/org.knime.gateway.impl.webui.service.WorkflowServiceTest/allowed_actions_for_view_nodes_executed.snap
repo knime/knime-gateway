@@ -1,6 +1,7 @@
 {
   "root:1" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
     "canOpenDialog" : true,
@@ -10,6 +11,7 @@
   },
   "root:2" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
     "canOpenDialog" : true,
@@ -17,6 +19,7 @@
   },
   "root:3" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
     "canOpenDialog" : true,
@@ -25,6 +28,7 @@
   },
   "root:4" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
     "canOpenDialog" : true,
@@ -32,37 +36,46 @@
   },
   "root:7" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
+    "canExpand" : "resetRequired",
     "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
   "root:8" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
+    "canExpand" : "resetRequired",
     "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
   "root:14" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
+    "canExpand" : "resetRequired",
     "canOpenDialog" : true,
     "canReset" : true
   },
   "root:11" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
+    "canExpand" : "resetRequired",
     "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
   "root:12" : {
     "canCancel" : false,
+    "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
     "canOpenDialog" : true,

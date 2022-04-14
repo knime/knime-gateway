@@ -42,6 +42,10 @@
   "value" : false
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:1/allowedActions/canCollapse",
+  "value" : "resetRequired"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:1/allowedActions/canDelete",
   "value" : true
 }, {

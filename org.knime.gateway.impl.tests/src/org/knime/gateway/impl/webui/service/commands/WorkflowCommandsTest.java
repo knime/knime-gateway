@@ -162,7 +162,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         assertThrows(OperationNotAllowedException.class, () -> commands.undo(wfKey));
 
         assertThrows(OperationNotAllowedException.class,
-            () -> commands.execute(null, builder(WorkflowCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
+            () -> commands.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
+                builder(WorkflowCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
 
         commands.redo(wfKey);
         assertThat(commands.getUndoStackSize(wfKey), is(1));
