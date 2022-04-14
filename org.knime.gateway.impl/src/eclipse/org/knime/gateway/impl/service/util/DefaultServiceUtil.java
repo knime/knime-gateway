@@ -134,7 +134,7 @@ public final class DefaultServiceUtil {
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      */
     public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) {
-        return WorkflowProjectManager.openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+        return WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
     }
 
@@ -146,7 +146,7 @@ public final class DefaultServiceUtil {
      * @throws NoSuchElementException if there is no workflow project for the id registered
      */
     public static WorkflowProject getWorkflowProject(final String workflowProjectID) {
-        return WorkflowProjectManager.getWorkflowProject(workflowProjectID).orElseThrow(
+        return WorkflowProjectManager.getInstance().getWorkflowProject(workflowProjectID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + workflowProjectID + "\" not found."));
     }
 
@@ -267,7 +267,7 @@ public final class DefaultServiceUtil {
      * @throws IOException If node factory settings could not be read.
      * @throws NoSuchElementException If no node is found for this factory class name.
      */
-    public static NodeFactory<NodeModel> getNodeFactory(String factoryClassName, String factorySettings) throws IOException, NoSuchElementException {
+    public static NodeFactory<NodeModel> getNodeFactory(final String factoryClassName, final String factorySettings) throws IOException, NoSuchElementException {
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = FileNativeNodeContainerPersistor.loadNodeFactory(factoryClassName);

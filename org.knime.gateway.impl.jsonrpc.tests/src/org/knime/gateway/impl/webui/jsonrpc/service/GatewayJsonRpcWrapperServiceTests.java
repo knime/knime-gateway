@@ -59,7 +59,7 @@ import java.util.Map;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,10 +69,12 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
-import org.knime.gateway.impl.webui.service.DefaultEventService;
-import org.knime.gateway.impl.webui.service.DefaultServices;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
@@ -133,20 +135,20 @@ public class GatewayJsonRpcWrapperServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
             }
 
             @Override
             public void executeUpToNodesAsync(final String wfId, final org.knime.core.node.workflow.NodeID[] ids) {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId)
-                        .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
-                        .executeUpToHere(ids);
+                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
+                    .executeUpToHere(ids);
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
                     .executeAllAndWaitUntilDone();
             }
@@ -175,7 +177,7 @@ public class GatewayJsonRpcWrapperServiceTests {
         };
 
         m_gatewayTestName = gatewayTestName;
-        m_eventSource = c -> DefaultEventService.getInstance().addEventConsumer(c);
+        m_eventSource = c -> ServiceDependencies.setServiceDependency(EventConsumer.class, c);
     }
 
     /**
@@ -208,15 +210,18 @@ public class GatewayJsonRpcWrapperServiceTests {
     }
 
     @SuppressWarnings("javadoc")
-    @BeforeClass
-    public static void setupServiceDependencies() {
-        DefaultServices.setServiceDependency(AppStateProvider.class, null);
+    @Before
+    public void setupServiceDependencies() {
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
     }
 
     @SuppressWarnings("javadoc")
-    @AfterClass
-    public static void disposeServices() {
-        DefaultServices.disposeAllServicesInstances();
+    @After
+    public void disposeServices() {
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
     /**
@@ -256,6 +261,7 @@ public class GatewayJsonRpcWrapperServiceTests {
     public static class TestExceptionResolver implements ExceptionResolver {
 
         private Matcher<String> m_messageMatcher;
+
         private Matcher<Integer> m_codeMatcher;
 
         /**

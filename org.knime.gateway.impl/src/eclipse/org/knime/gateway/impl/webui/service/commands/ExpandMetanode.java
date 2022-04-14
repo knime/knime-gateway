@@ -50,6 +50,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Expand a metanode.
@@ -57,6 +58,10 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 class ExpandMetanode extends AbstractExpand {
+
+    ExpandMetanode(final WorkflowMiddleware workflowMiddleware) {
+        super(workflowMiddleware);
+    }
 
     @Override
     ExpandMetanode configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {

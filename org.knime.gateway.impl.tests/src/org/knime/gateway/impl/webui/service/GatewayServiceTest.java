@@ -111,7 +111,8 @@ public class GatewayServiceTest {
      */
     protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String workflowProjectId) throws Exception {
         m_workflowLoader.loadWorkflow(wf, workflowProjectId);
-        WorkflowProject project = WorkflowProjectManager.getWorkflowProject(workflowProjectId).orElse(null);
+        WorkflowProject project =
+            WorkflowProjectManager.getInstance().getWorkflowProject(workflowProjectId).orElse(null);
         return project == null ? null : project.openProject();
     }
 
@@ -125,7 +126,7 @@ public class GatewayServiceTest {
      */
     protected WorkflowManager loadComponent(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadComponent(wf, projectId);
-        WorkflowProject project = WorkflowProjectManager.getWorkflowProject(projectId).orElse(null);
+        WorkflowProject project = WorkflowProjectManager.getInstance().getWorkflowProject(projectId).orElse(null);
         return project == null ? null : project.openProject();
     }
 

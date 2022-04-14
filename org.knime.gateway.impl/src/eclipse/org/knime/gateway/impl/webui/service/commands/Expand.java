@@ -49,6 +49,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to expand the queried container. Determines the container type (e.g. metanode, component) and
@@ -56,14 +57,21 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 final class Expand extends CommandIfElse {
+
+    private final WorkflowMiddleware m_workflowMiddleware;
+
+    Expand(final WorkflowMiddleware workflowMiddleware) {
+        m_workflowMiddleware = workflowMiddleware;
+    }
+
     Expand configure(final WorkflowKey wfKey, final WorkflowManager wfm, final ExpandCommandEnt commandEnt) {
         super.configure(wfKey, wfm,
                 () -> {
                     var containerType = WorkflowCommandUtils.getContainerType(wfm, commandEnt.getNodeId()).orElseThrow();
                     return containerType == WorkflowCommandUtils.ContainerType.METANODE;
                 },
-                () -> new ExpandMetanode().configure(wfKey, wfm, commandEnt),
-                () -> new ExpandComponent().configure(wfKey, wfm, commandEnt)
+                () -> new ExpandMetanode(m_workflowMiddleware).configure(wfKey, wfm, commandEnt),
+                () -> new ExpandComponent(m_workflowMiddleware).configure(wfKey, wfm, commandEnt)
         );
         return this;
     }

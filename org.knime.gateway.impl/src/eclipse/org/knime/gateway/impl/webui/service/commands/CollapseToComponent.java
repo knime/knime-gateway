@@ -50,6 +50,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Collapse the queried workflow parts into a component. This operation is a {@link CommandSequence} of collapsing to
@@ -59,9 +60,15 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 class CollapseToComponent extends CommandSequence {
 
+    private final WorkflowMiddleware m_workflowMiddleware;
+
+    CollapseToComponent(final WorkflowMiddleware workflowMiddleware) {
+        m_workflowMiddleware = workflowMiddleware;
+    }
+
     CollapseToComponent configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEnt)  {
         super.configure(wfKey, wfm,
-            new CollapseToMetanode().configure(wfKey, wfm, commandEnt),
+            new CollapseToMetanode(m_workflowMiddleware).configure(wfKey, wfm, commandEnt),
             new Pair<>(
                     new ConvertMetanodeToComponent(),
                     (currentCommand, previousCommand) -> {

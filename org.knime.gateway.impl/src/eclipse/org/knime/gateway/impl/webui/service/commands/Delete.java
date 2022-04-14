@@ -71,7 +71,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to delete nodes, connections or workflow annotations.
@@ -93,6 +93,12 @@ final class Delete extends AbstractWorkflowCommand {
      * persistor (persistor only covers connections whose source and destination are part of the persistor too).
      */
     private Set<ConnectionContainer> m_connections;
+
+    private final WorkflowMiddleware m_workflowMiddleware;
+
+    Delete(final WorkflowMiddleware workflowMiddleware) {
+        m_workflowMiddleware = workflowMiddleware;
+    }
 
     Delete configure(final WorkflowKey wfKey, final WorkflowManager wfm, final DeleteCommandEnt commandEnt) {
         super.configure(wfKey, wfm);
@@ -179,13 +185,12 @@ final class Delete extends AbstractWorkflowCommand {
         }
     }
 
-    private static void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
+    private void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
         final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs, final WorkflowKey wfKey) {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
-                WorkflowStatefulUtil.getInstance()
-                    .clearWorkflowState(new WorkflowKey(wfKey.getProjectId(), new NodeIDEnt(id)));
+                m_workflowMiddleware.clearWorkflowState(new WorkflowKey(wfKey.getProjectId(), new NodeIDEnt(id)));
             }
         }
         if (connections != null) {

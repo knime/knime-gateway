@@ -52,13 +52,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
@@ -76,13 +82,24 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuild
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.service.DefaultEventService;
+import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
+import org.knime.gateway.impl.webui.service.GatewayServiceTest;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.service.ServiceInstances;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -90,7 +107,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class WorkflowCommandsTest {
+public class WorkflowCommandsTest extends GatewayServiceTest {
 
     /**
      * Mainly tests the expected sizes of the undo- and redo-stacks after calling apply, undo, redo or
@@ -100,7 +117,8 @@ public class WorkflowCommandsTest {
     public void testUndoAndRedoStackSizes() throws Exception {
         WorkflowProject wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands = new WorkflowCommands(5);
+        WorkflowCommands commands =
+            new WorkflowCommands(5, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
@@ -115,7 +133,7 @@ public class WorkflowCommandsTest {
         commands.execute(wfKey, commandEntity);
         commands.execute(wfKey, commandEntity);
         assertThat(commands.getUndoStackSize(wfKey), is(5));
-        assertThat(commands.getRedoStackSize(wfKey), is(-1));
+        assertThat(commands.getRedoStackSize(wfKey), is(0));
         assertThat(commands.canUndo(wfKey), is(true));
         assertThat(commands.canRedo(wfKey), is(false));
         assertThrows(OperationNotAllowedException.class, () -> commands.redo(wfKey));
@@ -150,8 +168,8 @@ public class WorkflowCommandsTest {
         assertThat(commands.getUndoStackSize(wfKey), is(1));
         assertThat(commands.getRedoStackSize(wfKey), is(4));
         commands.disposeUndoAndRedoStacks(wfKey.getProjectId());
-        assertThat(commands.getUndoStackSize(wfKey), is(-1));
-        assertThat(commands.getRedoStackSize(wfKey), is(-1));
+        assertThat(commands.getUndoStackSize(wfKey), is(0));
+        assertThat(commands.getRedoStackSize(wfKey), is(0));
 
         disposeWorkflowProject(wp);
     }
@@ -189,8 +207,10 @@ public class WorkflowCommandsTest {
         assertThat(wfm.getConnectionContainers().size(), is(1));
         assertThat(connectCommand.canUndo(), is(true));
 
-        var deleteCommandEnt = builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(2))).setKind(KindEnum.DELETE).build();
-        var deleteCommand = new Delete().configure(wfKey, wfm, deleteCommandEnt);
+        var deleteCommandEnt = builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(2)))
+            .setKind(KindEnum.DELETE).build();
+        var deleteCommand = new Delete(new WorkflowMiddleware(WorkflowProjectManager.getInstance())).configure(wfKey,
+            wfm, deleteCommandEnt);
         deleteCommand.executeWithWorkflowLock();
         assertThat(wfm.getNodeContainers().size(), is(1));
         deleteCommand.undo();
@@ -208,8 +228,50 @@ public class WorkflowCommandsTest {
         disposeWorkflowProject(wp);
     }
 
+    /**
+     * Makes sure that the 'undo'-flag is correctly updated (through a workflow changed event) if a workflow is changed
+     * (e.g. a node deleted).
+     * There used to be a race condition where the respective event didn't contain the 'undo'-flag update (see NXT-965).
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+
+        Semaphore semaphore = new Semaphore(0);
+        AtomicReference<Object> event = new AtomicReference<>();
+        EventConsumer eventConsumer = (n, e) -> {
+            event.set(e);
+            semaphore.release();
+        };
+        ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
+        String projectId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES).getFirst().toString();
+        var snapshotId =
+            DefaultWorkflowService.getInstance().getWorkflow(projectId, NodeIDEnt.getRootID(), true).getSnapshotId();
+
+        DefaultEventService.getInstance()
+            .addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
+                .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId).setTypeId("WorkflowChangedEventType")
+                .build());
+        DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(),
+            builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(1))).setKind(KindEnum.DELETE)
+                .build());
+
+        semaphore.acquire();
+        try {
+            assertThat(((WorkflowChangedEventEnt)event.get()).getPatch().getOps().stream().map(op -> op.getPath())
+                .collect(Collectors.toList()), Matchers.hasItem("/allowedActions/canUndo"));
+        } finally {
+            ServiceInstances.disposeAllServiceInstancesAndDependencies();
+        }
+    }
+
     private static void disposeWorkflowProject(final WorkflowProject wp) {
-        WorkflowProjectManager.removeWorkflowProject(wp.getID());
+        WorkflowProjectManager.getInstance().removeWorkflowProject(wp.getID());
         WorkflowManager.ROOT.removeProject(wp.openProject().getID());
     }
 
@@ -241,7 +303,7 @@ public class WorkflowCommandsTest {
                 }
 
             };
-            WorkflowProjectManager.addWorkflowProject(id, workflowProject);
+            WorkflowProjectManager.getInstance().addWorkflowProject(id, workflowProject);
             return workflowProject;
         } else {
             throw new IllegalStateException("Creating empty workflow failed");

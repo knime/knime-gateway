@@ -44,25 +44,72 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 26, 2021 (hornm): created
+ *   Mar 30, 2022 (Kai Franze, KNIME GmbH): created
  */
-package org.knime.gateway.testing.helper;
+package org.knime.gateway.impl.webui.service;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.impl.service.util.EventConsumer;
+import static java.util.Collections.synchronizedMap;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.knime.gateway.api.service.GatewayService;
 
 /**
- * Provides access to the events issued by the {@link EventService}-implementation.
+ * Provides and manages specific object instances that are considered to be dependencies for the
+ * implementation of {@link GatewayService}s.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-public interface EventSource {
+public final class ServiceDependencies {
+
+    private static final Map<Class<?>, Object> DEPENDENCIES = synchronizedMap(new HashMap<>());
+
+    private ServiceDependencies() {
+        // Utility class
+    }
 
     /**
-     * Sets the callback to receive events.
+     * Return a dependency instance based on its class
      *
-     * @param c the callback
+     * @param <T>
+     * @param key the service dependency-class requested
+     * @param isRequired whether the dependency is required
+     * @return an instance of the given class or {@code null} if it's not present and not required
+     * @throws IllegalStateException if there is no implementation registered
      */
-    void setEventConsumer(EventConsumer c);
+    @SuppressWarnings("unchecked")
+    static <T> T getServiceDependency(final Class<T> key, final boolean isRequired) {
+        if (isRequired && !DEPENDENCIES.containsKey(key)) {
+            throw new IllegalStateException(
+                "No instance for class " + key.getName() + " given but required as a service dependency");
+        }
+        return (T)DEPENDENCIES.get(key);
+    }
+
+    /**
+     * Make a dependency available
+     *
+     * @param clazz The class characterizing the dependency
+     * @param impl The implementation of `clazz` to be served as the dependency
+     * @param <T> The concrete type of the dependency instance
+     */
+    public static <T> void setServiceDependency(final Class<T> clazz, final T impl) {
+        if (ServiceInstances.areServicesInitialized()) {
+            throw new IllegalStateException(
+                "Some services are already initialized. Service dependencies can't be set anymore.");
+        }
+        if (DEPENDENCIES.containsKey(clazz)) {
+            throw new IllegalStateException("Only one dependency can be registered at a time");
+        }
+        DEPENDENCIES.put(clazz, impl);
+    }
+
+    /**
+     * Disposes all default service dependencies.
+     */
+    public static void disposeAllServicesDependencies() {
+        DEPENDENCIES.clear();
+    }
 
 }

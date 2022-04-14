@@ -48,21 +48,19 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
@@ -73,26 +71,27 @@ import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
  */
 public final class DefaultEventService implements EventService {
 
+    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, true);
+
+    private final Map<Class<?>, EventSource<?, ?>> m_eventSources = new HashMap<>();
+
+    private final AppStateProvider m_appStateProvider =
+        ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
+
+    private final WorkflowMiddleware m_workflowMiddleware =
+        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private final WorkflowProjectManager m_workflowProjectManager =
+        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
+
     /**
      * Returns the singleton instance for this service.
      *
      * @return the singleton instance
      */
     public static DefaultEventService getInstance() {
-        return DefaultServices.getDefaultServiceInstance(DefaultEventService.class);
+        return ServiceInstances.getDefaultServiceInstance(DefaultEventService.class);
     }
-
-    private final List<BiConsumer<String, Object>> m_eventConsumer = new ArrayList<>();
-
-    private final Map<Class<?>, EventSource<?, ?>> m_eventSources = new HashMap<>();
-
-    private final AppStateProvider m_appStateProvider =
-        DefaultServices.getServiceDependency(AppStateProvider.class, true);
-
-    /*
-     * For testing purposes only.
-     */
-    private boolean m_callEventConsumerOnError = false;
 
     DefaultEventService() {
         // singleton
@@ -108,10 +107,11 @@ public final class DefaultEventService implements EventService {
         EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new WorkflowChangedEventSource(this::sendEvent));
+                t -> new WorkflowChangedEventSource(this::sendEvent, m_workflowMiddleware));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider));
+                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider, m_workflowProjectManager,
+                    m_workflowMiddleware));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -142,43 +142,20 @@ public final class DefaultEventService implements EventService {
     }
 
     /**
-     * Adds a new event consumer. The consumer takes the event name and the readily created event, i.e.
-     * {@link EventEnt}s, and delivers it to the client/ui.
-     *
-     * @param eventConsumer the event consumer to add
+     * For testing purposes only!
      */
-    // TODO provide event consumer as a 'service dependency' instead (NXT-927)
-    public void addEventConsumer(final BiConsumer<String, Object> eventConsumer) {
-        m_eventConsumer.add(eventConsumer);
-    }
-
-    void setEventConsumerForTesting(final BiConsumer<String, Object> eventConsumer,
-        final Runnable preEventCreationCallback) {
-        m_eventConsumer.clear();
+    void setPreEventCreationCallbackForTesting(final Runnable preEventCreationCallback) {
         m_eventSources.values().forEach(s -> s.setPreEventCreationCallback(preEventCreationCallback));
-        addEventConsumer(eventConsumer);
-        m_callEventConsumerOnError = true;
     }
 
     /**
-     * Removes a previously registered event consumer.
+     * Send a named event to the event consumer
      *
-     * @param eventConsumer the consumer to remove
+     * @param name The event name
+     * @param event The actual event object
      */
-    public void removeEventConsumer(final BiConsumer<String, Object> eventConsumer) {
-        m_eventConsumer.remove(eventConsumer); // NOSONAR
-    }
-
     private synchronized void sendEvent(final String name, final Object event) {
-        if (m_eventConsumer.isEmpty()) {
-            var message = "Events available but no one is interested. Most likely an implementation error.";
-            NodeLogger.getLogger(getClass()).error(message);
-            if (m_callEventConsumerOnError) {
-                m_eventConsumer.forEach(c -> c.accept(message, null));
-            }
-            throw new IllegalStateException(message);
-        }
-        m_eventConsumer.forEach(c -> c.accept(name, event));
+        m_eventConsumer.accept(name, event);
     }
 
     /*
@@ -191,7 +168,6 @@ public final class DefaultEventService implements EventService {
     @Override
     public void dispose() {
         removeAllEventListeners();
-        m_eventConsumer.clear();
     }
 
 }

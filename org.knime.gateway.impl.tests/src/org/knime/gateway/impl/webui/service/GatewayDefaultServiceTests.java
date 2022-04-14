@@ -48,7 +48,7 @@ package org.knime.gateway.impl.webui.service;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,9 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -112,20 +114,20 @@ public class GatewayDefaultServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
             }
 
             @Override
-            public void executeUpToNodesAsync(String wfId, NodeID[] ids) {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+            public void executeUpToNodesAsync(final String wfId, final NodeID[] ids) {
+                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
                         .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
                         .executeUpToHere(ids);
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                WorkflowProjectManager.openAndCacheWorkflow(wfId)
+                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
                     .executeAllAndWaitUntilDone();
             }
@@ -148,12 +150,14 @@ public class GatewayDefaultServiceTests {
             }
         };
         m_gatewayTestName = gatewayTestName;
-
-        m_eventSource = c -> DefaultEventService.getInstance().setEventConsumerForTesting(c, null);
+        m_eventSource = c -> {
+            ServiceDependencies.setServiceDependency(EventConsumer.class, c);
+            DefaultEventService.getInstance().setPreEventCreationCallbackForTesting(null);
+        };
     }
 
     /**
-     * Runs the actual (parametrized) test.
+     * Runs the actual (parameterized) test.
      *
      * @throws Exception
      */
@@ -181,15 +185,18 @@ public class GatewayDefaultServiceTests {
     }
 
     @SuppressWarnings("javadoc")
-    @BeforeClass
-    public static void setupServiceDependencies() {
-        DefaultServices.setServiceDependency(AppStateProvider.class, null);
+    @Before
+    public void setupServiceDependencies() {
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
     }
 
     @SuppressWarnings("javadoc")
-    @AfterClass
-    public static void disposeServices() {
-        DefaultServices.disposeAllServicesInstances();
+    @After
+    public void disposeServices() {
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
 }

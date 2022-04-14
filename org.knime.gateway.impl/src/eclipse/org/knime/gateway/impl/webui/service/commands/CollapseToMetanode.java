@@ -66,7 +66,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowStatefulUtil;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
@@ -80,6 +80,12 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
     private Set<NodeID> m_newNodeIdsAfterUndo = new HashSet<>();
 
     private Set<WorkflowAnnotationID> m_newAnnotIdsAfterUndo = new HashSet<>();
+
+    private final WorkflowMiddleware m_workflowMiddleware;
+
+    CollapseToMetanode(final WorkflowMiddleware workflowMiddleware) {
+        m_workflowMiddleware = workflowMiddleware;
+    }
 
     CollapseToMetanode configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEntity) {
         super.configure(wfKey, wfm, commandEntity);
@@ -96,7 +102,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand {
         m_newNodeIdsAfterUndo = Set.of(reintroducedParts.getNodeIDs());
         m_newAnnotIdsAfterUndo = Set.of(reintroducedParts.getAnnotationIDs());
 
-        WorkflowStatefulUtil.getInstance().clearWorkflowState(
+        m_workflowMiddleware.clearWorkflowState(
             new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(getNewNode().orElseThrow())));
     }
 

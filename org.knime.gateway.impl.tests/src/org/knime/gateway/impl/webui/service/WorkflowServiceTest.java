@@ -55,10 +55,13 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
 
@@ -119,9 +122,16 @@ public class WorkflowServiceTest extends GatewayServiceTest {
     }
 
     @SuppressWarnings("javadoc")
+    @BeforeClass
+    public static void setupServiceDependencies() {
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+    }
+
+    @SuppressWarnings("javadoc")
     @AfterClass
     public static void disposeServices() {
-        DefaultServices.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
 }

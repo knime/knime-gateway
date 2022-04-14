@@ -88,7 +88,7 @@ public final class DefaultNodeService implements NodeService {
      * @return the singleton instance
      */
     public static DefaultNodeService getInstance() {
-        return DefaultServices.getDefaultServiceInstance(DefaultNodeService.class);
+        return ServiceInstances.getDefaultServiceInstance(DefaultNodeService.class);
     }
 
     DefaultNodeService() {

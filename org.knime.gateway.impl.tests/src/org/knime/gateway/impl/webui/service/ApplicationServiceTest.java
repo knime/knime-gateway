@@ -56,9 +56,11 @@ import java.util.function.Supplier;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.AppStateProvider.AppState;
 import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
 /**
@@ -82,7 +84,10 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         Supplier<AppState> appStateSupplier = mock(Supplier.class);
         AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
         when(appStateSupplier.get()).thenReturn(appState);
-        DefaultServices.setServiceDependency(AppStateProvider.class, appStateProvider);
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, appStateProvider);
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
 
         var appService = DefaultApplicationService.getInstance();
 
@@ -99,7 +104,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
             appStateEnt2.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow()
         );
 
-        DefaultServices.disposeAllServicesInstances();
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
 
     }
 

@@ -49,6 +49,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to collapse nodes based on a {@link CollapseCommandEnt}. Determines whether the queried workflow
@@ -58,11 +59,17 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 final class Collapse extends CommandIfElse {
 
+    private final WorkflowMiddleware m_workflowMiddleware;
+
+    Collapse(final WorkflowMiddleware workflowMiddleware) {
+        m_workflowMiddleware = workflowMiddleware;
+    }
+
     Collapse configure(final WorkflowKey wfKey, final WorkflowManager wfm, final CollapseCommandEnt commandEnt) {
         super.configure(wfKey, wfm,
                 () -> commandEnt.getContainerType() == CollapseCommandEnt.ContainerTypeEnum.METANODE,
-                () -> new CollapseToMetanode().configure(wfKey, wfm, commandEnt),
-                () -> new CollapseToComponent().configure(wfKey, wfm, commandEnt)
+                () -> new CollapseToMetanode(m_workflowMiddleware).configure(wfKey, wfm, commandEnt),
+                () -> new CollapseToComponent(m_workflowMiddleware).configure(wfKey, wfm, commandEnt)
         );
         return this;
     }

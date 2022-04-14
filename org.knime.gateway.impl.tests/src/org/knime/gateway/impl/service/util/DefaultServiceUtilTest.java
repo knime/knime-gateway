@@ -85,6 +85,8 @@ public class DefaultServiceUtilTest {
 
     private WorkflowManager m_wfm;
 
+    private final WorkflowProjectManager m_wpm = WorkflowProjectManager.getInstance();
+
     private NodeID m_nodeID;
 
     private String m_wfId;
@@ -205,8 +207,8 @@ public class DefaultServiceUtilTest {
      */
     @After
     public void removeWorkflowProjects() {
-        WorkflowProjectManager.getWorkflowProjects().stream().map(WorkflowProject::getID).collect(Collectors.toList())
-            .forEach(WorkflowProjectManager::removeWorkflowProject);
+        m_wpm.getWorkflowProjects().stream().map(WorkflowProject::getID).collect(Collectors.toList())
+            .forEach(m_wpm::removeWorkflowProject);
     }
 
     /*
@@ -223,7 +225,7 @@ public class DefaultServiceUtilTest {
 
     private static String addWorkflowProject(final WorkflowManager wfm) {
         String wfId = UUID.randomUUID().toString();
-        WorkflowProjectManager.addWorkflowProject(wfId, new WorkflowProject() {
+        WorkflowProjectManager.getInstance().addWorkflowProject(wfId, new WorkflowProject() {
 
             @Override
             public WorkflowManager openProject() {

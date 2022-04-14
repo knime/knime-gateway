@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
 
 /**
@@ -63,24 +65,44 @@ import org.knime.core.node.workflow.WorkflowManager;
  */
 public final class WorkflowProjectManager {
 
-    private static final Map<String, WorkflowProject> WORKFLOW_PROJECT_MAP = new HashMap<>();
+    private static final LazyInitializer<WorkflowProjectManager> INITIALIZER = new LazyInitializer<>() {
 
-    private static final List<Consumer<String>> WORKFLOW_REMOVED_LISTENERS = new ArrayList<>();
+        @Override
+        protected WorkflowProjectManager initialize() throws ConcurrentException {
+            return new WorkflowProjectManager();
+        }
+
+    };
+
+    private final Map<String, WorkflowProject> m_workflowProjectMap = new HashMap<>();
+
+    private final List<Consumer<String>> m_workflowRemovedListeners = new ArrayList<>();
 
     /**
      * Maps of already opened/loaded workflow projects.
      */
-    private static final Map<String, WorkflowManager> CACHED_WORKFLOWS_MAP = new HashMap<>();
+    private final Map<String, WorkflowManager> m_chachedWorkflowsMap = new HashMap<>();
 
     private WorkflowProjectManager() {
-        //~ static utility class
+        // singleton
+    }
+
+    /**
+     * @return the singleton instance
+     */
+    public static WorkflowProjectManager getInstance() {
+        try {
+            return INITIALIZER.get();
+        } catch (ConcurrentException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**
      * @return all registered workflow projects
      */
-    public static Collection<WorkflowProject> getWorkflowProjects() {
-        return WORKFLOW_PROJECT_MAP.values();
+    public Collection<WorkflowProject> getWorkflowProjects() {
+        return m_workflowProjectMap.values();
     }
 
     /**
@@ -90,8 +112,8 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID id of the project to be added
      * @param project the actual workflow project to be added
      */
-    public static void addWorkflowProject(final String workflowProjectID, final WorkflowProject project) {
-        WORKFLOW_PROJECT_MAP.put(workflowProjectID, project);
+    public void addWorkflowProject(final String workflowProjectID, final WorkflowProject project) {
+        m_workflowProjectMap.put(workflowProjectID, project);
     }
 
     /**
@@ -99,18 +121,18 @@ public final class WorkflowProjectManager {
      *
      * @param workflowProjectID id of the project to be removed
      */
-    public static void removeWorkflowProject(final String workflowProjectID) {
-         WORKFLOW_PROJECT_MAP.remove(workflowProjectID);
-         CACHED_WORKFLOWS_MAP.remove(workflowProjectID);
-         WORKFLOW_REMOVED_LISTENERS.stream().forEach(l -> l.accept(workflowProjectID));
+    public void removeWorkflowProject(final String workflowProjectID) {
+         m_workflowProjectMap.remove(workflowProjectID);
+         m_chachedWorkflowsMap.remove(workflowProjectID);
+         m_workflowRemovedListeners.stream().forEach(l -> l.accept(workflowProjectID));
     }
 
     /**
      * @param workflowProjectID
      * @return the workflow project for the given id or an empty optional if doesn't exist
      */
-    public static Optional<WorkflowProject> getWorkflowProject(final String workflowProjectID) {
-        return Optional.ofNullable(WORKFLOW_PROJECT_MAP.get(workflowProjectID));
+    public Optional<WorkflowProject> getWorkflowProject(final String workflowProjectID) {
+        return Optional.ofNullable(m_workflowProjectMap.get(workflowProjectID));
     }
 
     /**
@@ -120,7 +142,7 @@ public final class WorkflowProjectManager {
      * @param workflowProjectID
      * @return the opened workflow or an empty optional if there is no workflow project with the given id
      */
-    public static Optional<WorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
+    public Optional<WorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
         WorkflowManager iwfm = getCachedWorkflow(workflowProjectID).orElse(null);
         if (iwfm == null) {
             WorkflowProject wp = getWorkflowProject(workflowProjectID).orElse(null);
@@ -138,16 +160,16 @@ public final class WorkflowProjectManager {
      *
      * @param listener the listener to be called
      */
-    public static void addWorkflowProjectRemovedListener(final Consumer<String> listener) {
-        WORKFLOW_REMOVED_LISTENERS.add(listener);
+    public void addWorkflowProjectRemovedListener(final Consumer<String> listener) {
+        m_workflowRemovedListeners.add(listener);
     }
 
     /**
      * @param workflowProjectID
      * @return the cached workflow or an empty optional if none has been found for the given workflow project ID.
      */
-    private static Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
-        return Optional.ofNullable(CACHED_WORKFLOWS_MAP.get(workflowProjectID));
+    private Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
+        return Optional.ofNullable(m_chachedWorkflowsMap.get(workflowProjectID));
     }
 
     /**
@@ -156,7 +178,7 @@ public final class WorkflowProjectManager {
      *
      * @param wfm
      */
-    private static void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
-        CACHED_WORKFLOWS_MAP.put(workflowProjectID, wfm);
+    private void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
+        m_chachedWorkflowsMap.put(workflowProjectID, wfm);
     }
 }
