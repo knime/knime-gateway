@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.Mockito.mock;
@@ -78,6 +79,7 @@ import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
@@ -108,6 +110,35 @@ import org.knime.testing.util.WorkflowManagerUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WorkflowCommandsTest extends GatewayServiceTest {
+
+    @Test
+    public void testRedoCommandOrder() throws Exception {
+        WorkflowProject wp = createEmptyWorkflowProject();
+
+        WorkflowCommands commands =
+                new WorkflowCommands(5, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
+
+        var wfm = wp.openProject();
+        var sleepNodeClassname = "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory";
+
+        var n1 = addNodeDirectly(sleepNodeClassname, wfm);
+        var n2 = addNodeDirectly(sleepNodeClassname, wfm);
+
+        commands.execute(wfKey, buildDeleteCommandEnt(n2));
+        commands.execute(wfKey, buildDeleteCommandEnt(n1));
+
+        commands.undo(wfKey);
+        commands.undo(wfKey);
+
+        commands.redo(wfKey);
+        assertFalse("Expect that most recent undo is re-done", wfm.containsNodeContainer(n2));
+
+        commands.redo(wfKey);
+        assertFalse("Expect that second redo corresponds to first undo", wfm.containsNodeContainer(n1));
+
+        disposeWorkflowProject(wp);
+    }
 
     /**
      * Mainly tests the expected sizes of the undo- and redo-stacks after calling apply, undo, redo or
@@ -322,4 +353,30 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ms.addInt("for_seconds", 0);
         wfm.loadNodeSettings(waitNodeID, ns);
     }
+
+    /**
+     * Add a node to the given workflow manager directly via {@link WorkflowManager} API (not using commands).
+     * @param nodeFactoryClassname The factory classname of the node to add
+     * @param wfm The workflow manager to add the node to
+     * @return The ID of the newly added node in the workflow manager
+     * @throws Exception If anything goes wrong
+     */
+    private NodeID addNodeDirectly(final String nodeFactoryClassname, final WorkflowManager wfm) throws Exception {
+        return WorkflowManagerUtil.createAndAddNode(wfm,
+                FileNativeNodeContainerPersistor.loadNodeFactory(nodeFactoryClassname)).getID();
+    }
+
+    private DeleteCommandEnt buildDeleteCommandEnt(final NodeID nodeToDelete) {
+        return buildDeleteCommandEnt(List.of(nodeToDelete));
+    }
+
+    private DeleteCommandEnt buildDeleteCommandEnt(final List<NodeID> nodesToDelete) {
+        return builder(DeleteCommandEntBuilder.class)
+                .setNodeIds(
+                        nodesToDelete.stream().map(NodeIDEnt::new).collect(Collectors.toList())
+                )
+                .setKind(KindEnum.DELETE)
+                .build();
+    }
+
 }
