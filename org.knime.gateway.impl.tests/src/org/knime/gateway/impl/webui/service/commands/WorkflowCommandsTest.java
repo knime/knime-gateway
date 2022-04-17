@@ -111,12 +111,13 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 public class WorkflowCommandsTest extends GatewayServiceTest {
 
+    @SuppressWarnings("javadoc")
     @Test
     public void testRedoCommandOrder() throws Exception {
         WorkflowProject wp = createEmptyWorkflowProject();
 
         WorkflowCommands commands =
-                new WorkflowCommands(5, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+            new WorkflowCommands(5, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
         var wfm = wp.openProject();
@@ -143,6 +144,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     /**
      * Mainly tests the expected sizes of the undo- and redo-stacks after calling apply, undo, redo or
      * disposeUndoAndRedoStacks.
+     *
+     * @throws Exception
      */
     @Test
     public void testUndoAndRedoStackSizes() throws Exception {
@@ -267,6 +270,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      *
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
         ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
@@ -361,22 +365,21 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      * @return The ID of the newly added node in the workflow manager
      * @throws Exception If anything goes wrong
      */
-    private NodeID addNodeDirectly(final String nodeFactoryClassname, final WorkflowManager wfm) throws Exception {
-        return WorkflowManagerUtil.createAndAddNode(wfm,
-                FileNativeNodeContainerPersistor.loadNodeFactory(nodeFactoryClassname)).getID();
+    private static NodeID addNodeDirectly(final String nodeFactoryClassname, final WorkflowManager wfm)
+        throws Exception {
+        return WorkflowManagerUtil
+            .createAndAddNode(wfm, FileNativeNodeContainerPersistor.loadNodeFactory(nodeFactoryClassname)).getID();
     }
 
-    private DeleteCommandEnt buildDeleteCommandEnt(final NodeID nodeToDelete) {
+    private static DeleteCommandEnt buildDeleteCommandEnt(final NodeID nodeToDelete) {
         return buildDeleteCommandEnt(List.of(nodeToDelete));
     }
 
-    private DeleteCommandEnt buildDeleteCommandEnt(final List<NodeID> nodesToDelete) {
-        return builder(DeleteCommandEntBuilder.class)
-                .setNodeIds(
-                        nodesToDelete.stream().map(NodeIDEnt::new).collect(Collectors.toList())
-                )
-                .setKind(KindEnum.DELETE)
-                .build();
+    private static DeleteCommandEnt buildDeleteCommandEnt(final List<NodeID> nodesToDelete) {
+        return builder(DeleteCommandEntBuilder.class) //
+            .setNodeIds(nodesToDelete.stream().map(NodeIDEnt::new).collect(Collectors.toList())) //
+            .setKind(KindEnum.DELETE) //
+            .build();
     }
 
 }
