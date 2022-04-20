@@ -409,96 +409,109 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseConfiguredToMetanode() throws Exception {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseConfiguredToComponent() throws Exception {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseExecutingToMetanode() throws Exception {
         testCollapseExecuting(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseExecutingToComponent() throws Exception {
         testCollapseExecuting(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseResettableToMetanode() throws Exception {
         testCollapseResettable(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseResettableToComponent() throws Exception {
         testCollapseResettable(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseResponseMetanode() throws Exception {
         testCollapseResponse(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
+    @SuppressWarnings("javadoc")
     public void testCollapseResponseComponent() throws Exception {
         testCollapseResponse(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandConfiguredMetanode() throws Exception {
         var configuredMetanode = 14;
         testExpandConfigured(configuredMetanode);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandConfiguredComponent() throws Exception {
         var configuredComponent = 15;
         testExpandConfigured(configuredComponent);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandResettableMetanode() throws Exception {
         var resettableMetanode = 13;
         testExpandResettable(resettableMetanode);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandResettableComponent() throws Exception {
         var resettableComponent = 10;
         testExpandResettable(resettableComponent);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandExecutingMetanode() throws Exception {
         var metanodeWithExecutingSuccessor = 20;
         var metanodeExecutingSuccessor = 19;
         testExpandExecuting(metanodeWithExecutingSuccessor, metanodeExecutingSuccessor);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandExecutingComponent() throws Exception {
         var componentWithExecutingSuccessor = 22;
         var componentExecutingSuccessor = 21;
         testExpandExecuting(componentWithExecutingSuccessor, componentExecutingSuccessor);
     }
 
+    @SuppressWarnings("javadoc")
     public void testExpandResponseMetanode() throws Exception {
         var configuredMetanode = 14;
         testExpandResponse(configuredMetanode);
     }
+
+    @SuppressWarnings("javadoc")
     public void testExpandResponseComponent() throws Exception {
         var configuredComponent = 15;
         testExpandResponse(configuredComponent);
     }
 
-    private void testExpandResettable(final int nodeToExpand)
-            throws Exception {
+    private void testExpandResettable(final int nodeToExpand) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
         WorkflowEnt wfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertTrue(
-                "Expect selected nodes to have allowed action for collapse set to 'reset required'",
-                getAllowedActionsOfNodes(List.of(nodeToExpandEnt), wfEnt).stream().anyMatch(
-                        actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.RESETREQUIRED
-                )
-        );
+        assertTrue("Expect selected nodes to have allowed action for collapse set to 'reset required'",
+            getAllowedActionsOfNodes(List.of(nodeToExpandEnt), wfEnt).stream()
+                .anyMatch(actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.RESETREQUIRED));
 
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
         assertNodesPresent("Expect container to be still be in root workflow", rootWfEnt, List.of(nodeToExpandEnt));
 
-        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
+        var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         assertExpanded(wfId, commandEnt, responseEnt);
     }
@@ -510,12 +523,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
 
-        assertTrue(
-                "Expect selected nodes to have allowed action for expand to be false",
-                getAllowedActionsOfNodes(List.of(containerEnt), rootWfEnt).stream().anyMatch(
-                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE
-                )
-        );
+        assertTrue("Expect selected nodes to have allowed action for expand to be false",
+            getAllowedActionsOfNodes(List.of(containerEnt), rootWfEnt).stream()
+                .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE));
 
 //        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, List.of(containerEnt));
     }
@@ -525,29 +535,21 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
         WorkflowEnt unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        assertTrue(
-                "Expect selected nodes to have allowed action for collapse set to true",
-                getAllowedActionsOfNodes(List.of(nodeToExpandEnt), unchangedWfEnt).stream().anyMatch(
-                        actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.TRUE
-                )
-        );
+        assertTrue("Expect selected nodes to have allowed action for collapse set to true",
+            getAllowedActionsOfNodes(List.of(nodeToExpandEnt), unchangedWfEnt).stream()
+                .anyMatch(actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.TRUE));
 
-        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
-        ExpandResultEnt commandResponseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
+        ExpandResultEnt commandResponseEnt =
+            (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         assertExpanded(wfId, commandEnt, commandResponseEnt);
 
         ws().undoWorkflowCommand(wfId, getRootID());
         WorkflowEnt parentWfAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertNodesPresent(
-            "Container expected to be back in parent workflow after undo",
-            parentWfAfterUndo,
-            List.of(nodeToExpandEnt)
-        );
-        assertNodesNotPresent(
-                "Expanded nodes assumed to no longer be in parent workflow",
-                parentWfAfterUndo,
-                commandResponseEnt.getExpandedNodeIds()
-        );
+        assertNodesPresent("Container expected to be back in parent workflow after undo", parentWfAfterUndo,
+            List.of(nodeToExpandEnt));
+        assertNodesNotPresent("Expanded nodes assumed to no longer be in parent workflow", parentWfAfterUndo,
+            commandResponseEnt.getExpandedNodeIds());
 
         ws().redoWorkflowCommand(wfId, getRootID());
         assertExpanded(wfId, commandEnt, commandResponseEnt);
@@ -555,37 +557,26 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private void assertExpanded(final String wfId, final ExpandCommandEnt commandEnt, final ExpandResultEnt responseEnt) throws Exception {
         var parentWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        assertNodesNotPresent(
-                "Expanded node expected to have been removed",
-                parentWfEnt, List.of(commandEnt.getNodeId())
-        );
-        assertNodesPresent(
-                "Nodes from container expected to appear in parent workflow",
-                parentWfEnt,
-                responseEnt.getExpandedNodeIds()
-        );
-        assertAnnotationsPresent(
-                "Annotations from container expected to appear in parent workflow",
-                parentWfEnt,
-                responseEnt.getExpandedAnnotationIds()
-        );
+        assertNodesNotPresent("Expanded node expected to have been removed", parentWfEnt,
+            List.of(commandEnt.getNodeId()));
+        assertNodesPresent("Nodes from container expected to appear in parent workflow", parentWfEnt,
+            responseEnt.getExpandedNodeIds());
+        assertAnnotationsPresent("Annotations from container expected to appear in parent workflow", parentWfEnt,
+            responseEnt.getExpandedAnnotationIds());
     }
 
     private void testCollapseExecuting(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var waitNode = 16;
-        var nodesToCollapseInts = List.of(5,3);
+        var nodesToCollapseInts = List.of(5, 3);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
 
         executeAndWaitUntilExecuting(wfId, waitNode);
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
 
-        assertTrue(
-                "Expect selected nodes to have allowed action for collapse to be false",
-                getAllowedActionsOfNodes(nodesToCollapseEnts, rootWfEnt).stream().anyMatch(
-                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE
-                )
-        );
+        assertTrue("Expect selected nodes to have allowed action for collapse to be false",
+            getAllowedActionsOfNodes(nodesToCollapseEnts, rootWfEnt).stream()
+                .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE));
 
         var commandEnt =
             buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
@@ -594,16 +585,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(exceptionMessage, containsString("Cannot move executed nodes"));
     }
 
-    private List<AllowedNodeActionsEnt> getAllowedActionsOfNodes(final List<NodeIDEnt> nodes, final WorkflowEnt wfEnt) {
-        return nodes.stream()
-                .map(NodeIDEnt::toString)
-                .map(idStr -> wfEnt.getNodes().get(idStr))
-                .map(NodeEnt::getAllowedActions)
-                .collect(Collectors.toList());
+    private static List<AllowedNodeActionsEnt> getAllowedActionsOfNodes(final List<NodeIDEnt> nodes,
+        final WorkflowEnt wfEnt) {
+        return nodes.stream() //
+            .map(NodeIDEnt::toString) //
+            .map(idStr -> wfEnt.getNodes().get(idStr)) //
+            .map(NodeEnt::getAllowedActions) //
+            .collect(Collectors.toList());
     }
 
     /**
      * Execute a node and block until we can confirm that it is executing (currently only for nodes in root workflow).
+     *
      * @param wfId The workflow to operate in
      * @param toExecute The node to execute
      * @throws Exception
@@ -612,10 +605,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeUpToNodesAsync(wfId, Collections.singletonList(new NodeIDEnt(toExecute)));
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             WorkflowEnt wfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
-            assertThat(
-                    ((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toExecute).toString())).getState().getExecutionState(),
-                    is(ExecutionStateEnum.EXECUTING)
-            );
+            assertThat(((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toExecute).toString())).getState()
+                .getExecutionState(), is(ExecutionStateEnum.EXECUTING));
         });
     }
 
@@ -663,14 +654,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Set<String> annotationContents = unchangedWfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(
                 Collectors.toSet());
 
-        assertTrue(
-                "Expect selected nodes to have allowed action for collapse set to true",
-                getAllowedActionsOfNodes(nodesToCollapseEnts, unchangedWfEnt).stream().anyMatch(
-                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.TRUE
-                )
-        );
+        assertTrue("Expect selected nodes to have allowed action for collapse set to true",
+            getAllowedActionsOfNodes(nodesToCollapseEnts, unchangedWfEnt).stream()
+                .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.TRUE));
 
-        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
+        var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
         var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         var newNode = getNewNodeId(commandResponseEnt);
 
@@ -679,26 +667,19 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().undoWorkflowCommand(wfId, getRootID());
 
         WorkflowEnt parentWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        assertNodesPresent(
-                "Nodes expected to be back in parent workflow after undo of collapse",
-                parentWfEnt, nodesToCollapseEnts
-        );
+        assertNodesPresent("Nodes expected to be back in parent workflow after undo of collapse", parentWfEnt,
+            nodesToCollapseEnts);
         // after undo, annotations will re-appear with new ids -- instead compare contents
-        assertAnnotationContentsPresent(
-                "Annotation contents expected to remain unchanged",
-                parentWfEnt,
-                annotationContents
-        );
-        assertNodesNotPresent(
-                "Previously created metanode expected to no longer be in parent workflow",
-                parentWfEnt, List.of(newNode)
-        );
+        assertAnnotationContentsPresent("Annotation contents expected to remain unchanged", parentWfEnt,
+            annotationContents);
+        assertNodesNotPresent("Previously created metanode expected to no longer be in parent workflow", parentWfEnt,
+            List.of(newNode));
 
         ws().redoWorkflowCommand(wfId, getRootID());
         assertCollapsed(wfId, commandEnt, commandResponseEnt, annotationContents);
     }
 
-    private NodeIDEnt getNewNodeId(final CommandResultEnt commandResultEnt) {
+    private static NodeIDEnt getNewNodeId(final CommandResultEnt commandResultEnt) {
         if (commandResultEnt instanceof CollapseResultEnt) {
             var collapseResponseEnt = (CollapseResultEnt)commandResultEnt;
             return collapseResponseEnt.getNewNodeId();
@@ -722,39 +703,21 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         WorkflowEnt parentWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
 
-        assertNodesNotPresent(
-                "nodes expected to be removed from top-level workflow",
-                parentWfEnt,
-                nodesToCollapseEnts
-        );
-        assertAnnotationsNotPresent(
-                "annotations expected to be removed from top-level workflow",
-                annotsToCollapseEnts,
-                parentWfEnt
-        );
+        assertNodesNotPresent("nodes expected to be removed from top-level workflow", parentWfEnt, nodesToCollapseEnts);
+        assertAnnotationsNotPresent("annotations expected to be removed from top-level workflow", annotsToCollapseEnts,
+            parentWfEnt);
 
-        assertNodesPresent(
-                "node in command response expected to be in top-level workflow",
-                parentWfEnt,
-                List.of(newNode)
-        );
+        assertNodesPresent("node in command response expected to be in top-level workflow", parentWfEnt,
+            List.of(newNode));
 
         WorkflowEnt childWfEnt = ws().getWorkflow(wfId, newNode, true).getWorkflow();
 
         var effectiveParentNodeEnt = getParentIdEnt(commandEnt.getContainerType(), newNode);
-        assertNodesPresent(
-                "Collapsed nodes expected to be child of new node after collapse",
-                childWfEnt,
-                nodesToCollapseInts.stream()
-                        .map(effectiveParentNodeEnt::appendNodeID)
-                        .collect(Collectors.toList())
-        );
+        assertNodesPresent("Collapsed nodes expected to be child of new node after collapse", childWfEnt,
+            nodesToCollapseInts.stream().map(effectiveParentNodeEnt::appendNodeID).collect(Collectors.toList()));
         // annotation ids are not consistent -- check for contents only as a workaround.
-        assertAnnotationContentsPresent(
-                "Annotation contents expected to be found in child workflow",
-                childWfEnt,
-                annotationContents
-        );
+        assertAnnotationContentsPresent("Annotation contents expected to be found in child workflow", childWfEnt,
+            annotationContents);
     }
 
     private static NodeIDEnt getParentIdEnt(final CollapseCommandEnt.ContainerTypeEnum containerType, final NodeIDEnt parentEnt) {
@@ -772,91 +735,76 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
 
         WorkflowEnt wfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertTrue(
-                "Expect selected nodes to have allowed action for collapse set to 'reset required'",
-                getAllowedActionsOfNodes(nodesToCollapseEnts, wfEnt).stream().anyMatch(
-                        actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.RESETREQUIRED
-                )
-        );
+        assertTrue("Expect selected nodes to have allowed action for collapse set to 'reset required'",
+            getAllowedActionsOfNodes(nodesToCollapseEnts, wfEnt).stream()
+                .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.RESETREQUIRED));
 
-        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
+        var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
         var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
         assertCollapsed(wfId, commandEnt, commandResponseEnt, Collections.emptySet());
     }
 
     private static void assertAnnotationsNotPresent(final String message, final List<AnnotationIDEnt> annots,
-            final WorkflowEnt wfEnt) {
+        final WorkflowEnt wfEnt) {
         if (annots.isEmpty()) {
             return;
         }
-        assertThat(
-                message,
-                wfEnt.getWorkflowAnnotations().stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList()),
-                not(hasItems(annots.toArray(AnnotationIDEnt[]::new)))
-        );
+        assertThat(message,
+            wfEnt.getWorkflowAnnotations().stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList()),
+            not(hasItems(annots.toArray(AnnotationIDEnt[]::new))));
     }
 
-    private static void assertAnnotationContentsPresent(final String message, final WorkflowEnt wfEnt, final Set<String> annotationContents) {
+    private static void assertAnnotationContentsPresent(final String message, final WorkflowEnt wfEnt,
+        final Set<String> annotationContents) {
         if (annotationContents.isEmpty()) {
             return;
         }
-        assertEquals(
-                message,
-                annotationContents,
-                wfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(Collectors.toSet())
-        );
+        assertEquals(message, annotationContents,
+            wfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(Collectors.toSet()));
     }
 
     private static void assertAnnotationsPresent(final String message, final WorkflowEnt wfEnt,
-            final List<AnnotationIDEnt> annots) {
+        final List<AnnotationIDEnt> annots) {
         if (annots.isEmpty()) {
             return;
         }
-        assertThat(
-                message,
-                wfEnt.getWorkflowAnnotations().stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList()),
-                hasItems(annots.toArray(AnnotationIDEnt[]::new))
-        );
+        assertThat(message,
+            wfEnt.getWorkflowAnnotations().stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList()),
+            hasItems(annots.toArray(AnnotationIDEnt[]::new)));
     }
 
     private static void assertNodesPresent(final String message, final WorkflowEnt wfEnt, final List<NodeIDEnt> nodes) {
         if (nodes.isEmpty()) {
             return;
         }
-        assertThat(
-                message,
-                wfEnt.getNodes().keySet(),
-                hasItems(nodes.stream().map(NodeIDEnt::toString).toArray(String[]::new)
-        ));
+        assertThat(message, wfEnt.getNodes().keySet(),
+            hasItems(nodes.stream().map(NodeIDEnt::toString).toArray(String[]::new)));
     }
 
     private static void assertNodesNotPresent(final String message, final WorkflowEnt wfEnt,
-            final List<NodeIDEnt> nodes) {
+        final List<NodeIDEnt> nodes) {
         if (nodes.isEmpty()) {
             return;
         }
-        assertThat(
-                message,
-                wfEnt.getNodes().keySet(),
-                not(hasItems(nodes.stream().map(NodeIDEnt::toString).toArray(String[]::new)))
-        );
+        assertThat(message, wfEnt.getNodes().keySet(),
+            not(hasItems(nodes.stream().map(NodeIDEnt::toString).toArray(String[]::new))));
     }
 
     private static CollapseCommandEnt buildCollapseCommandEnt(final List<NodeIDEnt> nodes,
-            final List<AnnotationIDEnt> annotationIds, final CollapseCommandEnt.ContainerTypeEnum containerType) {
-        return builder(CollapseCommandEnt.CollapseCommandEntBuilder.class)
-                .setKind(KindEnum.COLLAPSE)
-                .setContainerType(containerType)
-                .setNodeIds(nodes)
-                .setAnnotationIds(annotationIds)
-                .build();
+        final List<AnnotationIDEnt> annotationIds, final CollapseCommandEnt.ContainerTypeEnum containerType) {
+        return builder(CollapseCommandEnt.CollapseCommandEntBuilder.class) //
+            .setKind(KindEnum.COLLAPSE) //
+            .setContainerType(containerType) //
+            .setNodeIds(nodes) //
+            .setAnnotationIds(annotationIds) //
+            .build();
     }
 
     private static ExpandCommandEnt buildExpandCommandEnt(final NodeIDEnt node) {
-        return builder(ExpandCommandEnt.ExpandCommandEntBuilder.class)
-                .setKind(KindEnum.EXPAND)
-                .setNodeId(node)
-                .build();
+        return builder(ExpandCommandEnt.ExpandCommandEntBuilder.class) //
+            .setKind(KindEnum.EXPAND) //
+            .setNodeId(node) //
+            .build();
     }
 
     /**
@@ -1133,7 +1081,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y) {
         assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
-        NodeEnt nodeEnt = wf.getWorkflow().getNodes().values().stream()
+        var nodeEnt = wf.getWorkflow().getNodes().values().stream()
             .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
             .findFirst().orElseThrow();
         assertThat(nodeEnt.getPosition().getX(), is(x));
