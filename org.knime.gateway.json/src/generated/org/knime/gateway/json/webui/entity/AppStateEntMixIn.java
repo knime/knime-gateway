@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
 
@@ -72,6 +73,14 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("openedWorkflows")
     public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
     
+    @Override
+    @JsonProperty("availableOtherPortTypes")
+    public java.util.Map<String, PortTypeEnt> getAvailableOtherPortTypes();
+    
+    @Override
+    @JsonProperty("recommendedPortTypeIds")
+    public java.util.List<String> getRecommendedPortTypeIds();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -88,6 +97,14 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("openedWorkflows")
         public AppStateEntMixInBuilder setOpenedWorkflows(final java.util.List<WorkflowProjectEnt> openedWorkflows);
+        
+        @Override
+        @JsonProperty("availableOtherPortTypes")
+        public AppStateEntMixInBuilder setAvailableOtherPortTypes(final java.util.Map<String, PortTypeEnt> availableOtherPortTypes);
+        
+        @Override
+        @JsonProperty("recommendedPortTypeIds")
+        public AppStateEntMixInBuilder setRecommendedPortTypeIds(final java.util.List<String> recommendedPortTypeIds);
         
     }
 

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -66,6 +67,18 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
 
+  /**
+   * All non-built-in port types available in the extension. Map from port type ID to port type entity.
+   * @return availableOtherPortTypes , never <code>null</code>
+   **/
+  public java.util.Map<String, PortTypeEnt> getAvailableOtherPortTypes();
+
+  /**
+   * List of IDs of recommended port types
+   * @return recommendedPortTypeIds , never <code>null</code>
+   **/
+  public java.util.List<String> getRecommendedPortTypeIds();
+
 
     /**
      * The builder for the entity.
@@ -79,6 +92,22 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows);
+        
+        /**
+         * All non-built-in port types available in the extension. Map from port type ID to port type entity.
+         * 
+         * @param availableOtherPortTypes the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setAvailableOtherPortTypes(java.util.Map<String, PortTypeEnt> availableOtherPortTypes);
+        
+        /**
+         * List of IDs of recommended port types
+         * 
+         * @param recommendedPortTypeIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setRecommendedPortTypeIds(java.util.List<String> recommendedPortTypeIds);
         
         
         /**

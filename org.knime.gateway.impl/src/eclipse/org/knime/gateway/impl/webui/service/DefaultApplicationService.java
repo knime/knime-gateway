@@ -53,17 +53,23 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -123,15 +129,30 @@ public final class DefaultApplicationService implements ApplicationService {
     public static AppStateEnt buildAppStateEnt(final AppState appState,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
         AppStateEntBuilder builder = builder(AppStateEntBuilder.class);
-        List<WorkflowProjectEnt> projects;
+        List<WorkflowProjectEnt> projectEnts;
+        Map<String, PortTypeEnt> availablePortTypeEnts;
+        List<String> recommendedPortTypeIds;
         if (appState != null) {
-            projects = appState.getOpenedWorkflows().stream()
+            projectEnts = appState.getOpenedWorkflows().stream()
                 .map(w -> buildWorkflowProjectEnt(w, workflowProjectManager, workflowMiddleware))
                 .filter(Objects::nonNull).collect(toList());
+            var allAvailablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
+            availablePortTypeEnts = appState.getAvailableOtherPortTypes().stream()
+                    .collect(Collectors.toMap(
+                            CoreUtil::getPortTypeId,
+                            pt -> EntityBuilderUtil.buildPortTypeEnt(pt, allAvailablePortTypes)
+                    ));
+            recommendedPortTypeIds = appState.getRecommendedPortTypes().stream()
+                    .map(CoreUtil::getPortTypeId)
+                    .collect(toList());
         } else {
-            projects = Collections.emptyList();
+            projectEnts = Collections.emptyList();
+            availablePortTypeEnts = Collections.emptyMap();
+            recommendedPortTypeIds = Collections.emptyList();
         }
-        builder.setOpenedWorkflows(projects);
+        builder.setOpenedWorkflows(projectEnts);
+        builder.setAvailableOtherPortTypes(availablePortTypeEnts);
+        builder.setRecommendedPortTypeIds(recommendedPortTypeIds);
         return builder.build();
     }
 

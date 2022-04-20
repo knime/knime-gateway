@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -63,6 +64,8 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 public class DefaultAppStateEnt implements AppStateEnt {
 
   protected java.util.List<WorkflowProjectEnt> m_openedWorkflows;
+  protected java.util.Map<String, PortTypeEnt> m_availableOtherPortTypes;
+  protected java.util.List<String> m_recommendedPortTypeIds;
   
   protected DefaultAppStateEnt() {
     //for sub-classes
@@ -79,6 +82,14 @@ public class DefaultAppStateEnt implements AppStateEnt {
         throw new IllegalArgumentException("openedWorkflows must not be null.");
     }
     m_openedWorkflows = immutable(builder.m_openedWorkflows);
+    if(builder.m_availableOtherPortTypes == null) {
+        throw new IllegalArgumentException("availableOtherPortTypes must not be null.");
+    }
+    m_availableOtherPortTypes = immutable(builder.m_availableOtherPortTypes);
+    if(builder.m_recommendedPortTypeIds == null) {
+        throw new IllegalArgumentException("recommendedPortTypeIds must not be null.");
+    }
+    m_recommendedPortTypeIds = immutable(builder.m_recommendedPortTypeIds);
   }
   
    /**
@@ -96,7 +107,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
             return false;
         }
         DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows);
+        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows) && Objects.equals(m_availableOtherPortTypes, ent.m_availableOtherPortTypes) && Objects.equals(m_recommendedPortTypeIds, ent.m_recommendedPortTypeIds);
     }
 
 
@@ -108,6 +119,8 @@ public class DefaultAppStateEnt implements AppStateEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_openedWorkflows)
+               .append(m_availableOtherPortTypes)
+               .append(m_recommendedPortTypeIds)
                .toHashCode();
    }
   
@@ -118,6 +131,16 @@ public class DefaultAppStateEnt implements AppStateEnt {
         return m_openedWorkflows;
   }
     
+  @Override
+  public java.util.Map<String, PortTypeEnt> getAvailableOtherPortTypes() {
+        return m_availableOtherPortTypes;
+  }
+    
+  @Override
+  public java.util.List<String> getRecommendedPortTypeIds() {
+        return m_recommendedPortTypeIds;
+  }
+    
   
     public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
     
@@ -126,6 +149,8 @@ public class DefaultAppStateEnt implements AppStateEnt {
         }
     
         private java.util.List<WorkflowProjectEnt> m_openedWorkflows = new java.util.ArrayList<>();
+        private java.util.Map<String, PortTypeEnt> m_availableOtherPortTypes = new java.util.HashMap<>();
+        private java.util.List<String> m_recommendedPortTypeIds = new java.util.ArrayList<>();
 
         @Override
         public DefaultAppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows) {
@@ -133,6 +158,24 @@ public class DefaultAppStateEnt implements AppStateEnt {
                  throw new IllegalArgumentException("openedWorkflows must not be null.");
              }
              m_openedWorkflows = openedWorkflows;
+             return this;
+        }
+
+        @Override
+        public DefaultAppStateEntBuilder setAvailableOtherPortTypes(java.util.Map<String, PortTypeEnt> availableOtherPortTypes) {
+             if(availableOtherPortTypes == null) {
+                 throw new IllegalArgumentException("availableOtherPortTypes must not be null.");
+             }
+             m_availableOtherPortTypes = availableOtherPortTypes;
+             return this;
+        }
+
+        @Override
+        public DefaultAppStateEntBuilder setRecommendedPortTypeIds(java.util.List<String> recommendedPortTypeIds) {
+             if(recommendedPortTypeIds == null) {
+                 throw new IllegalArgumentException("recommendedPortTypeIds must not be null.");
+             }
+             m_recommendedPortTypeIds = recommendedPortTypeIds;
              return this;
         }
 

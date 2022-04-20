@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -62,11 +63,17 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.database.DatabaseConnectionPortObject;
+import org.knime.core.node.port.database.DatabasePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowLoopContext;
@@ -93,6 +100,15 @@ public final class CoreUtil {
 
     private static final String STREAMING_JOB_MANAGER_ID =
         "org.knime.core.streaming.SimpleStreamerNodeExecutionJobManagerFactory";
+
+
+   public static final List<PortType> RECOMMENDED_PORT_TYPES = List.of(
+            BufferedDataTable.TYPE,  // Data
+            DatabaseConnectionPortObject.TYPE, // Database Connection
+            DatabasePortObject.TYPE, // Database Query
+            FlowVariablePortObject.TYPE,  // Flow Variable
+            PortObject.TYPE  // Generic
+    );
 
     private CoreUtil() {
         // utility
@@ -293,13 +309,46 @@ public final class CoreUtil {
     }
 
     /**
-     * Obtain the ID of the given port type
-     *
-     * @param ptype The port type to determine the ID of
-     * @return The ID of the given port type.
+     * Get the port type based on a port type ID
+     * @param ptypeId The ID of the port type to obtain
+     * @return An Optional containing the Port Type, or an empty optional if the port type could not be determined.
+     */
+    public static Optional<PortType> getPortType(final String ptypeId) {
+        var portTypeRegistry = PortTypeRegistry.getInstance();
+        return portTypeRegistry.getObjectClass(ptypeId).map(portTypeRegistry::getPortType);
+    }
+
+    /**
+     * Get the port type ID of a given port type object
+     * @param ptype The port type
+     * @return The ID of the given port type
      */
     public static String getPortTypeId(final PortType ptype) {
         return ptype.getPortObjectClass().getName();
+    }
+
+    /**
+     * The kind of a port type.
+     */
+    public enum PortTypeKind {
+        TABLE, FLOWVARIABLE, GENERIC, OTHER
+    }
+
+    /**
+     * Determine the kind of the given port
+     * @param ptype The port to determine the kind of
+     * @return The kind of the port
+     */
+    public static PortTypeKind getPortTypeKind(final PortType ptype) {
+        if (BufferedDataTable.TYPE.equals(ptype)) {
+            return PortTypeKind.TABLE;
+        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
+            return PortTypeKind.FLOWVARIABLE;
+        } else if (PortObject.TYPE.equals(ptype)) {
+            return PortTypeKind.GENERIC;
+        } else {
+            return PortTypeKind.OTHER;
+        }
     }
 
 }

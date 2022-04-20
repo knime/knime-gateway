@@ -57,7 +57,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.internal.ReferencedFile;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.Node;

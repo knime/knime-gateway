@@ -54,6 +54,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.knime.core.node.port.PortType;
+
 /**
  * Provides information about the state of the application. The application state is modelled by a reference to a
  * supplier.
@@ -118,6 +120,16 @@ public final class AppStateProvider {
          * @return list of all currently open workflows.
          */
         List<OpenedWorkflow> getOpenedWorkflows();
+
+        /**
+         * @return All non-built-in port types available in the current extension
+         */
+        Set<PortType> getAvailableOtherPortTypes();
+
+        /**
+         * @return List of recommended port types
+         */
+        List<PortType> getRecommendedPortTypes();
 
         /**
          * Represents an opened workflow.
