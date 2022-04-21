@@ -46,8 +46,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import static java.util.Arrays.stream;
-
+import java.util.List;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowLock;
@@ -66,21 +65,21 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  */
 abstract class CommandSequence extends HigherOrderCommand {
 
-    private final WorkflowCommand[] m_commands;
+    private final List<WorkflowCommand> m_commands;
 
     private WorkflowKey m_wfKey;
 
-    protected CommandSequence(final WorkflowCommand... commands) {
-        if (commands.length == 0) {
+    protected CommandSequence(final List<WorkflowCommand> commands) {
+        if (commands.isEmpty()) {
             throw new IllegalStateException("No commands given");
         }
         m_commands = commands;
     }
 
     @Override
-    protected Optional<WithResult> preExecuteToGetCommmandWithResult(final WorkflowKey wfKey)
+    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
-        var lastCommand = m_commands[m_commands.length - 1];
+        var lastCommand = m_commands.get(m_commands.size() - 1);
         if (lastCommand instanceof WithResult) {
             return Optional.of((WithResult)lastCommand);
         } else {
@@ -98,21 +97,22 @@ abstract class CommandSequence extends HigherOrderCommand {
         throws ServiceExceptions.OperationNotAllowedException, NodeNotFoundException, NotASubWorkflowException {
         m_wfKey = wfKey;
         var wfm = WorkflowUtil.getWorkflowManager(wfKey);
-        var isWorklfowModified = false;
+        var isWorkflowModified = false;
         try (WorkflowLock lock = wfm.lock()) {
             for (var command : m_commands) {
                 if (command.execute(wfKey)) {
-                    isWorklfowModified = true;
+                    isWorkflowModified = true;
                 }
             }
         }
-        return isWorklfowModified;
+        return isWorkflowModified;
     }
 
     @Override
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        for (int i = m_commands.length - 1; i >= 0; i--) {
-            m_commands[i].undo();
+        var iterator = m_commands.listIterator(m_commands.size());
+        while (iterator.hasPrevious()) {
+            iterator.previous().undo();
         }
     }
 
@@ -128,12 +128,12 @@ abstract class CommandSequence extends HigherOrderCommand {
 
     @Override
     public boolean canUndo() {
-        return stream(m_commands).allMatch(WorkflowCommand::canUndo);
+        return m_commands.stream().allMatch(WorkflowCommand::canUndo);
     }
 
     @Override
     public boolean canRedo() {
-        return stream(m_commands).allMatch(WorkflowCommand::canRedo);
+        return m_commands.stream().allMatch(WorkflowCommand::canRedo);
     }
 
 }

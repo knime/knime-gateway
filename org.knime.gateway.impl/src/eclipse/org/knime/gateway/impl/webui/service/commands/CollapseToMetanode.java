@@ -93,6 +93,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         m_newAnnotationIDsAfterUndo = m_metaNodeCollapseResult.undoWithResult().getAnnotationIDs();
         m_metaNodeCollapseResult = null;
 
+        // TODO remove, see NXT-1039
         m_workflowMiddleware.clearWorkflowState(
             new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(collapsedNodeId)));
     }

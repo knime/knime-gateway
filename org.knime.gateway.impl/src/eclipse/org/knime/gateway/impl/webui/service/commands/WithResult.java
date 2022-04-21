@@ -57,7 +57,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
  *
  * The {@link #getChangeToWaitFor()}-method is called before command execution (i.e.
  * {@link WorkflowCommand#execute(org.knime.gateway.impl.webui.WorkflowKey)}), {@link #buildEntity(String)} is
- * guaranteed to be called after command exect
+ * guaranteed to be called after command execution.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

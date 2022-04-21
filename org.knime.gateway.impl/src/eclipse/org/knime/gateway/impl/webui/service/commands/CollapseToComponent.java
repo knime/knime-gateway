@@ -46,6 +46,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -64,10 +65,10 @@ class CollapseToComponent extends CommandSequence {
         super(getCommands(commandEnt, workflowMiddleware));
     }
 
-    private static WorkflowCommand[] getCommands(final CollapseCommandEnt commandEnt,
+    private static List<WorkflowCommand> getCommands(final CollapseCommandEnt commandEnt,
         final WorkflowMiddleware workflowMiddleware) {
         var collapseCommand = new CollapseToMetanode(commandEnt, workflowMiddleware);
         Supplier<NodeIDEnt> newNodeIdSupplier = () -> collapseCommand.buildEntity("").getNewNodeId();
-        return new WorkflowCommand[]{collapseCommand, new ConvertMetanodeToComponent(newNodeIdSupplier)};
+        return List.of(collapseCommand, new ConvertMetanodeToComponent(newNodeIdSupplier));
     }
 }

@@ -108,6 +108,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
 
         m_subNodeExpandResult = wfm.expandSubWorkflow(nodeToExpand);
 
+        // TODO remove, see NXT-1039
         m_workflowMiddleware
             .clearWorkflowState(new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(nodeToExpand)));
 

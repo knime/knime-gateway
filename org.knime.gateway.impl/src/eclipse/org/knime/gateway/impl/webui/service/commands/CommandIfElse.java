@@ -89,7 +89,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    public Optional<WithResult> preExecuteToGetCommmandWithResult(final WorkflowKey wfKey)
+    public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
         var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         var takeLeft = m_predicate.apply(wfm);

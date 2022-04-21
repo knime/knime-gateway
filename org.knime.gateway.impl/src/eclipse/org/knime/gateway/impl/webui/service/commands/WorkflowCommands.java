@@ -73,7 +73,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
@@ -125,7 +124,6 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
@@ -147,12 +145,10 @@ public final class WorkflowCommands {
         }
 
         WorkflowChangeWaiter workflowChangeWaiter = null;
-        var hasResult = false;
         if (command instanceof WithResult) {
+            var hasResult = true;
             if (command instanceof HigherOrderCommand) {
-                hasResult = ((HigherOrderCommand)command).preExecuteToDetermineCommandResult(wfKey);
-            } else {
-                hasResult = true;
+                hasResult = ((HigherOrderCommand)command).preExecuteToDetermineWhetherProvidesResult(wfKey);
             }
             if (hasResult) {
                 var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
@@ -180,7 +176,7 @@ public final class WorkflowCommands {
             }
         }
 
-        if (hasResult) {
+        if (workflowChangeWaiter != null) {
             try {
                 workflowChangeWaiter.blockUntilOccurred();
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown

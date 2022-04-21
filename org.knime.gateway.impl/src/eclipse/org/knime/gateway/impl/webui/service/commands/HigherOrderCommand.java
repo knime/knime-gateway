@@ -65,7 +65,7 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 abstract class HigherOrderCommand extends AbstractWorkflowCommand implements WithResult {
 
-    private WithResult m_commandWithResult;
+    private WithResult m_resultProvidingCommand;
 
     /**
      * Optionally returns a {@link WorkflowCommand} that produces a result (i.e. implements {@link WithResult}) which
@@ -80,7 +80,7 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      * @throws NotASubWorkflowException
      * @throws NodeNotFoundException
      */
-    protected abstract Optional<WithResult> preExecuteToGetCommmandWithResult(WorkflowKey wfKey)
+    protected abstract Optional<WithResult> preExecuteToGetResultProvidingCommand(WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException;
 
     /**
@@ -89,30 +89,30 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      * @throws NodeNotFoundException
      * @throws NotASubWorkflowException
      */
-    final boolean preExecuteToDetermineCommandResult(final WorkflowKey wfKey)
+    final boolean preExecuteToDetermineWhetherProvidesResult(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
-        m_commandWithResult = preExecuteToGetCommmandWithResult(wfKey).orElse(null);
-        if (m_commandWithResult instanceof HigherOrderCommand) {
-            m_commandWithResult =
-                ((HigherOrderCommand)m_commandWithResult).preExecuteToGetCommmandWithResult(wfKey).orElse(null);
+        m_resultProvidingCommand = preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
+        if (m_resultProvidingCommand instanceof HigherOrderCommand) {
+            m_resultProvidingCommand = ((HigherOrderCommand)m_resultProvidingCommand)
+                .preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
         }
-        return m_commandWithResult != null;
+        return m_resultProvidingCommand != null;
     }
 
     @Override
     public WorkflowChange getChangeToWaitFor() {
-        if (m_commandWithResult == null) {
+        if (m_resultProvidingCommand == null) {
             throw new IllegalStateException("Implementation problem. No command with result given.");
         }
-        return m_commandWithResult.getChangeToWaitFor();
+        return m_resultProvidingCommand.getChangeToWaitFor();
     }
 
     @Override
     public CommandResultEnt buildEntity(final String snapshotId) {
-        if (m_commandWithResult == null) {
+        if (m_resultProvidingCommand == null) {
             throw new IllegalStateException("Implementation problem. No command with result given.");
         }
-        return m_commandWithResult.buildEntity(snapshotId);
+        return m_resultProvidingCommand.buildEntity(snapshotId);
     }
 
 }

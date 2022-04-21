@@ -185,6 +185,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
+                // TODO remove, see NXT-1039
                 m_workflowMiddleware.clearWorkflowState(new WorkflowKey(wfKey.getProjectId(), new NodeIDEnt(id)));
             }
         }
