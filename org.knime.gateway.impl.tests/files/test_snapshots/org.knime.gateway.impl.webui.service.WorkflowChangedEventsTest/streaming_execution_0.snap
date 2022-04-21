@@ -24,8 +24,16 @@
   "value" : true
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:3:0:3/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:3:0:3/state/executionState",
   "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:5/allowedActions/canCollapse",
+  "value" : "false"
 }, {
   "op" : "replace",
   "path" : "/nodes/root:3:0:5/allowedActions/canDelete",
@@ -36,8 +44,16 @@
   "value" : "EXECUTING"
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:3:0:6/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:3:0:6/state/executionState",
   "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:7/allowedActions/canCollapse",
+  "value" : "false"
 }, {
   "op" : "replace",
   "path" : "/nodes/root:3:0:7/allowedActions/canDelete",

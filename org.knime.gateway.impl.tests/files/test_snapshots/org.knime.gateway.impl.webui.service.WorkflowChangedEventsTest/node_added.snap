@@ -5,6 +5,7 @@
   "value" : {
     "allowedActions" : {
       "canCancel" : false,
+      "canCollapse" : "true",
       "canDelete" : true,
       "canExecute" : false,
       "canOpenDialog" : true,
