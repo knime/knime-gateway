@@ -598,14 +598,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Execute a node and block until we can confirm that it is executing (currently only for nodes in root workflow).
      *
      * @param wfId The workflow to operate in
-     * @param toExecute The node to execute
+     * @param toWaitFor the node to wait it's executing
      * @throws Exception
      */
-    private void executeAndWaitUntilExecuting(final String wfId, final int toExecute) throws Exception {
-        executeUpToNodesAsync(wfId, Collections.singletonList(new NodeIDEnt(toExecute)));
+    private void executeAndWaitUntilExecuting(final String wfId, final int toWaitFor) throws Exception {
+        executeWorkflowAsync(wfId);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             WorkflowEnt wfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
-            assertThat(((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toExecute).toString())).getState()
+            assertThat(((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toWaitFor).toString())).getState()
                 .getExecutionState(), is(ExecutionStateEnum.EXECUTING));
         });
     }

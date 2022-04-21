@@ -17,10 +17,7 @@
  */
 package org.knime.gateway.testing.helper;
 
-import java.util.List;
 import java.util.UUID;
-
-import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
  * Executes workflows identified by {@link UUID}s.
@@ -44,12 +41,5 @@ public interface WorkflowExecutor {
 	 * @throws Exception
 	 */
 	void executeWorkflowAsync(String wfId) throws Exception;
-
-	/**
-	 * Executes the given workflow up to the given nodes.
-	 * @param wfId The workflow to execute nodes in.
-	 * @param ids The nodes to execute.
-	 */
-	void executeUpToNodesAsync(String wfId, List<NodeIDEnt> ids);
 
 }

@@ -45,7 +45,6 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -55,8 +54,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -118,13 +115,6 @@ public class GatewayDefaultServiceTests {
             public void executeWorkflowAsync(final String wfId) throws Exception {
                 WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
-            }
-
-            @Override
-            public void executeUpToNodesAsync(final String wfId, final List<NodeIDEnt> ids) {
-                var wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId) //
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId));
-                wfm.executeUpToHere(ids.stream().map(id -> id.toNodeID(wfm.getID())).toArray(NodeID[]::new));
             }
 
             @Override

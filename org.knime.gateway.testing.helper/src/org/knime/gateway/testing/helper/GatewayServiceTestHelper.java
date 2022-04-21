@@ -45,10 +45,6 @@
  */
 package org.knime.gateway.testing.helper;
 
-import java.util.List;
-
-import org.knime.gateway.api.entity.NodeIDEnt;
-
 /**
  * Helper to test service implementations. This is usually done by loading a workflow, optionally executing it and then
  * retrieving the entities under test and compare them to a stored snapshot (via {@link #cr(Object, String)}).
@@ -133,16 +129,6 @@ public class GatewayServiceTestHelper {
      */
     protected final void executeWorkflowAsync(final String wfId) throws Exception {
         m_workflowExecutor.executeWorkflowAsync(wfId);
-    }
-
-    /**
-     * See {@link WorkflowExecutor#executeUpToNodesAsync(String, List)}.
-     *
-     * @param wfId
-     * @param nodes
-     */
-    protected final void executeUpToNodesAsync(final String wfId, final List<NodeIDEnt> nodes) {
-        m_workflowExecutor.executeUpToNodesAsync(wfId, nodes);
     }
 
     /**
