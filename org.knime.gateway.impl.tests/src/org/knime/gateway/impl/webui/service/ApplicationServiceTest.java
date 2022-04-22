@@ -51,10 +51,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.junit.Test;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.AppStateProvider;
@@ -94,6 +98,11 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         cr(appService.getState(), "empty_appstate");
 
         when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
+        var assumedAvailablePortTypes = Set.of(BufferedDataTable.TYPE, DatabaseConnectionPortObject.TYPE);
+        when(appState.getAvailablePortTypes()).thenReturn(assumedAvailablePortTypes);
+        var assumedRecommendedPortTypes = CoreUtil.RECOMMENDED_PORT_TYPES;
+        when(appState.getRecommendedPortTypes()).thenReturn(assumedRecommendedPortTypes);
+
         AppStateEnt appStateEnt = appService.getState();
         cr(appStateEnt, "appstate");
 

@@ -68,10 +68,10 @@ public interface AppStateEnt extends GatewayEntity {
   public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
 
   /**
-   * All non-built-in port types available in the extension. Map from port type ID to port type entity.
-   * @return availableOtherPortTypes , never <code>null</code>
+   * All port types available in the extension. Map from port type ID to port type entity.
+   * @return availablePortTypes , never <code>null</code>
    **/
-  public java.util.Map<String, PortTypeEnt> getAvailableOtherPortTypes();
+  public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
 
   /**
    * List of IDs of recommended port types
@@ -94,12 +94,12 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows);
         
         /**
-         * All non-built-in port types available in the extension. Map from port type ID to port type entity.
+         * All port types available in the extension. Map from port type ID to port type entity.
          * 
-         * @param availableOtherPortTypes the property value, NOT <code>null</code>! 
+         * @param availablePortTypes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setAvailableOtherPortTypes(java.util.Map<String, PortTypeEnt> availableOtherPortTypes);
+        AppStateEntBuilder setAvailablePortTypes(java.util.Map<String, PortTypeEnt> availablePortTypes);
         
         /**
          * List of IDs of recommended port types

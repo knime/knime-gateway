@@ -55,7 +55,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -73,7 +72,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   protected WorkflowInfoEnt m_info;
   protected java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes;
   protected java.util.Map<String, NativeNodeInvariantsEnt> m_nodeTemplates;
-  protected java.util.Map<String, PortTypeEnt> m_portTypes;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
   protected java.util.List<WorkflowInfoEnt> m_parents;
@@ -107,7 +105,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         throw new IllegalArgumentException("nodeTemplates must not be null.");
     }
     m_nodeTemplates = immutable(builder.m_nodeTemplates);
-    m_portTypes = immutable(builder.m_portTypes);
     if(builder.m_connections == null) {
         throw new IllegalArgumentException("connections must not be null.");
     }
@@ -143,7 +140,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_portTypes, ent.m_portTypes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata) && Objects.equals(m_dirty, ent.m_dirty);
+        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata) && Objects.equals(m_dirty, ent.m_dirty);
     }
 
 
@@ -157,7 +154,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
                .append(m_info)
                .append(m_nodes)
                .append(m_nodeTemplates)
-               .append(m_portTypes)
                .append(m_connections)
                .append(m_workflowAnnotations)
                .append(m_parents)
@@ -185,11 +181,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   @Override
   public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates() {
         return m_nodeTemplates;
-  }
-    
-  @Override
-  public java.util.Map<String, PortTypeEnt> getPortTypes() {
-        return m_portTypes;
   }
     
   @Override
@@ -247,7 +238,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         private WorkflowInfoEnt m_info;
         private java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NativeNodeInvariantsEnt> m_nodeTemplates = new java.util.HashMap<>();
-        private java.util.Map<String, PortTypeEnt> m_portTypes;
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
         private java.util.List<WorkflowInfoEnt> m_parents;
@@ -282,12 +272,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
                  throw new IllegalArgumentException("nodeTemplates must not be null.");
              }
              m_nodeTemplates = nodeTemplates;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowEntBuilder setPortTypes(java.util.Map<String, PortTypeEnt> portTypes) {
-             m_portTypes = portTypes;
              return this;
         }
 

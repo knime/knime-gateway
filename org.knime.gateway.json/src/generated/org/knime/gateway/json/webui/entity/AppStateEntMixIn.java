@@ -74,8 +74,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
     
     @Override
-    @JsonProperty("availableOtherPortTypes")
-    public java.util.Map<String, PortTypeEnt> getAvailableOtherPortTypes();
+    @JsonProperty("availablePortTypes")
+    public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
     
     @Override
     @JsonProperty("recommendedPortTypeIds")
@@ -99,8 +99,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
         public AppStateEntMixInBuilder setOpenedWorkflows(final java.util.List<WorkflowProjectEnt> openedWorkflows);
         
         @Override
-        @JsonProperty("availableOtherPortTypes")
-        public AppStateEntMixInBuilder setAvailableOtherPortTypes(final java.util.Map<String, PortTypeEnt> availableOtherPortTypes);
+        @JsonProperty("availablePortTypes")
+        public AppStateEntMixInBuilder setAvailablePortTypes(final java.util.Map<String, PortTypeEnt> availablePortTypes);
         
         @Override
         @JsonProperty("recommendedPortTypeIds")

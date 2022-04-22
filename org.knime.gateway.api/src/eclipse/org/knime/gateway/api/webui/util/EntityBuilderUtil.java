@@ -285,7 +285,6 @@ public final class EntityBuilderUtil {
             return builder(WorkflowEntBuilder.class).setInfo(info)//
                 .setNodes(nodes)//
                 .setNodeTemplates(invariants)//
-                .setPortTypes(buildPortTypeEntsMap(buildContext))//
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
                 .setAllowedActions(

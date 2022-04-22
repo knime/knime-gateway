@@ -137,7 +137,7 @@ public final class DefaultApplicationService implements ApplicationService {
                 .map(w -> buildWorkflowProjectEnt(w, workflowProjectManager, workflowMiddleware))
                 .filter(Objects::nonNull).collect(toList());
             var allAvailablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
-            availablePortTypeEnts = appState.getAvailableOtherPortTypes().stream()
+            availablePortTypeEnts = appState.getAvailablePortTypes().stream()
                     .collect(Collectors.toMap(
                             CoreUtil::getPortTypeId,
                             pt -> EntityBuilderUtil.buildPortTypeEnt(pt, allAvailablePortTypes)
@@ -151,7 +151,7 @@ public final class DefaultApplicationService implements ApplicationService {
             recommendedPortTypeIds = Collections.emptyList();
         }
         builder.setOpenedWorkflows(projectEnts);
-        builder.setAvailableOtherPortTypes(availablePortTypeEnts);
+        builder.setAvailablePortTypes(availablePortTypeEnts);
         builder.setRecommendedPortTypeIds(recommendedPortTypeIds);
         return builder.build();
     }

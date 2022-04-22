@@ -49,7 +49,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -87,10 +86,6 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @Override
     @JsonProperty("nodeTemplates")
     public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates();
-    
-    @Override
-    @JsonProperty("portTypes")
-    public java.util.Map<String, PortTypeEnt> getPortTypes();
     
     @Override
     @JsonProperty("connections")
@@ -152,10 +147,6 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("nodeTemplates")
         public WorkflowEntMixInBuilder setNodeTemplates(final java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates);
-        
-        @Override
-        @JsonProperty("portTypes")
-        public WorkflowEntMixInBuilder setPortTypes(final java.util.Map<String, PortTypeEnt> portTypes);
         
         @Override
         @JsonProperty("connections")

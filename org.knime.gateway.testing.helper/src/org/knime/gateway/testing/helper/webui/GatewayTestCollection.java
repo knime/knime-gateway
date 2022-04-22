@@ -51,8 +51,6 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetComponentProjectWorkflow());
         res.put("testWorkflowAndComponentMetadata",
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testWorkflowAndComponentMetadata());
-        res.put("testGetWorkflowWithAmbiguousPortTypes",
-            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetWorkflowWithAmbiguousPortTypes());
         res.put("testExecuteTranslateCommand",
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteTranslateCommand());
         res.put("testExecuteDeleteCommand",

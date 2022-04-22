@@ -86,6 +86,7 @@ import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -107,7 +108,8 @@ public final class CoreUtil {
             DatabaseConnectionPortObject.TYPE, // Database Connection
             DatabasePortObject.TYPE, // Database Query
             FlowVariablePortObject.TYPE,  // Flow Variable
-            PortObject.TYPE  // Generic
+            PortObject.TYPE,  // Generic
+            WorkflowPortObject.TYPE  // Workflow
     );
 
     private CoreUtil() {
@@ -339,6 +341,7 @@ public final class CoreUtil {
      * @param ptype The port to determine the kind of
      * @return The kind of the port
      */
+    // TODO probably not needed anymore after rebase on top of finished NXT-645
     public static PortTypeKind getPortTypeKind(final PortType ptype) {
         if (BufferedDataTable.TYPE.equals(ptype)) {
             return PortTypeKind.TABLE;

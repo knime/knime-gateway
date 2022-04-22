@@ -122,9 +122,9 @@ public final class AppStateProvider {
         List<OpenedWorkflow> getOpenedWorkflows();
 
         /**
-         * @return All non-built-in port types available in the current extension
+         * @return All port types available in the current extension
          */
-        Set<PortType> getAvailableOtherPortTypes();
+        Set<PortType> getAvailablePortTypes();
 
         /**
          * @return List of recommended port types
