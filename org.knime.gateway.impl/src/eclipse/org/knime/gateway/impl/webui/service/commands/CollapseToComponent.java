@@ -68,7 +68,8 @@ class CollapseToComponent extends CommandSequence {
     private static List<WorkflowCommand> getCommands(final CollapseCommandEnt commandEnt,
         final WorkflowMiddleware workflowMiddleware) {
         var collapseCommand = new CollapseToMetanode(commandEnt, workflowMiddleware);
-        Supplier<NodeIDEnt> newNodeIdSupplier = () -> collapseCommand.buildEntity("").getNewNodeId();
-        return List.of(collapseCommand, new ConvertMetanodeToComponent(newNodeIdSupplier));
+        Supplier<NodeIDEnt> newNodeIdSupplier = () -> collapseCommand.buildEntity(null).getNewNodeId();
+        var convertCommand = new ConvertMetanodeToComponent(newNodeIdSupplier);
+        return List.of(collapseCommand, convertCommand);
     }
 }

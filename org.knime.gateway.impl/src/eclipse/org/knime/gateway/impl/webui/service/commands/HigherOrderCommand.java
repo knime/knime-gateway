@@ -71,7 +71,13 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      * Optionally returns a {@link WorkflowCommand} that produces a result (i.e. implements {@link WithResult}) which
      * will also be the result of this higher-order command.
      *
-     * Guaranteed to be called before {@link #getChangeToWaitFor()} and {@link #buildEntity(String)}
+     * <ul>
+     *     <li>Guaranteed to be called before {@link #getChangeToWaitFor()} and {@link #buildEntity(String)}</li>
+     *     <li>
+     *         Guaranteed to be called before {@link #execute(WorkflowKey)}, i.e. some initialisation of the higher-
+     *         order command may happen in this method.
+     *     </li>
+     * </ul>
      *
      * @param wfKey represents the workflow this command operates on
      *

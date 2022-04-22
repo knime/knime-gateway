@@ -121,7 +121,7 @@ abstract class CommandSequence extends HigherOrderCommand {
         try {
             execute(m_wfKey);
         } catch (OperationNotAllowedException | NodeNotFoundException | NotASubWorkflowException ex) {
-            // should never happen because command has been exeucted at least once already
+            // should never happen because command has been executed at least once already
             throw new IllegalStateException(ex);
         }
     }
