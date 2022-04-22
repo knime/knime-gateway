@@ -42,63 +42,68 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeSelectionsEnt.DefaultNodeSelectionsEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * A group of nodes.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface NodeGroupEnt extends GatewayEntity {
 
-@JsonDeserialize(builder=DefaultNodeSelectionsEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeSelectionsEntMixIn extends NodeSelectionsEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * The tag representing the node group.
+   * @return tag , never <code>null</code>
+   **/
+  public String getTag();
 
-    @Override
-    @JsonProperty("selections")
-    public java.util.List<NodeSelectionEnt> getSelections();
-    
-    @Override
-    @JsonProperty("totalNumSelections")
-    public Integer getTotalNumSelections();
-    
+  /**
+   * A selection on nodes of the group in a fixed order (most frequently used).
+   * @return nodes , never <code>null</code>
+   **/
+  public java.util.List<NodeTemplateEnt> getNodes();
+
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface NodeGroupEntBuilder extends GatewayEntityBuilder<NodeGroupEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeSelectionsEntMixInBuilder extends NodeSelectionsEntBuilder {
-    
-        @Override
-        public NodeSelectionsEntMixIn build();
-    
-        @Override
-        @JsonProperty("selections")
-        public NodeSelectionsEntMixInBuilder setSelections(final java.util.List<NodeSelectionEnt> selections);
+        /**
+         * The tag representing the node group.
+         * 
+         * @param tag the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeGroupEntBuilder setTag(String tag);
         
-        @Override
-        @JsonProperty("totalNumSelections")
-        public NodeSelectionsEntMixInBuilder setTotalNumSelections(final Integer totalNumSelections);
+        /**
+         * A selection on nodes of the group in a fixed order (most frequently used).
+         * 
+         * @param nodes the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeGroupEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        NodeGroupEnt build();
+    
     }
 
-
 }
-

@@ -132,6 +132,10 @@ import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfo
 import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeGroupEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
@@ -140,10 +144,6 @@ import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEn
 import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeSearchResultEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionEnt.NodeSelectionEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeSelectionEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt.NodeSelectionsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeSelectionsEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
@@ -338,6 +338,12 @@ public class Interface2ImplMap {
         if(clazz == NodeFactoryKeyEntBuilder.class) {
             return (B)new DefaultNodeFactoryKeyEnt.DefaultNodeFactoryKeyEntBuilder();
         }        
+        if(clazz == NodeGroupEntBuilder.class) {
+            return (B)new DefaultNodeGroupEnt.DefaultNodeGroupEntBuilder();
+        }        
+        if(clazz == NodeGroupsEntBuilder.class) {
+            return (B)new DefaultNodeGroupsEnt.DefaultNodeGroupsEntBuilder();
+        }        
         if(clazz == NodePortDescriptionEntBuilder.class) {
             return (B)new DefaultNodePortDescriptionEnt.DefaultNodePortDescriptionEntBuilder();
         }        
@@ -349,12 +355,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeSearchResultEntBuilder.class) {
             return (B)new DefaultNodeSearchResultEnt.DefaultNodeSearchResultEntBuilder();
-        }        
-        if(clazz == NodeSelectionEntBuilder.class) {
-            return (B)new DefaultNodeSelectionEnt.DefaultNodeSelectionEntBuilder();
-        }        
-        if(clazz == NodeSelectionsEntBuilder.class) {
-            return (B)new DefaultNodeSelectionsEnt.DefaultNodeSelectionsEntBuilder();
         }        
         if(clazz == NodeStateEntBuilder.class) {
             return (B)new DefaultNodeStateEnt.DefaultNodeStateEntBuilder();

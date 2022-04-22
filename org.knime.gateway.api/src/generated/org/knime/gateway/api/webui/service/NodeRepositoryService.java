@@ -47,8 +47,8 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 /**
@@ -69,6 +69,18 @@ public interface NodeRepositoryService extends GatewayService {
     java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> requestBody) ;
         
     /**
+     * Returns a pre-defined set groups (defined by tags) and nodes per group (the most frequently used ones in that group).
+     *
+     * @param numNodesPerTag The number of nodes per tag/group to be returned.
+     * @param tagsOffset The number of tags to be skipped (for pagination).
+     * @param tagsLimit The maximum number of tags to be returned (mainly for pagination).
+     * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
+     *
+     * @return the result
+     */
+    NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo) ;
+        
+    /**
      * Searches for nodes (and components) in the node repository.
      *
      * @param q The term to search for.
@@ -81,17 +93,5 @@ public interface NodeRepositoryService extends GatewayService {
      * @return the result
      */
     NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo) ;
-        
-    /**
-     * Returns a pre-defined selection tags and nodes per tag (e.g. the most popular tags and nodes).
-     *
-     * @param numNodesPerTag The number of nodes per tag to be returned.
-     * @param tagsOffset The number of tags to be skipped (for pagination).
-     * @param tagsLimit The maximum number of tags to be returned (mainly for pagination).
-     * @param fullTemplateInfo If true, the selection result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
-     *
-     * @return the result
-     */
-    NodeSelectionsEnt selectNodes(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo) ;
         
 }

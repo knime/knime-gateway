@@ -44,8 +44,8 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -86,18 +86,18 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "searchNodes")
-    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo)  {
-        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);    
+    @JsonRpcMethod(value = "getNodesGroupedByTags")
+    public NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
+        return m_service.get().getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
     }
 
 	/**
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "selectNodes")
-    public NodeSelectionsEnt selectNodes(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
-        return m_service.get().selectNodes(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
+    @JsonRpcMethod(value = "searchNodes")
+    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo)  {
+        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);    
     }
 
 }

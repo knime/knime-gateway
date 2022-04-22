@@ -67,10 +67,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 /**
@@ -136,14 +136,14 @@ public class NodeRepositoryTest {
      */
     @Test
     public void testSelectNodesAndNodeSearchNullParameters() {
-        NodeSelection select = new NodeSelection(repo);
+        NodeGroups select = new NodeGroups(repo);
         NodeSearch search = new NodeSearch(repo);
 
-        NodeSelectionsEnt selectRes = select.selectNodes(null, null, null, null);
+        NodeGroupsEnt groupsRes = select.getNodesGroupedByTags(null, null, null, null);
         NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null);
 
         Map<String, NodeTemplateEnt> overplus = new HashMap<>();
-        for (NodeTemplateEnt n1 : selectRes.getSelections().stream().flatMap(s -> s.getNodes().stream())
+        for (NodeTemplateEnt n1 : groupsRes.getGroups().stream().flatMap(s -> s.getNodes().stream())
             .collect(Collectors.toList())) {
             if (overplus.containsKey(n1.getId() + "_search")) {
                 overplus.remove(n1.getId() + "_search");

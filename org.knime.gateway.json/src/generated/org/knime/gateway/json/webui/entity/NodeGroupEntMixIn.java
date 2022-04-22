@@ -42,68 +42,63 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.knime.gateway.api.webui.entity.NodeGroupEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeGroupEnt.DefaultNodeGroupEntBuilder;
 
 /**
- * A list of node selections.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeSelectionsEnt extends GatewayEntity {
 
+@JsonDeserialize(builder=DefaultNodeGroupEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface NodeGroupEntMixIn extends NodeGroupEnt {
 
-  /**
-   * The list of node selections in a fixed order.
-   * @return selections , never <code>null</code>
-   **/
-  public java.util.List<NodeSelectionEnt> getSelections();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-  /**
-   * The total number of selections available. The selections listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
-   * @return totalNumSelections , never <code>null</code>
-   **/
-  public Integer getTotalNumSelections();
-
+    @Override
+    @JsonProperty("tag")
+    public String getTag();
+    
+    @Override
+    @JsonProperty("nodes")
+    public java.util.List<NodeTemplateEnt> getNodes();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface NodeSelectionsEntBuilder extends GatewayEntityBuilder<NodeSelectionsEnt> {
 
-        /**
-         * The list of node selections in a fixed order.
-         * 
-         * @param selections the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeSelectionsEntBuilder setSelections(java.util.List<NodeSelectionEnt> selections);
-        
-        /**
-         * The total number of selections available. The selections listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
-         * 
-         * @param totalNumSelections the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NodeSelectionsEntBuilder setTotalNumSelections(Integer totalNumSelections);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        NodeSelectionsEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NodeGroupEntMixInBuilder extends NodeGroupEntBuilder {
     
+        @Override
+        public NodeGroupEntMixIn build();
+    
+        @Override
+        @JsonProperty("tag")
+        public NodeGroupEntMixInBuilder setTag(final String tag);
+        
+        @Override
+        @JsonProperty("nodes")
+        public NodeGroupEntMixInBuilder setNodes(final java.util.List<NodeTemplateEnt> nodes);
+        
     }
 
+
 }
+

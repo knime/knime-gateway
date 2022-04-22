@@ -56,20 +56,20 @@ import static org.hamcrest.Matchers.nullValue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 /**
- * Tests {@link NodeSelection}.
+ * Tests {@link NodeGroups}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("javadoc")
-public class NodeSelectionTest {
+public class NodeGroupTest {
 
     private static NodeRepository repo;
 
-    private NodeSelection m_select;
+    private NodeGroups m_groups;
 
     @BeforeClass
     public static void initRepo() {
@@ -78,16 +78,16 @@ public class NodeSelectionTest {
 
     @Before
     public void initNodeSelection() {
-        m_select = new NodeSelection(repo);
+        m_groups = new NodeGroups(repo);
     }
 
     @Test
     public void testSelectNodesMinimalTemplateInfo() {
-        NodeSelectionsEnt res = m_select.selectNodes(6, 1, 2, Boolean.FALSE);
-        assertThat("unexpected number of selections", res.getSelections().size(), is(2));
-        assertThat("unexpected 2nd selection", res.getSelections().get(0).getTag(), is("Manipulation"));
-        assertThat("unexpected number of nodes per tag", res.getSelections().get(0).getNodes().size(), is(6));
-        NodeTemplateEnt node = res.getSelections().get(0).getNodes().get(0);
+        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 1, 2, Boolean.FALSE);
+        assertThat("unexpected number of groups", res.getGroups().size(), is(2));
+        assertThat("unexpected 2nd group", res.getGroups().get(0).getTag(), is("Manipulation"));
+        assertThat("unexpected number of nodes per tag", res.getGroups().get(0).getNodes().size(), is(6));
+        NodeTemplateEnt node = res.getGroups().get(0).getNodes().get(0);
         assertThat("name expected", node.getName(), is(notNullValue()));
         assertThat("no icon expected", node.getIcon(), is(nullValue()));
         assertThat("no in-ports expected", node.getInPorts(), is(nullValue()));
@@ -96,11 +96,11 @@ public class NodeSelectionTest {
 
     @Test
     public void testSelectNodesFullTemplateInfo() {
-        NodeSelectionsEnt res = m_select.selectNodes(6, 2, 3, Boolean.TRUE);
-        assertThat("unexpected number of selections", res.getSelections().size(), is(3));
-        assertThat("unexpected 3rd selection", res.getSelections().get(0).getTag(), is("Views"));
-        assertThat("unexpected number of nodes per tag", res.getSelections().get(0).getNodes().size(), is(6));
-        NodeTemplateEnt node = res.getSelections().get(0).getNodes().get(0);
+        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 2, 3, Boolean.TRUE);
+        assertThat("unexpected number of groups", res.getGroups().size(), is(3));
+        assertThat("unexpected 3rd group", res.getGroups().get(0).getTag(), is("Views"));
+        assertThat("unexpected number of nodes per tag", res.getGroups().get(0).getNodes().size(), is(6));
+        NodeTemplateEnt node = res.getGroups().get(0).getNodes().get(0);
         assertThat("icon expected", node.getIcon(), is(notNullValue()));
         assertThat("in-ports expected", node.getInPorts(), is(notNullValue()));
         assertThat("out-ports expected", node.getOutPorts(), is(notNullValue()));
@@ -108,9 +108,9 @@ public class NodeSelectionTest {
 
     @Test
     public void testSelectNodesNoEmptySelections() {
-        NodeSelectionsEnt res = m_select.selectNodes(1, 0, null, Boolean.FALSE);
-        int numTotalNodes = (int)res.getSelections().stream().mapToInt(s -> s.getNodes().size()).count();
-        assertThat("unexpected number of total nodes", res.getTotalNumSelections(), is(numTotalNodes));
+        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(1, 0, null, Boolean.FALSE);
+        int numTotalNodes = (int)res.getGroups().stream().mapToInt(s -> s.getNodes().size()).count();
+        assertThat("unexpected number of total nodes", res.getTotalNumGroups(), is(numTotalNodes));
     }
 
 }

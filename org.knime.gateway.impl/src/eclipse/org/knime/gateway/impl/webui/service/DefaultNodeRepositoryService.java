@@ -51,13 +51,13 @@ package org.knime.gateway.impl.webui.service;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
+import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.NodeSearch;
-import org.knime.gateway.impl.webui.NodeSelection;
 
 /**
  * The default implementation of {@link NodeRepositoryService}.
@@ -70,7 +70,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
 
     private final NodeSearch m_nodeSearch;
 
-    private final NodeSelection m_nodeSelection;
+    private final NodeGroups m_nodeGroups;
 
     /**
      * Returns the singleton instance for this service.
@@ -84,16 +84,16 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     DefaultNodeRepositoryService() {
         m_nodeRepo = new NodeRepository();
         m_nodeSearch = new NodeSearch(m_nodeRepo);
-        m_nodeSelection = new NodeSelection(m_nodeRepo);
+        m_nodeGroups = new NodeGroups(m_nodeRepo);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NodeSelectionsEnt selectNodes(final Integer numNodesPerTag, final Integer tagsOffset,
+    public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
         final Integer tagsLimit, final Boolean fullTemplateInfo) {
-        return m_nodeSelection.selectNodes(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);
+        return m_nodeGroups.getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);
     }
 
     /**

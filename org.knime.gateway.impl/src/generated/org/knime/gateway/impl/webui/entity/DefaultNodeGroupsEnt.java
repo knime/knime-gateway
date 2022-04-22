@@ -50,40 +50,40 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 
-import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 
 /**
- * A selection of nodes.
+ * A list of node groups.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
+public class DefaultNodeGroupsEnt implements NodeGroupsEnt {
 
-  protected String m_tag;
-  protected java.util.List<NodeTemplateEnt> m_nodes;
+  protected java.util.List<NodeGroupEnt> m_groups;
+  protected Integer m_totalNumGroups;
   
-  protected DefaultNodeSelectionEnt() {
+  protected DefaultNodeGroupsEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "NodeSelection";
+    return "NodeGroups";
   }
   
-  private DefaultNodeSelectionEnt(DefaultNodeSelectionEntBuilder builder) {
+  private DefaultNodeGroupsEnt(DefaultNodeGroupsEntBuilder builder) {
     
-    if(builder.m_tag == null) {
-        throw new IllegalArgumentException("tag must not be null.");
+    if(builder.m_groups == null) {
+        throw new IllegalArgumentException("groups must not be null.");
     }
-    m_tag = immutable(builder.m_tag);
-    if(builder.m_nodes == null) {
-        throw new IllegalArgumentException("nodes must not be null.");
+    m_groups = immutable(builder.m_groups);
+    if(builder.m_totalNumGroups == null) {
+        throw new IllegalArgumentException("totalNumGroups must not be null.");
     }
-    m_nodes = immutable(builder.m_nodes);
+    m_totalNumGroups = immutable(builder.m_totalNumGroups);
   }
   
    /**
@@ -100,8 +100,8 @@ public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultNodeSelectionEnt ent = (DefaultNodeSelectionEnt)o;
-        return Objects.equals(m_tag, ent.m_tag) && Objects.equals(m_nodes, ent.m_nodes);
+        DefaultNodeGroupsEnt ent = (DefaultNodeGroupsEnt)o;
+        return Objects.equals(m_groups, ent.m_groups) && Objects.equals(m_totalNumGroups, ent.m_totalNumGroups);
     }
 
 
@@ -112,55 +112,55 @@ public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_tag)
-               .append(m_nodes)
+               .append(m_groups)
+               .append(m_totalNumGroups)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getTag() {
-        return m_tag;
+  public java.util.List<NodeGroupEnt> getGroups() {
+        return m_groups;
   }
     
   @Override
-  public java.util.List<NodeTemplateEnt> getNodes() {
-        return m_nodes;
+  public Integer getTotalNumGroups() {
+        return m_totalNumGroups;
   }
     
   
-    public static class DefaultNodeSelectionEntBuilder implements NodeSelectionEntBuilder {
+    public static class DefaultNodeGroupsEntBuilder implements NodeGroupsEntBuilder {
     
-        public DefaultNodeSelectionEntBuilder(){
+        public DefaultNodeGroupsEntBuilder(){
             
         }
     
-        private String m_tag;
-        private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
+        private java.util.List<NodeGroupEnt> m_groups = new java.util.ArrayList<>();
+        private Integer m_totalNumGroups;
 
         @Override
-        public DefaultNodeSelectionEntBuilder setTag(String tag) {
-             if(tag == null) {
-                 throw new IllegalArgumentException("tag must not be null.");
+        public DefaultNodeGroupsEntBuilder setGroups(java.util.List<NodeGroupEnt> groups) {
+             if(groups == null) {
+                 throw new IllegalArgumentException("groups must not be null.");
              }
-             m_tag = tag;
+             m_groups = groups;
              return this;
         }
 
         @Override
-        public DefaultNodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
-             if(nodes == null) {
-                 throw new IllegalArgumentException("nodes must not be null.");
+        public DefaultNodeGroupsEntBuilder setTotalNumGroups(Integer totalNumGroups) {
+             if(totalNumGroups == null) {
+                 throw new IllegalArgumentException("totalNumGroups must not be null.");
              }
-             m_nodes = nodes;
+             m_totalNumGroups = totalNumGroups;
              return this;
         }
 
         
         @Override
-        public DefaultNodeSelectionEnt build() {
-            return new DefaultNodeSelectionEnt(this);
+        public DefaultNodeGroupsEnt build() {
+            return new DefaultNodeGroupsEnt(this);
         }
     
     }

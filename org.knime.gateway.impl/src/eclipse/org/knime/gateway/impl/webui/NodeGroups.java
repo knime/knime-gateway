@@ -66,20 +66,20 @@ import org.knime.core.node.extension.CategoryExtension;
 import org.knime.core.node.extension.CategoryExtensionManager;
 import org.knime.core.node.extension.NodeAndCategorySorter;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionEnt.NodeSelectionEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
-import org.knime.gateway.api.webui.entity.NodeSelectionsEnt.NodeSelectionsEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeGroupEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
+import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
- * Logic and state (e.g. caching) required to select (i.e. filter and group) nodes from the {@link NodeRepository}.
+ * Logic and state (e.g. caching) required to filter and group nodes from the {@link NodeRepository}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class NodeSelection {
+public final class NodeGroups {
 
     private static final String UNCATEGORIZED_KEY = "/uncategorized";
 
@@ -100,31 +100,31 @@ public final class NodeSelection {
      *
      * @param nodeRepo the node repository to select the nodes from
      */
-    public NodeSelection(final NodeRepository nodeRepo) {
+    public NodeGroups(final NodeRepository nodeRepo) {
         m_nodeRepo = nodeRepo;
     }
 
     /**
-     * Selects (i.e. filters and groups) nodes from the node repository.
+     * Filters and groups nodes nodes from the node repository.
      *
      * @param numNodesPerTag the number of nodes per selected tag
      * @param tagsOffset the number of tags to be skipped (the tags have a fixed order)
      * @param tagsLimit the maximum number of tags to select
      * @param fullTemplateInfo see
      *            {@link EntityBuilderUtil#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
-     * @return the node selection entity
+     * @return the node groups entity
      */
-    public NodeSelectionsEnt selectNodes(final Integer numNodesPerTag, final Integer tagsOffset,
+    public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
         final Integer tagsLimit, final Boolean fullTemplateInfo) {
         initNodesAndCategories();
-        List<NodeSelectionEnt> selections = m_topLevelCats.stream()//
+        List<NodeGroupEnt> groups = m_topLevelCats.stream()//
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
-            .map(p -> buildNodeSelectionEnt(p.getFirst(), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
+            .map(p -> buildNodeGroupEnt(p.getFirst(), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
-        return builder(NodeSelectionsEntBuilder.class).setSelections(selections)
-            .setTotalNumSelections(m_nodesPerCategory.size()).build();
+        return builder(NodeGroupsEntBuilder.class).setGroups(groups)
+            .setTotalNumGroups(m_nodesPerCategory.size()).build();
     }
 
     private synchronized void initNodesAndCategories() {
@@ -186,7 +186,7 @@ public final class NodeSelection {
         return res;
     }
 
-    private NodeSelectionEnt buildNodeSelectionEnt(final String completePath, final String name,
+    private NodeGroupEnt buildNodeGroupEnt(final String completePath, final String name,
         final Integer numNodesPerTag, final Boolean fullTemplateInfo) {
         List<Node> nodesPerCategory = m_nodesPerCategory.get(completePath);
         if (nodesPerCategory == null || nodesPerCategory.isEmpty()) {
@@ -197,6 +197,6 @@ public final class NodeSelection {
             .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityBuilderUtil.buildNodeTemplateEnt(n.factory)
                 : EntityBuilderUtil.buildMinimalNodeTemplateEnt(n.factory))//
             .collect(Collectors.toList());
-        return builder(NodeSelectionEntBuilder.class).setNodes(res).setTag(name).build();
+        return builder(NodeGroupEntBuilder.class).setNodes(res).setTag(name).build();
     }
 }
