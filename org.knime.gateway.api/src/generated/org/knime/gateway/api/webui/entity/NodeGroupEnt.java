@@ -67,7 +67,7 @@ public interface NodeGroupEnt extends GatewayEntity {
   public String getTag();
 
   /**
-   * A selection on nodes of the group in a fixed order (most frequently used).
+   * List of nodes corresponding to the given tag, in most-frequently-used order.
    * @return nodes , never <code>null</code>
    **/
   public java.util.List<NodeTemplateEnt> getNodes();
@@ -87,7 +87,7 @@ public interface NodeGroupEnt extends GatewayEntity {
         NodeGroupEntBuilder setTag(String tag);
         
         /**
-         * A selection on nodes of the group in a fixed order (most frequently used).
+         * List of nodes corresponding to the given tag, in most-frequently-used order.
          * 
          * @param nodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

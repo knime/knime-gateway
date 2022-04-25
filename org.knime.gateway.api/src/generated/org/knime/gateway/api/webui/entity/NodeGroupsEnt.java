@@ -67,7 +67,7 @@ public interface NodeGroupsEnt extends GatewayEntity {
   public java.util.List<NodeGroupEnt> getGroups();
 
   /**
-   * The total number of groups available. The gruops listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
+   * Total number of groups available. In case the maximum number of included groups has been limited, the length of the \&quot;groups\&quot; list may be smaller than this number.
    * @return totalNumGroups , never <code>null</code>
    **/
   public Integer getTotalNumGroups();
@@ -87,7 +87,7 @@ public interface NodeGroupsEnt extends GatewayEntity {
         NodeGroupsEntBuilder setGroups(java.util.List<NodeGroupEnt> groups);
         
         /**
-         * The total number of groups available. The gruops listed as part of this object might not be complete (in case the maximum number of included tags has been limited).
+         * Total number of groups available. In case the maximum number of included groups has been limited, the length of the \&quot;groups\&quot; list may be smaller than this number.
          * 
          * @param totalNumGroups the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

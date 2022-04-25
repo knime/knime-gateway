@@ -69,7 +69,7 @@ public interface NodeRepositoryService extends GatewayService {
     java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> requestBody) ;
         
     /**
-     * Returns a pre-defined set groups (defined by tags) and nodes per group (the most frequently used ones in that group).
+     * Returns a pre-defined set of groups (defined by tags) and nodes per group (the most frequently used ones in that group).
      *
      * @param numNodesPerTag The number of nodes per tag/group to be returned.
      * @param tagsOffset The number of tags to be skipped (for pagination).
