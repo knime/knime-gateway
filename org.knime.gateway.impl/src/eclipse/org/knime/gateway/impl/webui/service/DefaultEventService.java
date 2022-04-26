@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public final class DefaultEventService implements EventService {
 
     private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, true);
 
-    private final Map<Class<?>, EventSource<?, ?>> m_eventSources = new HashMap<>();
+    private final Map<Class<?>, EventSource<?, ?>> m_eventSources = Collections.synchronizedMap(new HashMap<>());
 
     private final AppStateProvider m_appStateProvider =
         ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
@@ -130,7 +131,9 @@ public final class DefaultEventService implements EventService {
     public void removeEventListener(final EventTypeEnt eventTypeEnt) {
         @SuppressWarnings({"rawtypes"})
         EventSource eventSource = m_eventSources.get(eventTypeEnt.getClass()); // NOSONAR
-        eventSource.removeEventListener(eventTypeEnt);
+        if (eventSource != null) {
+            eventSource.removeEventListener(eventTypeEnt);
+        }
     }
 
     /**
