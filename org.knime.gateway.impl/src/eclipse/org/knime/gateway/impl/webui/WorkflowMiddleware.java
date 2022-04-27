@@ -63,15 +63,10 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.DependentNodeProperties;
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -116,7 +111,7 @@ public final class WorkflowMiddleware {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW, this);
         m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
-        WorkflowProjectManager.getInstance().addWorkflowProjectRemovedListener(
+        workflowProjectManager.addWorkflowProjectRemovedListener(
             projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
 
@@ -197,58 +192,12 @@ public final class WorkflowMiddleware {
     }
 
     /**
-     * See {@link WorkflowCommands#execute(WorkflowKey, WorkflowCommandEnt)}.
+     * Gives access to {@link WorkflowCommands} to in order to execute, undo or redo commands.
      *
-     * @param wfKey
-     * @param commandEnt
-     * @throws OperationNotAllowedException
-     * @throws NotASubWorkflowException
-     * @throws NodeNotFoundException
-     * @return The result of the command execution
+     * @return the workflow commands instance
      */
-    public CommandResultEnt executeCommand(final WorkflowKey wfKey, final WorkflowCommandEnt commandEnt)
-        throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        return m_commands.execute(wfKey, commandEnt);
-    }
-
-    /**
-     * See {@link WorkflowCommands#undo(WorkflowKey)}.
-     *
-     * @param wfKey
-     * @throws OperationNotAllowedException
-     */
-    public void undoCommand(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        m_commands.undo(wfKey);
-    }
-
-    /**
-     * See {@link WorkflowCommands#redo(WorkflowKey)}.
-     *
-     * @param wfKey
-     * @throws OperationNotAllowedException
-     */
-    public void redoCommand(final WorkflowKey wfKey) throws OperationNotAllowedException {
-        m_commands.redo(wfKey);
-    }
-
-    /**
-     * See {@link WorkflowCommands#canUndo(WorkflowKey)}.
-     *
-     * @param wfKey
-     * @return
-     */
-    public boolean canUndoCommand(final WorkflowKey wfKey) {
-        return m_commands.canUndo(wfKey);
-    }
-
-    /**
-     * See {@link WorkflowCommands#canRedo(WorkflowKey)}.
-     *
-     * @param wfKey
-     * @return
-     */
-    public boolean canRedoCommand(final WorkflowKey wfKey) {
-        return m_commands.canRedo(wfKey);
+    public WorkflowCommands getCommands() {
+        return m_commands;
     }
 
     /**
@@ -293,8 +242,8 @@ public final class WorkflowMiddleware {
             .includeInteractionInfo(includeInteractionInfo);
         WorkflowState ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
-            buildContextBuilder.canUndo(canUndoCommand(wfKey))//
-                .canRedo(canRedoCommand(wfKey))//
+            buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
+                .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
         WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, () -> buildContextBuilder, changes);

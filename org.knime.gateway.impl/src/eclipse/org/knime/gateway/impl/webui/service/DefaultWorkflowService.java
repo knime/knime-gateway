@@ -93,7 +93,8 @@ public final class DefaultWorkflowService implements WorkflowService {
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
-                    .canUndo(m_workflowMiddleware.canUndoCommand(wfKey)).canRedo(m_workflowMiddleware.canRedoCommand(wfKey)));
+                    .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))
+                    .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey)));
         } else {
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
@@ -107,7 +108,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        return m_workflowMiddleware.executeCommand(new WorkflowKey(projectId, workflowId), workflowCommandEnt);
+        return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId),
+            workflowCommandEnt);
     }
 
     /**
@@ -116,7 +118,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        m_workflowMiddleware.undoCommand(new WorkflowKey(projectId, workflowId));
+        m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
     /**
@@ -125,7 +127,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
-        m_workflowMiddleware.redoCommand(new WorkflowKey(projectId, workflowId));
+        m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
 }
