@@ -112,20 +112,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         NodePortEntBuilder setName(String name);
         
         /**
-         * The port type.
+         * A unique port type id helping to infer the corresponding &#39;PortType&#39;
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param typeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setType(TypeEnum type);
-        
-        /**
-         * A unique port type id if it&#39;s a port of type &#39;other&#39;.
-         * 
-         * @param otherTypeId the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setOtherTypeId(String otherTypeId);
+        NodePortEntBuilder setTypeId(String typeId);
         
         /**
          * Whether it&#39;s a optional port or not.

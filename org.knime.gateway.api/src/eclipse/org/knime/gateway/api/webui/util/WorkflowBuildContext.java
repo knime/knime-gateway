@@ -52,10 +52,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -139,15 +136,11 @@ public final class WorkflowBuildContext {
 
     /**
      * This only method that mutates this build context. Use with care. Helps to avoid redundant work when collecting
-     * all the available input and output port types from a workflow. Ports of type {@link BufferedDataTable},
-     * {@link FlowVariablePortObject} and {@link PortObject} are ignored!
+     * all the available input and output port types from a workflow.
      *
      * @param pt
      */
     void updatePortTypes(final PortType pt) {
-        if (BufferedDataTable.TYPE.equals(pt) || FlowVariablePortObject.TYPE.equals(pt) || PortObject.TYPE.equals(pt)) {
-            return;
-        }
         if (m_portTypes == null) {
             m_portTypes = new HashSet<>();
         }

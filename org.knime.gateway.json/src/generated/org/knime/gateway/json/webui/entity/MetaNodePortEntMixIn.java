@@ -74,12 +74,8 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public String getName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("otherTypeId")
-    public String getOtherTypeId();
+    @JsonProperty("typeId")
+    public String getTypeId();
     
     @Override
     @JsonProperty("optional")
@@ -131,12 +127,8 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         public MetaNodePortEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("type")
-        public MetaNodePortEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("otherTypeId")
-        public MetaNodePortEntMixInBuilder setOtherTypeId(final String otherTypeId);
+        @JsonProperty("typeId")
+        public MetaNodePortEntMixInBuilder setTypeId(final String typeId);
         
         @Override
         @JsonProperty("optional")

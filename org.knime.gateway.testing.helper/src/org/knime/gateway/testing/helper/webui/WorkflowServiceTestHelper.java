@@ -527,7 +527,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             getAllowedActionsOfNodes(List.of(containerEnt), rootWfEnt).stream()
                 .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE));
 
-//        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, List.of(containerEnt));
+        assertNodesPresent("Expect nodes to still be in root workflow", rootWfEnt, List.of(containerEnt));
     }
 
     private void testExpandConfigured(final int nodeToExpand) throws Exception {

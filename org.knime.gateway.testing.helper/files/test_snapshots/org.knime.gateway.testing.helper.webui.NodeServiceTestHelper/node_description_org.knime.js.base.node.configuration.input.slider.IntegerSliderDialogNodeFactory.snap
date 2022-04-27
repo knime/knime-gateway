@@ -4,7 +4,7 @@
     "description" : "Input table which contains at least one integer\n\t\t\tcolumn with\tdomain values set, which can be used to control the\n\t\t\tminimum and\tmaximum values of the slider.\n\t\t",
     "name" : "Table Input with applicable domain values",
     "optional" : true,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "options" : [ {
     "fields" : [ {
@@ -37,7 +37,7 @@
     "description" : "\n\t\t  Variable output (integer) with the given variable defined.\n\t\t",
     "name" : "Flow Variable Output",
     "optional" : false,
-    "type" : "flowVariable"
+    "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
   } ],
   "shortDescription" : "\n\t   Provides a slider configuration option to an encapsulating component's dialog. \n\t   Outputs a integer flow variable with the set value.\n\t"
 }

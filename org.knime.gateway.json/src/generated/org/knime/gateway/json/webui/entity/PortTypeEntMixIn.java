@@ -72,6 +72,10 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
     public String getName();
     
     @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
     @JsonProperty("color")
     public String getColor();
     
@@ -95,6 +99,10 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
         @Override
         @JsonProperty("name")
         public PortTypeEntMixInBuilder setName(final String name);
+        
+        @Override
+        @JsonProperty("kind")
+        public PortTypeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("color")

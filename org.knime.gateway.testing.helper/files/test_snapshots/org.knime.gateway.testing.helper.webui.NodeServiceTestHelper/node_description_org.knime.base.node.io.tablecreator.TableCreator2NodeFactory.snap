@@ -15,7 +15,7 @@
     "description" : "Manually created table",
     "name" : "Manually created table",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "shortDescription" : "\n        Allows the manual creation of a data table with any number of rows and\n        columns.\n    "
 }

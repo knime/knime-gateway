@@ -9,6 +9,33 @@
     "canOpenView" : true,
     "canReset" : true
   },
+  "root:11" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canExpand" : "resetRequired",
+    "canOpenDialog" : true,
+    "canOpenView" : true,
+    "canReset" : true
+  },
+  "root:12" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canOpenDialog" : true,
+    "canReset" : true
+  },
+  "root:14" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canExpand" : "resetRequired",
+    "canOpenDialog" : true,
+    "canReset" : true
+  },
   "root:2" : {
     "canCancel" : false,
     "canCollapse" : "resetRequired",
@@ -52,33 +79,6 @@
     "canExpand" : "resetRequired",
     "canOpenDialog" : true,
     "canOpenView" : true,
-    "canReset" : true
-  },
-  "root:14" : {
-    "canCancel" : false,
-    "canCollapse" : "resetRequired",
-    "canDelete" : true,
-    "canExecute" : false,
-    "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
-    "canReset" : true
-  },
-  "root:11" : {
-    "canCancel" : false,
-    "canCollapse" : "resetRequired",
-    "canDelete" : true,
-    "canExecute" : false,
-    "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
-    "canOpenView" : true,
-    "canReset" : true
-  },
-  "root:12" : {
-    "canCancel" : false,
-    "canCollapse" : "resetRequired",
-    "canDelete" : true,
-    "canExecute" : false,
-    "canOpenDialog" : true,
     "canReset" : true
   }
 }

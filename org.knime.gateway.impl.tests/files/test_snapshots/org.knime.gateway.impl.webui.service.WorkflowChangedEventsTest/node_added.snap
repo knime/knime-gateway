@@ -17,13 +17,13 @@
       "index" : 0,
       "name" : "Variable Inport",
       "optional" : true,
-      "type" : "flowVariable"
+      "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
     }, {
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "First table to concatenate",
       "optional" : false,
-      "type" : "table",
+      "typeId" : "org.knime.core.node.BufferedDataTable",
       "view" : {
         "type" : "table"
       }
@@ -32,7 +32,7 @@
       "index" : 2,
       "name" : "Second table to concatenate",
       "optional" : false,
-      "type" : "table",
+      "typeId" : "org.knime.core.node.BufferedDataTable",
       "view" : {
         "type" : "table"
       }
@@ -43,12 +43,12 @@
       "index" : 0,
       "name" : "Variable Outport",
       "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-      "type" : "flowVariable"
+      "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
     }, {
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "Concatenated table",
-      "type" : "table",
+      "typeId" : "org.knime.core.node.BufferedDataTable",
       "view" : {
         "type" : "table"
       }

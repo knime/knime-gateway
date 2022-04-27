@@ -54,12 +54,8 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
-<<<<<<< HEAD
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-=======
-import org.knime.gateway.api.webui.entity.NativeNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
->>>>>>> NXT-645: Port type map added to workflow entity
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -77,8 +73,6 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   protected WorkflowInfoEnt m_info;
   protected java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes;
   protected java.util.Map<String, NativeNodeInvariantsEnt> m_nodeTemplates;
-  protected java.util.Map<String, java.util.List<Integer>> m_ambiguousPortTypes;
-  protected java.util.Map<String, NativeNodeTemplateEnt> m_nodeTemplates;
   protected java.util.Map<String, PortTypeEnt> m_portTypes;
   protected java.util.Map<String, ConnectionEnt> m_connections;
   protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
@@ -89,18 +83,18 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
   protected ComponentNodeDescriptionEnt m_componentMetadata;
   protected ProjectMetadataEnt m_projectMetadata;
   protected Boolean m_dirty;
-
+  
   protected DefaultWorkflowEnt() {
     //for sub-classes
   }
-
+  
   @Override
   public String getTypeID() {
     return "Workflow";
   }
-
-  private DefaultWorkflowEnt(final DefaultWorkflowEntBuilder builder) {
-
+  
+  private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
+    
     if(builder.m_info == null) {
         throw new IllegalArgumentException("info must not be null.");
     }
@@ -133,7 +127,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
     }
     m_dirty = immutable(builder.m_dirty);
   }
-
+  
    /**
      * {@inheritDoc}
      */
@@ -149,11 +143,11 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
             return false;
         }
         DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_ambiguousPortTypes, ent.m_ambiguousPortTypes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata) && Objects.equals(m_dirty, ent.m_dirty);
+        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_portTypes, ent.m_portTypes) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata) && Objects.equals(m_dirty, ent.m_dirty);
     }
 
 
-
+  
    /**
     * {@inheritDoc}
     */
@@ -175,85 +169,85 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
                .append(m_dirty)
                .toHashCode();
    }
-
-
-
+  
+	
+	
   @Override
   public WorkflowInfoEnt getInfo() {
         return m_info;
   }
-
+    
   @Override
   public java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> getNodes() {
         return m_nodes;
   }
-
+    
   @Override
   public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates() {
         return m_nodeTemplates;
   }
-
+    
   @Override
   public java.util.Map<String, PortTypeEnt> getPortTypes() {
         return m_portTypes;
   }
-
+    
   @Override
   public java.util.Map<String, ConnectionEnt> getConnections() {
         return m_connections;
   }
-
+    
   @Override
   public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
         return m_workflowAnnotations;
   }
-
+    
   @Override
   public java.util.List<WorkflowInfoEnt> getParents() {
         return m_parents;
   }
-
+    
   @Override
   public MetaPortsEnt getMetaInPorts() {
         return m_metaInPorts;
   }
-
+    
   @Override
   public MetaPortsEnt getMetaOutPorts() {
         return m_metaOutPorts;
   }
-
+    
   @Override
   public AllowedWorkflowActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
-
+    
   @Override
   public ComponentNodeDescriptionEnt getComponentMetadata() {
         return m_componentMetadata;
   }
-
+    
   @Override
   public ProjectMetadataEnt getProjectMetadata() {
         return m_projectMetadata;
   }
-
+    
   @Override
   public Boolean isDirty() {
         return m_dirty;
   }
-
-
+    
+  
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
-
+    
         public DefaultWorkflowEntBuilder(){
-
+            
         }
-
+    
         private WorkflowInfoEnt m_info;
         private java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes = new java.util.HashMap<>();
         private java.util.Map<String, NativeNodeInvariantsEnt> m_nodeTemplates = new java.util.HashMap<>();
-        private java.util.Map<String, java.util.List<Integer>> m_ambiguousPortTypes;
+        private java.util.Map<String, PortTypeEnt> m_portTypes;
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
         private java.util.List<WorkflowInfoEnt> m_parents;
@@ -265,7 +259,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         private Boolean m_dirty;
 
         @Override
-        public DefaultWorkflowEntBuilder setInfo(final WorkflowInfoEnt info) {
+        public DefaultWorkflowEntBuilder setInfo(WorkflowInfoEnt info) {
              if(info == null) {
                  throw new IllegalArgumentException("info must not be null.");
              }
@@ -274,7 +268,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setNodes(final java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> nodes) {
+        public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> nodes) {
              if(nodes == null) {
                  throw new IllegalArgumentException("nodes must not be null.");
              }
@@ -283,7 +277,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setNodeTemplates(final java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates) {
+        public DefaultWorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates) {
              if(nodeTemplates == null) {
                  throw new IllegalArgumentException("nodeTemplates must not be null.");
              }
@@ -292,13 +286,13 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setPortTypes(final java.util.Map<String, PortTypeEnt> portTypes) {
+        public DefaultWorkflowEntBuilder setPortTypes(java.util.Map<String, PortTypeEnt> portTypes) {
              m_portTypes = portTypes;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setConnections(final java.util.Map<String, ConnectionEnt> connections) {
+        public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
              if(connections == null) {
                  throw new IllegalArgumentException("connections must not be null.");
              }
@@ -307,7 +301,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setWorkflowAnnotations(final java.util.List<WorkflowAnnotationEnt> workflowAnnotations) {
+        public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations) {
              if(workflowAnnotations == null) {
                  throw new IllegalArgumentException("workflowAnnotations must not be null.");
              }
@@ -316,43 +310,43 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setParents(final java.util.List<WorkflowInfoEnt> parents) {
+        public DefaultWorkflowEntBuilder setParents(java.util.List<WorkflowInfoEnt> parents) {
              m_parents = parents;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setMetaInPorts(final MetaPortsEnt metaInPorts) {
+        public DefaultWorkflowEntBuilder setMetaInPorts(MetaPortsEnt metaInPorts) {
              m_metaInPorts = metaInPorts;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setMetaOutPorts(final MetaPortsEnt metaOutPorts) {
+        public DefaultWorkflowEntBuilder setMetaOutPorts(MetaPortsEnt metaOutPorts) {
              m_metaOutPorts = metaOutPorts;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setAllowedActions(final AllowedWorkflowActionsEnt allowedActions) {
+        public DefaultWorkflowEntBuilder setAllowedActions(AllowedWorkflowActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setComponentMetadata(final ComponentNodeDescriptionEnt componentMetadata) {
+        public DefaultWorkflowEntBuilder setComponentMetadata(ComponentNodeDescriptionEnt componentMetadata) {
              m_componentMetadata = componentMetadata;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setProjectMetadata(final ProjectMetadataEnt projectMetadata) {
+        public DefaultWorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata) {
              m_projectMetadata = projectMetadata;
              return this;
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setDirty(final Boolean dirty) {
+        public DefaultWorkflowEntBuilder setDirty(Boolean dirty) {
              if(dirty == null) {
                  throw new IllegalArgumentException("dirty must not be null.");
              }
@@ -360,12 +354,12 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
              return this;
         }
 
-
+        
         @Override
         public DefaultWorkflowEnt build() {
             return new DefaultWorkflowEnt(this);
         }
-
+    
     }
 
 }

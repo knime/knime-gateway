@@ -4,12 +4,12 @@
     "description" : "\n\t\t\tData table containing the categories and values to be plotted in a bar\n\t\t\tchart.\n\t\t",
     "name" : "Display data",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }, {
     "description" : "\n\t\t\tData table containing one column with the column names of table which has in addition a color assigned.\n\t\t\t<b>Note:</b> for the \"Occurrence Count\" aggregation method the column name in the color table should be also \"Occurrence Count\".\n\t\t",
     "name" : "Bar color data",
     "optional" : true,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "interactiveView" : {
     "description" : "\n\t\tA bar chart based on the NVD3 library.\n\t",
@@ -173,7 +173,7 @@
     "description" : "\n\t\t\tSVG image of the bar chart.\n\t\t",
     "name" : "Bar chart image",
     "optional" : false,
-    "type" : "other"
+    "typeId" : "org.knime.core.node.port.image.ImagePortObject"
   } ],
   "shortDescription" : "A bar chart based on the NVD3 library."
 }

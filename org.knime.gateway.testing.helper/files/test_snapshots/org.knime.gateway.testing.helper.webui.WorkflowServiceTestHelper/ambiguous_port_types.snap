@@ -2,11 +2,18 @@
   "org.knime.core.node.port.database.DatabaseConnectionPortObject" : {
     "color" : "#FF4B4B",
     "compatibleTypes" : [ "org.knime.core.node.port.database.DatabasePortObject" ],
+    "kind" : "other",
     "name" : "Database Connection"
   },
   "org.knime.core.node.port.database.DatabasePortObject" : {
     "color" : "#800000",
     "compatibleTypes" : [ "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
+    "kind" : "other",
     "name" : "Database Query"
+  },
+  "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
+    "color" : "#FF4B4B",
+    "kind" : "flowVariable",
+    "name" : "Flow Variable"
   }
 }

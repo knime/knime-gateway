@@ -3,7 +3,7 @@
     "canCancel" : false,
     "canExecute" : true,
     "canRedo" : false,
-    "canReset" : false,
+    "canReset" : true,
     "canUndo" : false
   },
   "connections" : {
@@ -417,11 +417,11 @@
     "root:1" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:1",
       "inPorts" : [ {
@@ -435,13 +435,16 @@
       "outPorts" : [ {
         "connectedVia" : "[ root:13_1, root:4_0 ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:10_1, root:19_1, root:20_1, root:20_2, root:21_1, root:22_2, root:25_1, root:26_2, root:27_1, root:27_3, root:2_1 ]",
         "index" : 1,
+        "info" : "Rows: 8, Cols: 5",
         "name" : "Random data with cluster ID",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -449,7 +452,9 @@
       }, {
         "connectedVia" : "[ root:12_1, root:23_1, root:27_2, root:9_1 ]",
         "index" : 2,
+        "info" : "Rows: 4, Cols: 4",
         "name" : "Cluster centers",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -460,18 +465,18 @@
         "y" : 343
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
     },
     "root:10" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -500,13 +505,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:22_1 ]",
         "index" : 1,
+        "info" : "J48",
         "name" : "Trained model",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject"
       } ],
       "position" : {
@@ -514,7 +522,7 @@
         "y" : 163
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
     },
@@ -565,6 +573,7 @@
         "y" : 383
       },
       "state" : {
+        "error" : "Execute failed: This node fails on each execution.",
         "executionState" : "CONFIGURED"
       },
       "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
@@ -572,12 +581,12 @@
     "root:12" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
         "canExecute" : true,
-        "canExpand" : "true",
+        "canExpand" : "resetRequired",
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "styleRanges" : [ ],
@@ -623,18 +632,18 @@
         "y" : 623
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "error" : "Execute failed: \nFail in execution 3:12:0:10: This node fails on each execution.",
+        "executionState" : "CONFIGURED"
       }
     },
     "root:13" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -660,12 +669,15 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:14_1, root:185_1 ]",
+        "inactive" : true,
         "index" : 1,
+        "info" : "Inactive Port Object",
         "name" : "Output",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
@@ -675,18 +687,18 @@
         "y" : 563
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
     },
     "root:14" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -711,14 +723,19 @@
       "kind" : "node",
       "outPorts" : [ {
         "connectedVia" : "[  ]",
+        "inactive" : true,
         "index" : 0,
+        "info" : "Inactive Port Object",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
+        "inactive" : true,
         "index" : 1,
+        "info" : "Inactive Port Object",
         "name" : "Variable table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -728,20 +745,16 @@
         "x" : 804,
         "y" : 543
       },
-      "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
-      },
       "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
     },
     "root:15" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:15",
       "inPorts" : [ {
@@ -755,13 +768,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:16_1 ]",
         "index" : 1,
+        "info" : "Rows: 1, Cols: 3",
         "name" : "Manually created table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -772,18 +788,18 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
     },
     "root:16" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:16",
       "inPorts" : [ {
@@ -806,12 +822,14 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:18_1 ]",
         "index" : 1,
+        "info" : "Variables connection",
         "name" : "Variables Output",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
@@ -821,7 +839,7 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
     },
@@ -869,11 +887,11 @@
     "root:18" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -899,12 +917,14 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Variables connection",
         "name" : "Appended variables",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
@@ -914,7 +934,7 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
     },
@@ -1039,12 +1059,12 @@
     "root:185" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
-        "canExpand" : "true",
+        "canExecute" : false,
+        "canExpand" : "resetRequired",
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "styleRanges" : [ ],
@@ -1069,7 +1089,9 @@
       "name" : "Inactive Component",
       "outPorts" : [ {
         "connectedVia" : "[  ]",
+        "inactive" : true,
         "index" : 0,
+        "info" : "Inactive Port Object",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
@@ -1077,20 +1099,16 @@
       "position" : {
         "x" : 804,
         "y" : 663
-      },
-      "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
     },
     "root:19" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "backgroundColor" : "#F57900",
@@ -1120,13 +1138,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:20_3 ]",
         "index" : 1,
+        "info" : "Distance Measure:'Standard Distance (Euclidean/ Manhattan)' of extension: 'org.knime.distance.measure.numerical.lnorm.LNormDistanceFactory'",
         "name" : "Distance Measure",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.distance.DistanceMeasurePortObject"
       } ],
       "position" : {
@@ -1134,18 +1155,18 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
     },
     "root:2" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1174,13 +1195,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:11_1, root:6_0 ]",
         "index" : 1,
+        "info" : "Rows: 8, Cols: 4",
         "name" : "Filtered table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1191,18 +1215,18 @@
         "y" : 343
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
     },
     "root:20" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1246,13 +1270,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 8, Cols: 8",
         "name" : "Input 1 + columns/rows with neighbor information",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1263,18 +1290,18 @@
         "y" : 763
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
     },
     "root:21" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1330,13 +1357,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 8, Cols: 5",
         "name" : "Concatenated table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1347,18 +1377,18 @@
         "y" : 23
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
     },
     "root:22" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1393,13 +1423,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 8, Cols: 6",
         "name" : "Classified Test data",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1410,20 +1443,20 @@
         "y" : 83
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
     },
     "root:23" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
-        "canExpand" : "true",
+        "canExecute" : false,
+        "canExpand" : "resetRequired",
         "canOpenDialog" : true,
-        "canOpenView" : false,
-        "canReset" : false
+        "canOpenView" : true,
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1453,13 +1486,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 4, Cols: 5",
         "name" : "Port 1",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1470,18 +1506,17 @@
         "y" : 623
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "EXECUTED"
       }
     },
     "root:25" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:25",
       "inPorts" : [ {
@@ -1504,13 +1539,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 4, Cols: 4",
         "name" : "Covariance matrix",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1518,7 +1556,9 @@
       }, {
         "connectedVia" : "[  ]",
         "index" : 2,
+        "info" : "Rows: 4, Cols: 5",
         "name" : "Spectral decomposition",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1526,7 +1566,9 @@
       }, {
         "connectedVia" : "[ root:26_1 ]",
         "index" : 3,
+        "info" : "4 principal components",
         "name" : "Projection model",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.base.node.mine.pca.PCAModelPortObject"
       } ],
       "position" : {
@@ -1534,18 +1576,18 @@
         "y" : 403
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
     },
     "root:26" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1580,13 +1622,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 8, Cols: 9",
         "name" : "Projected data",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1597,18 +1642,18 @@
         "y" : 483
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
     },
     "root:27" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "defaultFontSize" : 15,
@@ -1655,13 +1700,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 20, Cols: 5",
         "name" : "Concatenated table",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1672,18 +1720,18 @@
         "y" : 203
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
     },
     "root:4" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:4",
       "inPorts" : [ {
@@ -1706,6 +1754,7 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
@@ -1715,7 +1764,7 @@
         "y" : 203
       },
       "state" : {
-        "executionState" : "CONFIGURED"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.viz.table.TableNodeFactory"
     },
@@ -1724,7 +1773,7 @@
         "canCancel" : false,
         "canCollapse" : "true",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1777,12 +1826,12 @@
     "root:6" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
-        "canExpand" : "true",
+        "canExecute" : false,
+        "canExpand" : "resetRequired",
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:6",
       "inPorts" : [ {
@@ -1806,8 +1855,10 @@
       "outPorts" : [ {
         "connectedVia" : "[ root:4_1 ]",
         "index" : 0,
+        "info" : "Rows: 5, Cols: 4",
         "name" : "Connected to: Filtered",
-        "nodeState" : "CONFIGURED",
+        "nodeState" : "EXECUTED",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1815,8 +1866,10 @@
       }, {
         "connectedVia" : "[ root:5_1 ]",
         "index" : 1,
+        "info" : "Rows: 3, Cols: 4",
         "name" : "Connected to: Filtered Out",
-        "nodeState" : "CONFIGURED",
+        "nodeState" : "EXECUTED",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1836,17 +1889,17 @@
         "y" : 263
       },
       "state" : {
-        "executionState" : "IDLE"
+        "executionState" : "EXECUTED"
       }
     },
     "root:8" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
+        "canExecute" : false,
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "id" : "root:8",
       "inPorts" : [ {
@@ -1869,13 +1922,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
+        "info" : "Rows: 7, Cols: 14",
         "name" : "Robust Statistics",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1886,19 +1942,19 @@
         "y" : 503
       },
       "state" : {
-        "executionState" : "IDLE"
+        "executionState" : "EXECUTED"
       },
       "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
     },
     "root:9" : {
       "allowedActions" : {
         "canCancel" : false,
-        "canCollapse" : "true",
+        "canCollapse" : "resetRequired",
         "canDelete" : true,
-        "canExecute" : true,
-        "canExpand" : "true",
+        "canExecute" : false,
+        "canExpand" : "resetRequired",
         "canOpenDialog" : true,
-        "canReset" : false
+        "canReset" : true
       },
       "annotation" : {
         "styleRanges" : [ ],
@@ -1928,13 +1984,16 @@
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
+        "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:8_1 ]",
         "index" : 1,
+        "info" : "Rows: 4, Cols: 16",
         "name" : "Port 1",
+        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
@@ -1945,8 +2004,7 @@
         "y" : 503
       },
       "state" : {
-        "executionState" : "IDLE",
-        "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+        "executionState" : "EXECUTED"
       },
       "type" : "Visualizer"
     }

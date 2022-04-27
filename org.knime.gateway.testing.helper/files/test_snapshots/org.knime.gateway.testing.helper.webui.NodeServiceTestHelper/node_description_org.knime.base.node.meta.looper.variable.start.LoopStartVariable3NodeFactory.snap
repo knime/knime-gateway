@@ -4,7 +4,7 @@
     "description" : "\n\t\t\tThe table whose rows will constitute variables' values for each iteration.\n\t\t",
     "name" : "Parameters table",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "links" : [ {
     "text" : "\n\t\t\tKNIME Analytics Platform for Data Scientists (Advanced): Lesson 2. Flow Variables &amp; Components\n\t\t",
@@ -29,7 +29,7 @@
     "description" : "\n\t\t\tConnection carrying on the variables.\n\t\t",
     "name" : "Variable connection",
     "optional" : false,
-    "type" : "flowVariable"
+    "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
   } ],
   "shortDescription" : "\n        Iterates over an input data table, whereby each row defines an iteration with variable settings taken from the\n        values in that row  \n    "
 }

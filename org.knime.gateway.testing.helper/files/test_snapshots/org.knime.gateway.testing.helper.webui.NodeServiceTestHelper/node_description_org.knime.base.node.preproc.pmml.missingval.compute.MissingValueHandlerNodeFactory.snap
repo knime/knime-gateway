@@ -4,7 +4,7 @@
     "description" : "Table with missing values",
     "name" : "Input table",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "options" : [ {
     "fields" : [ {
@@ -17,12 +17,12 @@
     "description" : "Table with replaced missing values",
     "name" : "Output table",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }, {
     "description" : "Table with PMML documenting the missing value replacement",
     "name" : "PMML Transformations",
     "optional" : false,
-    "type" : "other"
+    "typeId" : "org.knime.core.node.port.pmml.PMMLPortObject"
   } ],
   "shortDescription" : "\n        Filters or replaces missing values in a table.\n    "
 }

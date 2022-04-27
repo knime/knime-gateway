@@ -8,79 +8,110 @@
   },
   "connections" : {
     "root:11_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:11",
       "destPort" : 1,
+      "id" : "root:11_1",
       "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:14_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:14",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:14_1",
       "sourceNode" : "root:13",
       "sourcePort" : 1
     },
     "root:16_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:16",
       "destPort" : 1,
+      "id" : "root:16_1",
       "sourceNode" : "root:15",
       "sourcePort" : 1
     },
     "root:185_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:185",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:185_1",
       "sourceNode" : "root:13",
       "sourcePort" : 1
     },
     "root:18_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:18",
       "destPort" : 1,
       "flowVariableConnection" : true,
+      "id" : "root:18_1",
       "sourceNode" : "root:16",
       "sourcePort" : 1
     },
     "root:20_3" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:20",
       "destPort" : 3,
+      "id" : "root:20_3",
       "sourceNode" : "root:19",
       "sourcePort" : 1
     },
     "root:22_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:22",
       "destPort" : 1,
+      "id" : "root:22_1",
       "sourceNode" : "root:10",
       "sourcePort" : 1
     },
     "root:5_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:5",
       "destPort" : 1,
+      "id" : "root:5_1",
       "sourceNode" : "root:6",
       "sourcePort" : 1
     },
     "root:6_0" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:6",
       "destPort" : 0,
+      "id" : "root:6_0",
       "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:8_1" : {
-      "canDelete" : true,
+      "allowedActions" : {
+        "canDelete" : true
+      },
       "destNode" : "root:8",
       "destPort" : 1,
+      "id" : "root:8_1",
       "sourceNode" : "root:9",
       "sourcePort" : 1
     }
   },
+  "dirty" : true,
   "info" : {
     "containerType" : "project",
     "name" : "general_web_ui"
@@ -184,6 +215,7 @@
     "root:10" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -201,13 +233,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Training data",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -218,13 +250,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:22_1 ]",
         "index" : 1,
         "name" : "Trained model",
-        "otherTypeId" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject",
-        "type" : "other"
+        "typeId" : "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject"
       } ],
       "position" : {
         "x" : 344,
@@ -233,12 +264,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "IAAB",
       "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory:ed021845"
     },
     "root:11" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -250,13 +281,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:11_1 ]",
         "index" : 1,
         "name" : "Any input table",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -267,12 +298,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Copy of input",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -284,14 +315,15 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "QA==",
       "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
     },
     "root:12" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
+        "canExpand" : "true",
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -306,13 +338,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -324,12 +356,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -340,12 +372,12 @@
       },
       "state" : {
         "executionState" : "IDLE"
-      },
-      "successors" : "gA=="
+      }
     },
     "root:13" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -363,13 +395,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -377,13 +409,13 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:14_1, root:185_1 ]",
         "index" : 1,
         "name" : "Output",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 684,
@@ -392,12 +424,12 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "AAMAAQ==",
       "templateId" : "org.knime.base.node.flowcontrol.trycatch.inverter.ActiveBranchInverterNodeFactory"
     },
     "root:14" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -415,13 +447,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:14_1 ]",
         "index" : 1,
         "name" : "Variables input",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -429,12 +461,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Variable table",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -447,12 +479,12 @@
         "executionState" : "IDLE",
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "successors" : "AAI=",
       "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
     },
     "root:15" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -464,7 +496,7 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -472,12 +504,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:16_1 ]",
         "index" : 1,
         "name" : "Manually created table",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -489,12 +521,12 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "ABw=",
       "templateId" : "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"
     },
     "root:16" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -506,13 +538,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:16_1 ]",
         "index" : 1,
         "name" : "Parameters table",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -523,13 +555,13 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:18_1 ]",
         "index" : 1,
         "name" : "Variables Output",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 344,
@@ -538,12 +570,12 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "ABg=",
       "templateId" : "org.knime.base.node.flowvariable.tablerowtovariable.TableToVariableNodeFactory"
     },
     "root:172" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -561,7 +593,7 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -569,7 +601,7 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 644,
@@ -579,12 +611,12 @@
         "executionState" : "IDLE",
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "successors" : "AAAg",
       "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"
     },
     "root:18" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
@@ -602,13 +634,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:18_1 ]",
         "index" : 1,
         "name" : "Input variables (optional)",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -616,13 +648,13 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Appended variables",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 464,
@@ -631,12 +663,12 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "successors" : "ABA=",
       "templateId" : "org.knime.base.node.preproc.stringmanipulation.variable.StringManipulationVariableNodeFactory"
     },
     "root:182" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -654,7 +686,7 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -662,7 +694,7 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 763,
@@ -672,14 +704,15 @@
         "executionState" : "IDLE",
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "successors" : "AABA",
       "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory"
     },
     "root:183" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
+        "canExpand" : "true",
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -701,13 +734,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "myPort 1",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -716,7 +749,7 @@
         "index" : 2,
         "name" : "Inport 2",
         "optional" : false,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
       "link" : "knime://knime.mountpoint/Streaming%20Component",
@@ -726,12 +759,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Outport 1",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -739,7 +772,7 @@
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
-        "type" : "generic"
+        "typeId" : "org.knime.core.node.port.PortObject"
       } ],
       "position" : {
         "x" : 924,
@@ -748,14 +781,15 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AACA",
       "type" : "Sink"
     },
     "root:185" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
+        "canExpand" : "true",
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -770,13 +804,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:185_1 ]",
         "index" : 1,
         "name" : "Inport 1",
         "optional" : false,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
       "name" : "Inactive Component",
@@ -785,7 +819,7 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 804,
@@ -794,12 +828,12 @@
       "state" : {
         "executionState" : "IDLE",
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
-      },
-      "successors" : "AAAAAQ=="
+      }
     },
     "root:19" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -818,13 +852,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input Table",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -835,13 +869,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:20_3 ]",
         "index" : 1,
         "name" : "Distance Measure",
-        "otherTypeId" : "org.knime.distance.DistanceMeasurePortObject",
-        "type" : "other"
+        "typeId" : "org.knime.distance.DistanceMeasurePortObject"
       } ],
       "position" : {
         "x" : 684,
@@ -850,12 +883,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AGA=",
       "templateId" : "org.knime.distance.measure.numerical.NumericalDistanceNodeFactory"
     },
     "root:2" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -873,13 +906,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Table to be filtered",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -890,12 +923,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:11_1, root:6_0 ]",
         "index" : 1,
         "name" : "Filtered table",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -907,12 +940,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "Rw==",
       "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
     },
     "root:20" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -930,13 +963,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Query table",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -945,7 +978,7 @@
         "index" : 2,
         "name" : "Reference table (neighbors)",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -954,8 +987,7 @@
         "index" : 3,
         "name" : "Distance Measure",
         "optional" : true,
-        "otherTypeId" : "org.knime.distance.DistanceMeasurePortObject",
-        "type" : "other"
+        "typeId" : "org.knime.distance.DistanceMeasurePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -963,12 +995,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input 1 + columns/rows with neighbor information",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -980,12 +1012,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AEA=",
       "templateId" : "org.knime.distmatrix.similaritysearch.SimilaritySearchNodeFactory"
     },
     "root:21" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1003,13 +1035,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "First table to concatenate",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1018,7 +1050,7 @@
         "index" : 2,
         "name" : "Optional second table to concatenate",
         "optional" : true,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1027,7 +1059,7 @@
         "index" : 3,
         "name" : "Optional third table to concatenate",
         "optional" : true,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1036,7 +1068,7 @@
         "index" : 4,
         "name" : "Optional fourth table to concatenate",
         "optional" : true,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1047,12 +1079,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Concatenated table",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1064,12 +1096,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AIA=",
       "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsWithOptionalInNodeFactory"
     },
     "root:22" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1087,20 +1119,19 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:22_1 ]",
         "index" : 1,
         "name" : "Weka model",
         "optional" : false,
-        "otherTypeId" : "org.knime.ext.weka37.ports.WekaClassifierModelPortObject",
-        "type" : "other"
+        "typeId" : "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Test data",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1111,12 +1142,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Classified Test data",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1128,14 +1159,15 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AAAB",
       "templateId" : "org.knime.ext.weka37.predictor3.WekaPredictorNodeFactory"
     },
     "root:23" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
+        "canExpand" : "true",
         "canOpenDialog" : true,
         "canOpenView" : false,
         "canReset" : false
@@ -1152,13 +1184,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1170,12 +1202,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1186,12 +1218,12 @@
       },
       "state" : {
         "executionState" : "IDLE"
-      },
-      "successors" : "AAAC"
+      }
     },
     "root:25" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1203,13 +1235,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Table to transform",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1220,12 +1252,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Covariance matrix",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1233,7 +1265,7 @@
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Spectral decomposition",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1241,8 +1273,7 @@
         "connectedVia" : "[  ]",
         "index" : 3,
         "name" : "Projection model",
-        "otherTypeId" : "org.knime.base.node.mine.pca.PCAModelPortObject",
-        "type" : "other"
+        "typeId" : "org.knime.base.node.mine.pca.PCAModelPortObject"
       } ],
       "position" : {
         "x" : 904,
@@ -1251,12 +1282,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AAAE",
       "templateId" : "org.knime.base.node.mine.pca.PCAComputeNodeFactory"
     },
     "root:26" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1274,20 +1305,19 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "PCA model",
         "optional" : false,
-        "otherTypeId" : "org.knime.base.node.mine.pca.PCAModelPortObject",
-        "type" : "other"
+        "typeId" : "org.knime.base.node.mine.pca.PCAModelPortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Table to transform",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1298,12 +1328,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Projected data",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1315,12 +1345,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AAAI",
       "templateId" : "org.knime.base.node.mine.pca.PCAApplyNodeFactory"
     },
     "root:27" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1338,13 +1368,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "First table to concatenate",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1353,7 +1383,7 @@
         "index" : 2,
         "name" : "Second table to concatenate",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1362,7 +1392,7 @@
         "index" : 3,
         "name" : "Additional table to concatenate",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1373,12 +1403,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Concatenated table",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1390,12 +1420,12 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "AAAQ",
       "templateId" : "org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"
     },
     "root:5" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1413,13 +1443,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:5_1 ]",
         "index" : 1,
         "name" : "Input data",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1430,13 +1460,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Decision Tree Model",
-        "otherTypeId" : "org.knime.core.node.port.pmml.PMMLPortObject",
-        "type" : "other"
+        "typeId" : "org.knime.core.node.port.pmml.PMMLPortObject"
       } ],
       "position" : {
         "x" : 704,
@@ -1446,14 +1475,15 @@
         "executionState" : "IDLE",
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "successors" : "Ag==",
       "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
     },
     "root:6" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
+        "canExpand" : "true",
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1463,10 +1493,16 @@
         "index" : 0,
         "name" : "Inport 0",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
+      }, {
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Inport 1",
+        "optional" : false,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "metanode",
       "name" : "Metanode",
@@ -1475,7 +1511,7 @@
         "index" : 0,
         "name" : "Connected to: Filtered",
         "nodeState" : "IDLE",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1484,7 +1520,7 @@
         "index" : 1,
         "name" : "Connected to: Filtered Out",
         "nodeState" : "IDLE",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1493,7 +1529,7 @@
         "index" : 2,
         "name" : "Outport 2",
         "nodeState" : "IDLE",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1504,12 +1540,12 @@
       },
       "state" : {
         "executionState" : "IDLE"
-      },
-      "successors" : "Bg=="
+      }
     },
     "root:8" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
@@ -1521,13 +1557,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:8_1 ]",
         "index" : 1,
         "name" : "Display data",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1538,12 +1574,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Robust Statistics",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1555,14 +1591,15 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "CA==",
       "templateId" : "org.knime.base.node.viz.plotter.box.BoxPlotNodeFactory"
     },
     "root:9" : {
       "allowedActions" : {
         "canCancel" : false,
+        "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
+        "canExpand" : "true",
         "canOpenDialog" : true,
         "canReset" : false
       },
@@ -1578,13 +1615,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1596,12 +1633,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:8_1 ]",
         "index" : 1,
         "name" : "Port 1",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -1613,25 +1650,50 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "successors" : "GA==",
       "type" : "Visualizer"
     }
   },
   "portTypes" : {
     "org.knime.base.node.mine.pca.PCAModelPortObject" : {
       "color" : "#1EB9DC",
+      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
+      "kind" : "other",
       "name" : "PCA"
+    },
+    "org.knime.core.node.BufferedDataTable" : {
+      "color" : "#000000",
+      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
+      "kind" : "table",
+      "name" : "Data"
+    },
+    "org.knime.core.node.port.PortObject" : {
+      "color" : "#9B9B9B",
+      "compatibleTypes" : [ "org.knime.base.node.mine.pca.PCAModelPortObject", "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.flowvariable.FlowVariablePortObject", "org.knime.core.node.port.pmml.PMMLPortObject", "org.knime.distance.DistanceMeasurePortObject", "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject" ],
+      "kind" : "generic",
+      "name" : "Generic Port"
+    },
+    "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
+      "color" : "#FF4B4B",
+      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
+      "kind" : "flowVariable",
+      "name" : "Flow Variable"
     },
     "org.knime.core.node.port.pmml.PMMLPortObject" : {
       "color" : "#1469AF",
+      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
+      "kind" : "other",
       "name" : "PMML"
     },
     "org.knime.distance.DistanceMeasurePortObject" : {
       "color" : "#9B9B9B",
+      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
+      "kind" : "other",
       "name" : "Distance Measure"
     },
-    "org.knime.ext.weka37.ports.WekaClassifierModelPortObject" : {
+    "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject" : {
       "color" : "#9B9B9B",
+      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
+      "kind" : "other",
       "name" : "Weka 3.7 Classifier"
     }
   },

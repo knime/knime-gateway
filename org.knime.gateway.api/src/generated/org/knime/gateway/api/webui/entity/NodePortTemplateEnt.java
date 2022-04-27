@@ -58,31 +58,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodePortTemplateEnt extends GatewayEntity {
 
-  /**
-   * The port type.
-   */
-  public enum TypeEnum {
-    TABLE("table"),
-    
-    FLOWVARIABLE("flowVariable"),
-    
-    GENERIC("generic"),
-    
-    OTHER("other");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
 
   /**
    * A descriptive name for the port. For native nodes, this name is taken from the node description. For components, the port name is taken from the component&#39;s description, if provided by the user.
@@ -91,22 +66,10 @@ public interface NodePortTemplateEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * The port type.
-   * @return type , never <code>null</code>
+   * A unique port type id helping to infer the corresponding &#39;PortType&#39;
+   * @return typeId , never <code>null</code>
    **/
-  public TypeEnum getType();
-
-  /**
-   * A unique port type id if it&#39;s a port of type &#39;other&#39;. Only present if interaction info is supposed to be included.
-   * @return otherTypeId 
-   **/
-  public Integer getOtherTypeId();
-
-  /**
-   * The color of the port in case of type &#39;other&#39;.
-   * @return color 
-   **/
-  public String getColor();
+  public String getTypeId();
 
   /**
    * Whether it&#39;s a optional port or not.
@@ -129,20 +92,12 @@ public interface NodePortTemplateEnt extends GatewayEntity {
         NodePortTemplateEntBuilder setName(String name);
         
         /**
-         * The port type.
+         * A unique port type id helping to infer the corresponding &#39;PortType&#39;
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param typeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodePortTemplateEntBuilder setType(TypeEnum type);
-        
-        /**
-         * A unique port type id if it&#39;s a port of type &#39;other&#39;.
-         * 
-         * @param otherTypeId the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortTemplateEntBuilder setOtherTypeId(String otherTypeId);
+        NodePortTemplateEntBuilder setTypeId(String typeId);
         
         /**
          * Whether it&#39;s a optional port or not.

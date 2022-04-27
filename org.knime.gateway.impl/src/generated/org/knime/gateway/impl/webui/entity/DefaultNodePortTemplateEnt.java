@@ -49,6 +49,8 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
 /**
@@ -60,30 +62,28 @@ import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
 
   protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_otherTypeId;
+  protected String m_typeId;
   protected Boolean m_optional;
-
+  
   protected DefaultNodePortTemplateEnt() {
     //for sub-classes
   }
-
+  
   @Override
   public String getTypeID() {
     return "NodePortTemplate";
   }
-
-  private DefaultNodePortTemplateEnt(final DefaultNodePortTemplateEntBuilder builder) {
-
+  
+  private DefaultNodePortTemplateEnt(DefaultNodePortTemplateEntBuilder builder) {
+    
     m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
+    if(builder.m_typeId == null) {
+        throw new IllegalArgumentException("typeId must not be null.");
     }
-    m_type = immutable(builder.m_type);
-    m_otherTypeId = immutable(builder.m_otherTypeId);
+    m_typeId = immutable(builder.m_typeId);
     m_optional = immutable(builder.m_optional);
   }
-
+  
    /**
      * {@inheritDoc}
      */
@@ -99,11 +99,11 @@ public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
             return false;
         }
         DefaultNodePortTemplateEnt ent = (DefaultNodePortTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional);
     }
 
 
-
+  
    /**
     * {@inheritDoc}
     */
@@ -111,79 +111,66 @@ public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_name)
-               .append(m_type)
-               .append(m_otherTypeId)
+               .append(m_typeId)
                .append(m_optional)
                .toHashCode();
    }
-
-
-
+  
+	
+	
   @Override
   public String getName() {
         return m_name;
   }
-
+    
   @Override
-  public TypeEnum getType() {
-        return m_type;
+  public String getTypeId() {
+        return m_typeId;
   }
-
-  @Override
-  public String getOtherTypeId() {
-        return m_otherTypeId;
-  }
-
+    
   @Override
   public Boolean isOptional() {
         return m_optional;
   }
-
-
+    
+  
     public static class DefaultNodePortTemplateEntBuilder implements NodePortTemplateEntBuilder {
-
+    
         public DefaultNodePortTemplateEntBuilder(){
-
+            
         }
-
+    
         private String m_name;
-        private TypeEnum m_type;
-        private String m_otherTypeId;
+        private String m_typeId;
         private Boolean m_optional;
 
         @Override
-        public DefaultNodePortTemplateEntBuilder setName(final String name) {
+        public DefaultNodePortTemplateEntBuilder setName(String name) {
              m_name = name;
              return this;
         }
 
         @Override
-        public DefaultNodePortTemplateEntBuilder setType(final TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+        public DefaultNodePortTemplateEntBuilder setTypeId(String typeId) {
+             if(typeId == null) {
+                 throw new IllegalArgumentException("typeId must not be null.");
              }
-             m_type = type;
+             m_typeId = typeId;
              return this;
         }
 
         @Override
-        public DefaultNodePortTemplateEntBuilder setOtherTypeId(final String otherTypeId) {
-             m_otherTypeId = otherTypeId;
-             return this;
-        }
-
-        @Override
-        public DefaultNodePortTemplateEntBuilder setOptional(final Boolean optional) {
+        public DefaultNodePortTemplateEntBuilder setOptional(Boolean optional) {
              m_optional = optional;
              return this;
         }
 
-
+        
         @Override
         public DefaultNodePortTemplateEnt build() {
             return new DefaultNodePortTemplateEnt(this);
         }
-
+    
     }
 
 }

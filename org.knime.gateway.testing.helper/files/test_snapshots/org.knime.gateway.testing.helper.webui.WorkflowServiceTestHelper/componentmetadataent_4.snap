@@ -5,7 +5,7 @@
     "description" : "test port desc 1",
     "name" : "test port name 1",
     "optional" : false,
-    "type" : "table",
+    "typeId" : "org.knime.core.node.BufferedDataTable",
     "typeName" : "Data"
   } ],
   "name" : "Component",
@@ -19,7 +19,7 @@
     "description" : "test port desc 2",
     "name" : "test port name 2",
     "optional" : false,
-    "type" : "table",
+    "typeId" : "org.knime.core.node.BufferedDataTable",
     "typeName" : "Data"
   } ],
   "type" : "Manipulator",

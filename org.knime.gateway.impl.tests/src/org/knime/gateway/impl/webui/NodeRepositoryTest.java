@@ -66,10 +66,10 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
@@ -102,7 +102,7 @@ public class NodeRepositoryTest {
         NodePortTemplateEnt nodeInPort = nodeFromRepo.getInPorts().get(0);
         assertThat("optional inport", nodeInPort.isOptional(), is(false));
         assertThat("no port name expected", nodeInPort.getName(), is(nullValue()));
-        assertThat("wrong port type", nodeInPort.getType(), is(TypeEnum.TABLE));
+        assertThat("wrong port type id", nodeInPort.getTypeId(), is((BufferedDataTable.class).getName()));
         assertThat(nodeFromRepo.getId(), is(nodeFromSearch.getId()));
         assertThat(nodeFromRepo.getType(), is(NativeNodeInvariantsEnt.TypeEnum.MANIPULATOR));
         assertThat(nodeFromRepo.isComponent(), is(false));

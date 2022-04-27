@@ -72,12 +72,8 @@ public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
     public String getName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("otherTypeId")
-    public String getOtherTypeId();
+    @JsonProperty("typeId")
+    public String getTypeId();
     
     @Override
     @JsonProperty("optional")
@@ -101,12 +97,8 @@ public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
         public NodePortTemplateEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("type")
-        public NodePortTemplateEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("otherTypeId")
-        public NodePortTemplateEntMixInBuilder setOtherTypeId(final String otherTypeId);
+        @JsonProperty("typeId")
+        public NodePortTemplateEntMixInBuilder setTypeId(final String typeId);
         
         @Override
         @JsonProperty("optional")

@@ -18,12 +18,12 @@
     "description" : "static in port one description",
     "name" : "static in port one name",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }, {
     "description" : "static in port two description",
     "name" : "static in port two name",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "interactiveView" : {
     "description" : "\n        interactive view <i>description</i>.\n        <ol>\n            <li>foo</li>\n            <li>bar</li>\n        </ol>\n    ",
@@ -64,12 +64,12 @@
     "description" : "static out port one description",
     "name" : "static out port one name",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }, {
     "description" : "static out port two description",
     "name" : "static out port two name",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "shortDescription" : "short description content",
   "views" : [ {

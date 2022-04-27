@@ -51,28 +51,59 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Decribes the type of a port (if the port type is _not_ a built-in port type).
+ * Decribes the type of a port.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface PortTypeEnt extends GatewayEntity {
 
+  /**
+   * Gets or Sets kind
+   */
+  public enum KindEnum {
+    TABLE("table"),
+    
+    FLOWVARIABLE("flowVariable"),
+    
+    GENERIC("generic"),
+    
+    OTHER("other");
+
+    private String value;
+
+    KindEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * A human-readable name for the port type.
-   * @return name 
+   * @return name , never <code>null</code>
    **/
   public String getName();
 
   /**
-   * The color of the port.
+   * Get kind
+   * @return kind , never <code>null</code>
+   **/
+  public KindEnum getKind();
+
+  /**
+   * The color of the port. Only given if &#39;kind&#39; is &#39;other&#39;.
    * @return color 
    **/
   public String getColor();
 
   /**
-   * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included.
+   * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included. Only given if &#39;kind&#39; is &#39;other&#39;.
    * @return compatibleTypes 
    **/
   public java.util.List<String> getCompatibleTypes();
@@ -86,13 +117,21 @@ public interface PortTypeEnt extends GatewayEntity {
         /**
          * A human-readable name for the port type.
          * 
-         * @param name the property value,  
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         PortTypeEntBuilder setName(String name);
         
         /**
-         * The color of the port.
+   		 * Set kind
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The color of the port. Only given if &#39;kind&#39; is &#39;other&#39;.
          * 
          * @param color the property value,  
          * @return this entity builder for chaining
@@ -100,7 +139,7 @@ public interface PortTypeEnt extends GatewayEntity {
         PortTypeEntBuilder setColor(String color);
         
         /**
-         * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included.
+         * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included. Only given if &#39;kind&#39; is &#39;other&#39;.
          * 
          * @param compatibleTypes the property value,  
          * @return this entity builder for chaining

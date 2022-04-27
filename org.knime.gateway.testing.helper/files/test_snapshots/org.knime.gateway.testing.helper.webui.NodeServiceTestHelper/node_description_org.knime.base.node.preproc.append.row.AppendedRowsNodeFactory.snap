@@ -6,19 +6,19 @@
     "name" : "Additional table to concatenate",
     "supportedPortTypes" : [ {
       "optional" : false,
-      "type" : "table"
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     } ]
   } ],
   "inPorts" : [ {
     "description" : "Table contributing the rows of the first part of the output table.",
     "name" : "First table to concatenate",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }, {
     "description" : "Table contributing the rows of the second part of the output table.",
     "name" : "Second table to concatenate",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "links" : [ {
     "text" : "\n\t\t\tKNIME E-Learning Course: Concatenation\n\t\t",
@@ -55,7 +55,7 @@
     "description" : "Table with rows from both tables.",
     "name" : "Concatenated table",
     "optional" : false,
-    "type" : "table"
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "shortDescription" : "Concatenates two tables row-wise."
 }

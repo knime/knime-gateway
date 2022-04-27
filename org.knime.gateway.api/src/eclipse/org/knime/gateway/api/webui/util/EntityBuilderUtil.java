@@ -269,11 +269,9 @@ public final class EntityBuilderUtil {
         try (WorkflowLock lock = wfm.lock()) {
             WorkflowBuildContext buildContext = buildContextBuilder.build(wfm);
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
-
             // linked hash map to retain iteration order!
             Map<String, NodeEnt> nodes = new LinkedHashMap<>();
             Map<String, NativeNodeInvariantsEnt> invariants = new HashMap<>();
-            Map<String, NativeNodeTemplateEnt> templates = new HashMap<>();
             for (NodeContainer nc : nodeContainers) {
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
@@ -313,15 +311,31 @@ public final class EntityBuilderUtil {
 
     private static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
         List<String> compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
-            .map(EntityBuilderUtil::getPortTypeId).collect(Collectors.toList());
+            .map(EntityBuilderUtil::getPortTypeId)//
+            .sorted() // fix tests by sorting the list of compatible types
+            .collect(Collectors.toList());
         return builder(PortTypeEntBuilder.class)//
-            .setName(ptype.getName()).setColor(hexStringColor(ptype.getColor()))//
+            .setName(ptype.getName())//
+            .setKind(getPortTypeKind(ptype))//
+            .setColor(hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .build();
     }
 
     private static String getPortTypeId(final PortType ptype) {
         return ptype.getPortObjectClass().getName();
+    }
+
+    private static PortTypeEnt.KindEnum getPortTypeKind(final PortType ptype) {
+        if (BufferedDataTable.TYPE.equals(ptype)) {
+            return PortTypeEnt.KindEnum.TABLE;
+        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
+            return PortTypeEnt.KindEnum.FLOWVARIABLE;
+        } else if (PortObject.TYPE.equals(ptype)) {
+            return PortTypeEnt.KindEnum.GENERIC;
+        } else {
+            return PortTypeEnt.KindEnum.OTHER;
+        }
     }
 
     private static boolean portTypesAreDifferentButCompatible(final PortType p1, final PortType p2) {
@@ -482,7 +496,7 @@ public final class EntityBuilderUtil {
             index -> builder(NodePortDescriptionEntBuilder.class) //
                 .setName(nameGetter.apply(index)) //
                 .setDescription(descGetter.apply(index)) //
-                .setType(getNodePortTemplateEntType(typeGetter.apply(index))) //
+                .setTypeId(getPortTypeId(typeGetter.apply(index))) //
                 .setOptional(typeGetter.apply(index).isOptional()) //
                 .build());
     }
@@ -557,13 +571,11 @@ public final class EntityBuilderUtil {
 
     private static List<NodePortTemplateEnt> buildNodePortTemplateEnts(final Stream<PortType> ptypes) {
         return ptypes.map(ptype -> {
-            NodePortTemplateEnt.TypeEnum typeEnt = getNodePortTemplateEntType(ptype);
-            return builder(NodePortTemplateEntBuilder.class) //
-                .setName(null) //
-                .setType(typeEnt) //
-                .setOtherTypeId(getOtherPortTypeId(ptype, typeEnt, false)) //
-                .setColor(getPortTypeColor(typeEnt, ptype)) //
-                .setOptional(ptype.isOptional()).build();
+                return builder((NodePortTemplateEntBuilder.class))
+                   .setName(null)
+                   .setTypeId(getPortTypeId(ptype))
+                   .setOptional(ptype.isOptional())
+                   .build();
         }).collect(Collectors.toList());
     }
 
@@ -785,11 +797,6 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final Map<String, PortTypeEnt> portTypes, final WorkflowBuildContext buildContext) {
-        return buildNodeEnt(id, nc, buildContext);
-    }
-
-    private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
         final WorkflowBuildContext buildContext) {
         AllowedNodeActionsEnt allowedActions =
             buildContext.includeInteractionInfo() ? buildAllowedNodeActionsEnt(nc, buildContext) : null;
@@ -935,14 +942,13 @@ public final class EntityBuilderUtil {
                 nodeState = null;
             }
             return builder(MetaNodePortEntBuilder.class)//
-                .setOtherTypeId(np.getOtherTypeId())//
+                .setTypeId(np.getTypeId())//
                 .setConnectedVia(np.getConnectedVia())//
                 .setInactive(np.isInactive())//
                 .setIndex(np.getIndex())//
                 .setInfo(np.getInfo())//
                 .setName(np.getName())//
                 .setOptional(np.isOptional())//
-                .setType(np.getType())//
                 .setView(np.getView())//
                 .setPortObjectVersion(np.getPortObjectVersion())//
                 .setNodeState(nodeState)//
@@ -1034,7 +1040,6 @@ public final class EntityBuilderUtil {
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
         final WorkflowBuildContext buildContext) {
-        NodePortTemplateEnt.TypeEnum resPortType = getNodePortTemplateEntType(ptype);
         buildContext.updatePortTypes(ptype);
         return builder(NodePortEntBuilder.class).setIndex(portIdx)//
             .setOptional(isOptional)//
@@ -1043,8 +1048,7 @@ public final class EntityBuilderUtil {
                 connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext)).collect(Collectors.toList()))//
             .setName(name)//
             .setInfo(info)//
-            .setType(resPortType)//
-            .setOtherTypeId(getOtherPortTypeId(ptype, resPortType))//
+            .setTypeId(getPortTypeId(ptype))//
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
             .build();
@@ -1057,26 +1061,6 @@ public final class EntityBuilderUtil {
                 .build();
         } else {
             return null;
-        }
-    }
-
-    private static String getOtherPortTypeId(final PortType ptype, final NodePortTemplateEnt.TypeEnum portTypeEnt) {
-        return NodePortTemplateEnt.TypeEnum.OTHER == portTypeEnt ? getPortTypeId(ptype) : null;
-    }
-
-    private static String getPortTypeColor(final NodePortTemplateEnt.TypeEnum entType, final PortType ptype) {
-        return entType == NodePortTemplateEnt.TypeEnum.OTHER ? hexStringColor(ptype.getColor()) : null;
-    }
-
-    private static NodePortTemplateEnt.TypeEnum getNodePortTemplateEntType(final PortType ptype) {
-        if (BufferedDataTable.TYPE.equals(ptype)) {
-            return NodePortTemplateEnt.TypeEnum.TABLE;
-        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
-            return NodePortTemplateEnt.TypeEnum.FLOWVARIABLE;
-        } else if (PortObject.TYPE.equals(ptype)) {
-            return NodePortTemplateEnt.TypeEnum.GENERIC;
-        } else {
-            return NodePortTemplateEnt.TypeEnum.OTHER;
         }
     }
 
@@ -1455,11 +1439,9 @@ public final class EntityBuilderUtil {
     }
 
     private static NodePortDescriptionEntBuilder buildNodePortDescriptionEntBuilder(final PortType ptype) {
-        NodePortTemplateEnt.TypeEnum resPortType = getNodePortTemplateEntType(ptype);
         return builder(NodePortDescriptionEntBuilder.class)//
-            .setType(resPortType)//
+            .setTypeId(getPortTypeId(ptype))//
             .setTypeName(ptype.getName())//
-            .setColor(getPortTypeColor(resPortType, ptype))//
             .setOptional(ptype.isOptional());
     }
 

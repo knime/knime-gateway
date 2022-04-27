@@ -7,15 +7,15 @@
     "canUndo" : false
   },
   "connections" : {
-    "root:8_0" : {
+    "root:3_1" : {
       "allowedActions" : {
         "canDelete" : false
       },
-      "destNode" : "root:8",
-      "destPort" : 0,
+      "destNode" : "root:3",
+      "destPort" : 1,
       "flowVariableConnection" : true,
-      "id" : "root:8_0",
-      "sourceNode" : "root:3",
+      "id" : "root:3_1",
+      "sourceNode" : "root:2",
       "sourcePort" : 1
     },
     "root:7_0" : {
@@ -29,15 +29,15 @@
       "sourceNode" : "root:4",
       "sourcePort" : 0
     },
-    "root:3_1" : {
+    "root:8_0" : {
       "allowedActions" : {
         "canDelete" : false
       },
-      "destNode" : "root:3",
-      "destPort" : 1,
+      "destNode" : "root:8",
+      "destPort" : 0,
       "flowVariableConnection" : true,
-      "id" : "root:3_1",
-      "sourceNode" : "root:2",
+      "id" : "root:8_0",
+      "sourceNode" : "root:3",
       "sourcePort" : 1
     }
   },
@@ -85,13 +85,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "To be filtered",
         "optional" : false,
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -102,12 +102,12 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Filtered",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -142,13 +142,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input table",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -156,13 +156,13 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:3_1 ]",
         "index" : 1,
         "name" : "Output table",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 184,
@@ -195,13 +195,13 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:3_1 ]",
         "index" : 1,
         "name" : "Input table",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -209,13 +209,13 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[ root:8_0 ]",
         "index" : 1,
         "name" : "Output table",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 284,
@@ -247,7 +247,7 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -256,14 +256,14 @@
         "info" : "Variables connection",
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "connectedVia" : "[  ]",
         "index" : 1,
         "info" : "Rows: 4, Cols: 5",
         "name" : "Random data with cluster ID",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -273,7 +273,7 @@
         "info" : "Rows: 4, Cols: 4",
         "name" : "Cluster centers",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "table",
+        "typeId" : "org.knime.core.node.BufferedDataTable",
         "view" : {
           "type" : "table"
         }
@@ -319,7 +319,7 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
       "name" : "Component",
@@ -328,7 +328,7 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 534,
@@ -365,7 +365,7 @@
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
       "name" : "Component",
@@ -374,7 +374,7 @@
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "type" : "flowVariable"
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
         "x" : 684,
@@ -383,6 +383,18 @@
       "state" : {
         "executionState" : "QUEUED"
       }
+    }
+  },
+  "portTypes" : {
+    "org.knime.core.node.BufferedDataTable" : {
+      "color" : "#000000",
+      "kind" : "table",
+      "name" : "Data"
+    },
+    "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
+      "color" : "#FF4B4B",
+      "kind" : "flowVariable",
+      "name" : "Flow Variable"
     }
   },
   "workflowAnnotations" : [ ]

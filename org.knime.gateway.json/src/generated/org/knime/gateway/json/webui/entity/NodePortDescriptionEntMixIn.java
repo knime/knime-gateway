@@ -73,16 +73,8 @@ public interface NodePortDescriptionEntMixIn extends NodePortDescriptionEnt {
     public String getName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("otherTypeId")
-    public Integer getOtherTypeId();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
+    @JsonProperty("typeId")
+    public String getTypeId();
     
     @Override
     @JsonProperty("optional")
@@ -114,16 +106,8 @@ public interface NodePortDescriptionEntMixIn extends NodePortDescriptionEnt {
         public NodePortDescriptionEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("type")
-        public NodePortDescriptionEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("otherTypeId")
-        public NodePortDescriptionEntMixInBuilder setOtherTypeId(final Integer otherTypeId);
-        
-        @Override
-        @JsonProperty("color")
-        public NodePortDescriptionEntMixInBuilder setColor(final String color);
+        @JsonProperty("typeId")
+        public NodePortDescriptionEntMixInBuilder setTypeId(final String typeId);
         
         @Override
         @JsonProperty("optional")

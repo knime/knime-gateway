@@ -8,13 +8,13 @@
     "index" : 0,
     "name" : "Variable Inport",
     "optional" : true,
-    "type" : "flowVariable"
+    "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
   }, {
     "connectedVia" : "[ root:3:0:5_1 ]",
     "index" : 1,
     "name" : "An input table",
     "optional" : false,
-    "type" : "table",
+    "typeId" : "org.knime.core.node.BufferedDataTable",
     "view" : {
       "type" : "table"
     }
@@ -25,13 +25,13 @@
     "index" : 0,
     "info" : "Variables connection",
     "name" : "Variable Outport",
-    "type" : "flowVariable"
+    "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
   }, {
     "connectedVia" : "[ root:3:0:7_1 ]",
     "index" : 1,
     "info" : "Rows: 3, Cols: 2",
     "name" : "Appended table",
-    "type" : "table",
+    "typeId" : "org.knime.core.node.BufferedDataTable",
     "view" : {
       "type" : "table"
     }

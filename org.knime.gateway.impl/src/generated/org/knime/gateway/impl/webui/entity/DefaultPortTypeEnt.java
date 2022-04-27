@@ -54,7 +54,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 
 /**
- * Decribes the type of a port (if the port type is _not_ a built-in port type).
+ * Decribes the type of a port.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 public class DefaultPortTypeEnt implements PortTypeEnt {
 
   protected String m_name;
+  protected KindEnum m_kind;
   protected String m_color;
   protected java.util.List<String> m_compatibleTypes;
   
@@ -76,7 +77,14 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
   
   private DefaultPortTypeEnt(DefaultPortTypeEntBuilder builder) {
     
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
+    }
     m_name = immutable(builder.m_name);
+    if(builder.m_kind == null) {
+        throw new IllegalArgumentException("kind must not be null.");
+    }
+    m_kind = immutable(builder.m_kind);
     m_color = immutable(builder.m_color);
     m_compatibleTypes = immutable(builder.m_compatibleTypes);
   }
@@ -96,7 +104,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
             return false;
         }
         DefaultPortTypeEnt ent = (DefaultPortTypeEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes);
     }
 
 
@@ -108,6 +116,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_name)
+               .append(m_kind)
                .append(m_color)
                .append(m_compatibleTypes)
                .toHashCode();
@@ -118,6 +127,11 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
   @Override
   public String getName() {
         return m_name;
+  }
+    
+  @Override
+  public KindEnum getKind() {
+        return m_kind;
   }
     
   @Override
@@ -138,12 +152,25 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         }
     
         private String m_name;
+        private KindEnum m_kind;
         private String m_color;
         private java.util.List<String> m_compatibleTypes;
 
         @Override
         public DefaultPortTypeEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
+             }
              m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultPortTypeEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("kind must not be null.");
+             }
+             m_kind = kind;
              return this;
         }
 
