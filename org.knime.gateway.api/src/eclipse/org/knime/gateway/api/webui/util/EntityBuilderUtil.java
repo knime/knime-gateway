@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
@@ -88,7 +87,6 @@ import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.ConnectionProgress;
 import org.knime.core.node.workflow.FlowScopeContext;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.LoopEndNode;
@@ -102,7 +100,6 @@ import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeExecutionJobManagerFactory;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
-import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -265,7 +262,8 @@ public final class EntityBuilderUtil {
      * @param buildContextBuilder contextual information required to build the {@link WorkflowEnt} instance
      * @return the newly created entity
      */
-    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm, final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
+    public static WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm,
+        final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
         try (WorkflowLock lock = wfm.lock()) {
             WorkflowBuildContext buildContext = buildContextBuilder.build(wfm);
             Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
@@ -280,23 +278,22 @@ public final class EntityBuilderUtil {
                 .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
                 .map(EntityBuilderUtil::buildWorkflowAnnotationEnt).collect(Collectors.toList());
-            WorkflowInfoEnt info = buildWorkflowInfoEnt(wfm, buildContext);
+            var info = buildWorkflowInfoEnt(wfm, buildContext);
             return builder(WorkflowEntBuilder.class).setInfo(info)//
                 .setNodes(nodes)//
                 .setNodeTemplates(invariants)//
                 .setPortTypes(buildPortTypeEntsMap(buildContext))//
                 .setConnections(connections)//
                 .setWorkflowAnnotations(annotations)//
-                .setAllowedActions(buildContext.includeInteractionInfo()
-                    ? buildAllowedWorkflowActionsEnt(wfm, buildContext) : null)//
+                .setAllowedActions(
+                    buildContext.includeInteractionInfo() ? buildAllowedWorkflowActionsEnt(wfm, buildContext) : null)//
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(
                     CoreUtil.isComponentWFM(wfm) ? buildComponentNodeDescriptionEnt(getParentComponent(wfm)) : null)//
-                .setDirty(wfm.isDirty())
-                .build();
+                .setDirty(wfm.isDirty()).build();
         }
     }
 
@@ -366,14 +363,13 @@ public final class EntityBuilderUtil {
      * @return the new {@link NodeTemplateEnt}-instance
      */
     public static NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
-        Node node = new Node((NodeFactory<NodeModel>)factory);
+        var node = new Node((NodeFactory<NodeModel>)factory);
         return builder(NodeTemplateEntBuilder.class)//
             .setId(createTemplateId(factory))//
             .setName(factory.getNodeName())//
             .setComponent(false)//
             .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase()))//
-            .setInPorts(
-                buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
+            .setInPorts(buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
             .setOutPorts(
                 buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
             .setIcon(createIconDataURL(factory))//
@@ -388,9 +384,9 @@ public final class EntityBuilderUtil {
      * @throws ServiceExceptions.NodeDescriptionNotAvailableException if node description could not be obtained.
      */
     public static NativeNodeDescriptionEnt buildNativeNodeDescriptionEnt(final Node coreNode)
-            throws ServiceExceptions.NodeDescriptionNotAvailableException {
+        throws ServiceExceptions.NodeDescriptionNotAvailableException {
 
-        NodeDescription nodeDescription = coreNode.invokeGetNodeDescription();
+        var nodeDescription = coreNode.invokeGetNodeDescription();
         if (nodeDescription instanceof NoDescriptionProxy) {
             // This will be the case when node description could not be read, cf. NodeDescription#init
             throw new ServiceExceptions.NodeDescriptionNotAvailableException("Could not read node description");
@@ -398,8 +394,8 @@ public final class EntityBuilderUtil {
 
         // intro and short description
         NativeNodeDescriptionEntBuilder builder = builder(NativeNodeDescriptionEntBuilder.class) //
-                .setDescription(nodeDescription.getIntro().orElse(null)) //
-                .setShortDescription(nodeDescription.getShortDescription().orElse(null));
+            .setDescription(nodeDescription.getIntro().orElse(null)) //
+            .setShortDescription(nodeDescription.getShortDescription().orElse(null));
 
         // dialog options
         builder.setOptions(buildDialogOptionGroupEnts(nodeDescription.getDialogOptionGroups()));
@@ -408,10 +404,8 @@ public final class EntityBuilderUtil {
         // Node#getInputType, #getOutputType, index 0 is the flow variable port, hence +1
         // Node#getNrInPorts adds 1 for flow variable port, hence -1
         // NodeDescription#getInportDescription is 0-indexed and does not contain description for flow variable port, hence +1
-        builder.setInPorts(
-                buildNativeNodePortDescriptionEnts(coreNode.getNrInPorts() - 1, nodeDescription::getInportName,
-                        nodeDescription::getInportDescription, i -> coreNode.getInputType(i + 1))
-        );
+        builder.setInPorts(buildNativeNodePortDescriptionEnts(coreNode.getNrInPorts() - 1,
+            nodeDescription::getInportName, nodeDescription::getInportDescription, i -> coreNode.getInputType(i + 1)));
         builder.setOutPorts( //
             buildNativeNodePortDescriptionEnts(coreNode.getNrOutPorts() - 1, nodeDescription::getOutportName,
                 nodeDescription::getOutportDescription, i -> coreNode.getOutputType(i + 1)) //
@@ -419,7 +413,7 @@ public final class EntityBuilderUtil {
 
         // dynamic port group descriptions (not the dynamically generated individual port descriptions)
         final Optional<ModifiablePortsConfiguration> portConfigs =
-                coreNode.getCopyOfCreationConfig().flatMap(ModifiableNodeCreationConfiguration::getPortConfig);
+            coreNode.getCopyOfCreationConfig().flatMap(ModifiableNodeCreationConfiguration::getPortConfig);
         builder.setDynamicInPortGroupDescriptions( //
             buildDynamicPortGroupDescriptions(nodeDescription.getDynamicInPortGroups(), portConfigs) //
         );
@@ -559,7 +553,7 @@ public final class EntityBuilderUtil {
             nodeFactoryKeyBuilder.setClassName(factory.getClass().getCanonicalName());
             //only set settings in case of a dynamic node factory
             if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
-                NodeSettings settings = new NodeSettings("settings");
+                var settings = new NodeSettings("settings");
                 factory.saveAdditionalFactorySettings(settings);
                 nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
             }
@@ -570,13 +564,12 @@ public final class EntityBuilderUtil {
     }
 
     private static List<NodePortTemplateEnt> buildNodePortTemplateEnts(final Stream<PortType> ptypes) {
-        return ptypes.map(ptype -> {
-                return builder((NodePortTemplateEntBuilder.class))
-                   .setName(null)
-                   .setTypeId(getPortTypeId(ptype))
-                   .setOptional(ptype.isOptional())
-                   .build();
-        }).collect(Collectors.toList());
+        return ptypes.map(ptype -> builder((NodePortTemplateEntBuilder.class))//
+                .setName(null)//
+                .setTypeId(getPortTypeId(ptype))//
+                .setOptional(ptype.isOptional())//
+                .build())//
+            .collect(Collectors.toList());
     }
 
     private static MetaPortsEnt buildMetaPortsEntForWorkflow(final WorkflowManager wfm, final boolean incoming,
@@ -639,7 +632,7 @@ public final class EntityBuilderUtil {
         if (nct instanceof SubNodeContainer && ((SubNodeContainer)nct).isProject()) {
             return null;
         }
-        URI sourceURI = nct.getTemplateInformation().getSourceURI();
+        var sourceURI = nct.getTemplateInformation().getSourceURI();
         return sourceURI == null ? null : sourceURI.toString();
     }
 
@@ -698,7 +691,7 @@ public final class EntityBuilderUtil {
     private static ProjectMetadataEnt buildProjectMetadataEnt(final WorkflowManager wfm) {
         assert wfm.isProject();
         final ReferencedFile rf = wfm.getWorkingDir();
-        File metadataFile = new File(rf.getFile(), WorkflowPersistor.METAINFO_FILE);
+        var metadataFile = new File(rf.getFile(), WorkflowPersistor.METAINFO_FILE);
         if (metadataFile.exists()) {
             WorkflowGroupMetadata metadata;
             try {
@@ -787,7 +780,7 @@ public final class EntityBuilderUtil {
 
     private static void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
         final Map<String, NativeNodeInvariantsEnt> invariants, final WorkflowBuildContext buildContext) {
-        NodeEnt nodeEnt = buildNodeEnt(id, nc, buildContext);
+        var nodeEnt = buildNodeEnt(id, nc, buildContext);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
         if (nc instanceof NativeNodeContainer) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
@@ -997,7 +990,7 @@ public final class EntityBuilderUtil {
             for (int i = 0; i < nc.getNrInPorts(); i++) {
                 ConnectionContainer connection = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
                 NodeInPort inPort = nc.getInPort(i);
-                PortType pt = inPort.getPortType();
+                var pt = inPort.getPortType();
                 res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null,
                     connection == null ? Collections.emptyList() : Collections.singletonList(connection), null,
                     buildContext));
@@ -1006,7 +999,7 @@ public final class EntityBuilderUtil {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
-                PortType pt = outPort.getPortType();
+                var pt = outPort.getPortType();
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, connections,
                     getPortObjectVersion(outPort, buildContext), buildContext));
@@ -1020,7 +1013,7 @@ public final class EntityBuilderUtil {
             return null;
         }
         if (outPort.getPortType().equals(FlowVariablePortObject.TYPE)) {
-            HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+            var hashCodeBuilder = new HashCodeBuilder();
             var flowObjectStack = outPort.getFlowObjectStack();
             if (flowObjectStack != null) {
                 for (FlowVariable v : flowObjectStack.getAllAvailableFlowVariables().values()) {
@@ -1030,7 +1023,7 @@ public final class EntityBuilderUtil {
             }
             return hashCodeBuilder.build();
         } else {
-            PortObject po = outPort.getPortObject();
+            var po = outPort.getPortObject();
             return po == null ? null : System.identityHashCode(po);
         }
     }
@@ -1119,10 +1112,10 @@ public final class EntityBuilderUtil {
         if (nc.isInactive()) {
             return null;
         }
-        NodeContainerState ncState = nc.getNodeContainerState();
+        var ncState = nc.getNodeContainerState();
         NodeStateEntBuilder builder =
             builder(NodeStateEntBuilder.class).setExecutionState(getNodeExecutionStateEnum(ncState));
-        NodeMessage nodeMessage = nc.getNodeMessage();
+        var nodeMessage = nc.getNodeMessage();
         if (nodeMessage.getMessageType() == Type.ERROR) {
             builder.setError(nodeMessage.getMessage());
         } else if (nodeMessage.getMessageType() == Type.WARNING) {
@@ -1143,7 +1136,7 @@ public final class EntityBuilderUtil {
         if (!nc.isModelCompatibleTo(LoopEndNode.class)) {
             return null;
         }
-        StatusEnum status = StatusEnum.valueOf(nc.getLoopStatus().name());
+        var status = StatusEnum.valueOf(nc.getLoopStatus().name());
         AllowedLoopActionsEnt allowedActions = null;
         if (buildContext.includeInteractionInfo()) {
             allowedActions = LoopState.getAllowedActions(nc, buildContext);
@@ -1333,9 +1326,9 @@ public final class EntityBuilderUtil {
      * @return the new template id
      */
     public static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
-        String configHash = "";
+        var configHash = "";
         if (nodeFactory instanceof DynamicNodeFactory) {
-            final NodeSettings settings = new NodeSettings("");
+            final var settings = new NodeSettings("");
             nodeFactory.saveAdditionalFactorySettings(settings);
             configHash = ConfigUtils.contentBasedHashString(settings);
         }
@@ -1446,7 +1439,7 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeExecutionInfoEnt buildNodeExecutionInfoEnt(final NodeContainer nc) {
-        JobManagerEnt jobManagerEnt = buildJobManagerEnt(nc.getJobManager());
+        var jobManagerEnt = buildJobManagerEnt(nc.getJobManager());
         if (jobManagerEnt != null) {
             return builder(NodeExecutionInfoEntBuilder.class).setJobManager(jobManagerEnt).build();
         } else {
@@ -1545,7 +1538,7 @@ public final class EntityBuilderUtil {
 
     private static String createIconDataURL(final byte[] iconData) {
         if (iconData != null) {
-            final String dataUrlPrefix = "data:image/png;base64,";
+            final var dataUrlPrefix = "data:image/png;base64,";
             return dataUrlPrefix + new String(Base64.encodeBase64(iconData), StandardCharsets.UTF_8);
         } else {
             return null;
@@ -1566,7 +1559,7 @@ public final class EntityBuilderUtil {
             .setSourceNode(buildContext.buildNodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())//
             .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null);
         if (buildContext.isInStreamingMode()) {
-            ConnectionProgress connectionProgress = cc.getConnectionProgress().orElse(null);
+            var connectionProgress = cc.getConnectionProgress().orElse(null);
             if (connectionProgress != null) {
                 builder.setLabel(connectionProgress.getMessage()).setStreaming(connectionProgress.inProgress());
             }
@@ -1587,7 +1580,7 @@ public final class EntityBuilderUtil {
             if (cc.getDest().equals(wfm.getID())) {
                 canDelete = wfm.canRemoveConnection(cc);
             } else {
-                NodeContainer nc = wfm.getNodeContainer(cc.getDest());
+                var nc = wfm.getNodeContainer(cc.getDest());
                 canDelete = isNodeResetOrCanBeReset(nc.getNodeContainerState(), nc.getID(),
                     buildContext.dependentNodeProperties());
             }

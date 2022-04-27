@@ -290,9 +290,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testExecuteTranslateCommand() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
-        NodeIDEnt node15 = new NodeIDEnt(15);
-        NodeIDEnt node16 = new NodeIDEnt(16);
-        NodeIDEnt node18 = new NodeIDEnt(18);
+        var node15 = new NodeIDEnt(15);
+        var node16 = new NodeIDEnt(16);
+        var node18 = new NodeIDEnt(18);
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
         Map<String, NodeEnt> nodes = workflow.getNodes();
         XYEnt orgPosNode15 = nodes.get(node15.toString()).getPosition();
@@ -303,7 +303,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
 
         // node and annotation translation
-        AnnotationIDEnt anno3 = new AnnotationIDEnt("root_3");
+        var anno3 = new AnnotationIDEnt("root_3");
         TranslateCommandEnt command = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setNodeIds(asList(node15, node16, node18)).setAnnotationIds(singletonList(anno3))
             .setTranslation(builder(XYEntBuilder.class).setX(-224).setY(-763).build()).build();
@@ -616,9 +616,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotsToCollapseInts = List.of(0,1);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
         var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
-        CollapseCommandEnt commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
+        var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
         var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+
         // TODO test for snapshot id once we have NXT-927
+
         if (commandResponseEnt instanceof CollapseResultEnt) {
             var collapseResponseEnt = (CollapseResultEnt)commandResponseEnt;
             assertNotNull(collapseResponseEnt.getNewNodeId());
@@ -633,8 +635,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private void testExpandResponse(final int nodeToExpand) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
-
-        ExpandCommandEnt commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
+        var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
 
         // TODO test for snapshot id once we have NXT-927
@@ -818,7 +819,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // successful deletion
-        DeleteCommandEnt command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
+        var command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
             asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
@@ -868,27 +869,27 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"), is(nullValue()));
 
         // deletion fails because a node doesn't exist
-        DeleteCommandEnt command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
+        var command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
         Exception ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
 
         // deletion fails because a connection doesn't exist
-        DeleteCommandEnt command3 =
+        var command3 =
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(99999999), 0)), emptyList());
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
         assertThat(ex.getMessage(), is("Some connections don't exist. Delete operation aborted."));
 
         // deletion fails because a workflow annotation doesn't exist
-        DeleteCommandEnt command4 =
+        var command4 =
             createDeleteCommandEnt(emptyList(), emptyList(), asList(new AnnotationIDEnt(getRootID(), 999999999)));
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
         assertThat(ex.getMessage(), is("Some workflow annotations don't exist. Delete operation aborted."));
 
         // deletion fails because a node cannot be deleted due to a delete lock
-        DeleteCommandEnt command5 = createDeleteCommandEnt(asList(new NodeIDEnt(23, 0, 8)), emptyList(), emptyList());
+        var command5 = createDeleteCommandEnt(asList(new NodeIDEnt(23, 0, 8)), emptyList(), emptyList());
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(23), command5));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
@@ -904,13 +905,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(ws().getWorkflow(wfId2, getRootID(), Boolean.TRUE).getWorkflow(), "can_delete_executing");
 
         // deletion fails because of a node that cannot be deleted due to executing successors
-        DeleteCommandEnt command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
+        var command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command6));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
 
         // deletion of a connection fails because because it's connected to an executing node
-        DeleteCommandEnt command7 =
+        var command7 =
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(7), 0)), emptyList());
         ex = Assert.assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
@@ -942,7 +943,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // replace existing connection
-        ConnectCommandEnt command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
+        var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         assertThat(connections.size(), is(29));
@@ -975,14 +976,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(exception.getMessage(), is("No command to undo"));
 
         // add a connection to a node that doesn't exist
-        ConnectCommandEnt command2 = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(9999999), 1);
+        var command2 = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(9999999), 1);
         exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
         assertThat(exception.getMessage(),
             containsString("9999999\" not contained in workflow, nor it's the workflow itself"));
 
         // add a connection that can't be added (here: because it creates a cycle)
-        ConnectCommandEnt command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);
+        var command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);
         exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
         assertThat(exception.getMessage(), containsString("Connection can't be added"));
@@ -1017,9 +1018,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteAddNodeCommand() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        String rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
-        NodeIDEnt metanode = new NodeIDEnt(1);
-        NodeIDEnt component = new NodeIDEnt(2);
+        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        var metanode = new NodeIDEnt(1);
+        var component = new NodeIDEnt(2);
 
         // add a node on root-level
         ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(rowFilterFactory, null, 12, 13));
@@ -1054,8 +1055,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 ws().getWorkflow(wfId, component, Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2)));
 
         // add a dynamic node (i.e. with factory settings)
-        String jsNodeFactory = "org.knime.dynamic.js.v30.DynamicJSNodeFactory";
-        String factorySettings =
+        var jsNodeFactory = "org.knime.dynamic.js.v30.DynamicJSNodeFactory";
+        var factorySettings =
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
         ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + ":8e81ce56", 15, 16);
