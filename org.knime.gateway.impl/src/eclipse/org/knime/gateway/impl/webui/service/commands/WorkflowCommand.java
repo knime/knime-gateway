@@ -56,12 +56,12 @@ import org.knime.gateway.impl.webui.WorkflowKey;
 /**
  * Unifying interface for all workflow commands.
  *
- * Methods are guaranteed to be called in a fixed order:
+ * Methods are guaranteed to be called synchronously (i.e. never at the same time) and in a fixed order:
  * <ol>
  * <li>The command is instantiated.</li>
- * <li>{@link WorkflowCommand#execute(WorkflowKey)} is called to execute the command.</li>
- * <li>Any number of repetitions of sequence of {@link WorkflowCommand#undo()} and {@link WorkflowCommand#redo()} is
- * called.</li>
+ * <li>{@link #execute(WorkflowKey)} is called to execute the command.</li>
+ * <li>Any number of repetitions of sequence of {@link #undo()} and {@link #redo()} is called (same for
+ * {@link #canUndo()} and {@link #canRedo()}).</li>
  * </ol>
  *
  * If a command is supposed to return a result it additionally needs to implement {@link WithResult}.

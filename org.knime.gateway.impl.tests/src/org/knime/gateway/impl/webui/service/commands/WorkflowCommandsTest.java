@@ -48,12 +48,17 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,11 +76,13 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.FileUtil;
+import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
@@ -103,6 +110,8 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.testing.util.WorkflowManagerUtil;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Tests {@link WorkflowCommands}.
@@ -380,6 +389,113 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             .setNodeIds(nodesToDelete.stream().map(NodeIDEnt::new).collect(Collectors.toList())) //
             .setKind(KindEnum.DELETE) //
             .build();
+    }
+
+    /**
+     * Makes sure that {@link WorkflowCommands#canUndo(WorkflowKey)} and {@link WorkflowCommands#canRedo(WorkflowKey)}
+     * are strictly called after
+     * {@link WorkflowCommands#execute(WorkflowKey, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)},
+     * {@link WorkflowCommands#undo(WorkflowKey)}, or {@link WorkflowCommands#redo(WorkflowKey)} (and never while
+     * 'command-execution' in progress).
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCanUndoAndCanRedoCalledAfterExecuteUndoAndRedo() throws Exception {
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        var eventConsumer = mock(EventConsumer.class);
+        ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
+        var workflowMiddleware = new WorkflowMiddleware(WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
+
+        var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW).getFirst().toString();
+        var snapshotId = DefaultWorkflowService.getInstance()
+            .getWorkflow(wfId, getRootID(), true).getSnapshotId();
+        var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
+            .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(snapshotId)
+            .setTypeId("WorkflowChangedEventType").build();
+        DefaultEventService.getInstance().addEventListener(eventType);
+
+        var commands = workflowMiddleware.getCommands();
+        var testCommand = new TestWorkflowCommand();
+        commands.setCommandToExecuteForTesting(testCommand);
+
+        var wfKey = new WorkflowKey(wfId, getRootID());
+        try {
+            commands.execute(wfKey, null);
+            await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
+                .untilAsserted(() -> verify(eventConsumer).accept(any(), any()));
+
+            testCommand.m_executeFinished = false;
+            commands.undo(wfKey);
+            await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
+            .untilAsserted(() -> verify(eventConsumer, times(2)).accept(any(), any()));
+
+            testCommand.m_executeFinished = false;
+            commands.redo(wfKey);
+            await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
+                .untilAsserted(() -> verify(eventConsumer, times(3)).accept(any(), any()));
+        } finally {
+            ServiceInstances.disposeAllServiceInstancesAndDependencies();
+        }
+    }
+
+    private class TestWorkflowCommand extends AbstractWorkflowCommand {
+
+        private boolean m_executeFinished = false;
+
+        private WorkflowAnnotation m_anno;
+
+        @Override
+        public boolean canRedo() {
+            if (!m_executeFinished) {
+                throw new AssertionFailedError("Unexpected 'canRedo'-call during command execution");
+            }
+            return true;
+        }
+
+        @Override
+        public boolean canUndo() {
+            if (!m_executeFinished) {
+                throw new AssertionFailedError("Unexpected 'canUndo'-call during command execution");
+            }
+            return true;
+        }
+
+        @Override
+        public void undo() throws OperationNotAllowedException {
+            getWorkflowManager().removeAnnotation(m_anno);
+            m_anno = null;
+            sleep();
+            m_executeFinished = true;
+        }
+
+        @Override
+        public void redo() throws OperationNotAllowedException {
+            executeWithLockedWorkflow();
+        }
+
+        @Override
+        protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+            // modify workflow to trigger an event
+            // which in turn creates a workflow patch
+            // which in turn call the 'canUndo' and 'canRedo' methods of WorkflowCommands
+            m_anno = new WorkflowAnnotation();
+            getWorkflowManager().addWorkflowAnnotation(m_anno);
+            sleep();
+            m_executeFinished = true;
+            return true;
+        }
+
+        private void sleep() {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+                //
+            }
+        }
+
     }
 
 }

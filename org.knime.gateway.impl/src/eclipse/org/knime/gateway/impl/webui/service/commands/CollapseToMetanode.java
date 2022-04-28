@@ -100,11 +100,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
 
     @Override
     public boolean canRedo() {
-        // TODO NXT-1037
-        if (m_metaNodeCollapseResult == null) {
-            return false;
-        }
-        return getWorkflowManager().canExpandMetaNode(m_metaNodeCollapseResult.getCollapsedMetanodeID()) == null;
+        return getWorkflowManager().canCollapseNodesIntoMetaNode(getNodeIDs()) == null;
     }
 
     @Override

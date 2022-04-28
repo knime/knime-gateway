@@ -89,10 +89,6 @@ final class AddNode extends AbstractWorkflowCommand {
 
     @Override
     public boolean canUndo() {
-        // TODO NXT-1037
-        if (m_addedNode == null) {
-            return false;
-        }
         return getWorkflowManager().canRemoveNode(m_addedNode);
     }
 

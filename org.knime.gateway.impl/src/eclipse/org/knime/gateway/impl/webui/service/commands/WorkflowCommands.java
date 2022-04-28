@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +93,8 @@ public final class WorkflowCommands {
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
+    private WorkflowCommand m_workflowCommandForTesting;
+
     /**
      * Creates a new instance with initially empty undo- and redo-stacks.
      *
@@ -104,8 +105,8 @@ public final class WorkflowCommands {
         final WorkflowMiddleware workflowMiddleware) {
         m_maxNumUndoAndRedoCommandsPerWorkflow = maxNumUndoAndRedoCommandsPerWorkflow;
         m_workflowMiddleware = workflowMiddleware;
-        m_redoStacks = Collections.synchronizedMap(new HashMap<>());
-        m_undoStacks = Collections.synchronizedMap(new HashMap<>());
+        m_redoStacks = new HashMap<>();
+        m_undoStacks = new HashMap<>();
     }
 
     /**
@@ -122,8 +123,8 @@ public final class WorkflowCommands {
      * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
-    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
-        throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+    public synchronized <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
+        final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
@@ -140,10 +141,21 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof ExpandCommandEnt) {
             command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
         } else {
-            throw new OperationNotAllowedException(
-                "Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed. Unknown command.");
+            if (m_workflowCommandForTesting != null) {
+                command = m_workflowCommandForTesting;
+            } else {
+                throw new OperationNotAllowedException("Command of type " + commandEnt.getClass().getSimpleName()
+                    + " cannot be executed. Unknown command.");
+            }
         }
 
+        var workflowChangeWaiter = prepareCommandResult(wfKey, command);
+        executeCommandAndModifyCommandStacks(wfKey, command);
+        return waitForCommandResult(wfKey, command, workflowChangeWaiter);
+    }
+
+    private WorkflowChangeWaiter prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
+        throws NodeNotFoundException, NotASubWorkflowException {
         WorkflowChangeWaiter workflowChangeWaiter = null;
         if (command instanceof WithResult) {
             var hasResult = true;
@@ -156,7 +168,11 @@ public final class WorkflowCommands {
                     wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor());
             }
         }
+        return workflowChangeWaiter;
+    }
 
+    private void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey, final WorkflowCommand command)
+        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
         var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
         var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
 
@@ -175,7 +191,15 @@ public final class WorkflowCommands {
                 redoStack.commitPendingChange();
             }
         }
+    }
 
+    private CommandStack getOrCreateCommandStackFor(final WorkflowKey wfKey,
+        final Map<WorkflowKey, CommandStack> stacks) {
+        return stacks.computeIfAbsent(wfKey, k -> new CommandStack(m_maxNumUndoAndRedoCommandsPerWorkflow));
+    }
+
+    private CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
+        final WorkflowChangeWaiter workflowChangeWaiter) throws OperationNotAllowedException {
         if (workflowChangeWaiter != null) {
             try {
                 workflowChangeWaiter.blockUntilOccurred();
@@ -189,16 +213,11 @@ public final class WorkflowCommands {
         }
     }
 
-    private CommandStack getOrCreateCommandStackFor(final WorkflowKey wfKey,
-        final Map<WorkflowKey, CommandStack> stacks) {
-        return stacks.computeIfAbsent(wfKey, k -> new CommandStack(m_maxNumUndoAndRedoCommandsPerWorkflow));
-    }
-
     /**
      * @param wfKey reference to the workflow to check the undo-state for
      * @return whether there is at least one command on the undo-stack
      */
-    public boolean canUndo(final WorkflowKey wfKey) {
+    public synchronized boolean canUndo(final WorkflowKey wfKey) {
         var stack = m_undoStacks.get(wfKey);
         return stack != null && stack.peek().map(WorkflowCommand::canUndo).orElse(Boolean.FALSE);
     }
@@ -207,7 +226,7 @@ public final class WorkflowCommands {
      * @param wfKey reference to the workflow to undo the last command for
      * @throws OperationNotAllowedException if there is no command to be undone
      */
-    public void undo(final WorkflowKey wfKey) throws OperationNotAllowedException {
+    public synchronized void undo(final WorkflowKey wfKey) throws OperationNotAllowedException {
         var undoStack = m_undoStacks.get(wfKey);
         if (undoStack != null && !undoStack.isEmpty()) {
             undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
@@ -220,7 +239,7 @@ public final class WorkflowCommands {
      * @param wfKey reference to the workflow to check the redo-state for
      * @return whether there is at least one command on the redo-stack
      */
-    public boolean canRedo(final WorkflowKey wfKey) {
+    public synchronized boolean canRedo(final WorkflowKey wfKey) {
         var stack = m_redoStacks.get(wfKey);
         return stack != null && stack.peek().map(WorkflowCommand::canRedo).orElse(Boolean.FALSE);
     }
@@ -229,7 +248,7 @@ public final class WorkflowCommands {
      * @param wfKey reference to the workflow to redo the last command for
      * @throws OperationNotAllowedException if there is no command to be redone
      */
-    public void redo(final WorkflowKey wfKey) throws OperationNotAllowedException {
+    public synchronized void redo(final WorkflowKey wfKey) throws OperationNotAllowedException {
         var redoStack = m_redoStacks.get(wfKey);
         if (redoStack != null && !redoStack.isEmpty()) {
             redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
@@ -254,7 +273,7 @@ public final class WorkflowCommands {
      *
      * @param keyFilter
      */
-    public void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
+    public synchronized void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
         m_undoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
         m_redoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
     }
@@ -412,6 +431,10 @@ public final class WorkflowCommands {
         @Override
         void close();
 
+    }
+
+    void setCommandToExecuteForTesting(final WorkflowCommand wc) {
+        m_workflowCommandForTesting = wc;
     }
 
 }
