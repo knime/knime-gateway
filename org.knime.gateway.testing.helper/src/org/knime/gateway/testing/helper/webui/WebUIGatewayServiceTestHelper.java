@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -146,6 +147,14 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
             gen.writeString("[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
                 .map(Object::toString).collect(Collectors.joining(", ")) + " ]")
         );
+
+        /**
+         * Canonical sorting of the compatibleTypes-list.
+         */
+        objToString.addException(PortTypeEnt.class, "compatibleTypes", (v, gen, e) -> {
+            List<String> l = ((List<String>)v).stream().sorted().collect(Collectors.toList());
+            gen.writeRawValue(objToString.toString(l));
+        });
 
         /**
          * Canonical sorting of the patch operations.

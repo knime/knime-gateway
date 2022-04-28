@@ -309,7 +309,6 @@ public final class EntityBuilderUtil {
     private static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
         List<String> compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
             .map(EntityBuilderUtil::getPortTypeId)//
-            .sorted() // fix tests by sorting the list of compatible types
             .collect(Collectors.toList());
         return builder(PortTypeEntBuilder.class)//
             .setName(ptype.getName())//
@@ -336,8 +335,7 @@ public final class EntityBuilderUtil {
     }
 
     private static boolean portTypesAreDifferentButCompatible(final PortType p1, final PortType p2) {
-        return !p1.equals(p2) && (p1.getPortObjectClass().isAssignableFrom(p2.getPortObjectClass())
-            || p2.getPortObjectClass().isAssignableFrom(p1.getPortObjectClass()));
+        return !p1.equals(p2) && (p1.isSuperTypeOf(p2) || p2.isSuperTypeOf(p1));
     }
 
     /**
