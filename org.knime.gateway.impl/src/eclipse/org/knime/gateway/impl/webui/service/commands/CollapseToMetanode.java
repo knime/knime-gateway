@@ -72,7 +72,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
 
     private CollapseIntoMetaNodeResult m_metaNodeCollapseResult;
 
-    static final String DEFAULT_NODE_NAME = "Metanode";
+    static final String DEFAULT_METANODE_NAME = "Metanode";
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
@@ -119,7 +119,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
             m_metaNodeCollapseResult = getWorkflowManager().collapseIntoMetaNode( //
                 nodeIds, //
                 getAnnotationsInternal().toArray(WorkflowAnnotation[]::new), //
-                DEFAULT_NODE_NAME //
+                DEFAULT_METANODE_NAME //
             );
             return true;
         } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type

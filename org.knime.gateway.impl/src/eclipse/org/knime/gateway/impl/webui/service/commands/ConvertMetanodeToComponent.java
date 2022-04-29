@@ -69,7 +69,7 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
 
     private MetaNodeToSubNodeResult m_metaNodeToSubNodeResult;
 
-    private static final String DEFAULT_NODE_NAME = "Component";
+    private static final String DEFAULT_COMPONENT_NAME = "Component";
 
     ConvertMetanodeToComponent(final Supplier<NodeIDEnt> nodeToConvert) {
         m_nodeToConvert = nodeToConvert;
@@ -82,8 +82,8 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
             m_metaNodeToSubNodeResult = getWorkflowManager().convertMetaNodeToSubNode(nodeID);
             var snc = getWorkflowManager().getNodeContainer(m_metaNodeToSubNodeResult.getConvertedNodeID(),
                 SubNodeContainer.class, true);
-            if (!snc.getName().equals(CollapseToMetanode.DEFAULT_NODE_NAME)) {
-                snc.setName(ConvertMetanodeToComponent.DEFAULT_NODE_NAME);
+            if (snc.getName().equals(CollapseToMetanode.DEFAULT_METANODE_NAME)) {
+                snc.setName(ConvertMetanodeToComponent.DEFAULT_COMPONENT_NAME);
             }
             return true;
         } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type
