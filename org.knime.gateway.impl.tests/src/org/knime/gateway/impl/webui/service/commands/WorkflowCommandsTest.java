@@ -55,16 +55,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -85,6 +83,7 @@ import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
@@ -100,6 +99,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -402,14 +402,22 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      */
     @Test
     public void testCanUndoAndCanRedoCalledAfterExecuteUndoAndRedo() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW).getFirst().toString();
+
         ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-        var eventConsumer = mock(EventConsumer.class);
-        ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         var workflowMiddleware = new WorkflowMiddleware(WorkflowProjectManager.getInstance());
+        var commands = workflowMiddleware.getCommands();
+        var wfKey = new WorkflowKey(wfId, getRootID());
+        AtomicInteger eventConsumerCalls = new AtomicInteger();
+        EventConsumer eventConsumer = (n, e) -> {
+            eventConsumerCalls.addAndGet(1);
+            commands.canRedo(wfKey);
+            commands.canUndo(wfKey);
+        };
+        ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
 
-        var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW).getFirst().toString();
         var snapshotId = DefaultWorkflowService.getInstance()
             .getWorkflow(wfId, getRootID(), true).getSnapshotId();
         var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
@@ -417,31 +425,29 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             .setTypeId("WorkflowChangedEventType").build();
         DefaultEventService.getInstance().addEventListener(eventType);
 
-        var commands = workflowMiddleware.getCommands();
         var testCommand = new TestWorkflowCommand();
         commands.setCommandToExecuteForTesting(testCommand);
 
-        var wfKey = new WorkflowKey(wfId, getRootID());
         try {
             commands.execute(wfKey, null);
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(eventConsumer).accept(any(), any()));
+                .until(() -> eventConsumerCalls.get() == 1);
 
             testCommand.m_executeFinished = false;
             commands.undo(wfKey);
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
-            .untilAsserted(() -> verify(eventConsumer, times(2)).accept(any(), any()));
+                .until(() -> eventConsumerCalls.get() == 2);
 
             testCommand.m_executeFinished = false;
             commands.redo(wfKey);
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(eventConsumer, times(3)).accept(any(), any()));
+                .until(() -> eventConsumerCalls.get() == 3);
         } finally {
             ServiceInstances.disposeAllServiceInstancesAndDependencies();
         }
     }
 
-    private class TestWorkflowCommand extends AbstractWorkflowCommand {
+    private class TestWorkflowCommand extends AbstractWorkflowCommand implements WithResult {
 
         private boolean m_executeFinished = false;
 
@@ -482,7 +488,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             // which in turn creates a workflow patch
             // which in turn call the 'canUndo' and 'canRedo' methods of WorkflowCommands
             m_anno = new WorkflowAnnotation();
-            getWorkflowManager().addWorkflowAnnotation(m_anno);
+            new Thread(() -> getWorkflowManager().addWorkflowAnnotation(m_anno)).start();
             sleep();
             m_executeFinished = true;
             return true;
@@ -494,6 +500,16 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             } catch (InterruptedException ex) {
                 //
             }
+        }
+
+        @Override
+        public WorkflowChange getChangeToWaitFor() {
+            return WorkflowChange.ANNOTATION_ADDED_OR_REMOVED;
+        }
+
+        @Override
+        public CommandResultEnt buildEntity(final String snapshotId) {
+            return null;
         }
 
     }

@@ -123,7 +123,7 @@ public final class WorkflowCommands {
      * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
-    public synchronized <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
+    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
         final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt) {
@@ -171,7 +171,8 @@ public final class WorkflowCommands {
         return workflowChangeWaiter;
     }
 
-    private void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey, final WorkflowCommand command)
+    private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
+        final WorkflowCommand command)
         throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
         var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
         var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
