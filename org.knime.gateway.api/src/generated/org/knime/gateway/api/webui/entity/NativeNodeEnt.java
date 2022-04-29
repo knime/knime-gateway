@@ -51,6 +51,7 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -154,6 +155,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+   		 * Set portGroups
+         * 
+         * @param portGroups the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setPortGroups(java.util.List<PortGroupEnt> portGroups);
         
         /**
          * The id of the node template this node is an instance of.

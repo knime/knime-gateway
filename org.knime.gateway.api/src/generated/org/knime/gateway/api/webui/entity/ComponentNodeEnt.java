@@ -51,6 +51,7 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -148,6 +149,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+   		 * Set portGroups
+         * 
+         * @param portGroups the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setPortGroups(java.util.List<PortGroupEnt> portGroups);
         
         /**
          * The component name.

@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -107,6 +108,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
+    @JsonProperty("portGroups")
+    public java.util.List<PortGroupEnt> getPortGroups();
+    
+    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -162,6 +167,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public MetaNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("portGroups")
+        public MetaNodeEntMixInBuilder setPortGroups(final java.util.List<PortGroupEnt> portGroups);
         
         @Override
         @JsonProperty("name")

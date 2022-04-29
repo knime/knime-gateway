@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -76,6 +77,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
   protected KindEnum m_kind;
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
+  protected java.util.List<PortGroupEnt> m_portGroups;
   protected String m_name;
   protected MetaNodeStateEnt m_state;
   protected String m_link;
@@ -114,6 +116,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
     m_kind = immutable(builder.m_kind);
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
+    m_portGroups = immutable(builder.m_portGroups);
     if(builder.m_name == null) {
         throw new IllegalArgumentException("name must not be null.");
     }
@@ -140,7 +143,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
             return false;
         }
         DefaultMetaNodeEnt ent = (DefaultMetaNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_portGroups, ent.m_portGroups) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
     }
 
 
@@ -159,6 +162,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
                .append(m_kind)
                .append(m_allowedActions)
                .append(m_executionInfo)
+               .append(m_portGroups)
                .append(m_name)
                .append(m_state)
                .append(m_link)
@@ -208,6 +212,11 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
   }
     
   @Override
+  public java.util.List<PortGroupEnt> getPortGroups() {
+        return m_portGroups;
+  }
+    
+  @Override
   public String getName() {
         return m_name;
   }
@@ -237,6 +246,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         private KindEnum m_kind;
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
+        private java.util.List<PortGroupEnt> m_portGroups;
         private String m_name;
         private MetaNodeStateEnt m_state;
         private String m_link;
@@ -301,6 +311,12 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo) {
              m_executionInfo = executionInfo;
+             return this;
+        }
+
+        @Override
+        public DefaultMetaNodeEntBuilder setPortGroups(java.util.List<PortGroupEnt> portGroups) {
+             m_portGroups = portGroups;
              return this;
         }
 

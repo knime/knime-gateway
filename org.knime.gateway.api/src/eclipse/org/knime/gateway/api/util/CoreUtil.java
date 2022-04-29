@@ -53,19 +53,25 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
+import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowLoopContext;
@@ -290,4 +296,128 @@ public final class CoreUtil {
             return Collections.emptySet();
         }
     }
+
+    /**
+     * Determine whether a given port can be removed from a native node.
+     *
+     * @param nnc The node the port is attached to.
+     * @param portIndex The index of the port. The enumeration begins with 0 at the fixed flow variable port.
+     * @param inPort Whether the queried port is an input port. Assumed to be an output port if false.
+     * @return Whether the queried port can currently be removed from the node.
+     */
+    @SuppressWarnings("java:S2301") // boolean parameter is reasonable.
+    public static boolean canRemoveNativeNodePort(final NativeNodeContainer nnc, final int portIndex,
+        final boolean inPort) {
+        if (portIndex == 0) {
+            // can never remove fixed flow variable port.
+            return false;
+        }
+        var portsConfig = nnc.getNode().getCopyOfCreationConfig()
+            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null);
+        if (portsConfig == null) {
+            return false;
+        }
+
+        var portIndexInList = portIndex - 1; // structures below do not consider fixed flow variable port.
+        var portGroupsToIndices = inPort ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation();
+        var nameAndIndices = portGroupsToIndices.entrySet().stream() //
+            .filter(entry -> { //
+                var indicesInThisGroup = entry.getValue();
+                return ArrayUtils.contains(indicesInThisGroup, portIndexInList);
+            }) //
+            .findFirst() //
+            .orElse(null);
+        if (nameAndIndices == null) {
+            return false;
+        }
+
+        var groupName = nameAndIndices.getKey();
+        var indicesInGroup = nameAndIndices.getValue();
+        var extendablePortGroup = portsConfig.getExtendablePorts().get(groupName);
+        if (extendablePortGroup == null) {
+            return false;
+        }
+
+        var maxIndex = Arrays.stream(indicesInGroup).max().orElse(-1);
+        var isLastInGroup = portIndexInList == maxIndex;
+        var groupHasAddedPort = extendablePortGroup.hasConfiguredPorts();
+        return isLastInGroup && groupHasAddedPort;
+    }
+
+    private static boolean canReplaceNode(final NodeContainer nc, final DependentNodeProperties dnp) {
+        var parentWfm = nc.getParent();
+        var in = parentWfm.getIncomingConnectionsFor(nc.getID());
+        var out = parentWfm.getOutgoingConnectionsFor(nc.getID());
+        // This check is not done by WorkflowManager#canReplaceNode, but WorkflowManager#replaceNode
+        //   fails with an exception if connections cannot be deleted.
+        var canRemoveAllConnections = Stream.concat(in.stream(), out.stream()).allMatch(dnp::canRemoveConnection);
+        return canRemoveAllConnections && parentWfm.canReplaceNode(nc.getID());
+    }
+
+    /**
+     * Determine whether a given port can be removed from a container node.
+     *
+     * @param nc The node the port is attached to. Assumed to be a container node, throws
+     *            {@link IllegalArgumentException} otherwise.
+     * @param portIndex The index of the queried port.
+     * @param inPorts Whether the queried is an input or an output port
+     * @apiNote For containers, the port at index 0 is always the fixed flow variable port. Metanodes do not have a
+     *          fixed flow variable port.
+     * @return Whether the queried port can currently be removed from the node.
+     */
+    @SuppressWarnings("java:S2301") // boolean parameter is reasonable.
+    public static boolean canRemoveContainerNodePort(final NodeContainer nc, final int portIndex,
+        final boolean inPorts) {
+        if (!(nc instanceof SubNodeContainer) && !(nc instanceof WorkflowManager)) {
+            throw new IllegalArgumentException("Not a container node");
+        }
+        if (nc instanceof SubNodeContainer && portIndex == 0) {
+            // First input/output port of component nodes is always a fixed flow variable port.
+            return false;
+        }
+        var metaPortInfo = getContainerMetaPortInfo(nc, inPorts);
+        return !metaPortInfo[portIndex].isConnected();
+    }
+
+    /**
+     * Determine whether currently changes can be made to the given native node's dynamic port configuration.
+     * 
+     * @param nc The node to modify ports of.
+     * @param dnp The dependent node properties of the workflow.
+     * @return Whether the port configuration can be updated.
+     */
+    public static boolean canEditNativeNodePorts(final NodeContainer nc, final DependentNodeProperties dnp) {
+        return canReplaceNode(nc, dnp);
+    }
+
+    private static MetaPortInfo[] getContainerMetaPortInfo(final NodeContainer nc, final boolean inPorts) {
+        var parentWfm = nc.getParent();
+        if (nc instanceof WorkflowManager) {
+            if (inPorts) {
+                return parentWfm.getMetanodeInputPortInfo(nc.getID());
+            } else {
+                return parentWfm.getMetanodeOutputPortInfo(nc.getID());
+            }
+        } else if (nc instanceof SubNodeContainer) {
+            if (inPorts) {
+                return parentWfm.getSubnodeInputPortInfo(nc.getID());
+            } else {
+                return parentWfm.getSubnodeOutputPortInfo(nc.getID());
+            }
+        } else {
+            throw new IllegalStateException("Queried node is not a container");
+        }
+    }
+
+    /**
+     * Obtain the ID of the given port type
+     *
+     * @param ptype The port type to determine the ID of
+     * @return The ID of the given port type.
+     */
+    public static String getPortTypeId(final PortType ptype) {
+        // TODO unify with EntityBuilderUtil#getPortTypeId introduced with NXT-645.
+        return ptype.getPortObjectClass().getName();
+    }
+
 }

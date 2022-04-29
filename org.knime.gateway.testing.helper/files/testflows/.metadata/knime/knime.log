@@ -51,3 +51,22 @@ java.lang.IllegalArgumentException: Cannot move executed nodes (reset first).
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1461)
 2022-03-24 11:39:56,647 : WARN  : KNIME-Worker-14-Wait... 0:16 :  : Node : Wait... : 0:16 : Execution canceled
 2022-04-01 13:18:10,963 : WARN  : ModalContext :  : Node : Line Reader : 0:145:144:4 : Errors overwriting node settings with flow variables: Can't evaluate variable "source-loc" as config expression, it is a STRING (""source-loc" (STRING: knime://knime.workflow/invoke.py)"
+2022-04-29 13:35:27,386 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  : PowerShell command powershell -inputformat none -outputformat text -NonInteractive -Command Get-Item -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Processes' -ErrorAction Stop | Select-Object -ExpandProperty Property did not terminate successfully.
+2022-04-29 13:35:27,387 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  : Stderr is:
+2022-04-29 13:35:27,387 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  : Get-Item : Requested registry access is not allowed.
+2022-04-29 13:35:27,387 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  : At line:1 char:1
+2022-04-29 13:35:27,387 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  : + Get-Item -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windo ...
+2022-04-29 13:35:27,387 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  : + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2022-04-29 13:35:27,388 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  :     + CategoryInfo          : PermissionDenied: (HKEY_LOCAL_MACH...sions\Processes:String) [Get-Item], SecurityExcepti 
+2022-04-29 13:35:27,388 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  :    on
+2022-04-29 13:35:27,388 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  :     + FullyQualifiedErrorId : System.Security.SecurityException,Microsoft.PowerShell.Commands.GetItemCommand
+2022-04-29 13:35:27,388 : ERROR : main :  : WindowsDefenderExceptionHandler :  :  :  
+2022-04-29 13:38:42,444 : WARN  : ModalContext :  : Node : MISSING Input File : 0:172 : Node can't be executed - Node "Input File" not available from extension "Generic Workflow Nodes for KNIME" (provided by "Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team"; plugin "missing.genericworkflownodes.knime" is not installed)
+2022-04-29 13:38:42,448 : WARN  : ModalContext :  : Node : MISSING Variants2Proteins : 0:182 : Node can't be executed - Node "Variants2Proteins" not available from extension "ImmunoNodes" (provided by "Freie Universitaet Berlin, Universitaet Tuebingen, and the ImmunoNodes Team"; plugin "de.immunonodes" is not installed)
+2022-04-29 13:38:42,671 : WARN  : ModalContext :  : Node : Sorter : 0:192:191 : No selected columns to sort
+2022-04-29 13:38:42,692 : WARN  : ModalContext :  : Node : Variable to Table Row (deprecated) : 0:14 : No variables selected
+2022-04-29 13:38:44,104 : WARN  : ModalContext :  : Node : Decision Tree Learner : 0:5 : Class column "Cluster Membership" not found or incompatible
+2022-04-29 13:38:44,119 : ERROR : ModalContext :  : LoadWorkflowRunnable :  :  : Errors during load: Status: Error: Test Gateway Workflow 0 loaded with errors
+2022-04-29 13:38:44,120 : ERROR : ModalContext :  : LoadWorkflowRunnable :  :  :   Status: Error: Test Gateway Workflow 0
+2022-04-29 13:38:44,120 : ERROR : ModalContext :  : LoadWorkflowRunnable :  :  :     Status: Error: Node "Input File" not available from extension "Generic Workflow Nodes for KNIME" (provided by "Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team"; plugin "missing.genericworkflownodes.knime" is not installed)
+2022-04-29 13:38:44,120 : ERROR : ModalContext :  : LoadWorkflowRunnable :  :  :     Status: Error: Node "Variants2Proteins" not available from extension "ImmunoNodes" (provided by "Freie Universitaet Berlin, Universitaet Tuebingen, and the ImmunoNodes Team"; plugin "de.immunonodes" is not installed)

@@ -57,6 +57,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
@@ -204,6 +205,16 @@ public final class DependentNodeProperties {
      */
     public boolean canResetAny() {
         return m_props.keySet().stream().anyMatch(this::canResetNode);
+    }
+
+    /**
+     * Determine whether the given connection can be removed from the workflow
+     * 
+     * @param cc The queried connection
+     * @return Whether the connection can be removed
+     */
+    public boolean canRemoveConnection(final ConnectionContainer cc) {
+        return m_wfm.canRemoveConnection(cc, this::canResetNode);
     }
 
     /**

@@ -100,6 +100,8 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
@@ -194,6 +196,8 @@ public class ListEntities {
         res.add(PartBasedCommandEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
+        res.add(PortActionEnt.class);
+        res.add(PortGroupEnt.class);
         res.add(PortViewEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(StyleRangeEnt.class);
@@ -273,6 +277,8 @@ public class ListEntities {
         res.add(PartBasedCommandEnt.PartBasedCommandEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
+        res.add(PortActionEnt.PortActionEntBuilder.class);
+        res.add(PortGroupEnt.PortGroupEntBuilder.class);
         res.add(PortViewEnt.PortViewEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
