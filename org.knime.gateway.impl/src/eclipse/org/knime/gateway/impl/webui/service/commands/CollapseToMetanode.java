@@ -49,17 +49,12 @@ package org.knime.gateway.impl.webui.service.commands;
 import static java.util.Arrays.stream;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.util.Set;
-
-import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.action.CollapseIntoMetaNodeResult;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -76,8 +71,6 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
-    private WorkflowAnnotationID[] m_newAnnotationIDsAfterUndo;
-
     CollapseToMetanode(final CollapseCommandEnt commandEntity, final WorkflowMiddleware workflowMiddleware) {
         super(commandEntity);
         m_workflowMiddleware = workflowMiddleware;
@@ -90,7 +83,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         }
 
         var collapsedNodeId = m_metaNodeCollapseResult.getCollapsedMetanodeID();
-        m_newAnnotationIDsAfterUndo = m_metaNodeCollapseResult.undoWithResult().getAnnotationIDs();
+        m_metaNodeCollapseResult.undo();
         m_metaNodeCollapseResult = null;
 
         // TODO remove, see NXT-1039
@@ -100,7 +93,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
 
     @Override
     public boolean canRedo() {
-        return getWorkflowManager().canCollapseNodesIntoMetaNode(getNodeIDs()) == null;
+        return getWorkflowManager().canCollapseNodesIntoMetaNode(getNodeIDs(), getAnnotationIDs()) == null;
     }
 
     @Override
@@ -109,8 +102,9 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         stream(getNodeIDs()).filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 
         var nodeIds = getNodeIDs();
+        var annoIDs = getAnnotationIDs();
 
-        var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds);
+        var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds, annoIDs);
         if (cannotCollapseReason != null) {
             throw new ServiceExceptions.OperationNotAllowedException(cannotCollapseReason);
         }
@@ -118,20 +112,12 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         try {
             m_metaNodeCollapseResult = getWorkflowManager().collapseIntoMetaNode( //
                 nodeIds, //
-                getAnnotationsInternal().toArray(WorkflowAnnotation[]::new), //
+                annoIDs, //
                 DEFAULT_METANODE_NAME //
             );
             return true;
         } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type
             throw new ServiceExceptions.OperationNotAllowedException(e.getMessage());
-        }
-    }
-
-    private Set<WorkflowAnnotation> getAnnotationsInternal() throws OperationNotAllowedException {
-        if (m_newAnnotationIDsAfterUndo != null) {
-            return getAnnotations(m_newAnnotationIDsAfterUndo);
-        } else {
-            return getAnnotations();
         }
     }
 

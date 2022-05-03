@@ -67,7 +67,6 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 
@@ -145,8 +144,8 @@ public final class WorkflowTransformations {
             }, "node_added"),
             newTransformation(w -> w.addConnection(w.getID().createChild(25), 3, w.getID().createChild(26), 1),
                 "connection_added"),
-            newTransformation(w -> w.addWorkflowAnnotation(new WorkflowAnnotation()), "workflow_annotation_added"),
-            newTransformation(w -> w.removeAnnotation(w.getWorkflowAnnotations().iterator().next()),
+            newTransformation(w -> w.addWorkflowAnnotation(new AnnotationData(), -1), "workflow_annotation_added"),
+            newTransformation(w -> w.removeAnnotation(w.getWorkflowAnnotations().iterator().next().getID()),
                 "workflow_annotation_removed"),
             newTransformation(w -> {
                 var newAnno = new AnnotationData();

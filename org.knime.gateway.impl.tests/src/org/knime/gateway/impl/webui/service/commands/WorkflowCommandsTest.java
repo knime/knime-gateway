@@ -60,6 +60,9 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,9 +75,10 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -451,7 +455,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
         private boolean m_executeFinished = false;
 
-        private WorkflowAnnotation m_anno;
+        private WorkflowAnnotationID m_annoID;
 
         @Override
         public boolean canRedo() {
@@ -471,8 +475,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
         @Override
         public void undo() throws OperationNotAllowedException {
-            getWorkflowManager().removeAnnotation(m_anno);
-            m_anno = null;
+            getWorkflowManager().removeAnnotation(m_annoID);
+            m_annoID = null;
             sleep();
             m_executeFinished = true;
         }
@@ -487,8 +491,13 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             // modify workflow to trigger an event
             // which in turn creates a workflow patch
             // which in turn call the 'canUndo' and 'canRedo' methods of WorkflowCommands
-            m_anno = new WorkflowAnnotation();
-            new Thread(() -> getWorkflowManager().addWorkflowAnnotation(m_anno)).start();
+            Callable<WorkflowAnnotationID> annoCallable =
+                    () -> getWorkflowManager().addWorkflowAnnotation(new AnnotationData(), -1).getID();
+            try {
+                m_annoID = ForkJoinPool.commonPool().submit(annoCallable).get();
+            } catch (ExecutionException | InterruptedException ex) {
+                throw new IllegalStateException(ex);
+            }
             sleep();
             m_executeFinished = true;
             return true;

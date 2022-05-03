@@ -72,7 +72,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -166,7 +166,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         es.removeEventListener(eventType);
         WorkflowListener wfListenerMock = mock(WorkflowListener.class);
         wfm.addListener(wfListenerMock); // listener in order to wait for the wf-events to be broadcasted
-        wfm.addWorkflowAnnotation(new WorkflowAnnotation());
+        wfm.addWorkflowAnnotation(new AnnotationData(), -1);
         await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> verify(wfListenerMock, times(1)).workflowChanged(any()));
         assertThat(m_testEventConsumer.getEvents(), is(empty()));

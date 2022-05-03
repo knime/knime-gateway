@@ -48,7 +48,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -140,8 +139,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
         var expandedNodes = getExpandedNodes();
         var expandedAnnots = getExpandedAnnotations();
         expandedNodes.forEach(wfm::removeNode);
-        Arrays.stream(wfm.getWorkflowAnnotations(expandedAnnots.toArray(WorkflowAnnotationID[]::new)))
-            .forEach(wfm::removeAnnotation);
+        expandedAnnots.forEach(wfm::removeAnnotation);
         wfm.paste(m_expandedNodePersistor);
     }
 

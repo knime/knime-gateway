@@ -194,11 +194,7 @@ final class Delete extends AbstractWorkflowCommand {
                 wfm.removeConnection(cc);
             }
         }
-        if (annotationIDs != null) {
-            for (WorkflowAnnotation wa : wfm.getWorkflowAnnotations(annotationIDs)) {
-                wfm.removeAnnotation(wa);
-            }
-        }
+        Arrays.stream(annotationIDs).forEach(wfm::removeAnnotation);
     }
 
     private static boolean canRemoveAllNodes(final WorkflowManager wfm, final Set<NodeID> nodeIDs) {
