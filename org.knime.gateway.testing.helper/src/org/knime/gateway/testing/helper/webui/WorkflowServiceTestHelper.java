@@ -836,7 +836,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(workflow.getNodes().keySet(), hasItems("root:1", "root:4"));
         assertThat(
             workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
-            hasItems("root_7"));
+            hasItems("root_1"));
         assertThat(workflow.getWorkflowAnnotations().size(), is(7));
         assertThat(workflow.getConnections().keySet(), hasItems("root:26_1"));
 
