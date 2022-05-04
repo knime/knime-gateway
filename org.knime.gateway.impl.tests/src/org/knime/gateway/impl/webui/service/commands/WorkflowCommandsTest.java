@@ -60,9 +60,6 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -488,16 +485,10 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
         @Override
         protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-            // modify workflow to trigger an event
+            // modify workflow to trigger an event (which is sent asynchronously)
             // which in turn creates a workflow patch
             // which in turn call the 'canUndo' and 'canRedo' methods of WorkflowCommands
-            Callable<WorkflowAnnotationID> annoCallable =
-                    () -> getWorkflowManager().addWorkflowAnnotation(new AnnotationData(), -1).getID();
-            try {
-                m_annoID = ForkJoinPool.commonPool().submit(annoCallable).get();
-            } catch (ExecutionException | InterruptedException ex) {
-                throw new IllegalStateException(ex);
-            }
+            m_annoID = getWorkflowManager().addWorkflowAnnotation(new AnnotationData(), -1).getID();
             sleep();
             m_executeFinished = true;
             return true;
