@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,68 +52,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * A selection of nodes.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface NodeSelectionEnt extends GatewayEntity {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * The tag these nodes are selected for.
+   * @return tag , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public String getTag();
+
+  /**
+   * The selected nodes in a fixed order (e.g. by popularity).
+   * @return nodes , never <code>null</code>
+   **/
+  public java.util.List<NodeTemplateEnt> getNodes();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface NodeSelectionEntBuilder extends GatewayEntityBuilder<NodeSelectionEnt> {
 
         /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * The tag these nodes are selected for.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param tag the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        NodeSelectionEntBuilder setTag(String tag);
+        
+        /**
+         * The selected nodes in a fixed order (e.g. by popularity).
+         * 
+         * @param nodes the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes);
         
         
         /**
@@ -122,7 +102,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        NodeSelectionEnt build();
     
     }
 

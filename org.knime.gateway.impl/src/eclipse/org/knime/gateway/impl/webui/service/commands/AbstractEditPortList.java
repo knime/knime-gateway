@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,81 +41,71 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
+import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt.DefaultPortCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * Basic structure for workflow commands that modify node ports.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
+public abstract class AbstractEditPortList extends AbstractWorkflowCommand {
 
-@JsonDeserialize(builder=DefaultPortCommandEntBuilder.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface PortCommandEntMixIn extends PortCommandEnt {
+    private final PortCommandEnt m_portCommandEnt;
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("side")
-    public SideEnum getSide();
-    
-    @Override
-    @JsonProperty("portGroup")
-    public String getPortGroup();
-    
-    @Override
-    @JsonProperty("nodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
-    
-
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
-     */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface PortCommandEntMixInBuilder extends PortCommandEntBuilder {
-    
-        @Override
-        public PortCommandEntMixIn build();
-    
-        @Override
-        @JsonProperty("kind")
-        public PortCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("side")
-        public PortCommandEntMixInBuilder setSide(final SideEnum side);
-        
-        @Override
-        @JsonProperty("portGroup")
-        public PortCommandEntMixInBuilder setPortGroup(final String portGroup);
-        
-        @Override
-        @JsonProperty("nodeId")
-        public PortCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
+    AbstractEditPortList(final PortCommandEnt portCommandEnt) {
+        m_portCommandEnt = portCommandEnt;
     }
 
+    /**
+     * @return The command entity describing this command.
+     */
+    protected PortCommandEnt getPortCommandEnt() {
+        return m_portCommandEnt;
+    }
+
+    /**
+     * @return The ID of the node to edit ports of.
+     */
+    protected NodeID getNodeId() {
+        return getPortCommandEnt().getNodeId()
+            .toNodeID(NodeID.ROOTID.createChild(getWorkflowManager().getProjectWFM().getID().getIndex()));
+    }
+
+    @Override
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+        var portCommandEnt = getPortCommandEnt();
+        if (portCommandEnt instanceof AddPortCommandEnt) {
+            addPort((AddPortCommandEnt)portCommandEnt);
+            return true;
+        } else if (portCommandEnt instanceof RemovePortCommandEnt) {
+            removePort((RemovePortCommandEnt)portCommandEnt);
+            return true;
+        } else {
+            throw new ServiceExceptions.OperationNotAllowedException("Unknown port operation");
+        }
+    }
+
+    /**
+     * Add a port to the node
+     * @param addPortCommandEnt The parameters of the command.
+     */
+    protected abstract void addPort(AddPortCommandEnt addPortCommandEnt);
+
+    /**
+     * Remove a port from the node
+     * @param removePortCommandEnt The parameters of the command
+     * @throws ServiceExceptions.OperationNotAllowedException If the operation can not be executed
+     */
+    protected abstract void removePort(RemovePortCommandEnt removePortCommandEnt)
+        throws ServiceExceptions.OperationNotAllowedException;
 
 }
-

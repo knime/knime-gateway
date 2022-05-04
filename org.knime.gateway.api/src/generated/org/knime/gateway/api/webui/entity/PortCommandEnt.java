@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Abstract schema for commands on ports (port operations).
+ * Abstract schema for commands acting on ports (port operations).
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -60,16 +60,16 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
   /**
-   * Gets or Sets targetPortList
+   * Gets or Sets side
    */
-  public enum TargetPortListEnum {
+  public enum SideEnum {
     INPUT("input"),
     
     OUTPUT("output");
 
     private String value;
 
-    TargetPortListEnum(String value) {
+    SideEnum(String value) {
       this.value = value;
     }
 
@@ -82,10 +82,16 @@ public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * Get targetPortList
-   * @return targetPortList , never <code>null</code>
+   * Get side
+   * @return side , never <code>null</code>
    **/
-  public TargetPortListEnum getTargetPortList();
+  public SideEnum getSide();
+
+  /**
+   * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
+   * @return portGroup 
+   **/
+  public String getPortGroup();
 
   /**
    * Get nodeId
@@ -108,12 +114,20 @@ public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         PortCommandEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set targetPortList
+   		 * Set side
          * 
-         * @param targetPortList the property value, NOT <code>null</code>! 
+         * @param side the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        PortCommandEntBuilder setTargetPortList(TargetPortListEnum targetPortList);
+        PortCommandEntBuilder setSide(SideEnum side);
+        
+        /**
+         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
+         * 
+         * @param portGroup the property value,  
+         * @return this entity builder for chaining
+         */
+        PortCommandEntBuilder setPortGroup(String portGroup);
         
         /**
    		 * Set nodeId

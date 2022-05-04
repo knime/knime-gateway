@@ -84,6 +84,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -91,6 +92,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
@@ -109,9 +111,13 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortActionEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -123,6 +129,7 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -1334,6 +1341,164 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
         return portActionEnt.getType() == TypeEnum.ADD
             && portActionEnt.getSupportedPortTypeIds().contains(targetPortTypeId);
+    }
+
+    /**
+     * Execute, undo and redo of adding an input port to a metanode. Add output port.
+     *
+     * @throws Exception
+     */
+    public void testAddPortToMetanode() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var someConfiguredMetanode = new NodeIDEnt(14);
+        assertAddUndoRedoContainerPorts(wfId, someConfiguredMetanode);
+    }
+
+    /**
+     * Execute, undo and redo of adding an input port to a component. Add output port.
+     *
+     * @throws Exception
+     */
+    public void testAddPortToComponent() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var someConfiguredComponent = new NodeIDEnt(15);
+        assertAddUndoRedoContainerPorts(wfId, someConfiguredComponent);
+    }
+
+    private void assertAddUndoRedoContainerPorts(final String wfId, final NodeIDEnt node) throws Exception {
+        PortType portType = WorkflowPortObject.TYPE;
+
+        var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+
+        var addInputPortCommandEnt = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
+            .setNodeId(node) //
+            .setSide(PortCommandEnt.SideEnum.INPUT) //
+            .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
+            .setKind(KindEnum.ADD_PORT) //
+            .build();
+
+        ws().executeWorkflowCommand(wfId, getRootID(), addInputPortCommandEnt);
+        assertPortAdded(node, true, wfId, unchangedWfEnt);
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+        assertPortsUnchanged(wfId, node, unchangedWfEnt);
+
+        ws().redoWorkflowCommand(wfId, getRootID());
+        assertPortAdded(node, true, wfId, unchangedWfEnt);
+
+        var addOutputPortCommandEnt = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
+            .setNodeId(node) //
+            .setSide(PortCommandEnt.SideEnum.OUTPUT) //
+            .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
+            .setKind(KindEnum.ADD_PORT) //
+            .build();
+        ws().executeWorkflowCommand(wfId, getRootID(), addOutputPortCommandEnt);
+        assertPortAdded(node, false, wfId, unchangedWfEnt);
+    }
+
+    private void assertPortsUnchanged(final String wfId, final NodeIDEnt node, final WorkflowEnt originalWfEnt)
+        throws ServiceExceptions.NotASubWorkflowException, NodeNotFoundException {
+        var currentWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var unchangedInports = originalWfEnt.getNodes().get(node.toString()).getInPorts();
+        var changedInPorts = currentWfEnt.getNodes().get(node.toString()).getInPorts();
+        assertPortListUnchanged(unchangedInports, changedInPorts);
+        var unchangedOutports = originalWfEnt.getNodes().get(node.toString()).getOutPorts();
+        var changedOutports = currentWfEnt.getNodes().get(node.toString()).getOutPorts();
+        assertPortListUnchanged(unchangedOutports, changedOutports);
+    }
+
+    private static void assertPortListUnchanged(final List<? extends NodePortEnt> originalPorts,
+        final List<? extends NodePortEnt> currentPorts) {
+        var originalNumInPorts = originalPorts.size();
+        assertThat("Expect to back to original number of in-ports after undo",
+            currentPorts.size() == originalNumInPorts);
+        var originalNames = originalPorts.stream().map(NodePortTemplateEnt::getName).collect(Collectors.toList());
+        var currentNames = currentPorts.stream().map(NodePortTemplateEnt::getName).collect(Collectors.toList());
+        assertEquals("Expect port names to not have changed", originalNames, currentNames);
+    }
+
+    private void assertPortAdded(final NodeIDEnt node, final boolean isInPort, final String wfId,
+        final WorkflowEnt originalWfEnt) throws Exception {
+        var originalNumInPorts = getPortList(originalWfEnt, isInPort, node).size();
+        var newWorkflowEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        var newPortList = getPortList(newWorkflowEnt, isInPort, node);
+        var newNumPorts = newPortList.size();
+        assertThat("Expect number of ports to have increased by one", newNumPorts == originalNumInPorts + 1);
+    }
+
+    private void assertPortRemoved(final NodeIDEnt node, final boolean isInPort, final String wfId,
+        final WorkflowEnt originalWfEnt) throws Exception {
+        var originalNumInPorts = getPortList(originalWfEnt, isInPort, node).size();
+        var newWorkflowEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        var newPortList = getPortList(newWorkflowEnt, isInPort, node);
+        var newNumPorts = newPortList.size();
+        assertThat("Expect number of ports to have decreased by one", newNumPorts == originalNumInPorts - 1);
+    }
+
+    /**
+     * Execute, undo and redo of removing port from metanode.
+     *
+     * @throws Exception
+     */
+    public void testRemovePortFromMetanode() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var metanodeWithPorts = new NodeIDEnt(24);
+        assertRemoveUndoRedoContainerPorts(wfId, metanodeWithPorts);
+    }
+
+    /**
+     * Execute, undo and redo of removing port from container.
+     *
+     * @throws Exception
+     */
+    public void testRemovePortFromComponent() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var componentWithPorts = new NodeIDEnt(25);
+
+        var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+
+        var deleteFixedFlowVarPort =
+            buildDeletePortCommandEnt(componentWithPorts, PortCommandEnt.SideEnum.INPUT, 0);
+        assertThrows("Expect exception on removing port with index 0 from component (fixed flow variable port)",
+            OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteFixedFlowVarPort));
+        assertPortsUnchanged(wfId, componentWithPorts, unchangedWfEnt);
+
+        assertRemoveUndoRedoContainerPorts(wfId, componentWithPorts);
+    }
+
+    private void assertRemoveUndoRedoContainerPorts(final String wfId, final NodeIDEnt node) throws Exception {
+        var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+
+        var deleteImpossiblePort = buildDeletePortCommandEnt(node, PortCommandEnt.SideEnum.INPUT, -3);
+        assertThrows("Expect exception on removing port with invalid index", OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteImpossiblePort));
+
+        var deleteFirst = buildDeletePortCommandEnt(node, PortCommandEnt.SideEnum.INPUT, 1);
+        ws().executeWorkflowCommand(wfId, getRootID(), deleteFirst);
+        assertPortRemoved(node, true, wfId, unchangedWfEnt);
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+        assertPortsUnchanged(wfId, node, unchangedWfEnt);
+
+        ws().redoWorkflowCommand(wfId, getRootID());
+        assertPortRemoved(node, true, wfId, unchangedWfEnt);
+    }
+
+    private static RemovePortCommandEnt buildDeletePortCommandEnt(final NodeIDEnt targetNode,
+        final PortCommandEnt.SideEnum side, final int portIndex) {
+        return builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
+            .setNodeId(targetNode) //
+            .setSide(side) //
+            .setPortIndex(portIndex) //
+            .setKind(KindEnum.REMOVE_PORT) //
+            .build();
+    }
+
+    private static List<? extends NodePortEnt> getPortList(final WorkflowEnt wfEnt, final boolean isInPort,
+        final NodeIDEnt node) {
+        var nodeEnt = wfEnt.getNodes().get(node.toString());
+        return isInPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
     }
 
 }

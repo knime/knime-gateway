@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Add a port to a node. The port will be appended to the port list of the specified port group.
+ * Add a port to a node. In case of native nodes, the port will be appended to the given port group. In case of container nodes, port will be added as last port.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -61,13 +61,7 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
 
 
   /**
-   * The ID of the port group to add a port to. Only used for native (non-container) nodes.
-   * @return targetPortGroup 
-   **/
-  public String getTargetPortGroup();
-
-  /**
-   * The ID of the port to be added.
+   * The ID of the port type to be added.
    * @return portTypeId , never <code>null</code>
    **/
   public String getPortTypeId();
@@ -87,12 +81,20 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
         AddPortCommandEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set targetPortList
+   		 * Set side
          * 
-         * @param targetPortList the property value, NOT <code>null</code>! 
+         * @param side the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AddPortCommandEntBuilder setTargetPortList(TargetPortListEnum targetPortList);
+        AddPortCommandEntBuilder setSide(SideEnum side);
+        
+        /**
+         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
+         * 
+         * @param portGroup the property value,  
+         * @return this entity builder for chaining
+         */
+        AddPortCommandEntBuilder setPortGroup(String portGroup);
         
         /**
    		 * Set nodeId
@@ -103,15 +105,7 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
         AddPortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         /**
-         * The ID of the port group to add a port to. Only used for native (non-container) nodes.
-         * 
-         * @param targetPortGroup the property value,  
-         * @return this entity builder for chaining
-         */
-        AddPortCommandEntBuilder setTargetPortGroup(String targetPortGroup);
-        
-        /**
-         * The ID of the port to be added.
+         * The ID of the port type to be added.
          * 
          * @param portTypeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

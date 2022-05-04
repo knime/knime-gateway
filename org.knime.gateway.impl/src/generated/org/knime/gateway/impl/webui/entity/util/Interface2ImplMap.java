@@ -46,6 +46,8 @@ package org.knime.gateway.impl.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt.AddPortCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -158,12 +160,16 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortActionEnt.PortActionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortActionEnt;
+import org.knime.gateway.api.webui.entity.PortCommandEnt.PortCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
@@ -212,6 +218,9 @@ public class Interface2ImplMap {
     public static <B extends GatewayEntityBuilder> B create(final Class<B> clazz) {
         if(clazz == AddNodeCommandEntBuilder.class) {
             return (B)new DefaultAddNodeCommandEnt.DefaultAddNodeCommandEntBuilder();
+        }        
+        if(clazz == AddPortCommandEntBuilder.class) {
+            return (B)new DefaultAddPortCommandEnt.DefaultAddPortCommandEntBuilder();
         }        
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
@@ -381,6 +390,9 @@ public class Interface2ImplMap {
         if(clazz == PortActionEntBuilder.class) {
             return (B)new DefaultPortActionEnt.DefaultPortActionEntBuilder();
         }        
+        if(clazz == PortCommandEntBuilder.class) {
+            return (B)new DefaultPortCommandEnt.DefaultPortCommandEntBuilder();
+        }        
         if(clazz == PortTypeEntBuilder.class) {
             return (B)new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();
         }        
@@ -389,6 +401,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
+        }        
+        if(clazz == RemovePortCommandEntBuilder.class) {
+            return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,60 +52,25 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * Remove a port from a node
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * The index of the port to be removed (out of all ports in this side). Only used for container nodes.
+   * @return portIndex , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public Integer getPortIndex();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface RemovePortCommandEntBuilder extends GatewayEntityBuilder<RemovePortCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -112,7 +78,39 @@ public interface WorkflowCommandEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        RemovePortCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set side
+         * 
+         * @param side the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        RemovePortCommandEntBuilder setSide(SideEnum side);
+        
+        /**
+         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
+         * 
+         * @param portGroup the property value,  
+         * @return this entity builder for chaining
+         */
+        RemovePortCommandEntBuilder setPortGroup(String portGroup);
+        
+        /**
+   		 * Set nodeId
+         * 
+         * @param nodeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        RemovePortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
+        /**
+         * The index of the port to be removed (out of all ports in this side). Only used for container nodes.
+         * 
+         * @param portIndex the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        RemovePortCommandEntBuilder setPortIndex(Integer portIndex);
         
         
         /**
@@ -122,7 +120,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        RemovePortCommandEnt build();
     
     }
 

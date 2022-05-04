@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
@@ -140,6 +141,8 @@ public final class WorkflowCommands {
             command = new Collapse((CollapseCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof ExpandCommandEnt) {
             command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
+        } else if (commandEnt instanceof PortCommandEnt) {
+            command = new EditPortList((PortCommandEnt)commandEnt);
         } else {
             if (m_workflowCommandForTesting != null) {
                 command = m_workflowCommandForTesting;

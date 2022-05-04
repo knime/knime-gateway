@@ -82,6 +82,11 @@ final class WorkflowCommandUtils {
             }
     }
 
+    private static Optional<NodeContainer> getNodeContainer(final NodeIDEnt idEnt, final WorkflowManager wfm) {
+        var nodeId = idEnt.toNodeID(NodeID.ROOTID.createChild(wfm.getProjectWFM().getID().getIndex()));
+        return getNodeContainer(nodeId, wfm);
+    }
+
     /**
      * Find a workflow annotation with given id in the given workflow manager.
      * @param id The workflow annotation to look for.
@@ -101,9 +106,15 @@ final class WorkflowCommandUtils {
         METANODE, COMPONENT
     }
 
+    /**
+     * Obtain the container type of a container node
+     * @param parentWfm
+     * @param child
+     * @return An Optional containing the container type of the node, or an empty Optional if the node could not be
+     *  found in the workflow or is not a container node.
+     */
     static Optional<ContainerType> getContainerType(final WorkflowManager parentWfm, final NodeIDEnt child) {
-        var nodeId = child.toNodeID(NodeID.ROOTID.createChild(parentWfm.getProjectWFM().getID().getIndex()));
-        var nodeContainer = getNodeContainer(nodeId, parentWfm);
+        var nodeContainer = getNodeContainer(child, parentWfm);
         return nodeContainer.map(nc -> {
             if (nc instanceof WorkflowManager) {
                 return ContainerType.METANODE;
@@ -113,5 +124,10 @@ final class WorkflowCommandUtils {
                 return null;
             }
         });
+    }
+
+    static Optional<Boolean> isContainerNode(final WorkflowManager parentWfm, final NodeIDEnt node) {
+        var nodeContainer = getNodeContainer(node, parentWfm);
+        return nodeContainer.map(nc -> nc instanceof WorkflowManager || nc instanceof SubNodeContainer);
     }
 }

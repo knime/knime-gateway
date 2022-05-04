@@ -73,16 +73,16 @@ public interface AddPortCommandEntMixIn extends AddPortCommandEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("targetPortList")
-    public TargetPortListEnum getTargetPortList();
+    @JsonProperty("side")
+    public SideEnum getSide();
+    
+    @Override
+    @JsonProperty("portGroup")
+    public String getPortGroup();
     
     @Override
     @JsonProperty("nodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
-    
-    @Override
-    @JsonProperty("targetPortGroup")
-    public String getTargetPortGroup();
     
     @Override
     @JsonProperty("portTypeId")
@@ -106,16 +106,16 @@ public interface AddPortCommandEntMixIn extends AddPortCommandEnt {
         public AddPortCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("targetPortList")
-        public AddPortCommandEntMixInBuilder setTargetPortList(final TargetPortListEnum targetPortList);
+        @JsonProperty("side")
+        public AddPortCommandEntMixInBuilder setSide(final SideEnum side);
+        
+        @Override
+        @JsonProperty("portGroup")
+        public AddPortCommandEntMixInBuilder setPortGroup(final String portGroup);
         
         @Override
         @JsonProperty("nodeId")
         public AddPortCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
-        @Override
-        @JsonProperty("targetPortGroup")
-        public AddPortCommandEntMixInBuilder setTargetPortGroup(final String targetPortGroup);
         
         @Override
         @JsonProperty("portTypeId")

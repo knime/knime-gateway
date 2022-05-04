@@ -60,8 +60,11 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 
@@ -92,6 +95,10 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultCollapseCommandEnt.class, name = "collapse")
 ,
   @Type(value = DefaultExpandCommandEnt.class, name = "expand")
+,
+  @Type(value = DefaultAddPortCommandEnt.class, name = "add_port")
+,
+  @Type(value = DefaultRemovePortCommandEnt.class, name = "remove_port")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -133,6 +140,10 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultCollapseCommandEnt.class, name = "collapse")
 ,
   @Type(value = DefaultExpandCommandEnt.class, name = "expand")
+,
+  @Type(value = DefaultAddPortCommandEnt.class, name = "add_port")
+,
+  @Type(value = DefaultRemovePortCommandEnt.class, name = "remove_port")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

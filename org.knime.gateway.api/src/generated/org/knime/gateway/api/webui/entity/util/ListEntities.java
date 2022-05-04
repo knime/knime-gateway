@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
@@ -101,9 +102,11 @@ import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortActionEnt;
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -141,6 +144,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEnt.class);
+        res.add(AddPortCommandEnt.class);
         res.add(AllowedActionsEnt.class);
         res.add(AllowedConnectionActionsEnt.class);
         res.add(AllowedLoopActionsEnt.class);
@@ -197,9 +201,11 @@ public class ListEntities {
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
         res.add(PortActionEnt.class);
+        res.add(PortCommandEnt.class);
         res.add(PortTypeEnt.class);
         res.add(PortViewEnt.class);
         res.add(ProjectMetadataEnt.class);
+        res.add(RemovePortCommandEnt.class);
         res.add(StyleRangeEnt.class);
         res.add(TranslateCommandEnt.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.class);
@@ -222,6 +228,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
+        res.add(AddPortCommandEnt.AddPortCommandEntBuilder.class);
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
         res.add(AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder.class);
         res.add(AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder.class);
@@ -278,9 +285,11 @@ public class ListEntities {
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
         res.add(PortActionEnt.PortActionEntBuilder.class);
+        res.add(PortCommandEnt.PortCommandEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(PortViewEnt.PortViewEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
+        res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(TranslateCommandEnt.TranslateCommandEntBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder.class);

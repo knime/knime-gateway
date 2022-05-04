@@ -311,5 +311,4 @@ public final class CoreUtil {
     public static String getPortTypeId(final PortType ptype) {
         return ptype.getPortObjectClass().getName();
     }
-
 }

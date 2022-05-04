@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,90 +41,44 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.commands;
 
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.apache.commons.lang3.NotImplementedException;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
- * A command that is executed to change a workflow.
- * 
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ *
+ * Implementations for modifying ports on a native node.
+ *
+ * TODO NXT-1031 implement
+ *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
+public class EditNativeNodePortList extends AbstractEditPortList {
+    EditNativeNodePortList(final PortCommandEnt portCommandEnt) {
+        super(portCommandEnt);
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    protected void addPort(final AddPortCommandEnt addPortCommandEnt) {
+        throw new NotImplementedException("TODO");
     }
 
-  }
+    @Override
+    protected void removePort(final RemovePortCommandEnt removePortCommandEnt)
+        throws ServiceExceptions.OperationNotAllowedException {
+        throw new NotImplementedException("TODO");
 
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-    /**
-     * The builder for the entity.
-     */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
-
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowCommandEnt build();
-    
     }
 
+    @Override
+    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+        throw new NotImplementedException("TODO");
+    }
 }

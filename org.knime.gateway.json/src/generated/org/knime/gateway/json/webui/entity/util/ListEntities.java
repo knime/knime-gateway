@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedConnectionActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
@@ -101,9 +102,11 @@ import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PatchEntMixIn;
 import org.knime.gateway.json.webui.entity.PatchOpEntMixIn;
 import org.knime.gateway.json.webui.entity.PortActionEntMixIn;
+import org.knime.gateway.json.webui.entity.PortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PortTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
@@ -140,6 +143,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEntMixIn.class);
+        res.add(AddPortCommandEntMixIn.class);
         res.add(AllowedActionsEntMixIn.class);
         res.add(AllowedConnectionActionsEntMixIn.class);
         res.add(AllowedLoopActionsEntMixIn.class);
@@ -196,9 +200,11 @@ public class ListEntities {
         res.add(PatchEntMixIn.class);
         res.add(PatchOpEntMixIn.class);
         res.add(PortActionEntMixIn.class);
+        res.add(PortCommandEntMixIn.class);
         res.add(PortTypeEntMixIn.class);
         res.add(PortViewEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
+        res.add(RemovePortCommandEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
@@ -221,6 +227,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
+        res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AllowedConnectionActionsEntMixIn.AllowedConnectionActionsEntMixInBuilder.class);
         res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);
@@ -277,9 +284,11 @@ public class ListEntities {
         res.add(PatchEntMixIn.PatchEntMixInBuilder.class);
         res.add(PatchOpEntMixIn.PatchOpEntMixInBuilder.class);
         res.add(PortActionEntMixIn.PortActionEntMixInBuilder.class);
+        res.add(PortCommandEntMixIn.PortCommandEntMixInBuilder.class);
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
         res.add(PortViewEntMixIn.PortViewEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
+        res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);

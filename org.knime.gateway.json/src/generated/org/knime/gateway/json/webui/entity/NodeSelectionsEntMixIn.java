@@ -42,78 +42,63 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortCommandEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeSelectionsEnt.DefaultNodeSelectionsEntBuilder;
 
 /**
- * Remove a port from a node
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface DeletePortCommandEnt extends GatewayEntity, PortCommandEnt {
 
+@JsonDeserialize(builder=DefaultNodeSelectionsEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface NodeSelectionsEntMixIn extends NodeSelectionsEnt {
 
-  /**
-   * The index of the port to be removed
-   * @return portIndex , never <code>null</code>
-   **/
-  public Integer getPortIndex();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
+    @Override
+    @JsonProperty("selections")
+    public java.util.List<NodeSelectionEnt> getSelections();
+    
+    @Override
+    @JsonProperty("totalNumSelections")
+    public Integer getTotalNumSelections();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface DeletePortCommandEntBuilder extends GatewayEntityBuilder<DeletePortCommandEnt> {
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        DeletePortCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set targetPortList
-         * 
-         * @param targetPortList the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        DeletePortCommandEntBuilder setTargetPortList(TargetPortListEnum targetPortList);
-        
-        /**
-   		 * Set nodeId
-         * 
-         * @param nodeId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        DeletePortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
-        /**
-         * The index of the port to be removed
-         * 
-         * @param portIndex the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        DeletePortCommandEntBuilder setPortIndex(Integer portIndex);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        DeletePortCommandEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NodeSelectionsEntMixInBuilder extends NodeSelectionsEntBuilder {
     
+        @Override
+        public NodeSelectionsEntMixIn build();
+    
+        @Override
+        @JsonProperty("selections")
+        public NodeSelectionsEntMixInBuilder setSelections(final java.util.List<NodeSelectionEnt> selections);
+        
+        @Override
+        @JsonProperty("totalNumSelections")
+        public NodeSelectionsEntMixInBuilder setTotalNumSelections(final Integer totalNumSelections);
+        
     }
 
+
 }
+

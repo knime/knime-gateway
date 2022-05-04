@@ -50,47 +50,40 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
-import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
 /**
- * Abstract schema for commands acting on ports (port operations).
+ * A selection of nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPortCommandEnt implements PortCommandEnt {
+public class DefaultNodeSelectionEnt implements NodeSelectionEnt {
 
-  protected KindEnum m_kind;
-  protected SideEnum m_side;
-  protected String m_portGroup;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
+  protected String m_tag;
+  protected java.util.List<NodeTemplateEnt> m_nodes;
   
-  protected DefaultPortCommandEnt() {
+  protected DefaultNodeSelectionEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "PortCommand";
+    return "NodeSelection";
   }
   
-  private DefaultPortCommandEnt(DefaultPortCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
+  private DefaultNodeSelectionEnt(DefaultNodeSelectionEntBuilder builder) {
+    
+    if(builder.m_tag == null) {
+        throw new IllegalArgumentException("tag must not be null.");
     }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_side == null) {
-        throw new IllegalArgumentException("side must not be null.");
+    m_tag = immutable(builder.m_tag);
+    if(builder.m_nodes == null) {
+        throw new IllegalArgumentException("nodes must not be null.");
     }
-    m_side = immutable(builder.m_side);
-    m_portGroup = immutable(builder.m_portGroup);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
+    m_nodes = immutable(builder.m_nodes);
   }
   
    /**
@@ -107,8 +100,8 @@ public class DefaultPortCommandEnt implements PortCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultPortCommandEnt ent = (DefaultPortCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_side, ent.m_side) && Objects.equals(m_portGroup, ent.m_portGroup) && Objects.equals(m_nodeId, ent.m_nodeId);
+        DefaultNodeSelectionEnt ent = (DefaultNodeSelectionEnt)o;
+        return Objects.equals(m_tag, ent.m_tag) && Objects.equals(m_nodes, ent.m_nodes);
     }
 
 
@@ -119,84 +112,55 @@ public class DefaultPortCommandEnt implements PortCommandEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_side)
-               .append(m_portGroup)
-               .append(m_nodeId)
+               .append(m_tag)
+               .append(m_nodes)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public KindEnum getKind() {
-        return m_kind;
+  public String getTag() {
+        return m_tag;
   }
     
   @Override
-  public SideEnum getSide() {
-        return m_side;
-  }
-    
-  @Override
-  public String getPortGroup() {
-        return m_portGroup;
-  }
-    
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
+  public java.util.List<NodeTemplateEnt> getNodes() {
+        return m_nodes;
   }
     
   
-    public static class DefaultPortCommandEntBuilder implements PortCommandEntBuilder {
+    public static class DefaultNodeSelectionEntBuilder implements NodeSelectionEntBuilder {
     
-        public DefaultPortCommandEntBuilder(){
-            super();
+        public DefaultNodeSelectionEntBuilder(){
+            
         }
     
-        private KindEnum m_kind;
-        private SideEnum m_side;
-        private String m_portGroup;
-        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
+        private String m_tag;
+        private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
 
         @Override
-        public DefaultPortCommandEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+        public DefaultNodeSelectionEntBuilder setTag(String tag) {
+             if(tag == null) {
+                 throw new IllegalArgumentException("tag must not be null.");
              }
-             m_kind = kind;
+             m_tag = tag;
              return this;
         }
 
         @Override
-        public DefaultPortCommandEntBuilder setSide(SideEnum side) {
-             if(side == null) {
-                 throw new IllegalArgumentException("side must not be null.");
+        public DefaultNodeSelectionEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
+             if(nodes == null) {
+                 throw new IllegalArgumentException("nodes must not be null.");
              }
-             m_side = side;
-             return this;
-        }
-
-        @Override
-        public DefaultPortCommandEntBuilder setPortGroup(String portGroup) {
-             m_portGroup = portGroup;
-             return this;
-        }
-
-        @Override
-        public DefaultPortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
-             if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
-             }
-             m_nodeId = nodeId;
+             m_nodes = nodes;
              return this;
         }
 
         
         @Override
-        public DefaultPortCommandEnt build() {
-            return new DefaultPortCommandEnt(this);
+        public DefaultNodeSelectionEnt build() {
+            return new DefaultNodeSelectionEnt(this);
         }
     
     }

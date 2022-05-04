@@ -50,50 +50,40 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionEnt;
 
-import org.knime.gateway.api.webui.entity.DeletePortCommandEnt;
+import org.knime.gateway.api.webui.entity.NodeSelectionsEnt;
 
 /**
- * Remove a port from a node
+ * A list of node selections.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultDeletePortCommandEnt implements DeletePortCommandEnt {
+public class DefaultNodeSelectionsEnt implements NodeSelectionsEnt {
 
-  protected KindEnum m_kind;
-  protected TargetPortListEnum m_targetPortList;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  protected Integer m_portIndex;
+  protected java.util.List<NodeSelectionEnt> m_selections;
+  protected Integer m_totalNumSelections;
   
-  protected DefaultDeletePortCommandEnt() {
+  protected DefaultNodeSelectionsEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "DeletePortCommand";
+    return "NodeSelections";
   }
   
-  private DefaultDeletePortCommandEnt(DefaultDeletePortCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
+  private DefaultNodeSelectionsEnt(DefaultNodeSelectionsEntBuilder builder) {
+    
+    if(builder.m_selections == null) {
+        throw new IllegalArgumentException("selections must not be null.");
     }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_targetPortList == null) {
-        throw new IllegalArgumentException("targetPortList must not be null.");
+    m_selections = immutable(builder.m_selections);
+    if(builder.m_totalNumSelections == null) {
+        throw new IllegalArgumentException("totalNumSelections must not be null.");
     }
-    m_targetPortList = immutable(builder.m_targetPortList);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-    if(builder.m_portIndex == null) {
-        throw new IllegalArgumentException("portIndex must not be null.");
-    }
-    m_portIndex = immutable(builder.m_portIndex);
+    m_totalNumSelections = immutable(builder.m_totalNumSelections);
   }
   
    /**
@@ -110,8 +100,8 @@ public class DefaultDeletePortCommandEnt implements DeletePortCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultDeletePortCommandEnt ent = (DefaultDeletePortCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_targetPortList, ent.m_targetPortList) && Objects.equals(m_nodeId, ent.m_nodeId) && Objects.equals(m_portIndex, ent.m_portIndex);
+        DefaultNodeSelectionsEnt ent = (DefaultNodeSelectionsEnt)o;
+        return Objects.equals(m_selections, ent.m_selections) && Objects.equals(m_totalNumSelections, ent.m_totalNumSelections);
     }
 
 
@@ -122,87 +112,55 @@ public class DefaultDeletePortCommandEnt implements DeletePortCommandEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_targetPortList)
-               .append(m_nodeId)
-               .append(m_portIndex)
+               .append(m_selections)
+               .append(m_totalNumSelections)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public KindEnum getKind() {
-        return m_kind;
+  public java.util.List<NodeSelectionEnt> getSelections() {
+        return m_selections;
   }
     
   @Override
-  public TargetPortListEnum getTargetPortList() {
-        return m_targetPortList;
-  }
-    
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
-    
-  @Override
-  public Integer getPortIndex() {
-        return m_portIndex;
+  public Integer getTotalNumSelections() {
+        return m_totalNumSelections;
   }
     
   
-    public static class DefaultDeletePortCommandEntBuilder implements DeletePortCommandEntBuilder {
+    public static class DefaultNodeSelectionsEntBuilder implements NodeSelectionsEntBuilder {
     
-        public DefaultDeletePortCommandEntBuilder(){
-            super();
+        public DefaultNodeSelectionsEntBuilder(){
+            
         }
     
-        private KindEnum m_kind;
-        private TargetPortListEnum m_targetPortList;
-        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-        private Integer m_portIndex;
+        private java.util.List<NodeSelectionEnt> m_selections = new java.util.ArrayList<>();
+        private Integer m_totalNumSelections;
 
         @Override
-        public DefaultDeletePortCommandEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+        public DefaultNodeSelectionsEntBuilder setSelections(java.util.List<NodeSelectionEnt> selections) {
+             if(selections == null) {
+                 throw new IllegalArgumentException("selections must not be null.");
              }
-             m_kind = kind;
+             m_selections = selections;
              return this;
         }
 
         @Override
-        public DefaultDeletePortCommandEntBuilder setTargetPortList(TargetPortListEnum targetPortList) {
-             if(targetPortList == null) {
-                 throw new IllegalArgumentException("targetPortList must not be null.");
+        public DefaultNodeSelectionsEntBuilder setTotalNumSelections(Integer totalNumSelections) {
+             if(totalNumSelections == null) {
+                 throw new IllegalArgumentException("totalNumSelections must not be null.");
              }
-             m_targetPortList = targetPortList;
-             return this;
-        }
-
-        @Override
-        public DefaultDeletePortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
-             if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
-             }
-             m_nodeId = nodeId;
-             return this;
-        }
-
-        @Override
-        public DefaultDeletePortCommandEntBuilder setPortIndex(Integer portIndex) {
-             if(portIndex == null) {
-                 throw new IllegalArgumentException("portIndex must not be null.");
-             }
-             m_portIndex = portIndex;
+             m_totalNumSelections = totalNumSelections;
              return this;
         }
 
         
         @Override
-        public DefaultDeletePortCommandEnt build() {
-            return new DefaultDeletePortCommandEnt(this);
+        public DefaultNodeSelectionsEnt build() {
+            return new DefaultNodeSelectionsEnt(this);
         }
     
     }
