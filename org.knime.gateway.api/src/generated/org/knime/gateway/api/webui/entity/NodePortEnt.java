@@ -99,12 +99,6 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
   public Integer getPortObjectVersion();
 
   /**
-   * Get portGroup
-   * @return portGroup 
-   **/
-  public String getPortGroup();
-
-  /**
    * Actions that can currently be performed on this port. Only available if &#39;interaction info&#39; is supposed to be included.
    * @return allowedPortActions 
    **/
@@ -203,14 +197,6 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
-        
-        /**
-   		 * Set portGroup
-         * 
-         * @param portGroup the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setPortGroup(String portGroup);
         
         /**
          * Actions that can currently be performed on this port. Only available if &#39;interaction info&#39; is supposed to be included.

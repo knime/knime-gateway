@@ -115,10 +115,6 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public Integer getPortObjectVersion();
     
     @Override
-    @JsonProperty("portGroup")
-    public String getPortGroup();
-    
-    @Override
     @JsonProperty("allowedPortActions")
     public java.util.List<PortActionEnt> getAllowedPortActions();
     
@@ -178,10 +174,6 @@ public interface NodePortEntMixIn extends NodePortEnt {
         @Override
         @JsonProperty("portObjectVersion")
         public NodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
-        
-        @Override
-        @JsonProperty("portGroup")
-        public NodePortEntMixInBuilder setPortGroup(final String portGroup);
         
         @Override
         @JsonProperty("allowedPortActions")

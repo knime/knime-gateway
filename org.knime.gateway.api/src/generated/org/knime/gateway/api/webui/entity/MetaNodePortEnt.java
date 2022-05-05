@@ -192,14 +192,6 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
         
         /**
-   		 * Set portGroup
-         * 
-         * @param portGroup the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setPortGroup(String portGroup);
-        
-        /**
          * Actions that can currently be performed on this port. Only available if &#39;interaction info&#39; is supposed to be included.
          * 
          * @param allowedPortActions the property value,  
