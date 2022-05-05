@@ -282,7 +282,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetWorkflowWithAmbiguousPortTypes() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.PORT_TYPES);
+        String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
         WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
         cr(workflow.getWorkflow().getAmbiguousPortTypes(), "ambiguous_port_types");
     }
@@ -945,33 +945,33 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        var originalNumConnections = connections.size();
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // replace existing connection
         ConnectCommandEnt command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:27"));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // new connection
         command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(30));
+        assertThat(connections.size(), is(originalNumConnections + 1));
         assertThat(connections.get("root:21_2").getSourceNode().toString(), is("root:27"));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        assertThat(connections.size(), is(originalNumConnections));
         assertNull(connections.get("root:21_2"));
 
         // add already existing connection (command is not added to the undo stack)
@@ -1166,7 +1166,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCanRemovePortFromNative() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
 
         // node with two input port groups, both containing one fixed port
         // the first input port group has an additionally added port ("configured" port)
@@ -1201,7 +1201,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
 
         // example for static nodes (only one port group, nothing to be modified)
-        final var columnFilter = new NodeIDEnt(2);
+        final var columnFilter = new NodeIDEnt(197);
         assertThat( //
             "Do not allow removal of port from node without dynamic port groups", //
             !portRemovalAllowed(columnFilter, wfId, 1) //
@@ -1231,7 +1231,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCanRemovePortFromContainer() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
         final var metanode = new NodeIDEnt(192);
         final var component = new NodeIDEnt(193);
         assertThat( //
@@ -1271,7 +1271,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final boolean inPort) throws Exception {
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
         var nodeEnt = workflow.getNodes().get(targetNode.toString());
+        if (nodeEnt == null) {
+            throw new IllegalArgumentException("Node not found in workflow entity");
+        }
         var portList = inPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
+        if (portList == null) {
+            throw new IllegalArgumentException("No in-/output ports present");
+        }
         var allowedActions = portList.get(portIndex).getAllowedPortActions();
         if (allowedActions == null) {
             return false;
@@ -1294,7 +1300,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCanAddPortToNative() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
         final var concatenateNode = new NodeIDEnt(187);
         var successor = 189;
         var compatiblePortType = BufferedDataTable.TYPE;
@@ -1321,11 +1327,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private boolean portAddingAllowed(final NodeIDEnt targetNode, final String wfId, final String targetPortTypeId,
         final String targetPortGroup) throws Exception {
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        var portGroupEnt = workflow //
-            .getNodes() //
-            .get(targetNode.toString()) //
-            .getPortGroups() //
-            .stream() //
+        var portGroups = workflow.getNodes().get(targetNode.toString()).getPortGroups();
+        if (portGroups == null ) {
+            return false;
+        }
+        var portGroupEnt = portGroups.stream() //
             .filter(pgEnt -> Objects.equals(pgEnt.getName(), targetPortGroup)) //
             .findFirst() //
             .orElse(null);

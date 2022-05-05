@@ -682,7 +682,7 @@
       } ],
       "position" : {
         "x" : 704,
-        "y" : 363
+        "y" : 323
       },
       "state" : {
         "executionState" : "IDLE",
@@ -708,6 +708,9 @@
         "optional" : false,
         "type" : "table"
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Inport 1",
@@ -731,6 +734,9 @@
         "nodeState" : "EXECUTED",
         "type" : "table"
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
@@ -980,6 +986,9 @@
         "optional" : true,
         "type" : "flowVariable"
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "myPort 1",
@@ -989,6 +998,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Inport 2",
@@ -1005,6 +1017,9 @@
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "type" : "flowVariable"
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Outport 1",
@@ -1013,6 +1028,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
@@ -1384,6 +1402,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortActions" : [ {
+          "type" : "remove"
+        } ],
         "connectedVia" : "[ root:27_3 ]",
         "index" : 3,
         "name" : "Additional table to concatenate",
@@ -1411,6 +1432,11 @@
         "view" : {
           "type" : "table"
         }
+      } ],
+      "portGroups" : [ {
+        "canAddPort" : true,
+        "name" : "input",
+        "supportedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable" ]
       } ],
       "position" : {
         "x" : 204,

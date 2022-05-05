@@ -6,36 +6,18 @@
         <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
     </config>
     <config key="model">
-        <config key="flowVariableName_Internals">
-            <entry key="SettingsModelID" type="xstring" value="SMID_string"/>
-            <entry key="EnabledStatus" type="xboolean" value="true"/>
-        </config>
-        <entry key="flowVariableName" type="xstring" value=""/>
-        <entry key="maxNrIterations" type="xint" value="100"/>
-        <entry key="endLoop_deprecated" type="xboolean" value="false"/>
-        <entry key="useFlowVariable" type="xboolean" value="false"/>
-        <entry key="propagateFlowVariables" type="xboolean" value="false"/>
-        <config key="minNumberOfRows">
-            <entry key="array-size" type="xint" value="1"/>
-            <entry key="0" type="xlong" value="1"/>
-        </config>
-        <config key="addIterationColumn">
-            <entry key="array-size" type="xint" value="2"/>
-            <entry key="0" type="xboolean" value="false"/>
-            <entry key="1" type="xboolean" value="false"/>
-        </config>
-        <config key="onlyLastData">
-            <entry key="array-size" type="xint" value="2"/>
-            <entry key="0" type="xboolean" value="false"/>
-            <entry key="1" type="xboolean" value="false"/>
-        </config>
+        <entry key="fail_on_duplicates" type="xboolean" value="false"/>
+        <entry key="append_suffix" type="xboolean" value="true"/>
+        <entry key="intersection_of_columns" type="xboolean" value="false"/>
+        <entry key="suffix" type="xstring" value="_dup"/>
+        <entry key="enable_hiliting" type="xboolean" value="false"/>
     </config>
     <config key="nodeAnnotation">
-        <entry key="text" type="xstring" value="two input port groups,%%00013%%00010one configured port"/>
+        <entry key="text" type="xstring" value="single input port group,%%00013%%00010one configured port"/>
         <entry key="bgcolor" type="xint" value="16777215"/>
-        <entry key="x-coordinate" type="xint" value="259"/>
-        <entry key="y-coordinate" type="xint" value="1399"/>
-        <entry key="width" type="xint" value="123"/>
+        <entry key="x-coordinate" type="xint" value="676"/>
+        <entry key="y-coordinate" type="xint" value="154"/>
+        <entry key="width" type="xint" value="126"/>
         <entry key="height" type="xint" value="30"/>
         <entry key="alignment" type="xstring" value="CENTER"/>
         <entry key="borderSize" type="xint" value="0"/>
@@ -45,9 +27,9 @@
         <config key="styles"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
-    <entry key="state" type="xstring" value="IDLE"/>
-    <entry key="factory" type="xstring" value="org.knime.base.node.meta.looper.recursive.RecursiveLoopEndDynamicNodeFactory"/>
-    <entry key="node-name" type="xstring" value="Recursive Loop End"/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <entry key="factory" type="xstring" value="org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Concatenate"/>
     <entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
     <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
     <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
@@ -58,23 +40,19 @@
     <entry key="node-feature-version" type="xstring" value="4.5.1.v202201171200"/>
     <config key="factory_settings"/>
     <config key="node_creation_config">
-        <config key="Collector">
+        <config key="input">
             <config key="port_0">
                 <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
             </config>
         </config>
-        <config key="Recursion"/>
+        <config key="Concatenated tables"/>
     </config>
-    <entry key="name" type="xstring" value="Recursive Loop End"/>
+    <entry key="name" type="xstring" value="Concatenate"/>
     <entry key="hasContent" type="xboolean" value="false"/>
     <entry key="isInactive" type="xboolean" value="false"/>
     <config key="ports">
         <config key="port_1">
             <entry key="index" type="xint" value="1"/>
-            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
-        </config>
-        <config key="port_2">
-            <entry key="index" type="xint" value="2"/>
             <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
         </config>
     </config>

@@ -53,6 +53,11 @@
         "type" : "table"
       }
     } ],
+    "portGroups" : [ {
+      "canAddPort" : true,
+      "name" : "input",
+      "supportedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable" ]
+    } ],
     "position" : {
       "x" : 40,
       "y" : 56

@@ -56,6 +56,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.BufferedDataTable;
@@ -79,6 +80,7 @@ import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.missing.MissingNodeFactory;
+import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
@@ -598,8 +600,8 @@ public final class EntityBuilderUtil {
             for (int i = 0; i < nrPorts; i++) {
                 Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
-                Boolean isInactive = port.isInactive() ? Boolean.TRUE : null;
-                Integer portObjectVersion = getPortObjectVersion(port, buildContext);
+                var isInactive = port.isInactive() ? Boolean.TRUE : null;
+                var portObjectVersion = getPortObjectVersion(port, buildContext);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
                     isInactive, connections, null, portObjectVersion, buildContext));
             }
@@ -820,30 +822,35 @@ public final class EntityBuilderUtil {
             var portsConfig = nnc.getNode().getCopyOfCreationConfig()
                 .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null);
             if (portsConfig == null) {
-                return Collections.emptyList();
+                return null;
             }
-            return portsConfig.getExtendablePorts().entrySet().stream()
+            var portGroupEnts = portsConfig.getExtendablePorts().entrySet().stream()
                 .map(entry -> buildPortGroupEnt(entry.getKey(), entry.getValue(), nnc, buildContext))
                 .filter(Objects::nonNull).collect(toList());
+            return !portGroupEnts.isEmpty() ? portGroupEnts : null;
         } else {
-            return Collections.emptyList();
+            return null;
         }
     }
 
     private static PortGroupEnt buildPortGroupEnt(final String portGroupName,
         final ExtendablePortGroup extendablePortGroup, final NativeNodeContainer nnc,
         final WorkflowBuildContext buildContext) {
-        var builder = builder(PortGroupEnt.PortGroupEntBuilder.class).setName(portGroupName);
-        if (buildContext.includeInteractionInfo()) {
-            var canEditPorts = CoreUtil.canEditNativeNodePorts(nnc, buildContext.dependentNodeProperties());
-            if (canEditPorts && extendablePortGroup.canAddPort()) {
-                var supportedTypeIds = Arrays.stream(extendablePortGroup.getSupportedPortTypes())
-                    .map(CoreUtil::getPortTypeId).collect(toList());
-                builder.setCanAddPort(true);
-                builder.setSupportedPortTypeIds(supportedTypeIds);
-            }
+        if (!buildContext.includeInteractionInfo()) {
+            return null;
         }
-        return builder.build();
+        var canEditPorts = canEditNativeNodePorts(nnc, buildContext.dependentNodeProperties());
+        var canAddPort = canEditPorts && extendablePortGroup.canAddPort();
+        if (!canAddPort) {
+            return null;
+        }
+        var supportedTypeIds = Arrays.stream(extendablePortGroup.getSupportedPortTypes())
+                .map(CoreUtil::getPortTypeId).collect(toList());
+        return builder(PortGroupEnt.PortGroupEntBuilder.class)
+                .setName(portGroupName)
+                .setCanAddPort(true)
+                .setSupportedPortTypeIds(supportedTypeIds)
+                .build();
     }
 
     private static AllowedNodeActionsEnt buildAllowedNodeActionsEnt(final NodeContainer nc,
@@ -1061,22 +1068,22 @@ public final class EntityBuilderUtil {
 
     private static List<PortActionEnt> getAllowedPortActionEnts(final NodeContainer nc, final boolean inPorts,
         final int portIndex, final WorkflowBuildContext buildContext) {
-        List<PortActionEnt> allowedActions = new ArrayList<>();
-        if (buildContext.includeInteractionInfo()) {
-            if (nc instanceof NativeNodeContainer) {
-                var canEditPorts = CoreUtil.canEditNativeNodePorts(nc, buildContext.dependentNodeProperties());
-                var canRemoveSpecificPort =
-                    CoreUtil.canRemoveNativeNodePort((NativeNodeContainer)nc, portIndex, inPorts);
-                if (canEditPorts && canRemoveSpecificPort) {
-                    allowedActions.add(buildPortActionEnt(PortActionEnt.TypeEnum.REMOVE));
-                }
-            } else if (nc instanceof WorkflowManager || nc instanceof SubNodeContainer) {
-                if (CoreUtil.canRemoveContainerNodePort(nc, portIndex, inPorts)) { // NOSONAR
-                    allowedActions.add(buildPortActionEnt(PortActionEnt.TypeEnum.REMOVE));
-                }
+        if (!buildContext.includeInteractionInfo()) {
+            return null;
+        }
+        if (nc instanceof NativeNodeContainer) {
+            var canEditPorts = canEditNativeNodePorts(nc, buildContext.dependentNodeProperties());
+            var canRemoveSpecificPort =
+                canRemoveNativeNodePort((NativeNodeContainer)nc, portIndex, inPorts);
+            if (canEditPorts && canRemoveSpecificPort) {
+                return List.of(buildPortActionEnt(PortActionEnt.TypeEnum.REMOVE));
+            }
+        } else if (nc instanceof WorkflowManager || nc instanceof SubNodeContainer) {
+            if (canRemoveContainerNodePort(nc, portIndex, inPorts)) { // NOSONAR
+                return List.of(buildPortActionEnt(PortActionEnt.TypeEnum.REMOVE));
             }
         }
-        return allowedActions;
+        return null;
     }
 
     private static PortActionEnt buildPortActionEnt(final PortActionEnt.TypeEnum type) {
@@ -1122,7 +1129,7 @@ public final class EntityBuilderUtil {
             .setColor(getPortTypeColor(resPortType, ptype))//
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
-            .setAllowedPortActions(!portActions.isEmpty() ? portActions : null) //
+            .setAllowedPortActions(portActions) //
             .build();
     }
 
@@ -1207,7 +1214,7 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
-            .setPortGroups(!portGroupEnts.isEmpty() ? portGroupEnts : null) //
+            .setPortGroups(portGroupEnts) //
             .build();
     }
 
@@ -1245,6 +1252,109 @@ public final class EntityBuilderUtil {
             allowedActions = LoopState.getAllowedActions(nc, buildContext);
         }
         return builder(LoopInfoEntBuilder.class).setStatus(status).setAllowedActions(allowedActions).build();
+    }
+
+    /**
+     * Determine whether a given port can be removed from a native node.
+     *
+     * @param nnc The node the port is attached to.
+     * @param portIndex The index of the port. The enumeration begins with 0 at the fixed flow variable port.
+     * @param inPort Whether the queried port is an input port. Assumed to be an output port if false.
+     * @return Whether the queried port can currently be removed from the node.
+     */
+    @SuppressWarnings("java:S2301") // boolean parameter is reasonable.
+    private static boolean canRemoveNativeNodePort(final NativeNodeContainer nnc, final int portIndex,
+        final boolean inPort) {
+        if (portIndex == 0) {
+            // can never remove fixed flow variable port.
+            return false;
+        }
+        var portsConfig = nnc.getNode().getCopyOfCreationConfig()
+            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null);
+        if (portsConfig == null) {
+            return false;
+        }
+
+        var portIndexInList = portIndex - 1; // structures below do not consider fixed flow variable port.
+        var portGroupsToIndices = inPort ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation();
+        var nameAndIndices = portGroupsToIndices.entrySet().stream() //
+            .filter(entry -> { //
+                var indicesInThisGroup = entry.getValue();
+                return ArrayUtils.contains(indicesInThisGroup, portIndexInList);
+            }) //
+            .findFirst() //
+            .orElse(null);
+        if (nameAndIndices == null) {
+            return false;
+        }
+
+        var groupName = nameAndIndices.getKey();
+        var indicesInGroup = nameAndIndices.getValue();
+        var extendablePortGroup = portsConfig.getExtendablePorts().get(groupName);
+        if (extendablePortGroup == null) {
+            return false;
+        }
+
+        var maxIndex = Arrays.stream(indicesInGroup).max().orElse(-1);
+        var isLastInGroup = portIndexInList == maxIndex;
+        var groupHasAddedPort = extendablePortGroup.hasConfiguredPorts();
+        return isLastInGroup && groupHasAddedPort;
+    }
+
+    /**
+     * Determine whether a given port can be removed from a container node.
+     *
+     * @param nc The node the port is attached to. Assumed to be a container node
+     * @param portIndex The index of the queried port.
+     * @param inPorts Whether the queried is an input or an output port
+     * @throws IllegalArgumentException If the given node is not a container node.
+     * @apiNote For containers, the port at index 0 is always the fixed flow variable port. Metanodes do not have a
+     *          fixed flow variable port.
+     * @return Whether the queried port can currently be removed from the node.
+     */
+    @SuppressWarnings("java:S2301") // boolean parameter is reasonable.
+    private static boolean canRemoveContainerNodePort(final NodeContainer nc, final int portIndex,
+        final boolean inPorts) {
+        var isContainerNode = (nc instanceof SubNodeContainer) || (nc instanceof WorkflowManager);
+        if (!isContainerNode) {
+            throw new IllegalArgumentException("Not a container node");
+        }
+        if (nc instanceof SubNodeContainer && portIndex == 0) {
+            // First input/output port of component nodes is always a fixed flow variable port.
+            return false;
+        }
+        var metaPortInfo = getContainerMetaPortInfo(nc, inPorts);
+        return !metaPortInfo[portIndex].isConnected();
+    }
+
+    /**
+     * Determine whether currently changes can be made to the given native node's dynamic port configuration.
+     *
+     * @param nc The node to modify ports of.
+     * @param dnp The dependent node properties of the workflow.
+     * @return Whether the port configuration can be updated.
+     */
+    private static boolean canEditNativeNodePorts(final NodeContainer nc, final DependentNodeProperties dnp) {
+        return dnp.canRemoveConnections(nc.getID());
+    }
+
+    private static MetaPortInfo[] getContainerMetaPortInfo(final NodeContainer nc, final boolean inPorts) {
+        var parentWfm = nc.getParent();
+        if (nc instanceof WorkflowManager) {
+            if (inPorts) {
+                return parentWfm.getMetanodeInputPortInfo(nc.getID());
+            } else {
+                return parentWfm.getMetanodeOutputPortInfo(nc.getID());
+            }
+        } else if (nc instanceof SubNodeContainer) {
+            if (inPorts) {
+                return parentWfm.getSubnodeInputPortInfo(nc.getID());
+            } else {
+                return parentWfm.getSubnodeOutputPortInfo(nc.getID());
+            }
+        } else {
+            throw new IllegalStateException("Queried node is not a container");
+        }
     }
 
     /**
