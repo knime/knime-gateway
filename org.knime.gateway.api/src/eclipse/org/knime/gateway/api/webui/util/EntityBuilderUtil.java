@@ -57,6 +57,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.internal.ReferencedFile;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.Node;
@@ -299,16 +300,12 @@ public final class EntityBuilderUtil {
         }
     }
 
-    private static Map<String, PortTypeEnt> buildPortTypeEntsMap(final WorkflowBuildContext buildContext) {
-        if (buildContext.portTypes() == null) {
-            return null;
-        }
-        Set<PortType> portTypes = buildContext.portTypes();
-        return portTypes.stream()
-            .collect(Collectors.toMap(CoreUtil::getPortTypeId, t -> buildPortTypeEnt(t, portTypes)));
-    }
-
-    private static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
+    /**
+     * @param ptype The port type
+     * @param availableTypes Available port types to be considered for listing ports compatible to the given one
+     * @return An entity describing the given port type
+     */
+    public static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
         List<String> compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
             .map(CoreUtil::getPortTypeId)//
             .collect(Collectors.toList());
@@ -1114,7 +1111,6 @@ public final class EntityBuilderUtil {
         final int portIdx, final Boolean isOptional, final Boolean isInactive,
         final Collection<ConnectionContainer> connections, final PortActionEnt allowedPortAction,
         final Integer portObjectVersion, final WorkflowBuildContext buildContext) {
-        buildContext.updatePortTypes(ptype);
         return builder(NodePortEntBuilder.class) //
             .setIndex(portIdx)//
             .setOptional(isOptional)//
@@ -1123,7 +1119,7 @@ public final class EntityBuilderUtil {
                 connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext)).collect(Collectors.toList()))//
             .setName(name)//
             .setInfo(info)//
-            .setTypeId(CoreUtil.getPortTypeId(ptype))//
+            .setTypeId(CoreUtil.getPortTypeId(ptype)) //
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
             .setAllowedPortAction(allowedPortAction)//

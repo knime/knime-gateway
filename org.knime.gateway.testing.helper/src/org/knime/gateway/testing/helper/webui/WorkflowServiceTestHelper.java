@@ -278,18 +278,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests that output port types that can be connected to more than one other port type in the workflow are correctly
-     * represented in the workflow.
-     *
-     * @throws Exception
-     */
-    public void testGetWorkflowWithAmbiguousPortTypes() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
-        WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
-        cr(workflow.getWorkflow().getPortTypes(), "ambiguous_port_types");
-    }
-
-    /**
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link TranslateCommandEnt}.

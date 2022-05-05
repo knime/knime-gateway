@@ -173,17 +173,5 @@
     "containerType" : "project",
     "name" : "general_web_ui"
   } ],
-  "portTypes" : {
-    "org.knime.core.node.BufferedDataTable" : {
-      "color" : "#000000",
-      "kind" : "table",
-      "name" : "Data"
-    },
-    "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
-      "color" : "#FF4B4B",
-      "kind" : "flowVariable",
-      "name" : "Flow Variable"
-    }
-  },
   "workflowAnnotations" : [ ]
 }

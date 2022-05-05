@@ -49,7 +49,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -85,12 +84,6 @@ public interface WorkflowEnt extends GatewayEntity {
    * @return nodeTemplates , never <code>null</code>
    **/
   public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates();
-
-  /**
-   * A map of all port types used in the workflow. Kept here to avoid repetition. The map keys are port type ids.
-   * @return portTypes 
-   **/
-  public java.util.Map<String, PortTypeEnt> getPortTypes();
 
   /**
    * The list of connections.
@@ -175,14 +168,6 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates);
-        
-        /**
-         * A map of all port types used in the workflow. Kept here to avoid repetition. The map keys are port type ids.
-         * 
-         * @param portTypes the property value,  
-         * @return this entity builder for chaining
-         */
-        WorkflowEntBuilder setPortTypes(java.util.Map<String, PortTypeEnt> portTypes);
         
         /**
          * The list of connections.

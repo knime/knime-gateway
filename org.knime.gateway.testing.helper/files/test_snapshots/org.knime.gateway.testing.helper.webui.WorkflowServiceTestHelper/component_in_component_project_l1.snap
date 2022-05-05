@@ -144,12 +144,5 @@
     "containerType" : "project",
     "name" : "component project"
   } ],
-  "portTypes" : {
-    "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
-      "color" : "#FF4B4B",
-      "kind" : "flowVariable",
-      "name" : "Flow Variable"
-    }
-  },
   "workflowAnnotations" : [ ]
 }

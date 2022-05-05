@@ -65,7 +65,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
 
   protected java.util.List<WorkflowProjectEnt> m_openedWorkflows;
   protected java.util.Map<String, PortTypeEnt> m_availablePortTypes;
-  protected java.util.List<String> m_recommendedPortTypeIds;
+  protected java.util.List<String> m_suggestedPortTypeIds;
   
   protected DefaultAppStateEnt() {
     //for sub-classes
@@ -86,10 +86,10 @@ public class DefaultAppStateEnt implements AppStateEnt {
         throw new IllegalArgumentException("availablePortTypes must not be null.");
     }
     m_availablePortTypes = immutable(builder.m_availablePortTypes);
-    if(builder.m_recommendedPortTypeIds == null) {
-        throw new IllegalArgumentException("recommendedPortTypeIds must not be null.");
+    if(builder.m_suggestedPortTypeIds == null) {
+        throw new IllegalArgumentException("suggestedPortTypeIds must not be null.");
     }
-    m_recommendedPortTypeIds = immutable(builder.m_recommendedPortTypeIds);
+    m_suggestedPortTypeIds = immutable(builder.m_suggestedPortTypeIds);
   }
   
    /**
@@ -107,7 +107,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
             return false;
         }
         DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_recommendedPortTypeIds, ent.m_recommendedPortTypeIds);
+        return Objects.equals(m_openedWorkflows, ent.m_openedWorkflows) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds);
     }
 
 
@@ -120,7 +120,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
        return new HashCodeBuilder()
                .append(m_openedWorkflows)
                .append(m_availablePortTypes)
-               .append(m_recommendedPortTypeIds)
+               .append(m_suggestedPortTypeIds)
                .toHashCode();
    }
   
@@ -137,8 +137,8 @@ public class DefaultAppStateEnt implements AppStateEnt {
   }
     
   @Override
-  public java.util.List<String> getRecommendedPortTypeIds() {
-        return m_recommendedPortTypeIds;
+  public java.util.List<String> getSuggestedPortTypeIds() {
+        return m_suggestedPortTypeIds;
   }
     
   
@@ -150,7 +150,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
     
         private java.util.List<WorkflowProjectEnt> m_openedWorkflows = new java.util.ArrayList<>();
         private java.util.Map<String, PortTypeEnt> m_availablePortTypes = new java.util.HashMap<>();
-        private java.util.List<String> m_recommendedPortTypeIds = new java.util.ArrayList<>();
+        private java.util.List<String> m_suggestedPortTypeIds = new java.util.ArrayList<>();
 
         @Override
         public DefaultAppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows) {
@@ -171,11 +171,11 @@ public class DefaultAppStateEnt implements AppStateEnt {
         }
 
         @Override
-        public DefaultAppStateEntBuilder setRecommendedPortTypeIds(java.util.List<String> recommendedPortTypeIds) {
-             if(recommendedPortTypeIds == null) {
-                 throw new IllegalArgumentException("recommendedPortTypeIds must not be null.");
+        public DefaultAppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds) {
+             if(suggestedPortTypeIds == null) {
+                 throw new IllegalArgumentException("suggestedPortTypeIds must not be null.");
              }
-             m_recommendedPortTypeIds = recommendedPortTypeIds;
+             m_suggestedPortTypeIds = suggestedPortTypeIds;
              return this;
         }
 

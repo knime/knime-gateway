@@ -185,25 +185,5 @@
     "containerType" : "project",
     "name" : "general_web_ui"
   } ],
-  "portTypes" : {
-    "org.knime.core.node.BufferedDataTable" : {
-      "color" : "#000000",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "table",
-      "name" : "Data"
-    },
-    "org.knime.core.node.port.PortObject" : {
-      "color" : "#9B9B9B",
-      "compatibleTypes" : [ "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.flowvariable.FlowVariablePortObject" ],
-      "kind" : "generic",
-      "name" : "Generic Port"
-    },
-    "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
-      "color" : "#FF4B4B",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "flowVariable",
-      "name" : "Flow Variable"
-    }
-  },
   "workflowAnnotations" : [ ]
 }

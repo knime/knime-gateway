@@ -74,10 +74,10 @@ public interface AppStateEnt extends GatewayEntity {
   public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
 
   /**
-   * List of IDs of recommended port types
-   * @return recommendedPortTypeIds , never <code>null</code>
+   * When the user is prompted to select a port type, this subset of types may be used as suggestions.
+   * @return suggestedPortTypeIds , never <code>null</code>
    **/
-  public java.util.List<String> getRecommendedPortTypeIds();
+  public java.util.List<String> getSuggestedPortTypeIds();
 
 
     /**
@@ -102,12 +102,12 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setAvailablePortTypes(java.util.Map<String, PortTypeEnt> availablePortTypes);
         
         /**
-         * List of IDs of recommended port types
+         * When the user is prompted to select a port type, this subset of types may be used as suggestions.
          * 
-         * @param recommendedPortTypeIds the property value, NOT <code>null</code>! 
+         * @param suggestedPortTypeIds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setRecommendedPortTypeIds(java.util.List<String> recommendedPortTypeIds);
+        AppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds);
         
         
         /**

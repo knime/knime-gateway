@@ -54,7 +54,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.database.DatabaseConnectionPortObject;
+import org.knime.core.node.port.database.DatabasePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.capture.WorkflowPortObject;
 
 /**
  * Provides information about the state of the application. The application state is modelled by a reference to a
@@ -117,6 +123,18 @@ public final class AppStateProvider {
     public interface AppState {
 
         /**
+         * When the user is prompted to select a port type, this subset of types may be used as suggestions.
+         */
+        List<PortType> SUGGESTED_PORT_TYPES = List.of(
+                 BufferedDataTable.TYPE,  // Data
+                 DatabaseConnectionPortObject.TYPE, // Database Connection
+                 DatabasePortObject.TYPE, // Database Query
+                 FlowVariablePortObject.TYPE,  // Flow Variable
+                 PortObject.TYPE,  // Generic
+                 WorkflowPortObject.TYPE  // Workflow
+         );
+
+        /**
          * @return list of all currently open workflows.
          */
         List<OpenedWorkflow> getOpenedWorkflows();
@@ -129,7 +147,7 @@ public final class AppStateProvider {
         /**
          * @return List of recommended port types
          */
-        List<PortType> getRecommendedPortTypes();
+        List<PortType> getSuggestedPortTypes();
 
         /**
          * Represents an opened workflow.

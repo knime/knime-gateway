@@ -102,16 +102,6 @@ public final class CoreUtil {
     private static final String STREAMING_JOB_MANAGER_ID =
         "org.knime.core.streaming.SimpleStreamerNodeExecutionJobManagerFactory";
 
-
-   public static final List<PortType> RECOMMENDED_PORT_TYPES = List.of(
-            BufferedDataTable.TYPE,  // Data
-            DatabaseConnectionPortObject.TYPE, // Database Connection
-            DatabasePortObject.TYPE, // Database Query
-            FlowVariablePortObject.TYPE,  // Flow Variable
-            PortObject.TYPE,  // Generic
-            WorkflowPortObject.TYPE  // Workflow
-    );
-
     private CoreUtil() {
         // utility
     }

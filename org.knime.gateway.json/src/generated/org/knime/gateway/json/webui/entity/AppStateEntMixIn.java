@@ -78,8 +78,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
     
     @Override
-    @JsonProperty("recommendedPortTypeIds")
-    public java.util.List<String> getRecommendedPortTypeIds();
+    @JsonProperty("suggestedPortTypeIds")
+    public java.util.List<String> getSuggestedPortTypeIds();
     
 
     /**
@@ -103,8 +103,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
         public AppStateEntMixInBuilder setAvailablePortTypes(final java.util.Map<String, PortTypeEnt> availablePortTypes);
         
         @Override
-        @JsonProperty("recommendedPortTypeIds")
-        public AppStateEntMixInBuilder setRecommendedPortTypeIds(final java.util.List<String> recommendedPortTypeIds);
+        @JsonProperty("suggestedPortTypeIds")
+        public AppStateEntMixInBuilder setSuggestedPortTypeIds(final java.util.List<String> suggestedPortTypeIds);
         
     }
 

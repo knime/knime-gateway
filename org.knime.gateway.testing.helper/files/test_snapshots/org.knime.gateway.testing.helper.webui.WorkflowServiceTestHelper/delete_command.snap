@@ -1680,50 +1680,6 @@
       "type" : "Visualizer"
     }
   },
-  "portTypes" : {
-    "org.knime.base.node.mine.pca.PCAModelPortObject" : {
-      "color" : "#1EB9DC",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "other",
-      "name" : "PCA"
-    },
-    "org.knime.core.node.BufferedDataTable" : {
-      "color" : "#000000",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "table",
-      "name" : "Data"
-    },
-    "org.knime.core.node.port.PortObject" : {
-      "color" : "#9B9B9B",
-      "compatibleTypes" : [ "org.knime.base.node.mine.pca.PCAModelPortObject", "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.flowvariable.FlowVariablePortObject", "org.knime.core.node.port.pmml.PMMLPortObject", "org.knime.distance.DistanceMeasurePortObject", "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject" ],
-      "kind" : "generic",
-      "name" : "Generic Port"
-    },
-    "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
-      "color" : "#FF4B4B",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "flowVariable",
-      "name" : "Flow Variable"
-    },
-    "org.knime.core.node.port.pmml.PMMLPortObject" : {
-      "color" : "#1469AF",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "other",
-      "name" : "PMML"
-    },
-    "org.knime.distance.DistanceMeasurePortObject" : {
-      "color" : "#9B9B9B",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "other",
-      "name" : "Distance Measure"
-    },
-    "org.knime.ext.weka37.ports.IWekaClassifierModelPortObject" : {
-      "color" : "#9B9B9B",
-      "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
-      "kind" : "other",
-      "name" : "Weka 3.7 Classifier"
-    }
-  },
   "workflowAnnotations" : [ {
     "backgroundColor" : "#FFFFFF",
     "borderColor" : "#FFD800",

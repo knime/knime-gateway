@@ -49,14 +49,11 @@
 package org.knime.gateway.api.webui.util;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
-import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -90,10 +87,6 @@ public final class WorkflowBuildContext {
 
     private final boolean m_canRedo;
 
-    private int m_nodeCount;
-
-    private Set<PortType> m_portTypes = null;
-
     private Map<NodeID, String[]> m_inPortGroupsAndIndices;
 
     private Map<NodeID, String[]> m_outPortGroupsAndIndices;
@@ -102,7 +95,7 @@ public final class WorkflowBuildContext {
 
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
-        final DependentNodeProperties depNodeProps, final int nodeCount) {
+        final DependentNodeProperties depNodeProps) {
         m_wfm = wfm;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
@@ -110,7 +103,6 @@ public final class WorkflowBuildContext {
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
-        m_nodeCount = nodeCount;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -139,31 +131,6 @@ public final class WorkflowBuildContext {
 
     boolean canRedo() {
         return m_canRedo;
-    }
-
-    int nodeCount() {
-        return m_nodeCount;
-    }
-
-    /**
-     * This only method that mutates this build context. Use with care. Helps to avoid redundant work when collecting
-     * all the available input and output port types from a workflow.
-     *
-     * @param pt
-     */
-    void updatePortTypes(final PortType pt) {
-        if (m_portTypes == null) {
-            m_portTypes = new HashSet<>();
-        }
-        m_portTypes.add(pt);
-    }
-
-    /**
-     * @return the set of port types a collected via {@link #updatePortTypes(PortType, boolean)}, <code>null</code> if
-     *         empty
-     */
-    Set<PortType> portTypes() {
-        return m_portTypes;
     }
 
     /**
@@ -310,7 +277,7 @@ public final class WorkflowBuildContext {
                     : m_depNodeProps.get();
             }
             return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm),
-                wfm.getProjectComponent().isPresent(), dnp, wfm.getNodeContainers().size());
+                wfm.getProjectComponent().isPresent(), dnp);
         }
 
     }
