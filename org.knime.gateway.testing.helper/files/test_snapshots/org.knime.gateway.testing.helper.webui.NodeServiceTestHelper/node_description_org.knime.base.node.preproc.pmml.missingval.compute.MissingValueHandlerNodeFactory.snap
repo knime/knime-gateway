@@ -19,6 +19,7 @@
     "optional" : false,
     "type" : "table"
   }, {
+    "color" : "#1469AF",
     "description" : "Table with PMML documenting the missing value replacement",
     "name" : "PMML Transformations",
     "optional" : false,

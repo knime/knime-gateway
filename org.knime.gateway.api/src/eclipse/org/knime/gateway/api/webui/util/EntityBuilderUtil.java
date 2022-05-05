@@ -477,12 +477,16 @@ public final class EntityBuilderUtil {
         final IntFunction<String> nameGetter, final IntFunction<String> descGetter,
         final IntFunction<PortType> typeGetter) {
         return listMapOrNull(IntStream.range(0, nrPorts).boxed().collect(toList()), //
-            index -> builder(NodePortDescriptionEntBuilder.class) //
-                .setName(nameGetter.apply(index)) //
-                .setDescription(descGetter.apply(index)) //
-                .setType(getNodePortTemplateEntType(typeGetter.apply(index))) //
-                .setOptional(typeGetter.apply(index).isOptional()) //
-                .build());
+            index -> { // NOSONAR
+                var portType = typeGetter.apply(index);
+                return builder(NodePortDescriptionEntBuilder.class) //
+                    .setName(nameGetter.apply(index)) //
+                    .setDescription(descGetter.apply(index)) //
+                    .setType(getNodePortTemplateEntType(portType)) //
+                    .setOptional(portType.isOptional()) //
+                    .setColor(getPortTypeColor(getNodePortTemplateEntType(portType), portType))//
+                    .build();
+            });
     }
 
     private static List<NodeDialogOptionGroupEnt> buildUngroupedDialogOptionGroupEnt(final List<NodeDialogOptionDescriptionEnt> ungroupedOptionEnts) {

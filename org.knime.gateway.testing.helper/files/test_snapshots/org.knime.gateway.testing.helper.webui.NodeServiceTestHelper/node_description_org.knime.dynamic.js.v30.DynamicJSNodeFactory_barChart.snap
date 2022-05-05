@@ -170,6 +170,7 @@
     "sectionName" : "Interactivity"
   } ],
   "outPorts" : [ {
+    "color" : "#41BE78",
     "description" : "\n\t\t\tSVG image of the bar chart.\n\t\t",
     "name" : "Bar chart image",
     "optional" : false,
