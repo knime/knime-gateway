@@ -99,10 +99,10 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
   public Integer getPortObjectVersion();
 
   /**
-   * Actions that can currently be performed on this port. Only available if &#39;interaction info&#39; is supposed to be included.
-   * @return allowedPortActions 
+   * Get allowedPortAction
+   * @return allowedPortAction 
    **/
-  public java.util.List<PortActionEnt> getAllowedPortActions();
+  public PortActionEnt getAllowedPortAction();
 
 
     /**
@@ -199,12 +199,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         NodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
         
         /**
-         * Actions that can currently be performed on this port. Only available if &#39;interaction info&#39; is supposed to be included.
+   		 * Set allowedPortAction
          * 
-         * @param allowedPortActions the property value,  
+         * @param allowedPortAction the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions);
+        NodePortEntBuilder setAllowedPortAction(PortActionEnt allowedPortAction);
         
         
         /**

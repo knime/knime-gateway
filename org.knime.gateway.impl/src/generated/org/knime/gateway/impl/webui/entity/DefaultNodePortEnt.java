@@ -75,7 +75,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
   protected Boolean m_inactive;
   protected PortViewEnt m_view;
   protected Integer m_portObjectVersion;
-  protected java.util.List<PortActionEnt> m_allowedPortActions;
+  protected PortActionEnt m_allowedPortAction;
   
   protected DefaultNodePortEnt() {
     //for sub-classes
@@ -105,7 +105,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
     m_inactive = immutable(builder.m_inactive);
     m_view = immutable(builder.m_view);
     m_portObjectVersion = immutable(builder.m_portObjectVersion);
-    m_allowedPortActions = immutable(builder.m_allowedPortActions);
+    m_allowedPortAction = immutable(builder.m_allowedPortAction);
   }
   
    /**
@@ -123,7 +123,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_allowedPortActions, ent.m_allowedPortActions);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_otherTypeId, ent.m_otherTypeId) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_allowedPortAction, ent.m_allowedPortAction);
     }
 
 
@@ -145,7 +145,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
                .append(m_inactive)
                .append(m_view)
                .append(m_portObjectVersion)
-               .append(m_allowedPortActions)
+               .append(m_allowedPortAction)
                .toHashCode();
    }
   
@@ -207,8 +207,8 @@ public class DefaultNodePortEnt implements NodePortEnt {
   }
     
   @Override
-  public java.util.List<PortActionEnt> getAllowedPortActions() {
-        return m_allowedPortActions;
+  public PortActionEnt getAllowedPortAction() {
+        return m_allowedPortAction;
   }
     
   
@@ -229,7 +229,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
         private Boolean m_inactive;
         private PortViewEnt m_view;
         private Integer m_portObjectVersion;
-        private java.util.List<PortActionEnt> m_allowedPortActions;
+        private PortActionEnt m_allowedPortAction;
 
         @Override
         public DefaultNodePortEntBuilder setName(String name) {
@@ -304,8 +304,8 @@ public class DefaultNodePortEnt implements NodePortEnt {
         }
 
         @Override
-        public DefaultNodePortEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions) {
-             m_allowedPortActions = allowedPortActions;
+        public DefaultNodePortEntBuilder setAllowedPortAction(PortActionEnt allowedPortAction) {
+             m_allowedPortAction = allowedPortAction;
              return this;
         }
 

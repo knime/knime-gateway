@@ -71,6 +71,14 @@ public interface PortActionEntMixIn extends PortActionEnt {
     @JsonProperty("type")
     public TypeEnum getType();
     
+    @Override
+    @JsonProperty("portGroupName")
+    public String getPortGroupName();
+    
+    @Override
+    @JsonProperty("supportedPortTypeIds")
+    public java.util.List<String> getSupportedPortTypeIds();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -87,6 +95,14 @@ public interface PortActionEntMixIn extends PortActionEnt {
         @Override
         @JsonProperty("type")
         public PortActionEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("portGroupName")
+        public PortActionEntMixInBuilder setPortGroupName(final String portGroupName);
+        
+        @Override
+        @JsonProperty("supportedPortTypeIds")
+        public PortActionEntMixInBuilder setSupportedPortTypeIds(final java.util.List<String> supportedPortTypeIds);
         
     }
 

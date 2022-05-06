@@ -59,9 +59,11 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface PortActionEnt extends GatewayEntity {
 
   /**
-   * The kind of action.
+   * the type of allowed port action
    */
   public enum TypeEnum {
+    ADD("add"),
+    
     REMOVE("remove");
 
     private String value;
@@ -79,10 +81,22 @@ public interface PortActionEnt extends GatewayEntity {
 
 
   /**
-   * The kind of action.
-   * @return type 
+   * the type of allowed port action
+   * @return type , never <code>null</code>
    **/
   public TypeEnum getType();
+
+  /**
+   * The name of the port group the port, this action refers to, is part of. Not present, e.g., if it&#39;s an action on component ports.
+   * @return portGroupName 
+   **/
+  public String getPortGroupName();
+
+  /**
+   * The IDs of port types associated with the action. Only present for certain types of port actions, e.g., to add a port.
+   * @return supportedPortTypeIds 
+   **/
+  public java.util.List<String> getSupportedPortTypeIds();
 
 
     /**
@@ -91,12 +105,28 @@ public interface PortActionEnt extends GatewayEntity {
     public interface PortActionEntBuilder extends GatewayEntityBuilder<PortActionEnt> {
 
         /**
-         * The kind of action.
+         * the type of allowed port action
          * 
-         * @param type the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         PortActionEntBuilder setType(TypeEnum type);
+        
+        /**
+         * The name of the port group the port, this action refers to, is part of. Not present, e.g., if it&#39;s an action on component ports.
+         * 
+         * @param portGroupName the property value,  
+         * @return this entity builder for chaining
+         */
+        PortActionEntBuilder setPortGroupName(String portGroupName);
+        
+        /**
+         * The IDs of port types associated with the action. Only present for certain types of port actions, e.g., to add a port.
+         * 
+         * @param supportedPortTypeIds the property value,  
+         * @return this entity builder for chaining
+         */
+        PortActionEntBuilder setSupportedPortTypeIds(java.util.List<String> supportedPortTypeIds);
         
         
         /**

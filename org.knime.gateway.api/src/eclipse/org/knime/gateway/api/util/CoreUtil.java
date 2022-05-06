@@ -53,23 +53,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
-import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
-import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.streamable.PartitionInfo;
@@ -228,7 +223,7 @@ public final class CoreUtil {
      *    <li>All incoming connections are from a metanode inport</li>
      * </ul>
      */
-    public static Set<NodeContainer> getSourceNodes(WorkflowManager wfm) {
+    public static Set<NodeContainer> getSourceNodes(final WorkflowManager wfm) {
         return wfm.getNodeContainers().stream().filter(nc -> {
             var incoming = wfm.getIncomingConnectionsFor(nc.getID());
             return incoming.isEmpty() || incoming.stream().allMatch(cc -> cc.getSource().equals(wfm.getID()));
@@ -304,7 +299,6 @@ public final class CoreUtil {
      * @return The ID of the given port type.
      */
     public static String getPortTypeId(final PortType ptype) {
-        // TODO unify with EntityBuilderUtil#getPortTypeId introduced with NXT-645.
         return ptype.getPortObjectClass().getName();
     }
 

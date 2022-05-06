@@ -48,7 +48,7 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortGroupEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -137,10 +137,10 @@ public interface NodeEnt extends GatewayEntity {
   public NodeExecutionInfoEnt getExecutionInfo();
 
   /**
-   * Get portGroups
-   * @return portGroups 
+   * A list of actions determining what ports can be added to the node.
+   * @return allowedPortActions 
    **/
-  public java.util.List<PortGroupEnt> getPortGroups();
+  public java.util.List<PortActionEnt> getAllowedPortActions();
 
 
     /**
@@ -213,12 +213,12 @@ public interface NodeEnt extends GatewayEntity {
         NodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
-   		 * Set portGroups
+         * A list of actions determining what ports can be added to the node.
          * 
-         * @param portGroups the property value,  
+         * @param allowedPortActions the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setPortGroups(java.util.List<PortGroupEnt> portGroups);
+        NodeEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions);
         
         
         /**

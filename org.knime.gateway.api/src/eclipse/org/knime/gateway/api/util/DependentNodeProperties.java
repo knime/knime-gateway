@@ -163,7 +163,7 @@ public final class DependentNodeProperties {
      * @param id The node to consider.
      * @return Whether a connection on that node can be removed.
      */
-    public boolean canRemoveConnections(final NodeID id) {
+    public boolean canRemoveIncomingConnections(final NodeID id) {
         var nc = m_wfm.getNodeContainer(id);
         var isExecutionInProgress = isExecutionInProgress(nc);
         var isExecuted = nc.getNodeContainerState().isExecuted();

@@ -56,7 +56,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.PortGroupEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -78,7 +78,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   protected KindEnum m_kind;
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
-  protected java.util.List<PortGroupEnt> m_portGroups;
+  protected java.util.List<PortActionEnt> m_allowedPortActions;
   protected String m_templateId;
   protected NodeStateEnt m_state;
   protected LoopInfoEnt m_loopInfo;
@@ -117,7 +117,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     m_kind = immutable(builder.m_kind);
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
-    m_portGroups = immutable(builder.m_portGroups);
+    m_allowedPortActions = immutable(builder.m_allowedPortActions);
     if(builder.m_templateId == null) {
         throw new IllegalArgumentException("templateId must not be null.");
     }
@@ -141,7 +141,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_portGroups, ent.m_portGroups) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_allowedPortActions, ent.m_allowedPortActions) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo);
     }
 
 
@@ -160,7 +160,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                .append(m_kind)
                .append(m_allowedActions)
                .append(m_executionInfo)
-               .append(m_portGroups)
+               .append(m_allowedPortActions)
                .append(m_templateId)
                .append(m_state)
                .append(m_loopInfo)
@@ -210,8 +210,8 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   }
     
   @Override
-  public java.util.List<PortGroupEnt> getPortGroups() {
-        return m_portGroups;
+  public java.util.List<PortActionEnt> getAllowedPortActions() {
+        return m_allowedPortActions;
   }
     
   @Override
@@ -244,7 +244,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         private KindEnum m_kind;
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
-        private java.util.List<PortGroupEnt> m_portGroups;
+        private java.util.List<PortActionEnt> m_allowedPortActions;
         private String m_templateId;
         private NodeStateEnt m_state;
         private LoopInfoEnt m_loopInfo;
@@ -313,8 +313,8 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setPortGroups(java.util.List<PortGroupEnt> portGroups) {
-             m_portGroups = portGroups;
+        public DefaultNativeNodeEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions) {
+             m_allowedPortActions = allowedPortActions;
              return this;
         }
 

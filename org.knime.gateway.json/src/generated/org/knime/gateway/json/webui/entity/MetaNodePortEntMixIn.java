@@ -115,8 +115,8 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public Integer getPortObjectVersion();
     
     @Override
-    @JsonProperty("allowedPortActions")
-    public java.util.List<PortActionEnt> getAllowedPortActions();
+    @JsonProperty("allowedPortAction")
+    public PortActionEnt getAllowedPortAction();
     
     @Override
     @JsonProperty("nodeState")
@@ -180,8 +180,8 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         public MetaNodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
         
         @Override
-        @JsonProperty("allowedPortActions")
-        public MetaNodePortEntMixInBuilder setAllowedPortActions(final java.util.List<PortActionEnt> allowedPortActions);
+        @JsonProperty("allowedPortAction")
+        public MetaNodePortEntMixInBuilder setAllowedPortAction(final PortActionEnt allowedPortAction);
         
         @Override
         @JsonProperty("nodeState")

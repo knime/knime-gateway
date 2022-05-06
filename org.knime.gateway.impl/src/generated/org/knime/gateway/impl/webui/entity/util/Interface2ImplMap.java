@@ -158,8 +158,6 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortActionEnt.PortActionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortActionEnt;
-import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultPortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
@@ -380,9 +378,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == PortActionEntBuilder.class) {
             return (B)new DefaultPortActionEnt.DefaultPortActionEntBuilder();
-        }        
-        if(clazz == PortGroupEntBuilder.class) {
-            return (B)new DefaultPortGroupEnt.DefaultPortGroupEntBuilder();
         }        
         if(clazz == PortViewEntBuilder.class) {
             return (B)new DefaultPortViewEnt.DefaultPortViewEntBuilder();

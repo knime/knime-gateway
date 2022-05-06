@@ -50,7 +50,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
-import org.knime.gateway.api.webui.entity.PortGroupEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -168,12 +168,12 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
         MetaNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
         
         /**
-   		 * Set portGroups
+         * A list of actions determining what ports can be added to the node.
          * 
-         * @param portGroups the property value,  
+         * @param allowedPortActions the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setPortGroups(java.util.List<PortGroupEnt> portGroups);
+        MetaNodeEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions);
         
         /**
    		 * Set name

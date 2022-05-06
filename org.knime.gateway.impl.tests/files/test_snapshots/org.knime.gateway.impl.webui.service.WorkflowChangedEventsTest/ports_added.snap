@@ -16,9 +16,10 @@
   "op" : "add",
   "path" : "/nodes/root:186/inPorts/4",
   "value" : {
-    "allowedPortActions" : [ {
+    "allowedPortAction" : {
+      "portGroupName" : "input",
       "type" : "remove"
-    } ],
+    },
     "connectedVia" : "[  ]",
     "index" : 4,
     "name" : "Additional table to concatenate",

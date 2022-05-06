@@ -48,7 +48,7 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortGroupEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 
@@ -127,8 +127,8 @@ public interface NodeEntMixIn extends NodeEnt {
     public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
-    @JsonProperty("portGroups")
-    public java.util.List<PortGroupEnt> getPortGroups();
+    @JsonProperty("allowedPortActions")
+    public java.util.List<PortActionEnt> getAllowedPortActions();
     
 
     /**
@@ -190,8 +190,8 @@ public interface NodeEntMixIn extends NodeEnt {
         public NodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
         
         @Override
-        @JsonProperty("portGroups")
-        public NodeEntMixInBuilder setPortGroups(final java.util.List<PortGroupEnt> portGroups);
+        @JsonProperty("allowedPortActions")
+        public NodeEntMixInBuilder setAllowedPortActions(final java.util.List<PortActionEnt> allowedPortActions);
         
     }
 

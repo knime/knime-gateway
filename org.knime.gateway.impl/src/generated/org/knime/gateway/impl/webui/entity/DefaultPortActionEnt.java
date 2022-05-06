@@ -62,6 +62,8 @@ import org.knime.gateway.api.webui.entity.PortActionEnt;
 public class DefaultPortActionEnt implements PortActionEnt {
 
   protected TypeEnum m_type;
+  protected String m_portGroupName;
+  protected java.util.List<String> m_supportedPortTypeIds;
   
   protected DefaultPortActionEnt() {
     //for sub-classes
@@ -74,7 +76,12 @@ public class DefaultPortActionEnt implements PortActionEnt {
   
   private DefaultPortActionEnt(DefaultPortActionEntBuilder builder) {
     
+    if(builder.m_type == null) {
+        throw new IllegalArgumentException("type must not be null.");
+    }
     m_type = immutable(builder.m_type);
+    m_portGroupName = immutable(builder.m_portGroupName);
+    m_supportedPortTypeIds = immutable(builder.m_supportedPortTypeIds);
   }
   
    /**
@@ -92,7 +99,7 @@ public class DefaultPortActionEnt implements PortActionEnt {
             return false;
         }
         DefaultPortActionEnt ent = (DefaultPortActionEnt)o;
-        return Objects.equals(m_type, ent.m_type);
+        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_portGroupName, ent.m_portGroupName) && Objects.equals(m_supportedPortTypeIds, ent.m_supportedPortTypeIds);
     }
 
 
@@ -104,6 +111,8 @@ public class DefaultPortActionEnt implements PortActionEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_type)
+               .append(m_portGroupName)
+               .append(m_supportedPortTypeIds)
                .toHashCode();
    }
   
@@ -114,6 +123,16 @@ public class DefaultPortActionEnt implements PortActionEnt {
         return m_type;
   }
     
+  @Override
+  public String getPortGroupName() {
+        return m_portGroupName;
+  }
+    
+  @Override
+  public java.util.List<String> getSupportedPortTypeIds() {
+        return m_supportedPortTypeIds;
+  }
+    
   
     public static class DefaultPortActionEntBuilder implements PortActionEntBuilder {
     
@@ -122,10 +141,27 @@ public class DefaultPortActionEnt implements PortActionEnt {
         }
     
         private TypeEnum m_type;
+        private String m_portGroupName;
+        private java.util.List<String> m_supportedPortTypeIds;
 
         @Override
         public DefaultPortActionEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("type must not be null.");
+             }
              m_type = type;
+             return this;
+        }
+
+        @Override
+        public DefaultPortActionEntBuilder setPortGroupName(String portGroupName) {
+             m_portGroupName = portGroupName;
+             return this;
+        }
+
+        @Override
+        public DefaultPortActionEntBuilder setSupportedPortTypeIds(java.util.List<String> supportedPortTypeIds) {
+             m_supportedPortTypeIds = supportedPortTypeIds;
              return this;
         }
 
