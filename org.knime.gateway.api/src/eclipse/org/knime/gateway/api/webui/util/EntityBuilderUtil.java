@@ -306,12 +306,16 @@ public final class EntityBuilderUtil {
      * @return An entity describing the given port type
      */
     public static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
-        List<String> compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
-            .map(CoreUtil::getPortTypeId)//
-            .collect(Collectors.toList());
+        var kind = getPortTypeKind(ptype);
+        List<String> compatibleTypes = Collections.emptyList();
+        if (kind == PortTypeEnt.KindEnum.OTHER) {
+            compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
+                .map(CoreUtil::getPortTypeId)//
+                .collect(Collectors.toList());
+        }
         return builder(PortTypeEntBuilder.class)//
             .setName(ptype.getName())//
-            .setKind(getPortTypeKind(ptype))//
+            .setKind(kind)//
             .setColor(hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .build();
