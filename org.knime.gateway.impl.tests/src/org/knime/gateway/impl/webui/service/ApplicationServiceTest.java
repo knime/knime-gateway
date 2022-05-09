@@ -83,7 +83,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
     @Test
     public void testGetAppState() throws Exception {
         String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, workflowProjectId);
+        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
 
         AppState appState = mock(AppState.class);
         Supplier<AppState> appStateSupplier = mock(Supplier.class);
