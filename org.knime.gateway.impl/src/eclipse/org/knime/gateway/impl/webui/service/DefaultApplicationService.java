@@ -58,7 +58,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -136,24 +135,24 @@ public final class DefaultApplicationService implements ApplicationService {
             projectEnts = appState.getOpenedWorkflows().stream()
                 .map(w -> buildWorkflowProjectEnt(w, workflowProjectManager, workflowMiddleware))
                 .filter(Objects::nonNull).collect(toList());
-            var allAvailablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
-            availablePortTypeEnts = appState.getAvailablePortTypes().stream()
-                    .collect(Collectors.toMap(
-                            CoreUtil::getPortTypeId,
-                            pt -> EntityBuilderUtil.buildPortTypeEnt(pt, allAvailablePortTypes)
-                    ));
-            suggestedPortTypeIds = appState.getSuggestedPortTypes().stream()
-                    .map(CoreUtil::getPortTypeId)
-                    .collect(toList());
+            var allAvailablePortTypes = appState.getAvailablePortTypes();
+            availablePortTypeEnts = allAvailablePortTypes.stream() //
+                .collect(Collectors.toMap( //
+                    CoreUtil::getPortTypeId, //
+                    pt -> EntityBuilderUtil.buildPortTypeEnt(pt, allAvailablePortTypes) //
+                ));
+            suggestedPortTypeIds = appState.getSuggestedPortTypes().stream() //
+                .map(CoreUtil::getPortTypeId) //
+                .collect(toList());
         } else {
             projectEnts = Collections.emptyList();
             availablePortTypeEnts = Collections.emptyMap();
             suggestedPortTypeIds = Collections.emptyList();
         }
-        builder.setOpenedWorkflows(projectEnts);
-        builder.setAvailablePortTypes(availablePortTypeEnts);
-        builder.setSuggestedPortTypeIds(suggestedPortTypeIds);
-        return builder.build();
+        return builder.setOpenedWorkflows(projectEnts) //
+            .setAvailablePortTypes(availablePortTypeEnts) //
+            .setSuggestedPortTypeIds(suggestedPortTypeIds) //
+            .build();
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf,

@@ -54,7 +54,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -63,17 +62,12 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.node.port.database.DatabaseConnectionPortObject;
-import org.knime.core.node.port.database.DatabasePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowLoopContext;
@@ -86,7 +80,6 @@ import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -317,31 +310,6 @@ public final class CoreUtil {
      */
     public static String getPortTypeId(final PortType ptype) {
         return ptype.getPortObjectClass().getName();
-    }
-
-    /**
-     * The kind of a port type.
-     */
-    public enum PortTypeKind {
-        TABLE, FLOWVARIABLE, GENERIC, OTHER
-    }
-
-    /**
-     * Determine the kind of the given port
-     * @param ptype The port to determine the kind of
-     * @return The kind of the port
-     */
-    // TODO probably not needed anymore after rebase on top of finished NXT-645
-    public static PortTypeKind getPortTypeKind(final PortType ptype) {
-        if (BufferedDataTable.TYPE.equals(ptype)) {
-            return PortTypeKind.TABLE;
-        } else if (FlowVariablePortObject.TYPE.equals(ptype)) {
-            return PortTypeKind.FLOWVARIABLE;
-        } else if (PortObject.TYPE.equals(ptype)) {
-            return PortTypeKind.GENERIC;
-        } else {
-            return PortTypeKind.OTHER;
-        }
     }
 
 }
