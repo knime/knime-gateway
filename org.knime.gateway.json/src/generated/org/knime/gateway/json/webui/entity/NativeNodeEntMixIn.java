@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -108,6 +109,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public NodeExecutionInfoEnt getExecutionInfo();
     
     @Override
+    @JsonProperty("allowedPortActions")
+    public java.util.List<PortActionEnt> getAllowedPortActions();
+    
+    @Override
     @JsonProperty("templateId")
     public String getTemplateId();
     
@@ -163,6 +168,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public NativeNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("allowedPortActions")
+        public NativeNodeEntMixInBuilder setAllowedPortActions(final java.util.List<PortActionEnt> allowedPortActions);
         
         @Override
         @JsonProperty("templateId")

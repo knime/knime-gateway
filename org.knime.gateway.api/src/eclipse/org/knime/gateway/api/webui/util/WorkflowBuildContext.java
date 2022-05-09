@@ -48,11 +48,16 @@
  */
 package org.knime.gateway.api.webui.util;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
+import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -88,6 +93,12 @@ public final class WorkflowBuildContext {
     private int m_nodeCount;
 
     private Set<PortType> m_portTypes = null;
+
+    private Map<NodeID, String[]> m_inPortGroupsAndIndices;
+
+    private Map<NodeID, String[]> m_outPortGroupsAndIndices;
+
+    private Map<NodeID, ModifiablePortsConfiguration> m_portsConfigurations;
 
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
@@ -153,6 +164,59 @@ public final class WorkflowBuildContext {
      */
     Set<PortType> portTypes() {
         return m_portTypes;
+    }
+
+    /**
+     * @param nnc the node to get the port index to port group map for
+     * @param inPort whether to the map for the input or output ports
+     * @return an array containing the port group name per port index; can be {@code null} if the given index is not
+     *         part of a port group
+     */
+    String[] getPortIndexToPortGroupMap(final NativeNodeContainer nnc, final boolean inPort) {
+        Map<NodeID, String[]> inOrOutPortGroupsAndIndices;
+        if (inPort) {
+            if (m_inPortGroupsAndIndices == null) {
+                m_inPortGroupsAndIndices = new HashMap<>();
+            }
+            inOrOutPortGroupsAndIndices = m_inPortGroupsAndIndices;
+        } else {
+            if (m_outPortGroupsAndIndices == null) {
+                m_outPortGroupsAndIndices = new HashMap<>();
+            }
+            inOrOutPortGroupsAndIndices = m_outPortGroupsAndIndices;
+        }
+
+        return inOrOutPortGroupsAndIndices.computeIfAbsent(nnc.getID(), id -> getPortGroupsPerIndex(nnc, inPort));
+    }
+
+    /**
+     * @param nnc the node to get the ports configuration for
+     * @return the {@link ModifiablePortsConfiguration} for the given node; it's cached such that no extra copy needs to
+     *         be created every time it's accessed; can be {@code null} if there is none
+     */
+    ModifiablePortsConfiguration getPortsConfiguration(final NativeNodeContainer nnc) {
+        if (m_portsConfigurations == null) {
+            m_portsConfigurations = new HashMap<>();
+        }
+        return m_portsConfigurations.computeIfAbsent(nnc.getID(), id -> nnc.getNode().getCopyOfCreationConfig()
+            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null));
+    }
+
+    private String[] getPortGroupsPerIndex(final NativeNodeContainer nnc, final boolean inPort) {
+        var portsConfig = getPortsConfiguration(nnc);
+        if (portsConfig == null) {
+            return null; // NOSONAR
+        }
+        var portGroupsToIndicesMap = inPort ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation();
+        var portGroupsPerIndex = new String[inPort ? (nnc.getNrInPorts() - 1) : (nnc.getNrOutPorts() - 1)];
+        for (var e : portGroupsToIndicesMap.entrySet()) {
+            var portGroup = e.getKey();
+            int[] indices = e.getValue();
+            for (var i : indices) {
+                portGroupsPerIndex[i] = portGroup;
+            }
+        }
+        return portGroupsPerIndex;
     }
 
     /**

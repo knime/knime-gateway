@@ -1,4 +1,14 @@
 {
+  "com.knime.bigdata.spark.core.port.data.SparkDataPortObject" : {
+    "color" : "#000000",
+    "kind" : "other",
+    "name" : "Spark Data (legacy com)"
+  },
+  "org.knime.core.node.BufferedDataTable" : {
+    "color" : "#000000",
+    "kind" : "table",
+    "name" : "Data"
+  },
   "org.knime.core.node.port.database.DatabaseConnectionPortObject" : {
     "color" : "#FF4B4B",
     "compatibleTypes" : [ "org.knime.core.node.port.database.DatabasePortObject" ],
@@ -15,5 +25,15 @@
     "color" : "#FF4B4B",
     "kind" : "flowVariable",
     "name" : "Flow Variable"
+  },
+  "org.knime.ext.textprocessing.dl4j.nodes.embeddings.WordVectorFileStorePortObject" : {
+    "color" : "#9B9B9B",
+    "kind" : "other",
+    "name" : "Word Vector Model"
+  },
+  "org.knime.kafka.port.KafkaConnectorPortObject" : {
+    "color" : "#42B0F4",
+    "kind" : "other",
+    "name" : "KafkaConnection"
   }
 }

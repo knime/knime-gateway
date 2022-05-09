@@ -72,6 +72,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -79,10 +80,15 @@ import java.util.stream.Collectors;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.database.DatabasePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
@@ -104,6 +110,8 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -128,6 +136,7 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S112") // generic exceptions
 public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
@@ -275,7 +284,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetWorkflowWithAmbiguousPortTypes() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.PORT_TYPES);
+        String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
         WorkflowSnapshotEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
         cr(workflow.getWorkflow().getPortTypes(), "ambiguous_port_types");
     }
@@ -603,7 +612,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     private void executeAndWaitUntilExecuting(final String wfId, final int toWaitFor) throws Exception {
         executeWorkflowAsync(wfId);
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+        Awaitility.await().atMost(15, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             WorkflowEnt wfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow();
             assertThat(((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toWaitFor).toString())).getState()
                 .getExecutionState(), is(ExecutionStateEnum.EXECUTING));
@@ -939,33 +948,33 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        var originalNumConnections = connections.size();
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // replace existing connection
         var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:27"));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // new connection
         command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(30));
+        assertThat(connections.size(), is(originalNumConnections + 1));
         assertThat(connections.get("root:21_2").getSourceNode().toString(), is("root:27"));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat(connections.size(), is(29));
+        assertThat(connections.size(), is(originalNumConnections));
         assertNull(connections.get("root:21_2"));
 
         // add already existing connection (command is not added to the undo stack)
@@ -1152,6 +1161,191 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setName(name)//
             .setNodeId(nodeId)//
             .build();
+    }
+
+    /**
+     * Test whether removing ports from native nodes is (not) allowed.
+     *
+     * @throws Exception
+     */
+    public void testCanRemovePortFromNative() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+
+        // node with two input port groups, both containing one fixed port
+        // the first input port group has an additionally added port ("configured" port)
+        // all input ports are connected.
+        final var recursiveLoopEnd = new NodeIDEnt(190);
+        assertPortTypeIDs(recursiveLoopEnd, workflow, 0, true, FlowVariablePortObject.TYPE);
+        assertThat( //
+            "Do not allow removal of fixed flow variable port", //
+            !portRemovalAllowed(recursiveLoopEnd, workflow, 0) //
+        );
+        assertPortTypeIDs(recursiveLoopEnd, workflow, 1, true, BufferedDataTable.TYPE);
+        assertThat( //
+            "Do not allow removal of first static port in first port group", //
+            !portRemovalAllowed(recursiveLoopEnd, workflow, 1) //
+        );
+        assertThat( //
+            "Allow removal of dynamic port in first port group", //
+            portRemovalAllowed(recursiveLoopEnd, workflow, 2) //
+        );
+        assertThat( //
+            "Do not allow removal of first static port in second port group", //
+            !portRemovalAllowed(recursiveLoopEnd, workflow, 3) //
+        );
+        // each additional input port also adds an output port
+        assertThat(
+                "Do not allow removal of static output port",
+                !portRemovalAllowed(recursiveLoopEnd, workflow, 1, false)
+        );
+        assertThat(
+                "Allow removal of additional output port",
+                portRemovalAllowed(recursiveLoopEnd, workflow, 2, false)
+        );
+
+        // example for static nodes (only one port group, nothing to be modified)
+        final var columnFilter = new NodeIDEnt(197);
+        assertThat( //
+            "Do not allow removal of port from node without dynamic port groups", //
+            !portRemovalAllowed(columnFilter, workflow, 1) //
+        );
+
+        var workflowWithoutInteractionInfo = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        assertNull( //
+            "Expect port actions to not be present if interaction info is not included", //
+            workflowWithoutInteractionInfo.getNodes().get(recursiveLoopEnd.toString()).getInPorts().get(1)
+                .getAllowedPortAction() //
+        );
+
+        // test that ports can not be removed if node cannot be replaced (updating ports of native node means
+        //   replacing the node with a modified version).
+        // Node with one input group containing two fixed and one additionally added port.
+        final var concatenateNode = new NodeIDEnt(187);
+        var successor = 189;
+        executeAndWaitUntilExecuting(wfId, successor);
+        assertThat( //
+            "Do not allow removing port if executing successor", //
+            !portRemovalAllowed(concatenateNode, workflow, 1) //
+        );
+    }
+
+    /**
+     * Test whether removing ports from container nodes is (not) allowed.
+     *
+     * @throws Exception
+     */
+    public void testCanRemovePortFromContainer() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        final var metanode = new NodeIDEnt(192);
+        final var component = new NodeIDEnt(193);
+        assertThat( //
+            "Expect: Can not remove connected port", //
+            !portRemovalAllowed(metanode, workflow, 0) //
+        );
+        assertThat( //
+            "Expect: Can remove unconnected input port", //
+            portRemovalAllowed(metanode, workflow, 1) //
+        );
+        assertThat( //
+                "Expect: Can remove unconnected output port", //
+                portRemovalAllowed(metanode, workflow, 0, false) //
+        );
+        // components have a fixed flow variable port, metanodes do not
+        var flowVarPortOffset = 1;
+        assertThat( //
+            "Expect: Can not remove connected port", //
+            !portRemovalAllowed(component, workflow, 0 + flowVarPortOffset) //
+        );
+        assertThat( //
+            "Expect: Can remove unconnected input port", //
+            portRemovalAllowed(component, workflow, 1 + flowVarPortOffset) //
+        );
+        assertThat( //
+                "Expect: Can remove unconnected output port", //
+                portRemovalAllowed(component, workflow, 1 + flowVarPortOffset, false) //
+        );
+    }
+
+    private static boolean portRemovalAllowed(final NodeIDEnt targetNode, final WorkflowEnt workflow,
+        final int portIndex) {
+        return portRemovalAllowed(targetNode, workflow, portIndex, true);
+    }
+
+    private static boolean portRemovalAllowed(final NodeIDEnt targetNode, final WorkflowEnt workflow,
+        final int portIndex, final boolean inPort) {
+        var nodeEnt = workflow.getNodes().get(targetNode.toString());
+        if (nodeEnt == null) {
+            throw new IllegalArgumentException("Node not found in workflow entity");
+        }
+        var portList = inPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
+        if (portList == null) {
+            throw new IllegalArgumentException("No in-/output ports present");
+        }
+        var allowedAction = portList.get(portIndex).getAllowedPortAction();
+        if (allowedAction == null) {
+            return false;
+        }
+        return allowedAction.getType() == PortActionEnt.TypeEnum.REMOVE;
+    }
+
+    private static void assertPortTypeIDs(final NodeIDEnt targetNode, final WorkflowEnt workflow, final int portIndex,
+        final boolean inPort, final PortType expectedPortType) {
+        var nodeEnt = workflow.getNodes().get(targetNode.toString());
+        var portList = inPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
+        var type = portList.get(portIndex).getTypeId();
+        assertThat("Expect port type kinds to match", type.equals(CoreUtil.getPortTypeId(expectedPortType)));
+    }
+
+    /**
+     * Test whether adding ports to native nodes is (not) allowed
+     *
+     * @throws Exception
+     */
+    public void testCanAddPortToNative() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        final var concatenateNode = new NodeIDEnt(187);
+        var successor = 189;
+        var compatiblePortType = BufferedDataTable.TYPE;
+        var compatiblePortTypeId = CoreUtil.getPortTypeId(compatiblePortType);
+        var incompatiblePortType = DatabasePortObject.TYPE;
+        var incompatiblePortTypeId = CoreUtil.getPortTypeId(incompatiblePortType);
+        var targetPortGroup = "input";
+
+        assertThat( //
+            "Allow adding port of compatible type", //
+            portAddingAllowed(concatenateNode, workflow, compatiblePortTypeId, targetPortGroup) //
+        );
+        assertThat("Do not allow adding port of incompatible type",
+            !portAddingAllowed(concatenateNode, workflow, incompatiblePortTypeId, targetPortGroup) //
+        );
+
+        executeAndWaitUntilExecuting(wfId, successor);
+        workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        var addingNotAllowed = !portAddingAllowed(concatenateNode, workflow, compatiblePortTypeId, targetPortGroup);
+        assertThat( //
+            "Do not allow adding port if executing successor", //
+            addingNotAllowed);
+    }
+
+    private static boolean portAddingAllowed(final NodeIDEnt targetNode, final WorkflowEnt workflow,
+        final String targetPortTypeId, final String targetPortGroup) {
+        var allowedPortActions = workflow.getNodes().get(targetNode.toString()).getAllowedPortActions();
+        if (allowedPortActions == null) {
+            return false;
+        }
+        var portActionEnt = allowedPortActions.stream() //
+            .filter(pgEnt -> Objects.equals(pgEnt.getPortGroupName(), targetPortGroup)) //
+            .findFirst() //
+            .orElse(null);
+        if (portActionEnt == null || portActionEnt.getType() == null
+            || portActionEnt.getSupportedPortTypeIds() == null) {
+            return false;
+        }
+        return portActionEnt.getType() == TypeEnum.ADD
+            && portActionEnt.getSupportedPortTypeIds().contains(targetPortTypeId);
     }
 
 }

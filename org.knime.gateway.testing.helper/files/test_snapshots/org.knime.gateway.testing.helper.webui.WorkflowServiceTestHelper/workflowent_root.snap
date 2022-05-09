@@ -989,6 +989,9 @@
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "allowedPortAction" : {
+          "type" : "remove"
+        },
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "myPort 1",
@@ -998,6 +1001,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortAction" : {
+          "type" : "remove"
+        },
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Inport 2",
@@ -1014,6 +1020,9 @@
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "allowedPortAction" : {
+          "type" : "remove"
+        },
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Outport 1",
@@ -1022,6 +1031,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortAction" : {
+          "type" : "remove"
+        },
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
@@ -1610,6 +1622,11 @@
         "canOpenDialog" : true,
         "canReset" : false
       },
+      "allowedPortActions" : [ {
+        "portGroupName" : "input",
+        "supportedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable" ],
+        "type" : "add"
+      } ],
       "annotation" : {
         "defaultFontSize" : 15,
         "styleRanges" : [ ],
@@ -1642,6 +1659,10 @@
           "type" : "table"
         }
       }, {
+        "allowedPortAction" : {
+          "portGroupName" : "input",
+          "type" : "remove"
+        },
         "connectedVia" : "[ root:27_3 ]",
         "index" : 3,
         "name" : "Additional table to concatenate",
@@ -1766,7 +1787,7 @@
       } ],
       "position" : {
         "x" : 704,
-        "y" : 363
+        "y" : 323
       },
       "state" : {
         "executionState" : "IDLE",
@@ -1795,6 +1816,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortAction" : {
+          "type" : "remove"
+        },
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Inport 1",
@@ -1822,6 +1846,9 @@
           "type" : "table"
         }
       }, {
+        "allowedPortAction" : {
+          "type" : "remove"
+        },
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",

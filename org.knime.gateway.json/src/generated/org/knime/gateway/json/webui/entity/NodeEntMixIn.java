@@ -48,6 +48,7 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 
@@ -125,6 +126,10 @@ public interface NodeEntMixIn extends NodeEnt {
     @JsonProperty("executionInfo")
     public NodeExecutionInfoEnt getExecutionInfo();
     
+    @Override
+    @JsonProperty("allowedPortActions")
+    public java.util.List<PortActionEnt> getAllowedPortActions();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -183,6 +188,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public NodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("allowedPortActions")
+        public NodeEntMixInBuilder setAllowedPortActions(final java.util.List<PortActionEnt> allowedPortActions);
         
     }
 

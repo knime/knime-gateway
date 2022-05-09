@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
 
@@ -105,6 +106,10 @@ public interface NodePortEntMixIn extends NodePortEnt {
     @JsonProperty("portObjectVersion")
     public Integer getPortObjectVersion();
     
+    @Override
+    @JsonProperty("allowedPortAction")
+    public PortActionEnt getAllowedPortAction();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -153,6 +158,10 @@ public interface NodePortEntMixIn extends NodePortEnt {
         @Override
         @JsonProperty("portObjectVersion")
         public NodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
+        
+        @Override
+        @JsonProperty("allowedPortAction")
+        public NodePortEntMixInBuilder setAllowedPortAction(final PortActionEnt allowedPortAction);
         
     }
 

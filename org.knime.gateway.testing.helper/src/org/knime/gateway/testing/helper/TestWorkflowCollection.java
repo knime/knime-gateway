@@ -44,9 +44,9 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution"),
 
     /**
-     * Workflow to test loop execution.
+     * Workflow to test ports and port types.
      */
-    PORT_TYPES("/files/testflows/Port Types", "port types"),
+    PORTS("/files/testflows/Ports", "ports"),
 
     /**
      * An without any native nodes, but an empty metanode (#1) and an empty component (#2).

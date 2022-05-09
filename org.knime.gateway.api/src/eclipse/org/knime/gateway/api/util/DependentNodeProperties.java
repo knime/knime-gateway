@@ -159,6 +159,19 @@ public final class DependentNodeProperties {
     }
 
     /**
+     * Determine whether a connection incident to the given node can be removed.
+     * @param id The node to consider.
+     * @return Whether a connection on that node can be removed.
+     */
+    public boolean canRemoveIncomingConnections(final NodeID id) {
+        var nc = m_wfm.getNodeContainer(id);
+        var isExecutionInProgress = isExecutionInProgress(nc);
+        var isExecuted = nc.getNodeContainerState().isExecuted();
+        var canReset = canResetNode(id);
+        return !(isExecutionInProgress || (isExecuted && !canReset));
+    }
+
+    /**
      * Determine whether nodes in the "loop body" are currently executing, based on the current dependent node properties.
      * Here, the loop body is the set of nodes forward-reachable from the loop head, up to the loop tail.
      * Consequently, this includes outgoing branches and does not include incoming branches.

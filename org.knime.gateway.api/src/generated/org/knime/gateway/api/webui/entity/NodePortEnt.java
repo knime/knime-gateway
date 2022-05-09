@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -96,6 +97,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
    * @return portObjectVersion 
    **/
   public Integer getPortObjectVersion();
+
+  /**
+   * Get allowedPortAction
+   * @return allowedPortAction 
+   **/
+  public PortActionEnt getAllowedPortAction();
 
 
     /**
@@ -174,6 +181,14 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
+        
+        /**
+   		 * Set allowedPortAction
+         * 
+         * @param allowedPortAction the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setAllowedPortAction(PortActionEnt allowedPortAction);
         
         
         /**

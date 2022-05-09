@@ -66,6 +66,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowLoopContext;
@@ -222,7 +223,7 @@ public final class CoreUtil {
      *    <li>All incoming connections are from a metanode inport</li>
      * </ul>
      */
-    public static Set<NodeContainer> getSourceNodes(WorkflowManager wfm) {
+    public static Set<NodeContainer> getSourceNodes(final WorkflowManager wfm) {
         return wfm.getNodeContainers().stream().filter(nc -> {
             var incoming = wfm.getIncomingConnectionsFor(nc.getID());
             return incoming.isEmpty() || incoming.stream().allMatch(cc -> cc.getSource().equals(wfm.getID()));
@@ -290,4 +291,15 @@ public final class CoreUtil {
             return Collections.emptySet();
         }
     }
+
+    /**
+     * Obtain the ID of the given port type
+     *
+     * @param ptype The port type to determine the ID of
+     * @return The ID of the given port type.
+     */
+    public static String getPortTypeId(final PortType ptype) {
+        return ptype.getPortObjectClass().getName();
+    }
+
 }
