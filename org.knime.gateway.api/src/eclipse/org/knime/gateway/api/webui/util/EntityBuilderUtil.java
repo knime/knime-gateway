@@ -309,7 +309,9 @@ public final class EntityBuilderUtil {
         var kind = getPortTypeKind(ptype);
         List<String> compatibleTypes = Collections.emptyList();
         if (kind == PortTypeEnt.KindEnum.OTHER) {
-            compatibleTypes = availableTypes.stream().filter(t -> portTypesAreDifferentButCompatible(ptype, t))
+            compatibleTypes = availableTypes.stream() //
+                .filter(t -> !PortObject.TYPE.equals(t)) //
+                .filter(t -> portTypesAreDifferentButCompatible(ptype, t)) //
                 .map(CoreUtil::getPortTypeId)//
                 .collect(Collectors.toList());
         }

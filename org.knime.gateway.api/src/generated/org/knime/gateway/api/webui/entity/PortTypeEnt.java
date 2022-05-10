@@ -103,7 +103,7 @@ public interface PortTypeEnt extends GatewayEntity {
   public String getColor();
 
   /**
-   * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included. Only given if &#39;kind&#39; is &#39;other&#39;.
+   * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included. Only given if &#39;kind&#39; is &#39;other&#39;. Will never contain the &#39;generic&#39; port type since it&#39;s compatible with every port.
    * @return compatibleTypes 
    **/
   public java.util.List<String> getCompatibleTypes();
@@ -139,7 +139,7 @@ public interface PortTypeEnt extends GatewayEntity {
         PortTypeEntBuilder setColor(String color);
         
         /**
-         * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included. Only given if &#39;kind&#39; is &#39;other&#39;.
+         * List of port type ids this port type is compatible with (i.e. can be connected with). Not present if it&#39;s only compatible with itself. Only present if interaction info is supposed to be included. Only given if &#39;kind&#39; is &#39;other&#39;. Will never contain the &#39;generic&#39; port type since it&#39;s compatible with every port.
          * 
          * @param compatibleTypes the property value,  
          * @return this entity builder for chaining
