@@ -320,6 +320,7 @@ public final class EntityBuilderUtil {
             .setKind(kind)//
             .setColor(hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
+            .setHidden(ptype.isHidden() ? Boolean.TRUE : null)//
             .build();
     }
 

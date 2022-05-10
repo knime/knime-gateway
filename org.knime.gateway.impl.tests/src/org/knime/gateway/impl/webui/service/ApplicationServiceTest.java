@@ -59,6 +59,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
+import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -99,8 +100,12 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         cr(appService.getState(), "empty_appstate");
 
         when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
-        var assumedAvailablePortTypes =
-            Set.of(BufferedDataTable.TYPE, DatabaseConnectionPortObject.TYPE, PortObject.TYPE, DatabasePortObject.TYPE);
+        var assumedAvailablePortTypes = Set.of(BufferedDataTable.TYPE, //
+            DatabaseConnectionPortObject.TYPE, // a port type compatible with another port type
+            PortObject.TYPE, // generic port
+            DatabasePortObject.TYPE, // a port type compatible with another port type
+            ShapeHandlerPortObject.TYPE // hidden port type
+        );
         when(appState.getAvailablePortTypes()).thenReturn(assumedAvailablePortTypes);
         var assumedSuggestedPortTypes = AppState.SUGGESTED_PORT_TYPES;
         when(appState.getSuggestedPortTypes()).thenReturn(assumedSuggestedPortTypes);

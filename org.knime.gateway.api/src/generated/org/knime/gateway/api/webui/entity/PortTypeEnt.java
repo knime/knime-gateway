@@ -108,6 +108,12 @@ public interface PortTypeEnt extends GatewayEntity {
    **/
   public java.util.List<String> getCompatibleTypes();
 
+  /**
+   * Whether this port type is hidden, e.g., from being actively selected by the user (e.g. for a component input/output). Will need to be shipped nevertheless to be able to just render hidden ports.
+   * @return hidden 
+   **/
+  public Boolean isHidden();
+
 
     /**
      * The builder for the entity.
@@ -145,6 +151,14 @@ public interface PortTypeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         PortTypeEntBuilder setCompatibleTypes(java.util.List<String> compatibleTypes);
+        
+        /**
+         * Whether this port type is hidden, e.g., from being actively selected by the user (e.g. for a component input/output). Will need to be shipped nevertheless to be able to just render hidden ports.
+         * 
+         * @param hidden the property value,  
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setHidden(Boolean hidden);
         
         
         /**

@@ -65,6 +65,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
   protected KindEnum m_kind;
   protected String m_color;
   protected java.util.List<String> m_compatibleTypes;
+  protected Boolean m_hidden;
   
   protected DefaultPortTypeEnt() {
     //for sub-classes
@@ -87,6 +88,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
     m_kind = immutable(builder.m_kind);
     m_color = immutable(builder.m_color);
     m_compatibleTypes = immutable(builder.m_compatibleTypes);
+    m_hidden = immutable(builder.m_hidden);
   }
   
    /**
@@ -104,7 +106,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
             return false;
         }
         DefaultPortTypeEnt ent = (DefaultPortTypeEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes) && Objects.equals(m_hidden, ent.m_hidden);
     }
 
 
@@ -119,6 +121,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
                .append(m_kind)
                .append(m_color)
                .append(m_compatibleTypes)
+               .append(m_hidden)
                .toHashCode();
    }
   
@@ -144,6 +147,11 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         return m_compatibleTypes;
   }
     
+  @Override
+  public Boolean isHidden() {
+        return m_hidden;
+  }
+    
   
     public static class DefaultPortTypeEntBuilder implements PortTypeEntBuilder {
     
@@ -155,6 +163,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         private KindEnum m_kind;
         private String m_color;
         private java.util.List<String> m_compatibleTypes;
+        private Boolean m_hidden;
 
         @Override
         public DefaultPortTypeEntBuilder setName(String name) {
@@ -183,6 +192,12 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         @Override
         public DefaultPortTypeEntBuilder setCompatibleTypes(java.util.List<String> compatibleTypes) {
              m_compatibleTypes = compatibleTypes;
+             return this;
+        }
+
+        @Override
+        public DefaultPortTypeEntBuilder setHidden(Boolean hidden) {
+             m_hidden = hidden;
              return this;
         }
 

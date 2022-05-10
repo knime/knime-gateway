@@ -21,6 +21,12 @@
       "compatibleTypes" : [ "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
       "kind" : "other",
       "name" : "Database Query"
+    },
+    "org.knime.core.node.port.viewproperty.ShapeHandlerPortObject" : {
+      "color" : "#1EB9DC",
+      "hidden" : true,
+      "kind" : "other",
+      "name" : "Shape"
     }
   },
   "openedWorkflows" : [ {
