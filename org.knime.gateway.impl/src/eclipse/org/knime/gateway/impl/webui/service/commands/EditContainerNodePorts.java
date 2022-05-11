@@ -49,11 +49,9 @@ package org.knime.gateway.impl.webui.service.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.port.MetaPortInfo;
-import org.knime.core.node.port.PortType;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
@@ -65,37 +63,40 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class EditContainerNodePortList extends AbstractEditPortList {
+final class EditContainerNodePorts extends AbstractEditPorts {
 
-    private List<MetaPortInfo> m_reverseInfos;
+    private MetaPortInfo[] m_reverseInfos;
 
-    public EditContainerNodePortList(final PortCommandEnt portCommandEnt) {
+    public EditContainerNodePorts(final PortCommandEnt portCommandEnt) {
         super(portCommandEnt);
     }
 
     @Override
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        Objects.requireNonNull(m_reverseInfos, "Execute assumed to be called before undo");
-        updatePortList(m_reverseInfos);
+        updatePorts(m_reverseInfos);
         m_reverseInfos = null;
     }
 
     @Override
     protected void addPort(final AddPortCommandEnt addPortCommandEnt) {
-        List<MetaPortInfo> newPortInfos = new ArrayList<>(getCurrentPortInfos());
+        var currentPortInfos = getCurrentPortInfos();
+        List<MetaPortInfo> newPortInfos = new ArrayList<>(Arrays.asList(currentPortInfos));
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
             .orElseThrow(() -> new UnsupportedOperationException("Unknown port type"));
-        var newMetaPortInfo = MetaPortInfo.builder().setPortType(newPortType).build();
+        var newMetaPortInfo = MetaPortInfo.builder() //
+            .setPortType(newPortType) //
+            .setNewIndex(currentPortInfos.length) //
+            .build();
         newPortInfos.add(newMetaPortInfo);
-        updatePortList(newPortInfos);
+        executeChanges(newPortInfos.toArray(MetaPortInfo[]::new));
     }
 
     @Override
     protected void removePort(final RemovePortCommandEnt removePortCommandEnt)
         throws ServiceExceptions.OperationNotAllowedException {
-        List<MetaPortInfo> newPortInfos = new ArrayList<>(getCurrentPortInfos());
+        var newPortInfos = new ArrayList<>(Arrays.asList(getCurrentPortInfos()));
         int indexToRemove = removePortCommandEnt.getPortIndex();
-        if (getContainerType() == WorkflowCommandUtils.ContainerType.COMPONENT && indexToRemove == 0) {
+        if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove == 0) {
             throw new ServiceExceptions.OperationNotAllowedException(
                 "Can not remove fixed flow variable port at index 0");
         }
@@ -104,7 +105,13 @@ public class EditContainerNodePortList extends AbstractEditPortList {
         } catch (IndexOutOfBoundsException e) { // NOSONAR: Exception is thrown
             throw new ServiceExceptions.OperationNotAllowedException(e.getMessage());
         }
-        updatePortList(newPortInfos);
+        executeChanges(newPortInfos.toArray(MetaPortInfo[]::new));
+    }
+
+    private void executeChanges(final MetaPortInfo[] newPortInfos) {
+        setNewIndices(newPortInfos);
+        m_reverseInfos = createReverseInfos(getCurrentPortInfos(), newPortInfos);
+        updatePorts(newPortInfos);
     }
 
     /**
@@ -113,9 +120,7 @@ public class EditContainerNodePortList extends AbstractEditPortList {
      * @param newPortInfos The list of new port infos to apply. This parameter describes changes, and its semantics
      *            depends on previous state (more like a patch).
      */
-    protected void updatePortList(final List<MetaPortInfo> newPortInfos) {
-        reEnumerateNewIndices(newPortInfos);
-        m_reverseInfos = createReverseInfos(getCurrentPortInfos(), newPortInfos);
+    private void updatePorts(final MetaPortInfo[] newPortInfos) {
         if (getPortCommandEnt().getSide() == PortCommandEnt.SideEnum.INPUT) {
             updateInputPorts(newPortInfos);
         } else {
@@ -128,7 +133,7 @@ public class EditContainerNodePortList extends AbstractEditPortList {
      *
      * @return New instances of {@link MetaPortInfo} describing the port configuration
      */
-    private List<MetaPortInfo> getCurrentPortInfos() {
+    private MetaPortInfo[] getCurrentPortInfos() {
         if (getPortCommandEnt().getSide() == PortCommandEnt.SideEnum.INPUT) {
             return getInputPortInfo();
         } else {
@@ -136,24 +141,24 @@ public class EditContainerNodePortList extends AbstractEditPortList {
         }
     }
 
-    protected WorkflowCommandUtils.ContainerType getContainerType() {
-        return WorkflowCommandUtils.getContainerType(getWorkflowManager(), getPortCommandEnt().getNodeId())
+    private CoreUtil.ContainerType getContainerType() {
+        return CoreUtil.getContainerType(getNodeId(), getWorkflowManager())
             .orElseThrow(() -> new UnsupportedOperationException("Node could not be found or is not a container"));
     }
 
-    protected List<MetaPortInfo> getInputPortInfo() {
-        if (getContainerType() == WorkflowCommandUtils.ContainerType.METANODE) {
-            return Arrays.asList(getWorkflowManager().getMetanodeInputPortInfo(getNodeId()));
+    private MetaPortInfo[] getInputPortInfo() {
+        if (getContainerType() == CoreUtil.ContainerType.METANODE) {
+            return getWorkflowManager().getMetanodeInputPortInfo(getNodeId());
         } else {
-            return Arrays.asList(getWorkflowManager().getSubnodeInputPortInfo(getNodeId()));
+            return getWorkflowManager().getSubnodeInputPortInfo(getNodeId());
         }
     }
 
-    protected List<MetaPortInfo> getOutputPortInfo() {
-        if (getContainerType() == WorkflowCommandUtils.ContainerType.METANODE) {
-            return Arrays.asList(getWorkflowManager().getMetanodeOutputPortInfo(getNodeId()));
+    private MetaPortInfo[] getOutputPortInfo() {
+        if (getContainerType() == CoreUtil.ContainerType.METANODE) {
+            return getWorkflowManager().getMetanodeOutputPortInfo(getNodeId());
         } else {
-            return Arrays.asList(getWorkflowManager().getSubnodeOutputPortInfo(getNodeId()));
+            return getWorkflowManager().getSubnodeOutputPortInfo(getNodeId());
         }
     }
 
@@ -162,12 +167,11 @@ public class EditContainerNodePortList extends AbstractEditPortList {
      *
      * @param newInPorts The new port list
      */
-    protected void updateInputPorts(final List<MetaPortInfo> newInPorts) {
-        var newInPortsArr = newInPorts.toArray(MetaPortInfo[]::new);
-        if (getContainerType() == WorkflowCommandUtils.ContainerType.METANODE) {
-            getWorkflowManager().changeMetaNodeInputPorts(getNodeId(), newInPortsArr);
+    private void updateInputPorts(final MetaPortInfo[] newInPorts) {
+        if (getContainerType() == CoreUtil.ContainerType.METANODE) {
+            getWorkflowManager().changeMetaNodeInputPorts(getNodeId(), newInPorts);
         } else {
-            getWorkflowManager().changeSubNodeInputPorts(getNodeId(), newInPortsArr);
+            getWorkflowManager().changeSubNodeInputPorts(getNodeId(), newInPorts);
         }
     }
 
@@ -176,12 +180,11 @@ public class EditContainerNodePortList extends AbstractEditPortList {
      *
      * @param newOutPorts The new port list
      */
-    protected void updateOutputPorts(final List<MetaPortInfo> newOutPorts) {
-        var newOutPortsArr = newOutPorts.toArray(MetaPortInfo[]::new);
-        if (getContainerType() == WorkflowCommandUtils.ContainerType.METANODE) {
-            getWorkflowManager().changeMetaNodeOutputPorts(getNodeId(), newOutPortsArr);
+    private void updateOutputPorts(final MetaPortInfo[] newOutPorts) {
+        if (getContainerType() == CoreUtil.ContainerType.METANODE) {
+            getWorkflowManager().changeMetaNodeOutputPorts(getNodeId(), newOutPorts);
         } else {
-            getWorkflowManager().changeSubNodeOutputPorts(getNodeId(), newOutPortsArr);
+            getWorkflowManager().changeSubNodeOutputPorts(getNodeId(), newOutPorts);
         }
     }
 
@@ -192,15 +195,15 @@ public class EditContainerNodePortList extends AbstractEditPortList {
      * @param newInfos The port info list describing the new state to be applied.
      * @return A port info list describing the reverse operation.
      */
-    private static List<MetaPortInfo> createReverseInfos(final List<MetaPortInfo> originalInfos,
-            final List<MetaPortInfo> newInfos) {
-        var reverse = Arrays.asList(new MetaPortInfo[originalInfos.size()]);
-        newInfos.stream()
+    private static MetaPortInfo[] createReverseInfos(final MetaPortInfo[] originalInfos,
+        final MetaPortInfo[] newInfos) {
+        var reverse = Arrays.asList(new MetaPortInfo[originalInfos.length]);
+        Arrays.stream(newInfos)
             // original index not present => port was added just now => don't need to include in undo list
             .filter(newInfo -> newInfo.getOldIndex() >= 0)
             // each other port is added to undo list with same info but index patch (newIndex, oldIndex) reversed
             .forEach(newInfo -> {
-                var undoInfo = buildReverseInfo(originalInfos.get(newInfo.getOldIndex()), newInfo);
+                var undoInfo = buildReverseInfo(originalInfos[newInfo.getOldIndex()], newInfo);
                 // undo port infos will be at position before change
                 reverse.set(newInfo.getOldIndex(), undoInfo);
             });
@@ -210,40 +213,40 @@ public class EditContainerNodePortList extends AbstractEditPortList {
         IntStream.range(0, reverse.size()) //
             .filter(i -> reverse.get(i) == null) //
             .forEach(i -> {
-                var removedInfo = originalInfos.get(i);
+                var removedInfo = originalInfos[i];
                 // reintroduced info is same as original info, only with no old index (since it is being (re-)introduced)
                 var reintroducedInfo = buildReintroducedInfo(removedInfo, i);
                 reverse.set(i, reintroducedInfo);
             });
-        return reverse;
+        return reverse.toArray(MetaPortInfo[]::new);
     }
 
-    private static MetaPortInfo buildReverseInfo(final MetaPortInfo originalInfo, MetaPortInfo newInfo) {
+    private static MetaPortInfo buildReverseInfo(final MetaPortInfo originalInfo, final MetaPortInfo newInfo) {
         return MetaPortInfo.builder() //
-                .setPortType(originalInfo.getType()) //
-                .setIsConnected(originalInfo.isConnected()) //
-                // "original"/old index of undoInfo is newIndex of change patch "newInfos"
-                .setOldIndex(newInfo.getNewIndex()) //
-                .setNewIndex(newInfo.getOldIndex()) //
-                .build();
+            .setPortType(originalInfo.getType()) //
+            .setIsConnected(originalInfo.isConnected()) //
+            // "original"/old index of undoInfo is newIndex of change patch "newInfos"
+            .setOldIndex(newInfo.getNewIndex()) //
+            .setNewIndex(newInfo.getOldIndex()) //
+            .build();
     }
 
     private static MetaPortInfo buildReintroducedInfo(final MetaPortInfo removedInfo, final int index) {
         return MetaPortInfo.builder(removedInfo)
-                // connected ports cannot be removed, thus any re-introduced port can not be connected
-                .setIsConnected(false) //
-                .setMessage(null) //
-                .setOldIndex(-1) //
-                .setNewIndex(index) //
-                .build();
+            // connected ports cannot be removed, thus any re-introduced port can not be connected
+            .setIsConnected(false) //
+            .setMessage(null) //
+            .setOldIndex(-1) //
+            .setNewIndex(index) //
+            .build();
     }
 
-    private static void reEnumerateNewIndices(final List<MetaPortInfo> newPortList) {
-        for (int portIndex = 0; portIndex < newPortList.size(); portIndex++) {
-            var updatedInfo = MetaPortInfo.builder(newPortList.get(portIndex)) //
+    private static void setNewIndices(final MetaPortInfo[] newPortList) {
+        for (int portIndex = 0; portIndex < newPortList.length; portIndex++) {
+            var updatedInfo = MetaPortInfo.builder(newPortList[portIndex]) //
                 .setNewIndex(portIndex) //
                 .build();
-            newPortList.set(portIndex, updatedInfo);
+            newPortList[portIndex] = updatedInfo;
         }
     }
 

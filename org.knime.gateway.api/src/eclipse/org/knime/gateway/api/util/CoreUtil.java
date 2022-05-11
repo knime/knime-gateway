@@ -79,6 +79,8 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.osgi.framework.Bundle;
@@ -310,5 +312,66 @@ public final class CoreUtil {
      */
     public static String getPortTypeId(final PortType ptype) {
         return ptype.getPortObjectClass().getName();
+    }
+
+    /**
+     * Find a workflow annotation with given id in the given workflow manager.
+     * @param id The workflow annotation to look for.
+     * @param wfm The workflow manager to search in.
+     * @return The workflow annotation object corresponding to the given ID, or an empty optional if not available.
+     */
+    public static Optional<WorkflowAnnotation> getAnnotation(final WorkflowAnnotationID id, final WorkflowManager wfm) {
+        var annos = wfm.getWorkflowAnnotations(id);
+        if (annos.length == 0 || annos[0] == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(annos[0]);
+        }
+    }
+
+    /**
+     * Find a node with given id in the given workflow manager.
+     * @param id The node to query
+     * @param wfm The workflow manager to search in
+     * @return The node container corresponding to the given ID, or an empty optional if not available.
+     */
+    public static Optional<NodeContainer> getNodeContainer(final NodeID id, final WorkflowManager wfm) {
+            try {
+                var nc = wfm.getNodeContainer(id);
+                return Optional.of(nc);
+            } catch (IllegalArgumentException e) {  // NOSONAR
+                return Optional.empty();
+            }
+    }
+
+    public static Optional<Boolean> isContainerNode(final NodeID node, final WorkflowManager wfm) {
+        return getNodeContainer(node, wfm).map(nc -> nc instanceof WorkflowManager || nc instanceof SubNodeContainer);
+    }
+
+    /**
+     * The concrete kind of a container node.
+     */
+    public enum ContainerType {
+        METANODE, COMPONENT
+    }
+
+    /**
+     * Obtain the container type of a container node
+     * @param parentWfm
+     * @param child
+     * @return An Optional containing the container type of the node, or an empty Optional if the node could not be
+     *  found in the workflow or is not a container node.
+     */
+    public static Optional<ContainerType> getContainerType(final NodeID node, final WorkflowManager wfm) {
+        var nodeContainer = getNodeContainer(node, wfm);
+        return nodeContainer.map(nc -> {
+            if (nc instanceof WorkflowManager) {
+                return ContainerType.METANODE;
+            } else if (nc instanceof SubNodeContainer) {
+                return ContainerType.COMPONENT;
+            } else {
+                return null;
+            }
+        });
     }
 }

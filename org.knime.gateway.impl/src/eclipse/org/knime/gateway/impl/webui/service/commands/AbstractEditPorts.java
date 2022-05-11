@@ -46,19 +46,65 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
- * Modify the port configuration of a given node.
+ * Basic structure for workflow commands that modify node ports.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class EditPortList extends CommandIfElse {
+abstract class AbstractEditPorts extends AbstractWorkflowCommand {
 
-    EditPortList(final PortCommandEnt portCommandEnt) {
-        super(
-            wfm -> WorkflowCommandUtils.isContainerNode(wfm, portCommandEnt.getNodeId())
-                .orElseThrow(() -> new UnsupportedOperationException("Node not found in workflow")),
-            new EditContainerNodePortList(portCommandEnt), new EditNativeNodePortList(portCommandEnt));
+    private final PortCommandEnt m_portCommandEnt;
+
+    AbstractEditPorts(final PortCommandEnt portCommandEnt) {
+        m_portCommandEnt = portCommandEnt;
     }
+
+    /**
+     * @return The command entity describing this command.
+     */
+    final protected PortCommandEnt getPortCommandEnt() {
+        return m_portCommandEnt;
+    }
+
+    /**
+     * @return The ID of the node to edit ports of.
+     */
+    final protected NodeID getNodeId() {
+        return getPortCommandEnt().getNodeId().toNodeID(getWorkflowManager().getID());
+    }
+
+    @Override
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+        var portCommandEnt = getPortCommandEnt();
+        if (portCommandEnt instanceof AddPortCommandEnt) {
+            addPort((AddPortCommandEnt)portCommandEnt);
+            return true;
+        } else if (portCommandEnt instanceof RemovePortCommandEnt) {
+            removePort((RemovePortCommandEnt)portCommandEnt);
+            return true;
+        } else {
+            throw new ServiceExceptions.OperationNotAllowedException("Unknown port operation");
+        }
+    }
+
+    /**
+     * Add a port to the node
+     * @param addPortCommandEnt The parameters of the command.
+     */
+    protected abstract void addPort(AddPortCommandEnt addPortCommandEnt);
+
+    /**
+     * Remove a port from the node
+     * @param removePortCommandEnt The parameters of the command
+     * @throws ServiceExceptions.OperationNotAllowedException If the operation can not be executed
+     */
+    protected abstract void removePort(RemovePortCommandEnt removePortCommandEnt)
+        throws ServiceExceptions.OperationNotAllowedException;
+
 }

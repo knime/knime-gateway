@@ -56,6 +56,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -96,11 +97,11 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
         var wfm = getWorkflowManager();
         Set<NodeID> nodesNotFound = stream(getNodeIDs()) //
-            .filter(id -> WorkflowCommandUtils.getNodeContainer(id, wfm).isEmpty()) //
+            .filter(id -> CoreUtil.getNodeContainer(id, wfm).isEmpty()) //
             .collect(Collectors.toSet());
 
         var annotsNotFound = stream(getAnnotationIDs()) //
-            .filter(id -> WorkflowCommandUtils.getAnnotation(id, wfm).isEmpty()) //
+            .filter(id -> CoreUtil.getAnnotation(id, wfm).isEmpty()) //
             .collect(Collectors.toSet());
 
         boolean nodesMissing = !nodesNotFound.isEmpty();
@@ -134,7 +135,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     protected final Set<NodeContainer> getNodeContainers() throws OperationNotAllowedException {
         checkPartsPresentElseThrow();
         return stream(getNodeIDs()) //
-            .map(id -> WorkflowCommandUtils.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
+            .map(id -> CoreUtil.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
             .collect(Collectors.toSet());
     }
 
@@ -156,7 +157,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     protected final Set<WorkflowAnnotation> getAnnotations(final WorkflowAnnotationID... annotationIDs) {
         var wfm = getWorkflowManager();
         return stream(annotationIDs) //
-            .map(id -> WorkflowCommandUtils.getAnnotation(id, wfm).orElse(null)) //
+            .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null)) //
             .filter(Objects::nonNull) //
             .collect(Collectors.toSet());
     }

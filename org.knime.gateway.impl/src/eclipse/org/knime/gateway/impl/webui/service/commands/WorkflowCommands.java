@@ -142,7 +142,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof ExpandCommandEnt) {
             command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof PortCommandEnt) {
-            command = new EditPortList((PortCommandEnt)commandEnt);
+            command = new EditPorts((PortCommandEnt)commandEnt);
         } else {
             if (m_workflowCommandForTesting != null) {
                 command = m_workflowCommandForTesting;

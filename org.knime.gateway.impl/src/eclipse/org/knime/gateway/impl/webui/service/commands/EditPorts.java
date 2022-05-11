@@ -46,39 +46,26 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
-import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- *
- * Implementations for modifying ports on a native node.
- *
- * TODO NXT-1031 implement
+ * Modify the port configuration of a given node.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class EditNativeNodePortList extends AbstractEditPortList {
-    EditNativeNodePortList(final PortCommandEnt portCommandEnt) {
-        super(portCommandEnt);
-    }
+public class EditPorts extends CommandIfElse {
 
-    @Override
-    protected void addPort(final AddPortCommandEnt addPortCommandEnt) {
-        throw new NotImplementedException("TODO");
-    }
-
-    @Override
-    protected void removePort(final RemovePortCommandEnt removePortCommandEnt)
-        throws ServiceExceptions.OperationNotAllowedException {
-        throw new NotImplementedException("TODO");
-
-    }
-
-    @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        throw new NotImplementedException("TODO");
+    EditPorts(final PortCommandEnt portCommandEnt) {
+        super(
+            wfm -> {
+                var nodeId = DefaultServiceUtil.entityToNodeID(wfm, portCommandEnt.getNodeId());
+                return CoreUtil.isContainerNode(nodeId, wfm)
+                    .orElseThrow(() -> new UnsupportedOperationException("Node not found in workflow"));
+            },
+            new EditContainerNodePorts(portCommandEnt),
+            new EditNativeNodePorts(portCommandEnt)
+        );
     }
 }
