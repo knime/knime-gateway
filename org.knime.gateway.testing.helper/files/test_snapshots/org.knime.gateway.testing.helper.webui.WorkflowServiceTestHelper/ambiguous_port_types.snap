@@ -1,39 +1,32 @@
 {
-  "com.knime.bigdata.spark.core.port.data.SparkDataPortObject" : {
-    "color" : "#000000",
-    "kind" : "other",
-    "name" : "Spark Data (legacy com)"
-  },
   "org.knime.core.node.BufferedDataTable" : {
     "color" : "#000000",
+    "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
     "kind" : "table",
     "name" : "Data"
   },
+  "org.knime.core.node.port.PortObject" : {
+    "color" : "#9B9B9B",
+    "compatibleTypes" : [ "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.database.DatabaseConnectionPortObject", "org.knime.core.node.port.database.DatabasePortObject", "org.knime.core.node.port.flowvariable.FlowVariablePortObject" ],
+    "kind" : "generic",
+    "name" : "Generic Port"
+  },
   "org.knime.core.node.port.database.DatabaseConnectionPortObject" : {
     "color" : "#FF4B4B",
-    "compatibleTypes" : [ "org.knime.core.node.port.database.DatabasePortObject" ],
+    "compatibleTypes" : [ "org.knime.core.node.port.PortObject", "org.knime.core.node.port.database.DatabasePortObject" ],
     "kind" : "other",
     "name" : "Database Connection"
   },
   "org.knime.core.node.port.database.DatabasePortObject" : {
     "color" : "#800000",
-    "compatibleTypes" : [ "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
+    "compatibleTypes" : [ "org.knime.core.node.port.PortObject", "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
     "kind" : "other",
     "name" : "Database Query"
   },
   "org.knime.core.node.port.flowvariable.FlowVariablePortObject" : {
     "color" : "#FF4B4B",
+    "compatibleTypes" : [ "org.knime.core.node.port.PortObject" ],
     "kind" : "flowVariable",
     "name" : "Flow Variable"
-  },
-  "org.knime.ext.textprocessing.dl4j.nodes.embeddings.WordVectorFileStorePortObject" : {
-    "color" : "#9B9B9B",
-    "kind" : "other",
-    "name" : "Word Vector Model"
-  },
-  "org.knime.kafka.port.KafkaConnectorPortObject" : {
-    "color" : "#42B0F4",
-    "kind" : "other",
-    "name" : "KafkaConnection"
   }
 }
