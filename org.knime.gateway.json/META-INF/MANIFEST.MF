@@ -8,11 +8,11 @@ Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.gateway.json.util
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
-Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.11.0,3.0.0)",
+Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.13.2.2,3.0.0)",
+ com.fasterxml.jackson.core.jackson-core;bundle-version="[2.13.2,3.0.0)",
+ com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.13.2,3.0.0)",
+ com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.13.2,3.0.0)",
  org.knime.gateway.api;bundle-version="[4.3.0,5.0.0)",
- com.fasterxml.jackson.core.jackson-core;bundle-version="[2.11.0,3.0.0)",
- com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.11.0,3.0.0)",
- com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.11.0,3.0.0)",
  de.undercouch.bson4jackson;bundle-version="[2.4.0,3.0.0)",
  org.knime.gateway.impl;bundle-version="[4.3.0,5.0.0)",
  org.apache.commons.codec;bundle-version="[1.14.0,1.15.0)"
