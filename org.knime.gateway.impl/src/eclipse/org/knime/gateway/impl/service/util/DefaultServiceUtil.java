@@ -210,16 +210,6 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Convert a node ID entity (as provided by gateway entities) to a {@link NodeID} instance.
-     * @param wfm The workflow manager the node belongs to
-     * @param nodeID The node ID entity
-     * @return The {@link NodeID} instance
-     */
-    public static NodeID entityToNodeID(final WorkflowManager wfm, final NodeIDEnt nodeID) {
-        return nodeID.toNodeID(wfm.getID());
-    }
-
-    /**
      * Converts annotation id entity (as provided by gateway entities) to a
      * {@link WorkflowAnnotationID}-instance.
      *

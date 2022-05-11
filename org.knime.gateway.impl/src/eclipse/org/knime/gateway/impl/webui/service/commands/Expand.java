@@ -48,7 +48,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
@@ -61,7 +60,7 @@ final class Expand extends CommandIfElse {
 
     Expand(final ExpandCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         super(wfm -> {
-            var nodeId = DefaultServiceUtil.entityToNodeID(wfm, commandEnt.getNodeId());
+            var nodeId = commandEnt.getNodeId().toNodeID(wfm.getID());
             var containerType = CoreUtil.getContainerType(nodeId, wfm).orElseThrow();
             return containerType == CoreUtil.ContainerType.METANODE;
         }, new ExpandMetanode(commandEnt, workflowMiddleware), new ExpandComponent(commandEnt, workflowMiddleware));

@@ -331,21 +331,18 @@ public final class CoreUtil {
 
     /**
      * Find a node with given id in the given workflow manager.
+     *
      * @param id The node to query
      * @param wfm The workflow manager to search in
      * @return The node container corresponding to the given ID, or an empty optional if not available.
      */
     public static Optional<NodeContainer> getNodeContainer(final NodeID id, final WorkflowManager wfm) {
-            try {
-                var nc = wfm.getNodeContainer(id);
-                return Optional.of(nc);
-            } catch (IllegalArgumentException e) {  // NOSONAR
-                return Optional.empty();
-            }
-    }
-
-    public static Optional<Boolean> isContainerNode(final NodeID node, final WorkflowManager wfm) {
-        return getNodeContainer(node, wfm).map(nc -> nc instanceof WorkflowManager || nc instanceof SubNodeContainer);
+        try {
+            var nc = wfm.getNodeContainer(id);
+            return Optional.of(nc);
+        } catch (IllegalArgumentException e) { // NOSONAR
+            return Optional.empty();
+        }
     }
 
     /**
@@ -356,14 +353,15 @@ public final class CoreUtil {
     }
 
     /**
-     * Obtain the container type of a container node
-     * @param parentWfm
-     * @param child
-     * @return An Optional containing the container type of the node, or an empty Optional if the node could not be
-     *  found in the workflow or is not a container node.
+     * Obtain the {@link ContainerType} of a container node.
+     *
+     * @param nodeId the node id to determine the container type for
+     * @param wfm
+     * @return an Optional containing the container type of the node, or an empty Optional if the node could not be
+     *         found in the workflow or is not a container node.
      */
-    public static Optional<ContainerType> getContainerType(final NodeID node, final WorkflowManager wfm) {
-        var nodeContainer = getNodeContainer(node, wfm);
+    public static Optional<ContainerType> getContainerType(final NodeID nodeId, final WorkflowManager wfm) {
+        var nodeContainer = getNodeContainer(nodeId, wfm);
         return nodeContainer.map(nc -> {
             if (nc instanceof WorkflowManager) {
                 return ContainerType.METANODE;

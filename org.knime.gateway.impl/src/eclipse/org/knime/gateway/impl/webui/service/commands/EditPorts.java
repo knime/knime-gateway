@@ -48,24 +48,21 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Modify the port configuration of a given node.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class EditPorts extends CommandIfElse {
+class EditPorts extends CommandIfElse {
 
     EditPorts(final PortCommandEnt portCommandEnt) {
-        super(
-            wfm -> {
-                var nodeId = DefaultServiceUtil.entityToNodeID(wfm, portCommandEnt.getNodeId());
-                return CoreUtil.isContainerNode(nodeId, wfm)
-                    .orElseThrow(() -> new UnsupportedOperationException("Node not found in workflow"));
-            },
-            new EditContainerNodePorts(portCommandEnt),
-            new EditNativeNodePorts(portCommandEnt)
+        super(wfm -> {
+            var nodeId = portCommandEnt.getNodeId().toNodeID(wfm.getID());
+            return CoreUtil.getContainerType(nodeId, wfm).isPresent();
+        }, //
+            new EditContainerNodePorts(portCommandEnt), //
+            new EditNativeNodePorts(portCommandEnt) //
         );
     }
 }
