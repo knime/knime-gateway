@@ -62,7 +62,7 @@ public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
 
   /**
    * The index of the port to be removed (out of all ports in this side). Only used for container nodes.
-   * @return portIndex , never <code>null</code>
+   * @return portIndex 
    **/
   public Integer getPortIndex();
 
@@ -107,7 +107,7 @@ public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
         /**
          * The index of the port to be removed (out of all ports in this side). Only used for container nodes.
          * 
-         * @param portIndex the property value, NOT <code>null</code>! 
+         * @param portIndex the property value,  
          * @return this entity builder for chaining
          */
         RemovePortCommandEntBuilder setPortIndex(Integer portIndex);

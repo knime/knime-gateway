@@ -1,0 +1,61 @@
+[ {
+  "connectedVia" : "[  ]",
+  "index" : 0,
+  "name" : "Variable Inport",
+  "optional" : true,
+  "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+}, {
+  "connectedVia" : "[  ]",
+  "index" : 1,
+  "name" : "Collecting data",
+  "optional" : false,
+  "typeId" : "org.knime.core.node.BufferedDataTable",
+  "view" : {
+    "type" : "table"
+  }
+}, {
+  "connectedVia" : "[  ]",
+  "index" : 2,
+  "name" : "Collecting data",
+  "optional" : false,
+  "typeId" : "org.knime.core.node.BufferedDataTable",
+  "view" : {
+    "type" : "table"
+  }
+}, {
+  "connectedVia" : "[  ]",
+  "index" : 3,
+  "name" : "Collecting data",
+  "optional" : false,
+  "typeId" : "org.knime.core.node.BufferedDataTable",
+  "view" : {
+    "type" : "table"
+  }
+}, {
+  "connectedVia" : "[  ]",
+  "index" : 4,
+  "name" : "Recursion data",
+  "optional" : false,
+  "typeId" : "org.knime.core.node.BufferedDataTable",
+  "view" : {
+    "type" : "table"
+  }
+}, {
+  "connectedVia" : "[  ]",
+  "index" : 5,
+  "name" : "Recursion data",
+  "optional" : false,
+  "typeId" : "org.knime.core.node.BufferedDataTable",
+  "view" : {
+    "type" : "table"
+  }
+}, {
+  "connectedVia" : "[  ]",
+  "index" : 6,
+  "name" : "Recursion data",
+  "optional" : false,
+  "typeId" : "org.knime.core.node.BufferedDataTable",
+  "view" : {
+    "type" : "table"
+  }
+} ]

@@ -46,7 +46,11 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
+import org.knime.core.node.context.ports.ExtendablePortGroup;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.action.ReplaceNodeResult;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
@@ -56,29 +60,57 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
  *
  * Implementations for modifying ports on a native node.
  *
- * TODO NXT-1031 implement
- *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 final class EditNativeNodePorts extends AbstractEditPorts {
+
+    private ReplaceNodeResult m_replaceNodeResult;
+
     EditNativeNodePorts(final PortCommandEnt portCommandEnt) {
         super(portCommandEnt);
     }
 
     @Override
     protected void addPort(final AddPortCommandEnt addPortCommandEnt) {
-        throw new NotImplementedException("TODO");
+        var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
+            .orElseThrow(() -> new UnsupportedOperationException("Unknown port type"));
+        var groupName = getPortCommandEnt().getPortGroup();
+        var creationConfigCopy = getCopyOfCreationConfig();
+        getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
+        executeInternal(creationConfigCopy);
     }
 
     @Override
     protected void removePort(final RemovePortCommandEnt removePortCommandEnt)
         throws ServiceExceptions.OperationNotAllowedException {
-        throw new NotImplementedException("TODO");
-
+        var creationConfigCopy = getCopyOfCreationConfig();
+        var groupName = getPortCommandEnt().getPortGroup();
+        getExtendablePortGroup(creationConfigCopy, groupName).removeLastPort();
+        executeInternal(creationConfigCopy);
     }
 
     @Override
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        throw new NotImplementedException("TODO");
+        m_replaceNodeResult.undo();
+    }
+
+    @Override
+    public boolean canUndo() {
+        return m_replaceNodeResult.canUndo();
+    }
+
+    private void executeInternal(final ModifiableNodeCreationConfiguration creationConfigCopy) {
+        m_replaceNodeResult = getWorkflowManager().replaceNode(getNodeId(), creationConfigCopy);
+    }
+
+    private ModifiableNodeCreationConfiguration getCopyOfCreationConfig() {
+        var nnc = getWorkflowManager().getNodeContainer(getNodeId(), NativeNodeContainer.class, true);
+        return nnc.getNode().getCopyOfCreationConfig().orElseThrow();
+    }
+
+    private static ExtendablePortGroup getExtendablePortGroup(final ModifiableNodeCreationConfiguration creationConfig,
+        final String groupName) {
+        var portsConfig = creationConfig.getPortConfig().orElseThrow();
+        return (ExtendablePortGroup)portsConfig.getGroup(groupName);
     }
 }

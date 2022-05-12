@@ -92,9 +92,6 @@ public class DefaultRemovePortCommandEnt implements RemovePortCommandEnt {
         throw new IllegalArgumentException("nodeId must not be null.");
     }
     m_nodeId = immutable(builder.m_nodeId);
-    if(builder.m_portIndex == null) {
-        throw new IllegalArgumentException("portIndex must not be null.");
-    }
     m_portIndex = immutable(builder.m_portIndex);
   }
   
@@ -207,9 +204,6 @@ public class DefaultRemovePortCommandEnt implements RemovePortCommandEnt {
 
         @Override
         public DefaultRemovePortCommandEntBuilder setPortIndex(Integer portIndex) {
-             if(portIndex == null) {
-                 throw new IllegalArgumentException("portIndex must not be null.");
-             }
              m_portIndex = portIndex;
              return this;
         }

@@ -76,6 +76,10 @@ public final class GatewayTestCollection {
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testRemovePortFromMetanode());
         res.put("testRemovePortFromComponent",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testRemovePortFromComponent());
+        res.put("testAddPortToNative",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddPortToNativeNode());
+        res.put("testRemovePortFromNativeNode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testRemovePortFromNative());
 
         res.put("testCollapseConfiguredToMetanode",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseConfiguredToMetanode());

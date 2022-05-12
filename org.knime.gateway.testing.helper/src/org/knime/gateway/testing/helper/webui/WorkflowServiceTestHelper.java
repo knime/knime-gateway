@@ -1366,7 +1366,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertAddUndoRedoContainerPorts(final String wfId, final NodeIDEnt node) throws Exception {
-        PortType portType = WorkflowPortObject.TYPE;
+        var portType = WorkflowPortObject.TYPE;
 
         var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
 
@@ -1499,6 +1499,88 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final NodeIDEnt node) {
         var nodeEnt = wfEnt.getNodes().get(node.toString());
         return isInPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
+    }
+
+    private List<? extends NodePortEnt> getPortList(final String wfId, final boolean isInPort, final NodeIDEnt node)
+        throws Exception {
+        var wfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var nodeEnt = wfEnt.getNodes().get(node.toString());
+        return isInPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
+    }
+
+    /**
+     * Add ports to different port groups of native node, undo and redo.
+     *
+     * @throws Exception
+     */
+    public void testAddPortToNativeNode() throws Exception {
+
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+        var recursiveLoopEnd = new NodeIDEnt(190);
+
+        var portType = BufferedDataTable.TYPE;
+
+        var addToFirstGroupCommand = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
+            .setNodeId(recursiveLoopEnd) //
+            .setSide(PortCommandEnt.SideEnum.INPUT) //
+            .setPortGroup("Collector") //
+            .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
+            .setKind(KindEnum.ADD_PORT) //
+            .build();
+
+        ws().executeWorkflowCommand(wfId, getRootID(), addToFirstGroupCommand);
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_addToFirstPortGroup");
+
+        var addToSecondGroupCommand = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
+            .setNodeId(recursiveLoopEnd) //
+            .setSide(PortCommandEnt.SideEnum.INPUT) //
+            .setPortGroup("Recursion") //
+            .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
+            .setKind(KindEnum.ADD_PORT) //
+            .build();
+        ws().executeWorkflowCommand(wfId, getRootID(), addToSecondGroupCommand);
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_addToSecondPortGroup");
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_undo");
+
+        ws().redoWorkflowCommand(wfId, getRootID());
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_redo");
+    }
+
+    /**
+     * Remove ports from different port groups of native node, undo and redo.
+     *
+     * @throws Exception
+     */
+    public void testRemovePortFromNative() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+        var recursiveLoopEnd = new NodeIDEnt(190);
+
+        var removeFromFirstGroupCommand = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
+            .setNodeId(recursiveLoopEnd) //
+            .setSide(PortCommandEnt.SideEnum.INPUT) //
+            .setPortGroup("Collector") //
+            .setKind(KindEnum.REMOVE_PORT) //
+            .build();
+
+        ws().executeWorkflowCommand(wfId, getRootID(), removeFromFirstGroupCommand);
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_removeFromFirstPortGroup");
+
+        var removeFromSecondGroupCommand = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
+            .setNodeId(recursiveLoopEnd) //
+            .setSide(PortCommandEnt.SideEnum.INPUT) //
+            .setPortGroup("Recursion") //
+            .setKind(KindEnum.REMOVE_PORT) //
+            .build();
+        ws().executeWorkflowCommand(wfId, getRootID(), removeFromSecondGroupCommand);
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_removeFromSecondPortGroup");
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_undo");
+
+        ws().redoWorkflowCommand(wfId, getRootID());
+        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_redo");
     }
 
 }
