@@ -363,7 +363,14 @@ public final class EntityBuilderUtil {
      * @return the new {@link NodeTemplateEnt}-instance
      */
     public static NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
-        var node = new Node((NodeFactory<NodeModel>)factory);
+        Node node;
+        try {
+            node = new Node((NodeFactory<NodeModel>)factory);
+        } catch (RuntimeException e) {
+            NodeLogger.getLogger(EntityBuilderUtil.class)
+                .error("Could not create instance of node" + ": " + e.getMessage());
+            return null;
+        }
         return builder(NodeTemplateEntBuilder.class)//
             .setId(createTemplateId(factory))//
             .setName(factory.getNodeName())//

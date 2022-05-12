@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -136,6 +137,7 @@ public class NodeSearch {
         List<NodeTemplateEnt> templates = foundNodes.stream()
             .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityBuilderUtil.buildNodeTemplateEnt(n.factory)
                 : EntityBuilderUtil.buildMinimalNodeTemplateEnt(n.factory))//
+            .filter(Objects::nonNull)
             .skip(nodesOffset == null ? 0 : nodesOffset).limit(nodesLimit == null ? Long.MAX_VALUE : nodesLimit)//
             .collect(Collectors.toList());
 

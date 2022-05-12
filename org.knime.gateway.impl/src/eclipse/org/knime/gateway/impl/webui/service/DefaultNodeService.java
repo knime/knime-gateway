@@ -193,11 +193,19 @@ public final class DefaultNodeService implements NodeService {
                         factoryKey.getSettings()
                 );
             } catch (NoSuchElementException | IOException e) { // NOSONAR: exceptions are handled
-                NodeLogger.getLogger(this.getClass()).error(e.getStackTrace());
-                throw new NodeNotFoundException("Could not read node description", e);
+                var message = "Could not read node description";
+                NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());
+                throw new NodeNotFoundException(message, e);
             }
 
-            final Node coreNode = new Node(fac);  // needed to init information on ports
+            final Node coreNode;  // needed to init information on ports
+            try {
+                coreNode = new Node(fac);
+            } catch (RuntimeException e) {
+                var message = "Could not create instance of node";
+                NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());
+                throw new ServiceExceptions.NodeDescriptionNotAvailableException(message);
+            }
             NativeNodeDescriptionEnt description = EntityBuilderUtil.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
             return description;
