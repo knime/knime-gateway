@@ -171,17 +171,17 @@
       "x" : 233,
       "y" : 293
     },
-    "defaultFontSize" : 15,
+    "defaultFontSize" : 11,
     "id" : "root:6_0",
     "styleRanges" : [ {
       "color" : "#EF2929",
-      "fontSize" : 15,
+      "fontSize" : 11,
       "length" : 13,
       "start" : 25
     }, {
       "bold" : true,
       "color" : "#EF2929",
-      "fontSize" : 15,
+      "fontSize" : 11,
       "length" : 15,
       "start" : 38
     } ],
@@ -197,7 +197,7 @@
       "x" : 840,
       "y" : 200
     },
-    "defaultFontSize" : 15,
+    "defaultFontSize" : 11,
     "id" : "root:6_1",
     "styleRanges" : [ ],
     "text" : "<- this output bar has a custom position and size",

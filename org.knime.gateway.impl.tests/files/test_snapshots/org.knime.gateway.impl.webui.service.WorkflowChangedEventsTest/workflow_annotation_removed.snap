@@ -2,13 +2,13 @@
   "ops" : [ {
   "op" : "add",
   "path" : "/workflowAnnotations/2/defaultFontSize",
-  "value" : 15
+  "value" : 11
 }, {
   "op" : "add",
   "path" : "/workflowAnnotations/2/styleRanges/0",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 15,
+    "fontSize" : 11,
     "length" : 1,
     "start" : 1
   }
@@ -17,7 +17,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/1",
   "value" : {
     "color" : "#CC0000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 5,
     "start" : 8
   }
@@ -26,7 +26,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/10",
   "value" : {
     "color" : "#73D216",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 1,
     "start" : 62
   }
@@ -35,7 +35,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/11",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 202,
     "start" : 63
   }
@@ -44,7 +44,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/12",
   "value" : {
     "color" : "#CC0000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 5,
     "start" : 265
   }
@@ -54,7 +54,7 @@
   "value" : {
     "bold" : true,
     "color" : "#4E9A06",
-    "fontSize" : 32,
+    "fontSize" : 24,
     "length" : 11,
     "start" : 270
   }
@@ -63,7 +63,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/14",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 12,
+    "fontSize" : 9,
     "length" : 7,
     "start" : 281
   }
@@ -73,7 +73,7 @@
   "value" : {
     "bold" : true,
     "color" : "#000000",
-    "fontSize" : 17,
+    "fontSize" : 13,
     "italic" : true,
     "length" : 13,
     "start" : 288
@@ -83,7 +83,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/16",
   "value" : {
     "color" : "#3465A4",
-    "fontSize" : 27,
+    "fontSize" : 20,
     "length" : 2,
     "start" : 301
   }
@@ -92,7 +92,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/17",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 23,
     "start" : 303
   }
@@ -102,7 +102,7 @@
   "value" : {
     "bold" : true,
     "color" : "#73D216",
-    "fontSize" : 32,
+    "fontSize" : 24,
     "length" : 11,
     "start" : 13
   }
@@ -111,7 +111,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/3",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 12,
+    "fontSize" : 9,
     "length" : 7,
     "start" : 24
   }
@@ -121,7 +121,7 @@
   "value" : {
     "bold" : true,
     "color" : "#000000",
-    "fontSize" : 17,
+    "fontSize" : 13,
     "italic" : true,
     "length" : 12,
     "start" : 31
@@ -132,7 +132,7 @@
   "value" : {
     "bold" : true,
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 6,
     "start" : 43
   }
@@ -141,7 +141,7 @@
   "path" : "/workflowAnnotations/3/styleRanges/6",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "italic" : true,
     "length" : 1,
     "start" : 49
@@ -152,7 +152,7 @@
   "value" : {
     "bold" : true,
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 2,
     "start" : 50
   }
@@ -162,7 +162,7 @@
   "value" : {
     "bold" : true,
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "italic" : true,
     "length" : 7,
     "start" : 52
@@ -173,7 +173,7 @@
   "value" : {
     "bold" : true,
     "color" : "#000000",
-    "fontSize" : 21,
+    "fontSize" : 16,
     "length" : 3,
     "start" : 59
   }
@@ -186,7 +186,7 @@
   "path" : "/workflowAnnotations/5/styleRanges/1",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 17,
+    "fontSize" : 13,
     "italic" : true,
     "length" : 3,
     "start" : 16
@@ -196,7 +196,7 @@
   "path" : "/workflowAnnotations/5/styleRanges/2",
   "value" : {
     "color" : "#000000",
-    "fontSize" : 11,
+    "fontSize" : 8,
     "length" : 3,
     "start" : 20
   }
@@ -205,7 +205,7 @@
   "path" : "/workflowAnnotations/5/styleRanges/3",
   "value" : {
     "color" : "#EF2929",
-    "fontSize" : 17,
+    "fontSize" : 13,
     "length" : 3,
     "start" : 24
   }
@@ -368,7 +368,7 @@
 }, {
   "op" : "replace",
   "path" : "/workflowAnnotations/3/styleRanges/0/fontSize",
-  "value" : 21
+  "value" : 16
 }, {
   "op" : "replace",
   "path" : "/workflowAnnotations/3/styleRanges/0/length",
@@ -412,7 +412,7 @@
 }, {
   "op" : "replace",
   "path" : "/workflowAnnotations/4/defaultFontSize",
-  "value" : 17
+  "value" : 13
 }, {
   "op" : "replace",
   "path" : "/workflowAnnotations/4/id",
@@ -420,7 +420,7 @@
 }, {
   "op" : "replace",
   "path" : "/workflowAnnotations/4/styleRanges/0/fontSize",
-  "value" : 17
+  "value" : 13
 }, {
   "op" : "replace",
   "path" : "/workflowAnnotations/4/styleRanges/0/length",

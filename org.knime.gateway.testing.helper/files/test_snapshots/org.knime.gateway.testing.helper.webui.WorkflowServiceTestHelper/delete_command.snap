@@ -222,7 +222,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "a node created\nvia a node set factory",
         "textAlign" : "center"
@@ -384,7 +384,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "Node 13",
         "textAlign" : "center"
@@ -436,7 +436,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "inactive branch",
         "textAlign" : "center"
@@ -582,7 +582,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 17,
+        "defaultFontSize" : 13,
         "styleRanges" : [ ],
         "text" : "Missing",
         "textAlign" : "center"
@@ -623,7 +623,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "checking flow\nvariables (string)",
         "textAlign" : "center"
@@ -675,7 +675,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 17,
+        "defaultFontSize" : 13,
         "styleRanges" : [ ],
         "text" : "🤷🏻‍♂️ 🤨",
         "textAlign" : "center"
@@ -717,7 +717,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 17,
+        "defaultFontSize" : 13,
         "styleRanges" : [ ],
         "text" : "Component",
         "textAlign" : "center"
@@ -853,7 +853,7 @@
       },
       "annotation" : {
         "backgroundColor" : "#F57900",
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "Node annotation with\nbackground color",
         "textAlign" : "center"
@@ -907,7 +907,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "node annotation",
         "textAlign" : "center"
@@ -964,7 +964,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "check for simple port spec\n(distance measure)",
         "textAlign" : "center"
@@ -1036,7 +1036,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "optional\nin-ports",
         "textAlign" : "center"
@@ -1120,7 +1120,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "Check a \n'generic'\nport type spec",
         "textAlign" : "center"
@@ -1185,7 +1185,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "with JS view inside\n(i.e. with composite view)",
         "textAlign" : "center"
@@ -1306,7 +1306,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "test of another\nport object spec",
         "textAlign" : "center"
@@ -1374,7 +1374,7 @@
         "type" : "add"
       } ],
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "dynamic\nports",
         "textAlign" : "center"
@@ -1453,7 +1453,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "a non-executing node",
         "textAlign" : "center"
@@ -1690,7 +1690,7 @@
       "x" : 20,
       "y" : 20
     },
-    "defaultFontSize" : 15,
+    "defaultFontSize" : 11,
     "id" : "root_0",
     "styleRanges" : [ ],
     "text" : "this is a workflow annotation",
@@ -1719,11 +1719,11 @@
       "x" : 340,
       "y" : 880
     },
-    "defaultFontSize" : 15,
+    "defaultFontSize" : 11,
     "id" : "root_3",
     "styleRanges" : [ {
       "color" : "#000000",
-      "fontSize" : 15,
+      "fontSize" : 11,
       "length" : 1,
       "start" : 1
     } ],
@@ -1739,108 +1739,108 @@
       "x" : 1120,
       "y" : 700
     },
-    "defaultFontSize" : 15,
+    "defaultFontSize" : 11,
     "id" : "root_4",
     "styleRanges" : [ {
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 8,
       "start" : 0
     }, {
       "color" : "#CC0000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 5,
       "start" : 8
     }, {
       "bold" : true,
       "color" : "#73D216",
-      "fontSize" : 32,
+      "fontSize" : 24,
       "length" : 11,
       "start" : 13
     }, {
       "color" : "#000000",
-      "fontSize" : 12,
+      "fontSize" : 9,
       "length" : 7,
       "start" : 24
     }, {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 17,
+      "fontSize" : 13,
       "italic" : true,
       "length" : 12,
       "start" : 31
     }, {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 6,
       "start" : 43
     }, {
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "italic" : true,
       "length" : 1,
       "start" : 49
     }, {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 2,
       "start" : 50
     }, {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "italic" : true,
       "length" : 7,
       "start" : 52
     }, {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 3,
       "start" : 59
     }, {
       "color" : "#73D216",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 1,
       "start" : 62
     }, {
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 202,
       "start" : 63
     }, {
       "color" : "#CC0000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 5,
       "start" : 265
     }, {
       "bold" : true,
       "color" : "#4E9A06",
-      "fontSize" : 32,
+      "fontSize" : 24,
       "length" : 11,
       "start" : 270
     }, {
       "color" : "#000000",
-      "fontSize" : 12,
+      "fontSize" : 9,
       "length" : 7,
       "start" : 281
     }, {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 17,
+      "fontSize" : 13,
       "italic" : true,
       "length" : 13,
       "start" : 288
     }, {
       "color" : "#3465A4",
-      "fontSize" : 27,
+      "fontSize" : 20,
       "length" : 2,
       "start" : 301
     }, {
       "color" : "#000000",
-      "fontSize" : 21,
+      "fontSize" : 16,
       "length" : 23,
       "start" : 303
     } ],
@@ -1856,11 +1856,11 @@
       "x" : 1220,
       "y" : 380
     },
-    "defaultFontSize" : 17,
+    "defaultFontSize" : 13,
     "id" : "root_5",
     "styleRanges" : [ {
       "color" : "#000000",
-      "fontSize" : 17,
+      "fontSize" : 13,
       "length" : 5,
       "start" : 11
     } ],
@@ -1876,28 +1876,28 @@
       "x" : 1360,
       "y" : 400
     },
-    "defaultFontSize" : 17,
+    "defaultFontSize" : 13,
     "id" : "root_6",
     "styleRanges" : [ {
       "bold" : true,
       "color" : "#000000",
-      "fontSize" : 17,
+      "fontSize" : 13,
       "length" : 4,
       "start" : 11
     }, {
       "color" : "#000000",
-      "fontSize" : 17,
+      "fontSize" : 13,
       "italic" : true,
       "length" : 3,
       "start" : 16
     }, {
       "color" : "#000000",
-      "fontSize" : 11,
+      "fontSize" : 8,
       "length" : 3,
       "start" : 20
     }, {
       "color" : "#EF2929",
-      "fontSize" : 17,
+      "fontSize" : 13,
       "length" : 3,
       "start" : 24
     } ],

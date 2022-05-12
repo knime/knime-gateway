@@ -59,7 +59,7 @@
               "canReset" : true
             },
             "annotation" : {
-              "defaultFontSize" : 15,
+              "defaultFontSize" : 11,
               "styleRanges" : [ ],
               "text" : "",
               "textAlign" : "center"

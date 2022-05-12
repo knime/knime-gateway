@@ -74,7 +74,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "idle",
         "textAlign" : "center"
@@ -131,7 +131,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "configured/executing",
         "textAlign" : "center"
@@ -184,7 +184,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "queued",
         "textAlign" : "center"
@@ -236,7 +236,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "configured/executed",
         "textAlign" : "center"
@@ -298,10 +298,10 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ {
           "color" : "#000000",
-          "fontSize" : 15,
+          "fontSize" : 11,
           "length" : 33,
           "start" : 0
         } ],
@@ -349,7 +349,7 @@
         "canReset" : false
       },
       "annotation" : {
-        "defaultFontSize" : 15,
+        "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "queued",
         "textAlign" : "center"
