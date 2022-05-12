@@ -102,7 +102,7 @@ public interface AnnotationEnt extends GatewayEntity {
   public TextAlignEnum getTextAlign();
 
   /**
-   * The default font size (in px) for parts of the text where no style range is defined.
+   * The default font size (in pt) for parts of the text where no style range is defined.
    * @return defaultFontSize 
    **/
   public Integer getDefaultFontSize();
@@ -144,7 +144,7 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
         
         /**
-         * The default font size (in px) for parts of the text where no style range is defined.
+         * The default font size (in pt) for parts of the text where no style range is defined.
          * 
          * @param defaultFontSize the property value,  
          * @return this entity builder for chaining
