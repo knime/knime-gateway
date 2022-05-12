@@ -196,6 +196,7 @@ public final class NodeGroups {
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
             .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityBuilderUtil.buildNodeTemplateEnt(n.factory)
                 : EntityBuilderUtil.buildMinimalNodeTemplateEnt(n.factory))//
+            .filter(Objects::nonNull)//
             .collect(Collectors.toList());
         return builder(NodeGroupEntBuilder.class).setNodes(res).setTag(name).build();
     }

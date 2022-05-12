@@ -62,6 +62,8 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.knime.core.node.Node;
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
@@ -371,5 +373,22 @@ public final class CoreUtil {
                 return null;
             }
         });
+    }
+
+    /**
+     * Creates a {@link Node}-instance from the given factory
+     *
+     * @param factory
+     * @return the instance or an empty optional if the node instance couldn't be created (e.g. because
+     *         {@link NodeFactory#createNodeModel()} failed unexpectedly)
+     */
+    public static Optional<Node> createNode(final NodeFactory<? extends NodeModel> factory) {
+        try {
+            return Optional.of(new Node((NodeFactory<NodeModel>)factory));
+        } catch (Exception e) { // NOSONAR
+            NodeLogger.getLogger(CoreUtil.class)
+                .error("Could not create instance of node " + factory.getClass().getName() + ": " + e.getMessage());
+            return Optional.empty();
+        }
     }
 }

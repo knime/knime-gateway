@@ -114,6 +114,7 @@ public final class NodeRepository {
         return templateIds.stream().map(this::getNode)//
             .filter(Objects::nonNull)//
             .map(n -> EntityBuilderUtil.buildNodeTemplateEnt(n.factory))//
+            .filter(Objects::nonNull)//
             .collect(Collectors.toMap(NodeTemplateEnt::getId, t -> t));
     }
 

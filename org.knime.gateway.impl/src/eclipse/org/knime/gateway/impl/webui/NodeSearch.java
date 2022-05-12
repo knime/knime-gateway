@@ -220,7 +220,6 @@ public class NodeSearch {
 
         private Boolean m_allTagsMatch;
 
-        @SuppressWarnings("hiding")
         SearchQuery(final String q, final List<String> tags, final Boolean allTagsMatch) {
             m_q = q;
             m_tags = tags;

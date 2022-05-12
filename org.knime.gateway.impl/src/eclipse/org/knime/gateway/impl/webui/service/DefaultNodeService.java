@@ -52,7 +52,6 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
@@ -63,6 +62,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.rpc.RpcServerManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -198,14 +198,9 @@ public final class DefaultNodeService implements NodeService {
                 throw new NodeNotFoundException(message, e);
             }
 
-            final Node coreNode;  // needed to init information on ports
-            try {
-                coreNode = new Node(fac);
-            } catch (RuntimeException e) {
-                var message = "Could not create instance of node";
-                NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());
-                throw new ServiceExceptions.NodeDescriptionNotAvailableException(message);
-            }
+            final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
+                .orElseThrow(() -> new ServiceExceptions.NodeDescriptionNotAvailableException(
+                    "Could not create instance of node"));
             NativeNodeDescriptionEnt description = EntityBuilderUtil.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
             return description;

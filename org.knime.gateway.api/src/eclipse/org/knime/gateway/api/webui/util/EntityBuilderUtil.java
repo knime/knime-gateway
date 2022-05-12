@@ -360,18 +360,12 @@ public final class EntityBuilderUtil {
      * Builds a {@link NodeTemplateEnt}-instance.
      *
      * @param factory the node factory to create the template entity from
-     * @return the new {@link NodeTemplateEnt}-instance
+     * @return the new {@link NodeTemplateEnt}-instance, or {@code null} if it couldn't be created (see
+     *         {@link CoreUtil#createNode(NodeFactory)})
      */
     public static NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
-        Node node;
-        try {
-            node = new Node((NodeFactory<NodeModel>)factory);
-        } catch (RuntimeException e) {
-            NodeLogger.getLogger(EntityBuilderUtil.class)
-                .error("Could not create instance of node" + ": " + e.getMessage());
-            return null;
-        }
-        return builder(NodeTemplateEntBuilder.class)//
+        var node = CoreUtil.createNode(factory).orElse(null);
+        return node == null ? null : builder(NodeTemplateEntBuilder.class)//
             .setId(createTemplateId(factory))//
             .setName(factory.getNodeName())//
             .setComponent(false)//
