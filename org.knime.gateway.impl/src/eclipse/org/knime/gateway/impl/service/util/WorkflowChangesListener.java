@@ -50,11 +50,13 @@ import java.io.Closeable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.ConnectionContainer;
@@ -63,7 +65,6 @@ import org.knime.core.node.workflow.ConnectionProgressListener;
 import org.knime.core.node.workflow.LoopStatusChangeListener;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeMessageListener;
 import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodePropertyChangedListener;
@@ -81,6 +82,7 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  * Summarizes all kind of workflow changes and allows one to register one single listener to all of them.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz
+ * @author Benjamin Moser, KNIME GmbH, Konstanz
  */
 public class WorkflowChangesListener implements Closeable {
 
@@ -88,17 +90,34 @@ public class WorkflowChangesListener implements Closeable {
 
     private final WorkflowListener m_workflowListener;
 
-    private final Map<NodeID, NodeStateChangeListener> m_nodeStateChangeListeners = new HashMap<>();
+    private final NodeListenerMap<NodeStateChangeListener> m_nodeStateChangeListeners =
+        new NodeListenerMap<>(NodeContainer::addNodeStateChangeListener, NodeContainer::removeNodeStateChangeListener);
 
-    private final Map<NodeID, NodeProgressListener> m_progressListeners = new HashMap<>();
+    private final NodeListenerMap<NodeProgressListener> m_progressListeners =
+        new NodeListenerMap<>((nc, l) -> nc.getProgressMonitor().addProgressListener(l),
+            (nc, l) -> nc.getProgressMonitor().removeProgressListener(l));
 
-    private final Map<NodeID, NodeUIInformationListener> m_nodeUIListeners = new HashMap<>();
+    private final NodeListenerMap<NodeUIInformationListener> m_nodeUIListeners = new NodeListenerMap<>( //
+        (nc, l) -> { //
+            nc.addUIInformationListener(l);
+            nc.getNodeAnnotation().addUIInformationListener(l);
+        }, //
+        (nc, l) -> { //
+            nc.removeUIInformationListener(l);
+            nc.getNodeAnnotation().removeUIInformationListener(l);
+        });
 
-    private final Map<NodeID, NodeMessageListener> m_nodeMessageListeners = new HashMap<>();
+    private final NodeListenerMap<NodeMessageListener> m_nodeMessageListeners =
+        new NodeListenerMap<>(NodeContainer::addNodeMessageListener, NodeContainer::removeNodeMessageListener);
 
-    private final Map<NodeID, NodePropertyChangedListener> m_nodePropertyChangedListeners = new HashMap<>();
+    private final NodeListenerMap<NodePropertyChangedListener> m_nodePropertyChangedListeners = new NodeListenerMap<>(
+        NodeContainer::addNodePropertyChangedListener, NodeContainer::removeNodePropertyChangedListener);
 
-    private final Map<NodeID, LoopStatusChangeListener> m_loopStatusChangeListeners = new HashMap<>();
+    private final NodeListenerMap<LoopStatusChangeListener> m_loopStatusChangeListeners = new NodeListenerMap<>(
+        (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
+            .ifPresent(h -> h.addLoopPausedListener(l)),
+        (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
+            .ifPresent(h -> h.removeLoopPausedListener(l)));
 
     private final Map<WorkflowAnnotationID, NodeUIInformationListener> m_workflowAnnotationListeners = new HashMap<>();
 
@@ -122,7 +141,7 @@ public class WorkflowChangesListener implements Closeable {
     public WorkflowChangesListener(final WorkflowManager wfm) {
         m_wfm = wfm;
         m_executorService = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
+            var t = new Thread(r, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
             t.setDaemon(true);
             return t;
         });
@@ -199,6 +218,7 @@ public class WorkflowChangesListener implements Closeable {
 
     /**
      * Register a callback to be called after workflow-change callbacks have been processed.
+     *
      * @see this#m_workflowChangedCallbacks
      * @param listener The callback to add
      */
@@ -234,7 +254,8 @@ public class WorkflowChangesListener implements Closeable {
             case NODE_REMOVED:
             case CONNECTION_ADDED:
             case CONNECTION_REMOVED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                updateWorkflowChangesTrackers(
+                    WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
                 break;
             case NODE_COLLAPSED:
                 updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
@@ -283,48 +304,26 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void addNodeListeners(final NodeContainer nc) {
-        NodeStateChangeListener sl = e -> {
+        m_nodeStateChangeListeners.add(nc, e -> {
             updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
             callback();
-        };
-        m_nodeStateChangeListeners.put(nc.getID(), sl);
-        nc.addNodeStateChangeListener(sl);
-        NodeProgressListener pl = e -> callback();
-        m_progressListeners.put(nc.getID(), pl);
-        nc.getProgressMonitor().addProgressListener(pl);
-        NodeUIInformationListener uil = e -> callback();
-        m_nodeUIListeners.put(nc.getID(), uil);
-        nc.addUIInformationListener(uil);
-        nc.getNodeAnnotation().addUIInformationListener(uil);
-        NodeMessageListener nml = e -> callback();
-        m_nodeMessageListeners.put(nc.getID(), nml);
-        nc.addNodeMessageListener(nml);
-        getNNC(nc).ifPresent(nnc -> nnc.getLoopStatusChangeHandler().ifPresent(h -> {
-            LoopStatusChangeListener l = this::callback;
-            m_loopStatusChangeListeners.put(nc.getID(), l);
-            h.addLoopPausedListener(l);
-        }));
-        NodePropertyChangedListener cl = e -> callback();
-        m_nodePropertyChangedListeners.put(nc.getID(), cl);
-        nc.addNodePropertyChangedListener(cl);
+        });
+        m_progressListeners.add(nc, e -> callback());
+        m_nodeUIListeners.add(nc, e -> callback());
+        m_nodeMessageListeners.add(nc, e -> callback());
+        m_loopStatusChangeListeners.add(nc, this::callback);
+        m_nodePropertyChangedListeners.add(nc, e -> callback());
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
-        NodeID id = nc.getID();
-        nc.removeNodeStateChangeListener(m_nodeStateChangeListeners.get(id));
-        nc.getProgressMonitor().removeProgressListener(m_progressListeners.get(id));
-        nc.removeUIInformationListener(m_nodeUIListeners.get(id));
-        nc.getNodeAnnotation().removeUIInformationListener(m_nodeUIListeners.get(id));
-        nc.removeNodeMessageListener(m_nodeMessageListeners.get(id));
-        getNNC(nc).ifPresent(nnc -> nnc.getLoopStatusChangeHandler()
-            .ifPresent(h -> h.removeLoopPausedListener(m_loopStatusChangeListeners.get(id))));
-        nc.removeNodePropertyChangedListener(m_nodePropertyChangedListeners.get(id));
-        m_nodeStateChangeListeners.remove(id);
-        m_progressListeners.remove(id);
-        m_nodeUIListeners.remove(id);
-        m_nodeMessageListeners.remove(id);
-        m_loopStatusChangeListeners.remove(id);
-        m_nodePropertyChangedListeners.remove(id);
+        List.of( //
+            m_nodeStateChangeListeners, //
+            m_progressListeners, //
+            m_nodeUIListeners, //
+            m_nodeMessageListeners, //
+            m_loopStatusChangeListeners, //
+            m_nodePropertyChangedListeners //
+        ).forEach(nlm -> nlm.remove(nc));
     }
 
     private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
@@ -385,6 +384,54 @@ public class WorkflowChangesListener implements Closeable {
     public void close() {
         stopListening();
         m_executorService.shutdown();
+    }
+
+    /**
+     * Wrapper around HashMap that uses the given NodeContainer's {@link System#identityHashCode(Object)} as keys. Only
+     * performs update if key not yet present. {@link org.knime.core.node.workflow.NodeID} does not suffice because the
+     * object associated with a node ID may change in the underlying workflow (e.g. conversion from metanode to
+     * component). Dependency to {@link NodeContainer} and related classes is avoided for maintainability.
+     *
+     * @param <L> The type of event listener to attach / detach
+     */
+    private static final class NodeListenerMap<L> {
+
+        private final Map<Integer, L> m_listeners = new HashMap<>();
+
+        final BiConsumer<NodeContainer, L> m_attacher;
+
+        final BiConsumer<NodeContainer, L> m_detacher;
+
+        private NodeListenerMap(final BiConsumer<NodeContainer, L> attacher,
+            final BiConsumer<NodeContainer, L> detacher) {
+            m_attacher = attacher;
+            m_detacher = detacher;
+        }
+
+        private static Integer getKey(final NodeContainer nc) {
+            return System.identityHashCode(nc);
+        }
+
+        private void add(final NodeContainer nc, final L listener) {
+            var ncKey = getKey(nc);
+
+            if (!m_listeners.containsKey(ncKey)) {  // NOSONAR
+                m_attacher.accept(nc, listener);
+                m_listeners.put(ncKey, listener);
+            }
+        }
+
+        private void remove(final NodeContainer nc) {
+            var ncKey = getKey(nc);
+            var listener = m_listeners.remove(ncKey);
+            if (listener != null) {
+                m_detacher.accept(nc, listener);
+            }
+        }
+
+        private void clear() {
+            m_listeners.clear();
+        }
     }
 
     /**
