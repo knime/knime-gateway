@@ -444,13 +444,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     @SuppressWarnings("javadoc")
-    public void testCollapseResponseMetanode() throws Exception {
-        testCollapseResponse(CollapseCommandEnt.ContainerTypeEnum.METANODE);
+    public void testCollapseResultMetanode() throws Exception {
+        testCollapseResult(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
     @SuppressWarnings("javadoc")
-    public void testCollapseResponseComponent() throws Exception {
-        testCollapseResponse(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+    public void testCollapseResultComponent() throws Exception {
+        testCollapseResult(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
     @SuppressWarnings("javadoc")
@@ -492,15 +492,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     @SuppressWarnings("javadoc")
-    public void testExpandResponseMetanode() throws Exception {
+    public void testExpandResultMetanode() throws Exception {
         var configuredMetanode = 14;
-        testExpandResponse(configuredMetanode);
+        testExpandResult(configuredMetanode);
     }
 
     @SuppressWarnings("javadoc")
-    public void testExpandResponseComponent() throws Exception {
+    public void testExpandResultComponent() throws Exception {
         var configuredComponent = 15;
-        testExpandResponse(configuredComponent);
+        testExpandResult(configuredComponent);
     }
 
     private void testExpandResettable(final int nodeToExpand) throws Exception {
@@ -614,60 +614,79 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
     }
 
-    private void testCollapseResponse(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
+    /**
+     * Test that the command result of the collapse command contains the required fields. Does not test synchronisation
+     * between workflow snapshots and command results or correctness of other contents of the result.
+     *
+     * @param containerType The kind of container node to test
+     * @throws Exception
+     */
+    private void testCollapseResult(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
-        var nodesToCollapseInts = List.of(5,3);
-        var annotsToCollapseInts = List.of(0,1);
+        var nodesToCollapseInts = List.of(5, 3);
+        var annotsToCollapseInts = List.of(0, 1);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
-        var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
+        var annotsToCollapseEnts =
+            annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
         var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
 
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // initialize snapshot id to null
-        var commandResponseEnt0 = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 0
-        ws().undoWorkflowCommand(wfId, getRootID());
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 1
-        var commandResponseEnt2 = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 2
+        // Call `getWorkflow` to trigger initialisation/update of latest snapshot ID.
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var result0 = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertCollapseResult(result0, "0");
 
-        if (commandResponseEnt0 instanceof CollapseResultEnt) {
-            var collapseResponseEnt0 = (CollapseResultEnt)commandResponseEnt0;
-            assertNotNull(collapseResponseEnt0.getNewNodeId());
-            assertEquals("0", collapseResponseEnt0.getSnapshotId());
-            var collapseResponseEnt2 = (CollapseResultEnt)commandResponseEnt2;
-            assertNotNull(collapseResponseEnt2.getNewNodeId());
-            assertEquals("2", collapseResponseEnt2.getSnapshotId());
-        } else if (commandResponseEnt0 instanceof ConvertContainerResultEnt) {
-            var convertResponseEnt0 = (ConvertContainerResultEnt)commandResponseEnt0;
-            assertNotNull(convertResponseEnt0.getConvertedNodeId());
-            assertEquals("0", convertResponseEnt0.getSnapshotId());
-            var convertResponseEnt2 = (ConvertContainerResultEnt)commandResponseEnt2;
-            assertNotNull(convertResponseEnt2.getConvertedNodeId());
-            assertEquals("2", convertResponseEnt2.getSnapshotId());
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        ws().undoWorkflowCommand(wfId, getRootID()); // no result to inspect
+
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var result2 = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertCollapseResult(result2, "2");
+    }
+
+    private static void assertCollapseResult(final CommandResultEnt resultEnt, final String expectedSnapshotId)
+        throws Exception {
+        assertEquals(expectedSnapshotId, resultEnt.getSnapshotId());
+        if (resultEnt instanceof CollapseResultEnt) {
+            var collapseResultEnt = (CollapseResultEnt)resultEnt;
+            assertNotNull(collapseResultEnt.getNewNodeId());
+        } else if (resultEnt instanceof ConvertContainerResultEnt) {
+            var convertResultEnt = (ConvertContainerResultEnt)resultEnt;
+            assertNotNull(convertResultEnt.getConvertedNodeId());
         } else {
-            throw new NoSuchElementException("Unexpected response entity");
+            throw new NoSuchElementException("Unexpected result entity");
         }
     }
 
-    private void testExpandResponse(final int nodeToExpand) throws Exception {
+    /**
+     * Test that the command result of the expand command contains the required fields. Does not test synchronisation
+     * between workflow snapshots and command results or correctness of other contents of the result.
+     *
+     * @param containerType
+     * @throws Exception
+     */
+    private void testExpandResult(final int nodeToExpand) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
         var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
 
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // initialize snapshot id to null
-        var responseEnt0 = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 0
-        ws().undoWorkflowCommand(wfId, getRootID());
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 1
-        var responseEnt2 = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 2
+        // Call `getWorkflow` to trigger initialisation/update of latest snapshot ID.
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var result0 = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertExpandResponse(result0, "0");
 
-        assertNotNull(responseEnt0.getExpandedNodeIds());
-        assertNotNull(responseEnt0.getExpandedAnnotationIds());
-        assertEquals("0", responseEnt0.getSnapshotId());
-        assertNotNull(responseEnt2.getExpandedNodeIds());
-        assertNotNull(responseEnt2.getExpandedAnnotationIds());
-        assertEquals("2", responseEnt2.getSnapshotId());
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        ws().undoWorkflowCommand(wfId, getRootID());
+
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var result2 = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        assertExpandResponse(result2, "2");
+
+    }
+
+    private static void assertExpandResponse(final ExpandResultEnt resultEnt, final String expectedSnapshotId) {
+        assertEquals(expectedSnapshotId, resultEnt.getSnapshotId());
+        assertNotNull(resultEnt.getExpandedNodeIds());
+        assertNotNull(resultEnt.getExpandedAnnotationIds());
     }
 
     private void testCollapseConfigured(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {

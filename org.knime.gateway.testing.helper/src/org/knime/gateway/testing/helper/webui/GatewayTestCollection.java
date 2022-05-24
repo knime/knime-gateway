@@ -93,10 +93,10 @@ public final class GatewayTestCollection {
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToMetanode());
         res.put("testCollapseResettableToComponent",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToComponent());
-        res.put("testCollapseResponseMetanode",
-                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResponseMetanode());
-        res.put("testCollapseResponseComponent",
-                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResponseComponent());
+        res.put("testCollapseResultMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResultMetanode());
+        res.put("testCollapseResultComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResultComponent());
 
         res.put("testExpandConfiguredMetanode",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandConfiguredMetanode());
@@ -110,10 +110,10 @@ public final class GatewayTestCollection {
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResettableMetanode());
         res.put("testExpandResettableComponent",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResettableComponent());
-        res.put("testExpandResponseMetanode",
-                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResponseMetanode());
-        res.put("testExpandResponseComponent",
-                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResponseComponent());
+        res.put("testExpandResultMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResultMetanode());
+        res.put("testExpandResultComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResultComponent());
 
         res.put("testChangeNodeState",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
