@@ -621,16 +621,29 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
         var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
         var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, containerType);
-        var commandResponseEnt = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
 
-        // TODO test for snapshot id once we have NXT-927
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // initialize snapshot id to null
+        var commandResponseEnt0 = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 0
+        ws().undoWorkflowCommand(wfId, getRootID());
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 1
+        var commandResponseEnt2 = ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 2
 
-        if (commandResponseEnt instanceof CollapseResultEnt) {
-            var collapseResponseEnt = (CollapseResultEnt)commandResponseEnt;
-            assertNotNull(collapseResponseEnt.getNewNodeId());
-        } else if (commandResponseEnt instanceof ConvertContainerResultEnt) {
-            var convertResponseEnt = (ConvertContainerResultEnt)commandResponseEnt;
-            assertNotNull(convertResponseEnt.getConvertedNodeId());
+        if (commandResponseEnt0 instanceof CollapseResultEnt) {
+            var collapseResponseEnt0 = (CollapseResultEnt)commandResponseEnt0;
+            assertNotNull(collapseResponseEnt0.getNewNodeId());
+            assertEquals("0", collapseResponseEnt0.getSnapshotId());
+            var collapseResponseEnt2 = (CollapseResultEnt)commandResponseEnt2;
+            assertNotNull(collapseResponseEnt2.getNewNodeId());
+            assertEquals("2", collapseResponseEnt2.getSnapshotId());
+        } else if (commandResponseEnt0 instanceof ConvertContainerResultEnt) {
+            var convertResponseEnt0 = (ConvertContainerResultEnt)commandResponseEnt0;
+            assertNotNull(convertResponseEnt0.getConvertedNodeId());
+            assertEquals("0", convertResponseEnt0.getSnapshotId());
+            var convertResponseEnt2 = (ConvertContainerResultEnt)commandResponseEnt2;
+            assertNotNull(convertResponseEnt2.getConvertedNodeId());
+            assertEquals("2", convertResponseEnt2.getSnapshotId());
         } else {
             throw new NoSuchElementException("Unexpected response entity");
         }
@@ -640,12 +653,21 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
         var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
-        ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
 
-        // TODO test for snapshot id once we have NXT-927
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // initialize snapshot id to null
+        var responseEnt0 = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 0
+        ws().undoWorkflowCommand(wfId, getRootID());
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 1
+        var responseEnt2 = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
+        ws().getWorkflow(wfId, getRootID(), false).getWorkflow();   // update snapshot id to 2
 
-        assertNotNull(responseEnt.getExpandedNodeIds());
-        assertNotNull(responseEnt.getExpandedAnnotationIds());
+        assertNotNull(responseEnt0.getExpandedNodeIds());
+        assertNotNull(responseEnt0.getExpandedAnnotationIds());
+        assertEquals("0", responseEnt0.getSnapshotId());
+        assertNotNull(responseEnt2.getExpandedNodeIds());
+        assertNotNull(responseEnt2.getExpandedAnnotationIds());
+        assertEquals("2", responseEnt2.getSnapshotId());
     }
 
     private void testCollapseConfigured(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
