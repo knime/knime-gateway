@@ -5,14 +5,14 @@
       "name" : "Port 1",
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Data"
+      "typeName" : "Table"
     } ],
     "name" : "Component",
     "outPorts" : [ {
       "name" : "Port 1",
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Data"
+      "typeName" : "Table"
     } ],
     "views" : [ {
       "name" : "JavaScript Table View"

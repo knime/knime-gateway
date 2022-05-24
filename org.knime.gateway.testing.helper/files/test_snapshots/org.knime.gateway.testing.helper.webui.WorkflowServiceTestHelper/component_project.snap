@@ -11,13 +11,13 @@
     "inPorts" : [ {
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Data"
+      "typeName" : "Table"
     } ],
     "name" : "component project",
     "outPorts" : [ {
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Data"
+      "typeName" : "Table"
     } ]
   },
   "connections" : {

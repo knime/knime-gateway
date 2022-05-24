@@ -6,7 +6,7 @@
     "name" : "test port name 1",
     "optional" : false,
     "typeId" : "org.knime.core.node.BufferedDataTable",
-    "typeName" : "Data"
+    "typeName" : "Table"
   } ],
   "name" : "Component",
   "options" : [ {
@@ -20,7 +20,7 @@
     "name" : "test port name 2",
     "optional" : false,
     "typeId" : "org.knime.core.node.BufferedDataTable",
-    "typeName" : "Data"
+    "typeName" : "Table"
   } ],
   "type" : "Manipulator",
   "views" : [ {

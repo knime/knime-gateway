@@ -6,7 +6,7 @@
       "name" : "myPort 1",
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Data"
+      "typeName" : "Table"
     }, {
       "optional" : false,
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
@@ -16,7 +16,7 @@
     "outPorts" : [ {
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Data"
+      "typeName" : "Table"
     }, {
       "optional" : false,
       "typeId" : "org.knime.core.node.port.PortObject",
