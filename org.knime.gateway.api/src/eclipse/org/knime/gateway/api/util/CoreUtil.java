@@ -385,7 +385,7 @@ public final class CoreUtil {
     public static Optional<Node> createNode(final NodeFactory<? extends NodeModel> factory) {
         try {
             return Optional.of(new Node((NodeFactory<NodeModel>)factory));
-        } catch (Exception e) { // NOSONAR
+        } catch (Throwable e) { // NOSONAR
             NodeLogger.getLogger(CoreUtil.class)
                 .error("Could not create instance of node " + factory.getClass().getName() + ": " + e.getMessage());
             return Optional.empty();
