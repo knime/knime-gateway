@@ -51,8 +51,10 @@ package org.knime.gateway.impl.service.util;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.javers.core.Javers;
@@ -62,9 +64,12 @@ import org.junit.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
+import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
@@ -97,6 +102,54 @@ public class PatchChangeProcessorTest {
         WorkflowEnt workflow2 =
             workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).setDirty(true).build();
 
+        PatchCreator<Object> patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
+
+        verify(patchCreator, Mockito.times(2)).added(any(), any());
+        verify(patchCreator, Mockito.times(1)).added(eq("/nodes/root:1"), any());
+        verify(patchCreator, Mockito.times(1)).added(eq("/nodes/root:11"), any());
+    }
+
+    /**
+     * Tests that element removals from arrays are correctly translated into respective 'remove'-patch operations with
+     * the correct index. Because there is a little peculiarity to consider: In order to, e.g., remove all elements from
+     * an array, the patch must look like this (i.e. the patch-ops depend on each other and their order is important):
+     *
+     * <pre>
+     * { "op": "remove", "path":"/0" },
+     * { "op": "remove", "path":"/0" },
+     * { "op": "remove", "path":"/0" }
+     * </pre>
+     *
+     * (instead of {@code ... "path":"/0" ... "path":"/1" ... "path":"/2"})
+     *
+     * For more details, see, e.g., https://github.com/json-patch/json-patch-tests/issues/26
+     */
+    @Test
+    public void testPatchRemovingMultipleArrayElements() {
+        var workflowBuilder = builder(WorkflowEntBuilder.class).setInfo(builder(WorkflowInfoEntBuilder.class)
+            .setName("wf-name").setContainerType(ContainerTypeEnum.PROJECT).build()).setDirty(false);
+
+        var workflowAnnoBuilder = builder(WorkflowAnnotationEntBuilder.class).setTextAlign(TextAlignEnum.CENTER)
+            .setBounds(builder(BoundsEntBuilder.class).build()).setId(new AnnotationIDEnt("root:1_1"))
+            .setBorderColor("test").setStyleRanges(Collections.emptyList()).setBorderWidth(0);
+        var anno1 = workflowAnnoBuilder.setText("anno1").build();
+        var anno2 = workflowAnnoBuilder.setText("anno2").build();
+        var anno3 = workflowAnnoBuilder.setText("anno3").build();
+
+        WorkflowEnt workflow1 = workflowBuilder.setWorkflowAnnotations(List.of(anno1, anno2, anno3)).build();
+        // remove all wf annotations
+        WorkflowEnt workflow2 = workflowBuilder.setWorkflowAnnotations(Collections.emptyList()).build();
+        var patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
+        verify(patchCreator, Mockito.times(3)).removed("/workflowAnnotations/0");
+
+        // remove only the first two workflow annotations
+        workflow2 = workflowBuilder.setWorkflowAnnotations(List.of(anno3)).build();
+        patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
+        verify(patchCreator, Mockito.times(2)).removed("/workflowAnnotations/1");
+        verify(patchCreator).replaced("/workflowAnnotations/0/text", "anno3");
+    }
+
+    private static PatchCreator<Object> createDiffAndPatchCreatorMock(final WorkflowEnt workflow1, final WorkflowEnt workflow2) {
         Javers javers = JaversBuilder.javers().registerValue(NodeIDEnt.class).registerValue(ConnectionIDEnt.class)
             .registerValue(AnnotationIDEnt.class).withNewObjectsSnapshot(false).build();
         Diff diff = javers.compare(workflow1, workflow2);
@@ -104,10 +157,7 @@ public class PatchChangeProcessorTest {
         PatchCreator<Object> patchCreator = Mockito.mock(PatchCreator.class);
         PatchChangeProcessor<Object> changeProcessor = new PatchChangeProcessor<>(patchCreator, "foo");
         javers.processChangeList(diff.getChanges(), changeProcessor);
-
-        Mockito.verify(patchCreator, Mockito.times(2)).added(any(), any());
-        Mockito.verify(patchCreator, Mockito.times(1)).added(eq("/nodes/root:1"), any());
-        Mockito.verify(patchCreator, Mockito.times(1)).added(eq("/nodes/root:11"), any());
+        return patchCreator;
     }
 
 }

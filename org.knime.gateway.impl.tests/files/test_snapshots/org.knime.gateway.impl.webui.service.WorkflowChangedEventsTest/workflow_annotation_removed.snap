@@ -217,52 +217,52 @@
   "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/10"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/11"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/12"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/13"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/14"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/15"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/16"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/17"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/2"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/3"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/4"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/5"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/6"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/7"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/8"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/4/styleRanges/9"
+  "path" : "/workflowAnnotations/4/styleRanges/1"
 }, {
   "op" : "remove",
   "path" : "/workflowAnnotations/6/defaultFontSize"
@@ -271,13 +271,13 @@
   "path" : "/workflowAnnotations/6/styleRanges/0"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/6/styleRanges/1"
+  "path" : "/workflowAnnotations/6/styleRanges/0"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/6/styleRanges/2"
+  "path" : "/workflowAnnotations/6/styleRanges/0"
 }, {
   "op" : "remove",
-  "path" : "/workflowAnnotations/6/styleRanges/3"
+  "path" : "/workflowAnnotations/6/styleRanges/0"
 }, {
   "op" : "remove",
   "path" : "/workflowAnnotations/7"

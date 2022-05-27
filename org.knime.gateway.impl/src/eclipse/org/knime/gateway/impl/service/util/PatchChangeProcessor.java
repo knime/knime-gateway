@@ -64,7 +64,6 @@ import org.javers.core.diff.changetype.container.ContainerChange;
 import org.javers.core.diff.changetype.container.ListChange;
 import org.javers.core.diff.changetype.container.SetChange;
 import org.javers.core.diff.changetype.container.ValueAdded;
-import org.javers.core.diff.changetype.container.ValueRemoved;
 import org.javers.core.diff.changetype.map.EntryRemoved;
 import org.javers.core.diff.changetype.map.MapChange;
 import org.javers.core.metamodel.object.GlobalId;
@@ -185,8 +184,19 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
     @Override
     public void onListChange(final ListChange listChange) {
         String path = getPath(listChange.getAffectedGlobalId(), listChange.getPropertyName());
-        for (ValueRemoved vr : listChange.getValueRemovedChanges()) {
-            m_patchCreator.removed(path + "/" + vr.getIndex());
+        var removedValues = listChange.getValueRemovedChanges();
+        for (var i = 0; i < removedValues.size(); i++) {
+            var index = removedValues.get(i).getIndex();
+            assert index >= i;
+            // If an element is removed from a list/array via a patch operation,
+            // the other subsequent elements in the list are all moved one to the 'left'.
+            // And since patch operations are applied one after another, we need to account for that
+            // when determining the list index of the element to remove - thus the 'index - i'.
+            // (e.g. when remove all elements from a list, the indices must be (0,0,0,...) instead
+            // of (0,1,2,3,...)
+            // An assumption here is that the elements in list of 'removedValues' are ordered by
+            // their index ('getIndex').
+            m_patchCreator.removed(path + "/" + (index - i));
         }
         for (ValueAdded va : listChange.getValueAddedChanges()) {
             Object val = va.getValue();
