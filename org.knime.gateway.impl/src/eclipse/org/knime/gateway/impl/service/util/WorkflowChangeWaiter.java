@@ -80,7 +80,7 @@ public class WorkflowChangeWaiter {
         m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
 
         m_postProcessCallback = wfm -> {
-            if (!m_tracker.hasOccurred(workflowChange)) {
+            if (!m_tracker.invoke(t -> t.hasOccurred(workflowChange))) {
                 return;
             }
             m_semaphore.release();

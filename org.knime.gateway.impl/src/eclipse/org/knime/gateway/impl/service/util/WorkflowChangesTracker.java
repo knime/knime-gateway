@@ -47,18 +47,19 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Instances remember specific changes until reset.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WorkflowChangesTracker {
 
-    private final Set<WorkflowChange> m_trackedChanges = Collections.synchronizedSet(new HashSet<>());
+    private final WorkflowChangesTrackerAccess m_trackerAccess;
 
     /**
      * Types of changes to occur to a workflow manager.
@@ -82,31 +83,56 @@ public class WorkflowChangesTracker {
      * @param setAllOccurred If true, set all possible changes to "have occurred".
      */
     WorkflowChangesTracker(final boolean setAllOccurred) {
-        if (setAllOccurred) {
-            m_trackedChanges.addAll(Arrays.asList(WorkflowChange.values()));
-        }
+        m_trackerAccess = new WorkflowChangesTrackerAccess(setAllOccurred);
     }
 
     /**
      * @param workflowChange Change to remember to have occurred
      */
-    void track(final WorkflowChange workflowChange) {
-        m_trackedChanges.add(workflowChange);
+    synchronized void track(final WorkflowChange workflowChange) {
+        m_trackerAccess.m_trackedChanges.add(workflowChange);
     }
 
     /**
-     * @param workflowChange The event to check for
-     * @return Whether the given event has occurred
+     * Lets one invoke methods on the tracker. Also makes sure that no more changes are being tracked while the methods
+     * are being invoked.
+     *
+     * @param <T>
+     * @param trackerAccess provides the instance that gives access to tracker methods
+     * @return arbitrary objects returned by the 'trackerAccess'
      */
-    public boolean hasOccurred(final WorkflowChange workflowChange) {
-        return m_trackedChanges.contains(workflowChange);
+    public synchronized <T> T invoke(final Function<WorkflowChangesTrackerAccess, T> trackerAccess) {
+        return trackerAccess.apply(m_trackerAccess);
     }
 
     /**
-     * Forget that any event has occurred
+     * Gives access to the actual {@link WorkflowChangesTracker}-methods.
      */
-    public void reset() {
-        m_trackedChanges.clear();
+    public static final class WorkflowChangesTrackerAccess {
+
+        private final Set<WorkflowChange> m_trackedChanges = new HashSet<>();
+
+        private WorkflowChangesTrackerAccess(final boolean setAllOccurred) {
+            if (setAllOccurred) {
+                m_trackedChanges.addAll(Arrays.asList(WorkflowChange.values()));
+            }
+        }
+
+        /**
+         * @param workflowChange The event to check for
+         * @return Whether the given event has occurred
+         */
+        public boolean hasOccurred(final WorkflowChange workflowChange) {
+            return m_trackedChanges.contains(workflowChange);
+        }
+
+        /**
+         * Forget that any event has occurred
+         */
+        public void reset() {
+            m_trackedChanges.clear();
+        }
+
     }
 
 }

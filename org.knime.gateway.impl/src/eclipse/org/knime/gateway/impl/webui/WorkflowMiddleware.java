@@ -76,6 +76,7 @@ import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 
 /**
@@ -167,14 +168,17 @@ public final class WorkflowMiddleware {
     }
 
     private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
-        final Supplier<WorkflowBuildContextBuilder> buildContextSupplier, final WorkflowChangesTracker tracker) {
+        final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowChangesTracker tracker) {
         try (WorkflowLock lock = wfm.lock()) {
-            if (tracker.hasOccurred(WorkflowChangesTracker.WorkflowChange.ANY)) {
-                var ent = buildWorkflowEnt(wfm, buildContextSupplier.get());
-                tracker.reset();
-                return ent;
-            }
-            return null;
+            var workflowChanged = tracker.invoke(t -> {
+                if (t.hasOccurred(WorkflowChange.ANY)) {
+                    t.reset();
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            return workflowChanged ? buildWorkflowEnt(wfm, buildContextBuilder) : null;
         }
     }
 
@@ -246,7 +250,7 @@ public final class WorkflowMiddleware {
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
-        WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, () -> buildContextBuilder, changes);
+        WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {
             // no change
             return null;
@@ -352,12 +356,14 @@ public final class WorkflowMiddleware {
         }
 
         public DependentNodeProperties get() {
-            var nodeStateChanges = m_tracker.hasOccurred(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
-            var nodeOrConnectionAddedOrRemoved = m_tracker.hasOccurred(WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
-            var recompute = m_dependentNodeProperties == null || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
-            if (recompute) {
+            var recompute = m_tracker.invoke(t -> {
+                var nodeStateChanges = t.hasOccurred(WorkflowChange.NODE_STATE_UPDATED);
+                var nodeOrConnectionAddedOrRemoved = t.hasOccurred(WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                t.reset();
+                return m_dependentNodeProperties == null || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+            });
+            if (Boolean.TRUE.equals(recompute)) {
                 m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(m_wfm);
-                m_tracker.reset();
             }
             return m_dependentNodeProperties;
         }
