@@ -47,11 +47,9 @@ package org.knime.gateway.util;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -161,10 +159,10 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
         });
         checkCanExecuteAndCanResetFlagsForAllNodes(metanode_224_23);
 
-		// test exception
+		// test absence of node id
         DependentNodeProperties props = DependentNodeProperties.determineDependentNodeProperties(metanode_25);
-        assertThrows(NoSuchElementException.class, () -> props.canExecuteNode(parentId));
-        assertThrows(NoSuchElementException.class, () -> props.canResetNode(parentId));
+        assertThat(props.canExecuteNode(new NodeID(9999)), is(false));
+        assertThat(props.canResetNode(new NodeID(9999)), is(false));
 
 	}
 

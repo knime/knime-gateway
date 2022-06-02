@@ -51,7 +51,6 @@ package org.knime.gateway.api.util;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
@@ -128,11 +127,10 @@ public final class DependentNodeProperties {
      *
      * @param id
      * @return <code>true</code> if the node can be executed, otherwise <code>false</code>
-     * @throws NoSuchElementException if the given node id couldn't be found
      */
     public boolean canExecuteNode(final NodeID id) {
         if (!m_props.containsKey(id)) {
-            throw new NoSuchElementException("No pre-calculated can-execute predicate found for node id " + id);
+            return false;
         }
         return m_wfm.canExecuteNode(id, i -> m_props.get(i).hasExecutablePredecessors());
     }
@@ -143,11 +141,10 @@ public final class DependentNodeProperties {
      *
      * @param id
      * @return <code>true</code> if the node can be reset, otherwise <code>false</code>
-     * @throws NoSuchElementException if the given node id couldn't be found
      */
     public boolean canResetNode(final NodeID id) {
         if (!m_props.containsKey(id)) {
-            throw new NoSuchElementException("No pre-calculated can-reset predicate found for node id " + id);
+            return false;
         }
         boolean wfmCanReset = m_wfm.canResetNode(id, i -> m_props.get(i).hasExecutingSuccessors());
         boolean hasPausedSuccessor = m_props.get(id).hasPausedSuccessor();
@@ -199,13 +196,15 @@ public final class DependentNodeProperties {
     }
 
     /**
+     * @param id
+     *
      * @return Whether the node has a successor that is currently executing. Also considers successors across
      *  component/metanode borders. The property is boundary-inclusive: A currently executing node will also have
      *  this property.
      */
     public boolean hasExecutingSuccessor(final NodeID id) {
         if (!m_props.containsKey(id)) {
-            throw new NoSuchElementException("No pre-calculated has-executing-successor predicate found for node id " + id);
+            return false;
         }
         return m_props.get(id).hasExecutingSuccessors();
     }
