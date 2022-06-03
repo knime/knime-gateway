@@ -97,8 +97,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     public Optional<AppStateChangedEventEnt>
         addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
         m_appStateProvider.addAppStateChangedListener(m_callback);
-        return Optional.of(buildEventEnt(DefaultApplicationService.buildAppStateEnt(m_appStateProvider.getAppState(),
-            m_workflowProjectManager, m_workflowMiddleware)));
+        return Optional.empty();
     }
 
     private static AppStateChangedEventEnt buildEventEnt(final AppStateEnt newAppStateEnt) {

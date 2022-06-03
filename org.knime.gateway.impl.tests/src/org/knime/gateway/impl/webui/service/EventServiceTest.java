@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -63,9 +64,13 @@ import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
@@ -162,6 +167,19 @@ public class EventServiceTest extends GatewayServiceTest {
 
         // check that there weren't any events
         verify(TEST_CONSUMER, times(0)).accept(any(), any());
+    }
+
+    /**
+     * Makes sure that {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} doesn't
+     * cause an event to be emitted for event type {@link AppStateChangedEventTypeEnt}.
+     *
+     * @throws InvalidRequestException
+     */
+    @Test
+    public void testNoEventsEmittedOnAddingAppStateChangedEventListener() throws InvalidRequestException {
+        var es = DefaultEventService.getInstance();
+        es.addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
+        verify(TEST_CONSUMER, never()).accept(any(), any());
     }
 
 }
