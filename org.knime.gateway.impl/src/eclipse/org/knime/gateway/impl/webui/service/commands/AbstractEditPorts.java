@@ -76,7 +76,7 @@ abstract class AbstractEditPorts extends AbstractWorkflowCommand {
      * @return The ID of the node to edit ports of.
      */
     protected final NodeID getNodeId() {
-        return getPortCommandEnt().getNodeId().toNodeID(getWorkflowManager().getID());
+        return getPortCommandEnt().getNodeId().toNodeID(getWorkflowManager().getProjectWFM().getID());
     }
 
     @Override

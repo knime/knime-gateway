@@ -96,6 +96,7 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
@@ -517,7 +518,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt responseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-        assertExpanded(wfId, commandEnt, responseEnt);
+        assertExpanded(wfId, getRootID(), commandEnt, responseEnt);
     }
 
     private void testExpandExecuting(final int container, final int successor) throws Exception{
@@ -538,29 +539,35 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
-        WorkflowEnt unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+        testExpandConfigured(wfId, getRootID(), nodeToExpandEnt);
+    }
+
+    private void testExpandConfigured(final String projectId, final NodeIDEnt wfId, final NodeIDEnt nodeToExpandEnt)
+        throws Exception {
+        WorkflowEnt unchangedWfEnt = ws().getWorkflow(projectId, wfId, true).getWorkflow();
         assertTrue("Expect selected nodes to have allowed action for collapse set to true",
             getAllowedActionsOfNodes(List.of(nodeToExpandEnt), unchangedWfEnt).stream()
                 .anyMatch(actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.TRUE));
 
         var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
         ExpandResultEnt commandResponseEnt =
-            (ExpandResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), commandEnt);
-        assertExpanded(wfId, commandEnt, commandResponseEnt);
+            (ExpandResultEnt)ws().executeWorkflowCommand(projectId, wfId, commandEnt);
+        assertExpanded(projectId, wfId, commandEnt, commandResponseEnt);
 
-        ws().undoWorkflowCommand(wfId, getRootID());
-        WorkflowEnt parentWfAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        ws().undoWorkflowCommand(projectId, wfId);
+        WorkflowEnt parentWfAfterUndo = ws().getWorkflow(projectId, wfId, Boolean.TRUE).getWorkflow();
         assertNodesPresent("Container expected to be back in parent workflow after undo", parentWfAfterUndo,
             List.of(nodeToExpandEnt));
         assertNodesNotPresent("Expanded nodes assumed to no longer be in parent workflow", parentWfAfterUndo,
             commandResponseEnt.getExpandedNodeIds());
 
-        ws().redoWorkflowCommand(wfId, getRootID());
-        assertExpanded(wfId, commandEnt, commandResponseEnt);
+        ws().redoWorkflowCommand(projectId, wfId);
+        assertExpanded(projectId, wfId, commandEnt, commandResponseEnt);
     }
 
-    private void assertExpanded(final String wfId, final ExpandCommandEnt commandEnt, final ExpandResultEnt responseEnt) throws Exception {
-        var parentWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+    private void assertExpanded(final String projectId, final NodeIDEnt wfId, final ExpandCommandEnt commandEnt,
+        final ExpandResultEnt responseEnt) throws Exception {
+        var parentWfEnt = ws().getWorkflow(projectId, wfId, true).getWorkflow();
         assertNodesNotPresent("Expanded node expected to have been removed", parentWfEnt,
             List.of(commandEnt.getNodeId()));
         assertNodesPresent("Nodes from container expected to appear in parent workflow", parentWfEnt,
@@ -1407,9 +1414,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertAddUndoRedoContainerPorts(final String wfId, final NodeIDEnt node) throws Exception {
+        assertAddUndoRedoContainerPorts(wfId, getRootID(), node);
+    }
+
+    private void assertAddUndoRedoContainerPorts(final String projectId, final NodeIDEnt wfId, final NodeIDEnt node)
+        throws Exception {
         var portType = WorkflowPortObject.TYPE;
 
-        var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var unchangedWfEnt = ws().getWorkflow(projectId, wfId, false).getWorkflow();
 
         var addInputPortCommandEnt = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
             .setNodeId(node) //
@@ -1418,14 +1430,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.ADD_PORT) //
             .build();
 
-        ws().executeWorkflowCommand(wfId, getRootID(), addInputPortCommandEnt);
-        assertPortAdded(node, true, wfId, unchangedWfEnt);
+        ws().executeWorkflowCommand(projectId, wfId, addInputPortCommandEnt);
+        assertPortAdded(node, true, projectId, wfId, unchangedWfEnt);
 
-        ws().undoWorkflowCommand(wfId, getRootID());
-        assertPortsUnchanged(wfId, node, unchangedWfEnt);
+        ws().undoWorkflowCommand(projectId, wfId);
+        assertPortsUnchanged(projectId, wfId, node, unchangedWfEnt);
 
-        ws().redoWorkflowCommand(wfId, getRootID());
-        assertPortAdded(node, true, wfId, unchangedWfEnt);
+        ws().redoWorkflowCommand(projectId, wfId);
+        assertPortAdded(node, true, projectId, wfId, unchangedWfEnt);
 
         var addOutputPortCommandEnt = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
             .setNodeId(node) //
@@ -1433,13 +1445,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
             .setKind(KindEnum.ADD_PORT) //
             .build();
-        ws().executeWorkflowCommand(wfId, getRootID(), addOutputPortCommandEnt);
-        assertPortAdded(node, false, wfId, unchangedWfEnt);
+        ws().executeWorkflowCommand(projectId, wfId, addOutputPortCommandEnt);
+        assertPortAdded(node, false, projectId, wfId, unchangedWfEnt);
     }
 
-    private void assertPortsUnchanged(final String wfId, final NodeIDEnt node, final WorkflowEnt originalWfEnt)
-        throws ServiceExceptions.NotASubWorkflowException, NodeNotFoundException {
-        var currentWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+    private void assertPortsUnchanged(final String projectId, final NodeIDEnt wfId, final NodeIDEnt node,
+        final WorkflowEnt originalWfEnt) throws ServiceExceptions.NotASubWorkflowException, NodeNotFoundException {
+        var currentWfEnt = ws().getWorkflow(projectId, wfId, false).getWorkflow();
         var unchangedInports = originalWfEnt.getNodes().get(node.toString()).getInPorts();
         var changedInPorts = currentWfEnt.getNodes().get(node.toString()).getInPorts();
         assertPortListUnchanged(unchangedInports, changedInPorts);
@@ -1458,10 +1470,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertEquals("Expect port names to not have changed", originalNames, currentNames);
     }
 
-    private void assertPortAdded(final NodeIDEnt node, final boolean isInPort, final String wfId,
+    private void assertPortAdded(final NodeIDEnt node, final boolean isInPort, final String projectId, final NodeIDEnt wfId,
         final WorkflowEnt originalWfEnt) throws Exception {
         var originalNumInPorts = getPortList(originalWfEnt, isInPort, node).size();
-        var newWorkflowEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        var newWorkflowEnt = ws().getWorkflow(projectId, wfId, Boolean.TRUE).getWorkflow();
         var newPortList = getPortList(newWorkflowEnt, isInPort, node);
         var newNumPorts = newPortList.size();
         assertThat("Expect number of ports to have increased by one", newNumPorts == originalNumInPorts + 1);
@@ -1503,7 +1515,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThrows("Expect exception on removing port with index 0 from component (fixed flow variable port)",
             OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteFixedFlowVarPort));
-        assertPortsUnchanged(wfId, componentWithPorts, unchangedWfEnt);
+        assertPortsUnchanged(wfId, getRootID(), componentWithPorts, unchangedWfEnt);
 
         assertRemoveUndoRedoContainerPorts(wfId, componentWithPorts);
     }
@@ -1520,7 +1532,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertPortRemoved(node, true, wfId, unchangedWfEnt);
 
         ws().undoWorkflowCommand(wfId, getRootID());
-        assertPortsUnchanged(wfId, node, unchangedWfEnt);
+        assertPortsUnchanged(wfId, getRootID(), node, unchangedWfEnt);
 
         ws().redoWorkflowCommand(wfId, getRootID());
         assertPortRemoved(node, true, wfId, unchangedWfEnt);
@@ -1624,4 +1636,54 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_redo");
     }
 
+    /**
+     * Some commands weren't working from within a component and metanode (NXT-1141). This is the test for it.
+     *
+     * @throws Exception
+     */
+    public void testExecuteCommandsWithinMetanode() throws Exception {
+        testExecuteCommandsWithinComponentAndMetanode(ContainerTypeEnum.METANODE);
+    }
+
+    /**
+     * Some commands weren't working from within a component and metanode (NXT-1141). This is the test for it.
+     *
+     * @throws Exception
+     */
+    public void testExecuteCommandsWithinComponent() throws Exception {
+        testExecuteCommandsWithinComponentAndMetanode(ContainerTypeEnum.COMPONENT);
+    }
+
+    private void testExecuteCommandsWithinComponentAndMetanode(final ContainerTypeEnum containerType)
+        throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+
+        // collapse metanode and component into a component/metanode and add ports to metanode and component
+        var collapse = buildCollapseCommandEnt(List.of(new NodeIDEnt(14), new NodeIDEnt(15)), Collections.emptyList(),
+            containerType);
+        var commandRes = ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), collapse);
+        var newNodeID = getNewNodeId(commandRes);
+        assertAddUndoRedoContainerPorts(wfId, newNodeID, appendNodeID(newNodeID, 14, containerType));
+        assertAddUndoRedoContainerPorts(wfId, newNodeID, appendNodeID(newNodeID, 15, containerType));
+
+        // expand again
+        var expand = buildExpandCommandEnt(newNodeID);
+        ws().executeWorkflowCommand(wfId, getRootID(), expand);
+
+        // collapse metanode and component into component/metanode and expand those within the component
+        collapse = buildCollapseCommandEnt(List.of(new NodeIDEnt(14), new NodeIDEnt(15)), Collections.emptyList(),
+            containerType);
+        commandRes = ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), collapse);
+        newNodeID = getNewNodeId(commandRes);
+        testExpandConfigured(wfId, newNodeID, appendNodeID(newNodeID, 14, containerType));
+        testExpandConfigured(wfId, newNodeID, appendNodeID(newNodeID, 15, containerType));
+    }
+
+    private static NodeIDEnt appendNodeID(final NodeIDEnt idEnt, final int id, final ContainerTypeEnum containerType) {
+        if (containerType == ContainerTypeEnum.COMPONENT) {
+            return idEnt.appendNodeID(0).appendNodeID(id);
+        } else {
+            return idEnt.appendNodeID(id);
+        }
+    }
 }

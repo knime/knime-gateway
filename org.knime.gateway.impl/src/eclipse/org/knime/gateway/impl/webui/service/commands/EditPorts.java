@@ -58,7 +58,7 @@ class EditPorts extends CommandIfElse {
 
     EditPorts(final PortCommandEnt portCommandEnt) {
         super(wfm -> {
-            var nodeId = portCommandEnt.getNodeId().toNodeID(wfm.getID());
+            var nodeId = portCommandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
             return CoreUtil.getContainerType(nodeId, wfm).isPresent();
         }, //
             new EditContainerNodePorts(portCommandEnt), //
