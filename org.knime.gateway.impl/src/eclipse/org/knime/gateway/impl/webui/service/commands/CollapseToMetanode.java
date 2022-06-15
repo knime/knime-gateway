@@ -104,6 +104,11 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         var nodeIds = getNodeIDs();
         var annoIDs = getAnnotationIDs();
 
+        if (nodeIds.length == 0 && annoIDs.length == 0) {
+            throw new ServiceExceptions.OperationNotAllowedException(
+                "No nodes and workflow annotations given to collapse into metanode or component");
+        }
+
         var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds, annoIDs);
         if (cannotCollapseReason != null) {
             throw new ServiceExceptions.OperationNotAllowedException(cannotCollapseReason);

@@ -97,6 +97,8 @@ public final class GatewayTestCollection {
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResultMetanode());
         res.put("testCollapseResultComponent",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResultComponent());
+        res.put("testCollapseNothingIntoMetanode",
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseNothingIntoMetanode());
 
         res.put("testExpandConfiguredMetanode",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandConfiguredMetanode());

@@ -454,6 +454,21 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testCollapseResult(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
+    /**
+     * Tests that the case of collapsing 'nothing' (i.e. no nodes nor workflow annotations given) into a metanode is
+     * handled properly.
+     *
+     * @throws Exception
+     */
+    public void testCollapseNothingIntoMetanode() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        List<NodeIDEnt> nodesToCollapseEnts = Collections.emptyList();
+        List<AnnotationIDEnt> annotsToCollapseEnts = Collections.emptyList();
+        var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, ContainerTypeEnum.METANODE);
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt));
+    }
+
     @SuppressWarnings("javadoc")
     public void testExpandConfiguredMetanode() throws Exception {
         var configuredMetanode = 14;
