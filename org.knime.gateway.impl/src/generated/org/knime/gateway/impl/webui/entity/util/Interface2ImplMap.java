@@ -86,6 +86,10 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt.ConvertContainerResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
+import org.knime.gateway.api.webui.entity.CopyResultEnt.CopyResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
@@ -278,6 +282,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == ConvertContainerResultEntBuilder.class) {
             return (B)new DefaultConvertContainerResultEnt.DefaultConvertContainerResultEntBuilder();
+        }        
+        if(clazz == CopyCommandEntBuilder.class) {
+            return (B)new DefaultCopyCommandEnt.DefaultCopyCommandEntBuilder();
+        }        
+        if(clazz == CopyResultEntBuilder.class) {
+            return (B)new DefaultCopyResultEnt.DefaultCopyResultEntBuilder();
         }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();

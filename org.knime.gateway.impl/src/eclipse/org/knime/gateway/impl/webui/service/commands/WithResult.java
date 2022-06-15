@@ -81,7 +81,7 @@ public interface WithResult {
      * Determines the workflow change to wait for before the command result can be built, see
      * {@link #buildEntity(String)}.
      *
-     * @return the workflow change to wait for until the command result can be built
+     * @return the workflow change to wait for until the command result can be built, can be {@code null}
      */
     WorkflowChangesTracker.WorkflowChange getChangeToWaitFor();
 

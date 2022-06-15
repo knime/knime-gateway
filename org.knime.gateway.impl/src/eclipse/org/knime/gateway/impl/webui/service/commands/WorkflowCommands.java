@@ -61,6 +61,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
@@ -127,7 +128,15 @@ public final class WorkflowCommands {
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
         final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
         WorkflowCommand command;
-        if (commandEnt instanceof TranslateCommandEnt) {
+        if (commandEnt instanceof CopyCommandEnt) {
+            // this command is special, it doesn't change the workflow state
+            command = new Copy((CopyCommandEnt)commandEnt);
+            // no workflow change, no stacking
+            executeCommandAndModifyCommandStacks(wfKey, command);
+            // directly return command result, quick and dirty
+            var latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
+            return ((WithResult)command).buildEntity(latestSnapshotId);
+        } else if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
         } else if (commandEnt instanceof DeleteCommandEnt) {
             command = new Delete((DeleteCommandEnt)commandEnt, m_workflowMiddleware);

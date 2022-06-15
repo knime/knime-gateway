@@ -66,7 +66,9 @@ public interface CommandResultEnt extends GatewayEntity {
     
     EXPANDRESULT("expandResult"),
     
-    CONVERTCONTAINERRESULT("convertContainerResult");
+    CONVERTCONTAINERRESULT("convertContainerResult"),
+    
+    COPYRESULT("copyResult");
 
     private String value;
 

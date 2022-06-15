@@ -65,6 +65,8 @@ import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.ConvertContainerResultEntMixIn;
+import org.knime.gateway.json.webui.entity.CopyCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.CopyResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DynamicPortGroupDescriptionEntMixIn;
@@ -163,6 +165,8 @@ public class ListEntities {
         res.add(ConnectCommandEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
         res.add(ConvertContainerResultEntMixIn.class);
+        res.add(CopyCommandEntMixIn.class);
+        res.add(CopyResultEntMixIn.class);
         res.add(CustomJobManagerEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.class);
@@ -247,6 +251,8 @@ public class ListEntities {
         res.add(ConnectCommandEntMixIn.ConnectCommandEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
         res.add(ConvertContainerResultEntMixIn.ConvertContainerResultEntMixInBuilder.class);
+        res.add(CopyCommandEntMixIn.CopyCommandEntMixInBuilder.class);
+        res.add(CopyResultEntMixIn.CopyResultEntMixInBuilder.class);
         res.add(CustomJobManagerEntMixIn.CustomJobManagerEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.DynamicPortGroupDescriptionEntMixInBuilder.class);

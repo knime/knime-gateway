@@ -25,3 +25,5 @@ Export-Package: org.knime.gateway.impl.project,
  org.knime.gateway.impl.webui.service,
  org.knime.gateway.impl.webui.service.events
 Automatic-Module-Name: org.knime.gateway.impl
+Import-Package: com.fasterxml.jackson.core;version="2.13.2",
+ com.fasterxml.jackson.databind

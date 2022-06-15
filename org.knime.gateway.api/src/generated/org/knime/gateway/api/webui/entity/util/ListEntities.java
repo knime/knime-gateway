@@ -65,6 +65,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.api.webui.entity.CopyResultEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
@@ -164,6 +166,8 @@ public class ListEntities {
         res.add(ConnectCommandEnt.class);
         res.add(ConnectionEnt.class);
         res.add(ConvertContainerResultEnt.class);
+        res.add(CopyCommandEnt.class);
+        res.add(CopyResultEnt.class);
         res.add(CustomJobManagerEnt.class);
         res.add(DeleteCommandEnt.class);
         res.add(DynamicPortGroupDescriptionEnt.class);
@@ -248,6 +252,8 @@ public class ListEntities {
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class);
+        res.add(CopyCommandEnt.CopyCommandEntBuilder.class);
+        res.add(CopyResultEnt.CopyResultEntBuilder.class);
         res.add(CustomJobManagerEnt.CustomJobManagerEntBuilder.class);
         res.add(DeleteCommandEnt.DeleteCommandEntBuilder.class);
         res.add(DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder.class);

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,70 +52,49 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * CopyResultEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface CopyResultEnt extends GatewayEntity, CommandResultEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * Get content
+   * @return content , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public String getContent();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface CopyResultEntBuilder extends GatewayEntityBuilder<CopyResultEnt> {
 
         /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param snapshotId the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        CopyResultEntBuilder setSnapshotId(String snapshotId);
+        
+        /**
+   		 * Set kind
+         * 
+         * @param kind the property value,  
+         * @return this entity builder for chaining
+         */
+        CopyResultEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set content
+         * 
+         * @param content the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        CopyResultEntBuilder setContent(String content);
         
         
         /**
@@ -124,7 +104,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        CopyResultEnt build();
     
     }
 

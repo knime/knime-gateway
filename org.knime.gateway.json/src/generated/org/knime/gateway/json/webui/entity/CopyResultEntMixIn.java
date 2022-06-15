@@ -44,46 +44,25 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
+import org.knime.gateway.api.webui.entity.CopyResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt.DefaultCopyResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
-})
-@JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
+
+@JsonDeserialize(builder=DefaultCopyResultEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface CommandResultEntMixIn extends CommandResultEnt {
+public interface CopyResultEntMixIn extends CopyResultEnt {
 
     @Override
     @JsonIgnore
@@ -97,40 +76,34 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
     @JsonProperty("kind")
     public KindEnum getKind();
     
+    @Override
+    @JsonProperty("content")
+    public String getContent();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
      * @author Martin Horn, University of Konstanz
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
-})
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {
+    public static interface CopyResultEntMixInBuilder extends CopyResultEntBuilder {
     
         @Override
-        public CommandResultEntMixIn build();
+        public CopyResultEntMixIn build();
     
         @Override
         @JsonProperty("snapshotId")
-        public CommandResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        public CopyResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
         @JsonProperty("kind")
-        public CommandResultEntMixInBuilder setKind(final KindEnum kind);
+        public CopyResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("content")
+        public CopyResultEntMixInBuilder setContent(final String content);
         
     }
 
