@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,94 +41,60 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jun 16, 2022 (Kai Franze, KNIME GmbH): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Arrays;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.WorkflowCopyContent;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.shared.workflow.storage.clipboard.DefClipboardContent;
+import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * A command that is executed to change a workflow.
- * 
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Workflow command to paste workflow parts into the active workflow
+ *
+ * @author Kai Franze, KNIME GmbH
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
+public class Paste extends AbstractWorkflowCommand {
 
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    PASTE("paste");
+    private final PasteCommandEnt m_commandEnt;
 
-    private String value;
+    private WorkflowCopyContent m_workflowCopyContent;
 
-    KindEnum(String value) {
-      this.value = value;
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(Paste.class);
+
+    Paste(final PasteCommandEnt commandEnt) {
+        m_commandEnt = commandEnt;
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public void undo() throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
+        Arrays.stream(m_workflowCopyContent.getNodeIDs()).forEach(wfm::removeNode);
+        Arrays.stream(m_workflowCopyContent.getAnnotationIDs()).forEach(wfm::removeAnnotation);
     }
 
-  }
-
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-    /**
-     * The builder for the entity.
-     */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
-
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowCommandEnt build();
-    
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        try {
+            var defClipboardContent = mapper.readValue(m_commandEnt.getContent(), DefClipboardContent.class);
+            m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
+        } catch (JsonProcessingException ex) {
+            LOGGER.info("Couldn't process your clipboard content. Maybe you didn't paste workflow parts? <"
+                + m_commandEnt.getContent().substring(0, Math.min(m_commandEnt.getContent().length(), 63)) + ">");
+            return false; // because the workflow wasn't modified
+        }
+        return true;
     }
 
 }

@@ -50,45 +50,40 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 
 /**
- * Copy selected workflow parts and serialize to JSON
+ * Paste JSON serialized workflow parts into the active workflow
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCopyCommandEnt implements CopyCommandEnt {
+public class DefaultPasteCommandEnt implements PasteCommandEnt {
 
   protected KindEnum m_kind;
-  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
-  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
+  protected String m_content;
   
-  protected DefaultCopyCommandEnt() {
+  protected DefaultPasteCommandEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "CopyCommand";
+    return "PasteCommand";
   }
   
-  private DefaultCopyCommandEnt(DefaultCopyCommandEntBuilder builder) {
+  private DefaultPasteCommandEnt(DefaultPasteCommandEntBuilder builder) {
     super();
     if(builder.m_kind == null) {
         throw new IllegalArgumentException("kind must not be null.");
     }
     m_kind = immutable(builder.m_kind);
-    if(builder.m_nodeIds == null) {
-        throw new IllegalArgumentException("nodeIds must not be null.");
+    if(builder.m_content == null) {
+        throw new IllegalArgumentException("content must not be null.");
     }
-    m_nodeIds = immutable(builder.m_nodeIds);
-    if(builder.m_annotationIds == null) {
-        throw new IllegalArgumentException("annotationIds must not be null.");
-    }
-    m_annotationIds = immutable(builder.m_annotationIds);
+    m_content = immutable(builder.m_content);
   }
   
    /**
@@ -105,8 +100,8 @@ public class DefaultCopyCommandEnt implements CopyCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultCopyCommandEnt ent = (DefaultCopyCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds);
+        DefaultPasteCommandEnt ent = (DefaultPasteCommandEnt)o;
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_content, ent.m_content);
     }
 
 
@@ -118,8 +113,7 @@ public class DefaultCopyCommandEnt implements CopyCommandEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_kind)
-               .append(m_nodeIds)
-               .append(m_annotationIds)
+               .append(m_content)
                .toHashCode();
    }
   
@@ -131,28 +125,22 @@ public class DefaultCopyCommandEnt implements CopyCommandEnt {
   }
     
   @Override
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
-        return m_nodeIds;
-  }
-    
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
-        return m_annotationIds;
+  public String getContent() {
+        return m_content;
   }
     
   
-    public static class DefaultCopyCommandEntBuilder implements CopyCommandEntBuilder {
+    public static class DefaultPasteCommandEntBuilder implements PasteCommandEntBuilder {
     
-        public DefaultCopyCommandEntBuilder(){
+        public DefaultPasteCommandEntBuilder(){
             super();
         }
     
         private KindEnum m_kind;
-        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
-        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
+        private String m_content;
 
         @Override
-        public DefaultCopyCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultPasteCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -161,27 +149,18 @@ public class DefaultCopyCommandEnt implements CopyCommandEnt {
         }
 
         @Override
-        public DefaultCopyCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
-             if(nodeIds == null) {
-                 throw new IllegalArgumentException("nodeIds must not be null.");
+        public DefaultPasteCommandEntBuilder setContent(String content) {
+             if(content == null) {
+                 throw new IllegalArgumentException("content must not be null.");
              }
-             m_nodeIds = nodeIds;
-             return this;
-        }
-
-        @Override
-        public DefaultCopyCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
-             if(annotationIds == null) {
-                 throw new IllegalArgumentException("annotationIds must not be null.");
-             }
-             m_annotationIds = annotationIds;
+             m_content = content;
              return this;
         }
 
         
         @Override
-        public DefaultCopyCommandEnt build() {
-            return new DefaultCopyCommandEnt(this);
+        public DefaultPasteCommandEnt build() {
+            return new DefaultPasteCommandEnt(this);
         }
     
     }

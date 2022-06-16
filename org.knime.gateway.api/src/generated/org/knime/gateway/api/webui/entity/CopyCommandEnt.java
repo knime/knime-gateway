@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Copy selected parts of a workflow to the clipboard
+ * Copy selected workflow parts and serialize to JSON
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

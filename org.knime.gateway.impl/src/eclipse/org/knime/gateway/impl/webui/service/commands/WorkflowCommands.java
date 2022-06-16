@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -136,6 +137,8 @@ public final class WorkflowCommands {
             // directly return command result, quick and dirty
             var latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
             return ((WithResult)command).buildEntity(latestSnapshotId);
+        } else if (commandEnt instanceof PasteCommandEnt) {
+            command = new Paste((PasteCommandEnt)commandEnt);
         } else if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
         } else if (commandEnt instanceof DeleteCommandEnt) {

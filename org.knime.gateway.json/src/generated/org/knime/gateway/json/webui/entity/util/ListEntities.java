@@ -101,6 +101,7 @@ import org.knime.gateway.json.webui.entity.NodeStateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeViewDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.PasteCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PatchEntMixIn;
 import org.knime.gateway.json.webui.entity.PatchOpEntMixIn;
 import org.knime.gateway.json.webui.entity.PortActionEntMixIn;
@@ -201,6 +202,7 @@ public class ListEntities {
         res.add(NodeTemplateEntMixIn.class);
         res.add(NodeViewDescriptionEntMixIn.class);
         res.add(PartBasedCommandEntMixIn.class);
+        res.add(PasteCommandEntMixIn.class);
         res.add(PatchEntMixIn.class);
         res.add(PatchOpEntMixIn.class);
         res.add(PortActionEntMixIn.class);
@@ -287,6 +289,7 @@ public class ListEntities {
         res.add(NodeTemplateEntMixIn.NodeTemplateEntMixInBuilder.class);
         res.add(NodeViewDescriptionEntMixIn.NodeViewDescriptionEntMixInBuilder.class);
         res.add(PartBasedCommandEntMixIn.PartBasedCommandEntMixInBuilder.class);
+        res.add(PasteCommandEntMixIn.PasteCommandEntMixInBuilder.class);
         res.add(PatchEntMixIn.PatchEntMixInBuilder.class);
         res.add(PatchOpEntMixIn.PatchOpEntMixInBuilder.class);
         res.add(PortActionEntMixIn.PortActionEntMixInBuilder.class);
