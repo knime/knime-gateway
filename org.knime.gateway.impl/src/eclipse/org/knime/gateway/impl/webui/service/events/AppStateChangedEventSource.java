@@ -68,14 +68,9 @@ import org.knime.gateway.impl.webui.service.DefaultApplicationService;
  */
 public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, AppStateChangedEventEnt> {
 
-    private final WorkflowProjectManager m_workflowProjectManager;
-
     private final Consumer<AppState> m_callback;
 
     private final AppStateProvider m_appStateProvider;
-
-    private final WorkflowMiddleware m_workflowMiddleware;
-
 
     /**
      * @param eventConsumer consumes the emitted events
@@ -87,8 +82,6 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
         super(eventConsumer);
         m_appStateProvider = appStateProvider;
-        m_workflowProjectManager = workflowProjectManager;
-        m_workflowMiddleware = workflowMiddleware;
         m_callback = appState -> sendEvent(buildEventEnt(
             DefaultApplicationService.buildAppStateEnt(appState, workflowProjectManager, workflowMiddleware)));
     }
