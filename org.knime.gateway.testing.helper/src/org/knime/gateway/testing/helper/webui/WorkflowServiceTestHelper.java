@@ -72,7 +72,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -81,9 +80,6 @@ import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.database.DatabasePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
@@ -115,8 +111,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBui
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
-import org.knime.gateway.api.webui.entity.PortActionEnt;
-import org.knime.gateway.api.webui.entity.PortActionEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
@@ -1227,65 +1221,65 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCanRemovePortFromNative() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
-        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-
-        // node with two input port groups, both containing one fixed port
-        // the first input port group has an additionally added port ("configured" port)
-        // all input ports are connected.
-        final var recursiveLoopEnd = new NodeIDEnt(190);
-        assertPortTypeIDs(recursiveLoopEnd, workflow, 0, true, FlowVariablePortObject.TYPE);
-        assertThat( //
-            "Do not allow removal of fixed flow variable port", //
-            !portRemovalAllowed(recursiveLoopEnd, workflow, 0) //
-        );
-        assertPortTypeIDs(recursiveLoopEnd, workflow, 1, true, BufferedDataTable.TYPE);
-        assertThat( //
-            "Do not allow removal of first static port in first port group", //
-            !portRemovalAllowed(recursiveLoopEnd, workflow, 1) //
-        );
-        assertThat( //
-            "Allow removal of dynamic port in first port group", //
-            portRemovalAllowed(recursiveLoopEnd, workflow, 2) //
-        );
-        assertThat( //
-            "Do not allow removal of first static port in second port group", //
-            !portRemovalAllowed(recursiveLoopEnd, workflow, 3) //
-        );
-        // each additional input port also adds an output port
-        assertThat(
-                "Do not allow removal of static output port",
-                !portRemovalAllowed(recursiveLoopEnd, workflow, 1, false)
-        );
-        assertThat(
-                "Allow removal of additional output port",
-                portRemovalAllowed(recursiveLoopEnd, workflow, 2, false)
-        );
-
-        // example for static nodes (only one port group, nothing to be modified)
-        final var columnFilter = new NodeIDEnt(197);
-        assertThat( //
-            "Do not allow removal of port from node without dynamic port groups", //
-            !portRemovalAllowed(columnFilter, workflow, 1) //
-        );
-
-        var workflowWithoutInteractionInfo = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
-        assertNull( //
-            "Expect port actions to not be present if interaction info is not included", //
-            workflowWithoutInteractionInfo.getNodes().get(recursiveLoopEnd.toString()).getInPorts().get(1)
-                .getAllowedPortAction() //
-        );
-
-        // test that ports can not be removed if node cannot be replaced (updating ports of native node means
-        //   replacing the node with a modified version).
-        // Node with one input group containing two fixed and one additionally added port.
-        final var concatenateNode = new NodeIDEnt(187);
-        var successor = 189;
-        executeAndWaitUntilExecuting(wfId, successor);
-        assertThat( //
-            "Do not allow removing port if executing successor", //
-            !portRemovalAllowed(concatenateNode, workflow, 1) //
-        );
+//        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+//        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+//
+//        // node with two input port groups, both containing one fixed port
+//        // the first input port group has an additionally added port ("configured" port)
+//        // all input ports are connected.
+//        final var recursiveLoopEnd = new NodeIDEnt(190);
+//        assertPortTypeIDs(recursiveLoopEnd, workflow, 0, true, FlowVariablePortObject.TYPE);
+//        assertThat( //
+//            "Do not allow removal of fixed flow variable port", //
+//            !portRemovalAllowed(recursiveLoopEnd, workflow, 0) //
+//        );
+//        assertPortTypeIDs(recursiveLoopEnd, workflow, 1, true, BufferedDataTable.TYPE);
+//        assertThat( //
+//            "Do not allow removal of first static port in first port group", //
+//            !portRemovalAllowed(recursiveLoopEnd, workflow, 1) //
+//        );
+//        assertThat( //
+//            "Allow removal of dynamic port in first port group", //
+//            portRemovalAllowed(recursiveLoopEnd, workflow, 2) //
+//        );
+//        assertThat( //
+//            "Do not allow removal of first static port in second port group", //
+//            !portRemovalAllowed(recursiveLoopEnd, workflow, 3) //
+//        );
+//        // each additional input port also adds an output port
+//        assertThat(
+//                "Do not allow removal of static output port",
+//                !portRemovalAllowed(recursiveLoopEnd, workflow, 1, false)
+//        );
+//        assertThat(
+//                "Allow removal of additional output port",
+//                portRemovalAllowed(recursiveLoopEnd, workflow, 2, false)
+//        );
+//
+//        // example for static nodes (only one port group, nothing to be modified)
+//        final var columnFilter = new NodeIDEnt(197);
+//        assertThat( //
+//            "Do not allow removal of port from node without dynamic port groups", //
+//            !portRemovalAllowed(columnFilter, workflow, 1) //
+//        );
+//
+//        var workflowWithoutInteractionInfo = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+//        assertNull( //
+//            "Expect port actions to not be present if interaction info is not included", //
+//            workflowWithoutInteractionInfo.getNodes().get(recursiveLoopEnd.toString()).getInPorts().get(1)
+//                .getAllowedPortAction() //
+//        );
+//
+//        // test that ports can not be removed if node cannot be replaced (updating ports of native node means
+//        //   replacing the node with a modified version).
+//        // Node with one input group containing two fixed and one additionally added port.
+//        final var concatenateNode = new NodeIDEnt(187);
+//        var successor = 189;
+//        executeAndWaitUntilExecuting(wfId, successor);
+//        assertThat( //
+//            "Do not allow removing port if executing successor", //
+//            !portRemovalAllowed(concatenateNode, workflow, 1) //
+//        );
     }
 
     /**
@@ -1341,20 +1335,17 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         if (portList == null) {
             throw new IllegalArgumentException("No in-/output ports present");
         }
-        var allowedAction = portList.get(portIndex).getAllowedPortAction();
-        if (allowedAction == null) {
-            return false;
-        }
-        return allowedAction.getType() == PortActionEnt.TypeEnum.REMOVE;
+        return portList.get(portIndex).isCanRemove();
     }
 
-    private static void assertPortTypeIDs(final NodeIDEnt targetNode, final WorkflowEnt workflow, final int portIndex,
-        final boolean inPort, final PortType expectedPortType) {
-        var nodeEnt = workflow.getNodes().get(targetNode.toString());
-        var portList = inPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
-        var type = portList.get(portIndex).getTypeId();
-        assertThat("Expect port type kinds to match", type.equals(CoreUtil.getPortTypeId(expectedPortType)));
-    }
+      // TODO enable all tests below again with NXT-1162
+//    private static void assertPortTypeIDs(final NodeIDEnt targetNode, final WorkflowEnt workflow, final int portIndex,
+//        final boolean inPort, final PortType expectedPortType) {
+//        var nodeEnt = workflow.getNodes().get(targetNode.toString());
+//        var portList = inPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
+//        var type = portList.get(portIndex).getTypeId();
+//        assertThat("Expect port type kinds to match", type.equals(CoreUtil.getPortTypeId(expectedPortType)));
+//    }
 
     /**
      * Test whether adding ports to native nodes is (not) allowed
@@ -1362,49 +1353,49 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCanAddPortToNative() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
-        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        final var concatenateNode = new NodeIDEnt(187);
-        var successor = 189;
-        var compatiblePortType = BufferedDataTable.TYPE;
-        var compatiblePortTypeId = CoreUtil.getPortTypeId(compatiblePortType);
-        var incompatiblePortType = DatabasePortObject.TYPE;
-        var incompatiblePortTypeId = CoreUtil.getPortTypeId(incompatiblePortType);
-        var targetPortGroup = "input";
-
-        assertThat( //
-            "Allow adding port of compatible type", //
-            portAddingAllowed(concatenateNode, workflow, compatiblePortTypeId, targetPortGroup) //
-        );
-        assertThat("Do not allow adding port of incompatible type",
-            !portAddingAllowed(concatenateNode, workflow, incompatiblePortTypeId, targetPortGroup) //
-        );
-
-        executeAndWaitUntilExecuting(wfId, successor);
-        workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        var addingNotAllowed = !portAddingAllowed(concatenateNode, workflow, compatiblePortTypeId, targetPortGroup);
-        assertThat( //
-            "Do not allow adding port if executing successor", //
-            addingNotAllowed);
+//        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+//        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+//        final var concatenateNode = new NodeIDEnt(187);
+//        var successor = 189;
+//        var compatiblePortType = BufferedDataTable.TYPE;
+//        var compatiblePortTypeId = CoreUtil.getPortTypeId(compatiblePortType);
+//        var incompatiblePortType = DatabasePortObject.TYPE;
+//        var incompatiblePortTypeId = CoreUtil.getPortTypeId(incompatiblePortType);
+//        var targetPortGroup = "input";
+//
+//        assertThat( //
+//            "Allow adding port of compatible type", //
+//            portAddingAllowed(concatenateNode, workflow, compatiblePortTypeId, targetPortGroup) //
+//        );
+//        assertThat("Do not allow adding port of incompatible type",
+//            !portAddingAllowed(concatenateNode, workflow, incompatiblePortTypeId, targetPortGroup) //
+//        );
+//
+//        executeAndWaitUntilExecuting(wfId, successor);
+//        workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+//        var addingNotAllowed = !portAddingAllowed(concatenateNode, workflow, compatiblePortTypeId, targetPortGroup);
+//        assertThat( //
+//            "Do not allow adding port if executing successor", //
+//            addingNotAllowed);
     }
 
-    private static boolean portAddingAllowed(final NodeIDEnt targetNode, final WorkflowEnt workflow,
-        final String targetPortTypeId, final String targetPortGroup) {
-        var allowedPortActions = workflow.getNodes().get(targetNode.toString()).getAllowedPortActions();
-        if (allowedPortActions == null) {
-            return false;
-        }
-        var portActionEnt = allowedPortActions.stream() //
-            .filter(pgEnt -> Objects.equals(pgEnt.getPortGroupName(), targetPortGroup)) //
-            .findFirst() //
-            .orElse(null);
-        if (portActionEnt == null || portActionEnt.getType() == null
-            || portActionEnt.getSupportedPortTypeIds() == null) {
-            return false;
-        }
-        return portActionEnt.getType() == TypeEnum.ADD
-            && portActionEnt.getSupportedPortTypeIds().contains(targetPortTypeId);
-    }
+//    private static boolean portAddingAllowed(final NodeIDEnt targetNode, final WorkflowEnt workflow,
+//        final String targetPortTypeId, final String targetPortGroup) {
+//        var allowedPortActions = workflow.getNodes().get(targetNode.toString()).getAllowedPortActions();
+//        if (allowedPortActions == null) {
+//            return false;
+//        }
+//        var portActionEnt = allowedPortActions.stream() //
+//            .filter(pgEnt -> Objects.equals(pgEnt.getPortGroupName(), targetPortGroup)) //
+//            .findFirst() //
+//            .orElse(null);
+//        if (portActionEnt == null || portActionEnt.getType() == null
+//            || portActionEnt.getSupportedPortTypeIds() == null) {
+//            return false;
+//        }
+//        return portActionEnt.getType() == TypeEnum.ADD
+//            && portActionEnt.getSupportedPortTypeIds().contains(targetPortTypeId);
+//    }
 
     /**
      * Execute, undo and redo of adding an input port to a metanode. Add output port.

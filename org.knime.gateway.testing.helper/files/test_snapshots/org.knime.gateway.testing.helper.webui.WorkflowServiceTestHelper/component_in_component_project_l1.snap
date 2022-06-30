@@ -115,6 +115,7 @@
       },
       "id" : "root:5:0:7",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
@@ -124,6 +125,7 @@
       "kind" : "component",
       "name" : "Component L2",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",

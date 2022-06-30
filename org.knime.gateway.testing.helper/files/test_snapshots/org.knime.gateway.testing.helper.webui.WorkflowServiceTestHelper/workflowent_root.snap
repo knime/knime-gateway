@@ -586,12 +586,14 @@
       },
       "id" : "root:12",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[ root:12_1 ]",
         "index" : 1,
         "name" : "Port 1",
@@ -604,12 +606,14 @@
       "kind" : "component",
       "name" : "Component Failing",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
@@ -983,15 +987,14 @@
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwUlEQVR4nGOQlpYy1tBQfwqk/2PD6uqqj0Fq/HtcWQL63beEzfR5GDjBff7///8ZQJgBqPlJU1Pj/0ePHv5/8uQJCgaJgeSUlZXu+3e75sWtCfmRcTDuf8g075dwA0C2gBTiAiA5NUul/6EzvN+ANCdtj/of2Oe2BsUAkG24AEjOrcbuf+rO6P/p+2OBBnk98elykcAw4P6z+/8Pnt///+aDmygGHDi5/3/U0sD/mYfi/seuDvnr1+GcA9OMYkDx4jyw8+KWhvw/c+0MWPP3H9/+5y7M+J9+IPZ/2q6Y/8BA3IOsGSUMmlfV/U/fG/sf5M/4pUH/j108+n/dwbX/U7dEgm0Pm+372afNWQ/DABUV5YegkD53+cz//MWZ/1N3x/zPBNoYvzIUaFA42MC4tSH//LpcKtE1w1xgrKam8gjkEg17lf/+fW5g54ICDOSiVCD2n+Bxx6/blQOrAegCXs2OKiFTvO6k7YoC2x421/etT5uTMTbNWA2AGiIbNMnjVPB070fAgGsGiZ3kkOY6L6G2+bKS/kMQBrFBYlgNwIZBGh64ev1/7B8IxiA2SIxoA0C2wjTDMEiMfgZQ7AVcgQgAUT6awwoY0YUAAAAASUVORK5CYII=",
       "id" : "root:183",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
-        "allowedPortAction" : {
-          "type" : "remove"
-        },
+        "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "myPort 1",
@@ -1001,9 +1004,7 @@
           "type" : "table"
         }
       }, {
-        "allowedPortAction" : {
-          "type" : "remove"
-        },
+        "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Inport 2",
@@ -1014,15 +1015,14 @@
       "link" : "knime://knime.mountpoint/Streaming%20Component",
       "name" : "Streaming Component",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
-        "allowedPortAction" : {
-          "type" : "remove"
-        },
+        "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Outport 1",
@@ -1031,9 +1031,7 @@
           "type" : "table"
         }
       }, {
-        "allowedPortAction" : {
-          "type" : "remove"
-        },
+        "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
@@ -1065,12 +1063,14 @@
       },
       "id" : "root:185",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[ root:185_1 ]",
         "index" : 1,
         "name" : "Inport 1",
@@ -1080,6 +1080,7 @@
       "kind" : "component",
       "name" : "Inactive Component",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
@@ -1445,12 +1446,14 @@
       },
       "id" : "root:23",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[ root:23_1 ]",
         "index" : 1,
         "name" : "Port 1",
@@ -1463,12 +1466,14 @@
       "kind" : "component",
       "name" : "Component",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
@@ -1622,11 +1627,6 @@
         "canOpenDialog" : true,
         "canReset" : false
       },
-      "allowedPortActions" : [ {
-        "portGroupName" : "input",
-        "supportedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable" ],
-        "type" : "add"
-      } ],
       "annotation" : {
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
@@ -1659,10 +1659,6 @@
           "type" : "table"
         }
       }, {
-        "allowedPortAction" : {
-          "portGroupName" : "input",
-          "type" : "remove"
-        },
         "connectedVia" : "[ root:27_3 ]",
         "index" : 3,
         "name" : "Additional table to concatenate",
@@ -1807,6 +1803,7 @@
       },
       "id" : "root:6",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[ root:6_0 ]",
         "index" : 0,
         "name" : "Inport 0",
@@ -1816,9 +1813,7 @@
           "type" : "table"
         }
       }, {
-        "allowedPortAction" : {
-          "type" : "remove"
-        },
+        "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Inport 1",
@@ -1828,6 +1823,7 @@
       "kind" : "metanode",
       "name" : "Metanode",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[ root:4_1 ]",
         "index" : 0,
         "name" : "Connected to: Filtered",
@@ -1837,6 +1833,7 @@
           "type" : "table"
         }
       }, {
+        "canRemove" : false,
         "connectedVia" : "[ root:5_1 ]",
         "index" : 1,
         "name" : "Connected to: Filtered Out",
@@ -1846,9 +1843,7 @@
           "type" : "table"
         }
       }, {
-        "allowedPortAction" : {
-          "type" : "remove"
-        },
+        "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
@@ -1935,12 +1930,14 @@
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
       "id" : "root:9",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[ root:9_1 ]",
         "index" : 1,
         "name" : "Port 1",
@@ -1953,12 +1950,14 @@
       "kind" : "component",
       "name" : "Component with icon and type",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
+        "canRemove" : false,
         "connectedVia" : "[ root:8_1 ]",
         "index" : 1,
         "name" : "Port 1",

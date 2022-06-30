@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -176,12 +175,12 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
         
         /**
-   		 * Set allowedPortAction
+         * Whether this port can be removed. Only available if this port belongs to a component or metanode and if &#39;interaction info&#39; is supposed to be included.
          * 
-         * @param allowedPortAction the property value,  
+         * @param canRemove the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodePortEntBuilder setAllowedPortAction(PortActionEnt allowedPortAction);
+        MetaNodePortEntBuilder setCanRemove(Boolean canRemove);
         
         /**
          * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.

@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
 
@@ -107,8 +106,8 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public Integer getPortObjectVersion();
     
     @Override
-    @JsonProperty("allowedPortAction")
-    public PortActionEnt getAllowedPortAction();
+    @JsonProperty("canRemove")
+    public Boolean isCanRemove();
     
 
     /**
@@ -160,8 +159,8 @@ public interface NodePortEntMixIn extends NodePortEnt {
         public NodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
         
         @Override
-        @JsonProperty("allowedPortAction")
-        public NodePortEntMixInBuilder setAllowedPortAction(final PortActionEnt allowedPortAction);
+        @JsonProperty("canRemove")
+        public NodePortEntMixInBuilder setCanRemove(final Boolean canRemove);
         
     }
 

@@ -46,6 +46,7 @@
   },
   "metaInPorts" : {
     "ports" : [ {
+      "canRemove" : false,
       "connectedVia" : "[ root:6:3_1 ]",
       "index" : 0,
       "name" : "Connected to: Filtered table",
@@ -54,6 +55,7 @@
         "type" : "table"
       }
     }, {
+      "canRemove" : true,
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "Outport 1",
@@ -63,6 +65,7 @@
   },
   "metaOutPorts" : {
     "ports" : [ {
+      "canRemove" : false,
       "connectedVia" : "[ root:6_0 ]",
       "index" : 0,
       "name" : "Inport 0",
@@ -71,6 +74,7 @@
         "type" : "table"
       }
     }, {
+      "canRemove" : false,
       "connectedVia" : "[ root:6_1 ]",
       "index" : 1,
       "name" : "Inport 1",
@@ -79,6 +83,7 @@
         "type" : "table"
       }
     }, {
+      "canRemove" : true,
       "connectedVia" : "[  ]",
       "index" : 2,
       "name" : "Inport 2",

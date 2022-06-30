@@ -54,7 +54,6 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.webui.entity.NodeEnt;
@@ -75,7 +74,6 @@ public class DefaultNodeEnt implements NodeEnt {
   protected KindEnum m_kind;
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
-  protected java.util.List<PortActionEnt> m_allowedPortActions;
   
   protected DefaultNodeEnt() {
     //for sub-classes
@@ -111,7 +109,6 @@ public class DefaultNodeEnt implements NodeEnt {
     m_kind = immutable(builder.m_kind);
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
-    m_allowedPortActions = immutable(builder.m_allowedPortActions);
   }
   
    /**
@@ -129,7 +126,7 @@ public class DefaultNodeEnt implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_allowedPortActions, ent.m_allowedPortActions);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo);
     }
 
 
@@ -148,7 +145,6 @@ public class DefaultNodeEnt implements NodeEnt {
                .append(m_kind)
                .append(m_allowedActions)
                .append(m_executionInfo)
-               .append(m_allowedPortActions)
                .toHashCode();
    }
   
@@ -194,11 +190,6 @@ public class DefaultNodeEnt implements NodeEnt {
         return m_executionInfo;
   }
     
-  @Override
-  public java.util.List<PortActionEnt> getAllowedPortActions() {
-        return m_allowedPortActions;
-  }
-    
   
     public static class DefaultNodeEntBuilder implements NodeEntBuilder {
     
@@ -214,7 +205,6 @@ public class DefaultNodeEnt implements NodeEnt {
         private KindEnum m_kind;
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
-        private java.util.List<PortActionEnt> m_allowedPortActions;
 
         @Override
         public DefaultNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -276,12 +266,6 @@ public class DefaultNodeEnt implements NodeEnt {
         @Override
         public DefaultNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo) {
              m_executionInfo = executionInfo;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeEntBuilder setAllowedPortActions(java.util.List<PortActionEnt> allowedPortActions) {
-             m_allowedPortActions = allowedPortActions;
              return this;
         }
 

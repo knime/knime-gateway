@@ -50,7 +50,6 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
 
@@ -73,7 +72,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
   protected Boolean m_inactive;
   protected PortViewEnt m_view;
   protected Integer m_portObjectVersion;
-  protected PortActionEnt m_allowedPortAction;
+  protected Boolean m_canRemove;
   protected NodeStateEnum m_nodeState;
   
   protected DefaultMetaNodePortEnt() {
@@ -102,7 +101,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
     m_inactive = immutable(builder.m_inactive);
     m_view = immutable(builder.m_view);
     m_portObjectVersion = immutable(builder.m_portObjectVersion);
-    m_allowedPortAction = immutable(builder.m_allowedPortAction);
+    m_canRemove = immutable(builder.m_canRemove);
     m_nodeState = immutable(builder.m_nodeState);
   }
   
@@ -121,7 +120,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
             return false;
         }
         DefaultMetaNodePortEnt ent = (DefaultMetaNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_allowedPortAction, ent.m_allowedPortAction) && Objects.equals(m_nodeState, ent.m_nodeState);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_canRemove, ent.m_canRemove) && Objects.equals(m_nodeState, ent.m_nodeState);
     }
 
 
@@ -141,7 +140,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
                .append(m_inactive)
                .append(m_view)
                .append(m_portObjectVersion)
-               .append(m_allowedPortAction)
+               .append(m_canRemove)
                .append(m_nodeState)
                .toHashCode();
    }
@@ -194,8 +193,8 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
   }
     
   @Override
-  public PortActionEnt getAllowedPortAction() {
-        return m_allowedPortAction;
+  public Boolean isCanRemove() {
+        return m_canRemove;
   }
     
   @Override
@@ -219,7 +218,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         private Boolean m_inactive;
         private PortViewEnt m_view;
         private Integer m_portObjectVersion;
-        private PortActionEnt m_allowedPortAction;
+        private Boolean m_canRemove;
         private NodeStateEnum m_nodeState;
 
         @Override
@@ -283,8 +282,8 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setAllowedPortAction(PortActionEnt allowedPortAction) {
-             m_allowedPortAction = allowedPortAction;
+        public DefaultMetaNodePortEntBuilder setCanRemove(Boolean canRemove) {
+             m_canRemove = canRemove;
              return this;
         }
 

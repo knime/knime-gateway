@@ -101,7 +101,6 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
-import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
@@ -200,7 +199,6 @@ public class ListEntities {
         res.add(PartBasedCommandEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
-        res.add(PortActionEnt.class);
         res.add(PortCommandEnt.class);
         res.add(PortTypeEnt.class);
         res.add(PortViewEnt.class);
@@ -284,7 +282,6 @@ public class ListEntities {
         res.add(PartBasedCommandEnt.PartBasedCommandEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
-        res.add(PortActionEnt.PortActionEntBuilder.class);
         res.add(PortCommandEnt.PortCommandEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(PortViewEnt.PortViewEntBuilder.class);

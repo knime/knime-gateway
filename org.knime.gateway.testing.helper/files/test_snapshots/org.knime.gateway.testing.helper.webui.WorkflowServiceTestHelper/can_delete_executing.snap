@@ -315,6 +315,7 @@
       },
       "id" : "root:7",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[ root:7_0 ]",
         "index" : 0,
         "name" : "Variable Inport",
@@ -324,6 +325,7 @@
       "kind" : "component",
       "name" : "Component",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
@@ -361,6 +363,7 @@
       },
       "id" : "root:8",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[ root:8_0 ]",
         "index" : 0,
         "name" : "Variable Inport",
@@ -370,6 +373,7 @@
       "kind" : "component",
       "name" : "Component",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",

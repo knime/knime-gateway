@@ -72,7 +72,6 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ConfigurablePortGroup;
-import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.dialog.DialogNodeValue;
@@ -192,8 +191,6 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
-import org.knime.gateway.api.webui.entity.PortActionEnt;
-import org.knime.gateway.api.webui.entity.PortActionEnt.PortActionEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
@@ -599,21 +596,23 @@ public final class EntityBuilderUtil {
         if (incoming) {
             int nrPorts = wfm.getNrWorkflowIncomingPorts();
             for (int i = 0; i < nrPorts; i++) {
+                var canRemovePort = canRemoveContainerNodePort(wfm, i, incoming);
                 Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
                 var isInactive = port.isInactive() ? Boolean.TRUE : null;
                 var portObjectVersion = getPortObjectVersion(port, buildContext);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
-                    isInactive, connections, null, portObjectVersion, buildContext));
+                    isInactive, canRemovePort, connections, portObjectVersion, buildContext));
             }
         } else {
             int nrPorts = wfm.getNrWorkflowOutgoingPorts();
             for (int i = 0; i < nrPorts; i++) {
+                var canRemovePort = canRemoveContainerNodePort(wfm, i, incoming);
                 ConnectionContainer connection = wfm.getIncomingConnectionFor(wfm.getID(), i);
                 Collection<ConnectionContainer> connections = connection != null ? singleton(connection) : emptyList();
                 NodeInPort port = wfm.getWorkflowOutgoingPort(i);
-                ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null, connections,
-                    null, null, buildContext));
+                ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null, canRemovePort,
+                    connections, null, buildContext));
             }
         }
         return ports;
@@ -800,57 +799,16 @@ public final class EntityBuilderUtil {
 
     private static NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
         final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
-        var allowedPortActions =
-            buildContext.includeInteractionInfo() ? buildAllowedPortActionEnts(nc, buildContext) : null;
         if (nc instanceof NativeNodeContainer) {
-            return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, allowedPortActions, buildContext);
+            return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, buildContext);
         } else if (nc instanceof WorkflowManager) {
-            return buildMetaNodeEnt(id, (WorkflowManager)nc, allowedActions, allowedPortActions, buildContext);
+            return buildMetaNodeEnt(id, (WorkflowManager)nc, allowedActions, buildContext);
         } else if (nc instanceof SubNodeContainer) {
-            return buildComponentNodeEnt(id, (SubNodeContainer)nc, allowedActions, allowedPortActions, buildContext);
+            return buildComponentNodeEnt(id, (SubNodeContainer)nc, allowedActions, buildContext);
         } else {
             throw new IllegalArgumentException(
                 "Node container " + nc.getClass().getName() + " cannot be mapped to a node entity.");
         }
-    }
-
-    @SuppressWarnings("java:S1168") // returning null values instead of an empty list is ok
-    private static List<PortActionEnt> buildAllowedPortActionEnts(final NodeContainer nc,
-        final WorkflowBuildContext buildContext) {
-        if (nc instanceof NativeNodeContainer) {
-            NativeNodeContainer nnc = (NativeNodeContainer)nc;
-            var portsConfig = nnc.getNode().getCopyOfCreationConfig()
-                .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null);
-            if (portsConfig == null) {
-                return null;
-            }
-            var portActionEnts = portsConfig.getExtendablePorts().entrySet().stream()
-                .map(entry -> buildAllowedPortActionEnt(entry.getKey(), entry.getValue(), nnc, buildContext))
-                .filter(Objects::nonNull).collect(toList());
-            return !portActionEnts.isEmpty() ? portActionEnts : null;
-        } else {
-            return null;
-        }
-    }
-
-    private static PortActionEnt buildAllowedPortActionEnt(final String portGroupName,
-        final ExtendablePortGroup extendablePortGroup, final NativeNodeContainer nnc,
-        final WorkflowBuildContext buildContext) {
-        if (!buildContext.includeInteractionInfo()) {
-            return null;
-        }
-        var canEditPorts = buildContext.dependentNodeProperties().canRemoveIncomingConnections(nnc.getID());
-        var canAddPort = canEditPorts && extendablePortGroup.canAddPort();
-        if (!canAddPort) {
-            return null;
-        }
-        var supportedTypeIds =
-            Arrays.stream(extendablePortGroup.getSupportedPortTypes()).map(CoreUtil::getPortTypeId).collect(toList());
-        return builder(PortActionEntBuilder.class) //
-            .setType(PortActionEnt.TypeEnum.ADD)//
-            .setPortGroupName(portGroupName) //
-            .setSupportedPortTypeIds(supportedTypeIds) //
-            .build();
     }
 
     private static AllowedNodeActionsEnt buildAllowedNodeActionsEnt(final NodeContainer nc,
@@ -947,8 +905,7 @@ public final class EntityBuilderUtil {
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,
-        final AllowedNodeActionsEnt allowedActions, final List<PortActionEnt> allowedPortActions,
-        final WorkflowBuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         return builder(MetaNodeEntBuilder.class).setName(wm.getName()).setId(id)//
             .setOutPorts(buildMetaNodePortEnts(wm, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))//
@@ -959,7 +916,6 @@ public final class EntityBuilderUtil {
             .setLink(getTemplateLink(wm))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
-            .setAllowedPortActions(allowedPortActions)//
             .build();
     }
 
@@ -995,14 +951,13 @@ public final class EntityBuilderUtil {
                 .setView(np.getView())//
                 .setPortObjectVersion(np.getPortObjectVersion())//
                 .setNodeState(nodeState)//
-                .setAllowedPortAction(np.getAllowedPortAction())//
+                .setCanRemove(np.isCanRemove())//
                 .build();
         }).collect(toList());
     }
 
     private static ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
-        final AllowedNodeActionsEnt allowedActions, final List<PortActionEnt> allowedPortActions,
-        final WorkflowBuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         ComponentMetadata metadata = nc.getMetadata();
         String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
@@ -1018,7 +973,6 @@ public final class EntityBuilderUtil {
             .setLink(getTemplateLink(nc))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
-            .setAllowedPortActions(allowedPortActions)//
             .build();
     }
 
@@ -1042,52 +996,35 @@ public final class EntityBuilderUtil {
         List<NodePortEnt> res = new ArrayList<>();
         if (inPorts) {
             for (int i = 0; i < nc.getNrInPorts(); i++) {
-                var allowedPortActionEnt = buildAllowedPortActionEnt(nc, true, i, buildContext);
+                var canRemovePort = canRemovePort(nc, i, inPorts, buildContext);
                 ConnectionContainer connection = nc.getParent().getIncomingConnectionFor(nc.getID(), i);
                 List<ConnectionContainer> connections =
                     connection == null ? emptyList() : Collections.singletonList(connection);
                 NodeInPort inPort = nc.getInPort(i);
                 var pt = inPort.getPortType();
-                res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null, connections,
-                    allowedPortActionEnt, null, buildContext));
+                res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null, canRemovePort,
+                    connections, null, buildContext));
             }
         } else {
             for (int i = 0; i < nc.getNrOutPorts(); i++) {
-                var allowedPortActionEnt = buildAllowedPortActionEnt(nc, false, i, buildContext);
+                var canRemovePort = canRemovePort(nc, i, inPorts, buildContext);
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
                 var pt = outPort.getPortType();
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
-                    outPort.isInactive() ? outPort.isInactive() : null, connections, allowedPortActionEnt,
+                    outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, connections,
                     getPortObjectVersion(outPort, buildContext), buildContext));
             }
         }
         return res;
     }
 
-    private static PortActionEnt buildAllowedPortActionEnt(final NodeContainer nc, final boolean inPorts,
-        final int portIndex, final WorkflowBuildContext buildContext) {
-        if (!buildContext.includeInteractionInfo()) {
-            return null;
+    private static Boolean canRemovePort(final NodeContainer nc, final int portIndex, final boolean inPorts,
+        final WorkflowBuildContext buildContext) {
+        if (!buildContext.includeInteractionInfo() || nc instanceof NativeNodeContainer) {
+            return null; // NOSONAR
         }
-        if (nc instanceof NativeNodeContainer) {
-            var canEditPorts = buildContext.dependentNodeProperties().canRemoveIncomingConnections(nc.getID());
-            var portGroupIfCanRemoveSpecificPort =
-                getPortGroupIfCanRemoveNativeNodePort((NativeNodeContainer)nc, portIndex, inPorts, buildContext);
-            if (canEditPorts && portGroupIfCanRemoveSpecificPort != null) {
-                return builder(PortActionEntBuilder.class) //
-                    .setType(PortActionEnt.TypeEnum.REMOVE) //
-                    .setPortGroupName(portGroupIfCanRemoveSpecificPort)//
-                    .build();
-            }
-        } else if (nc instanceof WorkflowManager || nc instanceof SubNodeContainer) {
-            if (canRemoveContainerNodePort(nc, portIndex, inPorts)) { // NOSONAR
-                return builder(PortActionEntBuilder.class) //
-                    .setType(PortActionEnt.TypeEnum.REMOVE) //
-                    .build();
-            }
-        }
-        return null;
+        return canRemoveContainerNodePort(nc, portIndex, inPorts);
     }
 
     private static Integer getPortObjectVersion(final NodeOutPort outPort, final WorkflowBuildContext buildContext) {
@@ -1112,9 +1049,9 @@ public final class EntityBuilderUtil {
 
     @SuppressWarnings("java:S107") // it's a 'builder'-method, so many parameters are ok
     private static NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
-        final int portIdx, final Boolean isOptional, final Boolean isInactive,
-        final Collection<ConnectionContainer> connections, final PortActionEnt allowedPortAction,
-        final Integer portObjectVersion, final WorkflowBuildContext buildContext) {
+        final int portIdx, final Boolean isOptional, final Boolean isInactive, final Boolean canRemovePort,
+        final Collection<ConnectionContainer> connections, final Integer portObjectVersion,
+        final WorkflowBuildContext buildContext) {
         return builder(NodePortEntBuilder.class) //
             .setIndex(portIdx)//
             .setOptional(isOptional)//
@@ -1126,7 +1063,7 @@ public final class EntityBuilderUtil {
             .setTypeId(CoreUtil.getPortTypeId(ptype)) //
             .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
-            .setAllowedPortAction(allowedPortAction)//
+            .setCanRemove(canRemovePort)//
             .build();
     }
 
@@ -1175,8 +1112,7 @@ public final class EntityBuilderUtil {
     }
 
     private static NativeNodeEnt buildNativeNodeEnt(final NodeIDEnt id, final NativeNodeContainer nc,
-        final AllowedNodeActionsEnt allowedActions, final List<PortActionEnt> allowedPortActions,
-        final WorkflowBuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
@@ -1189,7 +1125,6 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc))//
             .setLoopInfo(buildLoopInfoEnt(nc, buildContext))//
-            .setAllowedPortActions(allowedPortActions)//
             .build();
     }
 

@@ -11,11 +11,6 @@
       "canOpenDialog" : true,
       "canReset" : false
     },
-    "allowedPortActions" : [ {
-      "portGroupName" : "input",
-      "supportedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable" ],
-      "type" : "add"
-    } ],
     "id" : "root:186",
     "inPorts" : [ {
       "connectedVia" : "[  ]",

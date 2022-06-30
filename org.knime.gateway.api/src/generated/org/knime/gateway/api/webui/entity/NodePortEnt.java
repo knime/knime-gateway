@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.PortActionEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
@@ -99,10 +98,10 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
   public Integer getPortObjectVersion();
 
   /**
-   * Get allowedPortAction
-   * @return allowedPortAction 
+   * Whether this port can be removed. Only available if this port belongs to a component or metanode and if &#39;interaction info&#39; is supposed to be included.
+   * @return canRemove 
    **/
-  public PortActionEnt getAllowedPortAction();
+  public Boolean isCanRemove();
 
 
     /**
@@ -183,12 +182,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         NodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
         
         /**
-   		 * Set allowedPortAction
+         * Whether this port can be removed. Only available if this port belongs to a component or metanode and if &#39;interaction info&#39; is supposed to be included.
          * 
-         * @param allowedPortAction the property value,  
+         * @param canRemove the property value,  
          * @return this entity builder for chaining
          */
-        NodePortEntBuilder setAllowedPortAction(PortActionEnt allowedPortAction);
+        NodePortEntBuilder setCanRemove(Boolean canRemove);
         
         
         /**
