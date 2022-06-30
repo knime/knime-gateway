@@ -554,7 +554,7 @@ public final class EntityBuilderUtil {
         org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder =
             builder(NodeFactoryKeyEntBuilder.class);
         if (factory != null) {
-            nodeFactoryKeyBuilder.setClassName(factory.getClass().getCanonicalName());
+            nodeFactoryKeyBuilder.setClassName(factory.getClass().getName());
             //only set settings in case of a dynamic node factory
             if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
                 var settings = new NodeSettings("settings");
@@ -810,7 +810,7 @@ public final class EntityBuilderUtil {
             return buildComponentNodeEnt(id, (SubNodeContainer)nc, allowedActions, allowedPortActions, buildContext);
         } else {
             throw new IllegalArgumentException(
-                "Node container " + nc.getClass().getCanonicalName() + " cannot be mapped to a node entity.");
+                "Node container " + nc.getClass().getName() + " cannot be mapped to a node entity.");
         }
     }
 
@@ -1505,7 +1505,7 @@ public final class EntityBuilderUtil {
             return nodeInfo.getFactoryClass().orElseGet(() -> "unknown_missing_node_factory_" + UUID.randomUUID())
                 + configHash;
         } else {
-            return nodeFactory.getClass().getCanonicalName() + configHash;
+            return nodeFactory.getClass().getName() + configHash;
         }
     }
 
@@ -1593,7 +1593,7 @@ public final class EntityBuilderUtil {
     private static NodePortDescriptionEnt buildOrGetFromCacheNodePortDescriptionEnt(final PortType ptype,
         final String name, final String description) {
         NodePortDescriptionEntBuilder builder = m_nodePortBuilderCache.computeIfAbsent(
-            ptype.getPortObjectClass().getCanonicalName(), k -> buildNodePortDescriptionEntBuilder(ptype));
+            ptype.getPortObjectClass().getName(), k -> buildNodePortDescriptionEntBuilder(ptype));
         builder.setName(isBlank(name) ? null : name);
         builder.setDescription(isBlank(description) ? null : description);
         return builder.build();
