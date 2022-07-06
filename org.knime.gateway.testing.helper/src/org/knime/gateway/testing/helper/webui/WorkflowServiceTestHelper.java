@@ -100,6 +100,11 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CopyResultEnt;
+import org.knime.gateway.api.webui.entity.CutCommandEnt;
+import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
@@ -111,6 +116,8 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBui
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
@@ -132,6 +139,11 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.shared.workflow.storage.clipboard.DefClipboardContent;
+import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * Test for the endpoints to view/render a workflow.
@@ -1692,4 +1704,118 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             return idEnt.appendNodeID(id);
         }
     }
+
+    /**
+     * Test Copy command
+     *
+     * @throws Exception
+     */
+    public void testExecuteCopyCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var command = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList());
+        // execute command
+        var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
+        assertCopyResultValid(commandResult);
+    }
+
+    private static CopyCommandEnt buildCopyCommand(final List<NodeIDEnt> nodeIds,
+        final List<AnnotationIDEnt> annotationIds) {
+        return builder(CopyCommandEntBuilder.class)//
+            .setKind(KindEnum.COPY)//
+            .setNodeIds(nodeIds)//
+            .setAnnotationIds(annotationIds)//
+            .build();
+    }
+
+    private static void assertCopyResultValid(final CopyResultEnt copyResult)
+        throws JsonMappingException, JsonProcessingException {
+        var clipboardContent = copyResult.getContent();
+        var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        var defClipboardContent = mapper.readValue(clipboardContent, DefClipboardContent.class);
+        assertThat("The DefClipboardContent could not read", defClipboardContent != null);
+    }
+
+    /**
+     * Test Cut command
+     *
+     * @throws Exception
+     */
+    public void testExecuteCutCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var command = buildCutCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList());
+        var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        // execute command
+        var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
+        var nodeKeysAfterExecution = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        assertCopyResultValid(commandResult);
+        assertThat("We should have less nodes in the workflow after cutting", nodeKeysAfterExecution.size() < nodeKeysBefore.size());
+        assertThat("We should not have more nodes in the workflow after cutting", nodeKeysBefore.containsAll(nodeKeysAfterExecution));
+        // undo command
+        ws().undoWorkflowCommand(wfId, getRootID());
+        var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        assertEquals("We should have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
+        // redo command
+        ws().redoWorkflowCommand(wfId, getRootID());
+        var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        assertEquals("We should have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
+    }
+
+    private static CutCommandEnt buildCutCommand(final List<NodeIDEnt> nodeIds,
+        final List<AnnotationIDEnt> annotationIds) {
+        return builder(CutCommandEntBuilder.class)//
+            .setKind(KindEnum.CUT)//
+            .setNodeIds(nodeIds)//
+            .setAnnotationIds(annotationIds)//
+            .build();
+    }
+
+    /**
+     * Test Paste command
+     *
+     * @throws Exception
+     */
+    public void testExecutePasteCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var copyCommand = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList());
+        var clipboardContent = ((CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), copyCommand)).getContent();
+        // test supported paste commands
+        var pasteCommands = List.of(//
+            buildPasteCommand(clipboardContent, null, null), //
+            buildPasteCommand(clipboardContent, null, List.of(32, 64))//
+        );
+        for (var pasteCommand : pasteCommands) {
+            var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+            // execute command
+            ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand);
+            var nodeKeysAfterExecution = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+            assertThat("We have more nodes in the workflow after pasting", nodeKeysAfterExecution.size() > nodeKeysBefore.size());
+            assertThat("We did not loose any nodes while pasting", nodeKeysAfterExecution.containsAll(nodeKeysBefore));
+            // undo command
+            ws().undoWorkflowCommand(wfId, getRootID());
+            var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+            assertEquals("We have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
+            // redo command
+            ws().redoWorkflowCommand(wfId, getRootID());
+            var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+            assertEquals("We have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
+        }
+        // test unsupported paste commands
+        pasteCommands = List.of(//
+            buildPasteCommand(clipboardContent, List.of(64, 128), List.of(64, 128)), //
+            buildPasteCommand(clipboardContent, List.of(64, 128), null)//
+        );
+        for (var pasteCommand : pasteCommands) {
+            assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand));
+        }
+    }
+
+    private static PasteCommandEnt buildPasteCommand(final String clipboardContent, final List<Integer> position, final List<Integer> offset) {
+        return builder(PasteCommandEntBuilder.class)//
+            .setKind(KindEnum.PASTE)//
+            .setContent(clipboardContent)//
+            .setPosition(position != null ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
+            .setOffset(offset != null ? builder(XYEntBuilder.class).setX(offset.get(0)).setY(offset.get(1)).build() : null)//
+            .build();
+    }
+
 }

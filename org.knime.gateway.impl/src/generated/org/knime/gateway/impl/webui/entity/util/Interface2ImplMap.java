@@ -86,8 +86,14 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt.ConvertContainerResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
+import org.knime.gateway.api.webui.entity.CopyResultEnt.CopyResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
+import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder;
@@ -154,6 +160,8 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescrip
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt.PartBasedCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -277,8 +285,17 @@ public class Interface2ImplMap {
         if(clazz == ConvertContainerResultEntBuilder.class) {
             return (B)new DefaultConvertContainerResultEnt.DefaultConvertContainerResultEntBuilder();
         }        
+        if(clazz == CopyCommandEntBuilder.class) {
+            return (B)new DefaultCopyCommandEnt.DefaultCopyCommandEntBuilder();
+        }        
+        if(clazz == CopyResultEntBuilder.class) {
+            return (B)new DefaultCopyResultEnt.DefaultCopyResultEntBuilder();
+        }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();
+        }        
+        if(clazz == CutCommandEntBuilder.class) {
+            return (B)new DefaultCutCommandEnt.DefaultCutCommandEntBuilder();
         }        
         if(clazz == DeleteCommandEntBuilder.class) {
             return (B)new DefaultDeleteCommandEnt.DefaultDeleteCommandEntBuilder();
@@ -378,6 +395,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == PartBasedCommandEntBuilder.class) {
             return (B)new DefaultPartBasedCommandEnt.DefaultPartBasedCommandEntBuilder();
+        }        
+        if(clazz == PasteCommandEntBuilder.class) {
+            return (B)new DefaultPasteCommandEnt.DefaultPasteCommandEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();

@@ -56,12 +56,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
@@ -99,6 +102,12 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddPortCommandEnt.class, name = "add_port")
 ,
   @Type(value = DefaultRemovePortCommandEnt.class, name = "remove_port")
+,
+  @Type(value = DefaultCopyCommandEnt.class, name = "copy")
+,
+  @Type(value = DefaultCutCommandEnt.class, name = "cut")
+,
+  @Type(value = DefaultPasteCommandEnt.class, name = "paste")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -144,6 +153,12 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddPortCommandEnt.class, name = "add_port")
 ,
   @Type(value = DefaultRemovePortCommandEnt.class, name = "remove_port")
+,
+  @Type(value = DefaultCopyCommandEnt.class, name = "copy")
+,
+  @Type(value = DefaultCutCommandEnt.class, name = "cut")
+,
+  @Type(value = DefaultPasteCommandEnt.class, name = "paste")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

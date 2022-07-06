@@ -88,7 +88,8 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), invert(m_delta));
     }
 
-    private static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
+    // TODO: Include connections in translation
+    static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final int[] delta) {
 
         for (NodeContainer nc : nodes) {

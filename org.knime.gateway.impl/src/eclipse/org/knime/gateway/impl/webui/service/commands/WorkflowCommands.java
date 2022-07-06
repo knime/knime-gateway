@@ -61,8 +61,11 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -71,6 +74,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -143,6 +147,12 @@ public final class WorkflowCommands {
             command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof PortCommandEnt) {
             command = new EditPorts((PortCommandEnt)commandEnt);
+        } else if (commandEnt instanceof CopyCommandEnt) {
+            command = new Copy((CopyCommandEnt)commandEnt);
+        } else if (commandEnt instanceof CutCommandEnt) {
+            command = new Cut((CutCommandEnt)commandEnt, m_workflowMiddleware);
+        } else if (commandEnt instanceof PasteCommandEnt) {
+            command = new Paste((PasteCommandEnt)commandEnt);
         } else {
             if (m_workflowCommandForTesting != null) {
                 command = m_workflowCommandForTesting;
@@ -152,26 +162,33 @@ public final class WorkflowCommands {
             }
         }
 
-        var workflowChangeWaiter = prepareCommandResult(wfKey, command);
+        var hasResult = doesCommandHaveResult(wfKey, command);
+        var wfChangeWaiter = prepareCommandResult(wfKey, command, hasResult);
         executeCommandAndModifyCommandStacks(wfKey, command);
-        return waitForCommandResult(wfKey, command, workflowChangeWaiter);
+        return waitForCommandResult(wfKey, command, hasResult, wfChangeWaiter);
     }
 
-    private WorkflowChangeWaiter prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
+    private static boolean doesCommandHaveResult(final WorkflowKey wfKey, final WorkflowCommand command)
         throws NodeNotFoundException, NotASubWorkflowException {
-        WorkflowChangeWaiter workflowChangeWaiter = null;
         if (command instanceof WithResult) {
             var hasResult = true;
             if (command instanceof HigherOrderCommand) {
                 hasResult = ((HigherOrderCommand)command).preExecuteToDetermineWhetherProvidesResult(wfKey);
             }
-            if (hasResult) {
-                var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
-                workflowChangeWaiter =
-                    wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor());
-            }
+            return hasResult;
         }
-        return workflowChangeWaiter;
+        return false;
+    }
+
+    private WorkflowChangeWaiter prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
+        final boolean hasResult) {
+        WorkflowChangeWaiter wfChangeWaiter = null;
+        // Only commands with results that trigger a real workflow change need a waiter
+        if (hasResult && ((WithResult)command).getChangeToWaitFor() != WorkflowChange.NONE) {
+            var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
+            wfChangeWaiter = wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor());
+        }
+        return wfChangeWaiter;
     }
 
     private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
@@ -203,18 +220,21 @@ public final class WorkflowCommands {
     }
 
     private CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
-        final WorkflowChangeWaiter workflowChangeWaiter) throws OperationNotAllowedException {
-        if (workflowChangeWaiter != null) {
-            try {
-                workflowChangeWaiter.blockUntilOccurred();
-            } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
-                throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
+        final boolean hasResult, final WorkflowChangeWaiter wfChangeWaiter)
+        throws OperationNotAllowedException {
+        if (hasResult) {
+            if (wfChangeWaiter != null) {
+                try {
+                    wfChangeWaiter.blockUntilOccurred();
+                } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
+                    throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change",
+                        e);
+                }
             }
             var latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
             return ((WithResult)command).buildEntity(latestSnapshotId);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

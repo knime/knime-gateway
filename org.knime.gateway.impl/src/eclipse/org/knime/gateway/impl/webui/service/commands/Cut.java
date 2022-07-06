@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,96 +41,50 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jun 30, 2022 (Kai Franze, KNIME GmbH): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import java.util.List;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.api.webui.entity.CutCommandEnt;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
- * A command that is executed to change a workflow.
- * 
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Workflow command to cut selected workflow parts and return them in workflow definition format.
+ * This operation is a {@link CommandSequence} of copying selected workflow parts and deleting them.
+ *
+ * @author Kai Franze, KNIME GmbH
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
+public class Cut extends CommandSequence {
 
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    CUT("cut"),
-    
-    PASTE("paste");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
+    // TODO: Make this command undoable!
+    protected Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        super(getCommands(commandEnt, workflowMiddleware));
     }
 
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-    /**
-     * The builder for the entity.
-     */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
-
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowCommandEnt build();
-    
+    private static List<WorkflowCommand> getCommands(final CutCommandEnt commandEnt,
+        final WorkflowMiddleware workflowMiddleware) {
+        // TODO: Enable cutting of connections too
+        var copyCommandEnt = builder(CopyCommandEnt.CopyCommandEntBuilder.class)//
+            .setKind(WorkflowCommandEnt.KindEnum.COPY)//
+            .setNodeIds(commandEnt.getNodeIds())//
+            .setAnnotationIds(commandEnt.getAnnotationIds())//
+            .build();
+        var deleteCommandEnt = builder(DeleteCommandEnt.DeleteCommandEntBuilder.class)//
+            .setKind(WorkflowCommandEnt.KindEnum.DELETE)//
+            .setNodeIds(commandEnt.getNodeIds())//
+            .setAnnotationIds(commandEnt.getAnnotationIds())//
+            .build();
+        return List.of(new Copy(copyCommandEnt), new Delete(deleteCommandEnt, workflowMiddleware));
     }
 
 }

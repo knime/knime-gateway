@@ -76,7 +76,9 @@ public class WorkflowChangesTracker {
         /** Tracked on any change */
         ANY,
         /** Tracked whenever a workflow annotation has been removed or added */
-        ANNOTATION_ADDED_OR_REMOVED
+        ANNOTATION_ADDED_OR_REMOVED,
+        /** There is no change to wait for */
+        NONE
     }
 
     /**
