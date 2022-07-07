@@ -49,10 +49,14 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
@@ -69,11 +73,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 public class Paste extends AbstractWorkflowCommand {
 
+    private static final int OFFSET = 120;
+
     private final PasteCommandEnt m_commandEnt;
 
     private WorkflowCopyContent m_workflowCopyContent;
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(Paste.class);
 
     Paste(final PasteCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -90,30 +94,14 @@ public class Paste extends AbstractWorkflowCommand {
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         // paste at original position
-        var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         try {
-            // TODO: Add more verification before actually mapping this?
+            var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
             var defClipboardContent = mapper.readValue(m_commandEnt.getContent(), DefClipboardContent.class);
             m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
-            LOGGER.info("Position offset of copy content: <" + m_workflowCopyContent.getPositionOffset() + ">");
         } catch (JsonProcessingException e) { // NOSONAR: Don't want to log or re-throw this exception
             throw new OperationNotAllowedException("Could not parse input string to def clipboard content");
         }
-        // derive offset
-        int[] delta = new int[2]; // NOSONAR: Can't use `var` here
-        if (m_commandEnt.getOffset() == null && m_commandEnt.getPosition() == null) {
-            delta[0] = 64;
-            delta[1] = 128;
-        } else if (m_commandEnt.getOffset() != null && m_commandEnt.getPosition() != null) {
-            throw new OperationNotAllowedException("Cannot paste workflow parts using an offset and a position");
-        } else if (m_commandEnt.getOffset() != null) {
-            delta[0] = m_commandEnt.getOffset().getX();
-            delta[1] = m_commandEnt.getOffset().getY();
-        } else {
-            // TODO: Implement this
-            throw new OperationNotAllowedException("Position is not supported yet");
-        }
-        // offset nodes and annotations
+        // get nodes and annotations
         var nodes = Arrays.stream(m_workflowCopyContent.getNodeIDs())//
             .map(id -> CoreUtil.getNodeContainer(id, wfm).orElseThrow())//
             .collect(Collectors.toSet());
@@ -121,11 +109,26 @@ public class Paste extends AbstractWorkflowCommand {
             .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toSet());
-        // TODO: Enable pasting of connections too, since bend points of connections need to be shifted as well
+        // move pasted content to the correct position
+        var delta = calculateShift(nodes, annotations);
         Translate.performTranslation(wfm, nodes, annotations, delta);
-        // * This receives a text string of about 54 million characters for the "Buildings" workflow
-        // * Paste command takes about 18 seconds to finish on a local machine
         return true;
+    }
+
+    private int[] calculateShift(final Set<NodeContainer> nodes, final Set<WorkflowAnnotation> annotations) {
+        int[] delta = new int[2]; // NOSONAR: Can't use `var` here
+        if (m_commandEnt.getPosition() == null) {
+            delta[0] = OFFSET;
+            delta[1] = OFFSET;
+        } else {
+            var position = Stream.concat(//
+                nodes.stream().map(nc -> Arrays.stream(nc.getUIInformation().getBounds()).boxed().collect(Collectors.toList())),//
+                annotations.stream().map(an -> List.of(an.getX(), an.getY(), an.getWidth(), an.getHeight())))
+                .reduce(List.of(Integer.MAX_VALUE, Integer.MAX_VALUE), (acc, nxt) -> List.of(Math.min(acc.get(0), nxt.get(0)), Math.min(acc.get(1), nxt.get(1))));
+            delta[0] = m_commandEnt.getPosition().getX() - position.get(0);
+            delta[1] = m_commandEnt.getPosition().getY() - position.get(1);
+        }
+        return delta;
     }
 
 }

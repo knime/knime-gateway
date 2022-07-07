@@ -130,7 +130,6 @@ public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult
         var annotationIDs = m_commandEnt.getAnnotationIds().stream()//
                 .map(annotationId -> DefaultServiceUtil.entityToAnnotationID(projectId, annotationId))//
                 .toArray(WorkflowAnnotationID[]::new);
-        // TODO: Enable copying of connections too
         var workflowCopyContent = WorkflowCopyContent.builder()//
                 .setNodeIDs(nodeIds)//
                 .setAnnotationIDs(annotationIDs)//

@@ -66,7 +66,6 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
   protected KindEnum m_kind;
   protected String m_content;
   protected XYEnt m_position;
-  protected XYEnt m_offset;
   
   protected DefaultPasteCommandEnt() {
     //for sub-classes
@@ -88,7 +87,6 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
     }
     m_content = immutable(builder.m_content);
     m_position = immutable(builder.m_position);
-    m_offset = immutable(builder.m_offset);
   }
   
    /**
@@ -106,7 +104,7 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
             return false;
         }
         DefaultPasteCommandEnt ent = (DefaultPasteCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_content, ent.m_content) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_offset, ent.m_offset);
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_content, ent.m_content) && Objects.equals(m_position, ent.m_position);
     }
 
 
@@ -120,7 +118,6 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
                .append(m_kind)
                .append(m_content)
                .append(m_position)
-               .append(m_offset)
                .toHashCode();
    }
   
@@ -141,11 +138,6 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
         return m_position;
   }
     
-  @Override
-  public XYEnt getOffset() {
-        return m_offset;
-  }
-    
   
     public static class DefaultPasteCommandEntBuilder implements PasteCommandEntBuilder {
     
@@ -156,7 +148,6 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
         private KindEnum m_kind;
         private String m_content;
         private XYEnt m_position;
-        private XYEnt m_offset;
 
         @Override
         public DefaultPasteCommandEntBuilder setKind(KindEnum kind) {
@@ -179,12 +170,6 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
         @Override
         public DefaultPasteCommandEntBuilder setPosition(XYEnt position) {
              m_position = position;
-             return this;
-        }
-
-        @Override
-        public DefaultPasteCommandEntBuilder setOffset(XYEnt offset) {
-             m_offset = offset;
              return this;
         }
 

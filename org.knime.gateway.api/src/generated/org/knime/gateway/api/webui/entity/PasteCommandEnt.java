@@ -73,12 +73,6 @@ public interface PasteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public XYEnt getPosition();
 
-  /**
-   * Get offset
-   * @return offset 
-   **/
-  public XYEnt getOffset();
-
 
     /**
      * The builder for the entity.
@@ -108,14 +102,6 @@ public interface PasteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         PasteCommandEntBuilder setPosition(XYEnt position);
-        
-        /**
-   		 * Set offset
-         * 
-         * @param offset the property value,  
-         * @return this entity builder for chaining
-         */
-        PasteCommandEntBuilder setOffset(XYEnt offset);
         
         
         /**

@@ -66,14 +66,12 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 public class Cut extends CommandSequence {
 
-    // TODO: Make this command undoable!
     protected Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         super(getCommands(commandEnt, workflowMiddleware));
     }
 
     private static List<WorkflowCommand> getCommands(final CutCommandEnt commandEnt,
         final WorkflowMiddleware workflowMiddleware) {
-        // TODO: Enable cutting of connections too
         var copyCommandEnt = builder(CopyCommandEnt.CopyCommandEntBuilder.class)//
             .setKind(WorkflowCommandEnt.KindEnum.COPY)//
             .setNodeIds(commandEnt.getNodeIds())//

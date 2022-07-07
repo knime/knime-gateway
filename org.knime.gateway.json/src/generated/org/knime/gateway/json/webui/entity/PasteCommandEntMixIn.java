@@ -81,10 +81,6 @@ public interface PasteCommandEntMixIn extends PasteCommandEnt {
     @JsonProperty("position")
     public XYEnt getPosition();
     
-    @Override
-    @JsonProperty("offset")
-    public XYEnt getOffset();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -109,10 +105,6 @@ public interface PasteCommandEntMixIn extends PasteCommandEnt {
         @Override
         @JsonProperty("position")
         public PasteCommandEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("offset")
-        public PasteCommandEntMixInBuilder setOffset(final XYEnt offset);
         
     }
 

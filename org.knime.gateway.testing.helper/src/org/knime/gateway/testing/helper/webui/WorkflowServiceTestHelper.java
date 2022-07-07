@@ -1712,7 +1712,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteCopyCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var command = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList());
+        var command = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
         // execute command
         var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
         assertCopyResultValid(commandResult);
@@ -1742,22 +1742,30 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteCutCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var command = buildCutCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList());
+        var command = buildCutCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
         var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        var annKeysBefore = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
         // execute command
         var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
         var nodeKeysAfterExecution = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        var annKeysAfterExecution = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
         assertCopyResultValid(commandResult);
         assertThat("We should have less nodes in the workflow after cutting", nodeKeysAfterExecution.size() < nodeKeysBefore.size());
+        assertThat("We should have less annotations in the workflow after cutting", annKeysAfterExecution.size() < annKeysBefore.size());
         assertThat("We should not have more nodes in the workflow after cutting", nodeKeysBefore.containsAll(nodeKeysAfterExecution));
+        assertThat("We should not have more annotations in the workflow after cutting", annKeysBefore.containsAll(annKeysAfterExecution));
         // undo command
         ws().undoWorkflowCommand(wfId, getRootID());
         var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        var annKeysAfterUndo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
         assertEquals("We should have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
+        assertEquals("We should have the same annotations as before execution", annKeysBefore, annKeysAfterUndo);
         // redo command
         ws().redoWorkflowCommand(wfId, getRootID());
         var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        var annKeysAfterRedo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
         assertEquals("We should have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
+        assertEquals("We should have the same annotations as after execution", annKeysAfterExecution, annKeysAfterRedo);
     }
 
     private static CutCommandEnt buildCutCommand(final List<NodeIDEnt> nodeIds,
@@ -1769,6 +1777,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
     }
 
+    private static Set<String> getAnnotationsKeysFromWorkflow(final WorkflowSnapshotEnt workflow) {
+        return workflow.getWorkflow().getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toSet());
+    }
+
     /**
      * Test Paste command
      *
@@ -1776,45 +1788,41 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecutePasteCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var copyCommand = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList());
+        var copyCommand = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
         var clipboardContent = ((CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), copyCommand)).getContent();
-        // test supported paste commands
-        var pasteCommands = List.of(//
-            buildPasteCommand(clipboardContent, null, null), //
-            buildPasteCommand(clipboardContent, null, List.of(32, 64))//
-        );
-        for (var pasteCommand : pasteCommands) {
+        // test paste commands
+        var pasteCommands = List.of(buildPasteCommand(clipboardContent, null), buildPasteCommand(clipboardContent, List.of(16, 32)));
+        for (var pasteCommand: pasteCommands) {
             var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+            var annKeysBefore = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
             // execute command
             ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand);
             var nodeKeysAfterExecution = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            assertThat("We have more nodes in the workflow after pasting", nodeKeysAfterExecution.size() > nodeKeysBefore.size());
-            assertThat("We did not loose any nodes while pasting", nodeKeysAfterExecution.containsAll(nodeKeysBefore));
+            var annKeysAfterExecution = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
+            assertThat("We should have more nodes in the workflow after pasting", nodeKeysAfterExecution.size() > nodeKeysBefore.size());
+            assertThat("We shouldn't have lost any nodes while pasting", nodeKeysAfterExecution.containsAll(nodeKeysBefore));
+            assertThat("We should have more annotations in the workflow after pasting", annKeysAfterExecution.size() > annKeysBefore.size());
+            assertThat("We shouldn't have lost any annotations while pasting", annKeysAfterExecution.containsAll(annKeysBefore));
             // undo command
             ws().undoWorkflowCommand(wfId, getRootID());
             var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            assertEquals("We have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
+            var annKeysAfterUndo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
+            assertEquals("We should have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
+            assertEquals("We should have the same annotations as before execution", annKeysBefore, annKeysAfterUndo);
             // redo command
             ws().redoWorkflowCommand(wfId, getRootID());
             var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            assertEquals("We have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
-        }
-        // test unsupported paste commands
-        pasteCommands = List.of(//
-            buildPasteCommand(clipboardContent, List.of(64, 128), List.of(64, 128)), //
-            buildPasteCommand(clipboardContent, List.of(64, 128), null)//
-        );
-        for (var pasteCommand : pasteCommands) {
-            assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand));
+            var annKeysAfterRedo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
+            assertEquals("We should have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
+            assertEquals("We should have the same annotations as after execution", annKeysAfterExecution, annKeysAfterRedo);
         }
     }
 
-    private static PasteCommandEnt buildPasteCommand(final String clipboardContent, final List<Integer> position, final List<Integer> offset) {
+    private static PasteCommandEnt buildPasteCommand(final String clipboardContent, final List<Integer> position) {
         return builder(PasteCommandEntBuilder.class)//
             .setKind(KindEnum.PASTE)//
             .setContent(clipboardContent)//
             .setPosition(position != null ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
-            .setOffset(offset != null ? builder(XYEntBuilder.class).setX(offset.get(0)).setY(offset.get(1)).build() : null)//
             .build();
     }
 
