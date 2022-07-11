@@ -642,17 +642,15 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeIDEnt getContainerId(final WorkflowManager wfm, final WorkflowBuildContext buildContext) {
-        if (wfm.isProject()) {
-            return null;
+        if (!wfm.isProject()) {
+            NodeContainerParent ncParent = wfm.getDirectNCParent();
+            if (ncParent instanceof SubNodeContainer) {
+                // it's a component's workflow
+                return buildContext.buildNodeIDEnt(((SubNodeContainer)ncParent).getID());
+            }
         }
-
-        NodeContainerParent ncParent = wfm.getDirectNCParent();
-        if (ncParent instanceof SubNodeContainer) {
-            // it's a component's workflow
-            return buildContext.buildNodeIDEnt(((SubNodeContainer)ncParent).getID());
-        } else {
-            return buildContext.buildNodeIDEnt(wfm.getID());
-        }
+        // it's a project's or a metanode's workflow
+        return buildContext.buildNodeIDEnt(wfm.getID());
     }
 
     private static ContainerTypeEnum getContainerType(final WorkflowManager wfm) {

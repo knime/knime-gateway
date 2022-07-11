@@ -90,8 +90,8 @@ public interface WorkflowInfoEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * The id of the metanode or component this workflow is contained in. Not given if this is the root workflow
-   * @return containerId 
+   * The id of the workflow, be it a metanode, a component or a project workflow.
+   * @return containerId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getContainerId();
 
@@ -128,9 +128,9 @@ public interface WorkflowInfoEnt extends GatewayEntity {
         WorkflowInfoEntBuilder setName(String name);
         
         /**
-         * The id of the metanode or component this workflow is contained in. Not given if this is the root workflow
+         * The id of the workflow, be it a metanode, a component or a project workflow.
          * 
-         * @param containerId the property value,  
+         * @param containerId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setContainerId(org.knime.gateway.api.entity.NodeIDEnt containerId);

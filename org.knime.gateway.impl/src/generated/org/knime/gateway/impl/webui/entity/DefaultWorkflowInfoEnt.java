@@ -83,6 +83,9 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
+    if(builder.m_containerId == null) {
+        throw new IllegalArgumentException("containerId must not be null.");
+    }
     m_containerId = immutable(builder.m_containerId);
     if(builder.m_containerType == null) {
         throw new IllegalArgumentException("containerType must not be null.");
@@ -177,6 +180,9 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
 
         @Override
         public DefaultWorkflowInfoEntBuilder setContainerId(org.knime.gateway.api.entity.NodeIDEnt containerId) {
+             if(containerId == null) {
+                 throw new IllegalArgumentException("containerId must not be null.");
+             }
              m_containerId = containerId;
              return this;
         }

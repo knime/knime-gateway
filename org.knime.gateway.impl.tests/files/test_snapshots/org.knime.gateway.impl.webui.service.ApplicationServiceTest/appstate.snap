@@ -43,6 +43,7 @@
         "connections" : { },
         "dirty" : true,
         "info" : {
+          "containerId" : "root",
           "containerType" : "project",
           "name" : "hollow"
         },

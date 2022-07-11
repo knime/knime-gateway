@@ -95,9 +95,12 @@ public class PatchChangeProcessorTest {
             .setKind(KindEnum.NODE).setTemplateId("templateId");
         NodeEnt node1 = nodeBuilder.setId(new NodeIDEnt(1)).build();
         NodeEnt node2 = nodeBuilder.setId(new NodeIDEnt(11)).build();
-        WorkflowEntBuilder workflowBuilder =
-            builder(WorkflowEntBuilder.class).setInfo(builder(WorkflowInfoEntBuilder.class).setName("wf-name")
-                .setContainerType(ContainerTypeEnum.PROJECT).build());
+        WorkflowEntBuilder workflowBuilder = builder(WorkflowEntBuilder.class)//
+            .setInfo(builder(WorkflowInfoEntBuilder.class)//
+                .setName("wf-name")//
+                .setContainerType(ContainerTypeEnum.PROJECT)//
+                .setContainerId(new NodeIDEnt(0))//
+                .build());
         WorkflowEnt workflow1 = workflowBuilder.setNodes(Collections.emptyMap()).setDirty(false).build();
         WorkflowEnt workflow2 =
             workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).setDirty(true).build();
@@ -126,8 +129,13 @@ public class PatchChangeProcessorTest {
      */
     @Test
     public void testPatchRemovingMultipleArrayElements() {
-        var workflowBuilder = builder(WorkflowEntBuilder.class).setInfo(builder(WorkflowInfoEntBuilder.class)
-            .setName("wf-name").setContainerType(ContainerTypeEnum.PROJECT).build()).setDirty(false);
+        var workflowBuilder = builder(WorkflowEntBuilder.class)//
+            .setInfo(builder(WorkflowInfoEntBuilder.class)//
+                .setName("wf-name")//
+                .setContainerType(ContainerTypeEnum.PROJECT)//
+                .setContainerId(new NodeIDEnt(0))//
+                .build())//
+            .setDirty(false);
 
         var workflowAnnoBuilder = builder(WorkflowAnnotationEntBuilder.class).setTextAlign(TextAlignEnum.CENTER)
             .setBounds(builder(BoundsEntBuilder.class).build()).setId(new AnnotationIDEnt("root:1_1"))

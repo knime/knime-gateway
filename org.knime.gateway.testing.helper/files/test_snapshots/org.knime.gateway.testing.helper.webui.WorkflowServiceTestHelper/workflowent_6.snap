@@ -163,6 +163,7 @@
     }
   },
   "parents" : [ {
+    "containerId" : "root",
     "containerType" : "project",
     "name" : "general_web_ui"
   } ],

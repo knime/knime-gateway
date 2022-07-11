@@ -43,6 +43,7 @@
   },
   "dirty" : true,
   "info" : {
+    "containerId" : "root",
     "containerType" : "project",
     "name" : "execution states"
   },
