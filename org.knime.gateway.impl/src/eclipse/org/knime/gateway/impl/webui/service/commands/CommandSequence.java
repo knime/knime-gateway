@@ -48,7 +48,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
@@ -66,7 +65,8 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  */
 abstract class CommandSequence extends HigherOrderCommand {
 
-    final List<WorkflowCommand> m_commands;
+    /** Not private so {@link Cut} command can access it */
+    protected final List<WorkflowCommand> m_commands;
 
     private WorkflowKey m_wfKey;
 
@@ -80,14 +80,11 @@ abstract class CommandSequence extends HigherOrderCommand {
     @Override
     protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
-        var commandsWithResult = m_commands.stream()//
-            .filter(WithResult.class::isInstance)//
-            .collect(Collectors.toList());
-        if (commandsWithResult.isEmpty()) {
-            return Optional.empty();
-        } else {
-            var lastCommand = commandsWithResult.get(commandsWithResult.size() - 1);
+        var lastCommand = m_commands.get(m_commands.size() - 1);
+        if (lastCommand instanceof WithResult) {
             return Optional.of((WithResult)lastCommand);
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -116,10 +113,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     public void undo() throws ServiceExceptions.OperationNotAllowedException {
         var iterator = m_commands.listIterator(m_commands.size());
         while (iterator.hasPrevious()) {
-            var command = iterator.previous();
-            if (command.canUndo()) {
-                command.undo();
-            }
+            iterator.previous().undo();
         }
     }
 
@@ -135,12 +129,12 @@ abstract class CommandSequence extends HigherOrderCommand {
 
     @Override
     public boolean canUndo() {
-        return m_commands.stream().anyMatch(WorkflowCommand::canUndo);
+        return m_commands.stream().allMatch(WorkflowCommand::canUndo);
     }
 
     @Override
     public boolean canRedo() {
-        return m_commands.stream().anyMatch(WorkflowCommand::canRedo);
+        return m_commands.stream().allMatch(WorkflowCommand::canRedo);
     }
 
 }

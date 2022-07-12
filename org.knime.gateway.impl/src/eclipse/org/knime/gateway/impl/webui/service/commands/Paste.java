@@ -93,15 +93,16 @@ public class Paste extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        // paste at original position
+        // Paste at original position
         try {
             var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+            // TODO: NXT-1168 Put a limit on the clipboard content size
             var defClipboardContent = mapper.readValue(m_commandEnt.getContent(), DefClipboardContent.class);
             m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
         } catch (JsonProcessingException e) { // NOSONAR: Don't want to log or re-throw this exception
             throw new OperationNotAllowedException("Could not parse input string to def clipboard content");
         }
-        // get nodes and annotations
+        // Get nodes and annotations
         var nodes = Arrays.stream(m_workflowCopyContent.getNodeIDs())//
             .map(id -> CoreUtil.getNodeContainer(id, wfm).orElseThrow())//
             .collect(Collectors.toSet());
@@ -109,22 +110,25 @@ public class Paste extends AbstractWorkflowCommand {
             .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toSet());
-        // move pasted content to the correct position
+        // Move pasted content to the correct position
         var delta = calculateShift(nodes, annotations);
+        // TODO: NXT-1169 Enable translation of connection bend points too
         Translate.performTranslation(wfm, nodes, annotations, delta);
         return true;
     }
 
     private int[] calculateShift(final Set<NodeContainer> nodes, final Set<WorkflowAnnotation> annotations) {
-        int[] delta = new int[2]; // NOSONAR: Can't use `var` here
+        var delta = new int[2];
         if (m_commandEnt.getPosition() == null) {
             delta[0] = OFFSET;
             delta[1] = OFFSET;
         } else {
             var position = Stream.concat(//
-                nodes.stream().map(nc -> Arrays.stream(nc.getUIInformation().getBounds()).boxed().collect(Collectors.toList())),//
+                nodes.stream()
+                    .map(nc -> Arrays.stream(nc.getUIInformation().getBounds()).boxed().collect(Collectors.toList())),
                 annotations.stream().map(an -> List.of(an.getX(), an.getY(), an.getWidth(), an.getHeight())))
-                .reduce(List.of(Integer.MAX_VALUE, Integer.MAX_VALUE), (acc, nxt) -> List.of(Math.min(acc.get(0), nxt.get(0)), Math.min(acc.get(1), nxt.get(1))));
+                .reduce(List.of(Integer.MAX_VALUE, Integer.MAX_VALUE),
+                    (acc, nxt) -> List.of(Math.min(acc.get(0), nxt.get(0)), Math.min(acc.get(1), nxt.get(1))));
             delta[0] = m_commandEnt.getPosition().getX() - position.get(0);
             delta[1] = m_commandEnt.getPosition().getY() - position.get(1);
         }

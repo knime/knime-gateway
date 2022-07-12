@@ -88,7 +88,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), invert(m_delta));
     }
 
-    // TODO: Include connections in translation
+    // TODO: NXT-1169 Enable translation of connection bend points too
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final int[] delta) {
 

@@ -50,8 +50,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.text.NumberFormat;
-
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -85,24 +83,26 @@ public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult
         m_commandEnt = commandEnt;
     }
 
+    /** Set true so it also works as a command sequence for {@link Cut} */
     @Override
     public boolean canUndo() {
-        return false;
+        return true;
     }
 
+    /** Set true so it also works as a command sequence for {@link Cut} */
     @Override
     public boolean canRedo() {
-        return false;
+        return true;
     }
 
     @Override
     public void redo() throws OperationNotAllowedException {
-        // do nothing
+        // Do nothing
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        // do nothing
+        // Do nothing
 
     }
 
@@ -134,21 +134,15 @@ public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult
                 .setNodeIDs(nodeIds)//
                 .setAnnotationIDs(annotationIDs)//
                 .build();
-        // TODO: Set an upper bound on the clipboard content size that can be sent to the front end?
-        // * This creates a text string of about 54 million characters for the "Buildings" workflow
-        // * Copy command takes about 18 seconds to finish on a local machine
+        // TODO: NXT-1168 Put a limit on the clipboard content size
         var defClipboardContent = getWorkflowManager().copyToDef(workflowCopyContent, PasswordRedactor.asNull());
         var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         try {
-            var content = mapper.writeValueAsString(defClipboardContent);
-            var formatter = NumberFormat.getInstance();
-            formatter.setGroupingUsed(true);
-            LOGGER.info("Number of characters in copy content object: " + formatter.format(content.length()));
-            m_content = content;
+            m_content = mapper.writeValueAsString(defClipboardContent);
         } catch (JsonProcessingException e) {
             LOGGER.error("Cannot copy to system clipboard: ", e);
         }
-        return false;
+        return false; // The workflow didn't change
     }
 
 }

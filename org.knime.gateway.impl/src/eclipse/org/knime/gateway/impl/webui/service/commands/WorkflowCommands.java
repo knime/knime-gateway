@@ -162,13 +162,16 @@ public final class WorkflowCommands {
             }
         }
 
-        var hasResult = doesCommandHaveResult(wfKey, command);
-        var wfChangeWaiter = prepareCommandResult(wfKey, command, hasResult);
+        var hasResult = hasCommandResult(wfKey, command);
+        WorkflowChangeWaiter wfChangeWaiter = null;
+        if (hasResult) {
+            wfChangeWaiter = prepareCommandResult(wfKey, command).orElse(null);
+        }
         executeCommandAndModifyCommandStacks(wfKey, command);
-        return waitForCommandResult(wfKey, command, hasResult, wfChangeWaiter);
+        return hasResult ? waitForCommandResult(wfKey, command, wfChangeWaiter) : null;
     }
 
-    private static boolean doesCommandHaveResult(final WorkflowKey wfKey, final WorkflowCommand command)
+    private static boolean hasCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
         throws NodeNotFoundException, NotASubWorkflowException {
         if (command instanceof WithResult) {
             var hasResult = true;
@@ -180,15 +183,13 @@ public final class WorkflowCommands {
         return false;
     }
 
-    private WorkflowChangeWaiter prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
-        final boolean hasResult) {
-        WorkflowChangeWaiter wfChangeWaiter = null;
+    private Optional<WorkflowChangeWaiter> prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command) {
         // Only commands with results that trigger a real workflow change need a waiter
-        if (hasResult && ((WithResult)command).getChangeToWaitFor() != WorkflowChange.NONE) {
+        if (((WithResult)command).getChangeToWaitFor() != WorkflowChange.NONE) {
             var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
-            wfChangeWaiter = wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor());
+            return Optional.of(wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor()));
         }
-        return wfChangeWaiter;
+        return Optional.empty();
     }
 
     private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
@@ -220,21 +221,18 @@ public final class WorkflowCommands {
     }
 
     private CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
-        final boolean hasResult, final WorkflowChangeWaiter wfChangeWaiter)
-        throws OperationNotAllowedException {
-        if (hasResult) {
-            if (wfChangeWaiter != null) {
-                try {
-                    wfChangeWaiter.blockUntilOccurred();
-                } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
-                    throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change",
-                        e);
-                }
+        final WorkflowChangeWaiter wfChangeWaiter) throws OperationNotAllowedException {
+        String latestSnapshotId = null;
+        if (wfChangeWaiter != null) {
+            try {
+                wfChangeWaiter.blockUntilOccurred();
+                // Only set a snapshot id if there is a workflow change to wait for
+                latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
+            } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
+                throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
             }
-            var latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
-            return ((WithResult)command).buildEntity(latestSnapshotId);
         }
-        return null;
+        return ((WithResult)command).buildEntity(latestSnapshotId);
     }
 
     /**

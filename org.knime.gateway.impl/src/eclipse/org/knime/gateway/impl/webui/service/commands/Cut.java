@@ -51,11 +51,15 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
@@ -68,6 +72,16 @@ public class Cut extends CommandSequence {
 
     protected Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         super(getCommands(commandEnt, workflowMiddleware));
+    }
+
+    /**
+     * Override the method in {@link CommandSequence} to get result providing command which isn't the last command in
+     * the sequence
+     */
+    @Override
+    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException {
+        return Optional.of((WithResult)m_commands.get(0));
     }
 
     private static List<WorkflowCommand> getCommands(final CutCommandEnt commandEnt,
