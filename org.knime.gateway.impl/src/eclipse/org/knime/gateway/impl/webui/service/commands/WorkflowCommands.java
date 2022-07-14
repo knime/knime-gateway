@@ -130,6 +130,20 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
         final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+        var command = createWorkflowCommand(commandEnt);
+
+        var hasResult = hasCommandResult(wfKey, command);
+        WorkflowChangeWaiter wfChangeWaiter = null;
+        if (hasResult) {
+            wfChangeWaiter = prepareCommandResult(wfKey, command).orElse(null);
+        }
+        executeCommandAndModifyCommandStacks(wfKey, command);
+        return hasResult ? waitForCommandResult(wfKey, command, wfChangeWaiter) : null;
+    }
+
+    @SuppressWarnings("java:S1541")
+    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt)
+        throws OperationNotAllowedException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
@@ -161,14 +175,7 @@ public final class WorkflowCommands {
                     + " cannot be executed. Unknown command.");
             }
         }
-
-        var hasResult = hasCommandResult(wfKey, command);
-        WorkflowChangeWaiter wfChangeWaiter = null;
-        if (hasResult) {
-            wfChangeWaiter = prepareCommandResult(wfKey, command).orElse(null);
-        }
-        executeCommandAndModifyCommandStacks(wfKey, command);
-        return hasResult ? waitForCommandResult(wfKey, command, wfChangeWaiter) : null;
+        return command;
     }
 
     private static boolean hasCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
