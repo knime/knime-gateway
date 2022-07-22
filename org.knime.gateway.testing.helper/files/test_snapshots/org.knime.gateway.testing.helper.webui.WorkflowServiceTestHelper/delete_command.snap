@@ -242,10 +242,7 @@
         "index" : 1,
         "name" : "Training data",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -294,10 +291,7 @@
         "index" : 1,
         "name" : "Any input table",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -312,10 +306,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Copy of input",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 484,
@@ -355,10 +346,7 @@
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "component",
       "name" : "Component Failing",
@@ -374,10 +362,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 344,
@@ -487,10 +472,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Variable table",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 804,
@@ -533,10 +515,7 @@
         "connectedVia" : "[ root:16_1 ]",
         "index" : 1,
         "name" : "Manually created table",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 224,
@@ -570,10 +549,7 @@
         "index" : 1,
         "name" : "Parameters table",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -778,10 +754,7 @@
         "index" : 1,
         "name" : "myPort 1",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : true,
         "connectedVia" : "[  ]",
@@ -805,10 +778,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Outport 1",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : true,
         "connectedVia" : "[  ]",
@@ -905,10 +875,7 @@
         "index" : 1,
         "name" : "Input Table",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -963,10 +930,7 @@
         "index" : 1,
         "name" : "Table to be filtered",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -981,10 +945,7 @@
         "connectedVia" : "[ root:11_1, root:6_0 ]",
         "index" : 1,
         "name" : "Filtered table",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 344,
@@ -1024,20 +985,14 @@
         "index" : 1,
         "name" : "Query table",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Reference table (neighbors)",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:20_3 ]",
@@ -1059,10 +1014,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Input 1 + columns/rows with neighbor information",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 864,
@@ -1102,40 +1054,28 @@
         "index" : 1,
         "name" : "First table to concatenate",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Optional second table to concatenate",
         "optional" : true,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 3,
         "name" : "Optional third table to concatenate",
         "optional" : true,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 4,
         "name" : "Optional fourth table to concatenate",
         "optional" : true,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1150,10 +1090,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Concatenated table",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 384,
@@ -1200,10 +1137,7 @@
         "index" : 2,
         "name" : "Test data",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1218,10 +1152,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Classified Test data",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 544,
@@ -1263,10 +1194,7 @@
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "component",
       "name" : "Component",
@@ -1282,10 +1210,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Port 1",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 164,
@@ -1318,10 +1243,7 @@
         "index" : 1,
         "name" : "Table to transform",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1336,19 +1258,13 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Covariance matrix",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Spectral decomposition",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
@@ -1401,10 +1317,7 @@
         "index" : 2,
         "name" : "Table to transform",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1419,10 +1332,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Projected data",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 1064,
@@ -1463,10 +1373,7 @@
         "name" : "First table to concatenate",
         "optional" : false,
         "portGroupId" : "input",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
@@ -1474,10 +1381,7 @@
         "name" : "Second table to concatenate",
         "optional" : false,
         "portGroupId" : "input",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : true,
         "connectedVia" : "[  ]",
@@ -1485,10 +1389,7 @@
         "name" : "Additional table to concatenate",
         "optional" : false,
         "portGroupId" : "input",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1503,10 +1404,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Concatenated table",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "portGroups" : {
         "input" : {
@@ -1554,10 +1452,7 @@
         "index" : 1,
         "name" : "Input data",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1601,10 +1496,7 @@
         "index" : 0,
         "name" : "Inport 0",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : true,
         "connectedVia" : "[  ]",
@@ -1621,30 +1513,21 @@
         "index" : 0,
         "name" : "Connected to: Filtered",
         "nodeState" : "IDLE",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:5_1 ]",
         "index" : 1,
         "name" : "Connected to: Filtered Out",
         "nodeState" : "IDLE",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : true,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Outport 2",
         "nodeState" : "IDLE",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 484,
@@ -1677,10 +1560,7 @@
         "index" : 1,
         "name" : "Display data",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -1695,10 +1575,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Robust Statistics",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 484,
@@ -1739,10 +1616,7 @@
         "index" : 1,
         "name" : "Port 1",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "component",
       "name" : "Component with icon and type",
@@ -1758,10 +1632,7 @@
         "connectedVia" : "[ root:8_1 ]",
         "index" : 1,
         "name" : "Port 1",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 344,

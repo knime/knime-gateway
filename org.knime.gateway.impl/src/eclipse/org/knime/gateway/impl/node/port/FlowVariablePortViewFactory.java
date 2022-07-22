@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,50 +44,68 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 27, 2020 (hornm): created
+ *   Jul 19, 2022 (hornm): created
  */
-package org.knime.gateway.impl.rpc.table;
+package org.knime.gateway.impl.node.port;
 
-import org.knime.core.data.DataType;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.json.impl.JsonInitialDataServiceImpl;
+import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
+import org.knime.core.webui.page.Page;
 
 /**
- * Represents the type of a table cell.
+ * Factory for a port view of a {@link FlowVariablePortObject}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface TableCellType {
+public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVariablePortObject> {
 
     /**
-     * @return a human-readable name of the cell type
+     * {@inheritDoc}
      */
-    String getName();
-
-    /**
-     * @return a identifier for the preferred type value
-     */
-    String getPreferredValueId();
-
-    /**
-     * Helper to create an instance of a table cell type.
-     *
-     * @param type the data type to create the instance from
-     * @return a new instance
-     */
-    static TableCellType create(final DataType type) {
-        return new TableCellType() { // NOSONAR
+    @Override
+    public PortView createPortView(final FlowVariablePortObject portObject) {
+        var nc = NodeContext.getContext().getNodeContainer();
+        var fos = nc.getOutPort(0).getFlowObjectStack();
+        List<FlowVariable> variables;
+        if (fos != null) {
+            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
+                .collect(Collectors.toList());
+        } else {
+            variables = Collections.emptyList();
+        }
+        return new PortView() {
 
             @Override
-            public String getName() {
-                return type.getName();
+            public Optional<InitialDataService> createInitialDataService() {
+                return Optional.of(new JsonInitialDataServiceImpl<List<FlowVariable>>(() -> variables));
             }
 
             @Override
-            public String getPreferredValueId() {
-                return type.getPreferredValueClass().getCanonicalName();
+            public Optional<DataService> createDataService() {
+                return Optional.empty();
+            }
+
+            @Override
+            public Page getPage() {
+                return Page.builder(() -> "", "vue_component_reference").build();
+            }
+
+            @Override
+            public String getPageId() {
+                return "FlowVariablePortView";
             }
 
         };
-
     }
 
 }

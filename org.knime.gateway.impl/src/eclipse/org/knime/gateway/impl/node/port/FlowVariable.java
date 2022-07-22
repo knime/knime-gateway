@@ -44,57 +44,69 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 23, 2020 (hornm): created
+ *   Jan 14, 2021 (hornm): created
  */
-package org.knime.gateway.impl.rpc.table;
+package org.knime.gateway.impl.node.port;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.workflow.NodeID;
 
 /**
- * A table row, only for the purpose to be displayed, not for processing.
+ * Represents a flow variable to be displayed as port of the flow variable port view.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface Row {
+public interface FlowVariable {
 
     /**
-     * @return the row id, never <code>null</code>
+     * @return the flow variable name
      */
-    String getId();
+    String getName();
 
     /**
-     * @return the list of cell in the row
+     * @return the flow var type
      */
-    List<TableCell> getCells();
+    String getType();
 
     /**
-     * Helper to create a row instance.
+     * @return the actual value
+     */
+    String getValue();
+
+    /**
+     * @return the id of the node that created the flow variable (can be <code>null</code>)
+     */
+    String getOwnerNodeId();
+
+    /**
+     * Helper to create a flow variable on the fly.
      *
-     * @param row the object to create the row instance from
-     * @param spec the original table spec, mainly used to sync with the global column data type
-     * @return a new instance
+     * @param v
+     * @return the new flow variable which retrieves the values from the passed 'core'-flow variable representation on
+     *         demand
      */
-    static Row create(final DataRow row, final DataTableSpec spec) {
-        return new Row() { // NOSONAR
+    static FlowVariable create(final org.knime.core.node.workflow.FlowVariable v) {
+        return new FlowVariable() {
 
             @Override
-            public String getId() {
-                return row.getKey().getString();
+            public String getValue() {
+                return v.getValueAsString();
             }
 
             @Override
-            public List<TableCell> getCells() {
-                List<TableCell> res = new ArrayList<>(row.getNumCells());
-                for (int i = 0; i < row.getNumCells(); i++) {
-                    res.add(TableCell.create(row.getCell(i), spec.getColumnSpec(i).getType()));
-                }
-                return res;
+            public String getType() {
+                return v.getVariableType().getClass().getSimpleName();
             }
 
+            @Override
+            public String getOwnerNodeId() {
+                NodeID owner = v.getOwner();
+                return owner != null && !owner.isRoot() ? owner.toString() : null;
+            }
+
+            @Override
+            public String getName() {
+                return v.getName();
+            }
         };
     }
 

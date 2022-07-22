@@ -66,19 +66,13 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Random data with cluster ID",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 2,
         "name" : "Cluster centers",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 162,

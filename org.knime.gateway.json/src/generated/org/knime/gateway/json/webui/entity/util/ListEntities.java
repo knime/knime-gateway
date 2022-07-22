@@ -109,7 +109,6 @@ import org.knime.gateway.json.webui.entity.PatchOpEntMixIn;
 import org.knime.gateway.json.webui.entity.PortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PortGroupEntMixIn;
 import org.knime.gateway.json.webui.entity.PortTypeEntMixIn;
-import org.knime.gateway.json.webui.entity.PortViewEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
@@ -212,7 +211,6 @@ public class ListEntities {
         res.add(PortCommandEntMixIn.class);
         res.add(PortGroupEntMixIn.class);
         res.add(PortTypeEntMixIn.class);
-        res.add(PortViewEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
         res.add(RemovePortCommandEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
@@ -301,7 +299,6 @@ public class ListEntities {
         res.add(PortCommandEntMixIn.PortCommandEntMixInBuilder.class);
         res.add(PortGroupEntMixIn.PortGroupEntMixInBuilder.class);
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
-        res.add(PortViewEntMixIn.PortViewEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
         res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);

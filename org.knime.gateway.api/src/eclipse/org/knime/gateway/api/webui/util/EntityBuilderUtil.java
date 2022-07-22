@@ -119,6 +119,7 @@ import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
 import org.knime.core.util.workflowalizer.Workflowalizer;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -196,8 +197,6 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
-import org.knime.gateway.api.webui.entity.PortViewEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
@@ -303,9 +302,12 @@ public final class EntityBuilderUtil {
     /**
      * @param ptype The port type
      * @param availableTypes Available port types to be considered for listing ports compatible to the given one
+     * @param includeInteractionInfo whether to include properties that are only required if one interacts with the
+     *            workflow
      * @return An entity describing the given port type
      */
-    public static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes) {
+    public static PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes,
+        final boolean includeInteractionInfo) {
         var kind = getPortTypeKind(ptype);
         List<String> compatibleTypes = Collections.emptyList();
         if (kind == PortTypeEnt.KindEnum.OTHER) {
@@ -321,6 +323,7 @@ public final class EntityBuilderUtil {
             .setColor(hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .setHidden(ptype.isHidden() ? Boolean.TRUE : null)//
+            .setHasView(hasPortView(ptype, includeInteractionInfo))//
             .build();
     }
 
@@ -949,7 +952,6 @@ public final class EntityBuilderUtil {
                 .setInfo(np.getInfo())//
                 .setName(np.getName())//
                 .setOptional(np.isOptional())//
-                .setView(np.getView())//
                 .setPortObjectVersion(np.getPortObjectVersion())//
                 .setNodeState(nodeState)//
                 .setCanRemove(np.isCanRemove())//
@@ -1070,21 +1072,14 @@ public final class EntityBuilderUtil {
             .setName(name)//
             .setInfo(info)//
             .setTypeId(CoreUtil.getPortTypeId(ptype))//
-            .setView(buildPortViewEnt(ptype))//
             .setPortObjectVersion(portObjectVersion)//
             .setPortGroupId(portGroupId)//
             .setCanRemove(canRemovePort)//
             .build();
     }
 
-    private static PortViewEnt buildPortViewEnt(final PortType ptype) {
-        BuildInWebPortViewType portViewType = BuildInWebPortViewType.getPortViewTypeFor(ptype).orElse(null);
-        if (portViewType != null && portViewType != BuildInWebPortViewType.FLOWVARIABLE) {
-            return builder(PortViewEntBuilder.class).setType(PortViewEnt.TypeEnum.valueOf(portViewType.toString()))
-                .build();
-        } else {
-            return null;
-        }
+    private static Boolean hasPortView(final PortType portType, final boolean includeInteractionInfo) {
+        return includeInteractionInfo && PortViewManager.hasPortView(portType) ? Boolean.TRUE : null;
     }
 
     private static ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c, final WorkflowBuildContext buildContext) {

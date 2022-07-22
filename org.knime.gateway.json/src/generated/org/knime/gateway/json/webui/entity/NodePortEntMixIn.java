@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.json.webui.entity.NodePortTemplateEntMixIn;
 
 
@@ -98,10 +97,6 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public Boolean isInactive();
     
     @Override
-    @JsonProperty("view")
-    public PortViewEnt getView();
-    
-    @Override
     @JsonProperty("portObjectVersion")
     public Integer getPortObjectVersion();
     
@@ -153,10 +148,6 @@ public interface NodePortEntMixIn extends NodePortEnt {
         @Override
         @JsonProperty("inactive")
         public NodePortEntMixInBuilder setInactive(final Boolean inactive);
-        
-        @Override
-        @JsonProperty("view")
-        public NodePortEntMixInBuilder setView(final PortViewEnt view);
         
         @Override
         @JsonProperty("portObjectVersion")

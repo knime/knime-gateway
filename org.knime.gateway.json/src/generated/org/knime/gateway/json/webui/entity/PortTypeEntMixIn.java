@@ -87,6 +87,10 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
     @JsonProperty("hidden")
     public Boolean isHidden();
     
+    @Override
+    @JsonProperty("hasView")
+    public Boolean hasView();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -119,6 +123,10 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
         @Override
         @JsonProperty("hidden")
         public PortTypeEntMixInBuilder setHidden(final Boolean hidden);
+        
+        @Override
+        @JsonProperty("hasView")
+        public PortTypeEntMixInBuilder setHasView(final Boolean hasView);
         
     }
 

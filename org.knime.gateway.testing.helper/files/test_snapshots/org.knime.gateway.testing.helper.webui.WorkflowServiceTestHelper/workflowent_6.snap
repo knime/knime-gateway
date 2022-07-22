@@ -50,10 +50,7 @@
       "connectedVia" : "[ root:6:3_1 ]",
       "index" : 0,
       "name" : "Connected to: Filtered table",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     }, {
       "canRemove" : true,
       "connectedVia" : "[  ]",
@@ -69,28 +66,19 @@
       "connectedVia" : "[ root:6_0 ]",
       "index" : 0,
       "name" : "Inport 0",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     }, {
       "canRemove" : false,
       "connectedVia" : "[ root:6_1 ]",
       "index" : 1,
       "name" : "Inport 1",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     }, {
       "canRemove" : true,
       "connectedVia" : "[  ]",
       "index" : 2,
       "name" : "Inport 2",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     } ],
     "xPos" : 780
   },
@@ -125,10 +113,7 @@
         "index" : 1,
         "name" : "To be filtered",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -143,19 +128,13 @@
         "connectedVia" : "[ root:6_0 ]",
         "index" : 1,
         "name" : "Filtered",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:6_1 ]",
         "index" : 2,
         "name" : "Filtered Out",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 150,

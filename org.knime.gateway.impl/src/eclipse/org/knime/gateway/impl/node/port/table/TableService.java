@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,77 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 27, 2020 (hornm): created
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc.ports;
+package org.knime.gateway.impl.node.port.table;
 
-import java.io.IOException;
-
-import org.junit.Before;
-import org.knime.core.node.util.CheckUtils;
-import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.rpc.table.TableService;
-import org.knime.gateway.testing.helper.ResultChecker;
+import java.util.List;
 
 /**
- * Abstracts some details of port rpc service tests (such as the {@link TableService}).
+ * Gives access to a table, e.g. of a port or node view. Only for the purpose of displaying the respective table (i.e.
+ * not for processing).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class AbstractJsonRpcSerializationTest<S> {
-
-    private ResultChecker m_resultChecker;
-
-    private final Class<S> m_serviceClass;
-
-    private TestJsonRpcClient<S> m_rpcClient;
+//TODO to be removed with NXT-632 (and everything related)
+public interface TableService {
 
     /**
-     * New test instance.
+     * Gets a table representation.
      *
-     * @param serviceClass the service interface class
+     * @param start the index of the rows to start with
+     * @param size the maximum number of rows to include
+     * @return the table with the requested number of rows (if any) and the table spec
      */
-    protected AbstractJsonRpcSerializationTest(final Class<S> serviceClass) {
-        m_serviceClass = serviceClass;
-    }
+    Table getTable(long start, int size);
 
     /**
-     * Inits the result checker for snapshot testing.
+     * Requests a certain range of rows.
      *
-     * @throws IOException
+     * @param start the index of the rows to start with
+     * @param size the maximum number of rows to include
+     * @return the list of rows; an empty collection if there are no rows in the given range; <code>null</code> if the
+     *         underlying port or node view doesn't have any data
      */
-    @Before
-    public void initResultChecker() throws IOException {
-        m_resultChecker = new ResultChecker(null, CoreUtil.resolveToFile("/files/test_snapshots", this.getClass()));
-    }
-
-    /**
-     * Creates a new service client instance.
-     *
-     * @param serviceImpl
-     * @return the new service client instance
-     */
-    protected S createServiceClient(final S serviceImpl) {
-        m_rpcClient = new TestJsonRpcClient<>(m_serviceClass, serviceImpl);
-        return m_rpcClient.getService();
-    }
-
-    /**
-     * Checks the last response from the rpc server by comparing it to the snapshot of the provided name
-     *
-     * @param snapshotName the snapshot to compare the last server response to
-     */
-    protected void checkLastServerResponse(final String snapshotName) {
-        CheckUtils.checkNotNull(m_rpcClient, "No rpc client initialized. Call 'createServiceClient' first.");
-        m_resultChecker.checkObject(AbstractJsonRpcSerializationTest.class, snapshotName,
-            m_rpcClient.getLastServerResponse());
-    }
-
-    /**
-     * @return the last server response as json-rpc string
-     */
-    protected String getLastServerResponse() {
-        return m_rpcClient.getLastServerResponse();
-    }
+    List<Row> getRows(long start, int size);
 
 }

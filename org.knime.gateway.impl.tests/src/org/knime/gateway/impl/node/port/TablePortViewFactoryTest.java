@@ -1,0 +1,249 @@
+package org.knime.gateway.impl.node.port;
+/*
+ * ------------------------------------------------------------------------
+ *
+ *  Copyright by KNIME AG, Zurich, Switzerland
+ *  Website: http://www.knime.org; Email: contact@knime.org
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License, Version 3, as
+ *  published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>.
+ *
+ *  Additional permission under GNU GPL version 3 section 7:
+ *
+ *  KNIME interoperates with ECLIPSE solely via ECLIPSE's plug-in APIs.
+ *  Hence, KNIME and ECLIPSE are both independent programs and are not
+ *  derived from each other. Should, however, the interpretation of the
+ *  GNU GPL Version 3 ("License") under any applicable laws result in
+ *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  you the additional permission to use and propagate KNIME together with
+ *  ECLIPSE with only the license terms in place for ECLIPSE applying to
+ *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
+ *  license terms of ECLIPSE themselves allow for the respective use and
+ *  propagation of ECLIPSE together with KNIME.
+ *
+ *  Additional permission relating to nodes for KNIME that extend the Node
+ *  Extension (and in particular that are based on subclasses of NodeModel,
+ *  NodeDialog, and NodeView) and that only interoperate with KNIME through
+ *  standard APIs ("Nodes"):
+ *  Nodes are deemed to be separate and independent programs and to not be
+ *  covered works.  Notwithstanding anything to the contrary in the
+ *  License, the License does not apply to Nodes, you are not required to
+ *  license Nodes under the License, and you are granted a license to
+ *  prepare and propagate Nodes, in each case even if such Nodes are
+ *  propagated with or for interoperation with KNIME.  The owner of a Node
+ *  may freely choose the license terms applicable to such Node, including
+ *  when such Node is propagated with or for interoperation with KNIME.
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jul 21, 2022 (hornm): created
+ */
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.knime.core.webui.data.rpc.json.JsonRpcDataService.jsonRpcRequest;
+
+import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.MissingCell;
+import org.knime.core.data.RowKey;
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.filestore.internal.NotInWorkflowDataRepository;
+import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.DefaultNodeProgressMonitor;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.Node;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
+import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+import org.knime.core.webui.data.text.TextInitialDataService;
+import org.knime.core.webui.node.port.PortView;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.impl.node.port.table.TableSpec;
+import org.knime.gateway.testing.helper.ObjectToString;
+import org.knime.gateway.testing.helper.ResultChecker;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
+/**
+ * Tests {@link TablePortViewFactory}.
+ *
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ */
+public class TablePortViewFactoryTest {
+
+    private ResultChecker m_resultChecker;
+
+    private static final ObjectMapper MAPPER;
+
+    static {
+        MAPPER = JsonMapper.builder().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true).build();
+    }
+
+    /**
+     * Inits the result checker for snapshot testing.
+     *
+     * @throws IOException
+     */
+    @Before
+    public void initResultChecker() throws IOException {
+        m_resultChecker = new ResultChecker(new ObjectToString(MAPPER),
+            CoreUtil.resolveToFile("/files/test_snapshots", this.getClass()));
+    }
+
+    /**
+     * Asserts that the correct page is returned by the {@link PortView} created by the {@link TablePortViewFactory}.
+     */
+    @Test
+    public void testTablePortViewPage() {
+        var bdt = createTable(2);
+        var portView = new TablePortViewFactory().createPortView(bdt);
+        var page = portView.getPage();
+        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
+        var pageId = portView.getPageId();
+        assertThat(pageId, is("TablePortView"));
+    }
+
+    /**
+     * Checks the {@link InitialDataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     */
+    @Test
+    public void testTablePortViewInitialData() {
+        var bdt = createTable(2);
+        var portView = new TablePortViewFactory().createPortView(bdt);
+        var initialData = ((TextInitialDataService)portView.createInitialDataService().get()).getInitialData();
+        checkResult("table_port_view_initial_data", initialData);
+    }
+
+    /**
+     * Checks the {@link DataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     */
+    @Test
+    public void testTablePortViewData() {
+        var bdt = createTable(10);
+        var portView = new TablePortViewFactory().createPortView(bdt);
+        var jsonRpcResponse = ((JsonRpcDataService)portView.createDataService().get())
+            .handleRequest(jsonRpcRequest("getTable", "0", "10"));
+        checkResult("table_port_view_data", jsonRpcResponse);
+    }
+
+    /**
+     * Makes sure that excess columns are ommitted.
+     */
+    @Test
+    public void testTablePortViewDataWithTruncatedColumns() {
+        String[] names = new String[TableSpec.MAX_NUM_COLUMNS + 2];
+        DataType[] types = new DataType[names.length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = "col " + i;
+            types[i] = IntCell.TYPE;
+        }
+        BufferedDataTable bdt = createTable(new DataTableSpec(names, types));
+
+        var portView = new TablePortViewFactory().createPortView(bdt);
+        var jsonRpcResponse = ((JsonRpcDataService)portView.createDataService().get())
+            .handleRequest(jsonRpcRequest("getTable", "0", "10"));
+        checkResult("table_port_view_data_truncated_columns", jsonRpcResponse);
+    }
+
+    private void checkResult(final String snapshotName, final String jsonString) {
+        Object jsonObject;
+        try {
+            jsonObject = MAPPER.readValue(jsonString, Object.class);
+        } catch (JsonProcessingException ex) {
+            // should never happen
+            throw new IllegalStateException(ex);
+        }
+        m_resultChecker.checkObject(TablePortViewFactoryTest.class, snapshotName, jsonObject);
+    }
+
+    private static final DataTableSpec SPEC =
+            new DataTableSpec(new DataColumnSpecCreator("int", IntCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("string", StringCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("long", LongCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("double", DoubleCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("boolean", BooleanCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("mixed-type", DataType.getCommonSuperType(StringCell.TYPE, DoubleCell.TYPE))
+                    .createSpec());
+
+        private static final VirtualParallelizedChunkPortObjectInNodeFactory FACTORY =
+            new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        private static final ExecutionContext EXEC =
+            new ExecutionContext(new DefaultNodeProgressMonitor(), new Node((NodeFactory)FACTORY),
+                SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
+
+        /**
+         * Creates a new {@link BufferedDataTable} for testing purposes with some dummy values per row.
+         *
+         * @param rowCount the number of rows in the new table
+         * @return the new table instance
+         */
+        private static BufferedDataTable createTable(final int rowCount) {
+            final DataRow[] rows =
+                IntStream.range(0, rowCount).mapToObj(TablePortViewFactoryTest::createRow).toArray(DataRow[]::new);
+            return createTable(SPEC, rows);
+        }
+
+        /**
+         * Creates a new {@link BufferedDataTable} for testing purposes.
+         *
+         * @param spec the spec of the new table
+         * @param rows the rows of the new table
+         * @return the new table instance
+         */
+        private static BufferedDataTable createTable(final DataTableSpec spec, final DataRow... rows) {
+            final BufferedDataContainer cont = EXEC.createDataContainer(spec, true, Integer.MAX_VALUE);
+            for (final DataRow r : rows) {
+                cont.addRowToTable(r);
+            }
+            cont.close();
+            return cont.getTable();
+        }
+
+        private static DataRow createRow(final int i) {
+            if (i == 1) {
+                // add a row with missing cells
+                return new DefaultRow(new RowKey(Integer.toString(i)),
+                    IntStream.range(0, SPEC.getNumColumns())
+                        .mapToObj(colIdx -> new MissingCell(colIdx % 2 == 1 ? ("error " + colIdx) : null))
+                        .collect(Collectors.toList()));
+            } else {
+                return new DefaultRow(new RowKey(Integer.toString(i)), new IntCell(i), new StringCell(Integer.toString(i)),
+                    new LongCell(i), new DoubleCell(i), i % 2 != 0 ? BooleanCell.TRUE : BooleanCell.FALSE,
+                    i % 2 != 0 ? new StringCell(Integer.toBinaryString(i)) : new DoubleCell(Double.MAX_VALUE));
+            }
+        }
+
+}

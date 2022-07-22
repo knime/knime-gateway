@@ -46,59 +46,98 @@
  * History
  *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc.table;
+package org.knime.gateway.impl.node.port.table;
 
-import java.lang.ref.WeakReference;
+import static org.knime.gateway.impl.node.port.table.TableSpec.getCellTypeRef;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DirectAccessTable;
-import org.knime.core.data.cache.WindowCacheTable;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.port.DataTableSpecProvider;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.data.DataType;
+import org.knime.core.data.DataValue;
 
 /**
- * Default implementation for {@link TableService}.
+ * Represents the table's specification.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultTableService implements TableService {
-
-    private final DirectAccessTable m_table;
-
-    private final DataTableSpec m_spec;
+public interface TableSpec {
 
     /**
-     * Creates a new table service instance.
-     *
-     * @param port the port to create the table service from
+     * The maximum number of columns returned. Excess columns will be omitted.
      */
-    public DefaultTableService(final NodeOutPort port) {
-        PortType portType = port.getPortType();
-        if (DataTableSpec.class.isAssignableFrom(portType.getPortObjectSpecClass())
-            && BufferedDataTable.class.equals(portType.getPortObjectClass())) {
-            BufferedDataTable btable = (BufferedDataTable)port.getPortObject();
-            m_table = btable != null ? new WindowCacheTable(btable) : null;
-            m_spec = (DataTableSpec)port.getPortObjectSpec();
-        } else if (DataTableSpecProvider.class.isAssignableFrom(portType.getPortObjectSpecClass())
-            && DirectAccessTable.class.isAssignableFrom(portType.getPortObjectClass())) {
-            m_table = (DirectAccessTable)port.getPortObject();
-            m_spec = ((DataTableSpecProvider)port.getPortObjectSpec()).getDataTableSpec();
-        } else {
-            throw new IllegalArgumentException("No table can be served from port type " + portType.getName());
+    static final int MAX_NUM_COLUMNS = 500;
+
+    /**
+     * @return the table columns
+     */
+    List<Column> getColumns();
+
+    /**
+     * @return the total number of columns
+     */
+    int getTotalNumColumns();
+
+    /**
+     * @return a map from a unique cell type reference key to the actual table cell type representation
+     */
+    Map<String, TableCellType> getCellTypes();
+
+    /**
+     * Helper to create a table spec instance on the fly from the provided {@link DataTableSpec}.
+     *
+     * @param spec the source to create the spec from
+     * @return the new table spec instance with on demand access to the underlying {@link DataTableSpec}
+     */
+    static TableSpec create(final DataTableSpec spec) {
+        if (spec == null) {
+            return null;
         }
+
+        return new TableSpec() { // NOSONAR
+
+            @Override
+            public List<Column> getColumns() {
+                List<Column> cols = new ArrayList<>(spec.getNumColumns());
+                for (int i = 0; i < Math.min(spec.getNumColumns(), MAX_NUM_COLUMNS); i++) {
+                    cols.add(Column.create(spec.getColumnSpec(i)));
+                }
+                return cols;
+            }
+
+            @Override
+            public int getTotalNumColumns() {
+                return spec.getNumColumns();
+            }
+
+            @Override
+            public Map<String, TableCellType> getCellTypes() {
+                Map<String, TableCellType> res = new HashMap<>();
+                for (int i = 0; i < spec.getNumColumns(); i++) {
+                    DataType type = spec.getColumnSpec(i).getType();
+                    res.put(getCellTypeRef(type), TableCellType.create(type));
+                }
+                return res;
+            }
+
+        };
     }
 
-    @Override
-    public Table getTable(final long start, final int size) {
-        return Table.create(m_spec, m_table, start, size);
-    }
-
-    @Override
-    public List<Row> getRows(final long start, final int size) {
-        return Table.getRows(m_table, start, size, m_spec);
+    /**
+     * @param type the data type to create the reference from
+     * @return a unique string to reference a cell type representation which is kept in {@link TableSpec#getCellTypes()}
+     */
+    static String getCellTypeRef(final DataType type) {
+        Class<? extends DataCell> cellClass = type.getCellClass();
+        if (cellClass != null) {
+            return cellClass.getCanonicalName();
+        } else {
+            return DataValue.class.getCanonicalName();
+        }
     }
 
 }

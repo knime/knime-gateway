@@ -10,28 +10,19 @@
   "name" : "Collecting data",
   "optional" : false,
   "portGroupId" : "Collector",
-  "typeId" : "org.knime.core.node.BufferedDataTable",
-  "view" : {
-    "type" : "table"
-  }
+  "typeId" : "org.knime.core.node.BufferedDataTable"
 }, {
   "connectedVia" : "[  ]",
   "index" : 2,
   "name" : "Recursion data",
   "optional" : false,
   "portGroupId" : "Recursion",
-  "typeId" : "org.knime.core.node.BufferedDataTable",
-  "view" : {
-    "type" : "table"
-  }
+  "typeId" : "org.knime.core.node.BufferedDataTable"
 }, {
   "connectedVia" : "[  ]",
   "index" : 3,
   "name" : "Recursion data",
   "optional" : false,
   "portGroupId" : "Recursion",
-  "typeId" : "org.knime.core.node.BufferedDataTable",
-  "view" : {
-    "type" : "table"
-  }
+  "typeId" : "org.knime.core.node.BufferedDataTable"
 } ]

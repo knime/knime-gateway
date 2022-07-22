@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -157,14 +156,6 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @return this entity builder for chaining
          */
         MetaNodePortEntBuilder setInactive(Boolean inactive);
-        
-        /**
-   		 * Set view
-         * 
-         * @param view the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodePortEntBuilder setView(PortViewEnt view);
         
         /**
          * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.

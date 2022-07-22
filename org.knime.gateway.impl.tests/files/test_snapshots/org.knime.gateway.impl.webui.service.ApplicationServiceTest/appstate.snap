@@ -2,6 +2,7 @@
   "availablePortTypes" : {
     "org.knime.core.node.BufferedDataTable" : {
       "color" : "#000000",
+      "hasView" : true,
       "kind" : "table",
       "name" : "Table"
     },

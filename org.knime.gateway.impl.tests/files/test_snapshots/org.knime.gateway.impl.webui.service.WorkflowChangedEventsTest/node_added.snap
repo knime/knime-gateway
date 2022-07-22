@@ -26,10 +26,7 @@
       "name" : "First table to concatenate",
       "optional" : false,
       "portGroupId" : "input",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     }, {
       "canRemove" : false,
       "connectedVia" : "[  ]",
@@ -37,10 +34,7 @@
       "name" : "Second table to concatenate",
       "optional" : false,
       "portGroupId" : "input",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     } ],
     "kind" : "node",
     "outPorts" : [ {
@@ -55,10 +49,7 @@
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "Concatenated table",
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "view" : {
-        "type" : "table"
-      }
+      "typeId" : "org.knime.core.node.BufferedDataTable"
     } ],
     "portGroups" : {
       "input" : {

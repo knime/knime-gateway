@@ -66,6 +66,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
   protected String m_color;
   protected java.util.List<String> m_compatibleTypes;
   protected Boolean m_hidden;
+  protected Boolean m_hasView;
   
   protected DefaultPortTypeEnt() {
     //for sub-classes
@@ -89,6 +90,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
     m_color = immutable(builder.m_color);
     m_compatibleTypes = immutable(builder.m_compatibleTypes);
     m_hidden = immutable(builder.m_hidden);
+    m_hasView = immutable(builder.m_hasView);
   }
   
    /**
@@ -106,7 +108,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
             return false;
         }
         DefaultPortTypeEnt ent = (DefaultPortTypeEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes) && Objects.equals(m_hidden, ent.m_hidden);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes) && Objects.equals(m_hidden, ent.m_hidden) && Objects.equals(m_hasView, ent.m_hasView);
     }
 
 
@@ -122,6 +124,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
                .append(m_color)
                .append(m_compatibleTypes)
                .append(m_hidden)
+               .append(m_hasView)
                .toHashCode();
    }
   
@@ -152,6 +155,11 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         return m_hidden;
   }
     
+  @Override
+  public Boolean hasView() {
+        return m_hasView;
+  }
+    
   
     public static class DefaultPortTypeEntBuilder implements PortTypeEntBuilder {
     
@@ -164,6 +172,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         private String m_color;
         private java.util.List<String> m_compatibleTypes;
         private Boolean m_hidden;
+        private Boolean m_hasView;
 
         @Override
         public DefaultPortTypeEntBuilder setName(String name) {
@@ -198,6 +207,12 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         @Override
         public DefaultPortTypeEntBuilder setHidden(Boolean hidden) {
              m_hidden = hidden;
+             return this;
+        }
+
+        @Override
+        public DefaultPortTypeEntBuilder setHasView(Boolean hasView) {
+             m_hasView = hasView;
              return this;
         }
 

@@ -46,61 +46,57 @@
  * History
  *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.jsonrpc.ports;
+package org.knime.gateway.impl.node.port.table;
 
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.rpc.NodePortRpcServerFactory;
-import org.knime.core.webui.data.rpc.RpcServer;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
-import org.knime.gateway.api.webui.util.BuildInWebPortViewType;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpec;
 
 /**
- * Abstract {@link NodePortRpcServerFactory}-implementation for build-in port types (see {@link BuildInWebPortViewType})
- * based on json-rpc.
+ * A table row, only for the purpose to be displayed, not for processing.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-abstract class AbstractPortJsonRpcServerFactory<S> implements NodePortRpcServerFactory {
-
-    private final BuildInWebPortViewType m_portType;
-
-    protected AbstractPortJsonRpcServerFactory(final BuildInWebPortViewType portType) {
-        m_portType = portType;
-    }
-
-    private static ObjectMapper objectMapper = createObjectMapper();
+public interface Row {
 
     /**
-     * Publicly visible only for testing.
+     * @return the row id, never <code>null</code>
+     */
+    String getId();
+
+    /**
+     * @return the list of cell in the row
+     */
+    List<TableCell> getCells();
+
+    /**
+     * Helper to create a row instance.
      *
-     * @return a new object mapper instance
+     * @param row the object to create the row instance from
+     * @param spec the original table spec, mainly used to sync with the global column data type
+     * @return a new instance
      */
-    public static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        return mapper;
-    }
+    static Row create(final DataRow row, final DataTableSpec spec) {
+        List<TableCell> cells = new ArrayList<>(row.getNumCells());
+        for (var i = 0; i < row.getNumCells(); i++) {
+            cells.add(TableCell.create(row.getCell(i), spec.getColumnSpec(i).getType()));
+        }
+        var rowKey = row.getKey().getString();
+        return new Row() { // NOSONAR
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isCompatible(final PortType ptype) {
-        return BuildInWebPortViewType.getPortViewTypeFor(ptype).map(t -> t == m_portType).orElse(Boolean.FALSE);
-    }
+            @Override
+            public String getId() {
+                return rowKey;
+            }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RpcServer createRpcServer(final NodeOutPort port) {
-        return new JsonRpcSingleServer<S>(createService(port), objectMapper);
-    }
+            @Override
+            public List<TableCell> getCells() {
+                return cells;
+            }
 
-    protected abstract S createService(NodeOutPort port);
+        };
+    }
 
 }

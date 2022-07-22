@@ -139,7 +139,7 @@ public final class DefaultApplicationService implements ApplicationService {
             availablePortTypeEnts = allAvailablePortTypes.stream() //
                 .collect(Collectors.toMap( //
                     CoreUtil::getPortTypeId, //
-                    pt -> EntityBuilderUtil.buildPortTypeEnt(pt, allAvailablePortTypes) //
+                    pt -> EntityBuilderUtil.buildPortTypeEnt(pt, allAvailablePortTypes, true) //
                 ));
             suggestedPortTypeIds = appState.getSuggestedPortTypes().stream() //
                 .map(CoreUtil::getPortTypeId) //

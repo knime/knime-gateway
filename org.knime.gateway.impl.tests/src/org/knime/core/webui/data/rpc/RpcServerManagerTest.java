@@ -49,87 +49,32 @@
 package org.knime.core.webui.data.rpc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.FileUtil;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.testing.helper.LocalWorkflowLoader;
-import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.rpc.node.SingleRpcNodeFactory;
 
 /**
  * Tests for {@link RpcServerManager}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ *
+ * @deprecated to be removed with the {@link RpcServerManager}.
  */
+@Deprecated(forRemoval = true)
 public class RpcServerManagerTest {
-
-    /**
-     * Tests the {@link RpcServerManager#doRpc(org.knime.core.node.workflow.NodeOutPort, String)} for rpc requests on
-     * ports. Makes especially sure that the response reflects the changed underlying port data (port object, port
-     * object spec).
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDoPortRpc() throws Exception {
-        LocalWorkflowLoader loader = new LocalWorkflowLoader();
-        String wfId = loader.loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowManager wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId).orElse(null);
-        NodeContainer dataGen = wfm.getNodeContainer(wfm.getID().createChild(1)); // NOSONAR wfm never null
-        String rpcTableRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}";
-        String rpcFlowVarRequest = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getFlowVariables\"}";
-
-        String rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
-        checkRpcTableResponse(rpcTableResponse, 5, -1);
-        String rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
-        checkRpcFlowVarResponse(rpcFlowVarResponse, "exposed");
-
-        // change config and check again
-        changeDataGenConfig(wfm, dataGen.getID(), 1, "test1");
-        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
-        checkRpcTableResponse(rpcTableResponse, 3, -1);
-        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
-        checkRpcFlowVarResponse(rpcFlowVarResponse, "test1");
-
-        /* test with data (i.e. executed node) */
-
-        wfm.executeUpToHere(dataGen.getID());
-        wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
-        checkRpcTableResponse(rpcTableResponse, 3, 8);
-        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
-        checkRpcFlowVarResponse(rpcFlowVarResponse, "test1");
-
-        // change config and check again
-        wfm.resetAndConfigureNode(dataGen.getID());
-        changeDataGenConfig(wfm, dataGen.getID(), 2, "test2");
-        wfm.executeUpToHere(dataGen.getID());
-        wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
-        rpcTableResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(1), rpcTableRequest);
-        checkRpcTableResponse(rpcTableResponse, 5, 8);
-        rpcFlowVarResponse = RpcServerManager.getInstance().doRpc(dataGen.getOutPort(0), rpcFlowVarRequest);
-        checkRpcFlowVarResponse(rpcFlowVarResponse, "test2");
-
-        loader.disposeWorkflows();
-    }
 
     /**
      * Test for {@link RpcServerManager#doRpc(NativeNodeContainer, String)}.
@@ -150,26 +95,6 @@ public class RpcServerManagerTest {
         wfm.getParent().removeProject(wfm.getID());
     }
 
-    private static void changeDataGenConfig(final WorkflowManager wfm, final NodeID id, final int universeSize,
-        final String exposedVarName) throws InvalidSettingsException {
-        NodeSettings ns = new NodeSettings("settings");
-        wfm.saveNodeSettings(id, ns);
-        NodeSettings model = ns.getNodeSettings("model");
-        NodeSettings unisize = model.getNodeSettings("unisize");
-        unisize.addInt("0", universeSize);
-        unisize.addInt("1", universeSize);
-
-        NodeSettings noiseVariable = ns.getNodeSettings("variables").getNodeSettings("tree").getNodeSettings("noise");
-        noiseVariable.addString("exposed_variable", exposedVarName);
-
-        wfm.loadNodeSettings(id, ns);
-    }
-
-    private static void checkRpcTableResponse(final String res, final int colCount, final int rowCount) {
-        assertThat("wrong number of expected columns", res, containsString("\"totalNumColumns\":" + colCount));
-        assertThat("wrong number of expected rows", res, containsString("\"totalNumRows\":" + rowCount));
-    }
-
     private static WorkflowManager createEmptyWorkflow() throws IOException {
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
@@ -182,10 +107,6 @@ public class RpcServerManagerTest {
         } else {
             throw new IllegalStateException("Creating empty workflow failed");
         }
-    }
-
-    private static void checkRpcFlowVarResponse(final String res, final String flowVarName) {
-        assertThat("expected flow variable not found", res, containsString("\"name\":\"" + flowVarName));
     }
 
 }

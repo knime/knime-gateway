@@ -1,0 +1,141 @@
+{
+  "result" : {
+    "rows" : [ {
+      "cells" : [ {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : "0"
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : "0"
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : "0"
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : "0.0"
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : "false"
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : {
+          "name" : "Number (double)",
+          "preferredValueId" : "org.knime.core.data.DoubleValue"
+        },
+        "valueAsString" : "1.7976931348623157E308"
+      } ],
+      "id" : "0"
+    }, {
+      "cells" : [ {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : null
+      }, {
+        "error" : "error 1",
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : null
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : null
+      }, {
+        "error" : "error 3",
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : null
+      }, {
+        "error" : null,
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : null
+      }, {
+        "error" : "error 5",
+        "truncated" : null,
+        "type" : null,
+        "valueAsString" : null
+      } ],
+      "id" : "1"
+    } ],
+    "spec" : {
+      "cellTypes" : {
+        "org.knime.core.data.DataValue" : {
+          "name" : "?",
+          "preferredValueId" : "org.knime.core.data.DataValue"
+        },
+        "org.knime.core.data.def.BooleanCell" : {
+          "name" : "Boolean value",
+          "preferredValueId" : "org.knime.core.data.BooleanValue"
+        },
+        "org.knime.core.data.def.DoubleCell" : {
+          "name" : "Number (double)",
+          "preferredValueId" : "org.knime.core.data.DoubleValue"
+        },
+        "org.knime.core.data.def.IntCell" : {
+          "name" : "Number (integer)",
+          "preferredValueId" : "org.knime.core.data.IntValue"
+        },
+        "org.knime.core.data.def.LongCell" : {
+          "name" : "Number (long)",
+          "preferredValueId" : "org.knime.core.data.LongValue"
+        },
+        "org.knime.core.data.def.StringCell" : {
+          "name" : "String",
+          "preferredValueId" : "org.knime.core.data.StringValue"
+        }
+      },
+      "columns" : [ {
+        "domain" : {
+          "lowerBound" : "0",
+          "upperBound" : "0"
+        },
+        "name" : "int",
+        "typeRef" : "org.knime.core.data.def.IntCell"
+      }, {
+        "domain" : null,
+        "name" : "string",
+        "typeRef" : "org.knime.core.data.def.StringCell"
+      }, {
+        "domain" : {
+          "lowerBound" : "0",
+          "upperBound" : "0"
+        },
+        "name" : "long",
+        "typeRef" : "org.knime.core.data.def.LongCell"
+      }, {
+        "domain" : {
+          "lowerBound" : "0.0",
+          "upperBound" : "0.0"
+        },
+        "name" : "double",
+        "typeRef" : "org.knime.core.data.def.DoubleCell"
+      }, {
+        "domain" : {
+          "lowerBound" : "false",
+          "upperBound" : "false"
+        },
+        "name" : "boolean",
+        "typeRef" : "org.knime.core.data.def.BooleanCell"
+      }, {
+        "domain" : null,
+        "name" : "mixed-type",
+        "typeRef" : "org.knime.core.data.DataValue"
+      } ],
+      "totalNumColumns" : 6
+    },
+    "totalNumRows" : 2
+  }
+}

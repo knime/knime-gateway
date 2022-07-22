@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -43,8 +43,10 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Jul 21, 2022 (hornm): created
  */
-package org.knime.gateway.testing.helper.rpc.port;
+package org.knime.gateway.impl.node.port;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -53,64 +55,90 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
+import org.junit.Test;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
-import org.knime.gateway.impl.rpc.flowvars.DefaultFlowVariableService;
-import org.knime.gateway.impl.rpc.flowvars.FlowVariableService;
-import org.knime.gateway.impl.rpc.table.TableService;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.json.JsonInitialDataService;
+import org.knime.core.webui.node.port.PortView;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tests expected behavior of {@link FlowVariableService}-methods.
+ * Tests {@link FlowVariablePortViewFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class FlowVariableServiceTestHelper {
+public class FlowVariablePortViewFactoryTest {
 
-    private Function<NodeOutPort, FlowVariableService> m_serviceCreator;
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
-     * Creates a new table service test helper.
-     *
-     * @param serviceCreator provider for the {@link TableService} implementation
+     * Asserts that the correct page is returned by the {@link PortView} created by the
+     * {@link FlowVariablePortViewFactory}
      */
-    public FlowVariableServiceTestHelper(final Function<NodeOutPort, FlowVariableService> serviceCreator) {
-        m_serviceCreator = serviceCreator;
+    @Test
+    public void testFlowVariablePortViewPage() {
+        var snc = mockSingleNodeContainer();
+        PortView portView;
+        NodeContext.pushContext(snc);
+        try {
+            portView = new FlowVariablePortViewFactory().createPortView(FlowVariablePortObject.INSTANCE);
+        } finally {
+            NodeContext.removeLastContext();
+        }
+        var page = portView.getPage();
+        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
+        var pageId = portView.getPageId();
+        assertThat(pageId, is("FlowVariablePortView"));
     }
 
     /**
-     * Basic service test.
+     * Tests the {@link InitialDataService} of the {@link PortView} created by the {@link FlowVariablePortViewFactory}.
+     *
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
      */
-    public void testFlowVariableService() {
-        NodeOutPort nodeOutPortMock = mockNodeOutPortWithFlowVariables();
-        List<org.knime.gateway.impl.rpc.flowvars.FlowVariable> res =
-            m_serviceCreator.apply(nodeOutPortMock).getFlowVariables();
+    @Test
+    public void testFlowVariablePortViewInitialData() throws JsonMappingException, JsonProcessingException {
+        var snc = mockSingleNodeContainer();
+
+        PortView portView;
+        NodeContext.pushContext(snc);
+        try {
+            portView = new FlowVariablePortViewFactory().createPortView(FlowVariablePortObject.INSTANCE);
+        } finally {
+            NodeContext.removeLastContext();
+        }
+
+        var initialData = ((JsonInitialDataService)portView.createInitialDataService().get()).getInitialData();
+        var jsonNode = MAPPER.readTree(initialData);
+        var res = jsonNode.get("result");
         assertThat(res.size(), is(3)); // 3 because it also includes the global 'knime.workspace' variable
-        assertThat(res.get(0).getName(), is("test2"));
-        assertThat(res.get(1).getName(), is("test1"));
-        assertThat(res.get(0).getOwnerNodeId(), is("4"));
-        assertThat(res.get(0).getType(), is("StringType"));
-        assertThat(res.get(1).getType(), is("DoubleType"));
-        assertThat(res.get(0).getValue(), is("foobar"));
-        assertThat(res.get(1).getValue(), is("NaN"));
+        assertThat(res.get(0).get("name").textValue(), is("test2"));
+        assertThat(res.get(1).get("name").textValue(), is("test1"));
+        assertThat(res.get(0).get("ownerNodeId").textValue(), is("4"));
+        assertThat(res.get(0).get("type").textValue(), is("StringType"));
+        assertThat(res.get(1).get("type").textValue(), is("DoubleType"));
+        assertThat(res.get(0).get("value").textValue(), is("foobar"));
+        assertThat(res.get(1).get("value").textValue(), is("NaN"));
     }
 
-    /**
-     * Creates a mock for a {@link NodeOutPort} as required for the {@link DefaultFlowVariableService} implementation.
-     *
-     * @return the new mock instance
-     */
-    public static NodeOutPort mockNodeOutPortWithFlowVariables() {
+    private static SingleNodeContainer mockSingleNodeContainer() {
         NodeOutPort port = mock(NodeOutPort.class);
         SingleNodeContainer snc = mock(SingleNodeContainer.class);
         when(snc.getOutPort(0)).thenReturn(port);
         when(port.getFlowObjectStack()).thenReturn(createTestFlowObjectStack());
         when(port.getConnectedNodeContainer()).thenReturn(snc);
-        return port;
+        return snc;
     }
 
     private static FlowObjectStack createTestFlowObjectStack() {

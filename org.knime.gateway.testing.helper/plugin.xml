@@ -2,17 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.knime.core.PortType">
-      <portType
-            hidden="false"
-            name="DirectAccessTablePortObject (for testing)"
-            objectClass="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObject"
-            objectSerializer="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObject$DirectAccessTablePortObjectSerializer"
-            specClass="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObjectSpec"
-            specSerializer="org.knime.gateway.testing.helper.rpc.port.DirectAccessTablePortObjectSpec$DirectAccessTablePortObjectSpecSerializer">
-      </portType>
-   </extension>
-   <extension
          point="org.knime.workbench.repository.nodes">
       <node
             deprecated="false"

@@ -44,27 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 14, 2021 (hornm): created
+ *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc.flowvars;
+package org.knime.gateway.impl.node.port.table;
 
 import java.util.List;
 
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.data.rpc.NodePortRpcServerFactory;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DirectAccessTable;
+import org.knime.core.data.cache.WindowCacheTable;
+import org.knime.core.node.BufferedDataTable;
 
 /**
- * Gives access to the node's flow variables. Provided as a rpc service because it's logic closely related to flow
- * variable port ({@link FlowVariablePortObject}) and will maybe tied to it more closely in the future (as part of the
- * 'node port data provider'-framework via rpc, see e.g. {@link NodePortRpcServerFactory}).
+ * Default implementation for {@link TableService}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface FlowVariableService {
+public final class DefaultTableService implements TableService {
+
+    private final DirectAccessTable m_table;
+
+    private final DataTableSpec m_spec;
 
     /**
-     * @return a list of flow variables
+     * Creates a new table service instance.
+     *
+     * @param table the table to create the table service from
      */
-    List<FlowVariable> getFlowVariables();
+    public DefaultTableService(final BufferedDataTable table) {
+        m_table = new WindowCacheTable(table);
+        m_spec = table.getDataTableSpec();
+    }
+
+    @Override
+    public Table getTable(final long start, final int size) {
+        return Table.create(m_spec, m_table, start, size);
+    }
+
+    @Override
+    public List<Row> getRows(final long start, final int size) {
+        return Table.getRows(m_table, start, size, m_spec);
+    }
 
 }

@@ -109,7 +109,6 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
@@ -213,7 +212,6 @@ public class ListEntities {
         res.add(PortCommandEnt.class);
         res.add(PortGroupEnt.class);
         res.add(PortTypeEnt.class);
-        res.add(PortViewEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(RemovePortCommandEnt.class);
         res.add(StyleRangeEnt.class);
@@ -302,7 +300,6 @@ public class ListEntities {
         res.add(PortCommandEnt.PortCommandEntBuilder.class);
         res.add(PortGroupEnt.PortGroupEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
-        res.add(PortViewEnt.PortViewEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);

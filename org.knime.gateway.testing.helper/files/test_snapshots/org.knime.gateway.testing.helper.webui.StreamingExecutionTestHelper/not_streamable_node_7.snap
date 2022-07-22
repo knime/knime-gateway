@@ -14,10 +14,7 @@
     "index" : 1,
     "name" : "Table",
     "optional" : false,
-    "typeId" : "org.knime.core.node.BufferedDataTable",
-    "view" : {
-      "type" : "table"
-    }
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "kind" : "node",
   "outPorts" : [ {
@@ -31,10 +28,7 @@
     "index" : 1,
     "info" : "Rows: 0, Cols: 3",
     "name" : "Transposed Table",
-    "typeId" : "org.knime.core.node.BufferedDataTable",
-    "view" : {
-      "type" : "table"
-    }
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
   "position" : {
     "x" : 259,

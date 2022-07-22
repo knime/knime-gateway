@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,55 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 14, 2021 (hornm): created
+ *   Oct 27, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc.flowvars;
+package org.knime.gateway.impl.node.port.table;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.knime.core.node.workflow.FlowObjectStack;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.data.DataType;
 
 /**
- * Default implementation of {@link FlowVariableService}.
+ * Represents the type of a table cell.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class DefaultFlowVariableService implements FlowVariableService {
-
-    private final List<FlowVariable> m_variables;
+public interface TableCellType {
 
     /**
-     * New flowvariable service instance.
+     * @return a human-readable name of the cell type
+     */
+    String getName();
+
+    /**
+     * @return a identifier for the preferred type value
+     */
+    String getPreferredValueId();
+
+    /**
+     * Helper to create an instance of a table cell type.
      *
-     * @param port the port to create the flowvariable service from
+     * @param type the data type to create the instance from
+     * @return a new instance
      */
-    public DefaultFlowVariableService(final NodeOutPort port) {
-        SingleNodeContainer snc = port.getConnectedNodeContainer();
-        if (snc != null) {
-            // for normal nodes port 0 is available (hidden variable OutPort!)
-            FlowObjectStack fos = snc.getOutPort(0).getFlowObjectStack();
-            if (fos != null) {
-                m_variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                    .collect(Collectors.toList());
-            } else {
-                m_variables = Collections.emptyList();
+    static TableCellType create(final DataType type) {
+        return new TableCellType() { // NOSONAR
+
+            @Override
+            public String getName() {
+                return type.getName();
             }
-        } else {
-            throw new IllegalArgumentException("The provided port doesn't belong to a node nor a component.");
-        }
 
-    }
+            @Override
+            public String getPreferredValueId() {
+                return type.getPreferredValueClass().getCanonicalName();
+            }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<FlowVariable> getFlowVariables() {
-        return m_variables;
+        };
+
     }
 
 }

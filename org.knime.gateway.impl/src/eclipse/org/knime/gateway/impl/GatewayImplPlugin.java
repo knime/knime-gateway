@@ -44,70 +44,36 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 14, 2021 (hornm): created
+ *   Jul 18, 2022 (hornm): created
  */
-package org.knime.gateway.impl.rpc.flowvars;
+package org.knime.gateway.impl;
 
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
+import org.knime.gateway.impl.node.port.TablePortViewFactory;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
- * Represents a flow variable to be displayed as port of the flow variable port view.
+ * Bundle activator of the gateway.impl plugin.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface FlowVariable {
+public class GatewayImplPlugin implements BundleActivator {
 
-    /**
-     * @return the flow variable name
-     */
-    String getName();
+    @Override
+    public void start(final BundleContext context) throws Exception {
+        // Temporary solution to register port views with port types/objects.
+        // To be removed once it's part of the PortObject/PortType API.
+        PortViewManager.registerPortViewFactory(BufferedDataTable.TYPE, new TablePortViewFactory());
+        PortViewManager.registerPortViewFactory(FlowVariablePortObject.TYPE, new FlowVariablePortViewFactory());
+    }
 
-    /**
-     * @return the flow var type
-     */
-    String getType();
-
-    /**
-     * @return the actual value
-     */
-    String getValue();
-
-    /**
-     * @return the id of the node that created the flow variable (can be <code>null</code>)
-     */
-    String getOwnerNodeId();
-
-    /**
-     * Helper to create a flow variable on the fly.
-     *
-     * @param v
-     * @return the new flow variable which retrieves the values from the passed 'core'-flow variable representation on
-     *         demand
-     */
-    static FlowVariable create(final org.knime.core.node.workflow.FlowVariable v) {
-        return new FlowVariable() {
-
-            @Override
-            public String getValue() {
-                return v.getValueAsString();
-            }
-
-            @Override
-            public String getType() {
-                return v.getVariableType().getClass().getSimpleName();
-            }
-
-            @Override
-            public String getOwnerNodeId() {
-                NodeID owner = v.getOwner();
-                return owner != null && !owner.isRoot() ? owner.toString() : null;
-            }
-
-            @Override
-            public String getName() {
-                return v.getName();
-            }
-        };
+    @Override
+    public void stop(final BundleContext context) throws Exception {
+        //
     }
 
 }

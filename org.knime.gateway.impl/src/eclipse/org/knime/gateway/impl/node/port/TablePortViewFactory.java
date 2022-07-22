@@ -44,57 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 26, 2020 (hornm): created
+ *   Jul 18, 2022 (hornm): created
  */
-package org.knime.gateway.impl.rpc.table;
+package org.knime.gateway.impl.node.port;
 
-import org.knime.core.data.DataColumnSpec;
+import java.util.Optional;
+
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.json.impl.JsonInitialDataServiceImpl;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcDataServiceImpl;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
+import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
+import org.knime.core.webui.page.Page;
+import org.knime.gateway.impl.node.port.table.DefaultTableService;
+import org.knime.gateway.impl.node.port.table.Table;
+import org.knime.gateway.impl.node.port.table.TableService;
 
 /**
- * Represents a table column.
+ * Factory for the port view of a {@link BufferedDataTable}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface Column {
+public final class TablePortViewFactory implements PortViewFactory<BufferedDataTable> {
 
-    /**
-     * @return the column name
-     */
-    String getName();
-
-    /**
-     * @return a reference to the most common table cell type this column contains; the actual type representations are,
-     *         e.g., provided at {@link TableSpec#getCellTypes()}
-     */
-    String getTypeRef();
-
-    /**
-     * @return the column domain, or <code>null</code> if there is no domain available
-     */
-    ColumnDomain getDomain();
-
-    /**
-     * Helper to create a column instance.
-     *
-     * @param colSpec the col spec to create the column instance from
-     * @return a new instance
-     */
-    static Column create(final DataColumnSpec colSpec) {
-        return new Column() {
+    @Override
+    public PortView createPortView(final BufferedDataTable table) {
+        var tableService = new DefaultTableService(table);
+        return new PortView() {
 
             @Override
-            public String getName() {
-                return colSpec.getName();
+            public Optional<InitialDataService> createInitialDataService() {
+                return Optional.of(new JsonInitialDataServiceImpl<Table>(() -> tableService.getTable(0, 100)));
             }
 
             @Override
-            public String getTypeRef() {
-                return TableSpec.getCellTypeRef(colSpec.getType());
+            public Optional<DataService> createDataService() {
+                var dataService = new JsonRpcDataServiceImpl(new JsonRpcSingleServer<TableService>(tableService));
+                return Optional.of(dataService);
             }
 
             @Override
-            public ColumnDomain getDomain() {
-                return ColumnDomain.create(colSpec.getDomain());
+            public Page getPage() {
+                return Page.builder(() -> "", "vue_component_reference").build();
+            }
+
+            @Override
+            public String getPageId() {
+                return "TablePortView";
             }
 
         };

@@ -94,10 +94,7 @@
         "index" : 1,
         "name" : "To be filtered",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -112,10 +109,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Filtered",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 84,
@@ -279,10 +273,7 @@
         "info" : "Rows: 4, Cols: 5",
         "name" : "Random data with cluster ID",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[  ]",
@@ -290,10 +281,7 @@
         "info" : "Rows: 4, Cols: 4",
         "name" : "Cluster centers",
         "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 384,

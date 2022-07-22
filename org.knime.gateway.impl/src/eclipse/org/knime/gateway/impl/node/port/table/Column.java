@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,101 +41,63 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Oct 26, 2020 (hornm): created
  */
-package org.knime.gateway.impl.webui.entity;
+package org.knime.gateway.impl.node.port.table;
 
-import static org.knime.gateway.api.util.EntityUtil.immutable;
-
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-
-import org.knime.gateway.api.webui.entity.PortViewEnt;
+import org.knime.core.data.DataColumnSpec;
 
 /**
- * Represents port view.
+ * Represents a table column.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPortViewEnt implements PortViewEnt {
+public interface Column {
 
-  protected TypeEnum m_type;
-  
-  protected DefaultPortViewEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "PortView";
-  }
-  
-  private DefaultPortViewEnt(DefaultPortViewEntBuilder builder) {
-    
-    m_type = immutable(builder.m_type);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * @return the column name
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultPortViewEnt ent = (DefaultPortViewEnt)o;
-        return Objects.equals(m_type, ent.m_type);
-    }
+    String getName();
 
+    /**
+     * @return a reference to the most common table cell type this column contains; the actual type representations are,
+     *         e.g., provided at {@link TableSpec#getCellTypes()}
+     */
+    String getTypeRef();
 
-  
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_type)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
-    
-  
-    public static class DefaultPortViewEntBuilder implements PortViewEntBuilder {
-    
-        public DefaultPortViewEntBuilder(){
-            
-        }
-    
-        private TypeEnum m_type;
+    /**
+     * @return the column domain, or <code>null</code> if there is no domain available
+     */
+    ColumnDomain getDomain();
 
-        @Override
-        public DefaultPortViewEntBuilder setType(TypeEnum type) {
-             m_type = type;
-             return this;
-        }
+    /**
+     * Helper to create a column instance.
+     *
+     * @param colSpec the col spec to create the column instance from
+     * @return a new instance
+     */
+    static Column create(final DataColumnSpec colSpec) {
+        return new Column() {
 
-        
-        @Override
-        public DefaultPortViewEnt build() {
-            return new DefaultPortViewEnt(this);
-        }
-    
+            @Override
+            public String getName() {
+                return colSpec.getName();
+            }
+
+            @Override
+            public String getTypeRef() {
+                return TableSpec.getCellTypeRef(colSpec.getType());
+            }
+
+            @Override
+            public ColumnDomain getDomain() {
+                return ColumnDomain.create(colSpec.getDomain());
+            }
+
+        };
     }
 
 }

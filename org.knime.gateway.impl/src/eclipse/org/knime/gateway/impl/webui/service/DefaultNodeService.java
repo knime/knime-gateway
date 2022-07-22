@@ -55,13 +55,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.webui.data.rpc.RpcServerManager;
+import org.knime.core.webui.node.NodePortWrapper;
+import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
@@ -118,7 +122,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         try {
-            NodeContainer nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+            var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
             if (nc instanceof NativeNodeContainer) {
                 NativeNodeContainer nnc = (NativeNodeContainer)nc;
                 if (nnc.isModelCompatibleTo(LoopEndNode.class)) {
@@ -163,8 +167,8 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public String doPortRpc(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId, final Integer portIdx,
-        final String body) throws NodeNotFoundException, InvalidRequestException {
+    public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Integer portIdx) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
             nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -172,10 +176,56 @@ public final class DefaultNodeService implements NodeService {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
 
+        if (nc instanceof SingleNodeContainer) {
+            if (portIdx != 0 && !nc.getNodeContainerState().isExecuted()) {
+                throw new InvalidRequestException(String.format(
+                    "No port view available because the respective node %s is not executed and there is no data.",
+                    nc.getNameWithID()));
+            }
+        } else {
+            if (!((WorkflowManager)nc).getOutPort(portIdx).getNodeContainerState().isExecuted()) {
+                throw new InvalidRequestException(
+                    String.format("No port view available at port index %d for node %s because there is no data.",
+                        portIdx, nc.getNameWithID()));
+            }
+        }
+
+        var outPort = nc.getOutPort(portIdx);
+        if (nc.getOutPort(portIdx).getPortObject() == InactiveBranchPortObject.INSTANCE) {
+            throw new InvalidRequestException(
+                String.format("No port view available because the port at index %d for node %s is inactive.", portIdx,
+                    nc.getNameWithID()));
+        }
+
+        if (PortViewManager.hasPortView(outPort.getPortType())) {
+            return new PortViewEnt(nc, portIdx);
+        } else {
+            throw new InvalidRequestException(
+                String.format("Port at index %d for node %s doesn't provide a view", portIdx, nc.getNameWithID()));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Integer portIdx, final String serviceType, final String body)
+        throws NodeNotFoundException, InvalidRequestException {
+        NodeContainer nc;
         try {
-            return RpcServerManager.getInstance().doRpc(nc.getOutPort(portIdx), body);
-        } catch (IOException | IllegalStateException ex) {
-            throw new InvalidRequestException(ex.getMessage(), ex);
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+
+        var portViewManager = PortViewManager.getInstance();
+        if ("initial_data".equals(serviceType)) {
+            return portViewManager.callTextInitialDataService(NodePortWrapper.of(nc, portIdx));
+        } else if ("data".equals(serviceType)) {
+            return portViewManager.callTextDataService(NodePortWrapper.of(nc, portIdx), body);
+        } else {
+            throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }
     }
 

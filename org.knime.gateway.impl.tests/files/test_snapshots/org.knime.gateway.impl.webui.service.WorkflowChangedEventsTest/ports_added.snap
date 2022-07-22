@@ -9,10 +9,7 @@
     "name" : "Additional table to concatenate",
     "optional" : false,
     "portGroupId" : "input",
-    "typeId" : "org.knime.core.node.BufferedDataTable",
-    "view" : {
-      "type" : "table"
-    }
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }
 }, {
   "op" : "add",
@@ -24,10 +21,11 @@
     "name" : "Additional table to concatenate",
     "optional" : false,
     "portGroupId" : "input",
-    "typeId" : "org.knime.core.node.BufferedDataTable",
-    "view" : {
-      "type" : "table"
-    }
+    "typeId" : "org.knime.core.node.BufferedDataTable"
   }
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:186/portGroups/input/inputRange/1",
+  "value" : 4
 } ]
 }

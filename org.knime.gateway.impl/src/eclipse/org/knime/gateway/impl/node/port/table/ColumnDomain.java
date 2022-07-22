@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -40,76 +41,60 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Oct 27, 2020 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.node.port.table;
 
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.core.data.DataColumnDomain;
 
 /**
- * Represents port view.
- * 
+ * Represents a table column's domain.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface PortViewEnt extends GatewayEntity {
-
-  /**
-   * Specification of the port view available for this port.
-   */
-  public enum TypeEnum {
-    TABLE("table"),
-    
-    OTHER("other");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * Specification of the port view available for this port.
-   * @return type 
-   **/
-  public TypeEnum getType();
-
+public interface ColumnDomain {
 
     /**
-     * The builder for the entity.
+     * @return the lower bound or <code>null</code> if none (or the column type is not a number)
      */
-    public interface PortViewEntBuilder extends GatewayEntityBuilder<PortViewEnt> {
+    String getLowerBound();
 
-        /**
-         * Specification of the port view available for this port.
-         * 
-         * @param type the property value,  
-         * @return this entity builder for chaining
-         */
-        PortViewEntBuilder setType(TypeEnum type);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        PortViewEnt build();
-    
+    /**
+     * @return the upper bound or <code>null</code> if none (or the column type is not a number)
+     */
+    String getUpperBound();
+
+    /**
+     * Helper to create a column domain instance.
+     *
+     * @param domain
+     * @return a new instance
+     */
+    static ColumnDomain create(final DataColumnDomain domain) {
+        if (!domain.hasUpperBound() && !domain.hasLowerBound()) {
+            return null;
+        }
+        return new ColumnDomain() {
+
+            @Override
+            public String getUpperBound() {
+                if (domain.hasUpperBound()) {
+                    return domain.getUpperBound().toString();
+                }
+                return null;
+            }
+
+            @Override
+            public String getLowerBound() {
+                if (domain.hasLowerBound()) {
+                    return domain.getLowerBound().toString();
+                }
+                return null;
+            }
+        };
     }
 
 }

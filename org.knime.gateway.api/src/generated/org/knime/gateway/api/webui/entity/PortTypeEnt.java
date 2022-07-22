@@ -114,6 +114,12 @@ public interface PortTypeEnt extends GatewayEntity {
    **/
   public Boolean isHidden();
 
+  /**
+   * Indicates whether this port type has a view. Property is only available if true and if interaction info is to be included. 
+   * @return hasView 
+   **/
+  public Boolean hasView();
+
 
     /**
      * The builder for the entity.
@@ -159,6 +165,14 @@ public interface PortTypeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         PortTypeEntBuilder setHidden(Boolean hidden);
+        
+        /**
+         * Indicates whether this port type has a view. Property is only available if true and if interaction info is to be included. 
+         * 
+         * @param hasView the property value,  
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setHasView(Boolean hasView);
         
         
         /**

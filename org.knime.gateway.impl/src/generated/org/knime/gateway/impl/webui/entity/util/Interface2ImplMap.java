@@ -174,8 +174,6 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt.PortViewEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultPortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
@@ -420,9 +418,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == PortTypeEntBuilder.class) {
             return (B)new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();
-        }        
-        if(clazz == PortViewEntBuilder.class) {
-            return (B)new DefaultPortViewEnt.DefaultPortViewEntBuilder();
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();

@@ -46,7 +46,7 @@
  * History
  *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc.table;
+package org.knime.gateway.impl.node.port.table;
 
 import java.util.Collections;
 import java.util.List;

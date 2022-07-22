@@ -69,10 +69,7 @@
         "index" : 1,
         "name" : "Data connection",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "node",
       "outPorts" : [ {
@@ -117,10 +114,7 @@
         "connectedVia" : "[  ]",
         "index" : 1,
         "name" : "Delegated Component Input 0",
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 2,
@@ -153,10 +147,7 @@
         "index" : 1,
         "name" : "Passed-on Component Output 0",
         "optional" : false,
-        "typeId" : "org.knime.core.node.BufferedDataTable",
-        "view" : {
-          "type" : "table"
-        }
+        "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "connectedVia" : "[  ]",
         "index" : 2,

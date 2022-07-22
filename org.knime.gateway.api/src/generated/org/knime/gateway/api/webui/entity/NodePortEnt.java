@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.PortViewEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -84,12 +83,6 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
    * @return inactive 
    **/
   public Boolean isInactive();
-
-  /**
-   * Get view
-   * @return view 
-   **/
-  public PortViewEnt getView();
 
   /**
    * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.
@@ -170,14 +163,6 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setInactive(Boolean inactive);
-        
-        /**
-   		 * Set view
-         * 
-         * @param view the property value,  
-         * @return this entity builder for chaining
-         */
-        NodePortEntBuilder setView(PortViewEnt view);
         
         /**
          * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.

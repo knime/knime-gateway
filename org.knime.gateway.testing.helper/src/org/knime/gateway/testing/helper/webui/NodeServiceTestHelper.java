@@ -52,6 +52,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -64,6 +65,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
+import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
@@ -74,6 +76,7 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBui
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptionNotAvailableException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -276,30 +279,90 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Test for {@link NodeService#doPortRpc(String, NodeIDEnt, NodeIDEnt, Integer, String)}.
+     * Tests {@link NodeService#getPortView(String, NodeIDEnt, NodeIDEnt, Integer)}.
+     * @throws Exception
+     */
+    public void testGetPortView() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+
+        // get table port view for a non-executed node
+        var message =
+            assertThrows(InvalidRequestException.class, () -> ns().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1))
+                .getMessage();
+        assertThat(message, containsString("No port view available"));
+
+        // get flow variable port view 0
+        var portView = ns().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0);
+        var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
+        assertThat(portViewJsonNode.get("projectId").textValue(), containsString("general_web_ui"));
+        assertThat(portViewJsonNode.get("workflowId").textValue(), is("root"));
+        assertThat(portViewJsonNode.get("nodeId").textValue(), is("root:1"));
+        assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
+        assertThat(portViewJsonNode.get("initialData").textValue(), notNullValue());
+        var resourceInfo = portViewJsonNode.get("resourceInfo");
+        assertThat(resourceInfo.get("id").textValue(), is("FlowVariablePortView"));
+        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_REFERENCE"));
+
+        executeWorkflow(wfId);
+
+        // get table port view 1
+        portView = ns().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1);
+        portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
+        assertThat(portViewJsonNode.get("projectId").textValue(), containsString("general_web_ui"));
+        assertThat(portViewJsonNode.get("workflowId").textValue(), is("root"));
+        assertThat(portViewJsonNode.get("nodeId").textValue(), is("root:1"));
+        assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
+        assertThat(portViewJsonNode.get("initialData"), notNullValue());
+        resourceInfo = portViewJsonNode.get("resourceInfo");
+        assertThat(resourceInfo.get("id").textValue(), is("TablePortView"));
+        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_REFERENCE"));
+
+        // get data for an inactive port
+        message =
+            assertThrows(InvalidRequestException.class, () -> ns().getPortView(wfId, getRootID(), new NodeIDEnt(14), 1))
+                .getMessage();
+        assertThat(message, containsString("No port view available"));
+
+        // get data for a metanode port
+        portView = ns().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
+        portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
+        assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("TablePortView"));
+
+        // get data for a metanode port that is not executed
+        message =
+            assertThrows(InvalidRequestException.class, () -> ns().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2))
+                .getMessage();
+        assertThat(message, containsString("No port view available"));
+    }
+
+    /**
+     * Tests {@link NodeService#callPortDataService(String, NodeIDEnt, NodeIDEnt, Integer, String, String)}.
      *
      * @throws Exception
      */
-    public void testDoPortRpc() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+    public void testCallPortDataService() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        executeWorkflow(wfId);
 
-        // table
-        String rpcRes = ns().doPortRpc(wfId, getRootID(), new NodeIDEnt(1), 1,
-            "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTable\",\"params\":[2,5]}");
-        JsonNode json = ObjectMapperUtil.getInstance().getObjectMapper().readValue(rpcRes, JsonNode.class);
-        assertThat(json.get("jsonrpc").asText(), is("2.0"));
-        assertThat(json.get("id").asInt(), is(1));
-        assertThat(json.get("result"), notNullValue());
+        // initialData
+        var initialData = ns().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "initial_data", "");
+        var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
+        assertThat(jsonNode.get("result").get("rows"), notNullValue());
 
-        // flow variables
-        rpcRes = ns().doPortRpc(wfId, getRootID(), new NodeIDEnt(1), 0,
-            "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getFlowVariables\"}");
-        json = ObjectMapperUtil.getInstance().getObjectMapper().readValue(rpcRes, JsonNode.class);
-        assertThat(json.get("jsonrpc").asText(), is("2.0"));
-        assertThat(json.get("id").asInt(), is(1));
-        assertThat(json.get("result"), notNullValue());
+        // data
+        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getTable", "0", "2");
+        var data = ns().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "data", jsonRpcRequest);
+        jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
+        assertThat(jsonNode.get("result").get("rows"), notNullValue());
+        assertThat(jsonNode.get("id").intValue(), is(1));
     }
 
+    /**
+     * Tests {@link NodeService#getNodeDescription(NodeFactoryKeyEnt)}.
+     *
+     * @throws NodeNotFoundException
+     * @throws NodeDescriptionNotAvailableException
+     */
     public void testGetNodeDescription() throws NodeNotFoundException, NodeDescriptionNotAvailableException {
         // example for elements in 4.1 schema and rich formatting
         testNodeDescriptionSnapshot(DummyNodeFactory_v41.class.getName());

@@ -46,7 +46,7 @@
  * History
  *   Oct 23, 2020 (hornm): created
  */
-package org.knime.gateway.impl.rpc.table;
+package org.knime.gateway.impl.node.port.table;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;

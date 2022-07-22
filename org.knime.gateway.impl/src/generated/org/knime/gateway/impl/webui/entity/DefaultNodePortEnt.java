@@ -50,7 +50,6 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -70,7 +69,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
   protected Integer m_index;
   protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
   protected Boolean m_inactive;
-  protected PortViewEnt m_view;
   protected Integer m_portObjectVersion;
   protected String m_portGroupId;
   protected Boolean m_canRemove;
@@ -99,7 +97,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
     m_index = immutable(builder.m_index);
     m_connectedVia = immutable(builder.m_connectedVia);
     m_inactive = immutable(builder.m_inactive);
-    m_view = immutable(builder.m_view);
     m_portObjectVersion = immutable(builder.m_portObjectVersion);
     m_portGroupId = immutable(builder.m_portGroupId);
     m_canRemove = immutable(builder.m_canRemove);
@@ -120,7 +117,7 @@ public class DefaultNodePortEnt implements NodePortEnt {
             return false;
         }
         DefaultNodePortEnt ent = (DefaultNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_view, ent.m_view) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_portGroupId, ent.m_portGroupId) && Objects.equals(m_canRemove, ent.m_canRemove);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_portGroupId, ent.m_portGroupId) && Objects.equals(m_canRemove, ent.m_canRemove);
     }
 
 
@@ -138,7 +135,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
                .append(m_index)
                .append(m_connectedVia)
                .append(m_inactive)
-               .append(m_view)
                .append(m_portObjectVersion)
                .append(m_portGroupId)
                .append(m_canRemove)
@@ -183,11 +179,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
   }
     
   @Override
-  public PortViewEnt getView() {
-        return m_view;
-  }
-    
-  @Override
   public Integer getPortObjectVersion() {
         return m_portObjectVersion;
   }
@@ -216,7 +207,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
         private Integer m_index;
         private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
         private Boolean m_inactive;
-        private PortViewEnt m_view;
         private Integer m_portObjectVersion;
         private String m_portGroupId;
         private Boolean m_canRemove;
@@ -266,12 +256,6 @@ public class DefaultNodePortEnt implements NodePortEnt {
         @Override
         public DefaultNodePortEntBuilder setInactive(Boolean inactive) {
              m_inactive = inactive;
-             return this;
-        }
-
-        @Override
-        public DefaultNodePortEntBuilder setView(PortViewEnt view) {
-             m_view = view;
              return this;
         }
 
