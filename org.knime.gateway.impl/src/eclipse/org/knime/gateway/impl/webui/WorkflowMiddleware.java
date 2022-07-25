@@ -171,7 +171,7 @@ public final class WorkflowMiddleware {
         final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowChangesTracker tracker) {
         try (WorkflowLock lock = wfm.lock()) {
             var workflowChanged = tracker.invoke(t -> {
-                if (t.hasOccurred(WorkflowChange.ANY)) {
+                if (t.hasOccurredAtLeastOne(WorkflowChange.ANY)) {
                     t.reset();
                     return true;
                 } else {
@@ -357,8 +357,9 @@ public final class WorkflowMiddleware {
 
         public DependentNodeProperties get() {
             var recompute = m_tracker.invoke(t -> {
-                var nodeStateChanges = t.hasOccurred(WorkflowChange.NODE_STATE_UPDATED);
-                var nodeOrConnectionAddedOrRemoved = t.hasOccurred(WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);
+                var nodeOrConnectionAddedOrRemoved = t.hasOccurredAtLeastOne(WorkflowChange.NODE_ADDED,
+                    WorkflowChange.NODE_REMOVED, WorkflowChange.CONNECTION_ADDED, WorkflowChange.CONNECTION_REMOVED);
                 t.reset();
                 return m_dependentNodeProperties == null || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
             });

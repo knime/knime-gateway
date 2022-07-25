@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -56,7 +57,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
  * Convert the queried metanode to a component.
@@ -111,7 +112,8 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
     }
 
     @Override
-    public WorkflowChangesTracker.WorkflowChange getChangeToWaitFor() {
-        return WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED;
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Set.of(WorkflowChange.NODE_ADDED, WorkflowChange.NODE_REMOVED, WorkflowChange.CONNECTION_ADDED,
+            WorkflowChange.CONNECTION_REMOVED);
     }
 }

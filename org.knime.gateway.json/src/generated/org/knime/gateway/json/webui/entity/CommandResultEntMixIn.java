@@ -56,6 +56,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
@@ -82,6 +83,8 @@ import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
   @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
 ,
   @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
+,
+  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
 })
 @JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -121,6 +124,8 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
   @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
 ,
   @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
+,
+  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {

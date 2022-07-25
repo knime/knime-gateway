@@ -69,9 +69,9 @@ public class WorkflowChangeWaiter {
     /**
      * Create and configure a workflow change waiter instance for the given event on the given workflow.
      *
-     * @param workflowChange The workflow change to wait for
+     * @param workflowChanges The workflow change to wait for
      */
-    WorkflowChangeWaiter(final WorkflowChangesTracker.WorkflowChange workflowChange,
+    WorkflowChangeWaiter(final WorkflowChangesTracker.WorkflowChange[] workflowChanges,
         final WorkflowChangesListener wfChangesListener) {
         m_wfChangesListener = wfChangesListener;
 
@@ -80,7 +80,7 @@ public class WorkflowChangeWaiter {
         m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
 
         m_postProcessCallback = wfm -> {
-            if (!m_tracker.invoke(t -> t.hasOccurred(workflowChange))) {
+            if (Boolean.FALSE.equals(m_tracker.invoke(t -> t.hasOccurredAtLeastOne(workflowChanges)))) {
                 return;
             }
             m_semaphore.release();

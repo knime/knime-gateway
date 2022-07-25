@@ -42,94 +42,79 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.PasteResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt.DefaultPasteResultEntBuilder;
 
 /**
- * CommandResultEnt
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CommandResultEnt extends GatewayEntity {
 
-  /**
-   * Gets or Sets kind
-   */
-  public enum KindEnum {
-    COLLAPSERESULT("collapseResult"),
-    
-    EXPANDRESULT("expandResult"),
-    
-    CONVERTCONTAINERRESULT("convertContainerResult"),
-    
-    COPYRESULT("copyResult"),
-    
-    PASTERESULT("pasteResult");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
+@JsonDeserialize(builder=DefaultPasteResultEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface PasteResultEntMixIn extends PasteResultEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
+    @JsonIgnore
+    public String getTypeID();
 
-  }
-
-
-  /**
-   * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-   * @return snapshotId 
-   **/
-  public String getSnapshotId();
-
-  /**
-   * Get kind
-   * @return kind 
-   **/
-  public KindEnum getKind();
-
+    @Override
+    @JsonProperty("snapshotId")
+    public String getSnapshotId();
+    
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("nodeIds")
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
+    
+    @Override
+    @JsonProperty("annotationIds")
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface CommandResultEntBuilder extends GatewayEntityBuilder<CommandResultEnt> {
 
-        /**
-         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-         * 
-         * @param snapshotId the property value,  
-         * @return this entity builder for chaining
-         */
-        CommandResultEntBuilder setSnapshotId(String snapshotId);
-        
-        /**
-   		 * Set kind
-         * 
-         * @param kind the property value,  
-         * @return this entity builder for chaining
-         */
-        CommandResultEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        CommandResultEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface PasteResultEntMixInBuilder extends PasteResultEntBuilder {
     
+        @Override
+        public PasteResultEntMixIn build();
+    
+        @Override
+        @JsonProperty("snapshotId")
+        public PasteResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        
+        @Override
+        @JsonProperty("kind")
+        public PasteResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("nodeIds")
+        public PasteResultEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
+        
+        @Override
+        @JsonProperty("annotationIds")
+        public PasteResultEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
+        
     }
 
+
 }
+

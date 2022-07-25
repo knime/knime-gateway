@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
@@ -72,7 +73,7 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      * will also be the result of this higher-order command.
      *
      * <ul>
-     *     <li>Guaranteed to be called before {@link #getChangeToWaitFor()} and {@link #buildEntity(String)}</li>
+     *     <li>Guaranteed to be called before {@link #getChangesToWaitFor()} and {@link #buildEntity(String)}</li>
      *     <li>
      *         Guaranteed to be called before {@link #execute(WorkflowKey)}, i.e. some initialisation of the higher-
      *         order command may happen in this method.
@@ -106,11 +107,11 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
     }
 
     @Override
-    public WorkflowChange getChangeToWaitFor() {
+    public Set<WorkflowChange> getChangesToWaitFor() {
         if (m_resultProvidingCommand == null) {
             throw new IllegalStateException("Implementation problem. No command with result given.");
         }
-        return m_resultProvidingCommand.getChangeToWaitFor();
+        return m_resultProvidingCommand.getChangesToWaitFor();
     }
 
     @Override

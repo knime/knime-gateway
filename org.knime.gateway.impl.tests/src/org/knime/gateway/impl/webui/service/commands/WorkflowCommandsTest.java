@@ -60,6 +60,7 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -503,8 +504,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         }
 
         @Override
-        public WorkflowChange getChangeToWaitFor() {
-            return WorkflowChange.ANNOTATION_ADDED_OR_REMOVED;
+        public Set<WorkflowChange> getChangesToWaitFor() {
+            return Set.of(WorkflowChange.ANNOTATION_ADDED, WorkflowChange.ANNOTATION_REMOVED);
         }
 
         @Override

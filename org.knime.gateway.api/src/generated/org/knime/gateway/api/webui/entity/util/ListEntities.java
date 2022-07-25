@@ -103,6 +103,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
@@ -205,6 +206,7 @@ public class ListEntities {
         res.add(NodeViewDescriptionEnt.class);
         res.add(PartBasedCommandEnt.class);
         res.add(PasteCommandEnt.class);
+        res.add(PasteResultEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
         res.add(PortCommandEnt.class);
@@ -292,6 +294,7 @@ public class ListEntities {
         res.add(NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder.class);
         res.add(PartBasedCommandEnt.PartBasedCommandEntBuilder.class);
         res.add(PasteCommandEnt.PasteCommandEntBuilder.class);
+        res.add(PasteResultEnt.PasteResultEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
         res.add(PortCommandEnt.PortCommandEntBuilder.class);

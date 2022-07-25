@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -58,9 +60,15 @@ import java.util.stream.Stream;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowCopyContent;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteResultEnt;
+import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.shared.workflow.storage.clipboard.DefClipboardContent;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 
@@ -71,7 +79,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class Paste extends AbstractWorkflowCommand {
+public class Paste extends AbstractWorkflowCommand implements WithResult {
 
     private static final int OFFSET = 120;
 
@@ -133,6 +141,22 @@ public class Paste extends AbstractWorkflowCommand {
             delta[1] = m_commandEnt.getPosition().getY() - position.get(1);
         }
         return delta;
+    }
+
+    @Override
+    public PasteResultEnt buildEntity(final String snapshotId) {
+        return builder(PasteResultEntBuilder.class) //
+            .setKind(KindEnum.PASTERESULT) //
+            .setNodeIds(
+                Arrays.stream(m_workflowCopyContent.getNodeIDs()).map(NodeIDEnt::new).collect(Collectors.toList())) //
+            .setAnnotationIds(Arrays.stream(m_workflowCopyContent.getAnnotationIDs()).map(AnnotationIDEnt::new)
+                .collect(Collectors.toList())) //
+            .setSnapshotId(snapshotId).build();
+    }
+
+    @Override
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Set.of(WorkflowChange.NODE_ADDED, WorkflowChange.ANNOTATION_ADDED);
     }
 
 }

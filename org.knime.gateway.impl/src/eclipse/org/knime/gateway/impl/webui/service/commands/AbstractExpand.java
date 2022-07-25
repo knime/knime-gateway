@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -180,8 +181,8 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    public WorkflowChangesTracker.WorkflowChange getChangeToWaitFor() {
-        return WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED;
+    public Set<WorkflowChangesTracker.WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
     }
 
 }

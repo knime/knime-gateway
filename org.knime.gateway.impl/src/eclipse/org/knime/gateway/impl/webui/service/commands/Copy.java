@@ -50,6 +50,9 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -117,8 +120,8 @@ public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult
     }
 
     @Override
-    public WorkflowChange getChangeToWaitFor() {
-        return WorkflowChange.NONE;
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.emptySet();
     }
 
     @Override

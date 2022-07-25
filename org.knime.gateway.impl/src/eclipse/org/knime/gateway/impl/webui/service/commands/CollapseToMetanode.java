@@ -49,13 +49,15 @@ package org.knime.gateway.impl.webui.service.commands;
 import static java.util.Arrays.stream;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.knime.core.node.workflow.action.CollapseIntoMetaNodeResult;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -142,8 +144,8 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    public WorkflowChange getChangeToWaitFor() {
-        return WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED;
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChange.NODES_COLLAPSED);
     }
 
 }

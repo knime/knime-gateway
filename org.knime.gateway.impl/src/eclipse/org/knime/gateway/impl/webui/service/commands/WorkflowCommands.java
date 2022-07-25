@@ -192,9 +192,10 @@ public final class WorkflowCommands {
 
     private Optional<WorkflowChangeWaiter> prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command) {
         // Only commands with results that trigger a real workflow change need a waiter
-        if (((WithResult)command).getChangeToWaitFor() != WorkflowChange.NONE) {
+        if (!((WithResult)command).getChangesToWaitFor().isEmpty()) {
             var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
-            return Optional.of(wfChangesListener.createWorkflowChangeWaiter(((WithResult)command).getChangeToWaitFor()));
+            return Optional.of(wfChangesListener.createWorkflowChangeWaiter(
+                ((WithResult)command).getChangesToWaitFor().toArray(WorkflowChange[]::new)));
         }
         return Optional.empty();
     }

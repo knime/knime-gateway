@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,58 +52,31 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * CommandResultEnt
+ * PasteResultEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CommandResultEnt extends GatewayEntity {
-
-  /**
-   * Gets or Sets kind
-   */
-  public enum KindEnum {
-    COLLAPSERESULT("collapseResult"),
-    
-    EXPANDRESULT("expandResult"),
-    
-    CONVERTCONTAINERRESULT("convertContainerResult"),
-    
-    COPYRESULT("copyResult"),
-    
-    PASTERESULT("pasteResult");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface PasteResultEnt extends GatewayEntity, CommandResultEnt {
 
 
   /**
-   * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-   * @return snapshotId 
+   * The ids of the nodes that were pasted.
+   * @return nodeIds 
    **/
-  public String getSnapshotId();
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
 
   /**
-   * Get kind
-   * @return kind 
+   * The ids of the workflow annotations that were pasted.
+   * @return annotationIds 
    **/
-  public KindEnum getKind();
+  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
 
 
     /**
      * The builder for the entity.
      */
-    public interface CommandResultEntBuilder extends GatewayEntityBuilder<CommandResultEnt> {
+    public interface PasteResultEntBuilder extends GatewayEntityBuilder<PasteResultEnt> {
 
         /**
          * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
@@ -110,7 +84,7 @@ public interface CommandResultEnt extends GatewayEntity {
          * @param snapshotId the property value,  
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setSnapshotId(String snapshotId);
+        PasteResultEntBuilder setSnapshotId(String snapshotId);
         
         /**
    		 * Set kind
@@ -118,7 +92,23 @@ public interface CommandResultEnt extends GatewayEntity {
          * @param kind the property value,  
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setKind(KindEnum kind);
+        PasteResultEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The ids of the nodes that were pasted.
+         * 
+         * @param nodeIds the property value,  
+         * @return this entity builder for chaining
+         */
+        PasteResultEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
+        
+        /**
+         * The ids of the workflow annotations that were pasted.
+         * 
+         * @param annotationIds the property value,  
+         * @return this entity builder for chaining
+         */
+        PasteResultEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
         
         /**
@@ -128,7 +118,7 @@ public interface CommandResultEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        CommandResultEnt build();
+        PasteResultEnt build();
     
     }
 

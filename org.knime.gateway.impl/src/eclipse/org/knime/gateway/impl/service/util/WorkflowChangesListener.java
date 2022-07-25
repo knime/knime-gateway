@@ -76,6 +76,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -185,12 +186,12 @@ public class WorkflowChangesListener implements Closeable {
     /**
      * Initialise a waiter for workflow changes. The waiter is aware of changes since its creation.
      *
-     * @param changeToWaitFor The event to track
+     * @param changesToWaitFor The changes to wait for
      * @return The created and initialised waiter.
      */
     public WorkflowChangeWaiter
-        createWorkflowChangeWaiter(final WorkflowChangesTracker.WorkflowChange changeToWaitFor) {
-        return new WorkflowChangeWaiter(changeToWaitFor, this);
+        createWorkflowChangeWaiter(final WorkflowChangesTracker.WorkflowChange... changesToWaitFor) {
+        return new WorkflowChangeWaiter(changesToWaitFor, this);
     }
 
     /**
@@ -251,11 +252,16 @@ public class WorkflowChangesListener implements Closeable {
     private void trackChange(final WorkflowEvent e) {
         switch (e.getType()) {
             case NODE_ADDED:
+                updateWorkflowChangesTrackers(WorkflowChange.NODE_ADDED);
+                break;
             case NODE_REMOVED:
+                updateWorkflowChangesTrackers(WorkflowChange.NODE_REMOVED);
+                break;
             case CONNECTION_ADDED:
+                updateWorkflowChangesTrackers(WorkflowChange.CONNECTION_ADDED);
+                break;
             case CONNECTION_REMOVED:
-                updateWorkflowChangesTrackers(
-                    WorkflowChangesTracker.WorkflowChange.NODE_OR_CONNECTION_ADDED_OR_REMOVED);
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.CONNECTION_REMOVED);
                 break;
             case NODE_COLLAPSED:
                 updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
@@ -264,8 +270,10 @@ public class WorkflowChangesListener implements Closeable {
                 updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
                 break;
             case ANNOTATION_ADDED:
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
+                break;
             case ANNOTATION_REMOVED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED_OR_REMOVED);
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
                 break;
             default:
                 //

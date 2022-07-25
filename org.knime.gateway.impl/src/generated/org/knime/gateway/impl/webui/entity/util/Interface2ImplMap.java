@@ -162,6 +162,8 @@ import org.knime.gateway.api.webui.entity.PartBasedCommandEnt.PartBasedCommandEn
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
+import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -398,6 +400,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == PasteCommandEntBuilder.class) {
             return (B)new DefaultPasteCommandEnt.DefaultPasteCommandEntBuilder();
+        }        
+        if(clazz == PasteResultEntBuilder.class) {
+            return (B)new DefaultPasteResultEnt.DefaultPasteResultEntBuilder();
         }        
         if(clazz == PatchEntBuilder.class) {
             return (B)new DefaultPatchEnt.DefaultPatchEntBuilder();

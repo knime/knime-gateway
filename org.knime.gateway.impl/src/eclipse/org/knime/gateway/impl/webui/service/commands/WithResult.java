@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Set;
+
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 
@@ -57,7 +59,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
  *
  * <ul>
  *     <li>
- *         The {@link #getChangeToWaitFor()}-method is called before command execution (i.e.
+ *         The {@link #getChangesToWaitFor()}-method is called before command execution (i.e.
 *          {@link WorkflowCommand#execute(org.knime.gateway.impl.webui.WorkflowKey)})
  *     </li>
  *     <li>
@@ -81,8 +83,9 @@ public interface WithResult {
      * Determines the workflow change to wait for before the command result can be built, see
      * {@link #buildEntity(String)}.
      *
-     * @return the workflow change to wait for until the command result can be built
+     * @return the workflow changes to wait for until the command result can be built (at least one(!) workflow change
+     *         must have been occurred to return the command result)
      */
-    WorkflowChangesTracker.WorkflowChange getChangeToWaitFor();
+    Set<WorkflowChangesTracker.WorkflowChange> getChangesToWaitFor();
 
 }

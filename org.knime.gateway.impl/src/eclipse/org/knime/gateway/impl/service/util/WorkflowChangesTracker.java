@@ -67,18 +67,24 @@ public class WorkflowChangesTracker {
     public enum WorkflowChange {
         /** Tracked on any node state change */
         NODE_STATE_UPDATED,
-        /** Tracked whenever a node or connection has been added or removed */
-        NODE_OR_CONNECTION_ADDED_OR_REMOVED,
+        /** Tracked whenever a node has been added */
+        NODE_ADDED,
+        /** Tracked whenever a node has been removed */
+        NODE_REMOVED,
         /** Tracked whenever parts of a workflow are collapsed into a metanode/component. */
         NODES_COLLAPSED,
         /** Tracked whenever a metanode or a component have been expanded */
         NODE_EXPANDED,
+        /** Tracked when a connection is added */
+        CONNECTION_ADDED,
+        /** Tracked when a connection is removed */
+        CONNECTION_REMOVED,
         /** Tracked on any change */
         ANY,
-        /** Tracked whenever a workflow annotation has been removed or added */
-        ANNOTATION_ADDED_OR_REMOVED,
-        /** There is no change to wait for */
-        NONE
+        /** Tracked whenever a workflow annotation has been added */
+        ANNOTATION_ADDED,
+        /** Tracked whenever a workflow annotation has been removed */
+        ANNOTATION_REMOVED
     }
 
     /**
@@ -121,11 +127,16 @@ public class WorkflowChangesTracker {
         }
 
         /**
-         * @param workflowChange The event to check for
-         * @return Whether the given event has occurred
+         * @param workflowChanges The changes to check for
+         * @return Whether at least one off given changes have occurred
          */
-        public boolean hasOccurred(final WorkflowChange workflowChange) {
-            return m_trackedChanges.contains(workflowChange);
+        public Boolean hasOccurredAtLeastOne(final WorkflowChange... workflowChanges) {
+            for (var workflowChange : workflowChanges) {
+                if (m_trackedChanges.contains(workflowChange)) {
+                    return Boolean.TRUE;
+                }
+            }
+            return Boolean.FALSE;
         }
 
         /**
