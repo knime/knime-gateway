@@ -47,9 +47,6 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.concurrent.Semaphore;
-import java.util.function.Consumer;
-
-import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Semaphore that is released once a specific workflow change event is tracked.
@@ -62,7 +59,7 @@ public class WorkflowChangeWaiter {
 
     private final Semaphore m_semaphore;
 
-    private final Consumer<WorkflowManager> m_postProcessCallback;
+    private final Runnable m_postProcessCallback;
 
     private final WorkflowChangesTracker m_tracker;
 
@@ -79,7 +76,7 @@ public class WorkflowChangeWaiter {
 
         m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
 
-        m_postProcessCallback = wfm -> {
+        m_postProcessCallback = () -> {
             if (Boolean.FALSE.equals(m_tracker.invoke(t -> t.hasOccurredAtLeastOne(workflowChanges)))) {
                 return;
             }

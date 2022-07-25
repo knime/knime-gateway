@@ -128,7 +128,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
 
-    private final Set<Consumer<WorkflowManager>> m_postProcessCallbacks = new HashSet<>();
+    private final Set<Runnable> m_postProcessCallbacks = new HashSet<>();
 
     private final ExecutorService m_executorService;
 
@@ -223,14 +223,14 @@ public class WorkflowChangesListener implements Closeable {
      * @see this#m_workflowChangedCallbacks
      * @param listener The callback to add
      */
-    void addPostProcessCallback(final Consumer<WorkflowManager> listener) {
+    void addPostProcessCallback(final Runnable listener) {
         m_postProcessCallbacks.add(listener);
     }
 
     /**
      * @param listener The callback to remove
      */
-    void removePostProcessCallback(final Consumer<WorkflowManager> listener) {
+    void removePostProcessCallback(final Runnable listener) {
         m_postProcessCallbacks.remove(listener);
     }
 
@@ -367,7 +367,7 @@ public class WorkflowChangesListener implements Closeable {
             m_executorService.execute(() -> {
                 do {
                     m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
-                    m_postProcessCallbacks.forEach(c -> c.accept(m_wfm));
+                    m_postProcessCallbacks.forEach(c -> c.run());
                 } while (m_callbackState.checkIsCallbackAwaitingAndChangeState());
             });
         }
