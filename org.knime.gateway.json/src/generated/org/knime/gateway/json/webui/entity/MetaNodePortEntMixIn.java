@@ -106,6 +106,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public Integer getPortObjectVersion();
     
     @Override
+    @JsonProperty("portGroupId")
+    public String getPortGroupId();
+    
+    @Override
     @JsonProperty("canRemove")
     public Boolean isCanRemove();
     
@@ -161,6 +165,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         @Override
         @JsonProperty("portObjectVersion")
         public MetaNodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
+        
+        @Override
+        @JsonProperty("portGroupId")
+        public MetaNodePortEntMixInBuilder setPortGroupId(final String portGroupId);
         
         @Override
         @JsonProperty("canRemove")

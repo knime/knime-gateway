@@ -13,25 +13,30 @@
     },
     "id" : "root:186",
     "inPorts" : [ {
+      "canRemove" : false,
       "connectedVia" : "[  ]",
       "index" : 0,
       "name" : "Variable Inport",
       "optional" : true,
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
     }, {
+      "canRemove" : false,
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "First table to concatenate",
       "optional" : false,
+      "portGroupId" : "input",
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "view" : {
         "type" : "table"
       }
     }, {
+      "canRemove" : false,
       "connectedVia" : "[  ]",
       "index" : 2,
       "name" : "Second table to concatenate",
       "optional" : false,
+      "portGroupId" : "input",
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "view" : {
         "type" : "table"
@@ -39,12 +44,14 @@
     } ],
     "kind" : "node",
     "outPorts" : [ {
+      "canRemove" : false,
       "connectedVia" : "[  ]",
       "index" : 0,
       "name" : "Variable Outport",
       "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
     }, {
+      "canRemove" : false,
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "Concatenated table",
@@ -53,6 +60,15 @@
         "type" : "table"
       }
     } ],
+    "portGroups" : {
+      "input" : {
+        "canAddInputPort" : true,
+        "inputRange" : [ 1, 2 ],
+        "supportedPortTypes" : [ {
+          "typeId" : "org.knime.core.node.BufferedDataTable"
+        } ]
+      }
+    },
     "position" : {
       "x" : 40,
       "y" : 56

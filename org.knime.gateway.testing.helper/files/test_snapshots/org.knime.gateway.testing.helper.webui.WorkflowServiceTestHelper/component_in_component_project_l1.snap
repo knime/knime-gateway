@@ -41,6 +41,7 @@
       },
       "id" : "root:5:0:5",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
@@ -49,6 +50,7 @@
       } ],
       "kind" : "node",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
@@ -75,6 +77,7 @@
       },
       "id" : "root:5:0:6",
       "inPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Inport",
@@ -83,6 +86,7 @@
       } ],
       "kind" : "node",
       "outPorts" : [ {
+        "canRemove" : false,
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",

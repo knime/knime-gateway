@@ -9,6 +9,7 @@
   "index" : 1,
   "name" : "Collecting data",
   "optional" : false,
+  "portGroupId" : "Collector",
   "typeId" : "org.knime.core.node.BufferedDataTable",
   "view" : {
     "type" : "table"
@@ -18,6 +19,7 @@
   "index" : 2,
   "name" : "Recursion data",
   "optional" : false,
+  "portGroupId" : "Recursion",
   "typeId" : "org.knime.core.node.BufferedDataTable",
   "view" : {
     "type" : "table"

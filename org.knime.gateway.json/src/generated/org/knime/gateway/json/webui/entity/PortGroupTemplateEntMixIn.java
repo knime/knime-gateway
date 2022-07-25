@@ -45,15 +45,14 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.json.webui.entity.PortGroupTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt.DefaultDynamicPortGroupDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.PortGroupTemplateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortGroupTemplateEnt.DefaultPortGroupTemplateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,9 +60,9 @@ import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultDynamicPortGroupDescriptionEntBuilder.class)
+@JsonDeserialize(builder=DefaultPortGroupTemplateEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDescriptionEnt {
+public interface PortGroupTemplateEntMixIn extends PortGroupTemplateEnt {
 
     @Override
     @JsonIgnore
@@ -77,14 +76,6 @@ public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDes
     @JsonProperty("supportedPortTypes")
     public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
     
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("description")
-    public String getDescription();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -93,26 +84,18 @@ public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDes
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface DynamicPortGroupDescriptionEntMixInBuilder extends DynamicPortGroupDescriptionEntBuilder {
+    public static interface PortGroupTemplateEntMixInBuilder extends PortGroupTemplateEntBuilder {
     
         @Override
-        public DynamicPortGroupDescriptionEntMixIn build();
+        public PortGroupTemplateEntMixIn build();
     
         @Override
         @JsonProperty("identifier")
-        public DynamicPortGroupDescriptionEntMixInBuilder setIdentifier(final String identifier);
+        public PortGroupTemplateEntMixInBuilder setIdentifier(final String identifier);
         
         @Override
         @JsonProperty("supportedPortTypes")
-        public DynamicPortGroupDescriptionEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
-        
-        @Override
-        @JsonProperty("name")
-        public DynamicPortGroupDescriptionEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("description")
-        public DynamicPortGroupDescriptionEntMixInBuilder setDescription(final String description);
+        public PortGroupTemplateEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
         
     }
 

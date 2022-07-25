@@ -44,15 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.LoopInfoEnt;
-import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
-import org.knime.gateway.api.webui.entity.NodePortEnt;
-import org.knime.gateway.api.webui.entity.NodeStateEnt;
-import org.knime.gateway.api.webui.entity.PortGroupEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.PortGroupTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -60,139 +53,91 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Native node extension of a node.
+ * Within natives nodes, ports belong to port groups.  Port groups in turn are used to describe whether and how many additional input or output ports of a certain type can be added to a node depending on the current state of the node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
+public interface PortGroupEnt extends GatewayEntity, PortGroupTemplateEnt {
 
 
   /**
-   * The id of the node template this node is an instance of.
-   * @return templateId , never <code>null</code>
+   * Which input ports (identified by index position) belong to the port group.
+   * @return inputRange 
    **/
-  public String getTemplateId();
+  public java.util.List<Integer> getInputRange();
 
   /**
-   * Get state
-   * @return state 
+   * Which output ports (identified by index position) belong to the port group.
+   * @return outputRange 
    **/
-  public NodeStateEnt getState();
+  public java.util.List<Integer> getOutputRange();
 
   /**
-   * Get loopInfo
-   * @return loopInfo 
+   * Can you add another input port or not.
+   * @return canAddInputPort 
    **/
-  public LoopInfoEnt getLoopInfo();
+  public Boolean isCanAddInputPort();
 
   /**
-   * Get portGroups
-   * @return portGroups 
+   * Can you add another output port or not.
+   * @return canAddOutputPort 
    **/
-  public java.util.Map<String, PortGroupEnt> getPortGroups();
+  public Boolean isCanAddOutputPort();
 
 
     /**
      * The builder for the entity.
      */
-    public interface NativeNodeEntBuilder extends GatewayEntityBuilder<NativeNodeEnt> {
+    public interface PortGroupEntBuilder extends GatewayEntityBuilder<PortGroupEnt> {
 
         /**
-         * The id of the node.
+         * The identifier of the port group.
          * 
-         * @param id the property value, NOT <code>null</code>! 
+         * @param identifier the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        PortGroupEntBuilder setIdentifier(String identifier);
         
         /**
-         * The list of inputs.
+         * The port types available in this port group.
          * 
-         * @param inPorts the property value, NOT <code>null</code>! 
+         * @param supportedPortTypes the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
+        PortGroupEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes);
         
         /**
-         * The list of outputs.
+         * Which input ports (identified by index position) belong to the port group.
          * 
-         * @param outPorts the property value, NOT <code>null</code>! 
+         * @param inputRange the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
+        PortGroupEntBuilder setInputRange(java.util.List<Integer> inputRange);
         
         /**
-   		 * Set annotation
+         * Which output ports (identified by index position) belong to the port group.
          * 
-         * @param annotation the property value,  
+         * @param outputRange the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
+        PortGroupEntBuilder setOutputRange(java.util.List<Integer> outputRange);
         
         /**
-   		 * Set position
+         * Can you add another input port or not.
          * 
-         * @param position the property value, NOT <code>null</code>! 
+         * @param canAddInputPort the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setPosition(XYEnt position);
+        PortGroupEntBuilder setCanAddInputPort(Boolean canAddInputPort);
         
         /**
-         * Whether it&#39;s a native node, component or a metanode.
+         * Can you add another output port or not.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param canAddOutputPort the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set allowedActions
-         * 
-         * @param allowedActions the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
-        
-        /**
-   		 * Set executionInfo
-         * 
-         * @param executionInfo the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
-        
-        /**
-         * The id of the node template this node is an instance of.
-         * 
-         * @param templateId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setTemplateId(String templateId);
-        
-        /**
-   		 * Set state
-         * 
-         * @param state the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setState(NodeStateEnt state);
-        
-        /**
-   		 * Set loopInfo
-         * 
-         * @param loopInfo the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setLoopInfo(LoopInfoEnt loopInfo);
-        
-        /**
-   		 * Set portGroups
-         * 
-         * @param portGroups the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setPortGroups(java.util.Map<String, PortGroupEnt> portGroups);
+        PortGroupEntBuilder setCanAddOutputPort(Boolean canAddOutputPort);
         
         
         /**
@@ -202,7 +147,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NativeNodeEnt build();
+        PortGroupEnt build();
     
     }
 

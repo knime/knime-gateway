@@ -53,42 +53,40 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortGroupTemplateEnt;
 
-import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
 
 /**
- * The description of a dynamic port group. A dynamic port group is a collection of dynamic ports, grouped by a common identifier, e.g. \&quot;Input\&quot; or \&quot;Output\&quot;.
+ * Within natives nodes, ports belong to port groups.  Port groups in turn are used to describe whether and how many additional input or output ports of a certain type can be added to a node depending on the current state of the node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultDynamicPortGroupDescriptionEnt implements DynamicPortGroupDescriptionEnt {
+public class DefaultPortGroupEnt implements PortGroupEnt {
 
   protected String m_identifier;
   protected java.util.List<NodePortTemplateEnt> m_supportedPortTypes;
-  protected String m_name;
-  protected String m_description;
+  protected java.util.List<Integer> m_inputRange;
+  protected java.util.List<Integer> m_outputRange;
+  protected Boolean m_canAddInputPort;
+  protected Boolean m_canAddOutputPort;
   
-  protected DefaultDynamicPortGroupDescriptionEnt() {
+  protected DefaultPortGroupEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "DynamicPortGroupDescription";
+    return "PortGroup";
   }
   
-  private DefaultDynamicPortGroupDescriptionEnt(DefaultDynamicPortGroupDescriptionEntBuilder builder) {
+  private DefaultPortGroupEnt(DefaultPortGroupEntBuilder builder) {
     super();
-    if(builder.m_identifier == null) {
-        throw new IllegalArgumentException("identifier must not be null.");
-    }
     m_identifier = immutable(builder.m_identifier);
     m_supportedPortTypes = immutable(builder.m_supportedPortTypes);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_description = immutable(builder.m_description);
+    m_inputRange = immutable(builder.m_inputRange);
+    m_outputRange = immutable(builder.m_outputRange);
+    m_canAddInputPort = immutable(builder.m_canAddInputPort);
+    m_canAddOutputPort = immutable(builder.m_canAddOutputPort);
   }
   
    /**
@@ -105,8 +103,8 @@ public class DefaultDynamicPortGroupDescriptionEnt implements DynamicPortGroupDe
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultDynamicPortGroupDescriptionEnt ent = (DefaultDynamicPortGroupDescriptionEnt)o;
-        return Objects.equals(m_identifier, ent.m_identifier) && Objects.equals(m_supportedPortTypes, ent.m_supportedPortTypes) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_description, ent.m_description);
+        DefaultPortGroupEnt ent = (DefaultPortGroupEnt)o;
+        return Objects.equals(m_identifier, ent.m_identifier) && Objects.equals(m_supportedPortTypes, ent.m_supportedPortTypes) && Objects.equals(m_inputRange, ent.m_inputRange) && Objects.equals(m_outputRange, ent.m_outputRange) && Objects.equals(m_canAddInputPort, ent.m_canAddInputPort) && Objects.equals(m_canAddOutputPort, ent.m_canAddOutputPort);
     }
 
 
@@ -119,8 +117,10 @@ public class DefaultDynamicPortGroupDescriptionEnt implements DynamicPortGroupDe
        return new HashCodeBuilder()
                .append(m_identifier)
                .append(m_supportedPortTypes)
-               .append(m_name)
-               .append(m_description)
+               .append(m_inputRange)
+               .append(m_outputRange)
+               .append(m_canAddInputPort)
+               .append(m_canAddOutputPort)
                .toHashCode();
    }
   
@@ -137,61 +137,79 @@ public class DefaultDynamicPortGroupDescriptionEnt implements DynamicPortGroupDe
   }
     
   @Override
-  public String getName() {
-        return m_name;
+  public java.util.List<Integer> getInputRange() {
+        return m_inputRange;
   }
     
   @Override
-  public String getDescription() {
-        return m_description;
+  public java.util.List<Integer> getOutputRange() {
+        return m_outputRange;
+  }
+    
+  @Override
+  public Boolean isCanAddInputPort() {
+        return m_canAddInputPort;
+  }
+    
+  @Override
+  public Boolean isCanAddOutputPort() {
+        return m_canAddOutputPort;
   }
     
   
-    public static class DefaultDynamicPortGroupDescriptionEntBuilder implements DynamicPortGroupDescriptionEntBuilder {
+    public static class DefaultPortGroupEntBuilder implements PortGroupEntBuilder {
     
-        public DefaultDynamicPortGroupDescriptionEntBuilder(){
+        public DefaultPortGroupEntBuilder(){
             super();
         }
     
         private String m_identifier;
         private java.util.List<NodePortTemplateEnt> m_supportedPortTypes;
-        private String m_name;
-        private String m_description;
+        private java.util.List<Integer> m_inputRange;
+        private java.util.List<Integer> m_outputRange;
+        private Boolean m_canAddInputPort;
+        private Boolean m_canAddOutputPort;
 
         @Override
-        public DefaultDynamicPortGroupDescriptionEntBuilder setIdentifier(String identifier) {
-             if(identifier == null) {
-                 throw new IllegalArgumentException("identifier must not be null.");
-             }
+        public DefaultPortGroupEntBuilder setIdentifier(String identifier) {
              m_identifier = identifier;
              return this;
         }
 
         @Override
-        public DefaultDynamicPortGroupDescriptionEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes) {
+        public DefaultPortGroupEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes) {
              m_supportedPortTypes = supportedPortTypes;
              return this;
         }
 
         @Override
-        public DefaultDynamicPortGroupDescriptionEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
-             }
-             m_name = name;
+        public DefaultPortGroupEntBuilder setInputRange(java.util.List<Integer> inputRange) {
+             m_inputRange = inputRange;
              return this;
         }
 
         @Override
-        public DefaultDynamicPortGroupDescriptionEntBuilder setDescription(String description) {
-             m_description = description;
+        public DefaultPortGroupEntBuilder setOutputRange(java.util.List<Integer> outputRange) {
+             m_outputRange = outputRange;
+             return this;
+        }
+
+        @Override
+        public DefaultPortGroupEntBuilder setCanAddInputPort(Boolean canAddInputPort) {
+             m_canAddInputPort = canAddInputPort;
+             return this;
+        }
+
+        @Override
+        public DefaultPortGroupEntBuilder setCanAddOutputPort(Boolean canAddOutputPort) {
+             m_canAddOutputPort = canAddOutputPort;
              return this;
         }
 
         
         @Override
-        public DefaultDynamicPortGroupDescriptionEnt build() {
-            return new DefaultDynamicPortGroupDescriptionEnt(this);
+        public DefaultPortGroupEnt build() {
+            return new DefaultPortGroupEnt(this);
         }
     
     }

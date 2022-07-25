@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt.DefaultDynamicPortGroupDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortGroupEnt.DefaultPortGroupEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,9 +61,9 @@ import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultDynamicPortGroupDescriptionEntBuilder.class)
+@JsonDeserialize(builder=DefaultPortGroupEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDescriptionEnt {
+public interface PortGroupEntMixIn extends PortGroupEnt {
 
     @Override
     @JsonIgnore
@@ -78,12 +78,20 @@ public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDes
     public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
     
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("inputRange")
+    public java.util.List<Integer> getInputRange();
     
     @Override
-    @JsonProperty("description")
-    public String getDescription();
+    @JsonProperty("outputRange")
+    public java.util.List<Integer> getOutputRange();
+    
+    @Override
+    @JsonProperty("canAddInputPort")
+    public Boolean isCanAddInputPort();
+    
+    @Override
+    @JsonProperty("canAddOutputPort")
+    public Boolean isCanAddOutputPort();
     
 
     /**
@@ -93,26 +101,34 @@ public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDes
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface DynamicPortGroupDescriptionEntMixInBuilder extends DynamicPortGroupDescriptionEntBuilder {
+    public static interface PortGroupEntMixInBuilder extends PortGroupEntBuilder {
     
         @Override
-        public DynamicPortGroupDescriptionEntMixIn build();
+        public PortGroupEntMixIn build();
     
         @Override
         @JsonProperty("identifier")
-        public DynamicPortGroupDescriptionEntMixInBuilder setIdentifier(final String identifier);
+        public PortGroupEntMixInBuilder setIdentifier(final String identifier);
         
         @Override
         @JsonProperty("supportedPortTypes")
-        public DynamicPortGroupDescriptionEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
+        public PortGroupEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
         
         @Override
-        @JsonProperty("name")
-        public DynamicPortGroupDescriptionEntMixInBuilder setName(final String name);
+        @JsonProperty("inputRange")
+        public PortGroupEntMixInBuilder setInputRange(final java.util.List<Integer> inputRange);
         
         @Override
-        @JsonProperty("description")
-        public DynamicPortGroupDescriptionEntMixInBuilder setDescription(final String description);
+        @JsonProperty("outputRange")
+        public PortGroupEntMixInBuilder setOutputRange(final java.util.List<Integer> outputRange);
+        
+        @Override
+        @JsonProperty("canAddInputPort")
+        public PortGroupEntMixInBuilder setCanAddInputPort(final Boolean canAddInputPort);
+        
+        @Override
+        @JsonProperty("canAddOutputPort")
+        public PortGroupEntMixInBuilder setCanAddOutputPort(final Boolean canAddOutputPort);
         
     }
 

@@ -107,6 +107,8 @@ import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.PortGroupEnt;
+import org.knime.gateway.api.webui.entity.PortGroupTemplateEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortViewEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -210,6 +212,8 @@ public class ListEntities {
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
         res.add(PortCommandEnt.class);
+        res.add(PortGroupEnt.class);
+        res.add(PortGroupTemplateEnt.class);
         res.add(PortTypeEnt.class);
         res.add(PortViewEnt.class);
         res.add(ProjectMetadataEnt.class);
@@ -298,6 +302,8 @@ public class ListEntities {
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
         res.add(PortCommandEnt.PortCommandEntBuilder.class);
+        res.add(PortGroupEnt.PortGroupEntBuilder.class);
+        res.add(PortGroupTemplateEnt.PortGroupTemplateEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(PortViewEnt.PortViewEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);

@@ -152,7 +152,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             // slightly delays the creation of the events to increase
             // the determinism of the event patches
             try {
-                Thread.sleep(100);
+                Thread.sleep(200);
             } catch (InterruptedException ex) { // NOSONAR
                 //
             }
@@ -167,7 +167,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         WorkflowListener wfListenerMock = mock(WorkflowListener.class);
         wfm.addListener(wfListenerMock); // listener in order to wait for the wf-events to be broadcasted
         wfm.addWorkflowAnnotation(new AnnotationData(), -1);
-        await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> verify(wfListenerMock, times(1)).workflowChanged(any()));
         assertThat(m_testEventConsumer.getEvents(), is(empty()));
     }
@@ -186,7 +186,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             testEventConsumer.unblock();
 
             // wait for the workflow events to arrive
-            await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
                 WorkflowChangedEventSource es = (WorkflowChangedEventSource)DefaultEventService.getInstance()
                     .getEventSource(DefaultWorkflowChangedEventTypeEnt.class);
                 assertTrue(es.checkWorkflowChangesListenerCallbackState(CallbackState.IDLE));

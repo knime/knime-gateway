@@ -3,10 +3,12 @@
   "op" : "add",
   "path" : "/nodes/root:186/inPorts/3",
   "value" : {
+    "canRemove" : false,
     "connectedVia" : "[  ]",
     "index" : 3,
     "name" : "Additional table to concatenate",
     "optional" : false,
+    "portGroupId" : "input",
     "typeId" : "org.knime.core.node.BufferedDataTable",
     "view" : {
       "type" : "table"
@@ -16,10 +18,12 @@
   "op" : "add",
   "path" : "/nodes/root:186/inPorts/4",
   "value" : {
+    "canRemove" : true,
     "connectedVia" : "[  ]",
     "index" : 4,
     "name" : "Additional table to concatenate",
     "optional" : false,
+    "portGroupId" : "input",
     "typeId" : "org.knime.core.node.BufferedDataTable",
     "view" : {
       "type" : "table"

@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.PortGroupTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -57,7 +58,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface DynamicPortGroupDescriptionEnt extends GatewayEntity {
+public interface DynamicPortGroupDescriptionEnt extends GatewayEntity, PortGroupTemplateEnt {
 
 
   /**
@@ -67,22 +68,10 @@ public interface DynamicPortGroupDescriptionEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * The identifier of the dynamic port group.
-   * @return identifier , never <code>null</code>
-   **/
-  public String getIdentifier();
-
-  /**
    * The description of the dynamic port group. May contain HTML markup tags.
    * @return description 
    **/
   public String getDescription();
-
-  /**
-   * The port types available in this dynamic port group.
-   * @return supportedPortTypes 
-   **/
-  public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
 
 
     /**
@@ -90,6 +79,22 @@ public interface DynamicPortGroupDescriptionEnt extends GatewayEntity {
      */
     public interface DynamicPortGroupDescriptionEntBuilder extends GatewayEntityBuilder<DynamicPortGroupDescriptionEnt> {
 
+        /**
+         * The identifier of the port group.
+         * 
+         * @param identifier the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        DynamicPortGroupDescriptionEntBuilder setIdentifier(String identifier);
+        
+        /**
+         * The port types available in this port group.
+         * 
+         * @param supportedPortTypes the property value,  
+         * @return this entity builder for chaining
+         */
+        DynamicPortGroupDescriptionEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes);
+        
         /**
          * The name of the dynamic port group.
          * 
@@ -99,28 +104,12 @@ public interface DynamicPortGroupDescriptionEnt extends GatewayEntity {
         DynamicPortGroupDescriptionEntBuilder setName(String name);
         
         /**
-         * The identifier of the dynamic port group.
-         * 
-         * @param identifier the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        DynamicPortGroupDescriptionEntBuilder setIdentifier(String identifier);
-        
-        /**
          * The description of the dynamic port group. May contain HTML markup tags.
          * 
          * @param description the property value,  
          * @return this entity builder for chaining
          */
         DynamicPortGroupDescriptionEntBuilder setDescription(String description);
-        
-        /**
-         * The port types available in this dynamic port group.
-         * 
-         * @param supportedPortTypes the property value,  
-         * @return this entity builder for chaining
-         */
-        DynamicPortGroupDescriptionEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes);
         
         
         /**
