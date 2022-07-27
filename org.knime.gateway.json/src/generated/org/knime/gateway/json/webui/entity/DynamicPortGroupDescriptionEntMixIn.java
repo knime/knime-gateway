@@ -45,7 +45,6 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.json.webui.entity.PortGroupTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -70,20 +69,20 @@ public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDes
     public String getTypeID();
 
     @Override
-    @JsonProperty("identifier")
-    public String getIdentifier();
-    
-    @Override
-    @JsonProperty("supportedPortTypes")
-    public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
     @Override
+    @JsonProperty("identifier")
+    public String getIdentifier();
+    
+    @Override
     @JsonProperty("description")
     public String getDescription();
+    
+    @Override
+    @JsonProperty("supportedPortTypes")
+    public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
     
 
     /**
@@ -99,20 +98,20 @@ public interface DynamicPortGroupDescriptionEntMixIn extends DynamicPortGroupDes
         public DynamicPortGroupDescriptionEntMixIn build();
     
         @Override
-        @JsonProperty("identifier")
-        public DynamicPortGroupDescriptionEntMixInBuilder setIdentifier(final String identifier);
-        
-        @Override
-        @JsonProperty("supportedPortTypes")
-        public DynamicPortGroupDescriptionEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
-        
-        @Override
         @JsonProperty("name")
         public DynamicPortGroupDescriptionEntMixInBuilder setName(final String name);
         
         @Override
+        @JsonProperty("identifier")
+        public DynamicPortGroupDescriptionEntMixInBuilder setIdentifier(final String identifier);
+        
+        @Override
         @JsonProperty("description")
         public DynamicPortGroupDescriptionEntMixInBuilder setDescription(final String description);
+        
+        @Override
+        @JsonProperty("supportedPortTypes")
+        public DynamicPortGroupDescriptionEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
         
     }
 

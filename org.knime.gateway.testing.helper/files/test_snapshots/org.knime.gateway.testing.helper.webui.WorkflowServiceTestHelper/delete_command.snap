@@ -1510,11 +1510,10 @@
       } ],
       "portGroups" : {
         "input" : {
-          "canAddInputPort" : true,
+          "canAddInPort" : true,
           "inputRange" : [ 1, 3 ],
-          "supportedPortTypes" : [ {
-            "typeId" : "org.knime.core.node.BufferedDataTable"
-          } ]
+          "outputRange" : [ ],
+          "supportedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable" ]
         }
       },
       "position" : {

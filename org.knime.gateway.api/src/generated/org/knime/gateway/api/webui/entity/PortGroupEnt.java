@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.PortGroupTemplateEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -58,32 +56,38 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface PortGroupEnt extends GatewayEntity, PortGroupTemplateEnt {
+public interface PortGroupEnt extends GatewayEntity {
 
 
   /**
-   * Which input ports (identified by index position) belong to the port group.
+   * Which input ports (identified by index position) belong to the port group. Either this or the  &#39;outputRange&#39; is required for a port group.
    * @return inputRange 
    **/
   public java.util.List<Integer> getInputRange();
 
   /**
-   * Which output ports (identified by index position) belong to the port group.
+   * Which output ports (identified by index position) belong to the port group. Either this or the  &#39;inputRange&#39; is required for a port group.
    * @return outputRange 
    **/
   public java.util.List<Integer> getOutputRange();
 
   /**
-   * Can you add another input port or not.
-   * @return canAddInputPort 
+   * Can you add another input port or not. Either this or the &#39;canAddOutPort&#39; is required for a port group.
+   * @return canAddInPort 
    **/
-  public Boolean isCanAddInputPort();
+  public Boolean isCanAddInPort();
 
   /**
-   * Can you add another output port or not.
-   * @return canAddOutputPort 
+   * Can you add another output port or not. Either this or the &#39;canAddInPort&#39; is required for a port group.
+   * @return canAddOutPort 
    **/
-  public Boolean isCanAddOutputPort();
+  public Boolean isCanAddOutPort();
+
+  /**
+   * A list of port type identifiers supported within this port group. If this property is not set, any port type is supported.
+   * @return supportedPortTypeIds 
+   **/
+  public java.util.List<String> getSupportedPortTypeIds();
 
 
     /**
@@ -92,23 +96,7 @@ public interface PortGroupEnt extends GatewayEntity, PortGroupTemplateEnt {
     public interface PortGroupEntBuilder extends GatewayEntityBuilder<PortGroupEnt> {
 
         /**
-         * The identifier of the port group.
-         * 
-         * @param identifier the property value,  
-         * @return this entity builder for chaining
-         */
-        PortGroupEntBuilder setIdentifier(String identifier);
-        
-        /**
-         * The port types available in this port group.
-         * 
-         * @param supportedPortTypes the property value,  
-         * @return this entity builder for chaining
-         */
-        PortGroupEntBuilder setSupportedPortTypes(java.util.List<NodePortTemplateEnt> supportedPortTypes);
-        
-        /**
-         * Which input ports (identified by index position) belong to the port group.
+         * Which input ports (identified by index position) belong to the port group. Either this or the  &#39;outputRange&#39; is required for a port group.
          * 
          * @param inputRange the property value,  
          * @return this entity builder for chaining
@@ -116,7 +104,7 @@ public interface PortGroupEnt extends GatewayEntity, PortGroupTemplateEnt {
         PortGroupEntBuilder setInputRange(java.util.List<Integer> inputRange);
         
         /**
-         * Which output ports (identified by index position) belong to the port group.
+         * Which output ports (identified by index position) belong to the port group. Either this or the  &#39;inputRange&#39; is required for a port group.
          * 
          * @param outputRange the property value,  
          * @return this entity builder for chaining
@@ -124,20 +112,28 @@ public interface PortGroupEnt extends GatewayEntity, PortGroupTemplateEnt {
         PortGroupEntBuilder setOutputRange(java.util.List<Integer> outputRange);
         
         /**
-         * Can you add another input port or not.
+         * Can you add another input port or not. Either this or the &#39;canAddOutPort&#39; is required for a port group.
          * 
-         * @param canAddInputPort the property value,  
+         * @param canAddInPort the property value,  
          * @return this entity builder for chaining
          */
-        PortGroupEntBuilder setCanAddInputPort(Boolean canAddInputPort);
+        PortGroupEntBuilder setCanAddInPort(Boolean canAddInPort);
         
         /**
-         * Can you add another output port or not.
+         * Can you add another output port or not. Either this or the &#39;canAddInPort&#39; is required for a port group.
          * 
-         * @param canAddOutputPort the property value,  
+         * @param canAddOutPort the property value,  
          * @return this entity builder for chaining
          */
-        PortGroupEntBuilder setCanAddOutputPort(Boolean canAddOutputPort);
+        PortGroupEntBuilder setCanAddOutPort(Boolean canAddOutPort);
+        
+        /**
+         * A list of port type identifiers supported within this port group. If this property is not set, any port type is supported.
+         * 
+         * @param supportedPortTypeIds the property value,  
+         * @return this entity builder for chaining
+         */
+        PortGroupEntBuilder setSupportedPortTypeIds(java.util.List<String> supportedPortTypeIds);
         
         
         /**

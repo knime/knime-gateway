@@ -98,13 +98,13 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
   public Integer getPortObjectVersion();
 
   /**
-   * The port group this port belongs to.
+   * The port group this port belongs to. Only available for native nodes.
    * @return portGroupId 
    **/
   public String getPortGroupId();
 
   /**
-   * Whether this port can be removed.
+   * Whether this port can be removed. Only available if &#39;interaction info&#39; is supposed to be included.
    * @return canRemove 
    **/
   public Boolean isCanRemove();
@@ -188,7 +188,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         NodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
         
         /**
-         * The port group this port belongs to.
+         * The port group this port belongs to. Only available for native nodes.
          * 
          * @param portGroupId the property value,  
          * @return this entity builder for chaining
@@ -196,7 +196,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         NodePortEntBuilder setPortGroupId(String portGroupId);
         
         /**
-         * Whether this port can be removed.
+         * Whether this port can be removed. Only available if &#39;interaction info&#39; is supposed to be included.
          * 
          * @param canRemove the property value,  
          * @return this entity builder for chaining

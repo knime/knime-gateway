@@ -218,8 +218,6 @@ import org.xml.sax.SAXException;
 /**
  * Collects helper methods to build entity instances basically from core.api-classes (e.g. WorkflowManager etc.).
  *
- * TODO: NXT-1187 Gateway API: Split up `EntityBuilderUtil` utility class
- *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class EntityBuilderUtil {
@@ -1004,7 +1002,7 @@ public final class EntityBuilderUtil {
                 List<ConnectionContainer> connections =
                     connection == null ? emptyList() : Collections.singletonList(connection);
                 NodeInPort inPort = nc.getInPort(i);
-                var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, Boolean.TRUE, buildContext).orElse(null);
+                var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, true, buildContext);
                 var pt = inPort.getPortType();
                 res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null, canRemovePort,
                     connections, null, portGroupId, buildContext));
@@ -1014,7 +1012,7 @@ public final class EntityBuilderUtil {
                 var canRemovePort = canRemovePort(nc, i, isInputPorts, buildContext);
                 Set<ConnectionContainer> connections = nc.getParent().getOutgoingConnectionsFor(nc.getID(), i);
                 NodeOutPort outPort = nc.getOutPort(i);
-                var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, Boolean.FALSE, buildContext).orElse(null);
+                var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, false, buildContext);
                 var pt = outPort.getPortType();
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, connections,
@@ -1133,20 +1131,21 @@ public final class EntityBuilderUtil {
      * @param canEditPorts Can ports be edited for the parent node
      * @return A single Map.Entry<String, PortGroupEntBuilder>
      */
-    private static Map.Entry<String, PortGroupEntBuilder> initializePortGroupEntBuilderWithSupportedTypesAndCanAddPort(
+    private static Map.Entry<String, PortGroupEntBuilder> initializePortGroupEntBuilder(
         final Map.Entry<String, ExtendablePortGroup> entry, final boolean canEditPorts) {
         var portGroupId = entry.getKey();
         var portGroup = entry.getValue();
         var isInputPort = portGroup.definesInputPorts();
-        var supportedTypIds = Arrays.stream(portGroup.getSupportedPortTypes())//
+        var supportedTypeIds = Arrays.stream(portGroup.getSupportedPortTypes())//
             .map(CoreUtil::getPortTypeId)//
-            .map(id -> builder(NodePortTemplateEntBuilder.class).setTypeId(id).build())//
             .collect(toList());
         var canAddPort = canEditPorts && portGroup.canAddPort();
         return Map.entry(portGroupId, builder(PortGroupEntBuilder.class)//
-            .setSupportedPortTypes(supportedTypIds)//
-            .setCanAddInputPort(isInputPort ? canAddPort : null)//
-            .setCanAddOutputPort(!isInputPort ? canAddPort : null));
+            .setSupportedPortTypeIds(supportedTypeIds)//
+            .setCanAddInPort(isInputPort ? canAddPort : null)//
+            .setCanAddOutPort(!isInputPort ? canAddPort : null)//
+            .setInputRange(List.of())//
+            .setOutputRange(List.of()));
     }
 
     /**
@@ -1167,14 +1166,15 @@ public final class EntityBuilderUtil {
         var minIdx = ids.indexOf(id);
         var maxIdx = ids.lastIndexOf(id);
         if (minIdx > -1 && maxIdx > -1) {
-            return Map.entry(id, builder.setInputRange(isInputPort ? List.of(minIdx, maxIdx) : null)
-                .setOutputRange(!isInputPort ? List.of(minIdx, maxIdx) : null));
+            return Map.entry(id, isInputPort ? builder.setInputRange(List.of(minIdx, maxIdx))
+                : builder.setOutputRange(List.of(minIdx, maxIdx)));
         }
         return entry;
     }
 
     /**
-     * Build a map of port group entities mapped by their port group id
+     * Build a map of port group entities mapped by their port group id. Of that doesn't apply, we just return an empty
+     * optional.
      *
      * @param nnc The native node container the result is for
      * @param inPorts List of input ports present for the node
@@ -1188,12 +1188,12 @@ public final class EntityBuilderUtil {
             return Optional.empty();
         }
         var canEditPorts = buildContext.dependentNodeProperties().canRemoveIncomingConnections(nnc.getID());
-        var portGroups = getPortGroupsForDynamicNativeNodePort(nnc, buildContext).orElse(null);
+        var portGroups = getPortGroupsForDynamicNativeNodePort(nnc, buildContext);
         if (portGroups == null) {
             return Optional.empty();
         }
         return Optional.of(portGroups.entrySet().stream()//
-            .map(entry -> initializePortGroupEntBuilderWithSupportedTypesAndCanAddPort(entry, canEditPorts))//
+            .map(entry -> initializePortGroupEntBuilder(entry, canEditPorts))//
             .map(entry -> addPortRangeToPortGroupEntBuilder(entry, inPorts, Boolean.TRUE))//
             .map(entry -> addPortRangeToPortGroupEntBuilder(entry, outPorts, Boolean.FALSE))//
             .map(entry -> Map.entry(entry.getKey(), entry.getValue().build()))//
@@ -1273,22 +1273,22 @@ public final class EntityBuilderUtil {
     private static boolean canRemoveNativeNodePort(final NativeNodeContainer nnc, final int portIndex,
         final boolean isInputPort, final WorkflowBuildContext buildContext) {
         if (portIndex == 0) {
-            return Boolean.FALSE; // Flow variable ports can never be removed
+            return false; // Flow variable ports can never be removed
         }
         var portsConfig = buildContext.getPortsConfiguration(nnc);
         if (portsConfig == null) {
-            return Boolean.FALSE; // If there is no ports configuration, ports are not modifiable
+            return false; // If there is no ports configuration, ports are not modifiable
         }
         var portIndexToPortGroupMap = buildContext.getPortIndexToPortGroupMap(nnc, isInputPort);
         var groupName = portIndexToPortGroupMap[portIndex - 1];
         if (groupName == null) {
-            return Boolean.FALSE; // The current port is not in any port group of interest
+            return false; // The current port is not in any port group of interest
         }
         var extendablePortGroup = portsConfig.getExtendablePorts().get(groupName);
         if (extendablePortGroup == null) {
             // We are only interested in {@link ExtendablePortGroup} ports at the moment
             // Note: {@link ExchangeablePortGroup} ports cannot be deleted
-            return Boolean.FALSE;
+            return false;
         }
         var isLastInGroup =
             portIndex == portIndexToPortGroupMap.length || !groupName.equals(portIndexToPortGroupMap[portIndex]);
@@ -1299,40 +1299,40 @@ public final class EntityBuilderUtil {
     /**
      * TODO: NXT-1189 Gateway API: Add `ExchangeablePortGroup` port types to `buildNativeNodeEnt()` method
      */
-    private static Optional<Map<String, ExtendablePortGroup>> getPortGroupsForDynamicNativeNodePort(
+    private static Map<String, ExtendablePortGroup> getPortGroupsForDynamicNativeNodePort(
         final NativeNodeContainer nnc, final WorkflowBuildContext buildContext) {
         var portsConfig = buildContext.getPortsConfiguration(nnc);
         if (portsConfig == null) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.of(portsConfig.getExtendablePorts()); // Only supports `ExtendablePortGroup` for now
+        return portsConfig.getExtendablePorts(); // Only supports `ExtendablePortGroup` for now
     }
 
     /**
      * TODO: NXT-1189 Gateway API: Add `ExchangeablePortGroup` port types to `buildNativeNodeEnt()` method
      */
-    private static Optional<String> getPortGroupNameForDynamicNativeNodePort(
+    private static String getPortGroupNameForDynamicNativeNodePort(
         final NodeContainer nc, final int portIndex, final boolean isInputPort, final WorkflowBuildContext buildContext) {
         if (nc instanceof NativeNodeContainer) { // We are only interested in native nodes
             var nnc = (NativeNodeContainer)nc;
             if (portIndex == 0) {
-                return Optional.empty(); // Flow variable ports are not interesting
+                return null; // Flow variable ports are not interesting
             }
             var portsConfig = buildContext.getPortsConfiguration(nnc);
             if (portsConfig == null) {
-                return Optional.empty(); // No ports configuration, no port group
+                return null; // No ports configuration, no port group
             }
             var portIndexToPortGroupMap = buildContext.getPortIndexToPortGroupMap(nnc, isInputPort);
             var groupName = portIndexToPortGroupMap[portIndex - 1];
             if (groupName == null) {
-                return Optional.empty(); // No port group for the current port
+                return null; // No port group for the current port
             }
             var portGroup = portsConfig.getGroup(groupName);
             if (portGroup instanceof ExtendablePortGroup) { // Only supports `ExtendablePortGroup` for now
-                return Optional.of(groupName);
+                return groupName;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /**

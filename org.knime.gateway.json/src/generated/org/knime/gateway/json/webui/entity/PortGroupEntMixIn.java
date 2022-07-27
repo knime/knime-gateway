@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.json.webui.entity.PortGroupTemplateEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -70,14 +68,6 @@ public interface PortGroupEntMixIn extends PortGroupEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("identifier")
-    public String getIdentifier();
-    
-    @Override
-    @JsonProperty("supportedPortTypes")
-    public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
-    
-    @Override
     @JsonProperty("inputRange")
     public java.util.List<Integer> getInputRange();
     
@@ -86,12 +76,16 @@ public interface PortGroupEntMixIn extends PortGroupEnt {
     public java.util.List<Integer> getOutputRange();
     
     @Override
-    @JsonProperty("canAddInputPort")
-    public Boolean isCanAddInputPort();
+    @JsonProperty("canAddInPort")
+    public Boolean isCanAddInPort();
     
     @Override
-    @JsonProperty("canAddOutputPort")
-    public Boolean isCanAddOutputPort();
+    @JsonProperty("canAddOutPort")
+    public Boolean isCanAddOutPort();
+    
+    @Override
+    @JsonProperty("supportedPortTypeIds")
+    public java.util.List<String> getSupportedPortTypeIds();
     
 
     /**
@@ -107,14 +101,6 @@ public interface PortGroupEntMixIn extends PortGroupEnt {
         public PortGroupEntMixIn build();
     
         @Override
-        @JsonProperty("identifier")
-        public PortGroupEntMixInBuilder setIdentifier(final String identifier);
-        
-        @Override
-        @JsonProperty("supportedPortTypes")
-        public PortGroupEntMixInBuilder setSupportedPortTypes(final java.util.List<NodePortTemplateEnt> supportedPortTypes);
-        
-        @Override
         @JsonProperty("inputRange")
         public PortGroupEntMixInBuilder setInputRange(final java.util.List<Integer> inputRange);
         
@@ -123,12 +109,16 @@ public interface PortGroupEntMixIn extends PortGroupEnt {
         public PortGroupEntMixInBuilder setOutputRange(final java.util.List<Integer> outputRange);
         
         @Override
-        @JsonProperty("canAddInputPort")
-        public PortGroupEntMixInBuilder setCanAddInputPort(final Boolean canAddInputPort);
+        @JsonProperty("canAddInPort")
+        public PortGroupEntMixInBuilder setCanAddInPort(final Boolean canAddInPort);
         
         @Override
-        @JsonProperty("canAddOutputPort")
-        public PortGroupEntMixInBuilder setCanAddOutputPort(final Boolean canAddOutputPort);
+        @JsonProperty("canAddOutPort")
+        public PortGroupEntMixInBuilder setCanAddOutPort(final Boolean canAddOutPort);
+        
+        @Override
+        @JsonProperty("supportedPortTypeIds")
+        public PortGroupEntMixInBuilder setSupportedPortTypeIds(final java.util.List<String> supportedPortTypeIds);
         
     }
 

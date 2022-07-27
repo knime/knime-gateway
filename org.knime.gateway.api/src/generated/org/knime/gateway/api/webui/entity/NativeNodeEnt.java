@@ -87,7 +87,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
   public LoopInfoEnt getLoopInfo();
 
   /**
-   * Get portGroups
+   * A map of string keys and port group values
    * @return portGroups 
    **/
   public java.util.Map<String, PortGroupEnt> getPortGroups();
@@ -187,7 +187,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setLoopInfo(LoopInfoEnt loopInfo);
         
         /**
-   		 * Set portGroups
+         * A map of string keys and port group values
          * 
          * @param portGroups the property value,  
          * @return this entity builder for chaining

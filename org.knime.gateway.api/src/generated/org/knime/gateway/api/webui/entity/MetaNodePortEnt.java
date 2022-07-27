@@ -175,7 +175,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
         
         /**
-         * The port group this port belongs to.
+         * The port group this port belongs to. Only available for native nodes.
          * 
          * @param portGroupId the property value,  
          * @return this entity builder for chaining
@@ -183,7 +183,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setPortGroupId(String portGroupId);
         
         /**
-         * Whether this port can be removed.
+         * Whether this port can be removed. Only available if &#39;interaction info&#39; is supposed to be included.
          * 
          * @param canRemove the property value,  
          * @return this entity builder for chaining

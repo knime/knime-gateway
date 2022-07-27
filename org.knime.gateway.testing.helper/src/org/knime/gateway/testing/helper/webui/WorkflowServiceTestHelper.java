@@ -1404,9 +1404,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         if (portGroup == null) {
             return Boolean.FALSE;
         }
-        var canAddInputPort = portGroup.isCanAddInputPort() != null ? portGroup.isCanAddInputPort() : Boolean.FALSE;
-        var canAddOutputPort = portGroup.isCanAddOutputPort() != null ? portGroup.isCanAddOutputPort() : Boolean.FALSE;
-        var supportsType = portGroup.getSupportedPortTypes().stream().filter(ent -> ent.getTypeId().equals(targetPortTypeId)).count() > 0;
+        var canAddInputPort = portGroup.isCanAddInPort() != null ? portGroup.isCanAddInPort() : Boolean.FALSE;
+        var canAddOutputPort = portGroup.isCanAddOutPort() != null ? portGroup.isCanAddOutPort() : Boolean.FALSE;
+        var supportsType = portGroup.getSupportedPortTypeIds().stream().filter(ent -> ent.equals(targetPortTypeId)).count() > 0;
         return (canAddInputPort || canAddOutputPort) && supportsType;
     }
 
