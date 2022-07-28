@@ -1194,8 +1194,8 @@ public final class EntityBuilderUtil {
         }
         return Optional.of(portGroups.entrySet().stream()//
             .map(entry -> initializePortGroupEntBuilder(entry, canEditPorts))//
-            .map(entry -> addPortRangeToPortGroupEntBuilder(entry, inPorts, Boolean.TRUE))//
-            .map(entry -> addPortRangeToPortGroupEntBuilder(entry, outPorts, Boolean.FALSE))//
+            .map(entry -> addPortRangeToPortGroupEntBuilder(entry, inPorts, true))//
+            .map(entry -> addPortRangeToPortGroupEntBuilder(entry, outPorts, false))//
             .map(entry -> Map.entry(entry.getKey(), entry.getValue().build()))//
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }

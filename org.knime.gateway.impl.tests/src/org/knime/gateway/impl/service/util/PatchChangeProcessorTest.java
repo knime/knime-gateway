@@ -60,6 +60,7 @@ import java.util.Map;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
+import org.javers.core.diff.changetype.container.ElementValueChange;
 import org.junit.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -69,6 +70,7 @@ import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
@@ -155,6 +157,39 @@ public class PatchChangeProcessorTest {
         patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
         verify(patchCreator, Mockito.times(2)).removed("/workflowAnnotations/1");
         verify(patchCreator).replaced("/workflowAnnotations/0/text", "anno3");
+    }
+
+    /**
+     * Test if `onListChange()` method can also handle {@link ElementValueChange} changes
+     */
+    @Test
+    public void testPatchReplacingListElements() {
+        NativeNodeEntBuilder nodeBuilder = builder(NativeNodeEntBuilder.class).setInPorts(Collections.emptyList())
+                .setOutPorts(Collections.emptyList()).setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())
+                .setKind(KindEnum.NODE).setTemplateId("templateId");
+        PortGroupEntBuilder portGroupBuilder = builder(PortGroupEntBuilder.class).setSupportedPortTypeIds(List.of("portTypeId"));
+        NodeEnt node1 = nodeBuilder//
+                .setId(new NodeIDEnt(1))//
+                .setPortGroups(Map.of("groupName", portGroupBuilder.setInputRange(List.of(1, 2)).build()))//
+                .build();
+        NodeEnt node2 = nodeBuilder//
+                .setId(new NodeIDEnt(1))//
+                .setPortGroups(Map.of("groupName", portGroupBuilder.setInputRange(List.of(2, 4)).build()))//
+                .build();
+        WorkflowEntBuilder workflowBuilder = builder(WorkflowEntBuilder.class)//
+            .setInfo(builder(WorkflowInfoEntBuilder.class)//
+                .setName("wf-name")//
+                .setContainerType(ContainerTypeEnum.PROJECT)//
+                .setContainerId(new NodeIDEnt(0))//
+                .build())
+            .setDirty(true);
+       WorkflowEnt workflow1 = workflowBuilder.setNodes(Map.of("root:1", node1)).build();
+       WorkflowEnt workflow2 = workflowBuilder.setNodes(Map.of("root:1", node2)).build();
+
+       PatchCreator<Object> patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
+
+       verify(patchCreator).replaced("/nodes/root:1/portGroups/groupName/inputRange/0", 2);
+       verify(patchCreator).replaced("/nodes/root:1/portGroups/groupName/inputRange/1", 4);
     }
 
     private static PatchCreator<Object> createDiffAndPatchCreatorMock(final WorkflowEnt workflow1, final WorkflowEnt workflow2) {

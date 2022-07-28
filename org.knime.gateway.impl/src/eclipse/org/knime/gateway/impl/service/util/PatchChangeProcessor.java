@@ -61,9 +61,9 @@ import org.javers.core.diff.changetype.ReferenceChange;
 import org.javers.core.diff.changetype.ValueChange;
 import org.javers.core.diff.changetype.container.ArrayChange;
 import org.javers.core.diff.changetype.container.ContainerChange;
+import org.javers.core.diff.changetype.container.ElementValueChange;
 import org.javers.core.diff.changetype.container.ListChange;
 import org.javers.core.diff.changetype.container.SetChange;
-import org.javers.core.diff.changetype.container.ValueAdded;
 import org.javers.core.diff.changetype.map.EntryRemoved;
 import org.javers.core.diff.changetype.map.MapChange;
 import org.javers.core.metamodel.object.GlobalId;
@@ -184,6 +184,7 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
     @Override
     public void onListChange(final ListChange listChange) {
         String path = getPath(listChange.getAffectedGlobalId(), listChange.getPropertyName());
+        // Handle removed values
         var removedValues = listChange.getValueRemovedChanges();
         for (var i = 0; i < removedValues.size(); i++) {
             var index = removedValues.get(i).getIndex();
@@ -198,14 +199,24 @@ class PatchChangeProcessor<P> implements ChangeProcessor<P> {
             // their index ('getIndex').
             m_patchCreator.removed(path + "/" + (index - i));
         }
-        for (ValueAdded va : listChange.getValueAddedChanges()) {
-            Object val = va.getValue();
+        // Handle added values
+        listChange.getValueAddedChanges().forEach(va -> {
+            Object value = va.getValue();
             String elementPath = path + "/" + va.getIndex(); // NOSONAR
             // NOTE: the value relies on the fact the #onNewObject has been called before, with the right object
-            if (!(val instanceof ValueObjectId) && !m_newObjects.contains(path)) {
-                m_patchCreator.added(elementPath, val);
+            if (!(value instanceof ValueObjectId) && !m_newObjects.contains(path)) {
+                m_patchCreator.added(elementPath, value);
             }
-        }
+        });
+        // Handle changed values
+        listChange.getChanges().stream()//
+            .filter(ElementValueChange.class::isInstance)//
+            .map(ElementValueChange.class::cast)//
+            .forEach(vc -> {
+                Object value = vc.getRightValue();
+                String elementPath = path + "/" + vc.getIndex(); // NOSONAR
+                m_patchCreator.replaced(elementPath, value);
+            });
     }
 
     @Override
