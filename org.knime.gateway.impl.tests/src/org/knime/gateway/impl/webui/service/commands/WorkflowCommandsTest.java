@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
@@ -61,6 +62,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -85,15 +87,21 @@ import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.CopyResultEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -513,6 +521,68 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             return null;
         }
 
+    }
+
+    /**
+     * Test that commands yielding results return the latest snapshot id correctly, so synchronization works as expected
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testWaitForCommandResultReturnsLatestSnapshotId() throws Exception {
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        Stack<CommandResultEnt> results = new Stack<>();
+        Stack<WorkflowChangedEventEnt> events = new Stack<>();
+        ServiceDependencies.setServiceDependency(EventConsumer.class,
+            (n, e) -> events.push((WorkflowChangedEventEnt)e));
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI).getFirst().toString();
+        var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), true).getSnapshotId();
+        var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
+            .setWorkflowId(getRootID()).setSnapshotId(snapshotId).setTypeId("WorkflowChangedEventType").build();
+        DefaultEventService.getInstance().addEventListener(eventType);
+
+        // Collapse command, changes the workflow, emits `WorkflowChangedEventEnt`
+        var command1 = builder(CollapseCommandEntBuilder.class)//
+            .setContainerType(ContainerTypeEnum.METANODE)//
+            .setKind(KindEnum.COLLAPSE)//
+            .setNodeIds(List.of(new NodeIDEnt(4)))//
+            .build();
+        executeCommandAndAssertSnapshotIdCorrect(command1, projectId, results, events);
+
+        // Copy command, doesn't change the workflow, yields a result but doesn't emit a `WorkflowChangedEventEnt`
+        var command2 = builder(CopyCommandEntBuilder.class)//
+            .setKind(KindEnum.COPY)//
+            .setNodeIds(List.of(new NodeIDEnt(1)))//
+            .build();
+        executeCommandAndAssertSnapshotIdCorrect(command2, projectId, results, events);
+
+        // Paste command, changes the workflow, emits `WorkflowChangedEventEnt`
+        var command3 = builder(PasteCommandEntBuilder.class)//
+            .setKind(KindEnum.PASTE)//
+            .setContent(((CopyResultEnt)results.peek()).getContent())//
+            .build();
+        executeCommandAndAssertSnapshotIdCorrect(command3, projectId, results, events);
+
+        assertEquals("3 command results received", 3, results.size());
+        assertEquals("Only 2 workflow changed events received", 2, events.size());
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    }
+
+    private static void executeCommandAndAssertSnapshotIdCorrect(final WorkflowCommandEnt command,
+        final String projectId, final Stack<CommandResultEnt> results, final Stack<WorkflowChangedEventEnt> events)
+        throws Exception {
+        var result =
+            DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+        var snapshotId = result.getSnapshotId();
+        if (snapshotId != null) {
+            assertEquals("Snapshot id returned = top most snapshot id on the events stack", snapshotId,
+                events.peek().getSnapshotId());
+        }
+        results.push(result);
     }
 
 }
