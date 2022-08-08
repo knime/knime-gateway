@@ -53,6 +53,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -92,6 +93,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
@@ -1101,8 +1103,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var component = new NodeIDEnt(2);
 
         // add a node on root-level
-        ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(rowFilterFactory, null, 12, 13));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 12, 13);
+        var result = ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(rowFilterFactory, null, 12, 13));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 12, 13, result);
+
+
 
         // undo
         // NOTE: for some reason the undo (i.e. delete node) seems to be carried out asynchronously by the
@@ -1113,8 +1117,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().isEmpty()));
 
         // add node to metanode
-        ws().executeWorkflowCommand(wfId, metanode, buildAddNodeCommand(rowFilterFactory, null, 13, 14));
-        checkForNode(ws().getWorkflow(wfId, metanode, Boolean.FALSE), rowFilterFactory, 13, 14);
+        result = ws().executeWorkflowCommand(wfId, metanode, buildAddNodeCommand(rowFilterFactory, null, 13, 14));
+        checkForNode(ws().getWorkflow(wfId, metanode, Boolean.FALSE), rowFilterFactory, 13, 14, result);
 
         // undo
         ws().undoWorkflowCommand(wfId, metanode);
@@ -1123,8 +1127,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 ws().getWorkflow(wfId, metanode, Boolean.FALSE).getWorkflow().getNodeTemplates().isEmpty()));
 
         // add node to component
-        ws().executeWorkflowCommand(wfId, component, buildAddNodeCommand(rowFilterFactory, null, 14, 15));
-        checkForNode(ws().getWorkflow(wfId, component, Boolean.FALSE), rowFilterFactory, 14, 15);
+        result = ws().executeWorkflowCommand(wfId, component, buildAddNodeCommand(rowFilterFactory, null, 14, 15));
+        checkForNode(ws().getWorkflow(wfId, component, Boolean.FALSE), rowFilterFactory, 14, 15, result);
 
         // undo
         ws().undoWorkflowCommand(wfId, component);
@@ -1136,8 +1140,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var jsNodeFactory = "org.knime.dynamic.js.v30.DynamicJSNodeFactory";
         var factorySettings =
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
-        ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + ":8e81ce56", 15, 16);
+        result = ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + ":8e81ce56", 15, 16, result);
 
         // add a node that doesn't exists
         Exception ex  = assertThrows(OperationNotAllowedException.class,
@@ -1158,13 +1162,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setPosition(builder(XYEntBuilder.class).setX(x).setY(y).build()).build();
     }
 
-    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y) {
+    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y, final CommandResultEnt result) {
         assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
         var nodeEnt = wf.getWorkflow().getNodes().values().stream()
             .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
             .findFirst().orElseThrow();
         assertThat(nodeEnt.getPosition().getX(), is(x));
         assertThat(nodeEnt.getPosition().getY(), is(y));
+        var newNodeId = ((AddNodeResultEnt)result).getNewNodeId();
+        assertThat(newNodeId, equalTo(nodeEnt.getId()));
     }
 
     /**

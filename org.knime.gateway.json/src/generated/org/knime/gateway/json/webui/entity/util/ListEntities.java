@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.AddNodeResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedConnectionActionsEntMixIn;
@@ -147,6 +148,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEntMixIn.class);
+        res.add(AddNodeResultEntMixIn.class);
         res.add(AddPortCommandEntMixIn.class);
         res.add(AllowedActionsEntMixIn.class);
         res.add(AllowedConnectionActionsEntMixIn.class);
@@ -235,6 +237,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
+        res.add(AddNodeResultEntMixIn.AddNodeResultEntMixInBuilder.class);
         res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AllowedConnectionActionsEntMixIn.AllowedConnectionActionsEntMixInBuilder.class);

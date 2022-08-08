@@ -44,54 +44,25 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt.DefaultAddNodeResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
-,
-  @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
-,
-  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
-,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "addNodeResult")
-})
-@JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
+
+@JsonDeserialize(builder=DefaultAddNodeResultEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface CommandResultEntMixIn extends CommandResultEnt {
+public interface AddNodeResultEntMixIn extends AddNodeResultEnt {
 
     @Override
     @JsonIgnore
@@ -105,46 +76,34 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
     @JsonProperty("kind")
     public KindEnum getKind();
     
+    @Override
+    @JsonProperty("newNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
      * @author Martin Horn, University of Konstanz
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
-,
-  @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
-,
-  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
-,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "addNodeResult")
-})
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {
+    public static interface AddNodeResultEntMixInBuilder extends AddNodeResultEntBuilder {
     
         @Override
-        public CommandResultEntMixIn build();
+        public AddNodeResultEntMixIn build();
     
         @Override
         @JsonProperty("snapshotId")
-        public CommandResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        public AddNodeResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
         @JsonProperty("kind")
-        public CommandResultEntMixInBuilder setKind(final KindEnum kind);
+        public AddNodeResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("newNodeId")
+        public AddNodeResultEntMixInBuilder setNewNodeId(final org.knime.gateway.api.entity.NodeIDEnt newNodeId);
         
     }
 

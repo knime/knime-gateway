@@ -48,21 +48,30 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.io.IOException;
+import java.util.Collections;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
+import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
  * Workflow command to add a native node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class AddNode extends AbstractWorkflowCommand {
+final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     private NodeID m_addedNode;
 
@@ -96,6 +105,20 @@ final class AddNode extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         getWorkflowManager().removeNode(m_addedNode);
         m_addedNode = null;
+    }
+
+    @Override
+    public AddNodeResultEnt buildEntity(final String snapshotId) {
+        return builder(AddNodeResultEntBuilder.class)//
+            .setKind(KindEnum.ADDNODERESULT)//
+            .setNewNodeId(new NodeIDEnt(m_addedNode))//
+            .setSnapshotId(snapshotId)//
+            .build();
+    }
+
+    @Override
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChange.NODE_ADDED);
     }
 
 }

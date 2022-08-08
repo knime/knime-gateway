@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
@@ -148,6 +149,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEnt.class);
+        res.add(AddNodeResultEnt.class);
         res.add(AddPortCommandEnt.class);
         res.add(AllowedActionsEnt.class);
         res.add(AllowedConnectionActionsEnt.class);
@@ -236,6 +238,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
+        res.add(AddNodeResultEnt.AddNodeResultEntBuilder.class);
         res.add(AddPortCommandEnt.AddPortCommandEntBuilder.class);
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
         res.add(AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder.class);
