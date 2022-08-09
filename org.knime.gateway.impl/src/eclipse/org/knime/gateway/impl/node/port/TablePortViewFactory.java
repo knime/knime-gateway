@@ -49,22 +49,25 @@
 package org.knime.gateway.impl.node.port;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import org.knime.base.views.node.defaultdialog.DefaultInitialDataServiceImpl;
+import org.knime.base.views.node.tableview.TableViewNodeFactory;
+import org.knime.base.views.node.tableview.TableViewViewSettings;
+import org.knime.base.views.node.tableview.data.TableViewDataService;
+import org.knime.base.views.node.tableview.data.TableViewInitialData;
+import org.knime.base.views.node.tableview.data.render.DataValueImageRendererRegistry;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.json.impl.JsonInitialDataServiceImpl;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcDataServiceImpl;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
-import org.knime.gateway.impl.node.port.table.DefaultTableService;
-import org.knime.gateway.impl.node.port.table.Table;
-import org.knime.gateway.impl.node.port.table.TableService;
 
 /**
- * Factory for the port view of a {@link BufferedDataTable}.
+ * Factory for the {@link PortView} of a {@link BufferedDataTable}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -72,28 +75,34 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
     @Override
     public PortView createPortView(final BufferedDataTable table) {
-        var tableService = new DefaultTableService(table);
-        return new PortView() {
+        var pageId = TableViewNodeFactory.getPageId();
+        var rendererRegistry =
+            new DataValueImageRendererRegistry(() -> pageId, TableViewNodeFactory.RENDERED_CELL_IMAGES_PATH_PREFIX);
+        return new PortView() { // NOSONAR
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
-                return Optional.of(new JsonInitialDataServiceImpl<Table>(() -> tableService.getTable(0, 100)));
+                Supplier<TableViewInitialData> initialTableDataSupplier = () -> TableViewNodeFactory
+                    .createInitialData(new TableViewViewSettings(table.getDataTableSpec()), table, rendererRegistry);
+                return Optional.of(new DefaultInitialDataServiceImpl<TableViewInitialData>(initialTableDataSupplier));
             }
 
             @Override
             public Optional<DataService> createDataService() {
-                var dataService = new JsonRpcDataServiceImpl(new JsonRpcSingleServer<TableService>(tableService));
+                var tableService = TableViewNodeFactory.createDataService(table, rendererRegistry);
+                var dataService =
+                    new JsonRpcDataServiceImpl(new JsonRpcSingleServer<TableViewDataService>(tableService));
                 return Optional.of(dataService);
             }
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "", "vue_component_reference").build();
+                return TableViewNodeFactory.createPage(rendererRegistry);
             }
 
             @Override
             public String getPageId() {
-                return "TablePortView";
+                return pageId;
             }
 
         };
