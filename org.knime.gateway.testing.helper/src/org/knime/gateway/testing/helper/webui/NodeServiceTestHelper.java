@@ -314,8 +314,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
         assertThat(portViewJsonNode.get("initialData"), notNullValue());
         resourceInfo = portViewJsonNode.get("resourceInfo");
-        assertThat(resourceInfo.get("id").textValue(), is("TablePortView"));
-        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_REFERENCE"));
+        assertThat(resourceInfo.get("id").textValue(), is("view_org.knime.base.views.node.tableview.TableViewNodeFactory"));
+        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
 
         // get data for an inactive port
         message =
@@ -326,7 +326,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // get data for a metanode port
         portView = ns().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
         portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
-        assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("TablePortView"));
+        assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(),
+            is("view_org.knime.base.views.node.tableview.TableViewNodeFactory"));
 
         // get data for a metanode port that is not executed
         message =
@@ -347,10 +348,10 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // initialData
         var initialData = ns().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
-        assertThat(jsonNode.get("result").get("rows"), notNullValue());
+        assertThat(jsonNode.get("result").get("table"), notNullValue());
 
         // data
-        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getTable", "0", "2");
+        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null);
         var data = ns().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("rows"), notNullValue());

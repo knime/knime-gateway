@@ -49,6 +49,7 @@ package org.knime.gateway.impl.node.port;
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.knime.core.webui.data.rpc.json.JsonRpcDataService.jsonRpcRequest;
 
@@ -56,8 +57,8 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.knime.base.views.node.tableview.TableViewNodeFactory;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
@@ -78,22 +79,16 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
 import org.knime.core.webui.data.text.TextInitialDataService;
 import org.knime.core.webui.node.port.PortView;
-import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.node.port.table.TableSpec;
-import org.knime.gateway.testing.helper.ObjectToString;
-import org.knime.gateway.testing.helper.ResultChecker;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests {@link TablePortViewFactory}.
@@ -102,89 +97,71 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
  */
 public class TablePortViewFactoryTest {
 
-    private ResultChecker m_resultChecker;
-
-    private static final ObjectMapper MAPPER;
-
-    static {
-        MAPPER = JsonMapper.builder().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true).build();
-    }
-
-    /**
-     * Inits the result checker for snapshot testing.
-     *
-     * @throws IOException
-     */
-    @Before
-    public void initResultChecker() throws IOException {
-        m_resultChecker = new ResultChecker(new ObjectToString(MAPPER),
-            CoreUtil.resolveToFile("/files/test_snapshots", this.getClass()));
-    }
-
     /**
      * Asserts that the correct page is returned by the {@link PortView} created by the {@link TablePortViewFactory}.
+     * @throws IOException
      */
     @Test
-    public void testTablePortViewPage() {
+    public void testTablePortViewPage() throws IOException {
         var bdt = createTable(2);
-        var portView = new TablePortViewFactory().createPortView(bdt);
+        var portViewAndDispose = createPortView(bdt);
+        var portView = portViewAndDispose.getFirst();
         var page = portView.getPage();
-        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
+        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_LIB"));
         var pageId = portView.getPageId();
-        assertThat(pageId, is("TablePortView"));
+        assertThat(pageId, is("view_org.knime.base.views.node.tableview.TableViewNodeFactory"));
+
+        portViewAndDispose.getSecond().dispose();
     }
 
     /**
      * Checks the {@link InitialDataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     * @throws IOException
      */
     @Test
-    public void testTablePortViewInitialData() {
+    public void testTablePortViewInitialData() throws IOException {
         var bdt = createTable(2);
-        var portView = new TablePortViewFactory().createPortView(bdt);
-        var initialData = ((TextInitialDataService)portView.createInitialDataService().get()).getInitialData();
-        checkResult("table_port_view_initial_data", initialData);
+        var portView = createPortView(bdt);
+        var initialData = ((TextInitialDataService)portView.getFirst().createInitialDataService().get()).getInitialData();
+        assertThat(initialData, containsString("{\"result\":{\"table\":{\"rows\":"));
+
+        portView.getSecond().dispose();
     }
 
     /**
      * Checks the {@link DataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     * @throws IOException
      */
     @Test
-    public void testTablePortViewData() {
+    public void testTablePortViewData() throws IOException {
         var bdt = createTable(10);
-        var portView = new TablePortViewFactory().createPortView(bdt);
-        var jsonRpcResponse = ((JsonRpcDataService)portView.createDataService().get())
-            .handleRequest(jsonRpcRequest("getTable", "0", "10"));
-        checkResult("table_port_view_data", jsonRpcResponse);
+        var portView = createPortView(bdt);
+        var jsonRpcResponse = ((JsonRpcDataService)portView.getFirst().createDataService().get())
+            .handleRequest(jsonRpcRequest("getTable", "string", "0", "2", null));
+        assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
+
+        portView.getSecond().dispose();
     }
 
-    /**
-     * Makes sure that excess columns are ommitted.
+    /*
+     * returns the port view and a runnable to dispose port-view related stuff
      */
-    @Test
-    public void testTablePortViewDataWithTruncatedColumns() {
-        String[] names = new String[TableSpec.MAX_NUM_COLUMNS + 2];
-        DataType[] types = new DataType[names.length];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = "col " + i;
-            types[i] = IntCell.TYPE;
+    private static Pair<PortView, Dispose> createPortView(final BufferedDataTable table) throws IOException {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new TableViewNodeFactory());
+        NodeContext.pushContext(nc);
+        try {
+            return Pair.create(new TablePortViewFactory().createPortView(table),
+                () -> WorkflowManagerUtil.disposeWorkflow(wfm));
+        } finally {
+            NodeContext.removeLastContext();
         }
-        BufferedDataTable bdt = createTable(new DataTableSpec(names, types));
-
-        var portView = new TablePortViewFactory().createPortView(bdt);
-        var jsonRpcResponse = ((JsonRpcDataService)portView.createDataService().get())
-            .handleRequest(jsonRpcRequest("getTable", "0", "10"));
-        checkResult("table_port_view_data_truncated_columns", jsonRpcResponse);
     }
 
-    private void checkResult(final String snapshotName, final String jsonString) {
-        Object jsonObject;
-        try {
-            jsonObject = MAPPER.readValue(jsonString, Object.class);
-        } catch (JsonProcessingException ex) {
-            // should never happen
-            throw new IllegalStateException(ex);
-        }
-        m_resultChecker.checkObject(TablePortViewFactoryTest.class, snapshotName, jsonObject);
+    @FunctionalInterface
+    @SuppressWarnings("javadoc")
+    private static interface Dispose {
+        void dispose();
     }
 
     private static final DataTableSpec SPEC =

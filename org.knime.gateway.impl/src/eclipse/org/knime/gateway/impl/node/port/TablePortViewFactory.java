@@ -58,6 +58,7 @@ import org.knime.base.views.node.tableview.data.TableViewDataService;
 import org.knime.base.views.node.tableview.data.TableViewInitialData;
 import org.knime.base.views.node.tableview.data.render.DataValueImageRendererRegistry;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcDataServiceImpl;
@@ -76,20 +77,22 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
     @Override
     public PortView createPortView(final BufferedDataTable table) {
         var pageId = TableViewNodeFactory.getPageId();
-        var rendererRegistry =
-            new DataValueImageRendererRegistry(() -> pageId, TableViewNodeFactory.RENDERED_CELL_IMAGES_PATH_PREFIX);
+        var rendererRegistry = new DataValueImageRendererRegistry(() -> pageId);
+        var tableId = TableViewNodeFactory.getTableId(NodeContext.getContext().getNodeContainer().getID()) + "_"
+            + table.getBufferedTableId();
         return new PortView() { // NOSONAR
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
-                Supplier<TableViewInitialData> initialTableDataSupplier = () -> TableViewNodeFactory
-                    .createInitialData(new TableViewViewSettings(table.getDataTableSpec()), table, rendererRegistry);
+                Supplier<TableViewInitialData> initialTableDataSupplier =
+                    () -> TableViewNodeFactory.createInitialData(new TableViewViewSettings(table.getDataTableSpec()),
+                        table, tableId, rendererRegistry);
                 return Optional.of(new DefaultInitialDataServiceImpl<TableViewInitialData>(initialTableDataSupplier));
             }
 
             @Override
             public Optional<DataService> createDataService() {
-                var tableService = TableViewNodeFactory.createDataService(table, rendererRegistry);
+                var tableService = TableViewNodeFactory.createDataService(table, tableId, rendererRegistry);
                 var dataService =
                     new JsonRpcDataServiceImpl(new JsonRpcSingleServer<TableViewDataService>(tableService));
                 return Optional.of(dataService);
