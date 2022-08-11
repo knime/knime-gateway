@@ -105,7 +105,7 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
     public void testStreamedWorkflow() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
         executeWorkflowAsync(wfId);
-        await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
+        await().atMost(4, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
             Map<String, NodeEnt> nodes = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow().getNodes();
             NodeStateEnt s1 = ((ComponentNodeEnt)nodes.get("root:3")).getState();
             NodeStateEnt s2 = ((ComponentNodeEnt)nodes.get("root:5")).getState();
