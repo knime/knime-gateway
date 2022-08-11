@@ -64,24 +64,15 @@
   "path" : "/nodes/root:3:0:7/outPorts/1/portObjectVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
-  "op" : "replace",
-  "path" : "/allowedActions/canCancel",
-  "value" : false
+  "op" : "remove",
+  "path" : "/nodes/root:3:0:3/state/warning"
 }, {
   "op" : "replace",
   "path" : "/allowedActions/canReset",
   "value" : true
 }, {
   "op" : "replace",
-  "path" : "/connections/root:3:0:5_1/allowedActions/canDelete",
-  "value" : true
-}, {
-  "op" : "replace",
-  "path" : "/connections/root:3:0:6_1/allowedActions/canDelete",
-  "value" : true
-}, {
-  "op" : "replace",
-  "path" : "/connections/root:3:0:7_1/allowedActions/canDelete",
+  "path" : "/dirty",
   "value" : true
 }, {
   "op" : "replace",
@@ -99,10 +90,6 @@
   "op" : "replace",
   "path" : "/nodes/root:3:0:5/allowedActions/canCollapse",
   "value" : "resetRequired"
-}, {
-  "op" : "replace",
-  "path" : "/nodes/root:3:0:5/allowedActions/canDelete",
-  "value" : true
 }, {
   "op" : "replace",
   "path" : "/nodes/root:3:0:5/allowedActions/canReset",
@@ -127,10 +114,6 @@
   "op" : "replace",
   "path" : "/nodes/root:3:0:7/allowedActions/canCollapse",
   "value" : "resetRequired"
-}, {
-  "op" : "replace",
-  "path" : "/nodes/root:3:0:7/allowedActions/canDelete",
-  "value" : true
 }, {
   "op" : "replace",
   "path" : "/nodes/root:3:0:7/allowedActions/canReset",

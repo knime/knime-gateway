@@ -152,9 +152,9 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             // slightly delays the creation of the events to increase
             // the determinism of the event patches
             try {
-                Thread.sleep(200);
+                Thread.sleep(400); // 200 is not enough
             } catch (InterruptedException ex) { // NOSONAR
-                //
+                // do nothing
             }
         });
 
