@@ -1103,9 +1103,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var component = new NodeIDEnt(2);
 
         // add a node on root-level
-        var result = ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(rowFilterFactory, null, 12, 13));
+        var result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowFilterFactory, null, 12, 13, null, null));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 12, 13, result);
-
 
 
         // undo
@@ -1117,7 +1117,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().isEmpty()));
 
         // add node to metanode
-        result = ws().executeWorkflowCommand(wfId, metanode, buildAddNodeCommand(rowFilterFactory, null, 13, 14));
+        result = ws().executeWorkflowCommand(wfId, metanode,
+            buildAddNodeCommand(rowFilterFactory, null, 13, 14, null, null));
         checkForNode(ws().getWorkflow(wfId, metanode, Boolean.FALSE), rowFilterFactory, 13, 14, result);
 
         // undo
@@ -1127,39 +1128,72 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 ws().getWorkflow(wfId, metanode, Boolean.FALSE).getWorkflow().getNodeTemplates().isEmpty()));
 
         // add node to component
-        result = ws().executeWorkflowCommand(wfId, component, buildAddNodeCommand(rowFilterFactory, null, 14, 15));
+        result = ws().executeWorkflowCommand(wfId, component,
+            buildAddNodeCommand(rowFilterFactory, null, 14, 15, null, null));
         checkForNode(ws().getWorkflow(wfId, component, Boolean.FALSE), rowFilterFactory, 14, 15, result);
 
         // undo
         ws().undoWorkflowCommand(wfId, component);
-        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> assertThat(
-                ws().getWorkflow(wfId, component, Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2)));
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, component, Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(2)));
 
         // add a dynamic node (i.e. with factory settings)
         var jsNodeFactory = "org.knime.dynamic.js.v30.DynamicJSNodeFactory";
         var factorySettings =
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
-        result = ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16));
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16, null, null));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + ":8e81ce56", 15, 16, result);
 
         // add a node that doesn't exists
-        Exception ex  = assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand("non-sense-factory", null, 0, 0)));
+        Exception ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId,
+            getRootID(), buildAddNodeCommand("non-sense-factory", null, 0, 0, null, null)));
         assertThat(ex.getMessage(), is("No node found for factory key non-sense-factory"));
 
         // add a dynamic node with non-sense settings
-        ex  = assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(jsNodeFactory, "blub", 0, 0)));
+        ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(jsNodeFactory, "blub", 0, 0, null, null)));
         assertThat(ex.getMessage(), startsWith("Problem reading factory settings while trying to create node from"));
+
+        // add and connect a node
+        var normalizerFactory = "org.knime.base.node.preproc.pmml.normalize.NormalizerPMMLNodeFactory2";
+        var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(normalizerFactory, null, 32, 64, null, null))).getNewNodeId();
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 1));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result);
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID()); // to remove row filter node
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(2)));
+        ws().undoWorkflowCommand(wfId, getRootID()); // to remove normalizer node
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(1)));
+
+        // redo
+        ws().redoWorkflowCommand(wfId, getRootID()); // bring back the normalizer node
+        assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2));
+
+        // try to connect to an incompatible port
+        ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2)));
+        assertThat(ex.getMessage(), is("Destination port index could not be infered"));
     }
 
     private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
-        final int x, final int y) {
+        final int x, final int y, final NodeIDEnt sourceNodeId, final Integer sourcePortIdx) {
         return builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
             .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class).setClassName(factoryClassName)
                 .setSettings(factorySettings).build())//
-            .setPosition(builder(XYEntBuilder.class).setX(x).setY(y).build()).build();
+            .setPosition(builder(XYEntBuilder.class).setX(x).setY(y).build())//
+            .setSourceNodeId(sourceNodeId)//
+            .setSourcePortIdx(sourcePortIdx)//
+            .build();
     }
 
     private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y, final CommandResultEnt result) {
@@ -1171,6 +1205,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(nodeEnt.getPosition().getY(), is(y));
         var newNodeId = ((AddNodeResultEnt)result).getNewNodeId();
         assertThat(newNodeId, equalTo(nodeEnt.getId()));
+    }
+
+    private static void checkForConnection(final WorkflowSnapshotEnt wf, final NodeIDEnt sourceNodeId,
+        final Integer sourcePortIdx, final CommandResultEnt result) {
+        var destNodeId = ((AddNodeResultEnt)result).getNewNodeId();
+        var connections = wf.getWorkflow().getConnections();
+        var numConnections = connections.values().stream()//
+            .filter(c -> c.getSourceNode().equals(sourceNodeId))//
+            .filter(c -> c.getSourcePort().equals(sourcePortIdx))//
+            .filter(c -> c.getDestNode().equals(destNodeId))//
+            .count();
+        assertThat(numConnections, is(1L));
     }
 
     /**

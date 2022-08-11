@@ -48,20 +48,47 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
- * Workflow command to add nodes based on a {@link AddNodeCommandEnt}. Determines whether the node shall simply be added
- * or added and connected to an existing node.
+ * Workflow command to add a node to the workflow and connect it to an existing node.
+ * This operation is a {@link CommandSequence} of {@link SimplyAddNode} and {@link Connect}.
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class AddNode extends CommandIfElse {
+public class AddAndConnectNode extends CommandSequence {
 
-    AddNode(final AddNodeCommandEnt commandEnt) {
-        super(wfm -> commandEnt.getSourceNodeId() == null || commandEnt.getSourcePortIdx() == null,
-            new SimplyAddNode(commandEnt), new AddAndConnectNode(commandEnt));
+    AddAndConnectNode(final AddNodeCommandEnt commandEnt) {
+        super(getCommands(commandEnt));
+    }
+
+    /**
+     * Override the method in {@link CommandSequence} to get result providing command which isn't the last command in
+     * the sequence
+     *
+     * TODO: This is the second time we override this, see {@link Cut}. Do we need a more general solution here?
+     */
+    @Override
+    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException {
+        return Optional.of((WithResult)m_commands.get(0));
+    }
+
+    private static List<WorkflowCommand> getCommands(final AddNodeCommandEnt commandEnt) {
+        var simplyAddNodeCommand = new SimplyAddNode(commandEnt);
+        var sourceNodeId = commandEnt.getSourceNodeId();
+        var sourcePortIdx = commandEnt.getSourcePortIdx();
+        Supplier<NodeIDEnt> destNodeIdSupplier = () -> simplyAddNodeCommand.buildEntity(null).getNewNodeId();
+        var connectCommand = new Connect(sourceNodeId, sourcePortIdx, destNodeIdSupplier);
+        return List.of(simplyAddNodeCommand, connectCommand);
     }
 
 }

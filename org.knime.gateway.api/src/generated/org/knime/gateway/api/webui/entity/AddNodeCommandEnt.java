@@ -74,6 +74,18 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public NodeFactoryKeyEnt getNodeFactory();
 
+  /**
+   * Optional parameter identifying the existing node to connect to
+   * @return sourceNodeId 
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
+
+  /**
+   * Optional parameter identifying the port index of the existing node to connect to
+   * @return sourcePortIdx 
+   **/
+  public Integer getSourcePortIdx();
+
 
     /**
      * The builder for the entity.
@@ -103,6 +115,22 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         AddNodeCommandEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
+        
+        /**
+         * Optional parameter identifying the existing node to connect to
+         * 
+         * @param sourceNodeId the property value,  
+         * @return this entity builder for chaining
+         */
+        AddNodeCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
+        
+        /**
+         * Optional parameter identifying the port index of the existing node to connect to
+         * 
+         * @param sourcePortIdx the property value,  
+         * @return this entity builder for chaining
+         */
+        AddNodeCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx);
         
         
         /**

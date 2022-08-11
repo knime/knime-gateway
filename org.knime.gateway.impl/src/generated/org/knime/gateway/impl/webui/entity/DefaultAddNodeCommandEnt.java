@@ -67,6 +67,8 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
   protected KindEnum m_kind;
   protected XYEnt m_position;
   protected NodeFactoryKeyEnt m_nodeFactory;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
+  protected Integer m_sourcePortIdx;
   
   protected DefaultAddNodeCommandEnt() {
     //for sub-classes
@@ -91,6 +93,8 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
         throw new IllegalArgumentException("nodeFactory must not be null.");
     }
     m_nodeFactory = immutable(builder.m_nodeFactory);
+    m_sourceNodeId = immutable(builder.m_sourceNodeId);
+    m_sourcePortIdx = immutable(builder.m_sourcePortIdx);
   }
   
    /**
@@ -108,7 +112,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
             return false;
         }
         DefaultAddNodeCommandEnt ent = (DefaultAddNodeCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeFactory, ent.m_nodeFactory);
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeFactory, ent.m_nodeFactory) && Objects.equals(m_sourceNodeId, ent.m_sourceNodeId) && Objects.equals(m_sourcePortIdx, ent.m_sourcePortIdx);
     }
 
 
@@ -122,6 +126,8 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
                .append(m_kind)
                .append(m_position)
                .append(m_nodeFactory)
+               .append(m_sourceNodeId)
+               .append(m_sourcePortIdx)
                .toHashCode();
    }
   
@@ -142,6 +148,16 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
         return m_nodeFactory;
   }
     
+  @Override
+  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
+        return m_sourceNodeId;
+  }
+    
+  @Override
+  public Integer getSourcePortIdx() {
+        return m_sourcePortIdx;
+  }
+    
   
     public static class DefaultAddNodeCommandEntBuilder implements AddNodeCommandEntBuilder {
     
@@ -152,6 +168,8 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
         private KindEnum m_kind;
         private XYEnt m_position;
         private NodeFactoryKeyEnt m_nodeFactory;
+        private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
+        private Integer m_sourcePortIdx;
 
         @Override
         public DefaultAddNodeCommandEntBuilder setKind(KindEnum kind) {
@@ -177,6 +195,18 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
                  throw new IllegalArgumentException("nodeFactory must not be null.");
              }
              m_nodeFactory = nodeFactory;
+             return this;
+        }
+
+        @Override
+        public DefaultAddNodeCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId) {
+             m_sourceNodeId = sourceNodeId;
+             return this;
+        }
+
+        @Override
+        public DefaultAddNodeCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx) {
+             m_sourcePortIdx = sourcePortIdx;
              return this;
         }
 

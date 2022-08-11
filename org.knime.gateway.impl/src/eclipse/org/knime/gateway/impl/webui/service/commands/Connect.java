@@ -48,8 +48,13 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.function.Supplier;
+
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
@@ -60,25 +65,66 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 final class Connect extends AbstractWorkflowCommand {
 
-    private final ConnectCommandEnt m_commandEnt;
+    private ConnectCommandEnt m_commandEnt;
 
     private ConnectionContainer m_newConnection;
 
     private ConnectionContainer m_oldConnection;
 
+    private NodeIDEnt m_sourceNodeId;
+
+    private Integer m_sourcePortIdx;
+
+    private Supplier<NodeIDEnt> m_destNodeIdSupplier;
+
     Connect(final ConnectCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
+    }
+
+    Connect(final NodeIDEnt sourceNodeId, final Integer sourcePortIdx, final Supplier<NodeIDEnt> destNodeIdSupplier) {
+        m_sourceNodeId = sourceNodeId;
+        m_sourcePortIdx = sourcePortIdx;
+        m_destNodeIdSupplier = destNodeIdSupplier;
     }
 
     @Override
     public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         var projectWfm = wfm.getProjectWFM();
-        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
-        var sourcePortIdx = m_commandEnt.getSourcePortIdx();
-        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
-        var destPortIdx = m_commandEnt.getDestinationPortIdx();
+        NodeID sourceNodeId;
+        Integer sourcePortIdx;
+        NodeID destNodeId;
+        Integer destPortIdx;
+        if (m_commandEnt != null) { // In case the command entity was provided
+            sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
+            sourcePortIdx = m_commandEnt.getSourcePortIdx();
+            destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
+            destPortIdx = m_commandEnt.getDestinationPortIdx();
+        } else { // In case we need to get the destination node id and infer port index first
+            sourceNodeId = m_sourceNodeId.toNodeID(projectWfm.getID());
+            sourcePortIdx = m_sourcePortIdx;
+            destNodeId = m_destNodeIdSupplier.get().toNodeID(projectWfm.getID());
+            destPortIdx = inferDestPortIdx(getWorkflowManager(), sourceNodeId, sourcePortIdx, destNodeId);
+        }
+        return connectNodesAndReturnIfWorkflowHasChanged(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+    }
 
+    private static Integer inferDestPortIdx(final WorkflowManager wfm, final NodeID sourceNodeId,
+        final Integer sourcePortIdx, final NodeID destNodeId) throws OperationNotAllowedException {
+        var sourceNode = wfm.getNodeContainer(sourceNodeId);
+        var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+        var destNode = wfm.getNodeContainer(destNodeId);
+        for (var i = 0; i < destNode.getNrInPorts(); i++) {
+            if (destNode.getOutPort(i).getPortType().equals(sourcePortType)) {
+                return i;
+            }
+        }
+        throw new OperationNotAllowedException("Destination port index could not be infered");
+    }
+
+    private boolean connectNodesAndReturnIfWorkflowHasChanged(final WorkflowManager wfm, final NodeID sourceNodeId,
+        final Integer sourcePortIdx, final NodeID destNodeId, final Integer destPortIdx)
+        throws OperationNotAllowedException {
         try {
             m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, destPortIdx));
         } catch (IllegalArgumentException e) {
@@ -97,7 +143,6 @@ final class Connect extends AbstractWorkflowCommand {
         m_newConnection = wfm.addConnection(sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
         return true;
     }
-
 
     @Override
     public boolean canUndo() {
