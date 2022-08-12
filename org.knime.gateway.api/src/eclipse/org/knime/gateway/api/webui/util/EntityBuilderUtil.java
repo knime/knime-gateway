@@ -939,6 +939,8 @@ public final class EntityBuilderUtil {
         var inPorts = buildNodePortEnts(nnc, true, buildContext);
         var outPorts = buildNodePortEnts(nnc, false, buildContext);
         var portGroups = buildPortGroupEntsMap(nnc, inPorts, outPorts, buildContext).orElse(null);
+        var hasDialog = NodeDialogManager.hasNodeDialog(nnc) ? Boolean.TRUE : null;
+        var hasView = NodeViewManager.hasNodeView(nnc) ? Boolean.TRUE : null;
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setKind(KindEnum.NODE)//
@@ -952,6 +954,8 @@ public final class EntityBuilderUtil {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nnc))//
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
+            .setHasDialog(hasDialog)
+            .setHasView(hasView)//
             .build();
     }
 

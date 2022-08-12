@@ -92,6 +92,18 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public java.util.Map<String, PortGroupEnt> getPortGroups();
 
+  /**
+   * Indicates whether this node has a dialog. Not present, if the node has no dialog.
+   * @return hasDialog 
+   **/
+  public Boolean hasDialog();
+
+  /**
+   * Indicates whether the node has a view.  Not present, if the node has no view.
+   * @return hasView 
+   **/
+  public Boolean hasView();
+
 
     /**
      * The builder for the entity.
@@ -193,6 +205,22 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setPortGroups(java.util.Map<String, PortGroupEnt> portGroups);
+        
+        /**
+         * Indicates whether this node has a dialog. Not present, if the node has no dialog.
+         * 
+         * @param hasDialog the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setHasDialog(Boolean hasDialog);
+        
+        /**
+         * Indicates whether the node has a view.  Not present, if the node has no view.
+         * 
+         * @param hasView the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setHasView(Boolean hasView);
         
         
         /**

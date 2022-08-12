@@ -62,9 +62,15 @@ import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.node.DataServiceManager;
+import org.knime.core.webui.node.NNCWrapper;
 import org.knime.core.webui.node.NodePortWrapper;
+import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
@@ -167,6 +173,89 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
+    public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
+        throws NodeNotFoundException, InvalidRequestException {
+        var nnc = getNNC(projectId, workflowId, nodeId);
+        if (!NodeDialogManager.hasNodeDialog(nnc)) {
+            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a dialog");
+        }
+        return new NodeDialogEnt(nnc);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
+        throws NodeNotFoundException, InvalidRequestException {
+        var nnc = getNNC(projectId, workflowId, nodeId);
+        if (!NodeViewManager.hasNodeView(nnc)) {
+            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a view");
+        }
+        if (!nnc.getNodeContainerState().isExecuted()) {
+            throw new InvalidRequestException(
+                "Node view can't be requested. The node " + nnc.getNameWithID() + " is not executed.");
+        }
+        return NodeViewEnt.create(nnc);
+    }
+
+    private static NativeNodeContainer getNNC(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        NodeContainer nc;
+        try {
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+
+        if (!(nc instanceof NativeNodeContainer)) {
+            throw new InvalidRequestException("The requested node " + nc.getNameWithID() + " is not a native node");
+        }
+
+        return (NativeNodeContainer)nc;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String extensionType, final String serviceType, final String request)
+        throws NodeNotFoundException, InvalidRequestException {
+
+        var nnc = getNNC(projectId, workflowId, nodeId);
+
+        final DataServiceManager<NNCWrapper> dataServiceManager;
+        if ("view".equals(extensionType)) {
+            dataServiceManager = NodeViewManager.getInstance();
+        } else if ("dialog".equals(extensionType)) {
+            dataServiceManager = NodeDialogManager.getInstance();
+        } else {
+            throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
+        }
+
+        var nncWrapper = NNCWrapper.of(nnc);
+        if ("initial_data".equals(serviceType)) {
+            return dataServiceManager.callTextInitialDataService(nncWrapper);
+        } else if ("data".equals(serviceType)) {
+            return dataServiceManager.callTextDataService(nncWrapper, request);
+        } else if ("apply_data".equals(serviceType)) {
+            try {
+                dataServiceManager.callTextApplyDataService(nncWrapper, request);
+            } catch (IOException e) {
+                NodeLogger.getLogger(getClass()).error(e);
+                return e.getMessage();
+            }
+            return "";
+        } else {
+            throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
@@ -251,7 +340,7 @@ public final class DefaultNodeService implements NodeService {
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
                 .orElseThrow(() -> new ServiceExceptions.NodeDescriptionNotAvailableException(
                     "Could not create instance of node"));
-            NativeNodeDescriptionEnt description = EntityBuilderUtil.buildNativeNodeDescriptionEnt(coreNode);
+            var description = EntityBuilderUtil.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
             return description;
         }

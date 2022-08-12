@@ -406,4 +406,101 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(ndEnt, "node_description_" + classname + (settingsReadable != null ? "_" + settingsReadable : ""));
     }
 
+    /**
+     * Tests {@link NodeService#getNodeDialog(String, NodeIDEnt, NodeIDEnt)}.
+     *
+     * @throws Exception
+     */
+    public void testGetNodeDialog() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
+
+        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+            .get("root:1")).hasDialog(), is(Boolean.TRUE));
+
+        var dialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(1));
+        var nodeDialogJsonNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(dialogEnt, JsonNode.class);
+        assertThat(nodeDialogJsonNode.get("projectId").textValue(), containsString("view nodes"));
+        assertThat(nodeDialogJsonNode.get("workflowId").textValue(), is("root"));
+        assertThat(nodeDialogJsonNode.get("nodeId").textValue(), is("root:1"));
+        assertThat(nodeDialogJsonNode.get("extensionType").textValue(), is("dialog"));
+        assertThat(nodeDialogJsonNode.get("initialData").textValue(), notNullValue());
+        var resourceInfo = nodeDialogJsonNode.get("resourceInfo");
+        assertThat(resourceInfo.get("id").textValue(),
+            is("dialog_org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory"));
+        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
+
+        var message = assertThrows(InvalidRequestException.class,
+            () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
+        assertThat(message, containsString("doesn't have a dialog"));
+    }
+
+    /**
+     * Tests {@link NodeService#getNodeView(String, NodeIDEnt, NodeIDEnt)}.
+     *
+     * @throws Exception
+     */
+    public void testGetNodeView() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
+
+        var message = assertThrows(InvalidRequestException.class,
+            () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1))).getMessage();
+        assertThat(message, containsString("is not executed"));
+
+        executeWorkflow(projectId);
+
+        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+                .get("root:1")).hasView(), is(Boolean.TRUE));
+
+        var viewEnt = ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));
+        var nodeViewJsonNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(viewEnt, JsonNode.class);
+        assertThat(nodeViewJsonNode.get("projectId").textValue(), containsString("view nodes"));
+        assertThat(nodeViewJsonNode.get("workflowId").textValue(), is("root"));
+        assertThat(nodeViewJsonNode.get("nodeId").textValue(), is("root:1"));
+        assertThat(nodeViewJsonNode.get("extensionType").textValue(), is("view"));
+        assertThat(nodeViewJsonNode.get("initialData").textValue(), notNullValue());
+        var resourceInfo = nodeViewJsonNode.get("resourceInfo");
+        assertThat(resourceInfo.get("id").textValue(),
+            is("view_org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory"));
+        assertThat(resourceInfo.get("type").textValue(), is("HTML"));
+
+        message = assertThrows(InvalidRequestException.class,
+            () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
+        assertThat(message, containsString("doesn't have a view"));
+    }
+
+    /**
+     * Tests {@link NodeService#callNodeDataService(String, NodeIDEnt, NodeIDEnt, String, String, String)}.
+     *
+     * @throws Exception
+     */
+    public void testCallNodeDataService() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
+        executeWorkflow(projectId);
+
+        // initialData
+        var initialData = ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "initial_data", "");
+        var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
+        assertThat(jsonNode.get("result").get("data"), notNullValue());
+
+        // data
+        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getData", "Universe_0_0", "Universe_0_1", "2");
+        var data = ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "data", jsonRpcRequest);
+        jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
+        assertThat(jsonNode.get("result").get("points"), notNullValue());
+        assertThat(jsonNode.get("id").intValue(), is(1));
+
+        // errors
+        var message = assertThrows(InvalidRequestException.class,
+            () -> ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "nonsense", ""))
+                .getMessage();
+        assertThat(message, containsString("Unknown service type"));
+        message = assertThrows(InvalidRequestException.class,
+            () -> ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "nonsense", "data", ""))
+                .getMessage();
+        assertThat(message, containsString("Unknown target"));
+
+    }
+
 }

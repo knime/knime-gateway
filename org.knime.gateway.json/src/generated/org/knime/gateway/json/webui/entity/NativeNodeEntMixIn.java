@@ -124,6 +124,14 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonProperty("portGroups")
     public java.util.Map<String, PortGroupEnt> getPortGroups();
     
+    @Override
+    @JsonProperty("hasDialog")
+    public Boolean hasDialog();
+    
+    @Override
+    @JsonProperty("hasView")
+    public Boolean hasView();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -184,6 +192,14 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("portGroups")
         public NativeNodeEntMixInBuilder setPortGroups(final java.util.Map<String, PortGroupEnt> portGroups);
+        
+        @Override
+        @JsonProperty("hasDialog")
+        public NativeNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        
+        @Override
+        @JsonProperty("hasView")
+        public NativeNodeEntMixInBuilder setHasView(final Boolean hasView);
         
     }
 
