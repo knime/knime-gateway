@@ -54,6 +54,7 @@ import java.util.Map;
 
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -63,6 +64,7 @@ import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
+import org.knime.gateway.impl.webui.service.events.SelectionEventSourceDelegator;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
 /**
@@ -74,7 +76,8 @@ public final class DefaultEventService implements EventService {
 
     private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, true);
 
-    private final Map<Class<?>, EventSource<?, ?>> m_eventSources = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Class<? extends EventTypeEnt>, EventSource<? extends EventTypeEnt, ?>> m_eventSources =
+        Collections.synchronizedMap(new HashMap<>());
 
     private final AppStateProvider m_appStateProvider =
         ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
@@ -101,18 +104,20 @@ public final class DefaultEventService implements EventService {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({"unchecked"})
     @Override
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new WorkflowChangedEventSource(this::sendEvent, m_workflowMiddleware));
+                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider, m_workflowProjectManager,
+                t -> new AppStateChangedEventSource(m_eventConsumer, m_appStateProvider, m_workflowProjectManager,
                     m_workflowMiddleware));
+        } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new SelectionEventSourceDelegator(m_eventConsumer));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -149,16 +154,6 @@ public final class DefaultEventService implements EventService {
      */
     void setPreEventCreationCallbackForTesting(final Runnable preEventCreationCallback) {
         m_eventSources.values().forEach(s -> s.setPreEventCreationCallback(preEventCreationCallback));
-    }
-
-    /**
-     * Send a named event to the event consumer
-     *
-     * @param name The event name
-     * @param event The actual event object
-     */
-    private synchronized void sendEvent(final String name, final Object event) {
-        m_eventConsumer.accept(name, event);
     }
 
     /*

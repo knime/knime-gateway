@@ -44,45 +44,25 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "typeId",
-    visible = true,
-    defaultImpl = DefaultEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventTypeEnt.class, name="EventType")
-,
-  @Type(value = DefaultSelectionEventTypeEnt.class, name = "SelectionEventType")
-,
-  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
-,
-  @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
-})
-@JsonDeserialize(builder=DefaultEventTypeEntBuilder.class)
+
+@JsonDeserialize(builder=DefaultSelectionEventTypeEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface EventTypeEntMixIn extends EventTypeEnt {
+public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
 
     @Override
     @JsonIgnore
@@ -92,36 +72,46 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
     @JsonProperty("typeId")
     public String getTypeId();
     
+    @Override
+    @JsonProperty("projectId")
+    public String getProjectId();
+    
+    @Override
+    @JsonProperty("workflowId")
+    public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId();
+    
+    @Override
+    @JsonProperty("nodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
      * @author Martin Horn, University of Konstanz
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "typeId",
-    visible = true,
-    defaultImpl = DefaultEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventTypeEnt.class, name="EventType")
-,
-  @Type(value = DefaultSelectionEventTypeEnt.class, name = "SelectionEventType")
-,
-  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
-,
-  @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
-})
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface EventTypeEntMixInBuilder extends EventTypeEntBuilder {
+    public static interface SelectionEventTypeEntMixInBuilder extends SelectionEventTypeEntBuilder {
     
         @Override
-        public EventTypeEntMixIn build();
+        public SelectionEventTypeEntMixIn build();
     
         @Override
         @JsonProperty("typeId")
-        public EventTypeEntMixInBuilder setTypeId(final String typeId);
+        public SelectionEventTypeEntMixInBuilder setTypeId(final String typeId);
+        
+        @Override
+        @JsonProperty("projectId")
+        public SelectionEventTypeEntMixInBuilder setProjectId(final String projectId);
+        
+        @Override
+        @JsonProperty("workflowId")
+        public SelectionEventTypeEntMixInBuilder setWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt workflowId);
+        
+        @Override
+        @JsonProperty("nodeId")
+        public SelectionEventTypeEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
     }
 

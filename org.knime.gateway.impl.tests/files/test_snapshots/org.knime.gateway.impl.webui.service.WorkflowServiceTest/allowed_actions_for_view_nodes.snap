@@ -36,6 +36,16 @@
     "canOpenDialog" : true,
     "canReset" : false
   },
+  "root:15" : {
+    "canCancel" : false,
+    "canCollapse" : "true",
+    "canDelete" : true,
+    "canExecute" : true,
+    "canOpenDialog" : true,
+    "canOpenLegacyFlowVariableDialog" : true,
+    "canOpenView" : false,
+    "canReset" : false
+  },
   "root:2" : {
     "canCancel" : false,
     "canCollapse" : "true",

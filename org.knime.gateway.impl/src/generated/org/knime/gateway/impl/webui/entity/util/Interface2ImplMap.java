@@ -180,6 +180,8 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntB
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
@@ -429,6 +431,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
+        }        
+        if(clazz == SelectionEventTypeEntBuilder.class) {
+            return (B)new DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();

@@ -192,4 +192,13 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         return m_service.get().getPortView(projectId, workflowId, nodeId, portIdx);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "updateDataPointSelection")
+    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, @JsonRpcParam(value="requestBody") java.util.List<String> requestBody)  {
+        m_service.get().updateDataPointSelection(projectId, workflowId, nodeId, mode, requestBody);    
+    }
+
 }

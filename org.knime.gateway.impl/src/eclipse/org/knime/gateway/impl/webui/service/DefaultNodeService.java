@@ -81,6 +81,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.impl.service.events.SelectionEventSource;
+import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -249,6 +251,22 @@ public final class DefaultNodeService implements NodeService {
             return "";
         } else {
             throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId, final String mode, final List<String> selection) {
+        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase());
+        var nc = (NativeNodeContainer)DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        try {
+            var rowKeys = NodeViewManager.getInstance().callSelectionTranslationService(nc, selection);
+            SelectionEventSource.processSelectionEvent(nc, selectionEventMode, true, rowKeys);
+        } catch (IOException ex) {
+            throw new IllegalStateException("Problem translating selection to row keys", ex);
         }
     }
 
