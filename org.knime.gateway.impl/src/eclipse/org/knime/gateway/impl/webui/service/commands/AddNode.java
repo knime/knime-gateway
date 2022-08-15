@@ -44,24 +44,104 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 10, 2022 (Kai Franze, KNIME GmbH): created
+ *   May 11, 2021 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
+import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
- * Workflow command to add nodes based on a {@link AddNodeCommandEnt}. Determines whether the node shall simply be added
- * or added and connected to an existing node.
+ * Workflow command to add a native node.
  *
- * @author Kai Franze, KNIME GmbH
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class AddNode extends CommandIfElse {
+final class AddNode extends AbstractWorkflowCommand implements WithResult {
+
+    private NodeID m_addedNode;
+
+    private AddNodeCommandEnt m_commandEnt;
 
     AddNode(final AddNodeCommandEnt commandEnt) {
-        super(wfm -> commandEnt.getSourceNodeId() == null || commandEnt.getSourcePortIdx() == null,
-            new SimplyAddNode(commandEnt), new AddAndConnectNode(commandEnt));
+        m_commandEnt = commandEnt;
+    }
+
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
+        var positionEnt = m_commandEnt.getPosition();
+        var factoryKeyEnt = m_commandEnt.getNodeFactory();
+        var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
+        try {
+            m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
+                targetPosition[0], targetPosition[1] - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
+        } catch (IOException | NoSuchElementException e) {
+            throw new OperationNotAllowedException(e.getMessage(), e);
+        }
+        // Optionally connect node
+        if (m_commandEnt.getSourceNodeId() != null && m_commandEnt.getSourcePortIdx() != null) {
+            var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm.getProjectWFM().getID());
+            var sourcePortIdx = m_commandEnt.getSourcePortIdx();
+            var destNodeId = m_addedNode;
+            var destPortIdx = inferDestPortIdx(wfm, sourceNodeId, sourcePortIdx, destNodeId);
+            Connect.addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+        }
+        return true;
+    }
+
+    private static Integer inferDestPortIdx(final WorkflowManager wfm, final NodeID sourceNodeId,
+        final Integer sourcePortIdx, final NodeID destNodeId) throws OperationNotAllowedException {
+        var sourceNode = wfm.getNodeContainer(sourceNodeId);
+        var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+        var destNode = wfm.getNodeContainer(destNodeId);
+        for (var i = 0; i < destNode.getNrInPorts(); i++) {
+            if (destNode.getOutPort(i).getPortType().equals(sourcePortType)) {
+                return i;
+            }
+        }
+        throw new OperationNotAllowedException("Destination port index could not be infered");
+    }
+
+
+    @Override
+    public boolean canUndo() {
+        return getWorkflowManager().canRemoveNode(m_addedNode);
+    }
+
+    @Override
+    public void undo() throws OperationNotAllowedException {
+        getWorkflowManager().removeNode(m_addedNode);
+        m_addedNode = null;
+    }
+
+    @Override
+    public AddNodeResultEnt buildEntity(final String snapshotId) {
+        return builder(AddNodeResultEntBuilder.class)//
+            .setKind(KindEnum.ADDNODERESULT)//
+            .setNewNodeId(new NodeIDEnt(m_addedNode))//
+            .setSnapshotId(snapshotId)//
+            .build();
+    }
+
+    @Override
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChange.NODE_ADDED);
     }
 
 }

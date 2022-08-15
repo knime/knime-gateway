@@ -248,9 +248,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class)
                 .setClassName("org.knime.base.node.util.sampledata.SampleDataNodeFactory").build())
             .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build()).setKind(KindEnum.ADD_NODE).build();
-//        var addNodeCommand = new AddNode(addCommandEnt);
-//        addNodeCommand.preExecuteToDetermineWhetherProvidesResult(wfKey);
-        var addNodeCommand = new SimplyAddNode(addCommandEnt);
+        var addNodeCommand = new AddNode(addCommandEnt);
         addNodeCommand.execute(wfKey);
         assertThat(wfm.getNodeContainers().size(), is(2));
         assertThat(addNodeCommand.canUndo(), is(true));
@@ -274,7 +272,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         assertThat(deleteCommand.canRedo(), is(true));
 
         wfm.executeAll();
-        assertThat(addNodeCommand.canUndo(), is(false)); // TODO: Why does this fail for a {@link HigherOrderCommand}?
+        assertThat(addNodeCommand.canUndo(), is(false));
         assertThat(connectCommand.canUndo(), is(false));
         assertThat(deleteCommand.canRedo(), is(false));
 
