@@ -52,9 +52,12 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.TreeMap;
 
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -85,6 +88,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
+        // Add node
         var positionEnt = m_commandEnt.getPosition();
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
         var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
@@ -95,29 +99,74 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
         // Optionally connect node
-        if (m_commandEnt.getSourceNodeId() != null && m_commandEnt.getSourcePortIdx() != null) {
-            var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm.getProjectWFM().getID());
-            var sourcePortIdx = m_commandEnt.getSourcePortIdx();
-            var destNodeId = m_addedNode;
-            var destPortIdx = inferDestPortIdx(wfm, sourceNodeId, sourcePortIdx, destNodeId);
-            Connect.addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+        try {
+            if (m_commandEnt.getSourceNodeId() != null) {
+                var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm.getProjectWFM().getID());
+                var destNodeId = m_addedNode;
+                var matchingPorts = getMatchingPorts(sourceNodeId, destNodeId);
+                for (var entry : matchingPorts.entrySet()) {
+                    Integer sourcePortIdx = entry.getKey();
+                    Integer destPortIdx = entry.getValue();
+                    Connect.addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+                }
+            }
+        } catch (OperationNotAllowedException e) {
+            undo(); // No side effect if exception is thrown
+            throw e;
         }
-        return true;
+        return true; // Workflow changed if no exceptions were thrown
     }
 
-    private static Integer inferDestPortIdx(final WorkflowManager wfm, final NodeID sourceNodeId,
-        final Integer sourcePortIdx, final NodeID destNodeId) throws OperationNotAllowedException {
+    private Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId)
+        throws OperationNotAllowedException {
+        if (m_commandEnt.getSourcePortIdx() != null) {
+            var sourcePortIdx = m_commandEnt.getSourcePortIdx();
+            var destPortIdx = getDestPortIdx(sourceNodeId, sourcePortIdx, destNodeId);
+            return Map.of(sourcePortIdx, destPortIdx);
+        } else {
+            var wfm = getWorkflowManager();
+            var sourceNode = wfm.getNodeContainer(sourceNodeId);
+            var destNode = wfm.getNodeContainer(destNodeId);
+            var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
+            var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1;
+            var matchingPorts = new TreeMap<Integer, Integer>();
+            for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
+                addFirstMatchingPortForDestPortIdx(destPortIdx, sourcePortFirst, sourceNode, destNode, matchingPorts);
+            }
+            return matchingPorts;
+        }
+    }
+
+    private Integer getDestPortIdx(final NodeID sourceNodeId, final Integer sourcePortIdx, final NodeID destNodeId)
+        throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
         var sourceNode = wfm.getNodeContainer(sourceNodeId);
         var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
         var destNode = wfm.getNodeContainer(destNodeId);
-        for (var i = 0; i < destNode.getNrInPorts(); i++) {
-            if (destNode.getOutPort(i).getPortType().equals(sourcePortType)) {
-                return i;
+        var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
+        for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
+            var destPortType = destNode.getInPort(destPortIdx).getPortType();
+            if ((sourcePortType.isSuperTypeOf(destPortType) || destPortType.isSuperTypeOf(sourcePortType)) // Port types match
+                && wfm.getOutgoingConnectionsFor(sourceNodeId, sourcePortIdx).isEmpty()) { // Port is not already connected
+                return destPortIdx;
             }
         }
         throw new OperationNotAllowedException("Destination port index could not be infered");
     }
 
+    private void addFirstMatchingPortForDestPortIdx(final Integer destPortIdx, final Integer sourcePortFirst,
+        final NodeContainer sourceNode, final NodeContainer destNode, final Map<Integer, Integer> matchingPorts) {
+        var wfm = getWorkflowManager();
+        var destPortType = destNode.getInPort(destPortIdx).getPortType();
+        for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
+            var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+            if ((sourcePortType.isSuperTypeOf(destPortType) || destPortType.isSuperTypeOf(sourcePortType)) // Port types match
+                && wfm.getOutgoingConnectionsFor(sourceNode.getID(), sourcePortIdx).isEmpty() // Source port is not already connected
+                && !matchingPorts.containsKey(sourcePortIdx) && !matchingPorts.containsValue(destPortIdx)) { // Ports weren't already assigned
+                matchingPorts.put(sourcePortIdx, destPortIdx);
+            }
+        }
+    }
 
     @Override
     public boolean canUndo() {

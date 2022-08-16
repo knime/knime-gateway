@@ -1163,9 +1163,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 1));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 64, 128, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
 
-        // undo
+        // undo adding both of the nodes
         ws().undoWorkflowCommand(wfId, getRootID()); // to remove row filter node
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
@@ -1175,14 +1175,50 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
                 is(1)));
 
-        // redo
-        ws().redoWorkflowCommand(wfId, getRootID()); // bring back the normalizer node
+        // redo adding the normalizer
+        ws().redoWorkflowCommand(wfId, getRootID());
         assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2));
 
         // try to connect to an incompatible port
         ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2)));
         assertThat(ex.getMessage(), is("Destination port index could not be infered"));
+
+        // redo adding the row filter
+        ws().redoWorkflowCommand(wfId, getRootID());
+        assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(3));
+
+        // try to connect to a port that is already used
+        var rowSplitterFactory = "org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory";
+        ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, 1)));
+        assertThat(ex.getMessage(), is("Destination port index could not be infered"));
+
+        // auto-connect won't use already connected ports
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, null));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowSplitterFactory, 128, 256, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false);
+
+        // undo adding the row splitter
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(3)));
+
+        // undo adding the row filter
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(2)));
+
+        // auto-connect and use all the compatible ports
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, null));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowSplitterFactory, 128, 256, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false);
     }
 
     private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
@@ -1208,7 +1244,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static void checkForConnection(final WorkflowSnapshotEnt wf, final NodeIDEnt sourceNodeId,
-        final Integer sourcePortIdx, final CommandResultEnt result) {
+        final Integer sourcePortIdx, final CommandResultEnt result, final boolean isPresent) {
         var destNodeId = ((AddNodeResultEnt)result).getNewNodeId();
         var connections = wf.getWorkflow().getConnections();
         var numConnections = connections.values().stream()//
@@ -1216,7 +1252,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .filter(c -> c.getSourcePort().equals(sourcePortIdx))//
             .filter(c -> c.getDestNode().equals(destNodeId))//
             .count();
-        assertThat(numConnections, is(1L));
+        assertThat(numConnections, is(isPresent ? 1L : 0L));
     }
 
     /**
