@@ -50,6 +50,7 @@ package org.knime.gateway.testing.helper;
 
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -68,6 +69,11 @@ public interface ServiceProvider {
      * @return node service implementation
      */
     NodeService getNodeService();
+
+    /**
+     * @return port service implementation
+     */
+    PortService getPortService();
 
     /**
      * @return event service implementation

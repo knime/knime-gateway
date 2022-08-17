@@ -55,23 +55,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
-import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NNCWrapper;
-import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
-import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
-import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
@@ -267,72 +262,6 @@ public final class DefaultNodeService implements NodeService {
             SelectionEventSource.processSelectionEvent(nc, selectionEventMode, true, rowKeys);
         } catch (IOException ex) {
             throw new IllegalStateException("Problem translating selection to row keys", ex);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Integer portIdx) throws NodeNotFoundException, InvalidRequestException {
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        if (nc instanceof SingleNodeContainer) {
-            if (portIdx != 0 && !nc.getNodeContainerState().isExecuted()) {
-                throw new InvalidRequestException(String.format(
-                    "No port view available because the respective node %s is not executed and there is no data.",
-                    nc.getNameWithID()));
-            }
-        } else {
-            if (!((WorkflowManager)nc).getOutPort(portIdx).getNodeContainerState().isExecuted()) {
-                throw new InvalidRequestException(
-                    String.format("No port view available at port index %d for node %s because there is no data.",
-                        portIdx, nc.getNameWithID()));
-            }
-        }
-
-        var outPort = nc.getOutPort(portIdx);
-        if (nc.getOutPort(portIdx).getPortObject() == InactiveBranchPortObject.INSTANCE) {
-            throw new InvalidRequestException(
-                String.format("No port view available because the port at index %d for node %s is inactive.", portIdx,
-                    nc.getNameWithID()));
-        }
-
-        if (PortViewManager.hasPortView(outPort.getPortType())) {
-            return new PortViewEnt(nc, portIdx);
-        } else {
-            throw new InvalidRequestException(
-                String.format("Port at index %d for node %s doesn't provide a view", portIdx, nc.getNameWithID()));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Integer portIdx, final String serviceType, final String body)
-        throws NodeNotFoundException, InvalidRequestException {
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        var portViewManager = PortViewManager.getInstance();
-        if ("initial_data".equals(serviceType)) {
-            return portViewManager.callTextInitialDataService(NodePortWrapper.of(nc, portIdx));
-        } else if ("data".equals(serviceType)) {
-            return portViewManager.callTextDataService(NodePortWrapper.of(nc, portIdx), body);
-        } else {
-            throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }
     }
 

@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -78,6 +79,7 @@ public final class ServiceInstances {
     private static final Map<Class<?>, Class<?>> INTERFACE_TO_IMPLEMENTATION_MAP = synchronizedMap(Map.of(//
         WorkflowService.class, DefaultWorkflowService.class, //
         NodeService.class, DefaultNodeService.class, //
+        PortService.class, DefaultPortService.class, //
         EventService.class, DefaultEventService.class, //
         ApplicationService.class, DefaultApplicationService.class, //
         NodeRepositoryService.class, DefaultNodeRepositoryService.class));

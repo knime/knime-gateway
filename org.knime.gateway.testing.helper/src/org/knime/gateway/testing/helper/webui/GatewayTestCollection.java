@@ -137,9 +137,6 @@ public final class GatewayTestCollection {
             es) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionStateInSubWorkflow());
         res.put("testGetNodeDescription",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testGetNodeDescription());
-        res.put("testGetPortView", (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testGetPortView());
-        res.put("testCallPortDataService",
-            (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testCallPortDataService());
         res.put("testGetNodeDialog",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testGetNodeDialog());
         res.put("testGetNodeView",
@@ -147,6 +144,9 @@ public final class GatewayTestCollection {
         res.put("testCallNodeDataService",
             (rc, sp, wl, we, es) -> new NodeServiceTestHelper(rc, sp, wl, we).testCallNodeDataService());
 
+        res.put("testGetPortView", (rc, sp, wl, we, es) -> new PortServiceTestHelper(rc, sp, wl, we).testGetPortView());
+        res.put("testCallPortDataService",
+            (rc, sp, wl, we, es) -> new PortServiceTestHelper(rc, sp, wl, we).testCallPortDataService());
 
         res.put("testJobManagerProperty",
             (rc, sp, wl, we, es) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testJobManagerProperty());

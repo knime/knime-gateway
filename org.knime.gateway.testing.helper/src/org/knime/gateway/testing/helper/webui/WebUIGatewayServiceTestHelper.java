@@ -66,6 +66,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeService;
+import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
@@ -253,6 +254,15 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected NodeService ns() {
         return m_serviceProvider.getNodeService();
+    }
+
+    /**
+     * A shortcut to get the node service instance.
+     *
+     * @return a port service instance
+     */
+    protected PortService ps() {
+        return m_serviceProvider.getPortService();
     }
 
     /**
