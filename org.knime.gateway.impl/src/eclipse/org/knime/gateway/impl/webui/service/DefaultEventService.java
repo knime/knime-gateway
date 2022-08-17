@@ -110,14 +110,14 @@ public final class DefaultEventService implements EventService {
         EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware));
+                t -> new WorkflowChangedEventSource(this::sendEvent, m_workflowMiddleware));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(m_eventConsumer, m_appStateProvider, m_workflowProjectManager,
+                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider, m_workflowProjectManager,
                     m_workflowMiddleware));
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new SelectionEventSourceDelegator(m_eventConsumer));
+                t -> new SelectionEventSourceDelegator(this::sendEvent));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -154,6 +154,18 @@ public final class DefaultEventService implements EventService {
      */
     void setPreEventCreationCallbackForTesting(final Runnable preEventCreationCallback) {
         m_eventSources.values().forEach(s -> s.setPreEventCreationCallback(preEventCreationCallback));
+    }
+
+    /**
+     * Send a named event to the event consumer. It's done in an extra method (instead of calling the event consumer
+     * directly whereever needed) in order to synchronize the calls on the event consumer. Because it's not guaranteed
+     * that the event consumer is thread-safe.
+     *
+     * @param name The event name
+     * @param event The actual event object
+     */
+    private synchronized void sendEvent(final String name, final Object event) {
+        m_eventConsumer.accept(name, event);
     }
 
     /*
