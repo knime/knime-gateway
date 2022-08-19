@@ -118,6 +118,10 @@ public interface NodeEntMixIn extends NodeEnt {
     public KindEnum getKind();
     
     @Override
+    @JsonProperty("hasDialog")
+    public Boolean hasDialog();
+    
+    @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
     
@@ -175,6 +179,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("kind")
         public NodeEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("hasDialog")
+        public NodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
         
         @Override
         @JsonProperty("allowedActions")

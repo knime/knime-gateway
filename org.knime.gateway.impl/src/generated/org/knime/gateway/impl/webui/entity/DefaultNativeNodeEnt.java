@@ -76,13 +76,13 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   protected NodeAnnotationEnt m_annotation;
   protected XYEnt m_position;
   protected KindEnum m_kind;
+  protected Boolean m_hasDialog;
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
   protected String m_templateId;
   protected NodeStateEnt m_state;
   protected LoopInfoEnt m_loopInfo;
   protected java.util.Map<String, PortGroupEnt> m_portGroups;
-  protected Boolean m_hasDialog;
   protected Boolean m_hasView;
   
   protected DefaultNativeNodeEnt() {
@@ -117,6 +117,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         throw new IllegalArgumentException("kind must not be null.");
     }
     m_kind = immutable(builder.m_kind);
+    m_hasDialog = immutable(builder.m_hasDialog);
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
     if(builder.m_templateId == null) {
@@ -126,7 +127,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
     m_state = immutable(builder.m_state);
     m_loopInfo = immutable(builder.m_loopInfo);
     m_portGroups = immutable(builder.m_portGroups);
-    m_hasDialog = immutable(builder.m_hasDialog);
     m_hasView = immutable(builder.m_hasView);
   }
   
@@ -145,7 +145,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
             return false;
         }
         DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo) && Objects.equals(m_portGroups, ent.m_portGroups) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_hasView, ent.m_hasView);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo) && Objects.equals(m_portGroups, ent.m_portGroups) && Objects.equals(m_hasView, ent.m_hasView);
     }
 
 
@@ -162,13 +162,13 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
                .append(m_annotation)
                .append(m_position)
                .append(m_kind)
+               .append(m_hasDialog)
                .append(m_allowedActions)
                .append(m_executionInfo)
                .append(m_templateId)
                .append(m_state)
                .append(m_loopInfo)
                .append(m_portGroups)
-               .append(m_hasDialog)
                .append(m_hasView)
                .toHashCode();
    }
@@ -206,6 +206,11 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   }
     
   @Override
+  public Boolean hasDialog() {
+        return m_hasDialog;
+  }
+    
+  @Override
   public AllowedNodeActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
@@ -236,11 +241,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
   }
     
   @Override
-  public Boolean hasDialog() {
-        return m_hasDialog;
-  }
-    
-  @Override
   public Boolean hasView() {
         return m_hasView;
   }
@@ -258,13 +258,13 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
+        private Boolean m_hasDialog;
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
         private String m_templateId;
         private NodeStateEnt m_state;
         private LoopInfoEnt m_loopInfo;
         private java.util.Map<String, PortGroupEnt> m_portGroups;
-        private Boolean m_hasDialog;
         private Boolean m_hasView;
 
         @Override
@@ -319,6 +319,12 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         }
 
         @Override
+        public DefaultNativeNodeEntBuilder setHasDialog(Boolean hasDialog) {
+             m_hasDialog = hasDialog;
+             return this;
+        }
+
+        @Override
         public DefaultNativeNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
@@ -354,12 +360,6 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setPortGroups(java.util.Map<String, PortGroupEnt> portGroups) {
              m_portGroups = portGroups;
-             return this;
-        }
-
-        @Override
-        public DefaultNativeNodeEntBuilder setHasDialog(Boolean hasDialog) {
-             m_hasDialog = hasDialog;
              return this;
         }
 

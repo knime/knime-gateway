@@ -81,7 +81,7 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
   public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
 
   /**
-   * Optional parameter identifying the port index of the existing node to connect to
+   * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
    * @return sourcePortIdx 
    **/
   public Integer getSourcePortIdx();
@@ -125,7 +125,7 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         AddNodeCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
         
         /**
-         * Optional parameter identifying the port index of the existing node to connect to
+         * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
          * 
          * @param sourcePortIdx the property value,  
          * @return this entity builder for chaining

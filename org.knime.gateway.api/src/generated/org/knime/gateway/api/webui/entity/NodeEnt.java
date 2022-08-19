@@ -124,6 +124,12 @@ public interface NodeEnt extends GatewayEntity {
   public KindEnum getKind();
 
   /**
+   * Indicates whether this node has a dialog. Not present, if the node has no dialog.
+   * @return hasDialog 
+   **/
+  public Boolean hasDialog();
+
+  /**
    * Get allowedActions
    * @return allowedActions 
    **/
@@ -188,6 +194,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * Indicates whether this node has a dialog. Not present, if the node has no dialog.
+         * 
+         * @param hasDialog the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setHasDialog(Boolean hasDialog);
         
         /**
    		 * Set allowedActions

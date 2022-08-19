@@ -59,9 +59,10 @@ import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.DataServiceManager;
-import org.knime.core.webui.node.NNCWrapper;
+import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.NodeDialogEnt;
@@ -172,11 +173,11 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
-        var nnc = getNNC(projectId, workflowId, nodeId);
-        if (!NodeDialogManager.hasNodeDialog(nnc)) {
-            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a dialog");
+        var snc = getNC(projectId, workflowId, nodeId, SingleNodeContainer.class);
+        if (!NodeDialogManager.hasNodeDialog(snc)) {
+            throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
-        return new NodeDialogEnt(nnc);
+        return new NodeDialogEnt(snc);
     }
 
     /**
@@ -185,7 +186,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
-        var nnc = getNNC(projectId, workflowId, nodeId);
+        var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
         if (!NodeViewManager.hasNodeView(nnc)) {
             throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a view");
         }
@@ -196,8 +197,8 @@ public final class DefaultNodeService implements NodeService {
         return NodeViewEnt.create(nnc);
     }
 
-    private static NativeNodeContainer getNNC(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+    private static <T> T getNC(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
             nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -205,11 +206,12 @@ public final class DefaultNodeService implements NodeService {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
 
-        if (!(nc instanceof NativeNodeContainer)) {
-            throw new InvalidRequestException("The requested node " + nc.getNameWithID() + " is not a native node");
+        if (!ncClass.isAssignableFrom(nc.getClass())) {
+            throw new InvalidRequestException(
+                "The requested node " + nc.getNameWithID() + " is not a " + ncClass.getName());
         }
 
-        return (NativeNodeContainer)nc;
+        return ncClass.cast(nc);
     }
 
     /**
@@ -220,9 +222,9 @@ public final class DefaultNodeService implements NodeService {
         final String extensionType, final String serviceType, final String request)
         throws NodeNotFoundException, InvalidRequestException {
 
-        var nnc = getNNC(projectId, workflowId, nodeId);
+        var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
 
-        final DataServiceManager<NNCWrapper> dataServiceManager;
+        final DataServiceManager<NodeWrapper> dataServiceManager;
         if ("view".equals(extensionType)) {
             dataServiceManager = NodeViewManager.getInstance();
         } else if ("dialog".equals(extensionType)) {
@@ -231,7 +233,7 @@ public final class DefaultNodeService implements NodeService {
             throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
         }
 
-        var nncWrapper = NNCWrapper.of(nnc);
+        var nncWrapper = NodeWrapper.of(nnc);
         if ("initial_data".equals(serviceType)) {
             return dataServiceManager.callTextInitialDataService(nncWrapper);
         } else if ("data".equals(serviceType)) {

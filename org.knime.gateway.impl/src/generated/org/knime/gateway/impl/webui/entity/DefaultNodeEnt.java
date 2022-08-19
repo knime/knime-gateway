@@ -72,6 +72,7 @@ public class DefaultNodeEnt implements NodeEnt {
   protected NodeAnnotationEnt m_annotation;
   protected XYEnt m_position;
   protected KindEnum m_kind;
+  protected Boolean m_hasDialog;
   protected AllowedNodeActionsEnt m_allowedActions;
   protected NodeExecutionInfoEnt m_executionInfo;
   
@@ -107,6 +108,7 @@ public class DefaultNodeEnt implements NodeEnt {
         throw new IllegalArgumentException("kind must not be null.");
     }
     m_kind = immutable(builder.m_kind);
+    m_hasDialog = immutable(builder.m_hasDialog);
     m_allowedActions = immutable(builder.m_allowedActions);
     m_executionInfo = immutable(builder.m_executionInfo);
   }
@@ -126,7 +128,7 @@ public class DefaultNodeEnt implements NodeEnt {
             return false;
         }
         DefaultNodeEnt ent = (DefaultNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo);
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo);
     }
 
 
@@ -143,6 +145,7 @@ public class DefaultNodeEnt implements NodeEnt {
                .append(m_annotation)
                .append(m_position)
                .append(m_kind)
+               .append(m_hasDialog)
                .append(m_allowedActions)
                .append(m_executionInfo)
                .toHashCode();
@@ -181,6 +184,11 @@ public class DefaultNodeEnt implements NodeEnt {
   }
     
   @Override
+  public Boolean hasDialog() {
+        return m_hasDialog;
+  }
+    
+  @Override
   public AllowedNodeActionsEnt getAllowedActions() {
         return m_allowedActions;
   }
@@ -203,6 +211,7 @@ public class DefaultNodeEnt implements NodeEnt {
         private NodeAnnotationEnt m_annotation;
         private XYEnt m_position;
         private KindEnum m_kind;
+        private Boolean m_hasDialog;
         private AllowedNodeActionsEnt m_allowedActions;
         private NodeExecutionInfoEnt m_executionInfo;
 
@@ -254,6 +263,12 @@ public class DefaultNodeEnt implements NodeEnt {
                  throw new IllegalArgumentException("kind must not be null.");
              }
              m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeEntBuilder setHasDialog(Boolean hasDialog) {
+             m_hasDialog = hasDialog;
              return this;
         }
 

@@ -101,6 +101,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public KindEnum getKind();
     
     @Override
+    @JsonProperty("hasDialog")
+    public Boolean hasDialog();
+    
+    @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
     
@@ -123,10 +127,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @Override
     @JsonProperty("portGroups")
     public java.util.Map<String, PortGroupEnt> getPortGroups();
-    
-    @Override
-    @JsonProperty("hasDialog")
-    public Boolean hasDialog();
     
     @Override
     @JsonProperty("hasView")
@@ -170,6 +170,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         public NativeNodeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
+        @JsonProperty("hasDialog")
+        public NativeNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        
+        @Override
         @JsonProperty("allowedActions")
         public NativeNodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
         
@@ -192,10 +196,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("portGroups")
         public NativeNodeEntMixInBuilder setPortGroups(final java.util.Map<String, PortGroupEnt> portGroups);
-        
-        @Override
-        @JsonProperty("hasDialog")
-        public NativeNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
         
         @Override
         @JsonProperty("hasView")

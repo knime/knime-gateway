@@ -99,6 +99,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public KindEnum getKind();
     
     @Override
+    @JsonProperty("hasDialog")
+    public Boolean hasDialog();
+    
+    @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
     
@@ -154,6 +158,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("kind")
         public MetaNodeEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("hasDialog")
+        public MetaNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
         
         @Override
         @JsonProperty("allowedActions")

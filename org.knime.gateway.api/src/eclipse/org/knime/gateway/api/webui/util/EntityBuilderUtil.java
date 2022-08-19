@@ -696,6 +696,7 @@ public final class EntityBuilderUtil {
         final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         ComponentMetadata metadata = nc.getMetadata();
         String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
+        var hasDialog = NodeDialogManager.hasNodeDialog(nc) ? Boolean.TRUE : null;
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
             .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
@@ -707,6 +708,7 @@ public final class EntityBuilderUtil {
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
+            .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
             .build();

@@ -332,11 +332,17 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetNodeDialog() throws Exception {
+        var key = "org.knime.component.ui.mode";
+        var componentUiMode = System.setProperty(key, "js");
+
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
-        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
-            .get("root:1")).hasDialog(), is(Boolean.TRUE));
+        var workflow = ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow();
+        assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).hasDialog(), is(Boolean.TRUE));
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).hasDialog(), is(nullValue()));
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).hasDialog(), is(Boolean.TRUE));
 
+        // dialog of a native node
         var dialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(1));
         var nodeDialogJsonNode =
             ObjectMapperUtil.getInstance().getObjectMapper().convertValue(dialogEnt, JsonNode.class);
@@ -353,6 +359,27 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var message = assertThrows(InvalidRequestException.class,
             () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
+
+        // request dialog of a component without any configuration nodes
+        message = assertThrows(InvalidRequestException.class,
+            () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(14))).getMessage();
+        assertThat(message, containsString("doesn't have a dialog"));
+
+        // request dialog of a component with a configuration node
+        var componentDialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(17));
+        nodeDialogJsonNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(componentDialogEnt, JsonNode.class);
+        assertThat(nodeDialogJsonNode.get("extensionType").textValue(), is("dialog"));
+        assertThat(nodeDialogJsonNode.get("initialData").textValue(), notNullValue());
+        resourceInfo = nodeDialogJsonNode.get("resourceInfo");
+        assertThat(resourceInfo.get("id").textValue(), is("defaultdialog"));
+        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
+
+        if (componentUiMode == null) {
+            System.clearProperty(key);
+        } else {
+            System.setProperty(key, componentUiMode);
+        }
     }
 
     /**

@@ -134,6 +134,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         ComponentNodeEntBuilder setKind(KindEnum kind);
         
         /**
+         * Indicates whether this node has a dialog. Not present, if the node has no dialog.
+         * 
+         * @param hasDialog the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setHasDialog(Boolean hasDialog);
+        
+        /**
    		 * Set allowedActions
          * 
          * @param allowedActions the property value,  
