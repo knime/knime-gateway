@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -217,20 +218,20 @@ public class EventServiceTest extends GatewayServiceTest {
         es.addEventListener(eventType);
 
         // do a selection and check event consumer
-        ns.updateDataPointSelection(projectId, NodeIDEnt.getRootID(), new NodeIDEnt(15),
-            "add", List.of("Row0", "Row5"));
+        ns.updateDataPointSelection(projectId, NodeIDEnt.getRootID(), new NodeIDEnt(15), "add",
+            List.of("Row0", "Row5"));
         verify(m_testConsumer).accept(eq("SelectionEvent"), argThat(e -> {
             var se = (SelectionEvent)e;
             return se.getNodeId().equals("root:1") && //
             se.getSelection().equals(List.of("Row2")) && //
             se.getMode() == SelectionEventMode.ADD;//
         }));
-        verify(m_testConsumer).accept(eq("SelectionEvent"), argThat(e -> {
+        Awaitility.await().untilAsserted(() -> verify(m_testConsumer).accept(eq("SelectionEvent"), argThat(e -> {
             var se = (SelectionEvent)e;
             return se.getNodeId().equals("root:1") && //
             se.getSelection().equals(List.of("Row0", "Row5")) && //
             se.getMode() == SelectionEventMode.ADD;//
-        }));
+        })));
 
         // remove selection event listener and check event consumer
         es.removeEventListener(eventType);
