@@ -332,6 +332,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetNodeDialog() throws Exception {
+        // needs to be set for {@link SubNodeContainerDialogFactory} to return the JS based node dialog
         var key = "org.knime.component.ui.mode";
         var componentUiMode = System.setProperty(key, "js");
 
