@@ -79,10 +79,10 @@ import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -334,11 +334,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
         if (workflowFile.createNewFile()) {
-            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper();
-            WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowFile.getParentFile());
-            creationHelper.setWorkflowContext(fac.createContext());
-
-            WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", creationHelper);
+            WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", new WorkflowCreationHelper(
+                WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null)));
             String id = "wfId";
             WorkflowProject workflowProject = new WorkflowProject() {
 

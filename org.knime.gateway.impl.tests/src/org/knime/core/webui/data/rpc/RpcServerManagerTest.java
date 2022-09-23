@@ -59,10 +59,10 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowContext;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.gateway.testing.helper.rpc.node.SingleRpcNodeFactory;
 
@@ -99,10 +99,8 @@ public class RpcServerManagerTest {
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
         if (workflowFile.createNewFile()) {
-            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper();
-            WorkflowContext.Factory fac = new WorkflowContext.Factory(workflowFile.getParentFile());
-            creationHelper.setWorkflowContext(fac.createContext());
-
+            WorkflowCreationHelper creationHelper = new WorkflowCreationHelper(
+                WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null));
             return WorkflowManager.ROOT.createAndAddProject("workflow", creationHelper);
         } else {
             throw new IllegalStateException("Creating empty workflow failed");
