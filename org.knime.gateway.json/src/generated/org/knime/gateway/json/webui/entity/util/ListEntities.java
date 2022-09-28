@@ -47,6 +47,7 @@ package org.knime.gateway.json.webui.entity.util;
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.AddPortResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedConnectionActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
@@ -151,6 +152,7 @@ public class ListEntities {
         res.add(AddNodeCommandEntMixIn.class);
         res.add(AddNodeResultEntMixIn.class);
         res.add(AddPortCommandEntMixIn.class);
+        res.add(AddPortResultEntMixIn.class);
         res.add(AllowedActionsEntMixIn.class);
         res.add(AllowedConnectionActionsEntMixIn.class);
         res.add(AllowedLoopActionsEntMixIn.class);
@@ -241,6 +243,7 @@ public class ListEntities {
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
         res.add(AddNodeResultEntMixIn.AddNodeResultEntMixInBuilder.class);
         res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);
+        res.add(AddPortResultEntMixIn.AddPortResultEntMixInBuilder.class);
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AllowedConnectionActionsEntMixIn.AllowedConnectionActionsEntMixInBuilder.class);
         res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);

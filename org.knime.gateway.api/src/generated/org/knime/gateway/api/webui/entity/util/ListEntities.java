@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.entity.util;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
+import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
@@ -152,6 +153,7 @@ public class ListEntities {
         res.add(AddNodeCommandEnt.class);
         res.add(AddNodeResultEnt.class);
         res.add(AddPortCommandEnt.class);
+        res.add(AddPortResultEnt.class);
         res.add(AllowedActionsEnt.class);
         res.add(AllowedConnectionActionsEnt.class);
         res.add(AllowedLoopActionsEnt.class);
@@ -242,6 +244,7 @@ public class ListEntities {
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
         res.add(AddNodeResultEnt.AddNodeResultEntBuilder.class);
         res.add(AddPortCommandEnt.AddPortCommandEntBuilder.class);
+        res.add(AddPortResultEnt.AddPortResultEntBuilder.class);
         res.add(AllowedActionsEnt.AllowedActionsEntBuilder.class);
         res.add(AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder.class);
         res.add(AllowedLoopActionsEnt.AllowedLoopActionsEntBuilder.class);

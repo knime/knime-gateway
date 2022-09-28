@@ -58,6 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
@@ -66,7 +67,7 @@ import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
-import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
@@ -159,8 +160,10 @@ public final class WorkflowCommands {
             command = new Collapse((CollapseCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof ExpandCommandEnt) {
             command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
-        } else if (commandEnt instanceof PortCommandEnt) {
-            command = new EditPorts((PortCommandEnt)commandEnt);
+        } else if (commandEnt instanceof AddPortCommandEnt) {
+          command = new AddPort((AddPortCommandEnt)commandEnt);
+        } else if (commandEnt instanceof RemovePortCommandEnt) {
+            command = new RemovePort((RemovePortCommandEnt)commandEnt);
         } else if (commandEnt instanceof CopyCommandEnt) {
             command = new Copy((CopyCommandEnt)commandEnt);
         } else if (commandEnt instanceof CutCommandEnt) {

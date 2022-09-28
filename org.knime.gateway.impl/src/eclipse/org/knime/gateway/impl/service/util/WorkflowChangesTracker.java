@@ -84,7 +84,9 @@ public class WorkflowChangesTracker {
         /** Tracked whenever a workflow annotation has been added */
         ANNOTATION_ADDED,
         /** Tracked whenever a workflow annotation has been removed */
-        ANNOTATION_REMOVED
+        ANNOTATION_REMOVED,
+        /** Tracked whenever a port has been added */
+        PORT_ADDED
     }
 
     /**

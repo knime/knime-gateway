@@ -123,7 +123,9 @@ public class TablePortViewFactoryTest {
         var bdt = createTable(2);
         var portView = createPortView(bdt);
         var initialData = ((TextInitialDataService)portView.getFirst().createInitialDataService().get()).getInitialData();
-        assertThat(initialData, containsString("{\"result\":{\"table\":"));
+        assertThat(initialData, containsString("{\"result\":{"));
+        assertThat(initialData, containsString("\"table\":{"));
+        assertThat(initialData, containsString("\"settings\":{"));
 
         portView.getSecond().dispose();
     }

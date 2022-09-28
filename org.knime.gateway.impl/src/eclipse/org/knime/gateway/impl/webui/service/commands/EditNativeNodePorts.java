@@ -43,55 +43,81 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Sep 27, 2022 (Kai Franze, KNIME GmbH): created
  */
 package org.knime.gateway.impl.webui.service.commands;
+
+import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.PortCommandEnt.SideEnum;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
- *
- * Implementations for modifying ports on a native node.
+ * Helper class to edit native node ports
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-final class EditNativeNodePorts extends AbstractEditPorts {
+public final class EditNativeNodePorts implements EditPorts {
+
+    private WorkflowManager m_wfm;
+
+    private PortCommandEnt m_portCommandEnt;
 
     private ReplaceNodeResult m_replaceNodeResult;
 
-    EditNativeNodePorts(final PortCommandEnt portCommandEnt) {
-        super(portCommandEnt);
+    EditNativeNodePorts(final WorkflowManager wfm, final PortCommandEnt portCommandEnt) {
+        m_wfm = wfm;
+        m_portCommandEnt = portCommandEnt;
+        m_replaceNodeResult = null;
     }
 
     @Override
-    protected void addPort(final AddPortCommandEnt addPortCommandEnt) {
+    public void addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
-            .orElseThrow(() -> new UnsupportedOperationException("Unknown port type"));
-        var groupName = getPortCommandEnt().getPortGroup();
+            .orElseThrow(() -> new OperationNotAllowedException("Unknown port type"));
+        var groupName = addPortCommandEnt.getPortGroup();
         var creationConfigCopy = getCopyOfCreationConfig();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
         executeInternal(creationConfigCopy);
     }
 
     @Override
-    protected void removePort(final RemovePortCommandEnt removePortCommandEnt)
-        throws ServiceExceptions.OperationNotAllowedException {
+    public void removePort(final RemovePortCommandEnt removePortCommandEnt) {
         var creationConfigCopy = getCopyOfCreationConfig();
-        var groupName = getPortCommandEnt().getPortGroup();
+        var groupName = removePortCommandEnt.getPortGroup();
         getExtendablePortGroup(creationConfigCopy, groupName).removeLastPort();
         executeInternal(creationConfigCopy);
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() {
         m_replaceNodeResult.undo();
+    }
+
+    @Override
+    public Integer findNewPortIdx() throws NoSuchElementException {
+        var side = m_portCommandEnt.getSide();
+        var portTypeId = ((AddPortCommandEnt)m_portCommandEnt).getPortTypeId();
+        var portConfig = getCopyOfCreationConfig().getPortConfig().orElseThrow();
+        var portTypes = side == SideEnum.INPUT ? portConfig.getInputPorts() : portConfig.getOutputPorts();
+        return IntStream.range(0, portTypes.length)//
+            .filter(i -> portTypes[i].getPortObjectClass().getName().equals(portTypeId))// Filter by port type id
+            .reduce((first, second) -> second)// Return last port index
+            .orElseThrow() + 1;// Add one to result
+
     }
 
     @Override
@@ -99,13 +125,17 @@ final class EditNativeNodePorts extends AbstractEditPorts {
         return m_replaceNodeResult.canUndo();
     }
 
-    private void executeInternal(final ModifiableNodeCreationConfiguration creationConfigCopy) {
-        m_replaceNodeResult = getWorkflowManager().replaceNode(getNodeId(), creationConfigCopy);
+    private ModifiableNodeCreationConfiguration getCopyOfCreationConfig() {
+        var nnc = m_wfm.getNodeContainer(getNodeId(), NativeNodeContainer.class, true);
+        return nnc.getNode().getCopyOfCreationConfig().orElseThrow();
     }
 
-    private ModifiableNodeCreationConfiguration getCopyOfCreationConfig() {
-        var nnc = getWorkflowManager().getNodeContainer(getNodeId(), NativeNodeContainer.class, true);
-        return nnc.getNode().getCopyOfCreationConfig().orElseThrow();
+    private final NodeID getNodeId() {
+        return m_portCommandEnt.getNodeId().toNodeID(m_wfm.getProjectWFM().getID());
+    }
+
+    private void executeInternal(final ModifiableNodeCreationConfiguration creationConfigCopy) {
+        m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy);
     }
 
     private static ExtendablePortGroup getExtendablePortGroup(final ModifiableNodeCreationConfiguration creationConfig,
@@ -113,4 +143,5 @@ final class EditNativeNodePorts extends AbstractEditPorts {
         var portsConfig = creationConfig.getPortConfig().orElseThrow();
         return (ExtendablePortGroup)portsConfig.getGroup(groupName);
     }
+
 }

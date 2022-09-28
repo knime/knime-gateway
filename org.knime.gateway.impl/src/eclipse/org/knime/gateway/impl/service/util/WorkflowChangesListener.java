@@ -84,6 +84,7 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz
  * @author Benjamin Moser, KNIME GmbH, Konstanz
+ * @author Kai Franze, KNIME GmbH
  */
 public class WorkflowChangesListener implements Closeable {
 
@@ -274,6 +275,9 @@ public class WorkflowChangesListener implements Closeable {
                 break;
             case ANNOTATION_REMOVED:
                 updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
+                break;
+            case PORT_ADDED:
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.PORT_ADDED);
                 break;
             default:
                 //

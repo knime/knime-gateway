@@ -43,68 +43,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Sep 26, 2022 (Kai Franze, KNIME GmbH): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.NodeID;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
-import org.knime.gateway.api.webui.entity.PortCommandEnt;
-import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.entity.AddPortResultEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
- * Basic structure for workflow commands that modify node ports.
+ * Workflow command that adds a port to a node.
  *
- * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-abstract class AbstractEditPorts extends AbstractWorkflowCommand {
+public class AddPort extends AbstractPortCommand implements WithResult {
 
-    private final PortCommandEnt m_portCommandEnt;
+    private Integer m_newPortIdx;
 
-    AbstractEditPorts(final PortCommandEnt portCommandEnt) {
-        m_portCommandEnt = portCommandEnt;
-    }
-
-    /**
-     * @return The command entity describing this command.
-     */
-    protected final PortCommandEnt getPortCommandEnt() {
-        return m_portCommandEnt;
-    }
-
-    /**
-     * @return The ID of the node to edit ports of.
-     */
-    protected final NodeID getNodeId() {
-        return getPortCommandEnt().getNodeId().toNodeID(getWorkflowManager().getProjectWFM().getID());
+    AddPort(final AddPortCommandEnt addPortCommandEnt) {
+        super(addPortCommandEnt);
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var portCommandEnt = getPortCommandEnt();
-        if (portCommandEnt instanceof AddPortCommandEnt) {
-            addPort((AddPortCommandEnt)portCommandEnt);
+        if (!(portCommandEnt instanceof AddPortCommandEnt)) {
+            throw new OperationNotAllowedException("Port command is not an add port command");
+        }
+        try {
+            var editor = instantiatePortEditor();
+            editor.addPort((AddPortCommandEnt)portCommandEnt);
+            m_newPortIdx = editor.findNewPortIdx();
             return true;
-        } else if (portCommandEnt instanceof RemovePortCommandEnt) {
-            removePort((RemovePortCommandEnt)portCommandEnt);
-            return true;
-        } else {
-            throw new ServiceExceptions.OperationNotAllowedException("Unknown port operation");
+        } catch (NoSuchElementException e) {
+            throw new OperationNotAllowedException("Could not determine new port index", e);
         }
     }
 
-    /**
-     * Add a port to the node
-     * @param addPortCommandEnt The parameters of the command.
-     */
-    protected abstract void addPort(AddPortCommandEnt addPortCommandEnt);
+    @Override
+    public AddPortResultEnt buildEntity(final String snapshotId) {
+        return builder(AddPortResultEnt.AddPortResultEntBuilder.class)//
+            .setKind(CommandResultEnt.KindEnum.ADDPORTRESULT)//
+            .setSnapshotId(snapshotId)//
+            .setNewPortIdx(m_newPortIdx)//
+            .build();
+    }
 
-    /**
-     * Remove a port from the node
-     * @param removePortCommandEnt The parameters of the command
-     * @throws ServiceExceptions.OperationNotAllowedException If the operation can not be executed
-     */
-    protected abstract void removePort(RemovePortCommandEnt removePortCommandEnt)
-        throws ServiceExceptions.OperationNotAllowedException;
+    @Override
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChange.PORT_ADDED);
+    }
 
 }

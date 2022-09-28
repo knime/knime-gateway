@@ -48,50 +48,57 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
-import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
- * Interface specifying port editing operations
+ * Abstract port command
  *
  * @author Kai Franze, KNIME GmbH
  */
-public interface EditPorts {
+public abstract class AbstractPortCommand extends AbstractWorkflowCommand {
+
+    private final PortCommandEnt m_portCommandEnt;
+
+    private EditPorts m_editor;
+
+    AbstractPortCommand(final PortCommandEnt portCommandEnt) {
+        m_portCommandEnt = portCommandEnt;
+    }
+
+    @Override
+    public boolean canUndo() {
+        return m_editor.canUndo();
+    }
+
+    @Override
+    public void undo() throws OperationNotAllowedException {
+        m_editor.undo();
+    }
+
+    @Override
+    protected abstract boolean executeWithLockedWorkflow() throws OperationNotAllowedException;
 
     /**
-     * Adds a port to a node
+     * Determines whether to edit the ports of a native or a container node and instantiates the editor accordingly.
      *
-     * @param addPortEnt Add port command
-     * @throws OperationNotAllowedException Thrown when the add port command cannot be run
+     * @return The port editor
      */
-    public void addPort(AddPortCommandEnt addPortEnt) throws OperationNotAllowedException;
+    protected EditPorts instantiatePortEditor() {
+        var wfm = getWorkflowManager();
+        var nodeId = m_portCommandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
+        var nodeIsContainer = CoreUtil.getContainerType(nodeId, wfm).isPresent();
+        m_editor = nodeIsContainer ? new EditContainerNodePorts(wfm, m_portCommandEnt)
+            : new EditNativeNodePorts(wfm, m_portCommandEnt);
+        return m_editor;
+    }
 
     /**
-     * Removes a port from a node
-     *
-     * @param removePortEnt Remove port command
-     * @throws OperationNotAllowedException Thrown when the remove port command cannot be run
+     * @return Port command entity
      */
-    public void removePort(RemovePortCommandEnt removePortEnt) throws OperationNotAllowedException;
-
-    /**
-     * Undo the port command
-     */
-    public void undo();
-
-    /**
-     * Check if a port command can be undone
-     *
-     * @return Whether a command can be undone or not
-     */
-    public boolean canUndo();
-
-    /**
-     * Determine the port index of the recently added port
-     *
-     * @return The index of the newly added port
-     */
-    public Integer findNewPortIdx();
+    protected PortCommandEnt getPortCommandEnt() {
+        return m_portCommandEnt;
+    }
 
 }

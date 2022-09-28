@@ -50,6 +50,8 @@ import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt.AddPortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
+import org.knime.gateway.api.webui.entity.AddPortResultEnt.AddPortResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -236,6 +238,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == AddPortCommandEntBuilder.class) {
             return (B)new DefaultAddPortCommandEnt.DefaultAddPortCommandEntBuilder();
+        }        
+        if(clazz == AddPortResultEntBuilder.class) {
+            return (B)new DefaultAddPortResultEnt.DefaultAddPortResultEntBuilder();
         }        
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();

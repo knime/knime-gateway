@@ -44,54 +44,33 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 28, 2022 (Kai Franze, KNIME GmbH): created
+ *   Sep 26, 2022 (Kai Franze, KNIME GmbH): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
- * Interface specifying port editing operations
+ * Workflow command that removes a port from a node.
  *
  * @author Kai Franze, KNIME GmbH
  */
-public interface EditPorts {
+public class RemovePort extends AbstractPortCommand {
 
-    /**
-     * Adds a port to a node
-     *
-     * @param addPortEnt Add port command
-     * @throws OperationNotAllowedException Thrown when the add port command cannot be run
-     */
-    public void addPort(AddPortCommandEnt addPortEnt) throws OperationNotAllowedException;
+    RemovePort(final RemovePortCommandEnt removePortCommandEnt) {
+        super(removePortCommandEnt);
+    }
 
-    /**
-     * Removes a port from a node
-     *
-     * @param removePortEnt Remove port command
-     * @throws OperationNotAllowedException Thrown when the remove port command cannot be run
-     */
-    public void removePort(RemovePortCommandEnt removePortEnt) throws OperationNotAllowedException;
-
-    /**
-     * Undo the port command
-     */
-    public void undo();
-
-    /**
-     * Check if a port command can be undone
-     *
-     * @return Whether a command can be undone or not
-     */
-    public boolean canUndo();
-
-    /**
-     * Determine the port index of the recently added port
-     *
-     * @return The index of the newly added port
-     */
-    public Integer findNewPortIdx();
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        var portCommandEnt = getPortCommandEnt();
+        if (!(portCommandEnt instanceof RemovePortCommandEnt)) {
+            throw new OperationNotAllowedException("Port command is not a remove port command");
+        }
+        var editor = instantiatePortEditor();
+        editor.removePort((RemovePortCommandEnt)portCommandEnt);
+        return true;
+    }
 
 }

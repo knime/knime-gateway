@@ -43,46 +43,53 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Sep 27, 2022 (Kai Franze, KNIME GmbH): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.port.MetaPortInfo;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
- * Implementations for modifying ports of a container node.
+ * Helper class to edit container node ports
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-final class EditContainerNodePorts extends AbstractEditPorts {
+public final class EditContainerNodePorts implements EditPorts {
+
+    private WorkflowManager m_wfm;
+
+    private PortCommandEnt m_portCommandEnt;
 
     private MetaPortInfo[] m_reverseInfos;
 
-    public EditContainerNodePorts(final PortCommandEnt portCommandEnt) {
-        super(portCommandEnt);
-    }
-
-    @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
-        updatePorts(m_reverseInfos);
+    EditContainerNodePorts(final WorkflowManager wfm, final PortCommandEnt portCommandEnt) {
+        m_wfm = wfm;
+        m_portCommandEnt = portCommandEnt;
         m_reverseInfos = null;
     }
 
     @Override
-    protected void addPort(final AddPortCommandEnt addPortCommandEnt) {
+    public void addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
         var currentPortInfos = getCurrentPortInfos();
         List<MetaPortInfo> newPortInfos = new ArrayList<>(Arrays.asList(currentPortInfos));
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
-            .orElseThrow(() -> new UnsupportedOperationException("Unknown port type"));
+            .orElseThrow(() -> new OperationNotAllowedException("Unknown port type"));
         var newMetaPortInfo = MetaPortInfo.builder() //
             .setPortType(newPortType) //
             .setNewIndex(currentPortInfos.length) //
@@ -92,8 +99,7 @@ final class EditContainerNodePorts extends AbstractEditPorts {
     }
 
     @Override
-    protected void removePort(final RemovePortCommandEnt removePortCommandEnt)
-        throws ServiceExceptions.OperationNotAllowedException {
+    public void removePort(final RemovePortCommandEnt removePortCommandEnt) throws OperationNotAllowedException {
         var newPortInfos = new ArrayList<>(Arrays.asList(getCurrentPortInfos()));
         int indexToRemove = removePortCommandEnt.getPortIndex();
         if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove == 0) {
@@ -106,6 +112,29 @@ final class EditContainerNodePorts extends AbstractEditPorts {
             throw new ServiceExceptions.OperationNotAllowedException(e.getMessage());
         }
         executeChanges(newPortInfos.toArray(MetaPortInfo[]::new));
+    }
+
+    @Override
+    public void undo() {
+        updatePorts(m_reverseInfos);
+        m_reverseInfos = null;
+    }
+
+    @Override
+    public boolean canUndo() {
+        return true;
+    }
+
+    @Override
+    public Integer findNewPortIdx() throws NoSuchElementException {
+        if (m_reverseInfos == null) {
+            throw new NoSuchElementException("`m_reverseInfos` is not set");
+        }
+        return m_reverseInfos.length;
+    }
+
+    private final NodeID getNodeId() {
+        return m_portCommandEnt.getNodeId().toNodeID(m_wfm.getProjectWFM().getID());
     }
 
     private void executeChanges(final MetaPortInfo[] newPortInfos) {
@@ -121,7 +150,7 @@ final class EditContainerNodePorts extends AbstractEditPorts {
      *            depends on previous state (more like a patch).
      */
     private void updatePorts(final MetaPortInfo[] newPortInfos) {
-        if (getPortCommandEnt().getSide() == PortCommandEnt.SideEnum.INPUT) {
+        if (m_portCommandEnt.getSide() == PortCommandEnt.SideEnum.INPUT) {
             updateInputPorts(newPortInfos);
         } else {
             updateOutputPorts(newPortInfos);
@@ -134,7 +163,7 @@ final class EditContainerNodePorts extends AbstractEditPorts {
      * @return New instances of {@link MetaPortInfo} describing the port configuration
      */
     private MetaPortInfo[] getCurrentPortInfos() {
-        if (getPortCommandEnt().getSide() == PortCommandEnt.SideEnum.INPUT) {
+        if (m_portCommandEnt.getSide() == PortCommandEnt.SideEnum.INPUT) {
             return getInputPortInfo();
         } else {
             return getOutputPortInfo();
@@ -142,23 +171,23 @@ final class EditContainerNodePorts extends AbstractEditPorts {
     }
 
     private CoreUtil.ContainerType getContainerType() {
-        return CoreUtil.getContainerType(getNodeId(), getWorkflowManager())
+        return CoreUtil.getContainerType(getNodeId(), m_wfm)
             .orElseThrow(() -> new UnsupportedOperationException("Node could not be found or is not a container"));
     }
 
     private MetaPortInfo[] getInputPortInfo() {
         if (getContainerType() == CoreUtil.ContainerType.METANODE) {
-            return getWorkflowManager().getMetanodeInputPortInfo(getNodeId());
+            return m_wfm.getMetanodeInputPortInfo(getNodeId());
         } else {
-            return getWorkflowManager().getSubnodeInputPortInfo(getNodeId());
+            return m_wfm.getSubnodeInputPortInfo(getNodeId());
         }
     }
 
     private MetaPortInfo[] getOutputPortInfo() {
         if (getContainerType() == CoreUtil.ContainerType.METANODE) {
-            return getWorkflowManager().getMetanodeOutputPortInfo(getNodeId());
+            return m_wfm.getMetanodeOutputPortInfo(getNodeId());
         } else {
-            return getWorkflowManager().getSubnodeOutputPortInfo(getNodeId());
+            return m_wfm.getSubnodeOutputPortInfo(getNodeId());
         }
     }
 
@@ -169,9 +198,9 @@ final class EditContainerNodePorts extends AbstractEditPorts {
      */
     private void updateInputPorts(final MetaPortInfo[] newInPorts) {
         if (getContainerType() == CoreUtil.ContainerType.METANODE) {
-            getWorkflowManager().changeMetaNodeInputPorts(getNodeId(), newInPorts);
+            m_wfm.changeMetaNodeInputPorts(getNodeId(), newInPorts);
         } else {
-            getWorkflowManager().changeSubNodeInputPorts(getNodeId(), newInPorts);
+            m_wfm.changeSubNodeInputPorts(getNodeId(), newInPorts);
         }
     }
 
@@ -182,9 +211,9 @@ final class EditContainerNodePorts extends AbstractEditPorts {
      */
     private void updateOutputPorts(final MetaPortInfo[] newOutPorts) {
         if (getContainerType() == CoreUtil.ContainerType.METANODE) {
-            getWorkflowManager().changeMetaNodeOutputPorts(getNodeId(), newOutPorts);
+            m_wfm.changeMetaNodeOutputPorts(getNodeId(), newOutPorts);
         } else {
-            getWorkflowManager().changeSubNodeOutputPorts(getNodeId(), newOutPorts);
+            m_wfm.changeSubNodeOutputPorts(getNodeId(), newOutPorts);
         }
     }
 
@@ -242,7 +271,7 @@ final class EditContainerNodePorts extends AbstractEditPorts {
     }
 
     private static void setNewIndices(final MetaPortInfo[] newPortList) {
-        for (int portIndex = 0; portIndex < newPortList.length; portIndex++) {
+        for (var portIndex = 0; portIndex < newPortList.length; portIndex++) {
             var updatedInfo = MetaPortInfo.builder(newPortList[portIndex]) //
                 .setNewIndex(portIndex) //
                 .build();

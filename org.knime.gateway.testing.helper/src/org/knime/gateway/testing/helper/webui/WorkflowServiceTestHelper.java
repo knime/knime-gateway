@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -95,6 +96,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
+import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
@@ -1537,7 +1539,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.ADD_PORT) //
             .build();
 
-        ws().executeWorkflowCommand(projectId, wfId, addInputPortCommandEnt);
+        var portResult = ws().executeWorkflowCommand(projectId, wfId, addInputPortCommandEnt);
+        assertThat(portResult, instanceOf(AddPortResultEnt.class));
         assertPortAdded(node, true, projectId, wfId, unchangedWfEnt);
 
         ws().undoWorkflowCommand(projectId, wfId);
@@ -1698,7 +1701,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
             .setKind(KindEnum.ADD_PORT) //
             .build();
-        ws().executeWorkflowCommand(wfId, getRootID(), addToSecondGroupCommand);
+        var portResult = ws().executeWorkflowCommand(wfId, getRootID(), addToSecondGroupCommand);
+        assertThat(portResult, instanceOf(AddPortResultEnt.class));
         cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_addToSecondPortGroup");
 
         ws().undoWorkflowCommand(wfId, getRootID());

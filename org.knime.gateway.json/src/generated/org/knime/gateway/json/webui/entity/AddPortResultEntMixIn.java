@@ -44,57 +44,25 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddPortResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt.DefaultAddPortResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
-,
-  @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
-,
-  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
-,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "addNodeResult")
-,
-  @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
-})
-@JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
+
+@JsonDeserialize(builder=DefaultAddPortResultEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface CommandResultEntMixIn extends CommandResultEnt {
+public interface AddPortResultEntMixIn extends AddPortResultEnt {
 
     @Override
     @JsonIgnore
@@ -108,48 +76,34 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
     @JsonProperty("kind")
     public KindEnum getKind();
     
+    @Override
+    @JsonProperty("newPortIdx")
+    public Integer getNewPortIdx();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
      * @author Martin Horn, University of Konstanz
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
-,
-  @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
-,
-  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
-,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "addNodeResult")
-,
-  @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
-})
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {
+    public static interface AddPortResultEntMixInBuilder extends AddPortResultEntBuilder {
     
         @Override
-        public CommandResultEntMixIn build();
+        public AddPortResultEntMixIn build();
     
         @Override
         @JsonProperty("snapshotId")
-        public CommandResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        public AddPortResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
         @JsonProperty("kind")
-        public CommandResultEntMixInBuilder setKind(final KindEnum kind);
+        public AddPortResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("newPortIdx")
+        public AddPortResultEntMixInBuilder setNewPortIdx(final Integer newPortIdx);
         
     }
 

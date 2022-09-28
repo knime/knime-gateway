@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,57 +40,72 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Sep 28, 2022 (Kai Franze, KNIME GmbH): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
-import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Interface specifying port editing operations
- *
- * @author Kai Franze, KNIME GmbH
+ * Simle command result indicating port command execution has finished.
+ * 
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface EditPorts {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface AddPortResultEnt extends GatewayEntity, CommandResultEnt {
+
+
+  /**
+   * The index of the newly added port
+   * @return newPortIdx , never <code>null</code>
+   **/
+  public Integer getNewPortIdx();
+
 
     /**
-     * Adds a port to a node
-     *
-     * @param addPortEnt Add port command
-     * @throws OperationNotAllowedException Thrown when the add port command cannot be run
+     * The builder for the entity.
      */
-    public void addPort(AddPortCommandEnt addPortEnt) throws OperationNotAllowedException;
+    public interface AddPortResultEntBuilder extends GatewayEntityBuilder<AddPortResultEnt> {
 
-    /**
-     * Removes a port from a node
-     *
-     * @param removePortEnt Remove port command
-     * @throws OperationNotAllowedException Thrown when the remove port command cannot be run
-     */
-    public void removePort(RemovePortCommandEnt removePortEnt) throws OperationNotAllowedException;
-
-    /**
-     * Undo the port command
-     */
-    public void undo();
-
-    /**
-     * Check if a port command can be undone
-     *
-     * @return Whether a command can be undone or not
-     */
-    public boolean canUndo();
-
-    /**
-     * Determine the port index of the recently added port
-     *
-     * @return The index of the newly added port
-     */
-    public Integer findNewPortIdx();
+        /**
+         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
+         * 
+         * @param snapshotId the property value,  
+         * @return this entity builder for chaining
+         */
+        AddPortResultEntBuilder setSnapshotId(String snapshotId);
+        
+        /**
+   		 * Set kind
+         * 
+         * @param kind the property value,  
+         * @return this entity builder for chaining
+         */
+        AddPortResultEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The index of the newly added port
+         * 
+         * @param newPortIdx the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AddPortResultEntBuilder setNewPortIdx(Integer newPortIdx);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        AddPortResultEnt build();
+    
+    }
 
 }
