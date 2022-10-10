@@ -276,8 +276,8 @@ public class WorkflowChangesListener implements Closeable {
             case ANNOTATION_REMOVED:
                 updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
                 break;
-            case PORT_ADDED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.PORT_ADDED);
+            case NODE_PORTS_CHANGED:
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
                 break;
             default:
                 //

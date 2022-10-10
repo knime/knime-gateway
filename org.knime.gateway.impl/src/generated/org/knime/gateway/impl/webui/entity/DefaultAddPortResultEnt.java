@@ -55,7 +55,7 @@ import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 
 /**
- * Simle command result indicating port command execution has finished.
+ * DefaultAddPortResultEnt
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

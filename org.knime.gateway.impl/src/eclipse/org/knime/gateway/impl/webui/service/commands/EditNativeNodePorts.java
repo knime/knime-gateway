@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
@@ -72,9 +71,9 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 public final class EditNativeNodePorts implements EditPorts {
 
-    private WorkflowManager m_wfm;
+    private final WorkflowManager m_wfm;
 
-    private PortCommandEnt m_portCommandEnt;
+    private final PortCommandEnt m_portCommandEnt;
 
     private ReplaceNodeResult m_replaceNodeResult;
 
@@ -85,13 +84,14 @@ public final class EditNativeNodePorts implements EditPorts {
     }
 
     @Override
-    public void addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
+    public int addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
             .orElseThrow(() -> new OperationNotAllowedException("Unknown port type"));
         var groupName = addPortCommandEnt.getPortGroup();
         var creationConfigCopy = getCopyOfCreationConfig();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
         executeInternal(creationConfigCopy);
+        return findNewPortIdx(addPortCommandEnt);
     }
 
     @Override
@@ -108,21 +108,24 @@ public final class EditNativeNodePorts implements EditPorts {
     }
 
     @Override
-    public Integer findNewPortIdx() throws NoSuchElementException {
-        var side = m_portCommandEnt.getSide();
-        var portTypeId = ((AddPortCommandEnt)m_portCommandEnt).getPortTypeId();
-        var portConfig = getCopyOfCreationConfig().getPortConfig().orElseThrow();
-        var portTypes = side == SideEnum.INPUT ? portConfig.getInputPorts() : portConfig.getOutputPorts();
-        return IntStream.range(0, portTypes.length)//
-            .filter(i -> portTypes[i].getPortObjectClass().getName().equals(portTypeId))// Filter by port type id
-            .reduce((first, second) -> second)// Return last port index
-            .orElseThrow() + 1;// Add one to result
-
-    }
-
-    @Override
     public boolean canUndo() {
         return m_replaceNodeResult.canUndo();
+    }
+
+    /**
+     * Finds the new port index by adding up the length of all preceding port groups on the particular side
+     */
+    private int findNewPortIdx(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
+        var portGroupId = addPortCommandEnt.getPortGroup();
+        var isPortGroupInput = addPortCommandEnt.getSide() == SideEnum.INPUT;
+        var portConfig = getCopyOfCreationConfig().getPortConfig()
+            .orElseThrow(() -> new OperationNotAllowedException("Could not retrieve port config"));
+        var portGroupIds = portConfig.getPortGroupNames();
+        return IntStream.range(0, portGroupIds.indexOf(portGroupId) + 1).boxed()//
+            .map(idx -> portConfig.getGroup(portGroupIds.get(idx)))//
+            .filter(group -> isPortGroupInput ? group.definesInputPorts() : group.definesOutputPorts())//
+            .mapToInt(group -> isPortGroupInput ? group.getInputPorts().length : group.getOutputPorts().length)//
+            .sum();
     }
 
     private ModifiableNodeCreationConfiguration getCopyOfCreationConfig() {

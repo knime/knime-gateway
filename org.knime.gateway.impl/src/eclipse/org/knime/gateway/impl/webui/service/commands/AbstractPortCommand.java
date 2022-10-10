@@ -56,14 +56,15 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  * Abstract port command
  *
  * @author Kai Franze, KNIME GmbH
+ * @param <T> The port command entity the command implementation is expecting
  */
-public abstract class AbstractPortCommand extends AbstractWorkflowCommand {
+public abstract class AbstractPortCommand<T extends PortCommandEnt> extends AbstractWorkflowCommand {
 
-    private final PortCommandEnt m_portCommandEnt;
+    private final T m_portCommandEnt;
 
     private EditPorts m_editor;
 
-    AbstractPortCommand(final PortCommandEnt portCommandEnt) {
+    AbstractPortCommand(final T portCommandEnt) {
         m_portCommandEnt = portCommandEnt;
     }
 
@@ -85,7 +86,7 @@ public abstract class AbstractPortCommand extends AbstractWorkflowCommand {
      *
      * @return The port editor
      */
-    protected EditPorts instantiatePortEditor() {
+    EditPorts instantiatePortEditor() {
         var wfm = getWorkflowManager();
         var nodeId = m_portCommandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
         var nodeIsContainer = CoreUtil.getContainerType(nodeId, wfm).isPresent();
@@ -97,7 +98,7 @@ public abstract class AbstractPortCommand extends AbstractWorkflowCommand {
     /**
      * @return Port command entity
      */
-    protected PortCommandEnt getPortCommandEnt() {
+    T getPortCommandEnt() {
         return m_portCommandEnt;
     }
 

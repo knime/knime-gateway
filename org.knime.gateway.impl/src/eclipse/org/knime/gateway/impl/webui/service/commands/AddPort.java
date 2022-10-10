@@ -65,9 +65,9 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class AddPort extends AbstractPortCommand implements WithResult {
+public class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResult {
 
-    private Integer m_newPortIdx;
+    private int m_newPortIdx;
 
     AddPort(final AddPortCommandEnt addPortCommandEnt) {
         super(addPortCommandEnt);
@@ -76,13 +76,9 @@ public class AddPort extends AbstractPortCommand implements WithResult {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var portCommandEnt = getPortCommandEnt();
-        if (!(portCommandEnt instanceof AddPortCommandEnt)) {
-            throw new OperationNotAllowedException("Port command is not an add port command");
-        }
         try {
             var editor = instantiatePortEditor();
-            editor.addPort((AddPortCommandEnt)portCommandEnt);
-            m_newPortIdx = editor.findNewPortIdx();
+            m_newPortIdx = editor.addPort(portCommandEnt);
             return true;
         } catch (NoSuchElementException e) {
             throw new OperationNotAllowedException("Could not determine new port index", e);
@@ -100,7 +96,7 @@ public class AddPort extends AbstractPortCommand implements WithResult {
 
     @Override
     public Set<WorkflowChange> getChangesToWaitFor() {
-        return Collections.singleton(WorkflowChange.PORT_ADDED);
+        return Collections.singleton(WorkflowChange.NODE_PORTS_CHANGED);
     }
 
 }

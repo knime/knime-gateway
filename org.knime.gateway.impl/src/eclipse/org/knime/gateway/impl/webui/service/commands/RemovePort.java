@@ -56,7 +56,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class RemovePort extends AbstractPortCommand {
+public class RemovePort extends AbstractPortCommand<RemovePortCommandEnt> {
 
     RemovePort(final RemovePortCommandEnt removePortCommandEnt) {
         super(removePortCommandEnt);
@@ -65,11 +65,8 @@ public class RemovePort extends AbstractPortCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var portCommandEnt = getPortCommandEnt();
-        if (!(portCommandEnt instanceof RemovePortCommandEnt)) {
-            throw new OperationNotAllowedException("Port command is not a remove port command");
-        }
         var editor = instantiatePortEditor();
-        editor.removePort((RemovePortCommandEnt)portCommandEnt);
+        editor.removePort(portCommandEnt);
         return true;
     }
 

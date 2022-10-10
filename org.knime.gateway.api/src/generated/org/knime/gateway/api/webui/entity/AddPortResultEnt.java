@@ -52,7 +52,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Simle command result indicating port command execution has finished.
+ * AddPortResultEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

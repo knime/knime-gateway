@@ -1157,12 +1157,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, "blub", 0, 0, null, null)));
         assertThat(ex.getMessage(), startsWith("Problem reading factory settings while trying to create node from"));
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link AddNodeCommandEnt} that also automatically connects a node.
+     *
+     * @throws Exception
+     */
+    public void testExecuteAddAndConnectCommand()throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
 
         // add and connect a node
         var normalizerFactory = "org.knime.base.node.preproc.pmml.normalize.NormalizerPMMLNodeFactory2";
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(normalizerFactory, null, 32, 64, null, null))).getNewNodeId();
-        result = ws().executeWorkflowCommand(wfId, getRootID(),
+        var result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 1));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
@@ -1171,24 +1183,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().undoWorkflowCommand(wfId, getRootID()); // to remove row filter node
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(2)));
+                is(1)));
         ws().undoWorkflowCommand(wfId, getRootID()); // to remove normalizer node
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(1)));
+                is(0)));
 
         // redo adding the normalizer
         ws().redoWorkflowCommand(wfId, getRootID());
-        assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2));
+        assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(1));
 
         // try to connect to an incompatible port
-        ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+        var ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2)));
         assertThat(ex.getMessage(), is("Destination port index could not be infered"));
 
         // redo adding the row filter
         ws().redoWorkflowCommand(wfId, getRootID());
-        assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(3));
+        assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2));
 
         // try to connect to a port that is already used
         var rowSplitterFactory = "org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory";
@@ -1207,13 +1219,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().undoWorkflowCommand(wfId, getRootID());
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(3)));
+                is(2)));
 
         // undo adding the row filter
         ws().undoWorkflowCommand(wfId, getRootID());
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(2)));
+                is(1)));
 
         // auto-connect and use all the compatible ports
         result = ws().executeWorkflowCommand(wfId, getRootID(),
@@ -1539,15 +1551,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.ADD_PORT) //
             .build();
 
-        var portResult = ws().executeWorkflowCommand(projectId, wfId, addInputPortCommandEnt);
-        assertThat(portResult, instanceOf(AddPortResultEnt.class));
-        assertPortAdded(node, true, projectId, wfId, unchangedWfEnt);
+        var commandResult = ws().executeWorkflowCommand(projectId, wfId, addInputPortCommandEnt);
+        assertPortAdded(node, true, projectId, wfId, unchangedWfEnt, commandResult);
 
         ws().undoWorkflowCommand(projectId, wfId);
         assertPortsUnchanged(projectId, wfId, node, unchangedWfEnt);
 
         ws().redoWorkflowCommand(projectId, wfId);
-        assertPortAdded(node, true, projectId, wfId, unchangedWfEnt);
+        assertPortAdded(node, true, projectId, wfId, unchangedWfEnt, commandResult);
 
         var addOutputPortCommandEnt = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
             .setNodeId(node) //
@@ -1555,8 +1566,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
             .setKind(KindEnum.ADD_PORT) //
             .build();
-        ws().executeWorkflowCommand(projectId, wfId, addOutputPortCommandEnt);
-        assertPortAdded(node, false, projectId, wfId, unchangedWfEnt);
+        commandResult = ws().executeWorkflowCommand(projectId, wfId, addOutputPortCommandEnt);
+        assertPortAdded(node, false, projectId, wfId, unchangedWfEnt, commandResult);
     }
 
     private void assertPortsUnchanged(final String projectId, final NodeIDEnt wfId, final NodeIDEnt node,
@@ -1581,12 +1592,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertPortAdded(final NodeIDEnt node, final boolean isInPort, final String projectId, final NodeIDEnt wfId,
-        final WorkflowEnt originalWfEnt) throws Exception {
+        final WorkflowEnt originalWfEnt, final CommandResultEnt commandResult) throws Exception {
         var originalNumInPorts = getPortList(originalWfEnt, isInPort, node).size();
         var newWorkflowEnt = ws().getWorkflow(projectId, wfId, Boolean.TRUE).getWorkflow();
         var newPortList = getPortList(newWorkflowEnt, isInPort, node);
         var newNumPorts = newPortList.size();
         assertThat("Expect number of ports to have increased by one", newNumPorts == originalNumInPorts + 1);
+        assertThat("Command result is not an `AddPortResultEnt`", commandResult, instanceOf(AddPortResultEnt.class));
+        assertThat("New port index returned is wrong", ((AddPortResultEnt)commandResult).getNewPortIdx(), is(newNumPorts - 1));
     }
 
     private void assertPortRemoved(final NodeIDEnt node, final boolean isInPort, final String wfId,
@@ -1691,7 +1704,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.ADD_PORT) //
             .build();
 
-        ws().executeWorkflowCommand(wfId, getRootID(), addToFirstGroupCommand);
+        var portResult = ws().executeWorkflowCommand(wfId, getRootID(), addToFirstGroupCommand);
+        assertThat(portResult, instanceOf(AddPortResultEnt.class));
+        assertThat(((AddPortResultEnt)portResult).getNewPortIdx(), is(3));
         cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_addToFirstPortGroup");
 
         var addToSecondGroupCommand = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
@@ -1701,8 +1716,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setPortTypeId(CoreUtil.getPortTypeId(portType)) //
             .setKind(KindEnum.ADD_PORT) //
             .build();
-        var portResult = ws().executeWorkflowCommand(wfId, getRootID(), addToSecondGroupCommand);
+        portResult = ws().executeWorkflowCommand(wfId, getRootID(), addToSecondGroupCommand);
         assertThat(portResult, instanceOf(AddPortResultEnt.class));
+        assertThat(((AddPortResultEnt)portResult).getNewPortIdx(), is(6));
         cr(getPortList(wfId, true, recursiveLoopEnd), "native_add_port_addToSecondPortGroup");
 
         ws().undoWorkflowCommand(wfId, getRootID());

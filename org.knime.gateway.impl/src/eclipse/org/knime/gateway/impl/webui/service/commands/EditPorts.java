@@ -57,15 +57,16 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  *
  * @author Kai Franze, KNIME GmbH
  */
-public interface EditPorts {
+interface EditPorts {
 
     /**
      * Adds a port to a node
      *
      * @param addPortEnt Add port command
+     * @return The port index of the newly added port
      * @throws OperationNotAllowedException Thrown when the add port command cannot be run
      */
-    public void addPort(AddPortCommandEnt addPortEnt) throws OperationNotAllowedException;
+    int addPort(AddPortCommandEnt addPortEnt) throws OperationNotAllowedException;
 
     /**
      * Removes a port from a node
@@ -73,25 +74,18 @@ public interface EditPorts {
      * @param removePortEnt Remove port command
      * @throws OperationNotAllowedException Thrown when the remove port command cannot be run
      */
-    public void removePort(RemovePortCommandEnt removePortEnt) throws OperationNotAllowedException;
+    void removePort(RemovePortCommandEnt removePortEnt) throws OperationNotAllowedException;
 
     /**
      * Undo the port command
      */
-    public void undo();
+    void undo();
 
     /**
      * Check if a port command can be undone
      *
      * @return Whether a command can be undone or not
      */
-    public boolean canUndo();
-
-    /**
-     * Determine the port index of the recently added port
-     *
-     * @return The index of the newly added port
-     */
-    public Integer findNewPortIdx();
+    boolean canUndo();
 
 }

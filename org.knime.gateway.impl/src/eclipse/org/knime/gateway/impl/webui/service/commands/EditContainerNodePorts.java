@@ -72,11 +72,13 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 public final class EditContainerNodePorts implements EditPorts {
 
-    private WorkflowManager m_wfm;
+    private final WorkflowManager m_wfm;
 
-    private PortCommandEnt m_portCommandEnt;
+    private final PortCommandEnt m_portCommandEnt;
 
     private MetaPortInfo[] m_reverseInfos;
+
+    private MetaPortInfo[] m_newPortInfos;
 
     EditContainerNodePorts(final WorkflowManager wfm, final PortCommandEnt portCommandEnt) {
         m_wfm = wfm;
@@ -85,7 +87,7 @@ public final class EditContainerNodePorts implements EditPorts {
     }
 
     @Override
-    public void addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
+    public int addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
         var currentPortInfos = getCurrentPortInfos();
         List<MetaPortInfo> newPortInfos = new ArrayList<>(Arrays.asList(currentPortInfos));
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
@@ -95,7 +97,9 @@ public final class EditContainerNodePorts implements EditPorts {
             .setNewIndex(currentPortInfos.length) //
             .build();
         newPortInfos.add(newMetaPortInfo);
-        executeChanges(newPortInfos.toArray(MetaPortInfo[]::new));
+        m_newPortInfos = newPortInfos.toArray(MetaPortInfo[]::new);
+        executeChanges(m_newPortInfos);
+        return findNewPortIdx();
     }
 
     @Override
@@ -118,6 +122,7 @@ public final class EditContainerNodePorts implements EditPorts {
     public void undo() {
         updatePorts(m_reverseInfos);
         m_reverseInfos = null;
+        m_newPortInfos = null;
     }
 
     @Override
@@ -125,12 +130,15 @@ public final class EditContainerNodePorts implements EditPorts {
         return true;
     }
 
-    @Override
-    public Integer findNewPortIdx() throws NoSuchElementException {
-        if (m_reverseInfos == null) {
-            throw new NoSuchElementException("`m_reverseInfos` is not set");
+    private Integer findNewPortIdx() throws NoSuchElementException {
+        if (m_newPortInfos == null) {
+            throw new NoSuchElementException("`m_newPortInfos` is not set");
         }
-        return m_reverseInfos.length;
+        return Arrays.stream(m_newPortInfos)//
+            .filter(pt -> pt.getOldIndex() == -1)//
+            .map(MetaPortInfo::getNewIndex)//
+            .findFirst()//
+            .orElseThrow(() -> new NoSuchElementException("Can't find new port index"));
     }
 
     private final NodeID getNodeId() {
