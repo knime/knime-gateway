@@ -141,7 +141,7 @@ public final class EditContainerNodePorts implements EditPorts {
             .orElseThrow(() -> new NoSuchElementException("Can't find new port index"));
     }
 
-    private final NodeID getNodeId() {
+    private NodeID getNodeId() {
         return m_portCommandEnt.getNodeId().toNodeID(m_wfm.getProjectWFM().getID());
     }
 
