@@ -69,7 +69,9 @@ import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.shared.workflow.storage.clipboard.DefClipboardContent;
+import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
+import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
+import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -105,10 +107,12 @@ public class Paste extends AbstractWorkflowCommand implements WithResult {
         try {
             var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
             // TODO: NXT-1168 Put a limit on the clipboard content size
-            var defClipboardContent = mapper.readValue(m_commandEnt.getContent(), DefClipboardContent.class);
+            var systemClipboardContent = mapper.readValue(m_commandEnt.getContent(), String.class);
+            var defClipboardContent = SystemClipboardFormat.deserialize(systemClipboardContent);
             m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
-        } catch (JsonProcessingException e) { // NOSONAR: Don't want to log or re-throw this exception
-            throw new OperationNotAllowedException("Could not parse input string to def clipboard content");
+        } catch (JsonProcessingException | IllegalArgumentException | InvalidDefClipboardContentVersionException
+                | ObfuscatorException e) {
+            throw new OperationNotAllowedException("Could not parse input string to def clipboard content: ", e);
         }
         // Get nodes and annotations
         var nodes = Arrays.stream(m_workflowCopyContent.getNodeIDs())//

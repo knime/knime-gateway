@@ -70,7 +70,7 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 public class Cut extends CommandSequence {
 
-    protected Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+    Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         super(getCommands(commandEnt, workflowMiddleware));
     }
 

@@ -148,11 +148,12 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.knime.shared.workflow.storage.clipboard.DefClipboardContent;
+import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
+import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
+import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * Test for the endpoints to view/render a workflow.
@@ -1836,12 +1837,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
     }
 
-    private static void assertCopyResultValid(final CopyResultEnt copyResult)
-        throws JsonMappingException, JsonProcessingException {
+    private static void assertCopyResultValid(final CopyResultEnt copyResult) throws JsonProcessingException,
+        IllegalArgumentException, InvalidDefClipboardContentVersionException, ObfuscatorException {
         var clipboardContent = copyResult.getContent();
         var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
-        var defClipboardContent = mapper.readValue(clipboardContent, DefClipboardContent.class);
-        assertThat("The DefClipboardContent could not read", defClipboardContent != null);
+        var systemClipboardContent = mapper.readValue(clipboardContent, String.class);
+        var defClipboardContent = SystemClipboardFormat.deserialize(systemClipboardContent);
+        assertThat("The DefClipboardContent could not be read", defClipboardContent != null);
     }
 
     /**

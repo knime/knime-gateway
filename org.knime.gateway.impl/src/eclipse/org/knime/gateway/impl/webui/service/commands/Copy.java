@@ -63,6 +63,8 @@ import org.knime.gateway.api.webui.entity.CopyResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
+import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 import org.knime.shared.workflow.storage.util.PasswordRedactor;
 
@@ -141,8 +143,9 @@ public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult
         var defClipboardContent = getWorkflowManager().copyToDef(workflowCopyContent, PasswordRedactor.asNull());
         var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         try {
-            m_content = mapper.writeValueAsString(defClipboardContent);
-        } catch (JsonProcessingException e) {
+            var systemClipboardContent = SystemClipboardFormat.serialize(defClipboardContent);
+            m_content = mapper.writeValueAsString(systemClipboardContent);
+        } catch (JsonProcessingException | ObfuscatorException e) {
             LOGGER.error("Cannot copy to system clipboard: ", e);
         }
         return false; // The workflow didn't change
