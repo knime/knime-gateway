@@ -65,7 +65,6 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
-import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 import org.knime.shared.workflow.storage.util.PasswordRedactor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -141,10 +140,8 @@ public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult
                 .build();
         // TODO: NXT-1168 Put a limit on the clipboard content size
         var defClipboardContent = getWorkflowManager().copyToDef(workflowCopyContent, PasswordRedactor.asNull());
-        var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         try {
-            var systemClipboardContent = SystemClipboardFormat.serialize(defClipboardContent);
-            m_content = mapper.writeValueAsString(systemClipboardContent);
+            m_content = SystemClipboardFormat.serialize(defClipboardContent);
         } catch (JsonProcessingException | ObfuscatorException e) {
             LOGGER.error("Cannot copy to system clipboard: ", e);
         }
