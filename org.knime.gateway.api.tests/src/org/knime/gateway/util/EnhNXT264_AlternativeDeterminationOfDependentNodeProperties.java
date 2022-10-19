@@ -75,7 +75,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 
 	@SuppressWarnings("javadoc")
     @Before
-    public void loadWorklfow() throws Exception {
+    public void loadWorkflow() throws Exception {
         m_wfm = WorkflowManagerUtil.loadWorkflow(CoreUtil.resolveToFile(
             "/files/testflows/enhNXT264_AlternativeDeterminationOfDependentNodeProperties", this.getClass()));
     }

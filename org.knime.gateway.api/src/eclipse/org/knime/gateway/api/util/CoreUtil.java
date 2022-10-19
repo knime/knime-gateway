@@ -348,8 +348,11 @@ public final class CoreUtil {
     }
 
     /**
-     * The concrete kind of a container node.
+     * The concrete kind of a container node. We assume a 1-to-1 mapping from a {@link ContainerType} to a subclass
+     * of {@link NodeContainer} that implements the node's container behaviour.
+     * @see CoreUtil#getContainerType(NodeID, WorkflowManager)
      */
+    @SuppressWarnings("javadoc")
     public enum ContainerType {
         METANODE, COMPONENT
     }
@@ -358,7 +361,7 @@ public final class CoreUtil {
      * Obtain the {@link ContainerType} of a container node.
      *
      * @param nodeId the node id to determine the container type for
-     * @param wfm
+     * @param wfm The parent workflow manager
      * @return an Optional containing the container type of the node, or an empty Optional if the node could not be
      *         found in the workflow or is not a container node.
      */
@@ -372,6 +375,25 @@ public final class CoreUtil {
             } else {
                 return null;
             }
+        });
+    }
+
+    /**
+     * Obtain the workflow manager that is encapsulated by a container node.
+     *
+     * @param nodeId The ID of the node to obtain the workflow manager for.
+     * @param wfm The parent workflow manager
+     * @return The workflow manager instance that is encapsulated by given container node
+     */
+    public static Optional<WorkflowManager> getContainedWfm(final NodeID nodeId, final WorkflowManager wfm) {
+        return getContainerType(nodeId, wfm).map(type -> {
+            if (type == ContainerType.METANODE) {
+                return wfm.getNodeContainer(nodeId, WorkflowManager.class, false);
+            }
+            if (type == ContainerType.COMPONENT) {
+                return wfm.getNodeContainer(nodeId, SubNodeContainer.class, false).getWorkflowManager();
+            }
+            return null;
         });
     }
 

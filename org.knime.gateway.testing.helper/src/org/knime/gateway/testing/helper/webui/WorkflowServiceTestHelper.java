@@ -504,12 +504,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testExpandResult(configuredComponent);
     }
 
+    @SuppressWarnings("javadoc")
+    public void testExpandLockedMetanode() throws Exception {
+        var lockedMetanode = 27;
+        assertExpandLocked(lockedMetanode);
+    }
+
+    @SuppressWarnings("javadoc")
+    public void testExpandLockedComponent() throws Exception {
+        var lockedComponent = 28;
+        assertExpandLocked(lockedComponent);
+    }
+
     private void testExpandResettable(final int nodeToExpand) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
         WorkflowEnt wfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertTrue("Expect selected nodes to have allowed action for collapse set to 'reset required'",
+        assertTrue("Expect selected nodes to have allowed action for expand set to 'reset required'",
             getAllowedActionsOfNodes(List.of(nodeToExpandEnt), wfEnt).stream()
                 .anyMatch(actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.RESETREQUIRED));
 
@@ -858,6 +870,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.EXPAND) //
             .setNodeId(node) //
             .build();
+    }
+
+    private void assertExpandLocked(final int nodeToExpand) throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
+
+        var expandCommand = buildExpandCommandEnt(nodeToExpandEnt);
+        Assert.assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), expandCommand));
     }
 
     /**

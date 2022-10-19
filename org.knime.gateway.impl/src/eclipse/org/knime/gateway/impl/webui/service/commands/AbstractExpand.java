@@ -59,6 +59,7 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.ExpandSubnodeResult;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
@@ -116,20 +117,16 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
 
     protected void checkCanExpandOrThrow(final WorkflowManager wfm, final NodeID nodeToExpand)
         throws ServiceExceptions.OperationNotAllowedException {
-        var containingWfmLocked = wfm.isEncrypted() && !wfm.isUnlocked();
-        if (containingWfmLocked) {
-            throw new ServiceExceptions.OperationNotAllowedException("Cannot expand in locked workflow manager");
-        }
-
-        var containerWfm = wfm.getNodeContainer(nodeToExpand, WorkflowManager.class, false);
-        if (containerWfm != null && !containerWfm.isUnlocked()) {
+        var containedWfm = CoreUtil.getContainedWfm(nodeToExpand, wfm)
+            .orElseThrow(() -> new ServiceExceptions.OperationNotAllowedException(
+                "No container node with the supplied ID can be found in workflow"));
+        if (!containedWfm.isUnlocked()) {
             throw new ServiceExceptions.OperationNotAllowedException(
-                "Password-protected component needs to" + "be unlocked first");
+                "Password-protected metanode/container needs to be unlocked first");
         }
-
-        if (containerWfm != null && containerWfm.isWriteProtected()) {
+        if (containedWfm.isWriteProtected()) {
             throw new ServiceExceptions.OperationNotAllowedException(
-                "Workflow to be expanded is write-protected" + " (may be a linked metanode or component)");
+                "Workflow to be expanded is write-protected (may be a linked metanode or component)");
         }
     }
 
