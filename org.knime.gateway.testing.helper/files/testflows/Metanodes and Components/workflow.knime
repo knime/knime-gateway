@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="workflow.knime">
-    <entry key="created_by" type="xstring" value="4.5.1.v202201200941"/>
+    <entry key="created_by" type="xstring" value="4.5.1.v202201171148"/>
     <entry key="created_by_nightly" type="xboolean" value="false"/>
     <entry key="version" type="xstring" value="4.1.0"/>
     <entry key="name" type="xstring" isnull="true" value=""/>
@@ -8,7 +8,7 @@
         <entry key="authored-by" type="xstring" value="Knime"/>
         <entry key="authored-when" type="xstring" value="2022-03-24 10:56:45 +0100"/>
         <entry key="lastEdited-by" type="xstring" value="Knime"/>
-        <entry key="lastEdited-when" type="xstring" value="2022-05-09 15:30:19 +0200"/>
+        <entry key="lastEdited-when" type="xstring" value="2022-10-31 12:27:17 +0100"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="IDLE"/>
@@ -80,8 +80,8 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="184"/>
                     <entry key="1" type="xint" value="137"/>
-                    <entry key="2" type="xint" value="124"/>
-                    <entry key="3" type="xint" value="78"/>
+                    <entry key="2" type="xint" value="94"/>
+                    <entry key="3" type="xint" value="93"/>
                 </config>
             </config>
         </config>
@@ -112,8 +112,8 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="184"/>
                     <entry key="1" type="xint" value="437"/>
-                    <entry key="2" type="xint" value="124"/>
-                    <entry key="3" type="xint" value="78"/>
+                    <entry key="2" type="xint" value="94"/>
+                    <entry key="3" type="xint" value="93"/>
                 </config>
             </config>
         </config>
@@ -289,6 +289,38 @@
                     <entry key="0" type="xint" value="264"/>
                     <entry key="1" type="xint" value="777"/>
                     <entry key="2" type="xint" value="71"/>
+                    <entry key="3" type="xint" value="78"/>
+                </config>
+            </config>
+        </config>
+        <config key="node_27">
+            <entry key="id" type="xint" value="27"/>
+            <entry key="node_settings_file" type="xstring" value="Metanode (#27)/workflow.knime"/>
+            <entry key="node_is_meta" type="xboolean" value="true"/>
+            <entry key="node_type" type="xstring" value="MetaNode"/>
+            <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+            <config key="ui_settings">
+                <config key="extrainfo.node.bounds">
+                    <entry key="array-size" type="xint" value="4"/>
+                    <entry key="0" type="xint" value="1065"/>
+                    <entry key="1" type="xint" value="297"/>
+                    <entry key="2" type="xint" value="61"/>
+                    <entry key="3" type="xint" value="65"/>
+                </config>
+            </config>
+        </config>
+        <config key="node_28">
+            <entry key="id" type="xint" value="28"/>
+            <entry key="node_settings_file" type="xstring" value="Metanode (#28)/settings.xml"/>
+            <entry key="node_is_meta" type="xboolean" value="true"/>
+            <entry key="node_type" type="xstring" value="SubNode"/>
+            <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+            <config key="ui_settings">
+                <config key="extrainfo.node.bounds">
+                    <entry key="array-size" type="xint" value="4"/>
+                    <entry key="0" type="xint" value="1164"/>
+                    <entry key="1" type="xint" value="297"/>
+                    <entry key="2" type="xint" value="61"/>
                     <entry key="3" type="xint" value="78"/>
                 </config>
             </config>

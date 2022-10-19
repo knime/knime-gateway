@@ -122,6 +122,10 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCommandsWithinComponent());
         res.put("testExecuteCommandsWithinMetanode",
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCommandsWithinMetanode());
+        res.put("testExpandLockedMetanode",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandLockedMetanode());
+        res.put("testExpandLockedComponent",
+                (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandLockedComponent());
 
         res.put("testExecuteCopyCommand", (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCopyCommand());
         res.put("testExecuteCutCommand", (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCutCommand());
