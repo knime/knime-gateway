@@ -72,6 +72,9 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
+import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Workflow command to paste workflow parts into the active workflow
@@ -102,10 +105,13 @@ public class Paste extends AbstractWorkflowCommand implements WithResult {
         var wfm = getWorkflowManager();
         // Paste at original position
         try {
+            var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
             // TODO: NXT-1168 Put a limit on the clipboard content size
-            var defClipboardContent = SystemClipboardFormat.deserialize(m_commandEnt.getContent());
+            var systemClipboardContent = mapper.readValue(m_commandEnt.getContent(), String.class);
+            var defClipboardContent = SystemClipboardFormat.deserialize(systemClipboardContent);
             m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
-        } catch (IllegalArgumentException | InvalidDefClipboardContentVersionException | ObfuscatorException e) {
+        } catch (JsonProcessingException | IllegalArgumentException | InvalidDefClipboardContentVersionException
+                | ObfuscatorException e) {
             throw new OperationNotAllowedException("Could not parse input string to def clipboard content: ", e);
         }
         // Get nodes and annotations
