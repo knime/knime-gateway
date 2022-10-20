@@ -48,6 +48,7 @@ import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
+import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
@@ -59,6 +60,21 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeRepositoryService extends GatewayService {
 
+    /**
+     * Given a node template id, it recommends a certain number of likely successor nodes the user might want to add next to its workflow.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param portIdx The port index to be used.
+     * @param nodesLimit The maximum number of node recommendations to return.
+     * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
+     *
+     * @return the result
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     */
+    NodeRecommendationsEnt getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
+        
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).
      *
@@ -88,7 +104,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @param allTagsMatch If true, only the nodes/components that have all of the given tags are included in the search result. Otherwise nodes/components that have at least one of the given tags are included.
      * @param nodesOffset Number of nodes/components to be skipped in the search result (for pagination).
      * @param nodesLimit The maximum number of nodes/components in the search result (mainly for pagination).
-     * @param fullTemplateInfo If true, the search result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
+     * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
      */

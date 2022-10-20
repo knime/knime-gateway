@@ -37,5 +37,5 @@
   "state" : {
     "executionState" : "EXECUTED"
   },
-  "templateId" : "org.knime.base.node.jsnippet.JavaSnippetNodeFactory"
+  "templateId" : "org.knime.base.node.jsnippet.JavaSnippetNodeFactory#Java Snippet"
 }

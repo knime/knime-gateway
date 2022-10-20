@@ -162,6 +162,13 @@ public final class GatewayTestCollection {
         res.put("testExecuteAndUndoDeleteCommandPatches", (rc, sp, wl, we,
             es) -> new EventServiceTestHelper(rc, sp, wl, we, es).testExecuteAndUndoDeleteCommandPatches());
 
+        res.put("testNodeRecommendations",
+            (rc, sp, wl, we, es) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendations());
+        res.put("testNodeRecommendationsForSourceNodes", (rc, sp, wl, we,
+            es) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendationsForSourceNodes());
+        res.put("testNodeRecommendationsThrowingExceptions", (rc, sp, wl, we,
+            es) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendationsThrowingExceptions());
+
         return res;
     }
 }

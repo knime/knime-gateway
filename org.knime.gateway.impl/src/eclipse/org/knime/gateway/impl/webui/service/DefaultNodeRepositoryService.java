@@ -51,11 +51,15 @@ package org.knime.gateway.impl.webui.service;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
+import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.NodeGroups;
+import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.NodeSearch;
 
@@ -72,6 +76,8 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
 
     private final NodeGroups m_nodeGroups;
 
+    private final NodeRecommendations m_nodeRecommendations;
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -85,6 +91,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         m_nodeRepo = new NodeRepository();
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
+        m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
     }
 
     /**
@@ -111,6 +118,19 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
         return m_nodeRepo.getNodeTemplates(templateIds);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws OperationNotAllowedException
+     */
+    @Override
+    public NodeRecommendationsEnt getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
+        throws OperationNotAllowedException {
+        return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
+            fullTemplateInfo);
     }
 
 }

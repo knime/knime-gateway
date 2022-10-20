@@ -55,6 +55,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -140,11 +141,16 @@ public class GatewayDefaultServiceTests {
             @Override
             public PortService getPortService() {
                 return DefaultPortService.getInstance();
-            };
+            }
 
             @Override
             public EventService getEventService() {
                 return DefaultEventService.getInstance();
+            }
+
+            @Override
+            public NodeRepositoryService getNodeRepositoryService() {
+                return DefaultNodeRepositoryService.getInstance();
             }
         };
         m_gatewayTestName = gatewayTestName;

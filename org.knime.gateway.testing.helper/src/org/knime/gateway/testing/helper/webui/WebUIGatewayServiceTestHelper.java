@@ -65,6 +65,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
+import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -275,6 +276,14 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected EventService es() {
         return m_serviceProvider.getEventService();
+    }
+
+    /**
+     * Shortcut to get the node repository service instance.
+     * @return a node repository service instance
+     */
+    protected NodeRepositoryService nrs() {
+        return m_serviceProvider.getNodeRepositoryService();
     }
 
     /**

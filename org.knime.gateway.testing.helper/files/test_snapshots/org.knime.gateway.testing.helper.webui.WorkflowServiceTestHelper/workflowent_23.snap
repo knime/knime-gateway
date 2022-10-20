@@ -41,17 +41,17 @@
     "name" : "Component"
   },
   "nodeTemplates" : {
-    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Input",
       "type" : "VirtualIn"
     },
-    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component Output" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Output",
       "type" : "VirtualOut"
     },
-    "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory" : {
+    "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory#Table View" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPklEQVQ4je2RMQoAIBRCX13Mo3s024I//4agBBdBER1AaGB2zBcFJNm0jaSiJUEStot2rkEHgxM3/g2e32ABBL1vm0aW6zoAAAAASUVORK5CYII=",
       "name" : "Table View",
       "type" : "Visualizer"
@@ -92,7 +92,7 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
+      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory#Table View"
     },
     "root:23:0:8" : {
       "id" : "root:23:0:8",
@@ -123,7 +123,7 @@
         "executionState" : "IDLE",
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76"
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input"
     },
     "root:23:0:9" : {
       "id" : "root:23:0:9",
@@ -154,7 +154,7 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76"
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component Output"
     }
   },
   "parents" : [ {

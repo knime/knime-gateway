@@ -64,7 +64,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -119,17 +118,16 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setTypeId("WorkflowChangedEventType").build();
         es().addEventListener(eventType);
 
-        DeleteCommandEnt command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
+        var command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
             Collections.emptyList(), Collections.emptyList());
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        PatchOpEnt patchOpEnt = waitAndFindPatchOpForPath(
-            "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3");
+        var patchPath = "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3#Decision Tree Learner";
+        var patchOpEnt = waitAndFindPatchOpForPath(patchPath);
         m_events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.REMOVE));
 
         ws().undoWorkflowCommand(wfId, getRootID());
-        patchOpEnt = waitAndFindPatchOpForPath(
-            "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3");
+        patchOpEnt = waitAndFindPatchOpForPath(patchPath);
         // make sure that 'sub-objects' of an object added as a patch op, aren't added again
         // (e.g. the node annotation of a to be added node)
         assertThatThereIsNoPathForPatchOp("/nodes/root:5/annotation");

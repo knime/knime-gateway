@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,50 +40,57 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Oct 9, 2020 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.testing.helper;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeRecommendationsEnt.DefaultNodeRecommendationsEntBuilder;
 
 /**
- * Provides implementations of all gateway services for the Web-UI.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
-public interface ServiceProvider {
+
+@JsonDeserialize(builder=DefaultNodeRecommendationsEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface NodeRecommendationsEntMixIn extends NodeRecommendationsEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("nodes")
+    public java.util.List<NodeTemplateEnt> getNodes();
+    
 
     /**
-     * @return workflow service implementation
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    WorkflowService getWorkflowService();
 
-    /**
-     * @return node service implementation
-     */
-    NodeService getNodeService();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface NodeRecommendationsEntMixInBuilder extends NodeRecommendationsEntBuilder {
+    
+        @Override
+        public NodeRecommendationsEntMixIn build();
+    
+        @Override
+        @JsonProperty("nodes")
+        public NodeRecommendationsEntMixInBuilder setNodes(final java.util.List<NodeTemplateEnt> nodes);
+        
+    }
 
-    /**
-     * @return port service implementation
-     */
-    PortService getPortService();
-
-    /**
-     * @return event service implementation
-     */
-    EventService getEventService();
-
-    /**
-     * @return node repository service implementation
-     */
-    NodeRepositoryService getNodeRepositoryService();
 
 }
+

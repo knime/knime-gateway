@@ -49,17 +49,17 @@
     "name" : "component project"
   },
   "nodeTemplates" : {
-    "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory" : {
+    "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory#Column Filter" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MDIyRjAxMjk0NDI1MTFFNUI4QUY5RjNFOUEzQTE4QjIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MDIyRjAxMjg0NDI1MTFFNUI4QUY5RjNFOUEzQTE4QjIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpiNmRiZTRmOC00Yzc3LTQyZGUtOGI5NC00ZGExNTM3Y2Q1M2YiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+vcE10QAAAGFJREFUeNrcUkEKwCAMa4L//7LCwA3bVYPztJxKDUlaS3tQLaJO+hdoH/EDgeKW1Gsk/MDlCxkTw8Cle4CQeuBSdE6TlORQlB3cAlvOR79xGdP1sEqAEyNAFabolqZqAgwA4/EMMjThx3gAAAAASUVORK5CYII=",
       "name" : "Column Filter",
       "type" : "Manipulator"
     },
-    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Input",
       "type" : "VirtualIn"
     },
-    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component Output" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Output",
       "type" : "VirtualOut"
@@ -148,7 +148,7 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory:739f3b76"
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input"
     },
     "root:7" : {
       "allowedActions" : {
@@ -191,7 +191,7 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory:739f3b76"
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component Output"
     },
     "root:8" : {
       "allowedActions" : {
@@ -240,7 +240,7 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory"
+      "templateId" : "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory#Column Filter"
     }
   },
   "workflowAnnotations" : [ ]

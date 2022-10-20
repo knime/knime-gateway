@@ -113,7 +113,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
-import org.knime.core.util.ConfigUtils;
+import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
@@ -540,26 +540,21 @@ public final class EntityBuilderUtil {
     }
 
     /**
-     * Creates an id the uniquely represents a node factory (node matter if it's a normal one or a dynamic node
-     * factory).
+     * Creates an id that uniquely represents a node factory (no matter if it's a normal one or a dynamic node factory).
      *
-     * @param nodeFactory the factory to create the id for
-     * @return the new template id
+     * @param nodeFactory The node factory to create the id for
+     * @return The new node template id
      */
     public static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
-        var configHash = "";
-        if (nodeFactory instanceof DynamicNodeFactory) {
-            final var settings = new NodeSettings("");
-            nodeFactory.saveAdditionalFactorySettings(settings);
-            configHash = ConfigUtils.contentBasedHashString(settings);
-        }
+        String nodeFactoryClassName;
         if (nodeFactory instanceof MissingNodeFactory) {
             NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)nodeFactory).getNodeAndBundleInfo();
-            return nodeInfo.getFactoryClass().orElseGet(() -> "unknown_missing_node_factory_" + UUID.randomUUID())
-                + configHash;
+            nodeFactoryClassName =
+                nodeInfo.getFactoryClass().orElseGet(() -> "unknown_missing_node_factory_" + UUID.randomUUID());
         } else {
-            return nodeFactory.getClass().getName() + configHash;
+            nodeFactoryClassName = nodeFactory.getClass().getName();
         }
+        return NodeRecommendationManager.getNodeTemplateId(nodeFactoryClassName, nodeFactory.getNodeName());
     }
 
     /**
@@ -1085,8 +1080,7 @@ public final class EntityBuilderUtil {
     }
 
     private static NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeFactory<? extends NodeModel> factory) {
-        org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder =
-            builder(NodeFactoryKeyEntBuilder.class);
+        NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class);
         if (factory != null) {
             nodeFactoryKeyBuilder.setClassName(factory.getClass().getName());
             //only set settings in case of a dynamic node factory

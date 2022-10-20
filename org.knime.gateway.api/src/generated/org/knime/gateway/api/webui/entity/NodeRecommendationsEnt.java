@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,50 +40,56 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Oct 9, 2020 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.testing.helper;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Provides implementations of all gateway services for the Web-UI.
- *
+ * Represents the result of a query for node recommendations
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
-public interface ServiceProvider {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface NodeRecommendationsEnt extends GatewayEntity {
+
+
+  /**
+   * Ordered list of node recommendations corresponding to the given template id.  The most relevant node comes first, the least relevant last.
+   * @return nodes , never <code>null</code>
+   **/
+  public java.util.List<NodeTemplateEnt> getNodes();
+
 
     /**
-     * @return workflow service implementation
+     * The builder for the entity.
      */
-    WorkflowService getWorkflowService();
+    public interface NodeRecommendationsEntBuilder extends GatewayEntityBuilder<NodeRecommendationsEnt> {
 
-    /**
-     * @return node service implementation
-     */
-    NodeService getNodeService();
-
-    /**
-     * @return port service implementation
-     */
-    PortService getPortService();
-
-    /**
-     * @return event service implementation
-     */
-    EventService getEventService();
-
-    /**
-     * @return node repository service implementation
-     */
-    NodeRepositoryService getNodeRepositoryService();
+        /**
+         * Ordered list of node recommendations corresponding to the given template id.  The most relevant node comes first, the least relevant last.
+         * 
+         * @param nodes the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeRecommendationsEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        NodeRecommendationsEnt build();
+    
+    }
 
 }
