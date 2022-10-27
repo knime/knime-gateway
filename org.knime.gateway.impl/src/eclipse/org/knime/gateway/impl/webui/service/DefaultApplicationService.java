@@ -152,6 +152,7 @@ public final class DefaultApplicationService implements ApplicationService {
         return builder.setOpenedWorkflows(projectEnts) //
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
+            .setFeatureFlags(getFeatureFlags()) //
             .build();
     }
 
@@ -190,6 +191,12 @@ public final class DefaultApplicationService implements ApplicationService {
             }
         }
         return builder.build();
+    }
+
+    private static Map<String, Object> getFeatureFlags() {
+        var featureFlagsPrefix = "org.knime.ui.feature.";
+        var f1 = featureFlagsPrefix + "embedded_views_and_dialogs";
+        return Map.of(f1, Boolean.getBoolean(f1));
     }
 
 }

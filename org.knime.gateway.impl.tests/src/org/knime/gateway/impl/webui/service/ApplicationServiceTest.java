@@ -46,6 +46,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,15 +88,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
 
-        AppState appState = mock(AppState.class);
-        Supplier<AppState> appStateSupplier = mock(Supplier.class);
-        AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
-        when(appStateSupplier.get()).thenReturn(appState);
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, appStateProvider);
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-
+        var appState = mockAppStateAndSetServiceDependencies();
         var appService = DefaultApplicationService.getInstance();
 
         cr(appService.getState(), "empty_appstate");
@@ -142,5 +136,41 @@ public class ApplicationServiceTest extends GatewayServiceTest {
                 return true;
             }
         };
+    }
+
+    /**
+     * Makes sure that feature flags supplied via system properties find their way into the app state returned by the
+     * application service.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetAppStateWithFeatureFlagsEnabled() throws Exception {
+        String workflowProjectId = "the_workflow_project_id";
+        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+
+        var appState = mockAppStateAndSetServiceDependencies();
+        var appService = DefaultApplicationService.getInstance();
+
+        var featureFlagKey = "org.knime.ui.feature.embedded_views_and_dialogs";
+        System.setProperty(featureFlagKey, "true");
+
+        var appStateEnt = appService.getState();
+        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKey), is(true));
+
+        System.clearProperty(featureFlagKey);
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    }
+
+    private static AppState mockAppStateAndSetServiceDependencies() {
+        AppState appState = mock(AppState.class);
+        Supplier<AppState> appStateSupplier = mock(Supplier.class);
+        AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
+        when(appStateSupplier.get()).thenReturn(appState);
+        ServiceDependencies.setServiceDependency(AppStateProvider.class, appStateProvider);
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        return appState;
     }
 }

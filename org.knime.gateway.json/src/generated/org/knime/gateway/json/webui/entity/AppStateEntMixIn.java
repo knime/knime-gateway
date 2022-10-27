@@ -81,6 +81,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("suggestedPortTypeIds")
     public java.util.List<String> getSuggestedPortTypeIds();
     
+    @Override
+    @JsonProperty("featureFlags")
+    public java.util.Map<String, Object> getFeatureFlags();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -105,6 +109,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("suggestedPortTypeIds")
         public AppStateEntMixInBuilder setSuggestedPortTypeIds(final java.util.List<String> suggestedPortTypeIds);
+        
+        @Override
+        @JsonProperty("featureFlags")
+        public AppStateEntMixInBuilder setFeatureFlags(final java.util.Map<String, Object> featureFlags);
         
     }
 

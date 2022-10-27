@@ -1,5 +1,8 @@
 {
   "availablePortTypes" : { },
+  "featureFlags" : {
+    "org.knime.ui.feature.embedded_views_and_dialogs" : false
+  },
   "openedWorkflows" : [ ],
   "suggestedPortTypeIds" : [ ]
 }

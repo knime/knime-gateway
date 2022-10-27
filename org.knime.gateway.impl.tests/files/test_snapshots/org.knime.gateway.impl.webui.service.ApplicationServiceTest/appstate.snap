@@ -30,6 +30,9 @@
       "name" : "Shape"
     }
   },
+  "featureFlags" : {
+    "org.knime.ui.feature.embedded_views_and_dialogs" : false
+  },
   "openedWorkflows" : [ {
     "activeWorkflow" : {
       "snapshotId" : "PLACEHOLDER_FOR_SNAPSHOT_ID",

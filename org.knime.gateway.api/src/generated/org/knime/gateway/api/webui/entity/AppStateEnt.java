@@ -79,6 +79,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.List<String> getSuggestedPortTypeIds();
 
+  /**
+   * Maps a feature-flag key to a feature-flag value (usually, but not necessarily, a boolean). The feature-flags are usually specified/controlled through jvm system properties.
+   * @return featureFlags 
+   **/
+  public java.util.Map<String, Object> getFeatureFlags();
+
 
     /**
      * The builder for the entity.
@@ -108,6 +114,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds);
+        
+        /**
+         * Maps a feature-flag key to a feature-flag value (usually, but not necessarily, a boolean). The feature-flags are usually specified/controlled through jvm system properties.
+         * 
+         * @param featureFlags the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags);
         
         
         /**
