@@ -99,7 +99,6 @@ import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -206,7 +205,6 @@ public class ListEntities {
         res.add(NodePortDescriptionEnt.class);
         res.add(NodePortEnt.class);
         res.add(NodePortTemplateEnt.class);
-        res.add(NodeRecommendationsEnt.class);
         res.add(NodeSearchResultEnt.class);
         res.add(NodeStateEnt.class);
         res.add(NodeTemplateEnt.class);
@@ -298,7 +296,6 @@ public class ListEntities {
         res.add(NodePortDescriptionEnt.NodePortDescriptionEntBuilder.class);
         res.add(NodePortEnt.NodePortEntBuilder.class);
         res.add(NodePortTemplateEnt.NodePortTemplateEntBuilder.class);
-        res.add(NodeRecommendationsEnt.NodeRecommendationsEntBuilder.class);
         res.add(NodeSearchResultEnt.NodeSearchResultEntBuilder.class);
         res.add(NodeStateEnt.NodeStateEntBuilder.class);
         res.add(NodeTemplateEnt.NodeTemplateEntBuilder.class);

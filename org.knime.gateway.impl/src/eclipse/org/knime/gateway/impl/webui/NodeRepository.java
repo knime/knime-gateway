@@ -65,8 +65,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.core.node.NodeInfo;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSetFactory;
@@ -76,7 +74,6 @@ import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.extension.NodeFactoryExtension;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.extension.NodeSetFactoryExtension;
-import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
@@ -112,9 +109,6 @@ public final class NodeRepository {
      */
     public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
         loadAllNodesAndNodeSets();
-        // Initialize node recommendation manager in new thread
-        Runnable runnable = this::setupNodeRecommendationManager;
-        runnable.run();
         // note: we could cache the already created node template entities here (which also contain, e.g., the icon)
         // but we expect the frontend to do it already
         return templateIds.stream().map(this::getNode)//
@@ -130,6 +124,7 @@ public final class NodeRepository {
      * @return The node
      */
     Node getNode(final String templateId) {
+        loadAllNodesAndNodeSets();
         var n = m_nodes.get(templateId);
         if (n != null) {
             return n;
@@ -186,23 +181,7 @@ public final class NodeRepository {
             loadNodeSets(categories, m_nodes, NodeSetFactoryExtension::isDeprecated, NodeSetFactory::isHidden,
                 NodeFactory::isDeprecated);
             addNodeWeights(m_nodes);
-            // Initialize node recommendation manager
-            setupNodeRecommendationManager();
         }
-    }
-
-    private void setupNodeRecommendationManager() {
-        Predicate<NodeInfo> isSourceNodePredicate = nodeInfo -> {
-            var id = NodeRecommendationManager.getNodeTemplateId(nodeInfo.getFactory(), nodeInfo.getName());
-            var node = getNode(id);
-            return node != null && node.factory.getType() == NodeType.Source;
-        };
-        Predicate<NodeInfo> existsInRepositoryPredicate = nodeInfo -> {
-            var id = NodeRecommendationManager.getNodeTemplateId(nodeInfo.getFactory(), nodeInfo.getName());
-            var node = getNode(id);
-            return node != null;
-        };
-        NodeRecommendationManager.getInstance().setup(isSourceNodePredicate, existsInRepositoryPredicate);
     }
 
     private static void loadNodes(final Map<String, CategoryExtension> categories, final Map<String, Node> nodes,

@@ -84,6 +84,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -117,9 +118,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         JsonUtil.addIDEntityDeSerializer(mapper);
         JsonUtil.addDateTimeDeSerializer(mapper);
         JsonUtil.addBitSetDeSerializer(mapper);
+
+        JsonMapper.builder().configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+        //mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
         mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
         var objToString = new ObjectToString(mapper);

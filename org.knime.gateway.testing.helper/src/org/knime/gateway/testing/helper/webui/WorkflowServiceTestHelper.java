@@ -1168,7 +1168,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16, null, null));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory, 15, 16, result);
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory  + "#Box Plot", 15, 16, result);
 
         // add a node that doesn't exists
         Exception ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId,
@@ -1269,7 +1269,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y, final CommandResultEnt result) {
-        assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(Matchers.containsString(nodeFactory)));
+        assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
         var nodeEnt = wf.getWorkflow().getNodes().values().stream()
             .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().contains(nodeFactory))
             .findFirst().orElseThrow();

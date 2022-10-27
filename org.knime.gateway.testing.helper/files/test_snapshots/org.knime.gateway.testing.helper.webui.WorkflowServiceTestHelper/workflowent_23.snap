@@ -51,7 +51,7 @@
       "name" : "Component Output",
       "type" : "VirtualOut"
     },
-    "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory#Table View" : {
+    "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPklEQVQ4je2RMQoAIBRCX13Mo3s024I//4agBBdBER1AaGB2zBcFJNm0jaSiJUEStot2rkEHgxM3/g2e32ABBL1vm0aW6zoAAAAASUVORK5CYII=",
       "name" : "Table View",
       "type" : "Visualizer"
@@ -92,7 +92,7 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory#Table View"
+      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
     },
     "root:23:0:8" : {
       "id" : "root:23:0:8",

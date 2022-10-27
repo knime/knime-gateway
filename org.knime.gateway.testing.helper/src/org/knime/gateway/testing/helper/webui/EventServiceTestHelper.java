@@ -88,6 +88,8 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private final List<Object> m_events = Collections.synchronizedList(new ArrayList<>());
+    
+    private final String m_patchPatch = "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3";
 
     /**
      * @param entityResultChecker
@@ -121,7 +123,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
             Collections.emptyList(), Collections.emptyList());
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        var patchPath = "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3#Decision Tree Learner";
+        var patchPath = "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3";
         var patchOpEnt = waitAndFindPatchOpForPath(patchPath);
         m_events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.REMOVE));

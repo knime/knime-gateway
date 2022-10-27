@@ -20,5 +20,11 @@
       </node>
 
    </extension>
+   <extension
+         point="org.knime.core.ui.nodetriples">
+      <tripleprovider
+            factory-class="org.knime.gateway.testing.helper.webui.TestNodeTipleProviderFactory">
+      </tripleprovider>
+   </extension>
 
 </plugin>

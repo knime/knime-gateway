@@ -195,7 +195,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             // check the expected patches
             int numEvents = testEventConsumer.getEvents().size();
             for (int i = 0; i < numEvents; i++) {
-                cr(testEventConsumer.getEvents().get(i).getPatch(),
+                cr(testEventConsumer.getEvents().get(i).getPatch(), // TODO: Test sometimes fails, because workflow id = 3 or 4.
                     workflowTransformation.getName() + (numEvents > 1 ? ("_" + i) : ""));
             }
 

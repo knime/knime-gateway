@@ -161,7 +161,6 @@ public class TablePortViewFactoryTest {
     }
 
     @FunctionalInterface
-    @SuppressWarnings("javadoc")
     private static interface Dispose {
         void dispose();
     }

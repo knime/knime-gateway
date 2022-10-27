@@ -53,7 +53,6 @@ import java.util.Map;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
@@ -126,7 +125,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * @throws OperationNotAllowedException
      */
     @Override
-    public NodeRecommendationsEnt getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
+    public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
         throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,

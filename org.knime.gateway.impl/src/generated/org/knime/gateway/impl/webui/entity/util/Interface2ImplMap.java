@@ -154,8 +154,6 @@ import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt.NodePortTemplateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt.NodeRecommendationsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeRecommendationsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
@@ -396,9 +394,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodePortTemplateEntBuilder.class) {
             return (B)new DefaultNodePortTemplateEnt.DefaultNodePortTemplateEntBuilder();
-        }        
-        if(clazz == NodeRecommendationsEntBuilder.class) {
-            return (B)new DefaultNodeRecommendationsEnt.DefaultNodeRecommendationsEntBuilder();
         }        
         if(clazz == NodeSearchResultEntBuilder.class) {
             return (B)new DefaultNodeSearchResultEnt.DefaultNodeSearchResultEntBuilder();

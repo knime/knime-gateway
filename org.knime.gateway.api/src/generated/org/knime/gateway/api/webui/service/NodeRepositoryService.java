@@ -48,7 +48,6 @@ import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
@@ -61,7 +60,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 public interface NodeRepositoryService extends GatewayService {
 
     /**
-     * Given a node template id, it recommends a certain number of likely successor nodes the user might want to add next to its workflow.
+     * Given a node in a workflow, it recommends a certain number of likely successor nodes the user might want to add next to its workflow.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
@@ -73,7 +72,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    NodeRecommendationsEnt getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
+    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).

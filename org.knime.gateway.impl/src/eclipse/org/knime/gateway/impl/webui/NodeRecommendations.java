@@ -48,26 +48,25 @@
  */
 package org.knime.gateway.impl.webui;
 
-import static org.knime.core.ui.workflowcoach.NodeRecommendationManager.getNodeTemplateId;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeFactory.NodeType;
+import org.knime.core.node.NodeInfo;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.ui.util.NodeTemplateId;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt.NodeRecommendationsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
@@ -77,6 +76,7 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  * Logic to retrieve node recommendations, we might need the {@link NodeRepository} for it.
  *
  * @author Kai Franze, KNIME GmbH
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class NodeRecommendations {
 
@@ -86,7 +86,7 @@ public class NodeRecommendations {
 
     private final NodeRepository m_nodeRepo;
 
-    private NodeRecommendationManager m_nodeRecommendationManager;
+    private boolean m_nodeRecommendationManagerIsInitialized = false;
 
     /**
      * Creates a new instance
@@ -95,7 +95,6 @@ public class NodeRecommendations {
      */
     public NodeRecommendations(final NodeRepository nodeRepo) {
         m_nodeRepo = nodeRepo;
-        m_nodeRepo.getNodes(); // To setup the repository
     }
 
     /**
@@ -110,12 +109,14 @@ public class NodeRecommendations {
      * @return The node recommendations
      * @throws OperationNotAllowedException
      */
-    public NodeRecommendationsEnt getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
+    public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
         throws OperationNotAllowedException {
-        if (m_nodeRecommendationManager == null) {
-            NodeRecommendationManager.getInstance().init(); // To initialize the repository
-            m_nodeRecommendationManager = NodeRecommendationManager.getInstance();
+        if (!m_nodeRecommendationManagerIsInitialized) {
+            m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
+        }
+        if (!m_nodeRecommendationManagerIsInitialized) {
+            throw new OperationNotAllowedException("Node recommendation manager was not initialized properly");
         }
         if (nodeId == null ^ portIdx == null) {
             throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
@@ -126,11 +127,27 @@ public class NodeRecommendations {
         var sourcePortType = determineSourcePortType(nnc, portIdx);
 
         var recommendations = getFlatListOfRecommendations(nnc);
-        var templates = getNodeTemplatesAndFilterByPortType(recommendations, sourcePortType, limit, fullInfo);
+        return getNodeTemplatesAndFilterByPortType(recommendations, sourcePortType, limit, fullInfo);
+    }
 
-        return builder(NodeRecommendationsEntBuilder.class)//
-            .setNodes(templates)//
-            .build();
+    /**
+     * Initializes the {@link NodeRecommendationManager} using the {@link NodeRepository} to build the predicates needed
+     *
+     * @param nodeRepo The node repository
+     * @return Exit status of initialization
+     */
+    private static boolean initializeNodeRecommendationManager(final NodeRepository nodeRepo) {
+        Predicate<NodeInfo> isSourceNode = nodeInfo -> {
+            var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
+                nodeRepo::getNode);
+            return node != null && node.factory.getType() == NodeType.Source;
+        };
+        Predicate<NodeInfo> existsInRepository = nodeInfo -> {
+            var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
+                nodeRepo::getNode);
+            return node != null;
+        };
+        return NodeRecommendationManager.getInstance().initialize(isSourceNode, existsInRepository);
     }
 
     private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,
@@ -140,7 +157,8 @@ public class NodeRecommendations {
             if (nc instanceof NativeNodeContainer) {
                 return (NativeNodeContainer)nc;
             } else {
-                throw new OperationNotAllowedException("Node recommendations for container nodes aren't supported yet");
+                throw new OperationNotAllowedException(
+                    "Node recommendations for metanodes or components aren't supported yet");
             }
         } else {
             return null;
@@ -159,9 +177,9 @@ public class NodeRecommendations {
         }
     }
 
-    private List<NodeRecommendation> getFlatListOfRecommendations(final NativeNodeContainer nnc) {
-        var recommendations = nnc == null ? m_nodeRecommendationManager.getNodeRecommendationFor()
-            : m_nodeRecommendationManager.getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc));
+    private static List<NodeRecommendation> getFlatListOfRecommendations(final NativeNodeContainer nnc) {
+        var recommendations = nnc == null ? NodeRecommendationManager.getInstance().getNodeRecommendationFor()
+            : NodeRecommendationManager.getInstance().getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc));
         var recommendationsWithoutDups =
             NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
         return recommendationsWithoutDups.stream().map(ObjectUtils::firstNonNull).collect(Collectors.toList());
@@ -170,7 +188,8 @@ public class NodeRecommendations {
     private List<NodeTemplateEnt> getNodeTemplatesAndFilterByPortType(final List<NodeRecommendation> recommendations,
         final PortType sourcePortType, final int limit, final boolean fullInfo) {
         return recommendations.stream()//
-            .map(r -> m_nodeRepo.getNode(getNodeTemplateId(r.getNodeFactoryClassName(), r.getNodeName())))//
+            .map(r -> NodeTemplateId.callWithNodeTemplateIdVariants(r.getNodeFactoryClassName(), r.getNodeName(),
+                m_nodeRepo::getNode))//
             .filter(Objects::nonNull)//
             .map(n -> n.factory)//
             .filter(f -> sourcePortType == null || isCompatibleWithSourcePortType(f, sourcePortType))//

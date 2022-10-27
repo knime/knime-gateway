@@ -53,19 +53,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.List;
 
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.hamcrest.core.IsNull;
-import org.knime.core.node.KNIMEConstants;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.NodeRecommendationsEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -74,21 +67,17 @@ import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
- * Test node recommendations endpoint
+ * Test {@link NodeRepositoryService#getNodeRecommendations(String, NodeIDEnt, NodeIDEnt, Integer, Integer, Boolean)}
  *
  * @author Kai Franze, KNIME GmbH
  */
 public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper {
 
-    private static final String PREFERENCE_QUALIFIER = "org.knime.workbench.workflowcoach";
+    private final NodeIDEnt m_datagenerator = new NodeIDEnt(1);
 
-    private static final String PREFERENCE_KEY = "community_node_triple_provider";
+    private final NodeIDEnt m_metanode = new NodeIDEnt(6);
 
-    private static final String FILE_URL = "https://update.knime.com/community_recommendations.json";
-
-    private static final String FILE_NAME = "community_recommendations.json";
-
-    private static final Path FILE_PATH = Paths.get(KNIMEConstants.getKNIMEHomeDir(), FILE_NAME);
+    private final NodeIDEnt m_component = new NodeIDEnt(12);
 
     /**
      * @param entityResultChecker
@@ -102,29 +91,12 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
     }
 
     /**
-     * Helper method to setup the environment
-     */
-    @SuppressWarnings("resource")
-    private static void beforeTest() throws IOException {
-        DefaultScope.INSTANCE.getNode(PREFERENCE_QUALIFIER).putBoolean(PREFERENCE_KEY, true);
-        InputStream in = new URL(FILE_URL).openStream();
-        Files.copy(in, FILE_PATH, StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    /**
-     * Helper method to clean up
-     */
-    private static void afterTest() throws IOException {
-        Files.delete(FILE_PATH);
-    }
-
-    /**
      * Tests node recommendations for nodes present on the workflow
      *
      * @throws Exception
      */
     public void testNodeRecommendations() throws Exception {
-        executeRecommendationsTest(new NodeIDEnt(1), 1);
+        executeRecommendationsTest(m_datagenerator, 1);
     }
 
     /**
@@ -137,31 +109,23 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
     }
 
     private void executeRecommendationsTest(final NodeIDEnt nodeId, final Integer portIdx) throws Exception {
-        // Setup
-        beforeTest();
-
-        // Perform test
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         var resultDefault = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, null, null);
         assertRecommendations(resultDefault, 12, false);
-        var resultMinimal10 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 10, false);
-        assertRecommendations(resultMinimal10, 10, false);
-        var resultFull20 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 20, true);
-        assertRecommendations(resultFull20, 20, true);
-
-        // Clean up
-        afterTest();
+        var resultMinimal13 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 101, false); // Max number of 13 recommendations received
+        assertRecommendations(resultMinimal13, 13, false);
+        var resultFull7 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 7, true);
+        assertRecommendations(resultFull7, 7, true);
     }
 
-    private static void assertRecommendations(final NodeRecommendationsEnt recommendations, final int nodesLimit,
+    private static void assertRecommendations(final List<NodeTemplateEnt> recommendations, final int nodesLimit,
         final boolean fullTemplateInfo) {
-        var nodeTemplates = recommendations.getNodes();
-        assertThat("Result size doesn't match", nodeTemplates.size(), is(nodesLimit));
+        assertThat("Result size doesn't match", recommendations.size(), is(nodesLimit));
         if (fullTemplateInfo) {
-            nodeTemplates.forEach(nt -> assertThat("This full template is incomplete", nt.getIcon(), is(IsNull.notNullValue())));
+            recommendations.forEach(nt -> assertThat("This full template is incomplete", nt.getIcon(), is(IsNull.notNullValue())));
         } else {
-            nodeTemplates.forEach(nt -> assertThat("This minimal template is not minimal", nt.getIcon(), is(IsNull.nullValue())));
+            recommendations.forEach(nt -> assertThat("This minimal template is not minimal", nt.getIcon(), is(IsNull.nullValue())));
         }
     }
 
@@ -171,25 +135,22 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
      * @throws Exception
      */
     public void testNodeRecommendationsThrowingExceptions() throws Exception {
-        // Setup
-        beforeTest();
-
-        // Perform test
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, new NodeIDEnt(1), null, null, null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, null, null, null));
         assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, new NodeIDEnt(1), 4, null, null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, new NodeIDEnt(1), -1, null, null));
-
-        // TODO: Add test for container nodes exception
-
-        // Clean up
-        afterTest();
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, null));
+        assertThrows("Node recommendations for metanodes or components aren't supported yet",
+            OperationNotAllowedException.class,
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_metanode, null, null, null));
+        assertThrows("Node recommendations for metanodes or components aren't supported yet",
+            OperationNotAllowedException.class,
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, true));
     }
 
 }

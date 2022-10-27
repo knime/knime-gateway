@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -113,7 +112,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
-import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
+import org.knime.core.ui.util.NodeTemplateId;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
@@ -546,16 +545,8 @@ public final class EntityBuilderUtil {
      * @return The new node template id
      */
     public static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
-        String nodeFactoryClassName;
-        if (nodeFactory instanceof MissingNodeFactory) {
-            NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)nodeFactory).getNodeAndBundleInfo();
-            nodeFactoryClassName =
-                nodeInfo.getFactoryClass().orElseGet(() -> "unknown_missing_node_factory_" + UUID.randomUUID());
-        } else {
-            nodeFactoryClassName = nodeFactory.getClass().getName();
-        }
-        return NodeRecommendationManager.getNodeTemplateId(nodeFactoryClassName, nodeFactory.getNodeName());
-    }
+        return NodeTemplateId.of(nodeFactory);
+     }
 
     /**
      * Add the port ranges for a single Map.Entry<String, PortGroupEntBuilder> if the port is used at all. Returns the
