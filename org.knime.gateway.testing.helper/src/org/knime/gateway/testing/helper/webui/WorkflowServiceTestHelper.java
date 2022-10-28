@@ -1271,7 +1271,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y, final CommandResultEnt result) {
         assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
         var nodeEnt = wf.getWorkflow().getNodes().values().stream()
-            .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().contains(nodeFactory))
+            .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
             .findFirst().orElseThrow();
         assertThat(nodeEnt.getPosition().getX(), is(x));
         assertThat(nodeEnt.getPosition().getY(), is(y));

@@ -202,8 +202,8 @@ public class NodeRecommendations {
     private static boolean isCompatibleWithSourcePortType(final NodeFactory<? extends NodeModel> factory,
         final PortType sourcePortType) {
         var node = CoreUtil.createNode(factory);
-        return node.isPresent() && IntStream.range(0, node.get().getNrInPorts()).boxed()//
-            .map(node.get()::getInputType)//
+        return node.isPresent() && IntStream.range(0, node.get().getNrInPorts())//
+            .mapToObj(node.get()::getInputType)//
             .anyMatch(pt -> pt.equals(sourcePortType));
     }
 }
