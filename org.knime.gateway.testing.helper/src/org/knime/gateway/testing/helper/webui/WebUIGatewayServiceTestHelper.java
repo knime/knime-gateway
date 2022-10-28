@@ -141,6 +141,9 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         objToString.addException(NodeStateEnt.class, "warning",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_WARNING_MESSAGE"));
 
+        objToString.addException(NodeStateEnt.class, "error",
+            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ERROR_MESSAGE"));
+
         /**
          * Canonical sorting of the connectedVia-list.
          */

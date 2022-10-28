@@ -139,7 +139,7 @@ public class TablePortViewFactoryTest {
         var bdt = createTable(10);
         var portView = createPortView(bdt);
         var jsonRpcResponse = ((JsonRpcDataService)portView.getFirst().createDataService().get())
-            .handleRequest(jsonRpcRequest("getTable", "string", "0", "2", null));
+            .handleRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "false"));
         assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
 
         portView.getSecond().dispose();

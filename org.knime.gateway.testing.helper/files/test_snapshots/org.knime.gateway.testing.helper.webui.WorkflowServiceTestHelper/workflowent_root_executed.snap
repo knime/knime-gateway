@@ -571,7 +571,7 @@
         "y" : 383
       },
       "state" : {
-        "error" : "Execute failed: This node fails on each execution.",
+        "error" : "PLACEHOLDER_FOR_ERROR_MESSAGE",
         "executionState" : "CONFIGURED"
       },
       "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
@@ -628,7 +628,7 @@
         "y" : 623
       },
       "state" : {
-        "error" : "Execute failed: \nFail in execution 3:12:0:10: This node fails on each execution.",
+        "error" : "PLACEHOLDER_FOR_ERROR_MESSAGE",
         "executionState" : "CONFIGURED"
       }
     },
