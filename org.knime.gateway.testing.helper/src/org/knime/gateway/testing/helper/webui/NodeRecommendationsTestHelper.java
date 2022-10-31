@@ -50,6 +50,7 @@ package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
@@ -121,7 +122,8 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
 
     private static void assertRecommendations(final List<NodeTemplateEnt> recommendations, final int nodesLimit,
         final boolean fullTemplateInfo) {
-        assertThat("Result size doesn't match", recommendations.size(), is(nodesLimit));
+        assertThat("Result size exceeds the expected number of nodes", recommendations.size(),
+            lessThanOrEqualTo(nodesLimit));
         if (fullTemplateInfo) {
             recommendations.forEach(nt -> assertThat("This full template is incomplete", nt.getIcon(), is(IsNull.notNullValue())));
         } else {
