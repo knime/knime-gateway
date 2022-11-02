@@ -190,12 +190,13 @@ public class NodeRecommendations {
         return recommendations.stream()//
             .map(r -> NodeTemplateId.callWithNodeTemplateIdVariants(r.getNodeFactoryClassName(), r.getNodeName(),
                 m_nodeRepo::getNode))//
-            .filter(Objects::nonNull)//
+            .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
             .map(n -> n.factory)//
             .filter(f -> sourcePortType == null || isCompatibleWithSourcePortType(f, sourcePortType))//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
             .map(f -> fullInfo ? EntityBuilderUtil.buildNodeTemplateEnt(f)
                 : EntityBuilderUtil.buildMinimalNodeTemplateEnt(f))//
+            .filter(Objects::nonNull)// `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
             .collect(Collectors.toList());
     }
 

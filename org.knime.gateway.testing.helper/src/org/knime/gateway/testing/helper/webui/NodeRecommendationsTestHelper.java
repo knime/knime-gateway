@@ -125,9 +125,11 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         assertThat("Result size exceeds the expected number of nodes", recommendations.size(),
             lessThanOrEqualTo(nodesLimit));
         if (fullTemplateInfo) {
-            recommendations.forEach(nt -> assertThat("This full template is incomplete", nt.getIcon(), is(IsNull.notNullValue())));
+            recommendations
+                .forEach(nt -> assertThat("This full template is incomplete", nt.getIcon(), is(IsNull.notNullValue())));
         } else {
-            recommendations.forEach(nt -> assertThat("This minimal template is not minimal", nt.getIcon(), is(IsNull.nullValue())));
+            recommendations.forEach(
+                nt -> assertThat("This minimal template is not minimal", nt.getIcon(), is(IsNull.nullValue())));
         }
     }
 
