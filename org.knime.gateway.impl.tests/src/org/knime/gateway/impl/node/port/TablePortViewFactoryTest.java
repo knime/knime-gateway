@@ -85,6 +85,7 @@ import org.knime.core.util.Pair;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.data.text.TextInitialDataService;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.testing.node.view.NodeViewNodeFactory;
@@ -126,6 +127,19 @@ public class TablePortViewFactoryTest {
         assertThat(initialData, containsString("{\"result\":{"));
         assertThat(initialData, containsString("\"table\":{"));
         assertThat(initialData, containsString("\"settings\":{"));
+        var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
+        var settings = initialDataTree.get("result").get("settings");
+        assertThat(settings.get("showTitle").asBoolean(), is(false));
+        assertThat(settings.get("publishSelection").asBoolean(), is(false));
+        assertThat(settings.get("subscribeToSelection").asBoolean(), is(false));
+        assertThat(settings.get("enablePagination").asBoolean(), is(false));
+        assertThat(settings.get("compactMode").asBoolean(), is(true));
+        assertThat(settings.get("showRowKeys").asBoolean(), is(true));
+        assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
+        assertThat(settings.get("showRowIndices").asBoolean(), is(false));
+        assertThat(settings.get("enableGlobalSearch").asBoolean(), is(true));
+        assertThat(settings.get("enableColumnSearch").asBoolean(), is(true));
+        assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
 
         portView.getSecond().dispose();
     }

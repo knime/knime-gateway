@@ -84,6 +84,12 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
+                var settings = new TableViewViewSettings(table.getDataTableSpec());
+                settings.m_showTitle = false;
+                settings.m_publishSelection = false;
+                settings.m_subscribeToSelection = false;
+                settings.m_enablePagination = false;
+                settings.m_compactMode = true;
                 Supplier<TableViewInitialData> initialTableDataSupplier = () -> TableViewUtil
                     .createInitialData(new TableViewViewSettings(table.getDataTableSpec()), table, tableId);
                 return Optional.of(new DefaultInitialDataServiceImpl<TableViewInitialData>(initialTableDataSupplier));
