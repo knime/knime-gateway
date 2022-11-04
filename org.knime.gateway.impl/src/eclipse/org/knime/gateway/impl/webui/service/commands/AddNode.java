@@ -146,12 +146,11 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
         for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
             var destPortType = destNode.getInPort(destPortIdx).getPortType();
-            if ((sourcePortType.isSuperTypeOf(destPortType) || destPortType.isSuperTypeOf(sourcePortType)) // Port types match
-                && wfm.getOutgoingConnectionsFor(sourceNodeId, sourcePortIdx).isEmpty()) { // Port is not already connected
+            if ((sourcePortType.isSuperTypeOf(destPortType) || destPortType.isSuperTypeOf(sourcePortType))) {
                 return destPortIdx;
             }
         }
-        throw new OperationNotAllowedException("Destination port index could not be infered");
+        throw new OperationNotAllowedException("Destination port index could not be inferred");
     }
 
     private void addFirstMatchingPortForDestPortIdx(final Integer destPortIdx, final Integer sourcePortFirst,
