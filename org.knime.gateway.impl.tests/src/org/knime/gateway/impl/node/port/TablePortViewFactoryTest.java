@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
-import org.knime.base.views.node.tableview.TableViewNodeFactory;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
@@ -88,6 +87,7 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
 import org.knime.core.webui.data.text.TextInitialDataService;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -150,7 +150,7 @@ public class TablePortViewFactoryTest {
      */
     private static Pair<PortView, Dispose> createPortView(final BufferedDataTable table) throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new TableViewNodeFactory());
+        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
         NodeContext.pushContext(nc);
         try {
             return Pair.create(new TablePortViewFactory().createPortView(table),
