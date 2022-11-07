@@ -1224,32 +1224,22 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().redoWorkflowCommand(wfId, getRootID());
         assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(), is(2));
 
-        // auto-connect won't use already connected ports
+        // try to connect to a port that is already used
         var rowSplitterFactory = "org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory";
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, null));
+            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, 1));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowSplitterFactory, 128, 256, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true); // this extra connection is allowed
 
-        // undo adding the row splitter
+        // undo adding row splitter
         ws().undoWorkflowCommand(wfId, getRootID());
-        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
-            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(2)));
 
-        // undo adding the row filter
-        ws().undoWorkflowCommand(wfId, getRootID());
-        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
-            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(1)));
-
-        // auto-connect and use all the compatible ports
+        // auto-connect will not use already connected ports
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, null));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowSplitterFactory, 128, 256, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false); // not auto-guessed
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false); // not auto-guessed
     }
 
     private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
