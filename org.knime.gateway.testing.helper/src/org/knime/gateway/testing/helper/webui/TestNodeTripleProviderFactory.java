@@ -66,7 +66,7 @@ import org.knime.core.ui.workflowcoach.data.NodeTripleProviderFactory;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class TestNodeTipleProviderFactory implements NodeTripleProviderFactory {
+public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory {
 
     @Override
     public List<NodeTripleProvider> createProviders() {

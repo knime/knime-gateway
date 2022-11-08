@@ -23,7 +23,7 @@
    <extension
          point="org.knime.core.ui.nodetriples">
       <tripleprovider
-            factory-class="org.knime.gateway.testing.helper.webui.TestNodeTipleProviderFactory">
+            factory-class="org.knime.gateway.testing.helper.webui.TestNodeTripleProviderFactory">
       </tripleprovider>
    </extension>
 
