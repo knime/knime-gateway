@@ -90,8 +90,8 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
                 settings.m_subscribeToSelection = false;
                 settings.m_enablePagination = false;
                 settings.m_compactMode = true;
-                Supplier<TableViewInitialData> initialTableDataSupplier = () -> TableViewUtil
-                    .createInitialData(new TableViewViewSettings(table.getDataTableSpec()), table, tableId);
+                Supplier<TableViewInitialData> initialTableDataSupplier =
+                    () -> TableViewUtil.createInitialData(settings, table, tableId);
                 return Optional.of(new DefaultInitialDataServiceImpl<TableViewInitialData>(initialTableDataSupplier));
             }
 
