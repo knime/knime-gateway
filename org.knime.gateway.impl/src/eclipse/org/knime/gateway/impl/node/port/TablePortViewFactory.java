@@ -49,21 +49,15 @@
 package org.knime.gateway.impl.node.port;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcDataServiceImpl;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
-import org.knime.core.webui.node.dialog.impl.DefaultInitialDataServiceImpl;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
-import org.knime.core.webui.node.view.table.data.TableViewDataService;
-import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -90,17 +84,13 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
                 settings.m_subscribeToSelection = false;
                 settings.m_enablePagination = false;
                 settings.m_compactMode = true;
-                Supplier<TableViewInitialData> initialTableDataSupplier =
-                    () -> TableViewUtil.createInitialData(settings, table, tableId);
-                return Optional.of(new DefaultInitialDataServiceImpl<TableViewInitialData>(initialTableDataSupplier));
+                return Optional.of(TableViewUtil.createInitialDataService(settings, () -> table, tableId));
             }
 
             @Override
             public Optional<DataService> createDataService() {
-                var tableService = TableViewUtil.createDataService(table, tableId);
-                var dataService =
-                    new JsonRpcDataServiceImpl(new JsonRpcSingleServer<TableViewDataService>(tableService));
-                return Optional.of(dataService);
+                return Optional.of(TableViewUtil
+                    .createDataService(TableViewUtil.createTableViewDataService(() -> table, tableId), tableId));
             }
 
             @Override
