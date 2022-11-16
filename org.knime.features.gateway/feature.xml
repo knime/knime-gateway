@@ -2,7 +2,7 @@
 <feature
       id="org.knime.features.gateway"
       label="KNIME Gateway"
-      version="4.6.1.qualifier"
+      version="4.6.4.qualifier"
       provider-name="KNIME AG, Zurich, Switzerland">
 
    <description>

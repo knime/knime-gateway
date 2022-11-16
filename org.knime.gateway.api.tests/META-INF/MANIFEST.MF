@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Unit-Tests for org.knime.gateway.api
 Bundle-SymbolicName: org.knime.gateway.api.tests;singleton:=true
-Bundle-Version: 4.6.0.qualifier
+Bundle-Version: 4.6.4.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Fragment-Host: org.knime.gateway.api;bundle-version="[4.3.0,5.0.0)"
 Require-Bundle: org.knime.testing;bundle-version="[4.0.0,5.0.0)",
