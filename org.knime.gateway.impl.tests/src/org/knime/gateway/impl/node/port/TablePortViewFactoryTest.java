@@ -140,6 +140,7 @@ public class TablePortViewFactoryTest {
         assertThat(settings.get("enableGlobalSearch").asBoolean(), is(true));
         assertThat(settings.get("enableColumnSearch").asBoolean(), is(true));
         assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
+        assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));
 
         portView.getSecond().dispose();
     }
