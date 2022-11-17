@@ -133,14 +133,13 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
         // create very first changed event to be sent first (and thus catch up with the most recent
         // workflow version)
-        var workflowChangedEvent =
-                m_workflowMiddleware.buildWorkflowChangedEvent( //
-                        workflowKey, //
-                        new PatchEntCreator(null), //
-                        wfEventType.getSnapshotId(), //
-                        true, //
-                        wfChangesTracker //
-                );
+        var workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent( //
+            workflowKey, //
+            new PatchEntCreator(null), //
+            wfEventType.getSnapshotId(), //
+            true, //
+            wfChangesTracker //
+        );
 
         // add and keep track of callback added to the workflow changes listener (if not already)
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {

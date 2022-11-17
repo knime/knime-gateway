@@ -47,7 +47,7 @@
 package org.knime.gateway.impl.webui.service.events;
 
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
@@ -65,10 +65,11 @@ import org.knime.gateway.impl.webui.service.DefaultApplicationService;
  * Event source that emits events whenever the cached application state changes.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, AppStateChangedEventEnt> {
 
-    private final Consumer<AppState> m_callback;
+    private final BiConsumer<AppState, AppState> m_callback;
 
     private final AppStateProvider m_appStateProvider;
 
@@ -82,8 +83,8 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
         super(eventConsumer);
         m_appStateProvider = appStateProvider;
-        m_callback = appState -> sendEvent(buildEventEnt(
-            DefaultApplicationService.buildAppStateEnt(appState, workflowProjectManager, workflowMiddleware)));
+        m_callback = (oldAppState, newAppState) -> sendEvent(buildEventEnt(
+            DefaultApplicationService.buildAppStateEnt(oldAppState, newAppState, workflowProjectManager, workflowMiddleware)));
     }
 
     @Override

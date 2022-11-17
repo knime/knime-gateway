@@ -51,7 +51,7 @@ package org.knime.gateway.impl.webui;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.knime.core.node.BufferedDataTable;
@@ -68,12 +68,15 @@ import org.knime.core.node.workflow.capture.WorkflowPortObject;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public final class AppStateProvider {
 
     private final Supplier<AppState> m_appStateSupplier;
 
-    private final Set<Consumer<AppState>> m_listeners = new HashSet<>();
+    private final Set<BiConsumer<AppState, AppState>> m_listeners = new HashSet<>();
+
+    private AppState m_appState;
 
     /**
      * Create a new instance.
@@ -88,7 +91,8 @@ public final class AppStateProvider {
      * @return The current application state.
      */
     public AppState getAppState() {
-        return m_appStateSupplier.get();
+        m_appState = m_appStateSupplier.get();
+        return m_appState;
     }
 
     /**
@@ -96,7 +100,7 @@ public final class AppStateProvider {
      */
     public void updateAppState() {
         var newAppState = m_appStateSupplier.get();
-        m_listeners.forEach(l -> l.accept(newAppState));
+        m_listeners.forEach(l -> l.accept(m_appState, newAppState));
     }
 
     /**
@@ -104,7 +108,7 @@ public final class AppStateProvider {
      *
      * @param consumer The callback to be called with the new application state
      */
-    public void addAppStateChangedListener(final Consumer<AppState> consumer) {
+    public void addAppStateChangedListener(final BiConsumer<AppState, AppState> consumer) {
         m_listeners.add(consumer);
     }
 
@@ -113,7 +117,7 @@ public final class AppStateProvider {
      *
      * @param consumer The callback to be removed from the set of listeners.
      */
-    public void removeAppStateChangedListener(final Consumer<AppState> consumer) {
+    public void removeAppStateChangedListener(final BiConsumer<AppState, AppState> consumer) {
         m_listeners.remove(consumer);
     }
 

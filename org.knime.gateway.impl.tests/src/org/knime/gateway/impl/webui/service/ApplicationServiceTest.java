@@ -110,8 +110,8 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
         AppStateEnt appStateEnt2 = appService.getState();
         assertNotSame(
-            appStateEnt.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow(),
-            appStateEnt2.getOpenedWorkflows().get(0).getActiveWorkflow().getWorkflow()
+            appStateEnt.getOpenProjects().get(0).getActiveWorkflow().getWorkflow(),
+            appStateEnt2.getOpenProjects().get(0).getActiveWorkflow().getWorkflow()
         );
 
         ServiceInstances.disposeAllServiceInstancesAndDependencies();

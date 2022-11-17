@@ -70,8 +70,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("openedWorkflows")
-    public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
+    @JsonProperty("openProjects")
+    public java.util.List<WorkflowProjectEnt> getOpenProjects();
     
     @Override
     @JsonProperty("availablePortTypes")
@@ -80,6 +80,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @Override
     @JsonProperty("suggestedPortTypeIds")
     public java.util.List<String> getSuggestedPortTypeIds();
+    
+    @Override
+    @JsonProperty("hasNodeRecommendationsEnabled")
+    public Boolean hasNodeRecommendationsEnabled();
     
     @Override
     @JsonProperty("featureFlags")
@@ -99,8 +103,8 @@ public interface AppStateEntMixIn extends AppStateEnt {
         public AppStateEntMixIn build();
     
         @Override
-        @JsonProperty("openedWorkflows")
-        public AppStateEntMixInBuilder setOpenedWorkflows(final java.util.List<WorkflowProjectEnt> openedWorkflows);
+        @JsonProperty("openProjects")
+        public AppStateEntMixInBuilder setOpenProjects(final java.util.List<WorkflowProjectEnt> openProjects);
         
         @Override
         @JsonProperty("availablePortTypes")
@@ -109,6 +113,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("suggestedPortTypeIds")
         public AppStateEntMixInBuilder setSuggestedPortTypeIds(final java.util.List<String> suggestedPortTypeIds);
+        
+        @Override
+        @JsonProperty("hasNodeRecommendationsEnabled")
+        public AppStateEntMixInBuilder setHasNodeRecommendationsEnabled(final Boolean hasNodeRecommendationsEnabled);
         
         @Override
         @JsonProperty("featureFlags")

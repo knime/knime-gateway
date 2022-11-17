@@ -62,22 +62,28 @@ public interface AppStateEnt extends GatewayEntity {
 
 
   /**
-   * List of all opened workflow projects.
-   * @return openedWorkflows , never <code>null</code>
+   * List of all opened workflows projects.
+   * @return openProjects 
    **/
-  public java.util.List<WorkflowProjectEnt> getOpenedWorkflows();
+  public java.util.List<WorkflowProjectEnt> getOpenProjects();
 
   /**
    * All port types available in this installation. Map from port type ID to port type entity.
-   * @return availablePortTypes , never <code>null</code>
+   * @return availablePortTypes 
    **/
   public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
 
   /**
    * When the user is prompted to select a port type, this subset of types may be used as suggestions.
-   * @return suggestedPortTypeIds , never <code>null</code>
+   * @return suggestedPortTypeIds 
    **/
   public java.util.List<String> getSuggestedPortTypeIds();
+
+  /**
+   * If true, node recommendation features can be used, otherwise they have to be disabled.
+   * @return hasNodeRecommendationsEnabled 
+   **/
+  public Boolean hasNodeRecommendationsEnabled();
 
   /**
    * Maps a feature-flag key to a feature-flag value (usually, but not necessarily, a boolean). The feature-flags are usually specified/controlled through jvm system properties.
@@ -94,15 +100,15 @@ public interface AppStateEnt extends GatewayEntity {
         /**
          * List of all opened workflow projects.
          * 
-         * @param openedWorkflows the property value, NOT <code>null</code>! 
+         * @param openProjects the property value,  
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setOpenedWorkflows(java.util.List<WorkflowProjectEnt> openedWorkflows);
+        AppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects);
         
         /**
          * All port types available in this installation. Map from port type ID to port type entity.
          * 
-         * @param availablePortTypes the property value, NOT <code>null</code>! 
+         * @param availablePortTypes the property value,  
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setAvailablePortTypes(java.util.Map<String, PortTypeEnt> availablePortTypes);
@@ -110,10 +116,18 @@ public interface AppStateEnt extends GatewayEntity {
         /**
          * When the user is prompted to select a port type, this subset of types may be used as suggestions.
          * 
-         * @param suggestedPortTypeIds the property value, NOT <code>null</code>! 
+         * @param suggestedPortTypeIds the property value,  
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds);
+        
+        /**
+         * If true, node recommendation features can be used, otherwise they have to be disabled.
+         * 
+         * @param hasNodeRecommendationsEnabled the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setHasNodeRecommendationsEnabled(Boolean hasNodeRecommendationsEnabled);
         
         /**
          * Maps a feature-flag key to a feature-flag value (usually, but not necessarily, a boolean). The feature-flags are usually specified/controlled through jvm system properties.
