@@ -48,7 +48,10 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotSame;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +94,10 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         var appState = mockAppStateAndSetServiceDependencies();
         var appService = DefaultApplicationService.getInstance();
 
-        cr(appService.getState(), "empty_appstate");
+        AppStateEnt appStateEnt0 = appService.getState();
+        assertThat(appStateEnt0.hasNodeRecommendationsEnabled(), not(is(nullValue())));
+        AppStateEnt appStateEnt0Stripped = stripHasNodeRecommendationsEnabled(appStateEnt0);
+        cr(appStateEnt0Stripped, "empty_appstate");
 
         when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
         var assumedAvailablePortTypes = Set.of(BufferedDataTable.TYPE, //
@@ -104,13 +110,15 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         var assumedSuggestedPortTypes = AppState.SUGGESTED_PORT_TYPES;
         when(appState.getSuggestedPortTypes()).thenReturn(assumedSuggestedPortTypes);
 
-        AppStateEnt appStateEnt = appService.getState();
-        cr(appStateEnt, "appstate");
+        AppStateEnt appStateEnt1 = appService.getState();
+        assertThat(appStateEnt1.hasNodeRecommendationsEnabled(), not(is(nullValue())));
+        AppStateEnt appStateEnt1Stripped = stripHasNodeRecommendationsEnabled(appStateEnt1);
+        cr(appStateEnt1Stripped, "appstate");
 
         // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
         AppStateEnt appStateEnt2 = appService.getState();
         assertNotSame(
-            appStateEnt.getOpenProjects().get(0).getActiveWorkflow().getWorkflow(),
+            appStateEnt1.getOpenProjects().get(0).getActiveWorkflow().getWorkflow(),
             appStateEnt2.getOpenProjects().get(0).getActiveWorkflow().getWorkflow()
         );
 
@@ -175,5 +183,14 @@ public class ApplicationServiceTest extends GatewayServiceTest {
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
         return appState;
+    }
+
+    private static AppStateEnt stripHasNodeRecommendationsEnabled(final AppStateEnt appStateEnt) {
+        return builder(AppStateEnt.AppStateEntBuilder.class) //
+            .setOpenProjects(appStateEnt.getOpenProjects()) //
+            .setAvailablePortTypes(appStateEnt.getAvailablePortTypes()) //
+            .setSuggestedPortTypeIds(appStateEnt.getSuggestedPortTypeIds()) //
+            .setFeatureFlags(appStateEnt.getFeatureFlags()) //
+            .build();
     }
 }
