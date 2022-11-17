@@ -62,11 +62,15 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.exec.ThreadNodeExecutionJobManager;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
@@ -93,6 +97,7 @@ import org.osgi.framework.FrameworkUtil;
  * gateway logic. Can/should eventually be moved into knime-core.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public final class CoreUtil {
 
@@ -317,6 +322,26 @@ public final class CoreUtil {
     }
 
     /**
+     * Checks whether a source port type and a destination port type are compatible. If true, those two ports could be
+     * connected on the workflow.
+     *
+     * @param sourceType The port type of the source port
+     * @param destType The port type of the destination port
+     * @return True if compatible, false otherwise
+     */
+    public static boolean arePortTypesCompatible(final PortType sourceType, final PortType destType) {
+        Class<? extends PortObject> sourceCl = sourceType.getPortObjectClass();
+        Class<? extends PortObject> destCl = destType.getPortObjectClass();
+        if (BufferedDataTable.class.equals(sourceCl) && !BufferedDataTable.class.equals(destCl)) {
+            return false;
+        } else if (BufferedDataTable.class.equals(destCl) && !BufferedDataTable.class.equals(sourceCl)) {
+            return false;
+        } else {
+            return destCl.isAssignableFrom(sourceCl) || sourceCl.isAssignableFrom(destCl);
+        }
+    }
+
+    /**
      * Find a workflow annotation with given id in the given workflow manager.
      * @param id The workflow annotation to look for.
      * @param wfm The workflow manager to search in.
@@ -410,6 +435,35 @@ public final class CoreUtil {
         } catch (Throwable e) { // NOSONAR
             NodeLogger.getLogger(CoreUtil.class)
                 .error("Could not create instance of node " + factory.getClass().getName() + ": " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * If the node is a dynamic node, retrieve its creation configuration
+     *
+     * @param wfm The workflow manager
+     * @param nodeId The node ID
+     * @return The optional creation configuration
+     */
+    public static Optional<ModifiableNodeCreationConfiguration> getCopyOfCreationConfig(final WorkflowManager wfm,
+        final NodeID nodeId) {
+        var nnc = wfm.getNodeContainer(nodeId, NativeNodeContainer.class, true);
+        return nnc.getNode().getCopyOfCreationConfig();
+    }
+
+    /**
+     * If the factory belongs to a dynamic node, retrieve its creation configuration
+     *
+     * @param factory The node factory
+     * @return The optional creation configuration
+     */
+    public static Optional<ModifiableNodeCreationConfiguration>
+        getCopyOfCreationConfig(final NodeFactory<? extends NodeModel> factory) {
+        if (factory instanceof ConfigurableNodeFactory) {
+            var creationConfig = ((ConfigurableNodeFactory<? extends NodeModel>)factory).createNodeCreationConfig();
+            return Optional.of(creationConfig);
+        } else {
             return Optional.empty();
         }
     }

@@ -1242,6 +1242,114 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false); // not auto-guessed
     }
 
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link AddNodeCommandEnt} that also automatically connects a dynamic node.
+     *
+     * @throws Exception
+     */
+    public void testExecuteAddAndConnectCommandDynamicNode() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        var caseSwitchStartFactory = "org.knime.base.node.switches.caseswitch.any.CaseStartAnyNodeFactory";
+        var dbConnectorFactory = "org.knime.database.node.connector.generic.DBConnectorNodeFactory";
+        var tableColToFlowVariableFactory =
+            "org.knime.base.node.flowvariable.tablecoltovariable4.TableColumnToVariable4NodeFactory";
+
+        // add and connect a node
+        var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowFilterFactory, null, 32, 64, null, null))).getNewNodeId();
+        var result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
+
+        // undo adding the case switch
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(1)));
+
+        // try the same thing for a database connection
+        sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(dbConnectorFactory, null, 128, 256, null, null))).getNewNodeId();
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
+
+        // undo adding the case switch
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(2)));
+
+        // try the same thing for a flow variable connection
+        sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(tableColToFlowVariableFactory, null, 256, 512, null, null))).getNewNodeId();
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
+
+        // TODO: Test for exchangeable ports, like excel reader and file system reader
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link AddNodeCommandEnt} that also automatically connects with flow variable ports.
+     *
+     * @throws Exception
+     */
+    public void testExecuteAddAndConnectCommandFlowVariables()throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        var tableColToVariableFactory =
+            "org.knime.base.node.flowvariable.tablecoltovariable4.TableColumnToVariable4NodeFactory";
+        var variableToTableRowFactory =
+            "org.knime.base.node.flowvariable.variabletotablerow4.VariableToTable4NodeFactory";
+        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        var excelWriterFactory = "org.knime.ext.poi3.node.io.filehandling.excel.writer.ExcelTableWriterNodeFactory";
+        var excelReaderFactory = "org.knime.ext.poi3.node.io.filehandling.excel.reader.ExcelTableReaderNodeFactory";
+
+        // add and connect native nodes with flow variables on port index 1
+        var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(tableColToVariableFactory, null, 32, 64, null, null))).getNewNodeId();
+        var result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(variableToTableRowFactory, null, 64, 128, sourceNodeId, 1));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), variableToTableRowFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
+
+        // undo variable to table row
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(1)));
+
+        // add and connect two incompatible nodes from source port 0 to destination port 1
+        sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowFilterFactory, null, 128, 256, null, null))).getNewNodeId();
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(variableToTableRowFactory, null, 64, 128, sourceNodeId, 0));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), variableToTableRowFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 0, result, true);
+
+        // undo variable to table row
+        ws().undoWorkflowCommand(wfId, getRootID());
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
+            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
+                is(2)));
+
+        // connect two incompatible nodes via their flow default variable ports
+        sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(excelWriterFactory, null, 256, 512, null, null))).getNewNodeId();
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(excelReaderFactory, null, 64, 128, sourceNodeId, 0));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), excelReaderFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 0, result, true);
+    }
+
     private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
         final int x, final int y, final NodeIDEnt sourceNodeId, final Integer sourcePortIdx) {
         return builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
