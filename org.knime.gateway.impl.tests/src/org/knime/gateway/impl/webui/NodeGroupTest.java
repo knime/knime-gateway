@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -84,7 +85,7 @@ public class NodeGroupTest {
     @Test
     public void testSelectNodesMinimalTemplateInfo() {
         NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 1, 2, Boolean.FALSE);
-        assertThat("unexpected number of groups", res.getGroups().size(), is(2));
+        assertThat("unexpected number of groups", res.getGroups().size(), lessThanOrEqualTo(2));
         assertThat("unexpected 2nd group", res.getGroups().get(0).getTag(), is("Manipulation"));
         assertThat("unexpected number of nodes per tag", res.getGroups().get(0).getNodes().size(), is(6));
         NodeTemplateEnt node = res.getGroups().get(0).getNodes().get(0);
@@ -97,7 +98,7 @@ public class NodeGroupTest {
     @Test
     public void testSelectNodesFullTemplateInfo() {
         NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 2, 3, Boolean.TRUE);
-        assertThat("unexpected number of groups", res.getGroups().size(), is(3));
+        assertThat("unexpected number of groups", res.getGroups().size(), lessThanOrEqualTo(3));
         assertThat("unexpected 3rd group", res.getGroups().get(0).getTag(), is("Views"));
         assertThat("unexpected number of nodes per tag", res.getGroups().get(0).getNodes().size(), is(6));
         NodeTemplateEnt node = res.getGroups().get(0).getNodes().get(0);

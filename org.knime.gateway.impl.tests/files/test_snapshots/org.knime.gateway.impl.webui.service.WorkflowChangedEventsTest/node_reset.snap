@@ -2,15 +2,15 @@
   "ops" : [ {
   "op" : "add",
   "path" : "/nodes/root:12/state/warning",
-  "value" : "Component Input 3:12:0:8: Component does not have input data, execute upstream nodes first"
+  "value" : "Component Input 4:12:0:8: Component does not have input data, execute upstream nodes first"
 }, {
   "op" : "add",
   "path" : "/nodes/root:23/state/warning",
-  "value" : "Component Input 3:23:0:8: Component does not have input data, execute upstream nodes first"
+  "value" : "Component Input 4:23:0:8: Component does not have input data, execute upstream nodes first"
 }, {
   "op" : "add",
   "path" : "/nodes/root:9/state/warning",
-  "value" : "Component Input 3:9:0:8: Component does not have input data, execute upstream nodes first"
+  "value" : "Component Input 4:9:0:8: Component does not have input data, execute upstream nodes first"
 }, {
   "op" : "remove",
   "path" : "/nodes/root:1/outPorts/0/info"

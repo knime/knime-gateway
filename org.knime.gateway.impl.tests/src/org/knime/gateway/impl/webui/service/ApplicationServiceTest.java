@@ -149,7 +149,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
 
-        var appState = mockAppStateAndSetServiceDependencies();
+        mockAppStateAndSetServiceDependencies();
         var appService = DefaultApplicationService.getInstance();
 
         var featureFlagKey = "org.knime.ui.feature.embedded_views_and_dialogs";
@@ -166,7 +166,10 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         AppState appState = mock(AppState.class);
         Supplier<AppState> appStateSupplier = mock(Supplier.class);
         AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
+
+        when(appState.getOpenedWorkflows()).thenReturn(List.of(mock(OpenedWorkflow.class), mock(OpenedWorkflow.class)));
         when(appStateSupplier.get()).thenReturn(appState);
+
         ServiceDependencies.setServiceDependency(AppStateProvider.class, appStateProvider);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));

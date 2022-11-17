@@ -63,7 +63,7 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 
 /**
- * Provides information about the state of the application. The application state is modelled by a reference to a
+ * Provides information about the state of the application. The application state is modeled by a reference to a
  * supplier.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -131,8 +131,8 @@ public final class AppStateProvider {
          */
         List<PortType> SUGGESTED_PORT_TYPES = List.of(
                  BufferedDataTable.TYPE,  // Data
-                 DatabaseConnectionPortObject.TYPE, // Database Connection
-                 DatabasePortObject.TYPE, // Database Query
+                 DatabaseConnectionPortObject.TYPE, // Database Connection, TODO: Update deprecated type here
+                 DatabasePortObject.TYPE, // Database Query, TODO: Update deprecated type here, too
                  FlowVariablePortObject.TYPE,  // Flow Variable
                  PortObject.TYPE,  // Generic
                  WorkflowPortObject.TYPE  // Workflow
