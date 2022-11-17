@@ -52,7 +52,6 @@ import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
-import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
@@ -88,7 +87,7 @@ public final class EditNativeNodePorts implements EditPorts {
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
             .orElseThrow(() -> new OperationNotAllowedException("Unknown port type"));
         var groupName = addPortCommandEnt.getPortGroup();
-        var creationConfigCopy = getCopyOfCreationConfig();
+        var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
         executeInternal(creationConfigCopy);
         return findNewPortIdx(addPortCommandEnt);
@@ -96,7 +95,7 @@ public final class EditNativeNodePorts implements EditPorts {
 
     @Override
     public void removePort(final RemovePortCommandEnt removePortCommandEnt) {
-        var creationConfigCopy = getCopyOfCreationConfig();
+        var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         var groupName = removePortCommandEnt.getPortGroup();
         getExtendablePortGroup(creationConfigCopy, groupName).removeLastPort();
         executeInternal(creationConfigCopy);
@@ -118,19 +117,14 @@ public final class EditNativeNodePorts implements EditPorts {
     private int findNewPortIdx(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
         var portGroupId = addPortCommandEnt.getPortGroup();
         var isPortGroupInput = addPortCommandEnt.getSide() == SideEnum.INPUT;
-        var portConfig = getCopyOfCreationConfig().getPortConfig()
+        var portConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow().getPortConfig()
             .orElseThrow(() -> new OperationNotAllowedException("Could not retrieve port config"));
         var portGroupIds = portConfig.getPortGroupNames();
-        return IntStream.range(0, portGroupIds.indexOf(portGroupId) + 1).boxed()//
-            .map(idx -> portConfig.getGroup(portGroupIds.get(idx)))//
+        return IntStream.range(0, portGroupIds.indexOf(portGroupId) + 1)//
+            .mapToObj(idx -> portConfig.getGroup(portGroupIds.get(idx)))//
             .filter(group -> isPortGroupInput ? group.definesInputPorts() : group.definesOutputPorts())//
             .mapToInt(group -> isPortGroupInput ? group.getInputPorts().length : group.getOutputPorts().length)//
             .sum();
-    }
-
-    private ModifiableNodeCreationConfiguration getCopyOfCreationConfig() {
-        var nnc = m_wfm.getNodeContainer(getNodeId(), NativeNodeContainer.class, true);
-        return nnc.getNode().getCopyOfCreationConfig().orElseThrow();
     }
 
     private final NodeID getNodeId() {
