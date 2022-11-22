@@ -161,7 +161,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(jsonNode.get("result").get("table"), notNullValue());
 
         // data
-        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false", "false");
+        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false");
         var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("rows"), notNullValue());
