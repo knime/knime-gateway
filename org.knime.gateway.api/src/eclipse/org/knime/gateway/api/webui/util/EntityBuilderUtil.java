@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.binary.Base64;
@@ -1282,7 +1281,7 @@ public final class EntityBuilderUtil {
             WorkflowGroupMetadata metadata;
             try {
                 metadata = Workflowalizer.readWorkflowGroup(metadataFile.toPath());
-            } catch (XPathExpressionException | ParserConfigurationException | SAXException | IOException ex) {
+            } catch (XPathExpressionException | SAXException | IOException ex) {
                 NodeLogger.getLogger(EntityBuilderUtil.class).error("Workflow metadata could not be read", ex);
                 return null;
             }

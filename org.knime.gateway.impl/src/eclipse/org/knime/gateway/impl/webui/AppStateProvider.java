@@ -88,6 +88,8 @@ public final class AppStateProvider {
     }
 
     /**
+     * Also keeps a copy of the application state to track its changes.
+     *
      * @return The current application state.
      */
     public AppState getAppState() {
@@ -97,10 +99,12 @@ public final class AppStateProvider {
 
     /**
      * Obtain the current application state and pass it to any listeners, regardless of whether the state has changed.
+     * Also keeps a copy of the application state to track its changes.
      */
     public void updateAppState() {
-        var newAppState = m_appStateSupplier.get();
-        m_listeners.forEach(l -> l.accept(m_appState, newAppState));
+        var previousAppState = m_appState;
+        m_appState = m_appStateSupplier.get();
+        m_listeners.forEach(l -> l.accept(previousAppState, m_appState));
     }
 
     /**

@@ -55,8 +55,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -134,56 +134,77 @@ public final class DefaultApplicationService implements ApplicationService {
         List<WorkflowProjectEnt> projectEnts = null;
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
-        Map<String, Object> featureFlags = null;
-
-        if(areOpenedWorkflowsDifferent(oldAppState, newAppState)) {
-            projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
-            availablePortTypeEnts = getAvailablePortTypeEnts(newAppState);
-            suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
-            featureFlags = getFeatureFlags();
+        if (newAppState != null) { // Only do something if we have a current app state
+            if (oldAppState == null) { // If there is no previous app state, no checks are needed
+                projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
+                availablePortTypeEnts = getAvailablePortTypeEnts(newAppState);
+                suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
+            } else { // Only set what has changed
+                if (!areOpenProjectsEqual(oldAppState, newAppState)) {
+                    projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
+                }
+                if (!areAvailablePortTypesEqual(oldAppState, newAppState)) {
+                    availablePortTypeEnts = getAvailablePortTypeEnts(newAppState);
+                }
+                if (!areSuggestedPortTypesEqual(oldAppState, newAppState)) {
+                    suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
+                }
+            }
+        } else { // Send an empty state otherwise
+            projectEnts = Collections.emptyList();
+            availablePortTypeEnts = Collections.emptyMap();
+            suggestedPortTypeIds = Collections.emptyList();
         }
-
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
-            .setFeatureFlags(featureFlags) //
             .setHasNodeRecommendationsEnabled(NodeRecommendationManager.isEnabled()) // This setting is always sent
+            .setFeatureFlags(getFeatureFlags()) // This setting is always sent
             .build();
 
     }
 
-    private static boolean areOpenedWorkflowsDifferent(final AppState oldAppState, final AppState newAppState) {
-        List<OpenedWorkflow> oldOpenedWorkflows =
-            oldAppState == null ? Collections.emptyList() : oldAppState.getOpenedWorkflows();
-        List<OpenedWorkflow> newOpenedWorkflow =
-            newAppState == null ? Collections.emptyList() : newAppState.getOpenedWorkflows();
-        if (oldOpenedWorkflows.size() != newOpenedWorkflow.size()) {
+    private static boolean areOpenProjectsEqual(final AppState oldAppState, final AppState newAppState) {
+        if (oldAppState.getOpenedWorkflows() == null && newAppState.getOpenedWorkflows() == null) {
             return true;
         }
-        Predicate<OpenedWorkflow> existsEqualWorkflow = outerWf -> oldOpenedWorkflows.stream().anyMatch(innerWf -> {
-            var sameProjectId = outerWf.getProjectId().equals(innerWf.getProjectId());
-            var sameWorkflowId = outerWf.getWorkflowId().equals(innerWf.getWorkflowId());
-            return sameProjectId && sameWorkflowId;
+        if ((oldAppState.getOpenedWorkflows() == null ^ newAppState.getOpenedWorkflows() == null)
+            || (oldAppState.getOpenedWorkflows().size() != newAppState.getOpenedWorkflows().size())) {
+            return false;
+        }
+        return IntStream.range(0, oldAppState.getOpenedWorkflows().size()).allMatch(i -> {
+            var left = oldAppState.getOpenedWorkflows().get(i);
+            var right = newAppState.getOpenedWorkflows().get(i);
+            return left.getProjectId().equals(right.getProjectId())
+                && left.getWorkflowId().equals(right.getWorkflowId());
         });
+    }
 
-        var areOpenedWorkflowsEqual = oldOpenedWorkflows.stream().allMatch(existsEqualWorkflow);
-        return !areOpenedWorkflowsEqual;
+    private static boolean areAvailablePortTypesEqual(final AppState oldAppState, final AppState newAppState) {
+        if (oldAppState.getAvailablePortTypes() == null && newAppState.getAvailablePortTypes() == null) {
+            return true;
+        }
+        return oldAppState.getAvailablePortTypes().equals(newAppState.getAvailablePortTypes());
+    }
+
+    private static boolean areSuggestedPortTypesEqual(final AppState oldAppState, final AppState newAppState) {
+        if (oldAppState.getSuggestedPortTypes() == null && newAppState.getSuggestedPortTypes() == null) {
+            return true;
+        }
+        return oldAppState.getSuggestedPortTypes().equals(newAppState.getSuggestedPortTypes());
     }
 
     private static List<WorkflowProjectEnt> getProjectEnts(final AppState appState,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
-        return appState == null ? Collections.emptyList() //
-            : appState.getOpenedWorkflows().stream() //
-                .map(w -> buildWorkflowProjectEnt(w, workflowProjectManager, workflowMiddleware)) //
-                .filter(Objects::nonNull)//
-                .collect(toList());
+        return appState.getOpenedWorkflows().stream() //
+            .map(w -> buildWorkflowProjectEnt(w, workflowProjectManager, workflowMiddleware)) //
+            .filter(Objects::nonNull)//
+            .collect(toList());
     }
 
+
     private static Map<String, PortTypeEnt> getAvailablePortTypeEnts(final AppState appState) {
-        if (appState == null) {
-            return Collections.emptyMap();
-        }
         var allAvailablePortTypes = appState.getAvailablePortTypes();
         return allAvailablePortTypes.stream() //
             .collect(Collectors.toMap( //
@@ -193,10 +214,20 @@ public final class DefaultApplicationService implements ApplicationService {
     }
 
     private static List<String> getSuggestedPortTypeIds(final AppState appState) {
-        return appState == null ? Collections.emptyList() //
-            : appState.getSuggestedPortTypes().stream() //
-                .map(CoreUtil::getPortTypeId) //
-                .collect(toList());
+        return appState.getSuggestedPortTypes().stream() //
+            .map(CoreUtil::getPortTypeId) //
+            .collect(toList());
+    }
+
+    /**
+     * Access feature flags in system properties
+     *
+     * @return A map of feature flag keys and their values
+     */
+    private static Map<String, Object> getFeatureFlags() {
+        var featureFlagsPrefix = "org.knime.ui.feature.";
+        var f1 = featureFlagsPrefix + "embedded_views_and_dialogs";
+        return Map.of(f1, Boolean.getBoolean(f1));
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf,
@@ -234,17 +265,6 @@ public final class DefaultApplicationService implements ApplicationService {
             }
         }
         return builder.build();
-    }
-
-    /**
-     * Access feature flags in system properties
-     *
-     * @return A map of feature flag keys and their values
-     */
-    private static Map<String, Object> getFeatureFlags() {
-        var featureFlagsPrefix = "org.knime.ui.feature.";
-        var f1 = featureFlagsPrefix + "embedded_views_and_dialogs";
-        return Map.of(f1, Boolean.getBoolean(f1));
     }
 
 }
