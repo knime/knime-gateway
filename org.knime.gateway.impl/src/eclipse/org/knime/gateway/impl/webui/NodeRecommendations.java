@@ -128,8 +128,12 @@ public class NodeRecommendations {
         }
         var limit = nodesLimit == null ? DEFAULT_NODES_LIMIT : nodesLimit;
         var fullInfo = fullTemplateInfo == null ? DEFAULT_FULL_TEMPLATE_INFO : fullTemplateInfo;
-        var nnc = getNativeNodeContainer(projectId, workflowId, nodeId);
-        var sourcePortType = determineSourcePortType(nnc, portIdx);
+
+        // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
+        var nnc = nodeId == null ? null : getNativeNodeContainer(projectId, workflowId, nodeId);
+
+        // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilterByPortType(...)`
+        var sourcePortType = nodeId == null ? null : determineSourcePortType(nnc, portIdx);
 
         var recommendations = getFlatListOfRecommendations(nnc);
         return getNodeTemplatesAndFilterByPortType(recommendations, sourcePortType, limit, fullInfo);
@@ -157,29 +161,21 @@ public class NodeRecommendations {
 
     private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId) throws OperationNotAllowedException {
-        if (nodeId != null) {
-            var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-            if (nc instanceof NativeNodeContainer) {
-                return (NativeNodeContainer)nc;
-            } else {
-                throw new OperationNotAllowedException(
-                    "Node recommendations for metanodes or components aren't supported yet");
-            }
+        var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        if (nc instanceof NativeNodeContainer) {
+            return (NativeNodeContainer)nc;
         } else {
-            return null;
+            throw new OperationNotAllowedException(
+                "Node recommendations for metanodes or components aren't supported yet");
         }
     }
 
     private static PortType determineSourcePortType(final NativeNodeContainer nnc, final Integer portIdx)
         throws OperationNotAllowedException {
-        if (nnc != null && portIdx != null) {
-            if (portIdx + 1 > nnc.getNrOutPorts() || portIdx < 0) {
-                throw new OperationNotAllowedException("Cannot recommend nodes for non-existing port");
-            }
-            return nnc.getOutPort(portIdx).getPortType();
-        } else {
-            return null;
+        if (portIdx + 1 > nnc.getNrOutPorts() || portIdx < 0) {
+            throw new OperationNotAllowedException("Cannot recommend nodes for non-existing port");
         }
+        return nnc.getOutPort(portIdx).getPortType();
     }
 
     private static List<NodeRecommendation> getFlatListOfRecommendations(final NativeNodeContainer nnc) {

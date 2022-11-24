@@ -118,7 +118,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             if (m_commandEnt.getSourceNodeId() != null) {
                 var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm.getProjectWFM().getID());
                 var destNodeId = m_addedNode;
-                var matchingPorts = getMatchingPorts(sourceNodeId, destNodeId);
+                var matchingPorts = getMatchingPorts(sourceNodeId, destNodeId, m_commandEnt.getSourcePortIdx(), wfm);
                 for (var entry : matchingPorts.entrySet()) {
                     Integer sourcePortIdx = entry.getKey();
                     Integer destPortIdx = entry.getValue();
@@ -132,24 +132,23 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         return true; // Workflow changed if no exceptions were thrown
     }
 
-    private Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId)
-        throws OperationNotAllowedException {
-        if (m_commandEnt.getSourcePortIdx() != null) { // Supports dynamic nodes and flow variables
-            var sourcePortIdx = m_commandEnt.getSourcePortIdx();
-            var destPortIdx = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId);
+    /**
+     * Get matching ports for a given pair of source node and destination node. As of today, the FE only calls this
+     * function when it also provides a source port index to connect from. The case where no source port index is
+     * provided (a.k.a. auto-connecting two existing nodes present in the workflow) is not used yet.
+     *
+     * @return The patching pairs of ports
+     * @throws OperationNotAllowedException Is thrown when no matching ports where found
+     */
+    private static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
+        final Integer sourcePortIdx, final WorkflowManager wfm) throws OperationNotAllowedException {
+        if (sourcePortIdx != null) { // Currently in use by the FE, supports dynamic nodes and flow variables
+            var destPortIdx = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId, wfm);
             return Map.of(sourcePortIdx, destPortIdx);
-        } else { // Currently unreachable, ignores dynamic nodes and flow variables
-            var wfm = getWorkflowManager();
+        } else { // Currently not used by the FE, ignores dynamic nodes and flow variables. Might be added later.
             var sourceNode = wfm.getNodeContainer(sourceNodeId);
             var destNode = wfm.getNodeContainer(destNodeId);
-            var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
-            var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
-            var matchingPorts = new TreeMap<Integer, Integer>();
-            for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
-                addFirstMatchingSourcePortForDestPortIdx(destPortIdx, sourcePortFirst, sourceNode, destNode,
-                    matchingPorts);
-            }
-            return matchingPorts;
+            return getFirstMatchingSourcePortsForDestPorts(sourceNode, destNode, wfm);
         }
     }
 
@@ -159,9 +158,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
      *
      * @return Port index of best matching destination port
      */
-    private Integer getDestPortIdxFromSourcePortIdx(final NodeID sourceNodeId, final Integer sourcePortIdx,
-        final NodeID destNodeId) throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
+    private static Integer getDestPortIdxFromSourcePortIdx(final NodeID sourceNodeId, final Integer sourcePortIdx,
+        final NodeID destNodeId, final WorkflowManager wfm) throws OperationNotAllowedException {
         var sourceNode = wfm.getNodeContainer(sourceNodeId);
         var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
         var destNode = wfm.getNodeContainer(destNodeId);
@@ -177,7 +175,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
         // Second try to create a matching port for dynamic nodes
         try {
-            return createAndGetDestPortIdx(sourcePortType, destNodeId).orElseThrow();
+            return createAndGetDestPortIdx(sourcePortType, destNodeId, wfm).orElseThrow();
         } catch (IllegalArgumentException | NoSuchElementException e) {
 
             // Third, consider the default flow variable port if compatible
@@ -191,9 +189,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     /**
      * Optionally creates the best matching port and returns it's index
      */
-    private Optional<Integer> createAndGetDestPortIdx(final PortType sourcePortType, final NodeID destNodeId)
-        throws IllegalArgumentException, NoSuchElementException {
-        var wfm = getWorkflowManager();
+    private static Optional<Integer> createAndGetDestPortIdx(final PortType sourcePortType, final NodeID destNodeId,
+        final WorkflowManager wfm) throws IllegalArgumentException, NoSuchElementException {
         var creationConfig = CoreUtil.getCopyOfCreationConfig(wfm, destNodeId).orElseThrow();
         var portsConfig = creationConfig.getPortConfig().orElseThrow();
         var portGroupIds = portsConfig.getPortGroupNames();
@@ -213,31 +210,24 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
         // If there are no compatible port types, we are done
         if (portGroupToCompatibleTypes.isEmpty()) {
-            return Optional.empty();
+            throw new NoSuchElementException(); // Exception will be handled by `getDestPortIdxFromSourcePortIdx(...)`
         }
 
-        // If there is a port type that is equal to the source port, use it
-        for (var pair : portGroupToCompatibleTypes) {
-            var portGroup = pair.getKey();
-            var destPortType = pair.getValue();
-            if (sourcePortType.equals(destPortType)) {
-                var destPortIdx =
-                    doCreatePortAndReturnPortIdx(portGroup, sourcePortType, destNodeId, creationConfig, inPortGroups);
-                return Optional.of(destPortIdx);
-            }
-        }
+        // Determine which port group to use
+        var portGroup = portGroupToCompatibleTypes.stream()//
+            .filter(pair -> sourcePortType.equals(pair.getValue()))//
+            .map(Pair::getKey).findFirst() // If there is an equal port type, use its port group
+            .orElse(portGroupToCompatibleTypes.get(0).getKey()); // Otherwise use the first compatible port group
 
-        // Else use the first one found
-        var portGroup = portGroupToCompatibleTypes.get(0).getKey();
+        // Create port and return index
         var destPortIdx =
-            doCreatePortAndReturnPortIdx(portGroup, sourcePortType, destNodeId, creationConfig, inPortGroups);
+            doCreatePortAndReturnPortIdx(portGroup, sourcePortType, destNodeId, creationConfig, inPortGroups, wfm);
         return Optional.of(destPortIdx);
     }
 
-    private int doCreatePortAndReturnPortIdx(final ConfigurablePortGroup portGroup, final PortType destPortType,
+    private static int doCreatePortAndReturnPortIdx(final ConfigurablePortGroup portGroup, final PortType destPortType,
         final NodeID destNodeId, final ModifiableNodeCreationConfiguration creationConfig,
-        final List<PortGroupConfiguration> inPortGroups) {
-        var wfm = getWorkflowManager();
+        final List<PortGroupConfiguration> inPortGroups, final WorkflowManager wfm) {
         if (portGroup instanceof ExtendablePortGroup) {
             ((ExtendablePortGroup)portGroup).addPort(destPortType);
         } else {
@@ -250,24 +240,26 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             .sum();
     }
 
-    /**
-     * Given a destination port index, it adds a compatible source port index if there is one. This ignores dynamic
-     * nodes for now.
-     *
-     * @param matchingPorts If a matching port is found, this is updated as a side effect
-     */
-    private void addFirstMatchingSourcePortForDestPortIdx(final Integer destPortIdx, final Integer sourcePortFirst,
-        final NodeContainer sourceNode, final NodeContainer destNode, final Map<Integer, Integer> matchingPorts) {
-        var wfm = getWorkflowManager();
-        var destPortType = destNode.getInPort(destPortIdx).getPortType();
-        for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
-            var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
-            if (CoreUtil.arePortTypesCompatible(sourcePortType, destPortType) // Port types match
-                && wfm.getOutgoingConnectionsFor(sourceNode.getID(), sourcePortIdx).isEmpty() // Source port is not already connected
-                && !matchingPorts.containsKey(sourcePortIdx) && !matchingPorts.containsValue(destPortIdx)) { // Ports weren't already assigned
-                matchingPorts.put(sourcePortIdx, destPortIdx);
+    private static Map<Integer, Integer> getFirstMatchingSourcePortsForDestPorts(final NodeContainer sourceNode,
+        final NodeContainer destNode, final WorkflowManager wfm) {
+        var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
+        var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
+        var matchingPorts = new TreeMap<Integer, Integer>();
+        for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
+            var destPortType = destNode.getInPort(destPortIdx).getPortType();
+            for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
+                var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+                var arePortsCompatible = CoreUtil.arePortTypesCompatible(sourcePortType, destPortType);
+                var isSourcePortUnconnected =
+                    wfm.getOutgoingConnectionsFor(sourceNode.getID(), sourcePortIdx).isEmpty();
+                var arePortsAbsentInMap =
+                    !matchingPorts.containsKey(sourcePortIdx) && !matchingPorts.containsValue(destPortIdx);
+                if (arePortsCompatible && isSourcePortUnconnected && arePortsAbsentInMap) {
+                    matchingPorts.put(sourcePortIdx, destPortIdx);
+                }
             }
         }
+        return matchingPorts;
     }
 
     @Override
