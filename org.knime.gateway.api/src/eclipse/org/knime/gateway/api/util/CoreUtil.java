@@ -333,9 +333,9 @@ public final class CoreUtil {
         Class<? extends PortObject> sourceCl = sourceType.getPortObjectClass();
         Class<? extends PortObject> destCl = destType.getPortObjectClass();
         if (BufferedDataTable.class.equals(sourceCl) && !BufferedDataTable.class.equals(destCl)) {
-            return false;
+            return false; // Do not connect table ports to generic ports
         } else if (BufferedDataTable.class.equals(destCl) && !BufferedDataTable.class.equals(sourceCl)) {
-            return false;
+            return false; // Do not connect table ports to generic ports, the other way around
         } else {
             return destCl.isAssignableFrom(sourceCl) || sourceCl.isAssignableFrom(destCl);
         }
@@ -440,7 +440,7 @@ public final class CoreUtil {
     }
 
     /**
-     * If the node is a dynamic node, retrieve its creation configuration
+     * If the node has dynamic ports, retrieve its creation configuration
      *
      * @param wfm The workflow manager
      * @param nodeId The node ID
@@ -453,7 +453,7 @@ public final class CoreUtil {
     }
 
     /**
-     * If the factory belongs to a dynamic node, retrieve its creation configuration
+     * If the factory belongs to a node with dynamic ports, retrieve its creation configuration
      *
      * @param factory The node factory
      * @return The optional creation configuration

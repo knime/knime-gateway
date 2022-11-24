@@ -1233,13 +1233,37 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // undo adding row splitter
         ws().undoWorkflowCommand(wfId, getRootID());
+    }
 
-        // auto-connect will not use already connected ports
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called with {@link AddNodeCommandEnt} that also auto connects nodes without a given source port.
+     *
+     * @throws Exception
+     */
+    public void testExecuteAddAndConnectCommandAutoGuessSourcePorts() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        var rowSplitterFactory = "org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory";
+        var columnAppenderFactory = "org.knime.base.node.preproc.columnappend.ColumnAppenderNodeFactory";
+        var normalizerFactory = "org.knime.base.node.preproc.pmml.normalize.NormalizerPMMLNodeFactory2";
+
+        // add a node and auto-connect all compatible ports
+        var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowSplitterFactory, null, 32, 64, null, null))).getNewNodeId();
+        var result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(columnAppenderFactory, null, 64, 128, sourceNodeId, null));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), columnAppenderFactory, 64, 128, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true); // got auto-connected
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, true); // got auto-connected
+
+        // add a another node and try to auto-connect auto-guessed ports
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, null));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowSplitterFactory, 128, 256, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false); // not auto-guessed
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false); // not auto-guessed
+            buildAddNodeCommand(normalizerFactory, null, 128, 256, sourceNodeId, null));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), normalizerFactory, 128, 256, result);
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false); // not auto-connected
+        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false); // not auto-connected
+
     }
 
     /**
@@ -1253,7 +1277,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
         var caseSwitchStartFactory = "org.knime.base.node.switches.caseswitch.any.CaseStartAnyNodeFactory";
-        var dbConnectorFactory = "org.knime.database.node.connector.generic.DBConnectorNodeFactory";
         var tableColToFlowVariableFactory =
             "org.knime.base.node.flowvariable.tablecoltovariable4.TableColumnToVariable4NodeFactory";
 
@@ -1271,20 +1294,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
                 is(1)));
 
-        // try the same thing for a database connection
-        sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(dbConnectorFactory, null, 128, 256, null, null))).getNewNodeId();
-        result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
-
-        // undo adding the case switch
-        ws().undoWorkflowCommand(wfId, getRootID());
-        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(
-            () -> assertThat(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodeTemplates().size(),
-                is(2)));
-
         // try the same thing for a flow variable connection
         sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(tableColToFlowVariableFactory, null, 256, 512, null, null))).getNewNodeId();
@@ -1293,7 +1302,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
 
-        // TODO: Test for exchangeable ports, like excel reader and file system reader
+        // TODO:
+        // * Find another way to test this for database ports
+        // * Test for exchangeable ports, like excel reader and file system reader
     }
 
     /**
@@ -1310,8 +1321,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var variableToTableRowFactory =
             "org.knime.base.node.flowvariable.variabletotablerow4.VariableToTable4NodeFactory";
         var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
-        var excelWriterFactory = "org.knime.ext.poi3.node.io.filehandling.excel.writer.ExcelTableWriterNodeFactory";
-        var excelReaderFactory = "org.knime.ext.poi3.node.io.filehandling.excel.reader.ExcelTableReaderNodeFactory";
+        var imageToTableFactory = "org.knime.base.node.image.ImageToTableNodeFactory";
+        var tableRowToImageFactory = "org.knime.base.node.image.tablerowtoimage.TableRowToImageNodeFactory";
 
         // add and connect native nodes with flow variables on port index 1
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
@@ -1343,10 +1354,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // connect two incompatible nodes via their flow default variable ports
         sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(excelWriterFactory, null, 256, 512, null, null))).getNewNodeId();
+            buildAddNodeCommand(imageToTableFactory, null, 256, 512, null, null))).getNewNodeId();
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(excelReaderFactory, null, 64, 128, sourceNodeId, 0));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), excelReaderFactory, 64, 128, result);
+            buildAddNodeCommand(tableRowToImageFactory, null, 64, 128, sourceNodeId, 0));
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), tableRowToImageFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 0, result, true);
     }
 

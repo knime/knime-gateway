@@ -68,6 +68,8 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommandDynamicNode());
         res.put("testExecuteAddAndConnectCommandFlowVariables",
             (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommandFlowVariables());
+        res.put("testExecuteAddAndConnectCommandAutoGuessSourcePorts",
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommandAutoGuessSourcePorts());
 
         res.put("testCanRemovePortFromNative",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanRemovePortFromNative());
