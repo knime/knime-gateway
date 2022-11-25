@@ -544,7 +544,7 @@ public final class EntityBuilderUtil {
      * @return The new node template id
      */
     public static String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
-        return NodeTemplateId.of(nodeFactory);
+        return NodeTemplateId.of(nodeFactory, true);
      }
 
     /**
