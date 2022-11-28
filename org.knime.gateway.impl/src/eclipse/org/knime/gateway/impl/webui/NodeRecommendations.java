@@ -216,11 +216,12 @@ public class NodeRecommendations {
         var streamOfSupportedPortTypes = CoreUtil.getCopyOfCreationConfig(factory)//
             .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
             .map(portsConfig -> portsConfig.getPortGroupNames().stream()//
-                    .map(portsConfig::getGroup)//
-                    .filter(PortGroupConfiguration::definesInputPorts)//
-                    .filter(ConfigurablePortGroup.class::isInstance)//
-                    .map(ConfigurablePortGroup.class::cast)//
-                    .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
+                .filter(portsConfig::isInteractive)//
+                .map(portsConfig::getGroup)//
+                .filter(PortGroupConfiguration::definesInputPorts)//
+                .filter(ConfigurablePortGroup.class::isInstance)//
+                .map(ConfigurablePortGroup.class::cast)//
+                .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
             .orElse(Stream.of());
         return Stream.concat(streamOfPresentPortTypes, streamOfSupportedPortTypes)
             .anyMatch(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt));

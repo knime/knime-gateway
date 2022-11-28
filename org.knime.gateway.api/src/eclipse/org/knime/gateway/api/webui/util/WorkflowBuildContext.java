@@ -48,8 +48,10 @@
  */
 package org.knime.gateway.api.webui.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
@@ -157,33 +159,31 @@ public final class WorkflowBuildContext {
     }
 
     /**
-     * @param nnc the node to get the ports configuration for
-     * @return the {@link ModifiablePortsConfiguration} for the given node; it's cached such that no extra copy needs to
-     *         be created every time it's accessed; can be {@code null} if there is none
+     * @param nnc The node to get the ports configuration for
+     * @return The optional of {@link ModifiablePortsConfiguration} for the given node; it's cached such that no extra
+     *         copy needs to be created every time it's accessed; can be {@code null} if there is none
      */
-    ModifiablePortsConfiguration getPortsConfiguration(final NativeNodeContainer nnc) {
+    Optional<ModifiablePortsConfiguration> getPortsConfiguration(final NativeNodeContainer nnc) {
         if (m_portsConfigurations == null) {
             m_portsConfigurations = new HashMap<>();
         }
-        return m_portsConfigurations.computeIfAbsent(nnc.getID(), id -> nnc.getNode().getCopyOfCreationConfig()
-            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null));
+        return Optional.ofNullable(m_portsConfigurations.computeIfAbsent(nnc.getID(), id -> nnc.getNode()
+            .getCopyOfCreationConfig().flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null)));
     }
 
     private String[] getPortGroupsPerIndex(final NativeNodeContainer nnc, final boolean inPort) {
-        var portsConfig = getPortsConfiguration(nnc);
-        if (portsConfig == null) {
-            return null; // NOSONAR
-        }
-        var portGroupsToIndicesMap = inPort ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation();
-        var portGroupsPerIndex = new String[inPort ? (nnc.getNrInPorts() - 1) : (nnc.getNrOutPorts() - 1)];
-        for (var e : portGroupsToIndicesMap.entrySet()) {
-            var portGroup = e.getKey();
-            int[] indices = e.getValue();
-            for (var i : indices) {
-                portGroupsPerIndex[i] = portGroup;
-            }
-        }
-        return portGroupsPerIndex;
+        return getPortsConfiguration(nnc)//
+            // Create map of port group to port group indices
+            .map(portsConfig -> inPort ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation())//
+            // Create a String array of port groups per index
+            .map(portGroupsToIndicesMap -> {
+                var portGroupsPerIndex = new String[inPort ? (nnc.getNrInPorts() - 1) : (nnc.getNrOutPorts() - 1)];
+                portGroupsToIndicesMap.entrySet().forEach(
+                    entry -> Arrays.stream(entry.getValue()).forEach(i -> portGroupsPerIndex[i] = entry.getKey()));
+                return portGroupsPerIndex;
+            })//
+            // Return null if the Optional received by "getPortsConfiguration(...)" was empty
+            .orElse(null);
     }
 
     /**

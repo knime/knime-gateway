@@ -1618,6 +1618,34 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             addingNotAllowed);
     }
 
+    /**
+     * Test whether adding ports to native nodes with dynamic ports is (not) allowed.
+     *
+     * @throws Exception
+     */
+    public void testCanAddPortToNativeIsInteractive() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.EMPTY);
+        var nodeFactory = "org.knime.gateway.testing.helper.webui.node.DummyNodeDynamicPortsInteractiveFactory";
+        var compatiblePortTypeId = CoreUtil.getPortTypeId(BufferedDataTable.TYPE);
+        var node = new NodeIDEnt(1);
+
+        // Add node and get workflow
+        ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(nodeFactory, null, 32, 64, null, null));
+        var workflow = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
+
+        // Can add input ports
+        assertThat( //
+            "Allow adding input ports", //
+            portAddingAllowed(node, workflow, compatiblePortTypeId, "Inputs") //
+        );
+
+        // Cannot add output ports
+        assertThat( //
+            "Don't allow adding output ports", //
+            !portAddingAllowed(node, workflow, compatiblePortTypeId, "Outputs") //
+        );
+    }
+
     private static boolean portAddingAllowed(final NodeIDEnt targetNode, final WorkflowEnt workflow,
         final String targetPortTypeId, final String targetPortGroup) {
         var node = workflow.getNodes().get(targetNode.toString());
