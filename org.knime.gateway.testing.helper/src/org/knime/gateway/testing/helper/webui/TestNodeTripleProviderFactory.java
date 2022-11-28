@@ -109,49 +109,49 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 "org.knime.base.node.util.sampledata.SampleDataNodeFactory", //
                 "Data Generator");
             var successors = Stream.of(//
-                new NodeInfo(//
-                    "org.knime.base.node.util.sampledata.SampleDataNodeFactory", //
-                    "Data Generator"),
-                new NodeInfo(//
+                new NodeInfo(// 1
                     "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", //
                     "Row Filter"),
-                new NodeInfo(//
+                new NodeInfo(// 2
                     "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory", //
                     "Column Filter"),
-                new NodeInfo(//
+                new NodeInfo(// 3
                     "org.knime.ext.poi3.node.io.filehandling.excel.writer.ExcelTableWriterNodeFactory", //
                     "Excel Writer"),
-                new NodeInfo(//
+                new NodeInfo(// 4
                     "org.knime.base.node.io.filehandling.csv.writer.CSVWriter2NodeFactory", //
                     "CSV Writer"),
-                new NodeInfo(//
+                new NodeInfo(// 5
                     "org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory", //
                     "Scatter Plot"),
-                new NodeInfo(//
+                new NodeInfo(// 6
                     "org.knime.js.base.node.viz.plotter.scatterSelectionAppender.ScatterPlotNodeFactory", //
                     "Scatter Plot"),
-                new NodeInfo(//
+                new NodeInfo(// 7
                     "org.knime.base.views.node.barchart.BarChartNodeFactory", //
                     "Bar Chart"),
-                new NodeInfo(//
+                new NodeInfo(// 8
                     "org.knime.dynamic.js.v30.DynamicJSNodeFactory", //
                     "Bar Chart"),
-                new NodeInfo(//
+                new NodeInfo(// 9
                     "org.knime.js.base.node.viz.plotter.line.LinePlotNodeFactory", //
                     "Line Plot"),
-                new NodeInfo(//
+                new NodeInfo(// 10
                     "org.knime.ext.jep.JEPNodeFactory", //
                     "Math Formula"),
-                new NodeInfo(//
+                new NodeInfo(// 11
                     "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory", //
                     "Table View"),
-                new NodeInfo(//
+                new NodeInfo(// 12
                     "org.knime.base.node.preproc.groupby.GroupByNodeFactory", //
                     "GroupBy"),
-                new NodeInfo(// one extra successor to be filtered out by default
+                new NodeInfo(// 13, extra successor since 12 recommendations are the default
                     "org.knime.base.node.preproc.stringmanipulation.StringManipulationNodeFactory", //
                     "String Manipulation"),
-                new NodeInfo(// not present in node repository
+                new NodeInfo(// 14, compatible but non-interactive input ports, must be filtered out
+                    "org.knime.gateway.testing.helper.webui.node.DummyNodeDynamicPortsInteractiveFactory", //
+                    "Dummy Node"),
+                new NodeInfo(// 15, not present in node repository, must be filtered out
                     "non.existing.factory", //
                     "Non-Existing Node"));
             return successors.map(successor -> new NodeTriple(null, node, successor));
@@ -167,46 +167,46 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", //
                 "Row Filter");
             var nodes = Stream.of(//
-                new NodeInfo(//
+                new NodeInfo(// 1
                     "org.knime.base.node.util.sampledata.SampleDataNodeFactory", //
                     "Data Generator"),
-                new NodeInfo(//
+                new NodeInfo(// 2
                     "org.knime.ext.poi3.node.io.filehandling.excel.reader.ExcelTableReaderNodeFactory", //
                     "Excel Reader"),
-                new NodeInfo(//
+                new NodeInfo(// 3
                     "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory", //
                     "Table Creator"),
-                new NodeInfo(//
+                new NodeInfo(// 4
                     "org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory", //
                     "CSV Reader"),
-                new NodeInfo(//
+                new NodeInfo(// 5
                     "org.knime.base.node.io.filehandling.table.reader.KnimeTableReaderNodeFactory", //
                     "Table Reader"),
-                new NodeInfo(//
+                new NodeInfo(// 6
                     "org.knime.base.node.io.filehandling.csv.reader.FileReaderNodeFactory", //
                     "File Reader"),
-                new NodeInfo(//
+                new NodeInfo(// 7
                     "org.knime.filehandling.core.fs.local.node.LocalConnectorNodeFactory", //
                     "Local File System Connector"),
-                new NodeInfo(//
+                new NodeInfo(// 8
                     "org.knime.database.node.io.reader.DBReadNodeFactory", //
                     "DB Reader"),
-                new NodeInfo(//
+                new NodeInfo(// 9
                     "org.knime.database.node.io.reader.query.DBQueryReaderNodeFactory", //
                     "DB Query Reader"),
-                new NodeInfo(//
+                new NodeInfo(// 10
                     "org.knime.filehandling.utility.nodes.listpaths.ListFilesAndFoldersNodeFactory", //
                     "List Files/Folders"),
-                new NodeInfo(//
+                new NodeInfo(// 11
                     "org.knime.time.node.create.createdatetime.CreateDateTimeNodeFactory", //
                     "Create Date&Time Range"),
-                new NodeInfo(//
+                new NodeInfo(// 12
                     "org.knime.database.node.connector.generic.DBConnectorNodeFactory", //
                     "DB Connector"),
-                new NodeInfo(// one extra successor to be filtered out by default
+                new NodeInfo(// 13, extra successor since 12 recommendations are the default
                     "org.knime.base.node.io.variablecreator.VariableCreatorNodeFactory", //
                     "Variable Creator"),
-                new NodeInfo(// not present in node repository
+                new NodeInfo(// 14, not present in node repository, must be filtered out
                     "non.existing.factory", //
                     "Non-Existing Node"));
             return nodes.map(node -> new NodeTriple(null, node, successor));

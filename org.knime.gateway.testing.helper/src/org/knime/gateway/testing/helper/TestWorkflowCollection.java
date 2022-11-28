@@ -61,8 +61,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Contains different kinds of metanodes and components and nodes and annotations that can be collapsed.
      */
-    METANODES_COMPONENTS("/files/testflows/Metanodes and Components", "metanodes_components");
+    METANODES_COMPONENTS("/files/testflows/Metanodes and Components", "metanodes_components"),
 
+    /**
+     * Empty workflow, doesn't contain any nodes.
+     */
+    EMPTY("/files/testflows/Empty", "empty");
 
     private final String m_workflowDir;
 

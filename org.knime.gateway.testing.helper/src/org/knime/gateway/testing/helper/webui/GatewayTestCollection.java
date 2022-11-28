@@ -77,6 +77,8 @@ public final class GatewayTestCollection {
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanRemovePortFromContainer());
         res.put("testCanAddPortToNative",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanAddPortToNative());
+        res.put("testCanAddPortToNativeIsInteractive",
+            (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanAddPortToNativeIsInteractive());
         res.put("testAddPortToMetanode",
                 (rc, sp, wl, we, es) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddPortToMetanode());
         res.put("testAddPortToComponent",

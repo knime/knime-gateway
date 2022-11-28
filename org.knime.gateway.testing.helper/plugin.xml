@@ -14,17 +14,21 @@
             hidden="true">
       </node>
       <node
-              deprecated="false"
-              factory-class="org.knime.gateway.testing.helper.webui.node.DummyNodeFactory_v41"
-              hidden="true">
+            deprecated="false"
+            factory-class="org.knime.gateway.testing.helper.webui.node.DummyNodeFactory_v41"
+            hidden="true">
       </node>
-
+      <node
+            deprecated="false"
+            factory-class="org.knime.gateway.testing.helper.webui.node.DummyNodeDynamicPortsInteractiveFactory"
+            hidden="true">
+      </node>      
    </extension>
+   
    <extension
          point="org.knime.core.ui.nodetriples">
       <tripleprovider
             factory-class="org.knime.gateway.testing.helper.webui.TestNodeTripleProviderFactory">
       </tripleprovider>
    </extension>
-
 </plugin>
