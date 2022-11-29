@@ -1624,10 +1624,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCanAddPortToNativeIsInteractive() throws Exception {
-        var wfId = loadWorkflow(TestWorkflowCollection.EMPTY);
+        var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var nodeFactory = "org.knime.gateway.testing.helper.webui.node.DummyNodeDynamicPortsInteractiveFactory";
         var compatiblePortTypeId = CoreUtil.getPortTypeId(BufferedDataTable.TYPE);
-        var node = new NodeIDEnt(1);
+        var node = new NodeIDEnt(3);
 
         // Add node and get workflow
         ws().executeWorkflowCommand(wfId, getRootID(), buildAddNodeCommand(nodeFactory, null, 32, 64, null, null));
