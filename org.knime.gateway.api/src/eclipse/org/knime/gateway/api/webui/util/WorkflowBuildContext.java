@@ -138,10 +138,10 @@ public final class WorkflowBuildContext {
     /**
      * @param nnc the node to get the port index to port group map for
      * @param inPort whether to the map for the input or output ports
-     * @return an array containing the port group name per port index; can be {@code null} if the given index is not
+     * @return an optional array containing the port group name per port index; can be empty if the given index is not
      *         part of a port group
      */
-    String[] getPortIndexToPortGroupMap(final NativeNodeContainer nnc, final boolean inPort) {
+    Optional<String[]> getPortIndexToPortGroupMap(final NativeNodeContainer nnc, final boolean inPort) {
         Map<NodeID, String[]> inOrOutPortGroupsAndIndices;
         if (inPort) {
             if (m_inPortGroupsAndIndices == null) {
@@ -154,21 +154,27 @@ public final class WorkflowBuildContext {
             }
             inOrOutPortGroupsAndIndices = m_outPortGroupsAndIndices;
         }
-
-        return inOrOutPortGroupsAndIndices.computeIfAbsent(nnc.getID(), id -> getPortGroupsPerIndex(nnc, inPort));
+        var portIndexToPortGroupMap =
+            inOrOutPortGroupsAndIndices.computeIfAbsent(nnc.getID(), id -> getPortGroupsPerIndex(nnc, inPort));
+        return Optional.ofNullable(portIndexToPortGroupMap);
     }
 
     /**
      * @param nnc The node to get the ports configuration for
      * @return The optional of {@link ModifiablePortsConfiguration} for the given node; it's cached such that no extra
-     *         copy needs to be created every time it's accessed; can be {@code null} if there is none
+     *         copy needs to be created every time it's accessed; can be empty if there is none
      */
     Optional<ModifiablePortsConfiguration> getPortsConfiguration(final NativeNodeContainer nnc) {
         if (m_portsConfigurations == null) {
             m_portsConfigurations = new HashMap<>();
         }
-        return Optional.ofNullable(m_portsConfigurations.computeIfAbsent(nnc.getID(), id -> nnc.getNode()
-            .getCopyOfCreationConfig().flatMap(ModifiableNodeCreationConfiguration::getPortConfig).orElse(null)));
+        // Compute the ports configuration if absent, unwrap the optional
+        var portsConfig = m_portsConfigurations.computeIfAbsent(nnc.getID(), id -> nnc.getNode()//
+            .getCopyOfCreationConfig()//
+            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
+            .orElse(null));
+        // Wrap the result in an optional again
+        return Optional.ofNullable(portsConfig);
     }
 
     private String[] getPortGroupsPerIndex(final NativeNodeContainer nnc, final boolean inPort) {
