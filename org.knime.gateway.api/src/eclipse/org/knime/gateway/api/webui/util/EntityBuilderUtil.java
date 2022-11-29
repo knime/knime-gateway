@@ -1484,24 +1484,29 @@ public final class EntityBuilderUtil {
         if (portIndex == 0) {
             return false; // Flow variable ports can never be removed
         }
+
+        return buildContext.getPortIndexToPortGroupMap(nnc, isInputPort)//
+            // There must be a port group found for the port
+            .filter(portIndexToPortGroupMap -> portIndexToPortGroupMap[portIndex - 1] != null)
+            // Check if port can be removed
+            .map(portIndexToPortGroupMap -> {
+                var portGroupName = portIndexToPortGroupMap[portIndex - 1];
+                var isLastInGroup = portIndex == portIndexToPortGroupMap.length
+                    || !portGroupName.equals(portIndexToPortGroupMap[portIndex]);
+                return isLastInGroup && hasPortsAddedToPortGroup(nnc, buildContext, portGroupName);
+            })//
+            // False in all other cases
+            .orElse(false);
+    }
+
+    private static boolean hasPortsAddedToPortGroup(final NativeNodeContainer nnc,
+        final WorkflowBuildContext buildContext, final String portGroupName) {
         return buildContext.getPortsConfiguration(nnc)//
-            .flatMap(portsConfig -> buildContext.getPortIndexToPortGroupMap(nnc, isInputPort)
-                // Maps to `true` if native node port can be removed
-                .map(portIndexToPortGroupMap -> {
-                    var groupName = portIndexToPortGroupMap[portIndex - 1];
-                    if (groupName == null) {
-                        return false; // No port group found, we cannot remove anything
-                    }
-                    var extendablePortGroup = portsConfig.getExtendablePorts().get(groupName); // Only `ExtendablePortGroup` supported
-                    if (extendablePortGroup == null) {
-                        return false;
-                    }
-                    var isLastInGroup = portIndex == portIndexToPortGroupMap.length
-                        || !groupName.equals(portIndexToPortGroupMap[portIndex]);
-                    var groupHasAddedPort = extendablePortGroup.hasConfiguredPorts();
-                    return isLastInGroup && groupHasAddedPort; // Port can also be removed if connected.
-                }))//
-            // Returns `false`
+            // Map to `ExtendablePortGroup` if there is any
+            .map(portsConfig -> portsConfig.getExtendablePorts().get(portGroupName))//
+            // Check if port group has at least one added port
+            .map(ExtendablePortGroup::hasConfiguredPorts)//
+            // False otherwise
             .orElse(false);
     }
 
@@ -1649,7 +1654,7 @@ public final class EntityBuilderUtil {
                     // Map to port group name
                     .map(portIndexToPortGroupMap -> portIndexToPortGroupMap[portIndex - 1])//
                     // Only continue if port group is `ExtendablePortGroup`
-                    .filter(groupName -> portsConfig.getGroup(groupName) instanceof ExtendablePortGroup))//
+                    .filter(portGroupName -> portsConfig.getGroup(portGroupName) instanceof ExtendablePortGroup))//
                 .orElse(null);
         }
         return null;
