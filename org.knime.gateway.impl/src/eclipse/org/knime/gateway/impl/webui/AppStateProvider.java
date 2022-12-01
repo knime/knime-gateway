@@ -53,10 +53,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
@@ -130,6 +132,9 @@ public final class AppStateProvider {
      */
     public interface AppState {
 
+        Set<PortType> AVAILABLE_PORT_TYPES = PortTypeRegistry.getInstance().availablePortTypes().stream()//
+            .collect(Collectors.toSet());
+
         /**
          * When the user is prompted to select a port type, this subset of types may be used as suggestions.
          */
@@ -150,12 +155,16 @@ public final class AppStateProvider {
         /**
          * @return All port types available in the current extension
          */
-        Set<PortType> getAvailablePortTypes();
+        default Set<PortType> getAvailablePortTypes() {
+            return AVAILABLE_PORT_TYPES;
+        }
 
         /**
          * @return List of recommended port types
          */
-        List<PortType> getSuggestedPortTypes();
+        default List<PortType> getSuggestedPortTypes() {
+            return SUGGESTED_PORT_TYPES;
+        }
 
         /**
          * Represents an opened workflow.
