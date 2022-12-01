@@ -133,6 +133,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -159,6 +160,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Test for the endpoints to view/render a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @SuppressWarnings("java:S112") // generic exceptions
 public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
@@ -1458,6 +1460,55 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setName(name)//
             .setNodeId(nodeId)//
             .build();
+    }
+
+    /**
+     * Tests
+     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
+     * when called {@link UpdateLabelCommandEnt}
+     *
+     * @throws Exception
+     */
+    public void testExecuteUpdateLabelCommand() throws Exception {
+        final var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        final var metanodeId = new NodeIDEnt(1);
+        final var componentId = new NodeIDEnt(2);
+
+        // add a native node
+        final var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        final var nativeNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(rowFilterFactory, null, 32, 64, null, null))).getNewNodeId();
+
+        // do tests for metanode, component and native node
+        for (var nodeId : List.of(metanodeId, componentId, nativeNodeId)) {
+            var oldLabel = getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), false).getWorkflow(), nodeId);
+            var newLabel = "The new label";
+
+            // update node label
+            ws().executeWorkflowCommand(wfId, getRootID(), buildUpdateLabelCommandEnt(nodeId, newLabel));
+            var retrievedLabel =
+                getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), false).getWorkflow(), nodeId);
+            assertThat("Retrieved label must equal new label", retrievedLabel, is(newLabel));
+
+            // undo command
+            ws().undoWorkflowCommand(wfId, getRootID());
+            retrievedLabel = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+                .get(metanodeId.toString()).getAnnotation().getText();
+            assertThat("Retrieved label must equal old label", retrievedLabel, is(oldLabel));
+        }
+    }
+
+    private static UpdateLabelCommandEnt buildUpdateLabelCommandEnt(final NodeIDEnt nodeId, final String label) {
+        return builder(UpdateLabelCommandEnt.UpdateLabelCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_LABEL)//
+            .setNodeId(nodeId)//
+            .setLabel(label)//
+            .build();
+    }
+
+    private static String getLabelFromNodeInWorkflow(final WorkflowEnt wf, final NodeIDEnt nodeId) {
+        var annotation = wf.getNodes().get(nodeId.toString()).getAnnotation();
+        return annotation == null ? "" : annotation.getText();
     }
 
     /**

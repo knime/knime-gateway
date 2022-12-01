@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,98 +41,60 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Nov 30, 2022 (kai): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.service.commands;
 
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.core.node.workflow.NodeAnnotation;
+import org.knime.core.node.workflow.NodeAnnotationData;
+import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
- * A command that is executed to change a workflow.
- * 
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Workflow command to update the label of a native node, component of metanode.
+ *
+ * @author Kai Franze, KNIME GmbH
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
+public class UpdateLabel extends AbstractWorkflowCommand {
 
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    UPDATE_LABEL("update_label"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    CUT("cut"),
-    
-    PASTE("paste");
+    private final UpdateLabelCommandEnt m_commandEnt;
 
-    private String value;
+    private NodeAnnotation m_nodeAnnotation;
 
-    KindEnum(String value) {
-      this.value = value;
+    private NodeAnnotationData m_oldNodeAnnotationData;
+
+    UpdateLabel(final UpdateLabelCommandEnt commandEnt) {
+        m_commandEnt = commandEnt;
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public void undo() throws OperationNotAllowedException {
+        m_nodeAnnotation.copyFrom(m_oldNodeAnnotationData, true);
     }
 
-  }
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
+        var nodeId = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
+        var nc = wfm.getNodeContainer(nodeId);
+        var newLabel = m_commandEnt.getLabel();
 
+        // Keep node annotation and node annotation data to undo
+        m_nodeAnnotation = nc.getNodeAnnotation();
+        m_oldNodeAnnotationData = m_nodeAnnotation.getData().clone();
+        var annotationData = m_nodeAnnotation.getData();
+        var oldLabel = annotationData.getText();
 
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-    /**
-     * The builder for the entity.
-     */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
-
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowCommandEnt build();
-    
+        // Only update the node annotation if the labels are different
+        if (!oldLabel.equals(newLabel)) {
+            annotationData.setText(newLabel);
+            m_nodeAnnotation.copyFrom(annotationData, true);
+            return true;
+        }
+        return false;
     }
 
 }

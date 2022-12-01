@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -143,9 +144,10 @@ public final class WorkflowCommands {
     }
 
     @SuppressWarnings("java:S1541")
-    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt)
+    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt) // NOSONAR: See below.
         throws OperationNotAllowedException {
         WorkflowCommand command;
+        // TODO: Replace this by pattern matching once Java 17 is available
         if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
         } else if (commandEnt instanceof DeleteCommandEnt) {
@@ -156,6 +158,8 @@ public final class WorkflowCommands {
             command = new AddNode((AddNodeCommandEnt)commandEnt);
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
             command = new UpdateComponentOrMetanodeNameCommand((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
+        } else if (commandEnt instanceof UpdateLabelCommandEnt) {
+            command = new UpdateLabel((UpdateLabelCommandEnt)commandEnt);
         } else if (commandEnt instanceof CollapseCommandEnt) {
             command = new Collapse((CollapseCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof ExpandCommandEnt) {

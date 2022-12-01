@@ -117,6 +117,7 @@ import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
@@ -223,6 +224,7 @@ public class ListEntities {
         res.add(StyleRangeEnt.class);
         res.add(TranslateCommandEnt.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.class);
+        res.add(UpdateLabelCommandEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowChangedEventEnt.class);
         res.add(WorkflowChangedEventTypeEnt.class);
@@ -314,6 +316,7 @@ public class ListEntities {
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(TranslateCommandEnt.TranslateCommandEntBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder.class);
+        res.add(UpdateLabelCommandEnt.UpdateLabelCommandEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder.class);
         res.add(WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder.class);

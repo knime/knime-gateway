@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -53,89 +52,55 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents the global application state.
+ * Updates the label of a native node, component of metanode.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AppStateEnt extends GatewayEntity {
+public interface UpdateLabelCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * List of all opened workflow projects.
-   * @return openProjects 
+   * Get label
+   * @return label , never <code>null</code>
    **/
-  public java.util.List<WorkflowProjectEnt> getOpenProjects();
+  public String getLabel();
 
   /**
-   * All port types available in this installation. Map from port type ID to port type entity.
-   * @return availablePortTypes 
+   * Get nodeId
+   * @return nodeId , never <code>null</code>
    **/
-  public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
-
-  /**
-   * When the user is prompted to select a port type, this subset of types may be used as suggestions.
-   * @return suggestedPortTypeIds 
-   **/
-  public java.util.List<String> getSuggestedPortTypeIds();
-
-  /**
-   * If true, node recommendation features can be used, otherwise they have to be disabled.
-   * @return hasNodeRecommendationsEnabled 
-   **/
-  public Boolean hasNodeRecommendationsEnabled();
-
-  /**
-   * Maps a feature-flag key to a feature-flag value (usually, but not necessarily, a boolean). The feature-flags are usually specified/controlled through jvm system properties.
-   * @return featureFlags 
-   **/
-  public java.util.Map<String, Object> getFeatureFlags();
+  public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
 
     /**
      * The builder for the entity.
      */
-    public interface AppStateEntBuilder extends GatewayEntityBuilder<AppStateEnt> {
+    public interface UpdateLabelCommandEntBuilder extends GatewayEntityBuilder<UpdateLabelCommandEnt> {
 
         /**
-         * List of all opened workflow projects.
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
          * 
-         * @param openProjects the property value,  
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects);
+        UpdateLabelCommandEntBuilder setKind(KindEnum kind);
         
         /**
-         * All port types available in this installation. Map from port type ID to port type entity.
+   		 * Set label
          * 
-         * @param availablePortTypes the property value,  
+         * @param label the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setAvailablePortTypes(java.util.Map<String, PortTypeEnt> availablePortTypes);
+        UpdateLabelCommandEntBuilder setLabel(String label);
         
         /**
-         * When the user is prompted to select a port type, this subset of types may be used as suggestions.
+   		 * Set nodeId
          * 
-         * @param suggestedPortTypeIds the property value,  
+         * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds);
-        
-        /**
-         * If true, node recommendation features can be used, otherwise they have to be disabled.
-         * 
-         * @param hasNodeRecommendationsEnabled the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setHasNodeRecommendationsEnabled(Boolean hasNodeRecommendationsEnabled);
-        
-        /**
-         * Maps a feature-flag key to a feature-flag value (usually, but not necessarily, a boolean). The feature-flags are usually specified/controlled through jvm system properties.
-         * 
-         * @param featureFlags the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags);
+        UpdateLabelCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         
         /**
@@ -145,7 +110,7 @@ public interface AppStateEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AppStateEnt build();
+        UpdateLabelCommandEnt build();
     
     }
 

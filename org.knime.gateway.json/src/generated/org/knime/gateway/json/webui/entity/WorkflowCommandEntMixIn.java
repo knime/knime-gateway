@@ -67,6 +67,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateLabelCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
@@ -94,6 +95,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultUpdateComponentOrMetanodeNameCommandEnt.class, name = "update_component_or_metanode_name")
+,
+  @Type(value = DefaultUpdateLabelCommandEnt.class, name = "update_label")
 ,
   @Type(value = DefaultCollapseCommandEnt.class, name = "collapse")
 ,
@@ -145,6 +148,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultUpdateComponentOrMetanodeNameCommandEnt.class, name = "update_component_or_metanode_name")
+,
+  @Type(value = DefaultUpdateLabelCommandEnt.class, name = "update_label")
 ,
   @Type(value = DefaultCollapseCommandEnt.class, name = "collapse")
 ,
