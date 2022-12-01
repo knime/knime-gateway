@@ -157,7 +157,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddNodeCommandEnt) {
             command = new AddNode((AddNodeCommandEnt)commandEnt);
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
-            command = new UpdateComponentOrMetanodeNameCommand((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
+            command = new UpdateComponentOrMetanodeName((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
         } else if (commandEnt instanceof UpdateLabelCommandEnt) {
             command = new UpdateLabel((UpdateLabelCommandEnt)commandEnt);
         } else if (commandEnt instanceof CollapseCommandEnt) {

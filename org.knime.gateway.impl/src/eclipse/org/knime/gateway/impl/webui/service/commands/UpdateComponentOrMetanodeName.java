@@ -59,7 +59,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  *
  * @author Kai Franze, KNIME GmbH
  */
-final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand {
+final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
 
     private final UpdateComponentOrMetanodeNameCommandEnt m_commandEnt;
 
@@ -67,7 +67,7 @@ final class UpdateComponentOrMetanodeNameCommand extends AbstractWorkflowCommand
 
     private NodeID m_nodeId;
 
-    UpdateComponentOrMetanodeNameCommand(final UpdateComponentOrMetanodeNameCommandEnt commandEnt) {
+    UpdateComponentOrMetanodeName(final UpdateComponentOrMetanodeNameCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
