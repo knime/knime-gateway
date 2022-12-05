@@ -86,6 +86,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.NodeAnnotationData;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
@@ -119,6 +120,7 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -133,7 +135,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -144,6 +146,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.util.EntityBuilderUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -1469,7 +1472,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testExecuteUpdateLabelCommand() throws Exception {
+    public void testExecuteUpdateNodeLabelCommand() throws Exception {
         final var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         final var metanodeId = new NodeIDEnt(1);
         final var componentId = new NodeIDEnt(2);
@@ -1481,31 +1484,39 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // do tests for metanode, component and native node
         for (var nodeId : List.of(metanodeId, componentId, nativeNodeId)) {
-            var oldLabel = getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), false).getWorkflow(), nodeId);
+            var oldLabel =
+                getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow(), nodeId);
             var newLabel = "The new label";
 
             // update node label
-            ws().executeWorkflowCommand(wfId, getRootID(), buildUpdateLabelCommandEnt(nodeId, newLabel));
+            ws().executeWorkflowCommand(wfId, getRootID(), buildUpdateNodeLabelCommandEnt(nodeId, newLabel));
             var retrievedLabel =
-                getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), false).getWorkflow(), nodeId);
+                getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow(), nodeId);
             assertThat("Retrieved label must equal new label", retrievedLabel, is(newLabel));
 
             // undo command
             ws().undoWorkflowCommand(wfId, getRootID());
-            retrievedLabel = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
-                .get(metanodeId.toString()).getAnnotation().getText();
+            retrievedLabel =
+                getLabelFromNodeInWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow(), nodeId);
             assertThat("Retrieved label must equal old label", retrievedLabel, is(oldLabel));
         }
     }
 
-    private static UpdateLabelCommandEnt buildUpdateLabelCommandEnt(final NodeIDEnt nodeId, final String label) {
-        return builder(UpdateLabelCommandEnt.UpdateLabelCommandEntBuilder.class)//
-            .setKind(KindEnum.UPDATE_LABEL)//
+    private static UpdateNodeLabelCommandEnt buildUpdateNodeLabelCommandEnt(final NodeIDEnt nodeId, final String label) {
+        return builder(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_NODE_LABEL)//
             .setNodeId(nodeId)//
             .setLabel(label)//
             .build();
     }
 
+    /**
+     * When a node has its default {@link NodeAnnotationData}, the {@link NodeAnnotationEnt} will be set to
+     * {@code null}, see {@link EntityBuilderUtil#buildNodeAnnotationEnt}. Setting the node label to something else and
+     * undoing this operation will yield to a non-empty {@link NodeAnnotationEnt}, since the {@link NodeAnnotationData}
+     * is no longer considered the default. Instead, the node annotation text will be set to the empty string, see
+     * {@link EntityBuilderUtil#buildNodeAnnotationEnt}
+     */
     private static String getLabelFromNodeInWorkflow(final WorkflowEnt wf, final NodeIDEnt nodeId) {
         var annotation = wf.getNodes().get(nodeId.toString()).getAnnotation();
         return annotation == null ? "" : annotation.getText();

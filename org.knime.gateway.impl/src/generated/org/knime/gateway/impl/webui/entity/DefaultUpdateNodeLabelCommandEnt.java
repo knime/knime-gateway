@@ -52,30 +52,30 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 
 /**
- * Updates the label of a native node, component of metanode.
+ * Updates the label of a native node, component or metanode.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
+public class DefaultUpdateNodeLabelCommandEnt implements UpdateNodeLabelCommandEnt {
 
   protected KindEnum m_kind;
   protected String m_label;
   protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
   
-  protected DefaultUpdateLabelCommandEnt() {
+  protected DefaultUpdateNodeLabelCommandEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "UpdateLabelCommand";
+    return "UpdateNodeLabelCommand";
   }
   
-  private DefaultUpdateLabelCommandEnt(DefaultUpdateLabelCommandEntBuilder builder) {
+  private DefaultUpdateNodeLabelCommandEnt(DefaultUpdateNodeLabelCommandEntBuilder builder) {
     super();
     if(builder.m_kind == null) {
         throw new IllegalArgumentException("kind must not be null.");
@@ -105,7 +105,7 @@ public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultUpdateLabelCommandEnt ent = (DefaultUpdateLabelCommandEnt)o;
+        DefaultUpdateNodeLabelCommandEnt ent = (DefaultUpdateNodeLabelCommandEnt)o;
         return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_label, ent.m_label) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
@@ -141,9 +141,9 @@ public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
   }
     
   
-    public static class DefaultUpdateLabelCommandEntBuilder implements UpdateLabelCommandEntBuilder {
+    public static class DefaultUpdateNodeLabelCommandEntBuilder implements UpdateNodeLabelCommandEntBuilder {
     
-        public DefaultUpdateLabelCommandEntBuilder(){
+        public DefaultUpdateNodeLabelCommandEntBuilder(){
             super();
         }
     
@@ -152,7 +152,7 @@ public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
-        public DefaultUpdateLabelCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultUpdateNodeLabelCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("kind must not be null.");
              }
@@ -161,7 +161,7 @@ public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
         }
 
         @Override
-        public DefaultUpdateLabelCommandEntBuilder setLabel(String label) {
+        public DefaultUpdateNodeLabelCommandEntBuilder setLabel(String label) {
              if(label == null) {
                  throw new IllegalArgumentException("label must not be null.");
              }
@@ -170,7 +170,7 @@ public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
         }
 
         @Override
-        public DefaultUpdateLabelCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+        public DefaultUpdateNodeLabelCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
                  throw new IllegalArgumentException("nodeId must not be null.");
              }
@@ -180,8 +180,8 @@ public class DefaultUpdateLabelCommandEnt implements UpdateLabelCommandEnt {
 
         
         @Override
-        public DefaultUpdateLabelCommandEnt build() {
-            return new DefaultUpdateLabelCommandEnt(this);
+        public DefaultUpdateNodeLabelCommandEnt build() {
+            return new DefaultUpdateNodeLabelCommandEnt(this);
         }
     
     }

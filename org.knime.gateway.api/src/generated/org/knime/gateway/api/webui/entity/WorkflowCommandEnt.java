@@ -72,7 +72,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
     
-    UPDATE_LABEL("update_label"),
+    UPDATE_NODE_LABEL("update_node_label"),
     
     COLLAPSE("collapse"),
     

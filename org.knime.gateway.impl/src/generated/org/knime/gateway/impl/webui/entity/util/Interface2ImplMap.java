@@ -190,8 +190,8 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEn
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt.UpdateLabelCommandEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -451,8 +451,8 @@ public class Interface2ImplMap {
         if(clazz == UpdateComponentOrMetanodeNameCommandEntBuilder.class) {
             return (B)new DefaultUpdateComponentOrMetanodeNameCommandEnt.DefaultUpdateComponentOrMetanodeNameCommandEntBuilder();
         }        
-        if(clazz == UpdateLabelCommandEntBuilder.class) {
-            return (B)new DefaultUpdateLabelCommandEnt.DefaultUpdateLabelCommandEntBuilder();
+        if(clazz == UpdateNodeLabelCommandEntBuilder.class) {
+            return (B)new DefaultUpdateNodeLabelCommandEnt.DefaultUpdateNodeLabelCommandEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();

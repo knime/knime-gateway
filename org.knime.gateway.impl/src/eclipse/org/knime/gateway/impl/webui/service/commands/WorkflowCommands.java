@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -158,8 +158,8 @@ public final class WorkflowCommands {
             command = new AddNode((AddNodeCommandEnt)commandEnt);
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
             command = new UpdateComponentOrMetanodeName((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
-        } else if (commandEnt instanceof UpdateLabelCommandEnt) {
-            command = new UpdateLabel((UpdateLabelCommandEnt)commandEnt);
+        } else if (commandEnt instanceof UpdateNodeLabelCommandEnt) {
+            command = new UpdateNodeLabel((UpdateNodeLabelCommandEnt)commandEnt);
         } else if (commandEnt instanceof CollapseCommandEnt) {
             command = new Collapse((CollapseCommandEnt)commandEnt, m_workflowMiddleware);
         } else if (commandEnt instanceof ExpandCommandEnt) {

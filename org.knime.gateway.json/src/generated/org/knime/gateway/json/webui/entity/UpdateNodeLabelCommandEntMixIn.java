@@ -42,76 +42,71 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt.DefaultUpdateNodeLabelCommandEntBuilder;
 
 /**
- * Updates the label of a native node, component of metanode.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateLabelCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
+@JsonDeserialize(builder=DefaultUpdateNodeLabelCommandEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface UpdateNodeLabelCommandEntMixIn extends UpdateNodeLabelCommandEnt {
 
-  /**
-   * Get label
-   * @return label , never <code>null</code>
-   **/
-  public String getLabel();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-  /**
-   * Get nodeId
-   * @return nodeId , never <code>null</code>
-   **/
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
-
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("label")
+    public String getLabel();
+    
+    @Override
+    @JsonProperty("nodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface UpdateLabelCommandEntBuilder extends GatewayEntityBuilder<UpdateLabelCommandEnt> {
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        UpdateLabelCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set label
-         * 
-         * @param label the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        UpdateLabelCommandEntBuilder setLabel(String label);
-        
-        /**
-   		 * Set nodeId
-         * 
-         * @param nodeId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        UpdateLabelCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        UpdateLabelCommandEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface UpdateNodeLabelCommandEntMixInBuilder extends UpdateNodeLabelCommandEntBuilder {
     
+        @Override
+        public UpdateNodeLabelCommandEntMixIn build();
+    
+        @Override
+        @JsonProperty("kind")
+        public UpdateNodeLabelCommandEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("label")
+        public UpdateNodeLabelCommandEntMixInBuilder setLabel(final String label);
+        
+        @Override
+        @JsonProperty("nodeId")
+        public UpdateNodeLabelCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
     }
 
+
 }
+

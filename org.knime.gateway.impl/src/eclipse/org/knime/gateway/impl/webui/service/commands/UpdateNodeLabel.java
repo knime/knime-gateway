@@ -48,38 +48,47 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeAnnotationData;
-import org.knime.gateway.api.webui.entity.UpdateLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * Workflow command to update the label of a native node, component of metanode.
+ * Workflow command to update the label of a native node, component or metanode.
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class UpdateLabel extends AbstractWorkflowCommand {
+public class UpdateNodeLabel extends AbstractWorkflowCommand {
 
-    private final UpdateLabelCommandEnt m_commandEnt;
+    /* The default background color for node annotations, equal to #FFFFFF */
+    private static final int DEFAULT_BG_COLOR = 16777215;
+
+    /* The default border color for node annotations, equal to #000000 */
+    private static final int DEFAULT_BORDER_COLOR = 0;
+
+    private final UpdateNodeLabelCommandEnt m_commandEnt;
 
     private NodeAnnotation m_nodeAnnotation;
 
     private NodeAnnotationData m_oldNodeAnnotationData;
 
-    UpdateLabel(final UpdateLabelCommandEnt commandEnt) {
+    UpdateNodeLabel(final UpdateNodeLabelCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        m_nodeAnnotation.copyFrom(m_oldNodeAnnotationData, true);
+        m_nodeAnnotation.copyFrom(m_oldNodeAnnotationData, false);
+        m_nodeAnnotation = null;
+        m_oldNodeAnnotationData = null;
     }
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        var nodeId = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
-        var nc = wfm.getNodeContainer(nodeId);
+        var nodeId = m_commandEnt.getNodeId();
+        var nc = DefaultServiceUtil.getNodeContainer(getWorkflowKey().getProjectId(), nodeId);
         var newLabel = m_commandEnt.getLabel();
 
         // Keep node annotation and node annotation data to undo
@@ -89,9 +98,15 @@ public class UpdateLabel extends AbstractWorkflowCommand {
         var oldLabel = annotationData.getText();
 
         // Only update the node annotation if the labels are different
-        if (!oldLabel.equals(newLabel)) {
+        if (!newLabel.equals(oldLabel)) {
+            // Reset node annotation styling
+            annotationData.setStyleRanges(new StyleRange[0]);
+            annotationData.setBgColor(DEFAULT_BG_COLOR);
+            annotationData.setBorderColor(DEFAULT_BORDER_COLOR);
+            annotationData.setBorderSize(0);
+            // Set node annotation text to new label
             annotationData.setText(newLabel);
-            m_nodeAnnotation.copyFrom(annotationData, true);
+            m_nodeAnnotation.copyFrom(annotationData, false);
             return true;
         }
         return false;
