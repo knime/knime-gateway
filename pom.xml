@@ -55,6 +55,11 @@
 		
 		<!-- for testing only (probably) -->
 		<repository>
+			<id>p2-knime-core-ui</id>
+			<url>${knime.core.ui.p2}</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
 			<id>p2-knime-workbench</id>
 			<layout>p2</layout>
 			<url>${knime.workbench.p2}</url>

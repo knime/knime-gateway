@@ -8,7 +8,8 @@ properties([
         upstream("knime-json/${env.BRANCH_NAME.replaceAll('/', '%2F')}" +
             ", knime-reporting/${env.BRANCH_NAME.replaceAll('/', '%2F')}" +
             ", knime-js-base/${env.BRANCH_NAME.replaceAll('/', '%2F')}" +
-            ", knime-product/${env.BRANCH_NAME.replaceAll('/', '%2F')}")
+            ", knime-product/${env.BRANCH_NAME.replaceAll('/', '%2F')}" +
+            ", knime-core-ui/${env.BRANCH_NAME.replaceAll('/', '%2F')}")
     ]),
     parameters(workflowTests.getConfigurationsAsParameters()),
     buildDiscarder(logRotator(numToKeepStr: '5')),
