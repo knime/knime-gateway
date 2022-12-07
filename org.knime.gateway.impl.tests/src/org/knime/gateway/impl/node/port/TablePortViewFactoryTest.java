@@ -109,8 +109,8 @@ public class TablePortViewFactoryTest {
         var portView = portViewAndDispose.getFirst();
         var page = portView.getPage();
         assertThat(page.getContentType().toString(), is("VUE_COMPONENT_LIB"));
-        var pageId = portView.getPageId();
-        assertThat(pageId, is("view_org.knime.base.views.node.tableview.TableViewNodeFactory"));
+        var pageId = page.getPageIdForReusablePage().orElse(null);
+        assertThat(pageId, is("tableview"));
 
         portViewAndDispose.getSecond().dispose();
     }

@@ -97,12 +97,10 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "", "vue_component_reference").build();
-            }
-
-            @Override
-            public String getPageId() {
-                return "FlowVariablePortView";
+                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
+                    // this is the name of the component used and already present in the frontend
+                    .markAsReusable("FlowVariablePortView")//
+                    .build();
             }
 
         };

@@ -123,8 +123,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
         assertThat(portViewJsonNode.get("initialData"), notNullValue());
         resourceInfo = portViewJsonNode.get("resourceInfo");
-        assertThat(resourceInfo.get("id").textValue(),
-            is("view_org.knime.base.views.node.tableview.TableViewNodeFactory"));
+        assertThat(resourceInfo.get("id").textValue(), is("tableview"));
         assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
 
         // get data for an inactive port
@@ -136,8 +135,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // get data for a metanode port
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
         portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
-        assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(),
-            is("view_org.knime.base.views.node.tableview.TableViewNodeFactory"));
+        assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("tableview"));
 
         // get data for a metanode port that is not executed
         message =

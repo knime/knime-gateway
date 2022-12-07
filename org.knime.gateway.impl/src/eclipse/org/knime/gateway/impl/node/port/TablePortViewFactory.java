@@ -69,7 +69,6 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
     @Override
     public PortView createPortView(final BufferedDataTable table) {
-        var pageId = TableViewUtil.getPageId();
         var tableId = TableViewUtil.toTableId(NodeContext.getContext().getNodeContainer().getID()) + "_"
             + table.getBufferedTableId();
         TableViewUtil.registerRendererRegistryCleanup(tableId);
@@ -95,12 +94,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
             @Override
             public Page getPage() {
-                return TableViewUtil.createPage();
-            }
-
-            @Override
-            public String getPageId() {
-                return pageId;
+                return TableViewUtil.PAGE;
             }
 
         };

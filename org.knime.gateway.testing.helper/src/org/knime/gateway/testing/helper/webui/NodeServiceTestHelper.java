@@ -353,8 +353,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(nodeDialogJsonNode.get("extensionType").textValue(), is("dialog"));
         assertThat(nodeDialogJsonNode.get("initialData").textValue(), notNullValue());
         var resourceInfo = nodeDialogJsonNode.get("resourceInfo");
-        assertThat(resourceInfo.get("id").textValue(),
-            is("dialog_org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory"));
+        assertThat(resourceInfo.get("id").textValue(), is("defaultdialog"));
         assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
 
         var message = assertThrows(InvalidRequestException.class,

@@ -97,7 +97,7 @@ public class FlowVariablePortViewFactoryTest {
         }
         var page = portView.getPage();
         assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
-        var pageId = portView.getPageId();
+        var pageId = page.getPageIdForReusablePage().orElse(null);
         assertThat(pageId, is("FlowVariablePortView"));
     }
 
