@@ -109,7 +109,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
         try {
             m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
-                targetPosition[0], targetPosition[1] - EntityBuilderUtil.NODE_Y_POS_CORRECTION, wfm, false);
+                targetPosition[0], targetPosition[1] - EntityBuilderUtil.Workflow.NODE_Y_POS_CORRECTION, wfm, false);
         } catch (IOException | NoSuchElementException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }

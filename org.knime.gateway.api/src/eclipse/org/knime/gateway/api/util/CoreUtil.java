@@ -88,7 +88,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.WorkflowEntityBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -166,7 +166,7 @@ public final class CoreUtil {
             m = nodeModelClass.getMethod("createStreamableOperator", PartitionInfo.class, PortObjectSpec[].class);
             return m.getDeclaringClass() != NodeModel.class;
         } catch (NoSuchMethodException | SecurityException ex) {
-            NodeLogger.getLogger(EntityBuilderUtil.class)
+            NodeLogger.getLogger(WorkflowEntityBuilder.class)
                 .error("Ability to be run in streaming mode couldn't be determined for node " + nodeModelClass, ex);
         }
         return false;

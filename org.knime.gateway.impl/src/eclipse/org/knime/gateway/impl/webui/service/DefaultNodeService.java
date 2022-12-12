@@ -289,7 +289,7 @@ public final class DefaultNodeService implements NodeService {
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
                 .orElseThrow(() -> new ServiceExceptions.NodeDescriptionNotAvailableException(
                     "Could not create instance of node"));
-            var description = EntityBuilderUtil.buildNativeNodeDescriptionEnt(coreNode);
+            var description = EntityBuilderUtil.NodeTemplateAndDescription.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
             return description;
         }

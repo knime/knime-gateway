@@ -113,7 +113,7 @@ public final class NodeRepository {
         // but we expect the frontend to do it already
         return templateIds.stream().map(this::getNode)//
             .filter(Objects::nonNull)//
-            .map(n -> EntityBuilderUtil.buildNodeTemplateEnt(n.factory))//
+            .map(n -> EntityBuilderUtil.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toMap(NodeTemplateEnt::getId, t -> t));
     }
@@ -196,7 +196,7 @@ public final class NodeRepository {
                     continue;
                 }
                 Node n = new Node();
-                n.templateId = EntityBuilderUtil.createTemplateId(factory);
+                n.templateId = EntityBuilderUtil.NodeTemplateAndDescription.createTemplateId(factory);
                 n.factory = factory;
                 n.name = factory.getNodeName();
                 n.path = normalizeCategoryPath(ext.getCategoryPath());
@@ -220,7 +220,7 @@ public final class NodeRepository {
                     continue;
                 }
                 Node n = new Node();
-                n.templateId = EntityBuilderUtil.createTemplateId(factory);
+                n.templateId = EntityBuilderUtil.NodeTemplateAndDescription.createTemplateId(factory);
                 n.factory = factory;
                 n.name = factory.getNodeName();
                 n.path = normalizeCategoryPath(ext.getCategoryPath(factoryId));

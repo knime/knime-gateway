@@ -195,8 +195,8 @@ public class NodeRecommendations {
             .map(n -> n.factory)//
             .filter(f -> sourcePortType == null || isCompatibleWithSourcePortType(f, sourcePortType))//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
-            .map(f -> fullInfo ? EntityBuilderUtil.buildNodeTemplateEnt(f)
-                : EntityBuilderUtil.buildMinimalNodeTemplateEnt(f))//
+            .map(f -> fullInfo ? EntityBuilderUtil.NodeTemplateAndDescription.buildNodeTemplateEnt(f)
+                : EntityBuilderUtil.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(f))//
             .filter(Objects::nonNull)// `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
             .collect(Collectors.toList());
     }

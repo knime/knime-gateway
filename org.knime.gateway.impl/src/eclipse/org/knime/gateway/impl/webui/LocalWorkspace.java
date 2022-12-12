@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
 import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.WorkflowEntityBuilder;
 
 /**
  * {@link Space}-implementation that represents the local workspace.
@@ -116,7 +117,7 @@ public final class LocalWorkspace implements Space {
         if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
             throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
-        return EntityBuilderUtil.buildSpaceItemsEnt(absolutePath, m_localWorkspaceRootPath, getItemIdFunction(),
+        return EntityBuilderUtil.Space.buildSpaceItemsEnt(absolutePath, m_localWorkspaceRootPath, getItemIdFunction(),
             getItemTypeFunction(), LocalWorkspace::isValidWorkspaceItem, getItemComparator());
     }
 
@@ -125,7 +126,7 @@ public final class LocalWorkspace implements Space {
             return !Files.isHidden(p)
                 && !WorkflowPersistor.METAINFO_FILE.equals(p.getName(p.getNameCount() - 1).toString());
         } catch (IOException ex) {
-            NodeLogger.getLogger(EntityBuilderUtil.class)
+            NodeLogger.getLogger(WorkflowEntityBuilder.class)
                 .warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.");
             return false;
         }

@@ -96,7 +96,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
             NodeUIInformation.moveNodeBy(nc, delta);
         }
         for (WorkflowAnnotation wa : annotations) {
-            wa.shiftPosition(delta[0], delta[1] + EntityBuilderUtil.NODE_Y_POS_CORRECTION);
+            wa.shiftPosition(delta[0], delta[1] + EntityBuilderUtil.Workflow.NODE_Y_POS_CORRECTION);
         }
 
         for (NodeContainer nc : nodes) {
