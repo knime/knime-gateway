@@ -1,0 +1,37 @@
+{
+  "items" : [ {
+    "id" : "-2064673576",
+    "name" : "Group11",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "1122931077",
+    "name" : "empty group",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "-115951930",
+    "name" : "workflow",
+    "type" : "Workflow"
+  }, {
+    "id" : "700457516",
+    "name" : "workflow2",
+    "type" : "Workflow"
+  }, {
+    "id" : "-536380242",
+    "name" : "Metanode",
+    "type" : "WorkflowTemplate"
+  }, {
+    "id" : "1636603187",
+    "name" : "data.txt",
+    "type" : "Other"
+  }, {
+    "id" : "-803303645",
+    "name" : "data2.txt",
+    "type" : "Other"
+  }, {
+    "id" : "-1472877695",
+    "name" : "template",
+    "type" : "Other"
+  } ],
+  "pathIds" : [ "-2135945432" ],
+  "pathNames" : [ "Group1" ]
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<met:KNIMEMetaInfo xmlns:met="http://www.knime.org/2.9/metainfo">
+    <met:element form="text" name="Author"/>
+    <met:element form="date" name="Creation Date">2021-07-22 12:28:20 +0200</met:element>
+    <met:element form="text" name="Last Edited" read-only="true">2021-07-22 12:28:20 +0200</met:element>
+    <met:element form="multiline" name="Comments"/>
+</met:KNIMEMetaInfo>

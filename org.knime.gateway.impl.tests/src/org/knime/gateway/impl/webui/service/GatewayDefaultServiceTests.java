@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
+import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
@@ -151,6 +152,11 @@ public class GatewayDefaultServiceTests {
             @Override
             public NodeRepositoryService getNodeRepositoryService() {
                 return DefaultNodeRepositoryService.getInstance();
+            }
+
+            @Override
+            public SpaceService getSpaceService() {
+                return DefaultSpaceService.getInstance();
             }
         };
         m_gatewayTestName = gatewayTestName;

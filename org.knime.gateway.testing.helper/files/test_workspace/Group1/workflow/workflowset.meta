@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<met:KNIMEMetaInfo xmlns:met="http://www.knime.org/2.9/metainfo"><met:element form="text" name="Author">Author</met:element><met:element form="date" name="Creation Date">15/9/2013</met:element><met:element form="date" name="Last Edited">2018-10-24 11:04:15 +0200</met:element><met:element form="multiline" name="Comments">This is a workflow in Group1.</met:element></met:KNIMEMetaInfo>

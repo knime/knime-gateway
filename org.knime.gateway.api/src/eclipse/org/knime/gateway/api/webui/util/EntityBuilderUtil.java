@@ -30,11 +30,14 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +52,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -198,6 +202,10 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemsEnt.SpaceItemsEntBuilder;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -223,6 +231,7 @@ import org.xml.sax.SAXException;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+// TODO introduce some namespacing?
 public final class EntityBuilderUtil {
 
     /*
@@ -1797,6 +1806,74 @@ public final class EntityBuilderUtil {
 
     private static boolean portTypesAreDifferentButCompatible(final PortType p1, final PortType p2) {
         return !p1.equals(p2) && (p1.isSuperTypeOf(p2) || p2.isSuperTypeOf(p1));
+    }
+
+
+    /**
+     * Builds a {@link SpaceItemsEnt}-entity from a local absolute path.
+     *
+     * @param absolutePath the absolute path to create the entity from
+     * @param rootWorkspacePath the absolute workspace root path
+     * @param getItemId function that determines the id for a given path
+     * @param getItemType function that determines the item type for a given path
+     * @param itemFilter allows one to exclude special paths from the list of space items
+     * @param comparator determines the order of the items in the returned list
+     *
+     * @return a new instance
+     */
+    public static SpaceItemsEnt buildSpaceItemsEnt(final Path absolutePath, final Path rootWorkspacePath,
+        final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
+        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) {
+        var isRoot = absolutePath.equals(rootWorkspacePath);
+        var relativePath = rootWorkspacePath.relativize(absolutePath);
+        var pathIds = isRoot ? Collections.<String> emptyList()
+            : getPathIds(absolutePath, relativePath.getNameCount(), getItemId);
+        var pathNames = isRoot ? Collections.<String> emptyList() : getPathNames(relativePath);
+        var items = buildSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter, comparator);
+        return builder(SpaceItemsEntBuilder.class) //
+            .setPathIds(pathIds) //
+            .setPathNames(pathNames) //
+            .setItems(items) //
+            .build();
+    }
+
+    private static List<SpaceItemEnt> buildSpaceItemEnts(final Path absolutePath, final Path rootWorkspacePath,
+        final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
+        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) {
+        try {
+            return Files.list(absolutePath) //
+                .filter(itemFilter) //
+                .map(p -> buildSpaceItemEnt(rootWorkspacePath.relativize(p), getItemId.apply(p), getItemType.apply(p))) //
+                .sorted(comparator) //
+                .collect(Collectors.toList());
+        } catch (IOException ex) {
+            // TODO
+            throw new RuntimeException();
+        }
+    }
+
+    private static List<String> getPathNames(final Path relativePath) {
+        return StreamSupport.stream(relativePath.spliterator(), false).map(Path::toString).collect(Collectors.toList());
+    }
+
+    private static List<String> getPathIds(final Path absolutePath, final int relativePathNameCount,
+        final Function<Path, String> getItemId) {
+        var res = new String[relativePathNameCount];
+        Path parent = absolutePath;
+        for (int i = res.length - 1; i >= 0; i--) {
+            res[i] = getItemId.apply(parent);
+            parent = parent.getParent();
+        }
+        return Arrays.asList(res);
+    }
+
+    private static SpaceItemEnt buildSpaceItemEnt(final Path relativePath, final String id,
+        final SpaceItemEnt.TypeEnum type) {
+        return builder(SpaceItemEntBuilder.class) //
+            .setId(id) //
+            .setName(relativePath.getName(relativePath.getNameCount() - 1).toString()) //
+            .setType(type) //
+            .build();
     }
 
 }

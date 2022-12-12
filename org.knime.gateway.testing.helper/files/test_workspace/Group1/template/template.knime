@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="template.knime">
+<entry key="created_by" type="xstring" value="2.9.0.qualifier"/>
+<entry key="version" type="xstring" value="2.8.0"/>
+<entry key="name" type="xstring" isnull="true" value=""/>
+<config key="workflow_template_information">
+<entry key="role" type="xstring" value="Template"/>
+<entry key="timestamp" type="xstring" value="2013-10-17 11:35:40"/>
+<entry key="sourceURI" type="xstring" isnull="true" value=""/>
+</config>
+<config key="authorInformation">
+<entry key="authored-by" type="xstring" value="thor"/>
+<entry key="authored-when" type="xstring" value="2013-10-17 11:35:40 +0200"/>
+<entry key="lastEdited-by" type="xstring" isnull="true" value=""/>
+<entry key="lastEdited-when" type="xstring" isnull="true" value=""/>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="CONFIGURED"/>
+<config key="workflow_credentials"/>
+<config key="nodes"/>
+<config key="connections">
+<config key="connection_0">
+<entry key="sourceID" type="xint" value="-1"/>
+<entry key="destID" type="xint" value="-1"/>
+<entry key="sourcePort" type="xint" value="0"/>
+<entry key="destPort" type="xint" value="0"/>
+</config>
+</config>
+<config key="meta_in_ports">
+<entry key="ui_classname" type="xstring" isnull="true" value=""/>
+<config key="port_enum">
+<config key="inport_0">
+<entry key="index" type="xint" value="0"/>
+<entry key="name" type="xstring" value="Inport 0"/>
+<config key="type">
+<entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+</config>
+</config>
+</config>
+</config>
+<config key="meta_out_ports">
+<entry key="ui_classname" type="xstring" isnull="true" value=""/>
+<config key="port_enum">
+<config key="outport_0">
+<entry key="index" type="xint" value="0"/>
+<entry key="name" type="xstring" value="Connected to: Outport 0"/>
+<config key="type">
+<entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+</config>
+</config>
+</config>
+</config>
+</config>

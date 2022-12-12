@@ -52,6 +52,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
+import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -86,5 +87,10 @@ public interface ServiceProvider {
      * @return node repository service implementation
      */
     NodeRepositoryService getNodeRepositoryService();
+
+    /**
+     * @return space service implementation
+     */
+    SpaceService getSpaceService();
 
 }

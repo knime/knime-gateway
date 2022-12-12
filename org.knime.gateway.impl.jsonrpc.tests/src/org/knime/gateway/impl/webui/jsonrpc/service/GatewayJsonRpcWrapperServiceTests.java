@@ -69,6 +69,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
+import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
@@ -178,6 +179,11 @@ public class GatewayJsonRpcWrapperServiceTests {
             @Override
             public NodeRepositoryService getNodeRepositoryService() {
                 return createClientProxy(NodeRepositoryService.class, handler, jsonRpcClient);
+            }
+
+            @Override
+            public SpaceService getSpaceService() {
+                return createClientProxy(SpaceService.class, handler, jsonRpcClient);
             }
         };
 

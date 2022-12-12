@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
+import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
@@ -288,6 +289,15 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected NodeRepositoryService nrs() {
         return m_serviceProvider.getNodeRepositoryService();
+    }
+
+    /**
+     * Shortcut to get a space service instance.
+     *
+     * @return a space service instance
+     */
+    protected SpaceService ss() {
+        return m_serviceProvider.getSpaceService();
     }
 
     /**

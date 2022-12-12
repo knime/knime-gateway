@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.service.util;
 
+import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.PortService;
@@ -75,6 +76,7 @@ public class ListServices {
      */
     public static List<Class<? extends GatewayService>> listServiceInterfaces() {
         List<Class<? extends GatewayService>> res = new ArrayList<>();
+        res.add(SpaceService.class);
         res.add(NodeService.class);
         res.add(NodeRepositoryService.class);
         res.add(PortService.class);

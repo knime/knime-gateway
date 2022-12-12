@@ -1,0 +1,42 @@
+[ {
+  "workflowPath" : "/workflow",
+  "flowVars" : [ ],
+  "credentials" : { },
+  "reset" : true,
+  "discard" : false,
+  "targetName" : "ServerDemo",
+  "schedule" : {
+    "@class" : "com.knime.enterprise.client.api.scheduled.JobSchedule",
+    "start" : "2014-11-25T07:36:08.457+01:00[Europe/Berlin]",
+    "disabled" : false
+  },
+  "inputParameters" : { },
+  "userId" : "Thomas.Gabriel",
+  "id" : "2a007f1e-7933-4356-a1ac-d50e1528c6e8",
+  "authToken" : "no-auth-token-available",
+  "notifications" : {
+    "emails" : [ ],
+    "reportFormats" : [ ]
+  }
+} , {
+  "workflowPath" : "/workflow",
+  "flowVars" : [ ],
+  "credentials" : { },
+  "reset" : true,
+  "discard" : false,
+  "targetName" : "ServerDemo",
+  "schedule" : {
+    "@class" : "com.knime.enterprise.client.api.scheduled.JobSchedule",
+    "start" : "2014-11-25T07:36:08.457+01:00[Europe/Berlin]",
+    "disabled" : false
+  },
+  "inputParameters" : { },
+  "userId" : "Thomas.Gabriel",
+  "id" : "2a007f1e-7933-4356-a1ac-d50e1528c6e9",
+  "authToken" : "no-auth-token-available",
+  "notifications" : {
+    "emails" : [ ],
+    "reportFormats" : [ ],
+    "reportLocation" : "file:/tmp/report.pdf"
+  }
+} ]

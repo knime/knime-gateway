@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
+import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
@@ -82,7 +83,8 @@ public final class ServiceInstances {
         PortService.class, DefaultPortService.class, //
         EventService.class, DefaultEventService.class, //
         ApplicationService.class, DefaultApplicationService.class, //
-        NodeRepositoryService.class, DefaultNodeRepositoryService.class));
+        NodeRepositoryService.class, DefaultNodeRepositoryService.class, //
+        SpaceService.class, DefaultSpaceService.class));
 
     private static final Map<Class<? extends GatewayService>, LazyInitializer<? extends GatewayService>> SERVICE_INITIALIZERS =
             synchronizedMap(new HashMap<>());
