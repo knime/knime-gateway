@@ -63,6 +63,6 @@ public interface SpaceProviders {
     /**
      * @return list of available {@link SpaceProvider}s
      */
-    List<SpaceProvider> getSpaceProviders();
+    List<SpaceProvider> get();
 
 }

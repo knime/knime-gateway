@@ -117,5 +117,18 @@ public final class ServiceExceptions {
         }
     }
 
+   /**
+    * If there was an I/O error of some kind.
+    */
+    public static class IOException extends Exception {
+        public IOException(String message) {
+            super(message);
+        }
+        
+        public IOException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     
 }

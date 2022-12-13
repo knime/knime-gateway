@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -103,7 +102,7 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public SpaceItemsEnt getItems(final String workflowGroupItemId) {
+    public SpaceItemsEnt getItems(final String workflowGroupItemId) throws IOException {
         Path relativePath = null;
         var isRoot = Space.ROOT_ITEM_ID.equals(workflowGroupItemId);
         if (!isRoot) {
@@ -112,13 +111,12 @@ public final class LocalWorkspace implements Space {
                 throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
             }
         }
-        var absolutePath =
-            relativePath == null ? m_localWorkspaceRootPath : m_localWorkspaceRootPath.resolve(relativePath);
+        var absolutePath = isRoot ? m_localWorkspaceRootPath : m_localWorkspaceRootPath.resolve(relativePath);
         if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
             throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
         return EntityBuilderUtil.Space.buildSpaceItemsEnt(absolutePath, m_localWorkspaceRootPath, getItemIdFunction(),
-            getItemTypeFunction(), LocalWorkspace::isValidWorkspaceItem, getItemComparator());
+            this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem, getItemComparator());
     }
 
     private static boolean isValidWorkspaceItem(final Path p) {
@@ -139,19 +137,14 @@ public final class LocalWorkspace implements Space {
     private Function<Path, String> getItemIdFunction() {
         return path -> {
             var id = path.hashCode();
-            var existingPath = m_itemIdToPathMap.get(id);
-            if (existingPath != null && !path.equals(existingPath)) {
+            Path existingPath;
+            while ((existingPath = m_itemIdToPathMap.get(id)) != null && !path.equals(existingPath)) {
                 // handle hash collision
-                // TODO do it in a loop!
                 id = 31 * id;
             }
             m_itemIdToPathMap.put(id, path);
             return Integer.toString(id);
         };
-    }
-
-    private Function<Path, SpaceItemEnt.TypeEnum> getItemTypeFunction() {
-        return this::cacheOrGetSpaceItemTypeFromCache;
     }
 
     private SpaceItemEnt.TypeEnum cacheOrGetSpaceItemTypeFromCache(final Path item) {
@@ -162,8 +155,8 @@ public final class LocalWorkspace implements Space {
         if (Files.isDirectory(item)) {
             // the order of checking is important because, e.g., a component also contains a workflow.knime file
             if (containsFile(item, WorkflowPersistor.TEMPLATE_FILE)) {
-                try (final InputStream s = Files.newInputStream(item.resolve(WorkflowPersistor.TEMPLATE_FILE))) {
-                    final MetadataConfig c = new MetadataConfig("ignored");
+                try (final var s = Files.newInputStream(item.resolve(WorkflowPersistor.TEMPLATE_FILE))) {
+                    final var c = new MetadataConfig("ignored");
                     c.load(s);
                     var isComponent = c.getConfigBase("workflow_template_information").getString("templateType")
                         .equals(MetaNodeTemplateInformation.TemplateType.SubNode.toString());

@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
@@ -63,7 +64,7 @@ public interface Space {
     /**
      * Id of the root 'workflow group'.
      */
-    static final String ROOT_ITEM_ID = "root";
+    String ROOT_ITEM_ID = "root";
 
     /**
      * @return a space id unique within a {@link SpaceProvider}
@@ -77,7 +78,8 @@ public interface Space {
      *
      * @return the items and some metadata
      * @throws NoSuchElementException if the given workflow group item id doesn't refer to a workflow group
+     * @throws IOException if the there was a problem with read or fetching the items
      */
-    SpaceItemsEnt getItems(String workflowGroupItemId);
+    SpaceItemsEnt getItems(String workflowGroupItemId) throws IOException;
 
 }

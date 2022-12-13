@@ -65,7 +65,8 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      */
-    SpaceItemsEnt getSpaceItems(String spaceId, String itemId)  throws ServiceExceptions.InvalidRequestException;
+    SpaceItemsEnt getSpaceItems(String spaceId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
         
 }

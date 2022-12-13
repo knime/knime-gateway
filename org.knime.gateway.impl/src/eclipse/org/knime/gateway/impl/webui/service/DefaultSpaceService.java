@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
@@ -83,21 +84,21 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceItemsEnt getSpaceItems(final String spaceId, final String itemId) throws InvalidRequestException {
+    public SpaceItemsEnt getSpaceItems(final String spaceId, final String itemId)
+        throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
             return getSpace(spaceId).getItems(itemId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
+        } catch (IOException e) {
+            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
     private Space getSpace(final String spaceId) throws InvalidRequestException {
-        Space space = m_spaceProviders.getSpaceProviders().stream().flatMap(sp -> sp.getSpaces().stream())
-            .filter(s -> spaceId.equals(s.getId())).findFirst().orElse(null);
-        if (space == null) {
-            throw new InvalidRequestException("No space available for space id '" + spaceId + "'");
-        }
-        return space;
+        return m_spaceProviders.get().stream().flatMap(sp -> sp.getSpaces().stream())
+            .filter(s -> spaceId.equals(s.getId())).findFirst()
+            .orElseThrow(() -> new InvalidRequestException("No space available for space id '" + spaceId + "'"));
     }
 
 }

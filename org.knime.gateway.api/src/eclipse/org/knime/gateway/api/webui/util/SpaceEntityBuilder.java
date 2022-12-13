@@ -80,19 +80,20 @@ public final class SpaceEntityBuilder {
     }
 
     /**
-     * TODO
+     * Builds a {@link SpaceItemsEnt}-entity from an absolute local directory-path by listening all contained items.
      *
-     * @param absolutePath
-     * @param rootWorkspacePath
-     * @param getItemId
-     * @param getItemType
-     * @param itemFilter
-     * @param comparator
-     * @return
+     * @param absolutePath the absolute path to list the items for
+     * @param rootWorkspacePath workspace root path
+     * @param getItemId function which determines the id per item/path
+     * @param getItemType function which determines the type per item/path
+     * @param itemFilter determines the items to be excluded (e.g. hidden files)
+     * @param comparator determines the order of the items
+     * @return a new entity instance
+     * @throws IOException
      */
-    public static SpaceItemsEnt buildSpaceItemsEnt(final Path absolutePath, final Path rootWorkspacePath,
+    public SpaceItemsEnt buildSpaceItemsEnt(final Path absolutePath, final Path rootWorkspacePath,
         final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
-        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) {
+        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
         var isRoot = absolutePath.equals(rootWorkspacePath);
         var relativePath = rootWorkspacePath.relativize(absolutePath);
         var pathIds = isRoot ? Collections.<String> emptyList()
@@ -108,16 +109,12 @@ public final class SpaceEntityBuilder {
 
     private static List<SpaceItemEnt> buildSpaceItemEnts(final Path absolutePath, final Path rootWorkspacePath,
         final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
-        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) {
-        try {
-            return Files.list(absolutePath) //
-                .filter(itemFilter) //
+        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
+        try (var pathsStream = Files.list(absolutePath)) {
+            return pathsStream.filter(itemFilter) //
                 .map(p -> buildSpaceItemEnt(rootWorkspacePath.relativize(p), getItemId.apply(p), getItemType.apply(p))) //
                 .sorted(comparator) //
                 .collect(Collectors.toList());
-        } catch (IOException ex) {
-            // TODO
-            throw new RuntimeException();
         }
     }
 
@@ -128,7 +125,7 @@ public final class SpaceEntityBuilder {
     private static List<String> getPathIds(final Path absolutePath, final int relativePathNameCount,
         final Function<Path, String> getItemId) {
         var res = new String[relativePathNameCount];
-        Path parent = absolutePath;
+        var parent = absolutePath;
         for (int i = res.length - 1; i >= 0; i--) {
             res[i] = getItemId.apply(parent);
             parent = parent.getParent();
