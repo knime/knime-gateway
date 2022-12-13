@@ -1,13 +1,13 @@
 {
   "items" : [ {
-    "id" : "1710921494",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "workflow",
     "type" : "Workflow"
   }, {
-    "id" : "-997701498",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "component",
     "type" : "Component"
   } ],
-  "pathIds" : [ "-2135945432", "-2064673576" ],
+  "pathIds" : "list of path-ids; list size: 2",
   "pathNames" : [ "Group1", "Group11" ]
 }

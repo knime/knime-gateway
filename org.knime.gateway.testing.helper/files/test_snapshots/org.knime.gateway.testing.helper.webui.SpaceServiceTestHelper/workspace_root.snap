@@ -1,33 +1,33 @@
 {
   "items" : [ {
-    "id" : "-199408696",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "EmptyGroup",
     "type" : "WorkflowGroup"
   }, {
-    "id" : "-2135945432",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "Group1",
     "type" : "WorkflowGroup"
   }, {
-    "id" : "-2135945431",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "Group2",
     "type" : "WorkflowGroup"
   }, {
-    "id" : "-184771659",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "workflow",
     "type" : "Workflow"
   }, {
-    "id" : "365352903",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "component",
     "type" : "Component"
   }, {
-    "id" : "1567783458",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "data.txt",
     "type" : "Other"
   }, {
-    "id" : "1647518753",
+    "id" : "PLACEHOLDER_FOR_ID",
     "name" : "öäüß.txt",
     "type" : "Other"
   } ],
-  "pathIds" : [ ],
+  "pathIds" : "list of path-ids; list size: 0",
   "pathNames" : [ ]
 }
