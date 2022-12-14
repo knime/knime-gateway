@@ -199,15 +199,15 @@ public final class WorkflowEntityBuilder {
     /*
      * The default background color for node annotations which usually translates to opaque.
      */
-    private final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
+    private static final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
 
-    private final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
+    private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
 
     /**
      * Characterization of loop state for determining allowed actions.
      * This is not part of the API, see {@link StatusEnum} instead.
      */
-    private static enum LoopState {
+    private enum LoopState {
 
         /** Initial state, no loop iteration has been performed yet */
         READY,
@@ -328,7 +328,7 @@ public final class WorkflowEntityBuilder {
      *
      * NOTE: the current value has been 'experimentally' determined
      */
-    public final int NODE_Y_POS_CORRECTION = 6;
+    public static final int NODE_Y_POS_CORRECTION = 6;
 
     private final Map<String, NativeNodeInvariantsEnt> m_nativeNodeInvariantsCache = new ConcurrentHashMap<>();
 

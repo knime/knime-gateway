@@ -125,7 +125,7 @@ public final class LocalWorkspace implements Space {
                 && !WorkflowPersistor.METAINFO_FILE.equals(p.getName(p.getNameCount() - 1).toString());
         } catch (IOException ex) {
             NodeLogger.getLogger(WorkflowEntityBuilder.class)
-                .warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.");
+                .warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.", ex);
             return false;
         }
     }
@@ -163,7 +163,7 @@ public final class LocalWorkspace implements Space {
                     return isComponent ? SpaceItemEnt.TypeEnum.COMPONENT : SpaceItemEnt.TypeEnum.WORKFLOWTEMPLATE;
                 } catch (InvalidSettingsException | IOException ex) {
                     NodeLogger.getLogger(LocalWorkspace.class)
-                        .warnWithFormat("Space item type couldn't be determined for %s", item);
+                        .warnWithFormat("Space item type couldn't be determined for %s", item, ex);
                     return SpaceItemEnt.TypeEnum.OTHER;
                 }
             } else if (containsFile(item, WorkflowPersistor.WORKFLOW_FILE)) {
